@@ -106,6 +106,13 @@ type names in each "Spelled today" section may rot, the rest must not.
 - [Honest data](principles/honest-data.md)
 - [What earns a concept](principles/what-earns-a-concept.md)
 - [Relay's words](principles/relays-words.md)
+- [Two runtimes, one compiler](principles/two-runtimes-one-compiler.md)
+
+## Decisions
+
+Choices made among real alternatives, with their evidence and the condition
+that would reopen them, live in [decisions/](decisions/). They may be
+superseded; principles may not.
 
 ## Openings
 

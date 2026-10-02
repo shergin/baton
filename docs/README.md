@@ -8,6 +8,9 @@ What to read when.
   [principles/](principles/) — one file per constraint: the failure mode it
   avoids, the idea, the consequences, the rejected alternatives, and how it
   is spelled in code today.
+- **Why this and not the alternative?**
+  [decisions/](decisions/) — one file per choice: context, decision,
+  evidence, what was not chosen, and what would reopen it.
 - **What does this word mean?**
   [terminology.md](terminology.md) — the vocabulary contract, updated in the
   same change as the code. Concepts marked *(planned)* do not exist yet.

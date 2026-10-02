@@ -20,8 +20,11 @@ the vocabulary is `docs/terminology.md`. These files outrank any default.
   suite and are recorded in `BENCHMARKS.md` with device, OS and date.
 - Public docs are updated in the same change that makes them stale: README,
   CHANGELOG, `docs/terminology.md`, the sample.
-- Settled stays settled. Decisions live in the planning notes with reasons
-  and reopening triggers; do not relitigate without new evidence.
+- Settled stays settled. Decisions of public interest are recorded in
+  `docs/decisions/` (context, decision, evidence, what would reopen them);
+  the full log stays in the planning notes. Do not relitigate without new
+  evidence; when evidence arrives, supersede the record rather than editing
+  its history.
 
 ## Git
 

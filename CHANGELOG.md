@@ -6,4 +6,5 @@ are expected and listed without apology.
 ## Unreleased
 
 - The design argument: `docs/vision.md`, `docs/principles/`,
-  `docs/terminology.md`. No code yet.
+  `docs/terminology.md`, and `docs/decisions/` for choices made among
+  alternatives. No usable code yet.
