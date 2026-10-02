@@ -1,0 +1,33 @@
+[package]
+name = "batonc"
+version = "0.0.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+description = "The Baton compiler: finds GraphQL in Swift and Kotlin sources, validates it, and emits lenses and plans."
+publish = false
+
+[[bin]]
+name = "batonc"
+path = "src/main.rs"
+
+[dependencies]
+# Relay's compiler front end, pinned to a release tag. Everything after the plan IR is ours.
+common = { git = "https://github.com/facebook/relay", tag = "v21.0.1" }
+intern = { git = "https://github.com/facebook/relay", tag = "v21.0.1" }
+graphql-syntax = { git = "https://github.com/facebook/relay", tag = "v21.0.1" }
+schema = { git = "https://github.com/facebook/relay", tag = "v21.0.1" }
+relay-schema = { git = "https://github.com/facebook/relay", tag = "v21.0.1" }
+graphql-ir = { git = "https://github.com/facebook/relay", tag = "v21.0.1" }
+graphql-text-printer = { git = "https://github.com/facebook/relay", tag = "v21.0.1" }
+relay-config = { git = "https://github.com/facebook/relay", tag = "v21.0.1" }
+relay-transforms = { git = "https://github.com/facebook/relay", tag = "v21.0.1" }
+
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+md5 = "0.7"
+
+[profile.release]
+codegen-units = 1
+lto = "thin"
+strip = true
