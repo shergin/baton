@@ -12,3 +12,6 @@ DerivedData/
 
 # Local
 .DS_Store
+
+# The compiler binary bundle Package.swift points at; build it with scripts/build-compiler.sh.
+/compiler/dist/

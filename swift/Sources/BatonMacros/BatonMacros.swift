@@ -1,0 +1,77 @@
+import SwiftCompilerPlugin
+import SwiftSyntax
+import SwiftSyntaxBuilder
+import SwiftSyntaxMacros
+
+struct MacroError: Error, CustomStringConvertible {
+    let description: String
+}
+
+/// A pure marker: validates the attachment site and expands to nothing, so the
+/// property stays stored and the memberwise initializer takes its type.
+public struct FragmentMacro: PeerMacro {
+    public static func expansion(
+        of node: AttributeSyntax,
+        providingPeersOf declaration: some DeclSyntaxProtocol,
+        in context: some MacroExpansionContext
+    ) throws -> [DeclSyntax] {
+        try requireTypedProperty(declaration, attribute: node)
+        return []
+    }
+}
+
+/// Turns `var name: Op` into a computed property over `_name: OperationStorage<Op>`
+/// with an init accessor, so `init(name: Op)` still exists and `name` reads the
+/// resolved value.
+public struct QueryMacro: AccessorMacro, PeerMacro {
+    public static func expansion(
+        of node: AttributeSyntax,
+        providingAccessorsOf declaration: some DeclSyntaxProtocol,
+        in context: some MacroExpansionContext
+    ) throws -> [AccessorDeclSyntax] {
+        let (name, _) = try requireTypedProperty(declaration, attribute: node)
+        return [
+            """
+            @storageRestrictions(initializes: _\(raw: name))
+            init(initialValue) {
+                _\(raw: name) = Baton.OperationStorage(initialValue)
+            }
+            """,
+            """
+            get {
+                _\(raw: name).resolved
+            }
+            """,
+        ]
+    }
+
+    public static func expansion(
+        of node: AttributeSyntax,
+        providingPeersOf declaration: some DeclSyntaxProtocol,
+        in context: some MacroExpansionContext
+    ) throws -> [DeclSyntax] {
+        let (name, type) = try requireTypedProperty(declaration, attribute: node)
+        return ["private var _\(raw: name): Baton.OperationStorage<\(type.trimmed)>"]
+    }
+}
+
+@discardableResult
+private func requireTypedProperty(_ declaration: some DeclSyntaxProtocol, attribute: AttributeSyntax) throws -> (String, TypeSyntax) {
+    guard let variable = declaration.as(VariableDeclSyntax.self),
+          variable.bindings.count == 1,
+          let binding = variable.bindings.first,
+          let pattern = binding.pattern.as(IdentifierPatternSyntax.self),
+          let type = binding.typeAnnotation?.type
+    else {
+        throw MacroError(description: "\(attribute.attributeName.trimmedDescription) must be attached to a single property with an explicit type")
+    }
+    guard binding.initializer == nil else {
+        throw MacroError(description: "a \(attribute.attributeName.trimmedDescription) property takes its value from the initializer, not a default")
+    }
+    return (pattern.identifier.text, type)
+}
+
+@main
+struct BatonMacrosPlugin: CompilerPlugin {
+    let providingMacros: [Macro.Type] = [FragmentMacro.self, QueryMacro.self]
+}
