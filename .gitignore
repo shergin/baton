@@ -1,0 +1,14 @@
+# Swift
+/.build/
+/.swiftpm/
+/Packages/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+DerivedData/
+.index-build/
+
+# Rust (compiler/)
+/compiler/target/
+
+# Local
+.DS_Store
