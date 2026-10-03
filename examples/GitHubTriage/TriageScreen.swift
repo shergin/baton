@@ -2,7 +2,9 @@ import Baton
 import SwiftUI
 
 /// An issue row declares exactly what it reads; `author` is an interface
-/// (`Actor`), read through the record's concrete type.
+/// (`Actor`), read through the record's concrete type. The row requires an
+/// author: an issue whose author is gone reads as no row, and the environment
+/// logs where, as Relay's `@required(action: LOG)` does.
 struct IssueRow: View {
     @Fragment("""
         fragment IssueRow_issue on Issue {
@@ -10,7 +12,7 @@ struct IssueRow: View {
           title
           state
           repository { nameWithOwner }
-          author { login }
+          author @required(action: LOG) { login }
         }
         """)
     var issue: IssueRow_issue
@@ -18,7 +20,7 @@ struct IssueRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(issue.title).font(.headline)
-            Text("\(issue.repository.nameWithOwner) #\(issue.number) · \(issue.author?.login ?? "ghost") · \(issue.state.lowercased())")
+            Text("\(issue.repository.nameWithOwner) #\(issue.number) · \(issue.author.login) · \(issue.state.lowercased())")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
@@ -85,14 +87,14 @@ struct TriageScreen: View {
                 Section("Assigned to \(data.viewer.login) · \(data.assigned.issueCount)") {
                     if let nodes = data.assigned.nodes {
                         ForEach(nodes) { node in
-                            TriageRow(issue: node.asIssue.map { ($0.id, $0.issueRow) }, pullRequest: node.asPullRequest?.pullRequestRow)
+                            TriageRow(issue: node.asIssue.flatMap { issue in issue.issueRow.map { (issue.id, $0) } }, pullRequest: node.asPullRequest?.pullRequestRow)
                         }
                     }
                 }
                 Section("Created by \(data.viewer.login) · \(data.created.issueCount)") {
                     if let nodes = data.created.nodes {
                         ForEach(nodes) { node in
-                            TriageRow(issue: node.asIssue.map { ($0.id, $0.issueRow) }, pullRequest: node.asPullRequest?.pullRequestRow)
+                            TriageRow(issue: node.asIssue.flatMap { issue in issue.issueRow.map { (issue.id, $0) } }, pullRequest: node.asPullRequest?.pullRequestRow)
                         }
                     }
                 }

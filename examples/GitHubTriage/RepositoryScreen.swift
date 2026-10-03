@@ -1,10 +1,13 @@
 import Baton
 import SwiftUI
 
+/// A repository that does not exist comes back as null with a field error;
+/// `@catch` turns the field into a `Result`, so the screen shows the server's
+/// reason instead of guessing.
 struct RepositoryScreen: View {
     @Query("""
         query RepositoryQuery($owner: String!, $name: String!) {
-          repository(owner: $owner, name: $name) {
+          repository(owner: $owner, name: $name) @catch {
             nameWithOwner
             description
             forkCount
@@ -17,7 +20,12 @@ struct RepositoryScreen: View {
 
     var body: some View {
         PhaseView(phase: repository.phase, retry: repository.retry) { data in
-            if let repo = data.repository {
+            switch data.repository {
+            case .failure(let errors):
+                ContentUnavailableView("Could not load the repository", systemImage: "questionmark.folder", description: Text(errors.description))
+            case .success(nil):
+                ContentUnavailableView("No such repository", systemImage: "questionmark.folder")
+            case .success(let repo?):
                 List {
                     Section {
                         VStack(alignment: .leading, spacing: 12) {
@@ -33,8 +41,6 @@ struct RepositoryScreen: View {
                     }
                     IssueList(repository: repo.issueList)
                 }
-            } else {
-                ContentUnavailableView("No such repository", systemImage: "questionmark.folder")
             }
         }
         .navigationTitle("\(repository.owner)/\(repository.name)")
@@ -62,7 +68,10 @@ struct IssueList: View {
     var body: some View {
         Section("\(repository.issues.totalCount) open issues") {
             ForEach(repository.issues.nodes) { issue in
-                NavigationLink(value: IssueQuery(id: issue.id)) { IssueRow(issue: issue.issueRow) }
+                // The row requires an author; an issue without one reads as no row.
+                if let row = issue.issueRow {
+                    NavigationLink(value: IssueQuery(id: issue.id)) { IssueRow(issue: row) }
+                }
             }
             if repository.issues.hasNext {
                 HStack {
