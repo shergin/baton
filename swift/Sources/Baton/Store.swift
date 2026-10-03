@@ -94,6 +94,9 @@ public final class Store {
     /// The record for a key, and whether this call created it.
     private func record(key: String, type: TypeID, entity: Bool) -> (record: Record, created: Bool) {
         if let record = records[key] {
+            // A key names one type: an entity's starts with it, and a path
+            // key under an interface or union ends with it.
+            assert(record.type == type, "\(key) is a \(record.type.name), not a \(type.name)")
             if record.deleted {
                 record.setDeleted(false)
                 record.notifyAll()

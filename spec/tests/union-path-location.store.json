@@ -1,0 +1,6 @@
+{
+  "client:root": {"__typename": "Query", "search(name:\"a\")": {"__refs": ["client:root:search(name:\"a\"):0:Location"]}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:search(name:\"a\"):0:Location": {"__typename": "Location", "dimension": "Dimension C-137", "name": "Earth (C-137)", "type": "Planet"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

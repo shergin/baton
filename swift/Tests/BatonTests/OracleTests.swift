@@ -77,6 +77,8 @@ struct OracleCase: Sendable, CustomTestStringConvertible {
         OracleCase("tests/node-fields-character", fixture("node-fields-character"), TestNodeFields(id: "1"), override: (["node.name"], .string("Rick Prime"))),
         OracleCase("tests/node-fields-episode", fixture("node-fields-episode"), TestNodeFields(id: "1"), override: (["node.id"], .string("1"))),
         OracleCase("tests/two-spreads-1", fixture("two-spreads-1"), TestTwoSpreads(id: "1", again: true), override: (["character.status"], .string("Dead"))),
+        OracleCase("tests/union-path-character", fixture("union-path-character"), TestUnion(name: "a"), override: (["search.0.label", "search.0.name"], .string("Rick Prime")), complete: false),
+        OracleCase("tests/union-path-location", fixture("union-path-location"), TestUnion(name: "a"), override: (["search.0.label"], .string("Dimension C-138")), complete: false),
         OracleCase("tests/search-1", fixture("search-1"), TestSearch(name: "1"), override: (["search.1.dimension"], .string("Dimension C-138"))),
         OracleCase("tests/search-origins-1", fixture("search-origins-1"), TestSearchOrigins(name: "1"), override: (["search.0.origin.name"], .string("Earth (C-138)"))),
         OracleCase("tests/set-favorite-1", fixture("set-favorite-1"), TestSetFavorite(id: "1", favorite: true), root: .mutation, override: (["setFavorite.character.favorite"], .bool(false))),

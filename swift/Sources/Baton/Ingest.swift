@@ -691,16 +691,18 @@ public enum Ingest {
         }
 
         /// The record for an object whose key is not settled yet: an entity key
-        /// when an id was seen, else a client id from the path.
+        /// when an id was seen, else a client id from the path. Under an
+        /// interface or union the path key ends in the concrete type, so a
+        /// payload of another type at the same path is another record.
         @inline(__always)
         mutating func settle(plan: ResolvedSelection, concreteType: TypeID, pendingID: (Int, Int, Bool)?, parent: Int32, slot: Slot?, listIndex: Int?) -> Int32 {
             if let (start, end, escaped) = pendingID {
                 return changes.record(for: concreteType.name + ":" + Ingest.materialize(base: base, start, end, escaped), type: concreteType, entity: true)
             }
-            let parentKey = changes.recordKeys[Int(parent)]
-            let storageKey = slot.map(Registry.storageKey) ?? ""
-            if let listIndex { return changes.record(for: parentKey + ":" + storageKey + ":" + String(listIndex), type: concreteType, entity: false) }
-            return changes.record(for: parentKey + ":" + storageKey, type: concreteType, entity: false)
+            var key = changes.recordKeys[Int(parent)] + ":" + (slot.map(Registry.storageKey) ?? "")
+            if let listIndex { key += ":" + String(listIndex) }
+            if plan.isAbstract { key += ":" + concreteType.name }
+            return changes.record(for: key, type: concreteType, entity: false)
         }
 
         mutating func scalarValue(_ scalar: ScalarKind) throws -> ChangeSet.RawValue {

@@ -49,4 +49,24 @@ struct IdentityTests {
         let data = TestNode.Data(anchor: Anchor(record: store.root, variables: TestNode(id: "8").variables, store: store))
         #expect(data.node?.asCharacter?.name == "Adjudicator Rick")
     }
+
+    @Test("an object under a union keyed by its path is a record per concrete type, so another type at the same path does not share one")
+    func pathKeysCarryTheType() throws {
+        let store = Store()
+        store.reportMissing = nil
+        let search = TestUnion(name: "a")
+        let plan = TestUnion.plan.resolve(search.variables)
+        let data = TestUnion.Data(anchor: Anchor(record: store.root, variables: search.variables, store: store))
+        store.commit(try Ingest.normalize(fixture("union-path-character"), plan: plan))
+        let first = try #require(data.search?.first)
+        #expect(first.recordID.key == #"client:root:search(name:"a"):0:Character"#)
+        #expect(first.asCharacter?.label == "Rick Sanchez")
+
+        store.commit(try Ingest.normalize(fixture("union-path-location"), plan: plan))
+        let second = try #require(data.search?.first)
+        #expect(second.recordID.key == #"client:root:search(name:"a"):0:Location"#)
+        #expect(second.asLocation?.label == "Dimension C-137")
+        #expect(second.asCharacter == nil)
+        #expect(store.existing(#"client:root:search(name:"a"):0:Character"#)?.type == Registry.type("Character"), "the first record kept its type")
+    }
 }

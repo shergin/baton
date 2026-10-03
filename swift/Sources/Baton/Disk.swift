@@ -14,8 +14,9 @@ import SQLite3
 /// do not. Every row carries the generation, a launch counter, of its last
 /// write or read.
 final class Disk: @unchecked Sendable {
-    /// The row format. A file of another format is discarded.
-    static let format: Int64 = 1
+    /// The row format. A file of another format is discarded. 2: a path key
+    /// under an interface or union ends in the record's concrete type.
+    static let format: Int64 = 2
     /// Marks the file as an image, so a database of another kind is left alone.
     static let applicationID: Int64 = 0x4241_544E
     /// Client fields that describe a request in flight, not data.
