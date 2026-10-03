@@ -230,6 +230,134 @@ func run() async throws {
 
     print("lifetime: 42 pages scrolled, release buffer of 10")
     try await scrollBench(data: data)
+
+    print("persistence: the fixture's 898 records and the root, through the image")
+    await persistenceBench(changes: changes, edited: editedChanges, plan: plan)
+}
+
+/// Times an asynchronous step by hand: `body` returns the nanoseconds it
+/// wants counted, so setup and teardown stay off the clock.
+@MainActor
+func measureEach(_ label: String, iterations: Int = 20, ops: Int = 1, _ body: () async -> UInt64) async {
+    var samples: [Double] = []
+    for _ in 0..<iterations { samples.append(Double(await body())) }
+    samples.sort()
+    let unit: (Double) -> String = { nanoseconds in
+        nanoseconds >= 1_000_000 ? String(format: "%8.2f ms", nanoseconds / 1_000_000)
+            : nanoseconds >= 1_000 ? String(format: "%8.2f µs", nanoseconds / 1_000)
+            : String(format: "%8.1f ns", nanoseconds)
+    }
+    print("  \(label.padding(toLength: 56, withPad: " ", startingAt: 0)) best \(unit(samples[0] / Double(ops)))   median \(unit(samples[samples.count / 2] / Double(ops)))")
+}
+
+/// The image's costs: what a commit pays on the main actor to hand its
+/// records over, what the writer pays off it, and what the availability check
+/// pays to read a screen back.
+@MainActor
+func persistenceBench(changes: ChangeSet, edited: ChangeSet, plan: ResolvedSelection) async {
+    let url = FileManager.default.temporaryDirectory.appendingPathComponent("baton-bench-\(UUID().uuidString).sqlite")
+    defer {
+        for suffix in ["", "-wal", "-shm"] { try? FileManager.default.removeItem(atPath: url.path + suffix) }
+    }
+    func now() -> UInt64 { DispatchTime.now().uptimeNanoseconds }
+
+    // The process has not touched SQLite yet: this is what a launch pays once.
+    let start = now()
+    let persistence = Persistence(url: url)
+    let missed = Store(persistence: persistence).check(plan)
+    print("  first use in the process (open, create, a read that misses): \(String(format: "%.2f", Double(now() - start) / 1_000_000)) ms\(missed ? " (unexpected hit)" : "")")
+
+    measure("commit into an empty store, image on (899 records)", iterations: 20) {
+        Store(persistence: persistence).commit(changes)
+    }
+    await persistence.flush()
+
+    await measureEach("write-behind of that commit, off the main actor") {
+        let store = Store(persistence: persistence)
+        store.commit(changes)
+        let start = now()
+        await persistence.flush()
+        return now() - start
+    }
+    let size = ((try? FileManager.default.attributesOfItem(atPath: url.path))?[.size] as? Int) ?? 0
+    print("    file: \(size) bytes for 898 rows and one root field")
+
+    let persisted = Store(persistence: persistence)
+    persisted.commit(changes)
+    await persistence.flush()
+    await measureEach("write-behind of one changed record") {
+        persisted.commit(edited)
+        let start = now()
+        await persistence.flush()
+        let elapsed = now() - start
+        persisted.commit(changes)
+        await persistence.flush()
+        return elapsed
+    }
+
+    measure("hydration: the check reads 898 rows into an empty store", iterations: 20) {
+        precondition(Store(persistence: persistence).check(plan))
+    }
+    measure("the same, per record", iterations: 20, ops: 898) {
+        precondition(Store(persistence: persistence).check(plan))
+    }
+    let hydrated = Store(persistence: persistence)
+    precondition(hydrated.check(plan))
+    measure("the check once the records are in memory", iterations: 50) {
+        precondition(hydrated.check(plan))
+    }
+
+    await measureEach("hydration right behind a commit of 899 records") {
+        Store(persistence: persistence).commit(changes)
+        let store = Store(persistence: persistence)
+        let start = now()
+        precondition(store.check(plan))
+        let elapsed = now() - start
+        await persistence.flush()
+        return elapsed
+    }
+
+    // A launch: this program again, as a process that has never touched
+    // SQLite, answering the fixture from the image. Once asking the moment
+    // the image's handle exists, so the main actor pays for the open too;
+    // once asking after the open has finished off it, as an app does that
+    // makes its environment before its first view.
+    func launched(_ flag: String) -> UInt64 {
+        let child = Process()
+        let output = Pipe()
+        child.executableURL = URL(fileURLWithPath: CommandLine.arguments[0])
+        child.arguments = [flag, url.path]
+        child.standardOutput = output
+        try! child.run()
+        child.waitUntilExit()
+        let text = String(decoding: output.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
+        return UInt64(text.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0
+    }
+    await measureEach("a launch: open and hydrate at once, in a new process", iterations: 15) { launched("--launch") }
+    await measureEach("a launch: hydrate after the image has opened", iterations: 15) { launched("--launch-opened") }
+}
+
+/// What the child process of the launch bench does: from creating the image's
+/// handle to the availability check answering from it, or, with `opened`,
+/// the check alone once the file has opened off the main actor. Prints
+/// nanoseconds.
+@MainActor
+func launch(_ path: String, opened: Bool) async {
+    let plan = BenchFixture.plan.resolve(BenchFixture(page: 1).variables)
+    var start = DispatchTime.now().uptimeNanoseconds
+    let persistence = Persistence(url: URL(fileURLWithPath: path))
+    let store = Store(persistence: persistence)
+    if opened {
+        await persistence.flush()
+        start = DispatchTime.now().uptimeNanoseconds
+    }
+    let complete = store.check(plan)
+    let elapsed = DispatchTime.now().uptimeNanoseconds - start
+    precondition(complete && store.hydratedRecords == 898)
+    print(elapsed)
+    // The rows it read carry this launch's generation once this is written,
+    // so the next launch finds them.
+    await persistence.flush()
 }
 
 /// A synthetic page of the notes connection: the first as the screen's query
@@ -354,4 +482,8 @@ func scrollBench(data: Data) async throws {
     print("  collection pass: best \(String(format: "%.2f", collectionCost[0])) ms, median \(String(format: "%.2f", collectionCost[collectionCost.count / 2])) ms, worst \(String(format: "%.2f", collectionCost.last!)) ms")
 }
 
-try await run()
+if CommandLine.arguments.count == 3, CommandLine.arguments[1].hasPrefix("--launch") {
+    await launch(CommandLine.arguments[2], opened: CommandLine.arguments[1] == "--launch-opened")
+} else {
+    try await run()
+}

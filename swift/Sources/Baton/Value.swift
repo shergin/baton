@@ -14,6 +14,10 @@ public enum Value {
     case list(ContiguousArray<Value>)
 }
 
+/// A record is isolated to the main actor, so a value that holds one can be
+/// handed to another thread, which may read the record's identity and no more.
+extension Value: Sendable {}
+
 extension Value: Equatable {
     /// Records compare by identity: the store holds one object per key.
     public static func == (lhs: Value, rhs: Value) -> Bool {

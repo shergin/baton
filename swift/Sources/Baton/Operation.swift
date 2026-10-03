@@ -141,10 +141,36 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
         return false
     }
 
+    /// The operation as the image names it: its name and its variables.
+    private var imageKey: String { Op.name + operation.variables.json }
+
+    /// Notes a response that just committed: the handle's own clock, and the
+    /// image's, which a later launch reads the age from.
+    private func didFetch() {
+        fetchTime = .now
+        fetchEpoch = environment.store.invalidationEpoch
+        environment.store.persistence?.fetched(imageKey)
+    }
+
+    /// Gives data this handle did not fetch the age the image knows: the time
+    /// since an earlier launch fetched it. Data that had to be read from the
+    /// image and has no such time is stale.
+    private func takeAge(hydrated: Bool) {
+        guard fetchTime == nil, let persistence = environment.store.persistence else { return }
+        if let age = persistence.age(of: imageKey) {
+            fetchTime = .now - .seconds(age)
+            fetchEpoch = environment.store.invalidationEpoch
+        } else if hydrated {
+            fetchEpoch = environment.store.invalidationEpoch - 1
+        }
+    }
+
     /// Applies a policy on attach: renders what the store allows, fetches
     /// when the policy asks for it.
     func apply(_ policy: FetchPolicy) {
+        let hydrated = environment.store.hydratedRecords
         let complete = isComplete
+        if complete { takeAge(hydrated: environment.store.hydratedRecords != hydrated) }
         if complete, policy != .networkOnly, case .loading = phase {
             phase = evaluate()
         }
@@ -179,8 +205,7 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
                 try await environment.fetch(operation) { [weak self] in
                     // A deferred response renders its first part at once.
                     guard let self, !Task.isCancelled else { return }
-                    fetchTime = .now
-                    fetchEpoch = environment.store.invalidationEpoch
+                    didFetch()
                     phase = evaluate()
                 }
             } catch {
@@ -193,8 +218,7 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
             isRefreshing = false
             switch failure {
             case nil:
-                fetchTime = .now
-                fetchEpoch = environment.store.invalidationEpoch
+                didFetch()
                 phase = evaluate()
             case is CancellationError:
                 return

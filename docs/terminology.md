@@ -130,7 +130,24 @@ before its records become collectable.
 
 **Invalidation, TTL.** Relay's and Apollo's shared words. `Environment.invalidate()`
 marks every fetched operation stale and refetches the retained ones;
-`queryCacheExpiration` does the same by age. Stale data stays readable.
+`queryCacheExpiration` does the same by age. Stale data stays readable. An
+invalidation also forgets the image's fetch times, so it outlives the launch.
+
+**Persistence, image.** Baton's words; Relay's store lives in memory. The
+image is the store's records in one SQLite file, written behind every commit
+of server data, off the main actor: a row per record, the query root a row
+per field, each operation's fetch time. Optimistic layers never reach it.
+`Persistence(url:)` or `Persistence(name:)`, handed to `Store(persistence:)`.
+It is a cache: an image of another format or `version`, a corrupt one and one
+over its size limit are deleted and started again, and a record that goes a
+whole launch unread is dropped at the next.
+
+**Hydration.** The web's word for filling a client's state from stored data.
+Here: the availability check reading from the image what memory lacks, a
+record's row once and a root field's row, so an operation an earlier launch
+fetched is ready when its handle is made, before the first body. Memory wins
+wherever it holds a value. The operation's age comes with its data; data that
+needed the image and has no fetch time is stale.
 
 **Optimistic layer.** Relay's optimistic update, applied as a layer that is
 rebased on each commit. Here: a typed `OptimisticResponse` ingested like a

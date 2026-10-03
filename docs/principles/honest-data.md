@@ -67,9 +67,11 @@ comes from and [Relay's words](relays-words.md) for the directive vocabulary.
 
 ## Spelled today
 
-As of 0.5.0: `phase` on an operation value (`.loading`, `.ready(data)`,
-`.failed(error)`) with `isRefreshing` and `isStale`; field errors stored
-beside the field and read through `@catch(to:)` as a `Result`;
+As of 0.6.0: `phase` on an operation value (`.loading`, `.ready(data)`,
+`.failed(error)`) with `isRefreshing` and `isStale`, which keep their meaning
+across a launch because the image stores when each operation fetched; field
+errors stored beside the field, in memory and in the image, and read through
+`@catch(to:)` as a `Result`;
 `@required(action:)` bubbling at the lens boundary, logging through
 `Environment.requiredFieldMissing`, or throwing from the accessor;
 `@throwOnFieldError` failing the operation or throwing at the spread, with

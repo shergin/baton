@@ -4,15 +4,17 @@
 
 # Baton 🥖
 
-**Status: 0.5.0.** Reads, writes, lists and errors run through every layer,
-with tests and benchmarks behind the claims: cached data in the first body,
-one changed field re-rendering one row, memory bounded by a release buffer
-rather than by how far the user scrolls, optimistic responses that show at
-once, rebase under every commit and revert on failure, connections that merge
-their pages in the store and grow by one notification per page, field errors
-stored beside their fields and read through Relay's directives, deferred
-fragments that arrive after the first frame, and subscriptions. The API will
-break freely until 1.0.
+**Status: 0.6.0.** Reads, writes, lists, errors and persistence run through
+every layer, with tests and benchmarks behind the claims: cached data in the
+first body, one changed field re-rendering one row, memory bounded by a
+release buffer rather than by how far the user scrolls, optimistic responses
+that show at once, rebase under every commit and revert on failure,
+connections that merge their pages in the store and grow by one notification
+per page, field errors stored beside their fields and read through Relay's
+directives, deferred fragments that arrive after the first frame,
+subscriptions, and a store that outlives the process: a launch draws the
+screens it showed last time from disk, before the network answers. The API
+will break freely until 1.0.
 
 Relay for SwiftUI and Compose. A view declares the GraphQL fragment it reads,
 beside its body. The compiler aggregates the fragments of a screen into one
@@ -45,8 +47,10 @@ with merged pages and `loadNext`, `@refetchable`, fragment arguments,
 `@alias(as:)`, the edge directives (0.4.0); field errors beside their fields,
 `@required`, `@catch`, `@throwOnFieldError` with `@semanticNonNull`,
 `onError`, `@defer` over the incremental formats, subscriptions over
-`graphql-transport-ws` (0.5.0). Still to come: persistence, then tooling and
-the road to 1.0. The promises:
+`graphql-transport-ws` (0.5.0); the store's image on disk through the
+system's SQLite, written behind every commit and read back by the
+availability check, with ages that survive a launch (0.6.0). Still to come:
+tooling and the road to 1.0. The promises:
 
 - **A fragment per view.** GraphQL lives in the Swift file, next to the view
   that reads it, as a full, valid document. A parent passes a child its
@@ -56,8 +60,10 @@ the road to 1.0. The promises:
   fragments spread into it and emits a persisted id for it. Nobody writes the
   screen's query by hand, and nothing waterfalls.
 - **Cached data in the first frame.** Reads are synchronous on the main
-  actor; a handle resolves against the store before the first body runs.
-  Decoding, normalization, persistence and garbage collection run off it.
+  actor; a handle resolves against the store before the first body runs, and
+  after a launch the store reads what that handle needs from its image on
+  disk. Decoding, normalization, the image's writes and garbage collection
+  run off it.
 - **Only changed views re-render.** Records are observable objects; a body
   that read `user.name` is invalidated when that field of that record changes
   and at no other time. A commit of a thousand records costs tens of
@@ -67,8 +73,9 @@ the road to 1.0. The promises:
   a `get throws`); field errors survive caching; staleness is a phase a view
   can read.
 - **Small everything.** Generated code is one line per field plus data
-  tables. The runtime depends on Foundation and Observation. The compiler is
-  one prebuilt binary, shared by the Swift and (later) Kotlin runtimes.
+  tables. The runtime depends on Foundation, Observation and the SQLite the
+  system ships. The compiler is one prebuilt binary, shared by the Swift and
+  (later) Kotlin runtimes.
 - **Declarative, down to the writes.** What a view needs, how a list pages,
   what an optimistic response shows and how a mutation edits a list are all
   directives and values in the GraphQL text beside the view; nothing is
@@ -190,7 +197,10 @@ Add the package and the plugin to a target, put `baton.json` with the schema
 path (and lookups) in the target's directory or at the package root, and
 build. The plugin runs `batonc`
 for every Swift file that declares GraphQL and reports schema errors at the
-GraphQL text. `swift run RickAndMorty` opens the read-only sample;
+GraphQL text. To keep the store across launches, give the environment an
+image: `Environment(url: endpoint, persistence: Persistence(name: "Main"))`;
+call `removeAll()` on it at sign-out. `swift run RickAndMorty` opens the
+read-only sample, which keeps its store on disk;
 `GITHUB_TOKEN=$(gh auth token) swift run GitHubTriage` opens the one with
 writes, connections, unions and a 1,800-definition schema; `swift test` runs
 the proofs;

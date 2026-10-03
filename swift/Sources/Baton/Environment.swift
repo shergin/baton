@@ -39,8 +39,10 @@ public final class Environment {
         #endif
     }
 
-    public convenience init(url: URL, headers: [String: String] = [:], subscriptions: (any SubscriptionTransport)? = nil) {
-        self.init(transport: URLSessionTransport(url: url, headers: headers), subscriptions: subscriptions)
+    /// An environment over HTTP. With `persistence`, the store keeps an image
+    /// on disk and a launch renders from it before the network answers.
+    public convenience init(url: URL, headers: [String: String] = [:], subscriptions: (any SubscriptionTransport)? = nil, persistence: Persistence? = nil) {
+        self.init(transport: URLSessionTransport(url: url, headers: headers), subscriptions: subscriptions, store: Store(persistence: persistence))
     }
 
     /// The handle for an operation value, shared by every view that holds an
@@ -82,6 +84,7 @@ public final class Environment {
     /// data stays visible until the response commits.
     public func invalidate() {
         store.invalidate()
+        store.persistence?.invalidate()
         for handle in handles.values where handle.retainCount > 0 {
             handle.refetchIfStale()
         }

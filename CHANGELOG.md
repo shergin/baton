@@ -5,6 +5,73 @@ are expected and listed without apology.
 
 ## Unreleased
 
+## 0.6.0 (Anchor Leg) — 2026-10-03
+
+The store outlives the process: an image on disk, written behind every
+commit, that a launch renders from before the network answers.
+
+- Persistence. `Persistence(url:)`, or `Persistence(name:)` for a file in the
+  caches directory, handed to `Store(persistence:)` or to
+  `Environment(url:headers:subscriptions:persistence:)`. The image is one
+  SQLite file through the system's library: a row per record (flags, the
+  type, then a cell per field: storage key, a tagged value, the field's error
+  if it has one), the query root a row per field, and type names and storage
+  keys interned by name, because slot numbers belong to a process. A commit
+  of server data hands the records it changed to a writer, at the cost of an
+  array retain each on the main actor; encoding and the transaction run off
+  it. What a commit writes under optimistic layers is the server's values:
+  a layer never reaches the image, nor do the mutation and subscription
+  roots, a connection's loading flags, or the link a lookup wrote back.
+- Hydration. The availability check answers from memory first, as before, at
+  the cost it had. When memory cannot answer and the store has an image, the
+  same walk runs again holding the image's connection in one read
+  transaction: a record that lacks a field reads its row once and fills the
+  slots it lacks, a missing root field reads its own row, a link to a record
+  the collector swept is pointed at the live record of that key, a deleted
+  record comes back deleted, and a connection's client record comes back
+  with its merged pages. So an operation an earlier launch fetched is
+  `.ready` when its handle is made, before the first body, and a screen the
+  release buffer let go is read back instead of refetched. Memory wins
+  wherever it holds a value. A lookup is satisfied by an entity only the
+  image holds, when the lookup names its type. `Store.hydratedRecords`
+  counts the rows read.
+- Age survives a launch. The image stores when each operation last committed
+  a response; a handle whose data is complete and that has not fetched takes
+  its age from there, so `isStale`, `queryCacheExpiration` and
+  `storeOrNetwork` mean after a launch what they meant before it. Data that
+  had to be read from the image and has no fetch time is stale.
+  `Environment.invalidate()` forgets the stored times, so an invalidation
+  outlives the launch.
+- Unreadable is a miss. An image of another format, an image written under
+  another `version` (the app's own cache version, for a release whose schema
+  gives a field another type), a corrupt file and a file over `sizeLimit`
+  (64 MB unless told otherwise) are deleted and started again; a row that
+  does not decode is used as far as it reads. A database that is not an image
+  is left alone and the store runs without one. A file that cannot be opened
+  for any other reason, a device still locked among them, is tried again on
+  the next use.
+- Lifetime by generation. Every row carries the launch that last wrote or
+  read it; at launch, rows no launch has touched since the one before last
+  are deleted. A record survives one whole launch unread, and no longer.
+- `Persistence.removeAll()` empties the image for a sign-out; `flush()` waits
+  for what was committed to be written, for tests and for an app about to be
+  suspended.
+- The Rick and Morty sample keeps its store on disk: quit and launch again,
+  and the list is on screen before the request returns.
+- A record's `type`, `key` and `entityID` are `nonisolated`, `entityID` is
+  immutable, and `Value` is `Sendable`: another thread may hold a record and
+  read its identity.
+- The benchmark runs itself as a new process to time a launch, and the
+  release's numbers are in `BENCHMARKS.md`: 898 records are in the store
+  1.8 ms after their handle asks when the file opened off the main actor,
+  under 5 ms when the main actor had to wait for the open. A Mac, not a
+  phone.
+- Known limits. A record a response writes before the image was asked for it
+  replaces its row, so fields only the image held are lost and fetched again
+  when a screen needs them. The image is bounded by generations and by
+  `sizeLimit` at launch, not by a size-ordered eviction. Reads from the image
+  happen on the main actor, inside the check; a read that lands behind a
+  write waits for it. One process uses an image.
 - Fixed: an entity whose `id` arrives after a linked field is keyed by its
   id. Relay prints the `id` it adds to a selection last and a server answers
   in that order, so the ingest had settled such an object on a path key
