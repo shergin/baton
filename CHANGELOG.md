@@ -189,6 +189,9 @@ are expected and listed without apology.
   buffer is made when the walk first reaches its depth, and the change set
   is built where it is filled: a 64-byte mutation payload ingests in 2.4 µs
   against 4.5 µs.
+- A floating-point number is read where it lies in the response; each one
+  was copied into a new array first, and a number the plan skips was
+  parsed.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

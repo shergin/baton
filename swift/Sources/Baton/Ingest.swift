@@ -912,7 +912,9 @@ public enum Ingest {
             return negative ? Int(truncatingIfNeeded: 0 &- magnitude) : Int(magnitude)
         }
 
-        mutating func parseDouble() throws -> Double {
+        /// Advances over a number's bytes without reading its value.
+        @inline(__always)
+        mutating func skipNumber() throws {
             let start = position
             while position < count {
                 let byte = base[position]
@@ -923,9 +925,26 @@ public enum Ingest {
                 }
             }
             guard position > start else { throw IngestError(offset: position, message: "expected a number") }
-            var buffer = [CChar](repeating: 0, count: position - start + 1)
-            for offset in 0..<(position - start) { buffer[offset] = CChar(bitPattern: base[start + offset]) }
-            return strtod(buffer, nil)
+        }
+
+        /// A number read where it lies. JSON puts a delimiter after it, which
+        /// stops `strtod` there; a number that ends the input, or one followed
+        /// by a byte `strtod` might read on, is copied to the stack first.
+        mutating func parseDouble() throws -> Double {
+            let start = position
+            try skipNumber()
+            if position < count {
+                let next = base[position]
+                if next == 0x2C || next == 0x7D || next == 0x5D || next == 0x20 || next == 0x0A || next == 0x0D || next == 0x09 {
+                    return UnsafeRawPointer(base + start).withMemoryRebound(to: CChar.self, capacity: position - start + 1) { strtod($0, nil) }
+                }
+            }
+            let length = position - start
+            return withUnsafeTemporaryAllocation(of: CChar.self, capacity: length + 1) { buffer in
+                for offset in 0..<length { buffer[offset] = CChar(bitPattern: base[start + offset]) }
+                buffer[length] = 0
+                return strtod(buffer.baseAddress!, nil)
+            }
         }
 
         mutating func parseBool() throws -> Bool {
@@ -959,7 +978,7 @@ public enum Ingest {
             case 0x74: try literal("true")
             case 0x66: try literal("false")
             case 0x6E: try literal("null")
-            default: _ = try parseDouble()
+            default: try skipNumber()
             }
         }
     }
