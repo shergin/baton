@@ -1,0 +1,60 @@
+# Cuts a release from main: builds the compiler bundle for both Mac
+# architectures, writes the release commit (the version into the compiler's
+# manifest, the bundle's checksum into Package.swift), tags it, and publishes
+# the GitHub release with the bundle and the changelog's section. The
+# changelog's section for the version is written beforehand, as for every
+# release.
+name: release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: The version, x.y.z
+        required: true
+      name:
+        description: The release's name
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-26
+    env:
+      VERSION: ${{ inputs.version }}
+      NAME: ${{ inputs.name }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin, x86_64-apple-darwin
+      - name: The changelog has the release's section
+        run: grep -q "^## $VERSION ($NAME)" CHANGELOG.md
+      - name: Set the version
+        run: |
+          sed -i '' "1,/^version = /s/^version = \".*\"/version = \"$VERSION\"/" compiler/Cargo.toml
+          (cd compiler && cargo update --workspace --offline || cargo update --workspace)
+      - name: Build the compiler bundle
+        run: scripts/bundle-compiler.sh | tail -1 > checksum
+      - name: Name the bundle in Package.swift
+        run: |
+          checksum="$(cat checksum)"
+          sed -i '' "s/^let compilerRelease = .*/let compilerRelease = (version: \"$VERSION\", checksum: \"$checksum\")/" Package.swift
+          grep -q "version: \"$VERSION\", checksum: \"$checksum\"" Package.swift
+      - name: Write the release commit and its tag
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+          git commit -m "Release $VERSION ($NAME)" -- compiler/Cargo.toml compiler/Cargo.lock Package.swift
+          git tag "v$VERSION"
+          git push origin HEAD:main "v$VERSION"
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          awk -v heading="## $VERSION ($NAME)" 'index($0, heading) == 1 { found = 1; next } found && /^## / { exit } found' CHANGELOG.md > notes.md
+          gh release create "v$VERSION" compiler/dist/release/batonc.artifactbundle.zip --title "$VERSION $NAME" --notes-file notes.md

@@ -1,6 +1,24 @@
 // swift-tools-version: 6.2
 import CompilerPluginSupport
+import Foundation
 import PackageDescription
+
+/// The release whose compiler bundle a package that depends on Baton
+/// downloads, and the bundle's checksum. The release workflow writes both
+/// into the release commit; empty until a release publishes a bundle.
+let compilerRelease = (version: "", checksum: "")
+
+/// The compiler the build plugin runs: the one `scripts/build-compiler.sh`
+/// built into this checkout, or else the bundle the release published.
+let localCompiler = "compiler/dist/batonc.artifactbundle"
+let compiler: Target = compilerRelease.version.isEmpty
+    || FileManager.default.fileExists(atPath: Context.packageDirectory + "/" + localCompiler + "/info.json")
+    ? .binaryTarget(name: "batonc", path: localCompiler)
+    : .binaryTarget(
+        name: "batonc",
+        url: "https://github.com/shergin/baton/releases/download/v\(compilerRelease.version)/batonc.artifactbundle.zip",
+        checksum: compilerRelease.checksum
+    )
 
 let package = Package(
     name: "Baton",
@@ -27,10 +45,7 @@ let package = Package(
             ],
             path: "swift/Sources/BatonMacros"
         ),
-        .binaryTarget(
-            name: "batonc",
-            path: "compiler/dist/batonc.artifactbundle"
-        ),
+        compiler,
         .plugin(
             name: "BatonPlugin",
             capability: .buildTool(),

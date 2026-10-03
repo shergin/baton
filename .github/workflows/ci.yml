@@ -58,6 +58,9 @@ jobs:
       # channels are key paths to getters; only a release build can show them
       # collide.
       - run: swift test -c release
+      # Every bench once, three samples each: the suite keeps running, and a
+      # bench that traps fails the build. The numbers are not recorded.
+      - run: swift run -c release BatonBenchmarks --quick
       # The samples and the tests are macOS executables, so nothing above
       # compiles the library for the platform it is written for.
       - run: >
@@ -81,3 +84,49 @@ jobs:
           shared-key: batonc
       - run: scripts/build-compiler.sh
       - run: swift test
+
+  # A package that depends on Baton, resolved from a clean clone as an app
+  # resolves it: nothing built in the checkout, so the build plugin needs the
+  # compiler bundle a release published. Not a gate until a release has
+  # published one; see the release workflow.
+  consumer:
+    runs-on: macos-26
+    timeout-minutes: 30
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          path: baton
+      - name: A consumer package with one document
+        run: |
+          mkdir -p consumer/Sources/App
+          cat > consumer/Package.swift <<'SWIFT'
+          // swift-tools-version: 6.2
+          import PackageDescription
+
+          let package = Package(
+              name: "Consumer",
+              platforms: [.macOS(.v26)],
+              dependencies: [.package(path: "../baton")],
+              targets: [
+                  .executableTarget(
+                      name: "App",
+                      dependencies: [.product(name: "Baton", package: "baton")],
+                      plugins: [.plugin(name: "BatonPlugin", package: "baton")]
+                  ),
+              ]
+          )
+          SWIFT
+          cat > consumer/Sources/App/baton.json <<'JSON'
+          { "schema": "../../../baton/spec/rickandmorty/schema.graphql" }
+          JSON
+          cat > consumer/Sources/App/main.swift <<'SWIFT'
+          import Baton
+
+          @MainActor
+          struct Row {
+              @Fragment("fragment Row_character on Character { name }")
+              var character: Row_character
+          }
+          SWIFT
+      - run: swift build --package-path consumer
