@@ -17,3 +17,4 @@ principle, the proof belongs here.
 - [Relay's front end, pinned, behind our driver](relay-front-end.md)
 - [Marker macros carry the GraphQL](marker-macros.md)
 - [Floors at the 26 releases](platform-floors.md)
+- [Lookups satisfy root fields from cached entities](lookups.md)

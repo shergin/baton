@@ -1,7 +1,9 @@
 # Baton
 
-**Status: pre-0.1, under construction.** Nothing usable yet. The design is
-written; the code is not.
+**Status: 0.1.0, the vertical spine.** One query runs through every layer,
+with tests and benchmarks behind the two claims it makes: cached data in the
+first body, and one changed field re-rendering one row. The API will break
+freely until 1.0.
 
 Relay for SwiftUI and Compose. A view declares the GraphQL fragment it reads,
 beside its body. The compiler aggregates the fragments of a screen into one
@@ -22,7 +24,12 @@ The design is in [`docs/vision.md`](docs/vision.md). Constraints it assumes
 live in [`docs/principles/`](docs/principles/). The vocabulary is
 [`docs/terminology.md`](docs/terminology.md).
 
-## What it will be
+## What it is, and will be
+
+Shipped in 0.1.0: the compiler over Relay's front end, lens types, the
+observable store, the one-pass ingest, `@Fragment` and `@Query` for SwiftUI,
+lookups, the sample. Still to come, in order: lifetime, mutations, lists,
+errors and `@defer`, persistence. The promises:
 
 - **A fragment per view.** GraphQL lives in the Swift file, next to the view
   that reads it, as a full, valid document. A parent passes a child its
@@ -61,7 +68,7 @@ live in [`docs/principles/`](docs/principles/). The vocabulary is
 
 ## The feel
 
-Illustrative, not final.
+From the sample; the API will still move before 1.0.
 
 ```swift
 struct CharacterRow: View {
@@ -76,9 +83,9 @@ struct CharacterRow: View {
 
     var body: some View {
         HStack {
-            AsyncImage(url: character.image)
-            Text(character.name)
-            Text(character.status)
+            Avatar(url: character.image)
+            Text(character.name ?? "Unknown")
+            Text(character.status ?? "")
         }
     }
 }
@@ -96,7 +103,11 @@ struct CharactersScreen: View {
     var body: some View {
         switch characters.phase {
         case .ready(let data):
-            List(data.characters.results) { CharacterRow(character: $0.characterRow) }
+            List {
+                ForEach(data.characters?.results ?? []) { character in
+                    CharacterRow(character: character.characterRow)
+                }
+            }
         case .loading:
             ProgressView()
         case .failed(let error):
@@ -105,6 +116,19 @@ struct CharactersScreen: View {
     }
 }
 ```
+
+## Using it
+
+Add the package and the plugin to a target, put `baton.json` with the schema
+path (and lookups) at the package root, and build. The plugin runs `batonc`
+for every Swift file that declares GraphQL and reports schema errors at the
+GraphQL text. `swift run RickAndMorty` opens the sample; `swift test` runs the
+proofs; `swift run -c release BatonBenchmarks` prints the numbers behind
+[`BENCHMARKS.md`](BENCHMARKS.md).
+
+Requires the 26 releases of Apple's platforms and Swift 6.2 tools. The
+compiler binary is built from `compiler/` with `scripts/build-compiler.sh`
+until artifact bundles are published.
 
 ## The name
 
