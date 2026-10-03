@@ -46,7 +46,9 @@ nonisolated enum Slots {
     static let Character_name = Baton.Registry.slot(Types.Character, "name")
     static let Character_notes_a9400e = Baton.DynamicKey(Types.Character, [.literal("notes(after:"), .variable("cursor"), .literal(",first:"), .variable("count"), .literal(")")])
     static let Character_notes_a7d47e = Baton.DynamicKey(Types.Character, [.literal("notes(after:null,first:"), .variable("size"), .literal(")")])
+    static let Character_notes_969630 = Baton.Registry.slot(Types.Character, "notes(after:null,first:1)")
     static let Character_notes_4958eb = Baton.Registry.slot(Types.Character, "notes(after:null,first:2)")
+    static let Character_notes_7ca442 = Baton.Registry.slot(Types.Character, "notes(after:null,first:3)")
     static let Character_notes_d859b7 = Baton.DynamicKey(Types.Character, [.literal("notes(before:"), .variable("cursor"), .literal(",last:"), .variable("count"), .literal(")")])
     static let Character_notes_94703e = Baton.Registry.slot(Types.Character, "notes(before:null,last:2)")
     static let Character_origin = Baton.Registry.slot(Types.Character, "origin")
@@ -94,6 +96,8 @@ nonisolated enum Slots {
     static let PageInfo_hasPreviousPage = Baton.Registry.slot(Types.PageInfo, "hasPreviousPage")
     static let PageInfo_startCursor = Baton.Registry.slot(Types.PageInfo, "startCursor")
     static let Query_character_4a2dfc = Baton.Registry.slot(Types.Query, "character(id:\"a,b\")")
+    static let Query_character_800bca = Baton.DynamicKey(Types.Query, [.literal("character(id:"), .variable("a"), .literal(")")])
+    static let Query_character_ac9202 = Baton.DynamicKey(Types.Query, [.literal("character(id:"), .variable("b"), .literal(")")])
     static let Query_character_bca4f9 = Baton.DynamicKey(Types.Query, [.literal("character(id:"), .variable("id"), .literal(")")])
     static let Query_characters_498461 = Baton.DynamicKey(Types.Query, [.literal("characters(filter:{\"name\":"), .variable("name"), .literal(",\"status\":\"Alive\"})")])
     static let Query_characters_5517f9 = Baton.DynamicKey(Types.Query, [.literal("characters(page:"), .variable("page"), .literal(")")])
@@ -126,6 +130,8 @@ nonisolated enum Sites {
     static let TestNotesSizedQuery_testNotes = Baton.ArgumentSite()
     static let TestRecentNotesPaginationQuery_testRecentNotes = Baton.ArgumentSite()
     static let TestRecentNotesQuery_testRecentNotes = Baton.ArgumentSite()
+    static let TestTwoScopes_testNotes = Baton.ArgumentSite()
+    static let TestTwoScopes_testNotes_2 = Baton.ArgumentSite()
 }
 
 /// Storage keys read on interfaces and unions, each resolved once per concrete type.

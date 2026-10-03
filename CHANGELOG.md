@@ -143,7 +143,12 @@ are expected and listed without apology.
   was nil silently. A `@required` field the store never received is
   reported missing before its lens bubbles. A non-null link without a
   record reads one placeholder per type, so the fields below it report
-  nothing a second time; a record was allocated per read.
+  nothing a second time; a record was allocated per read. A `@catch` on a
+  non-null list reports a null as the other readers do.
+- A `@required` link to a record `@deleteRecord` removed is null, as every
+  other read of the link is: the lens bubbles, a `THROW` collects the
+  error, and an operation that bubbles to its root fails. The lens read a
+  blank record and the operation stayed ready.
 - A connection's `nodes` builds its lenses in one pass instead of an array
   of anchors mapped into a second one: 110 µs for 2,100 nodes against 124
   µs on an M1 Pro.

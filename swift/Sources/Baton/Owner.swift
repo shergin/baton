@@ -7,6 +7,9 @@
 public final class Owner {
     nonisolated public let variables: Variables
     nonisolated let store: Store?
+    /// Whether reads in the scope report missing and unexpected values; not
+    /// under a placeholder, whose link reported already.
+    nonisolated let reports: Bool
     /// The slot of each key with variables, resolved on first use.
     private var slots: [(key: DynamicKey, slot: Slot)] = []
     /// The abstract slot of each key with variables read on an interface or
@@ -16,9 +19,14 @@ public final class Owner {
     private var bound: [(site: ArgumentSite, owner: Owner)] = []
     private var inertOwner: Owner?
 
-    nonisolated public init(variables: Variables, store: Store? = nil) {
+    nonisolated public convenience init(variables: Variables, store: Store? = nil) {
+        self.init(variables: variables, store: store, reports: true)
+    }
+
+    nonisolated private init(variables: Variables, store: Store?, reports: Bool) {
         self.variables = variables
         self.store = store
+        self.reports = reports
     }
 
     /// The key's slot under these variables.
@@ -45,16 +53,17 @@ public final class Owner {
         for entry in bound where entry.site === site { return entry.owner }
         var merged = variables.values
         for (name, value) in values() { merged[name] = value ?? .null }
-        let owner = Owner(variables: Variables(merged), store: store)
+        let owner = Owner(variables: Variables(merged), store: store, reports: reports)
         bound.append((site, owner))
         return owner
     }
 
-    /// The same scope without the store: a placeholder record reads in it, so
-    /// nothing under the placeholder reports a second time.
+    /// The same scope, reporting nothing: a placeholder record reads in it,
+    /// so nothing under the placeholder reports a second time, and a
+    /// non-null link below it reads the store's placeholder of its type.
     var inert: Owner {
         if let inertOwner { return inertOwner }
-        let owner = Owner(variables: variables)
+        let owner = reports ? Owner(variables: variables, store: store, reports: false) : self
         inertOwner = owner
         return owner
     }

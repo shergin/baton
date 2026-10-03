@@ -72,20 +72,17 @@ extension Lens {
 extension Anchor {
     private func missing(_ slot: Slot) {
         // A deleted record's fields are gone on purpose.
-        guard !record.deleted else { return }
+        guard !record.deleted, owner.reports else { return }
         anchor.store?.reportMissing?(record, slot)
     }
 
     private func unexpected(_ slot: Slot, _ value: Value) {
+        guard owner.reports else { return }
         store?.reportUnexpected?(record, slot, value)
     }
 
     private var anchor: Anchor { self }
 
-    /// The slot of a storage key on the record's own type, for a key with
-    /// variables on an interface or union; a constant key reads through an
-    /// `AbstractSlot`.
-    @inline(__always) public func slot(key: String) -> Slot { Registry.slot(record.type, key) }
 
     /// Whether an `@include` or `@skip` condition selects: the variable has
     /// the value. An accessor under a condition that does not select reads
@@ -241,6 +238,8 @@ extension Anchor {
             missing(slot)
             return requiredMissing(path: path, log: log)
         case .null: return requiredMissing(path: path, log: log)
+        // A link to a deleted record reads as null, so it is null here too.
+        case .ref(let target) where target.deleted: return requiredMissing(path: path, log: log)
         default: return true
         }
     }
@@ -305,7 +304,10 @@ extension Anchor {
     }
 
     public func caughtRequiredList<Element: Lens>(_ slot: Slot, within: (Anchor) -> [FieldError], keep: ((Anchor) -> Bool)? = nil) -> Result<List<Element>, FieldErrors> {
-        caughtList(slot, within: within, keep: keep).map { (list: List<Element>?) in list ?? List(records: [], anchor: self, keep: nil) }
+        var errors: [FieldError] = []
+        collectErrors(list: slot, within: within, into: &errors)
+        if !errors.isEmpty { return .failure(FieldErrors(errors)) }
+        return .success(list(slot, nonNull: true, keep: keep) ?? List(records: [], anchor: self, keep: nil))
     }
 
     /// Appends the field's own error, if any.
@@ -320,6 +322,7 @@ extension Anchor {
             missing(slot)
             errors.append(.required(path: path))
         case .null: errors.append(.required(path: path))
+        case .ref(let target) where target.deleted: errors.append(.required(path: path))
         default: return
         }
     }

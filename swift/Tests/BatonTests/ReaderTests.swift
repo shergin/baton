@@ -48,6 +48,94 @@ struct ReaderTests {
 
         let again = TestNotes_character(anchor: Anchor(record: record, variables: TestNotesQuery(id: "1").variables, store: store)).notes
         #expect(again.anchor.record === notes.anchor.record, "a second miss of the type reads the same placeholder")
+        #expect(again.pageInfo.anchor.record === notes.pageInfo.anchor.record, "a link below a placeholder reads its type's placeholder too")
+        #expect(store.existing(notes.pageInfo.anchor.record.key) == nil)
+        #expect(reports.missing.count == 2, "each read of the link reports it once, and nothing below it: \(reports.missing)")
+    }
+
+    @Test("a @required link to a record @deleteRecord removed is null: the lens bubbles, a throwing selection collects the error, and a bubbling operation fails")
+    func deletedRequiredLink() async throws {
+        let transport = RecordedTransport { request in request.operationName == TestRequiredOrigin.name ? fixture("required-origin-1") : nil }
+        let environment = Environment(transport: transport)
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestRequiredOrigin(id: "1"))
+        handle.retain()
+        await until { if case .loading = handle.phase { false } else { true } }
+        guard case .ready(let data) = handle.phase else {
+            Issue.record("expected ready, got \(handle.phase)")
+            return
+        }
+        #expect(data.character.origin.name == "Earth (C-137)")
+        let character = try #require(environment.store.existing("Character:1"))
+        let throwing = Anchor(record: character, variables: .none, store: environment.store)
+        #expect(TestThrowingOrigin_character.fieldErrors(throwing).isEmpty)
+
+        let deletion = TestDeleteNote(id: "L9")
+        environment.store.commit(try Ingest.normalize(fixture("delete-location-L9"), plan: TestDeleteNote.plan.resolve(deletion.variables), rootKey: Store.mutationRootKey))
+        #expect(environment.store.existing("Location:L9")?.deleted == true)
+        #expect(!TestRequiredOrigin.Data.Character.satisfied(Anchor(record: character, variables: .none, store: environment.store)))
+        #expect(TestThrowingOrigin_character.fieldErrors(throwing).map(\.path) == ["origin"])
+        guard case .failed(let error) = handle.phase, error is RequiredFieldError else {
+            Issue.record("expected the bubbling operation to fail, got \(handle.phase)")
+            return
+        }
+        handle.release()
+    }
+
+    @Test("a non-null list under @catch that the server sent null reads empty and is reported")
+    func caughtNullList() throws {
+        let reports = Reports()
+        let store = store(reports)
+        let query = TestCaughtEpisodes(id: "1")
+        store.commit(try Ingest.normalize(fixture("caught-episodes-null"), plan: TestCaughtEpisodes.plan.resolve(query.variables)))
+        let character = try #require(TestCaughtEpisodes.Data(anchor: Anchor(record: store.root, variables: query.variables, store: store)).character)
+        guard case .success(let episodes) = character.caught else {
+            Issue.record("the list has no error")
+            return
+        }
+        #expect(episodes.isEmpty)
+        #expect(reports.unexpected == ["episode = null"])
+    }
+
+    @Test("a value of another kind than the reader's reads nil and is reported")
+    func kindMismatch() throws {
+        let reports = Reports()
+        let store = store(reports)
+        let query = Registry.type("Query")
+        let kinds = Registry.type("TestKinds")
+        let value = Registry.slot(kinds, "value")
+        let plan = Plan(root: Selection(type: query, hasID: false, fields: [
+            .linked("kinds", key: .fixed(Registry.slot(query, "kinds")), plural: false, selection: Selection(type: kinds, hasID: false, fields: [
+                .scalar("value", key: .fixed(value), kind: .string, list: false),
+            ])),
+        ])).resolve(.none)
+        store.commit(try Ingest.normalize(Data(#"{"data":{"kinds":{"value":"text"}}}"#.utf8), plan: plan))
+        let anchor = Anchor(record: try #require(store.existing("client:root:kinds")), variables: .none, store: store)
+        #expect(anchor.int(value) == nil)
+        #expect(anchor.bool(value) == nil)
+        #expect(anchor.requiredDouble(value) == 0)
+        #expect(anchor.linked(value) == nil)
+        #expect(reports.unexpected.count == 4, "\(reports.unexpected)")
+        #expect(anchor.string(value) == "text")
+    }
+
+    @Test("one owner keeps each key with variables and each spread with arguments apart")
+    func ownerKeepsKeysApart() throws {
+        let store = Store()
+        store.reportMissing = nil
+        store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
+        for id in ["1", "2"] {
+            #expect(store.check(TestHeaderQuery.plan.resolve(TestHeaderQuery(id: id).variables)), "the lookup binds character(id: \(id))")
+        }
+        let scopes = TestTwoScopes(a: "1", b: "2")
+        let data = TestTwoScopes.Data(anchor: Anchor(record: store.root, variables: scopes.variables, store: store))
+        let first = try #require(data.first)
+        let second = try #require(data.second)
+        #expect(first.name == "Rick Sanchez")
+        #expect(second.name == "Morty Smith")
+        #expect(first.testNotes.anchor.variables["count"] == .int(1))
+        #expect(second.testNotes.anchor.variables["count"] == .int(3))
+        #expect(first.testNotes.anchor.owner !== second.testNotes.anchor.owner)
     }
 
     @Test("a @required field the store never received is reported missing before its lens bubbles")
