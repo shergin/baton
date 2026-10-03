@@ -737,22 +737,34 @@ public enum Ingest {
             throw IngestError(offset: start, message: "unterminated string")
         }
 
+        /// An integer that fits `Int`. A fraction, an exponent or a value out
+        /// of range is an error, not a rounding: an `Int` field holds what the
+        /// server sent or nothing.
         mutating func parseInt() throws -> Int {
+            let start = position
             var negative = false
             if peek() == 0x2D { negative = true; position += 1 }
-            var value = 0
+            // The magnitude, so that `Int.min` reads without overflowing.
+            var magnitude: UInt64 = 0
+            var overflow = false
             var digits = 0
             while position < count, base[position] >= 0x30, base[position] <= 0x39 {
-                value = value &* 10 &+ Int(base[position] - 0x30)
+                let (scaled, scaleOverflow) = magnitude.multipliedReportingOverflow(by: 10)
+                let (sum, sumOverflow) = scaled.addingReportingOverflow(UInt64(base[position] - 0x30))
+                overflow = overflow || scaleOverflow || sumOverflow
+                magnitude = sum
                 position += 1
                 digits += 1
             }
             if digits == 0 { throw IngestError(offset: position, message: "expected a number") }
             if position < count, base[position] == 0x2E || base[position] == 0x65 || base[position] == 0x45 {
-                position -= digits + (negative ? 1 : 0)
-                return Int(try parseDouble())
+                throw IngestError(offset: start, message: "expected an integer")
             }
-            return negative ? -value : value
+            let limit = negative ? UInt64(Int.max) + 1 : UInt64(Int.max)
+            if overflow || magnitude > limit {
+                throw IngestError(offset: start, message: "integer out of range")
+            }
+            return negative ? Int(truncatingIfNeeded: 0 &- magnitude) : Int(magnitude)
         }
 
         mutating func parseDouble() throws -> Double {

@@ -82,7 +82,7 @@ extension Anchor {
     public func int(_ slot: Slot) -> Int? {
         switch record.read(slot) {
         case .int(let int): return int
-        case .double(let double): return Int(double)
+        case .double(let double): return Int(exactly: double)
         case .missing: missing(slot); return nil
         default: return nil
         }
