@@ -103,3 +103,19 @@ fn ignores_markers_inside_comments_and_strings() {
     assert!(documents.is_empty(), "{documents:?}");
     assert!(errors.is_empty(), "{errors:?}");
 }
+
+#[test]
+fn skips_extra_attribute_arguments_before_the_property() {
+    let source = "@Query(\"query Q { a }\", fetchPolicy: .storeOrNetwork) var q: Q\n";
+    let (documents, errors) = scan(source);
+    assert!(errors.is_empty(), "{errors:?}");
+    assert_eq!(documents.len(), 1);
+    assert_eq!(documents[0].text, "query Q { a }");
+    assert_eq!(
+        documents[0]
+            .property
+            .as_ref()
+            .map(|property| property.type_name.as_str()),
+        Some("Q")
+    );
+}

@@ -317,10 +317,7 @@ impl<'a> Scanner<'a> {
         if text.contains('\\') {
             self.errors.push(ScanError::EscapeInLiteral { at: start });
         }
-        self.skip_whitespace();
-        if self.peek(0) == Some(')') {
-            self.advance();
-        }
+        self.skip_remaining_arguments();
         let property = self.read_property();
         self.documents.push(EmbeddedDocument {
             marker,
@@ -441,6 +438,31 @@ impl<'a> Scanner<'a> {
         }
         (self.index, self.line, self.column) = saved;
         None
+    }
+
+    /// Skips the rest of an attribute's argument list after the literal, such
+    /// as `, fetchPolicy: .storeOrNetwork)`, up to and including the closing
+    /// parenthesis.
+    fn skip_remaining_arguments(&mut self) {
+        let mut depth = 1;
+        while let Some(character) = self.peek(0) {
+            match character {
+                '(' => depth += 1,
+                ')' => {
+                    depth -= 1;
+                    if depth == 0 {
+                        self.advance();
+                        return;
+                    }
+                }
+                '"' => {
+                    self.skip_string_literal();
+                    continue;
+                }
+                _ => {}
+            }
+            self.advance();
+        }
     }
 
     fn skip_balanced_parentheses(&mut self) {
