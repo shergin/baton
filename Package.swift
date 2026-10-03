@@ -53,6 +53,14 @@ let package = Package(
             plugins: ["BatonPlugin"]
         ),
         .executableTarget(
+            name: "GitHubTriage",
+            dependencies: ["Baton"],
+            path: "examples/GitHubTriage",
+            exclude: ["schema.docs.graphql", "baton.json"],
+            swiftSettings: [.swiftLanguageMode(.v6)],
+            plugins: ["BatonPlugin"]
+        ),
+        .executableTarget(
             name: "BatonBenchmarks",
             dependencies: ["Baton"],
             path: "swift/Benchmarks",

@@ -1,0 +1,6 @@
+{
+  "schema": "schema.docs.graphql",
+  "lookups": [
+    { "field": "Query.node", "argument": "id" }
+  ]
+}
