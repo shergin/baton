@@ -31,6 +31,7 @@ type Query {
   episodesByIds(ids: [ID!]!): [Episode]
   node(id: ID!): Node
   search(name: String!): [SearchResult]
+  namesake(name: String!): Named
   tokenizer: Tokenizer
 }
 

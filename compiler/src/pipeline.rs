@@ -717,11 +717,15 @@ impl Lowering<'_> {
     /// payload's `__typename` then names the type to key by.
     fn type_has_id(&self, type_: Type) -> bool {
         match type_ {
-            Type::Union(id) => self.schema.union(id).members.iter().any(|member| {
-                self.schema
-                    .named_field(Type::Object(*member), "id".intern())
-                    .is_some()
-            }),
+            // An interface need not declare the `id` its implementers have:
+            // GitHub's `Actor` does not, and its users are still entities.
+            Type::Union(_) | Type::Interface(_) => {
+                self.possible_objects(type_).into_iter().any(|object| {
+                    self.schema
+                        .named_field(Type::Object(object), "id".intern())
+                        .is_some()
+                })
+            }
             _ => self.schema.named_field(type_, "id".intern()).is_some(),
         }
     }
@@ -730,7 +734,17 @@ impl Lowering<'_> {
     /// itself, an interface every object that implements it, a union its
     /// members.
     fn possible_types(&self, type_: Type) -> Vec<String> {
-        let objects: Vec<schema::ObjectID> = match type_ {
+        let mut names: Vec<String> = self
+            .possible_objects(type_)
+            .into_iter()
+            .map(|id| self.schema.object(id).name.item.0.lookup().to_string())
+            .collect();
+        names.sort();
+        names
+    }
+
+    fn possible_objects(&self, type_: Type) -> Vec<schema::ObjectID> {
+        match type_ {
             Type::Object(id) => vec![id],
             Type::Interface(id) => self
                 .schema
@@ -740,13 +754,7 @@ impl Lowering<'_> {
                 .collect(),
             Type::Union(id) => self.schema.union(id).members.clone(),
             _ => Vec::new(),
-        };
-        let mut names: Vec<String> = objects
-            .into_iter()
-            .map(|id| self.schema.object(id).name.item.0.lookup().to_string())
-            .collect();
-        names.sort();
-        names
+        }
     }
 
     /// How a type condition stands to the parent's possible types.

@@ -104,3 +104,28 @@ fn a_configuration_with_a_key_it_does_not_know_is_an_error() {
         .is_err()
     );
 }
+
+#[test]
+fn an_interface_whose_implementers_have_ids_is_keyed_by_id_though_it_declares_none() {
+    let (sdl, path) = schema();
+    let compiled = compile(
+        &sdl,
+        &path,
+        &[document("query Probe { namesake(name: \"a\") { name } }")],
+        &Config::default(),
+    )
+    .unwrap_or_else(|errors| panic!("{errors:?}"));
+    let SelectionPlan::Linked {
+        has_id,
+        is_abstract,
+        ..
+    } = &compiled.plan.operations[0].normalization[0]
+    else {
+        panic!("namesake is a link");
+    };
+    assert!(*is_abstract);
+    assert!(
+        *has_id,
+        "Character and Location, which implement Named, have ids"
+    );
+}
