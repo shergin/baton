@@ -146,3 +146,9 @@ nonisolated enum Slots {
     static let Tokenizer_strings = Baton.Registry.slot(Types.Tokenizer, "strings")
     static let Tokenizer_text = Baton.Registry.slot(Types.Tokenizer, "text")
 }
+
+/// Storage keys read on interfaces and unions, each resolved once per concrete type.
+nonisolated enum AbstractSlots {
+    static let Named_name = Baton.AbstractSlot("name")
+    static let Node_id = Baton.AbstractSlot("id")
+}

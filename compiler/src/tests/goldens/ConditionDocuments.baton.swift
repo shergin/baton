@@ -172,7 +172,7 @@ fragment TestAppearances_character on Character {
             public let anchor: Baton.Anchor
             public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Node"
-            @MainActor public var id: String? { anchor.string(key: "id") }
+            @MainActor public var id: String? { anchor.string(AbstractSlots.Node_id.on(anchor.record.type)) }
             @MainActor public var asCharacter: AsCharacter? { anchor.record.is(Types.Character) ? AsCharacter(anchor: anchor) : nil }
             @MainActor public var appearances: Appearances? { anchor.record.is(Types.Character) ? Appearances(anchor: anchor) : nil }
 
@@ -258,7 +258,7 @@ query TestNodeFields(
             public let anchor: Baton.Anchor
             public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Node"
-            @MainActor public var id: String? { anchor.string(key: "id") }
+            @MainActor public var id: String? { anchor.string(AbstractSlots.Node_id.on(anchor.record.type)) }
             @MainActor public var asCharacter: AsCharacter? { anchor.record.is(Types.Character) ? AsCharacter(anchor: anchor) : nil }
 
             nonisolated public struct AsCharacter: Baton.Lens {
@@ -601,7 +601,7 @@ query TestUnion(
                 public let anchor: Baton.Anchor
                 public init(anchor: Baton.Anchor) { self.anchor = anchor }
                 public static let typeName = "Named"
-                @MainActor public var name: String? { anchor.string(key: "name") }
+                @MainActor public var name: String? { anchor.string(AbstractSlots.Named_name.on(anchor.record.type)) }
             }
         }
     }

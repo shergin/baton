@@ -118,8 +118,10 @@ and act only when exactly one live record has the id.
 the key under which a value is stored. Here: computed by the compiler and
 emitted as a constant; the process numbers each key on first use, and a
 record stores the value at that number, so a read through a constant hashes
-nothing. Resolving keys with variables, and fields read through an interface
-or union, once rather than on every read is *(planned)*. See
+nothing. A field read through an interface or union reads an *abstract
+slot*: its key's slot on each concrete type, resolved on that type's first
+read. Resolving keys with variables once rather than on every read is
+*(planned)*. See
 [Slots are numbered by the process](decisions/slots-are-numbered-by-the-process.md).
 
 **Invalidation channel.** Baton's word; Relay tells a fragment's subscribers

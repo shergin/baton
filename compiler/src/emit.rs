@@ -89,6 +89,8 @@ struct FragmentFlags {
 
 struct Emitter {
     slots: BTreeSet<SlotRef>,
+    /// Constant keys read on an interface or union.
+    abstract_slots: BTreeSet<SlotRef>,
     types: BTreeSet<String>,
     /// Every fragment's `@argumentDefinitions`, for binding spreads.
     fragment_arguments: BTreeMap<String, Vec<VariablePlan>>,
@@ -145,6 +147,7 @@ pub fn emit(plan: &Plan) -> Output {
     }
     let mut emitter = Emitter {
         slots: BTreeSet::new(),
+        abstract_slots: BTreeSet::new(),
         types: BTreeSet::new(),
         fragment_arguments: plan
             .fragments
@@ -270,6 +273,20 @@ impl Emitter {
             }
         }
         output.push_str("}\n");
+        if !self.abstract_slots.is_empty() {
+            output.push_str(
+                "\n/// Storage keys read on interfaces and unions, each resolved once per concrete type.\nnonisolated enum AbstractSlots {\n",
+            );
+            for slot in &self.abstract_slots {
+                let _ = writeln!(
+                    output,
+                    "    static let {} = Baton.AbstractSlot({})",
+                    slot.identifier(),
+                    swift_literal(&slot.template)
+                );
+            }
+            output.push_str("}\n");
+        }
         output
     }
 
@@ -1301,7 +1318,7 @@ impl Emitter {
         indent: &str,
         condition: Option<&str>,
     ) {
-        let argument = self.read_argument(type_name, type_is_abstract, storage_key);
+        let argument = self.slot_expression(type_name, type_is_abstract, storage_key);
         let property = escape(field.property);
         let (reader, swift_type) = scalar_reader(field.base_kind, field.list);
         let required_reader = format!("required{}", capitalize(reader));
@@ -1394,7 +1411,7 @@ impl Emitter {
         indent: &str,
         condition: Option<&str>,
     ) {
-        let argument = self.read_argument(type_name, type_is_abstract, storage_key);
+        let argument = self.slot_expression(type_name, type_is_abstract, storage_key);
         let property = escape(field.property);
         let nested = field.nested;
         let base_type = field.base_type;
@@ -1680,41 +1697,29 @@ impl Emitter {
     /// The argument a lens accessor passes: a static slot on a concrete type, or
     /// a storage key resolved against the record's own type when the selection
     /// is on an interface or union.
-    fn read_argument(
-        &mut self,
-        type_name: &str,
-        type_is_abstract: bool,
-        storage_key: &StorageKeyPlan,
-    ) -> String {
-        if type_is_abstract {
-            self.types.insert(type_name.to_string());
-            format!(
-                "key: {}",
-                key_expression(&key_parts(storage_key), "anchor.variables")
-            )
-        } else {
-            self.slot(type_name, storage_key)
-        }
-    }
-
-    /// A slot as a value: the static slot, or the key resolved against the
-    /// record's type for abstract selections. For the readers that take a slot
-    /// and more.
+    /// A slot as a value: the static slot, or on an interface or union the
+    /// abstract slot taken on the record's type. A key with variables on an
+    /// abstract type is rendered and resolved per read.
     fn slot_expression(
         &mut self,
         type_name: &str,
         type_is_abstract: bool,
         storage_key: &StorageKeyPlan,
     ) -> String {
-        if type_is_abstract {
-            self.types.insert(type_name.to_string());
-            format!(
-                "anchor.slot(key: {})",
-                key_expression(&key_parts(storage_key), "anchor.variables")
-            )
-        } else {
-            self.slot(type_name, storage_key)
+        if !type_is_abstract {
+            return self.slot(type_name, storage_key);
         }
+        self.types.insert(type_name.to_string());
+        let slot = SlotRef::new(type_name, storage_key);
+        if slot.has_variables() {
+            return format!(
+                "anchor.slot(key: {})",
+                key_expression(&slot.parts, "anchor.variables")
+            );
+        }
+        let expression = format!("AbstractSlots.{}.on(anchor.record.type)", slot.identifier());
+        self.abstract_slots.insert(slot);
+        expression
     }
 
     /// Writes a `Baton.Selection(...)` expression for the normalization plan:

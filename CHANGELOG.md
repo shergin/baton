@@ -147,6 +147,10 @@ are expected and listed without apology.
 - A connection's `nodes` builds its lenses in one pass instead of an array
   of anchors mapped into a second one: 110 µs for 2,100 nodes against 124
   µs on an M1 Pro.
+- A field selected on an interface or union reads through an
+  `AbstractSlot`, which resolves its key once per concrete type: 22 ns per
+  untracked read against 56 ns, which took the registry's lock and hashed
+  the key on every read. The `key:` readers of `Anchor` are removed.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

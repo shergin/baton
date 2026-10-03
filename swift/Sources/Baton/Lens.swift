@@ -68,8 +68,9 @@ extension Anchor {
 
     private var anchor: Anchor { self }
 
-    /// The slot of a storage key on the record's own type, for selections on
-    /// interfaces and unions.
+    /// The slot of a storage key on the record's own type, for a key with
+    /// variables on an interface or union; a constant key reads through an
+    /// `AbstractSlot`.
     @inline(__always) public func slot(key: String) -> Slot { Registry.slot(record.type, key) }
 
     /// Whether an `@include` or `@skip` condition selects: the variable has
@@ -210,32 +211,6 @@ extension Anchor {
         default: unexpected(slot, value); return nil
         }
     }
-}
-
-/// Readers by storage key, for selections on interfaces and unions: the slot is
-/// resolved against the record's concrete type.
-@MainActor
-extension Anchor {
-    public func string(key: String) -> String? { string(slot(key: key)) }
-    public func requiredString(key: String) -> String { requiredString(slot(key: key)) }
-    public func int(key: String) -> Int? { int(slot(key: key)) }
-    public func requiredInt(key: String) -> Int { requiredInt(slot(key: key)) }
-    public func double(key: String) -> Double? { double(slot(key: key)) }
-    public func requiredDouble(key: String) -> Double { requiredDouble(slot(key: key)) }
-    public func bool(key: String) -> Bool? { bool(slot(key: key)) }
-    public func requiredBool(key: String) -> Bool { requiredBool(slot(key: key)) }
-    public func strings(key: String) -> [String]? { strings(slot(key: key)) }
-    public func requiredStrings(key: String) -> [String] { requiredStrings(slot(key: key)) }
-    public func ints(key: String) -> [Int]? { ints(slot(key: key)) }
-    public func requiredInts(key: String) -> [Int] { requiredInts(slot(key: key)) }
-    public func doubles(key: String) -> [Double]? { doubles(slot(key: key)) }
-    public func requiredDoubles(key: String) -> [Double] { requiredDoubles(slot(key: key)) }
-    public func bools(key: String) -> [Bool]? { bools(slot(key: key)) }
-    public func requiredBools(key: String) -> [Bool] { requiredBools(slot(key: key)) }
-    public func linked(key: String) -> Anchor? { linked(slot(key: key)) }
-    public func requiredLinked(key: String, type: TypeID) -> Anchor { requiredLinked(slot(key: key), type: type) }
-    public func list<Element: Lens>(key: String, keep: ((Anchor) -> Bool)? = nil) -> List<Element>? { list(slot(key: key), keep: keep) }
-    public func requiredList<Element: Lens>(key: String, keep: ((Anchor) -> Bool)? = nil) -> List<Element> { requiredList(slot(key: key), keep: keep) }
 }
 
 /// Honest data: the readers behind `@required`, `@catch`,
