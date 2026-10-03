@@ -503,6 +503,12 @@ public enum Ingest {
                             let next = peek()
                             if next == 0x5D { position += 1; break }
                             if next == 0x2C { position += 1; continue }
+                            if next == 0x6E {
+                                try literal("null")
+                                changes.scalars.append(.null)
+                                items += 1
+                                continue
+                            }
                             let value = try scalarValue(scalar)
                             changes.scalars.append(value)
                             items += 1
