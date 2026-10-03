@@ -599,6 +599,27 @@ func connectionBench() async throws {
         guard case .string(let cursor)? = request.variables["cursor"], let number = Int(cursor.dropFirst()) else { return nil }
         return responses[(number + 1) / size]
     }
+    // The same pages with no body reading the nodes: what the merge costs
+    // as the connection grows, apart from what tracking every node costs.
+    do {
+        let environment = Environment(transport: transport)
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: BenchNotesQuery(id: "1"))
+        handle.retain()
+        await handle.settle()
+        guard case .ready(let data) = handle.phase, let character = data.character?.benchNotes else { return }
+        var samples: [Double] = []
+        while character.notes.hasNext {
+            let start = DispatchTime.now().uptimeNanoseconds
+            try await character.notes.loadNext()
+            samples.append(Double(DispatchTime.now().uptimeNanoseconds - start))
+        }
+        let series = [2, 21, 41].filter { $0 - 2 < samples.count }.map { "page \($0) \(format(samples[$0 - 2]).trimmingCharacters(in: .whitespaces))" }
+        report("loadNext with no body reading the nodes, per page of 50", samples, ops: 1)
+        print("    by page: \(series.joined(separator: ", "))")
+        handle.release()
+    }
+
     let environment = Environment(transport: transport)
     environment.store.reportMissing = nil
     let handle = environment.handle(for: BenchNotesQuery(id: "1"))
@@ -617,7 +638,7 @@ func connectionBench() async throws {
     }
     // As the connection grows: the page appended to 1, 20 and 40 pages.
     let series = [2, 21, 41].filter { $0 - 2 < samples.count }.map { "page \($0) \(format(samples[$0 - 2]).trimmingCharacters(in: .whitespaces))" }
-    report("loadNext (transport, ingest, merge), per page of 50", samples, ops: 1)
+    report("loadNext, a body reading every node, per page of 50", samples, ops: 1)
     print("    by page: \(series.joined(separator: ", "))")
     print("    pages appended: \(samples.count), nodes: \(character.notes.nodes.count), notifications: \(observer.fired) (one per page, on the edges slot)")
 
