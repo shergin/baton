@@ -1,0 +1,15 @@
+# The operation that produced characters-page-1.json (variables: page = 1).
+query Fixture($page: Int) {
+  characters(page: $page) {
+    info { count pages next prev }
+    results {
+      id name status species type gender image created
+      origin { id name type dimension created }
+      location { id name type dimension created }
+      episode {
+        id name air_date episode created
+        characters { id name image }
+      }
+    }
+  }
+}

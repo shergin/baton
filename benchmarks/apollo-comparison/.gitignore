@@ -1,0 +1,4 @@
+/.build/
+# Download with: gh release download 2.4.0 -R apollographql/apollo-ios -p 'apollo-ios-cli.tar.gz'
+/apollo-ios-cli
+/apollo-ios-cli.tar.gz

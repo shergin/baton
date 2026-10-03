@@ -1,0 +1,12 @@
+{
+  "schemaNamespace": "RickAndMortyAPI",
+  "input": {
+    "operationSearchPaths": ["operations/**/*.graphql"],
+    "schemaSearchPaths": ["../../spec/rickandmorty/schema.graphql"]
+  },
+  "output": {
+    "testMocks": { "none": {} },
+    "schemaTypes": { "path": "./RickAndMortyAPI", "moduleType": { "swiftPackage": {} } },
+    "operations": { "inSchemaModule": {} }
+  }
+}
