@@ -21,3 +21,5 @@ principle, the proof belongs here.
 - [Connections reference page edges and own inserted ones](connections-own-their-edges.md)
 - [Relay's error directives in Swift's terms](error-directives-in-swift.md)
 - [The image is the system's SQLite](the-image-is-sqlite.md)
+- [Slots are numbered by the process, not by the compiler](slots-are-numbered-by-the-process.md)
+- [A deletion is announced by its commit, not tracked by readers](deletion-is-announced-by-its-commit.md)

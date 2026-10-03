@@ -103,7 +103,9 @@ object identified by typename plus key, holding interned slots, per-field
 errors and type-membership bits. Its values are sized by what was written,
 not by how many storage keys the type has. A record `@deleteRecord` removed
 is *deleted*: links to it read as null, lists skip it, its observers are
-told, and a payload that names it again revives it.
+told, and a payload that names it again revives it. Telling the bodies that
+hold a link to it is *(planned)*; see
+[A deletion is announced by its commit](decisions/deletion-is-announced-by-its-commit.md).
 
 **Key.** The configured identity fields of a type (default `id`), combined
 with the typename. Objects without a key get a path-based client id, as in
@@ -111,8 +113,12 @@ Relay. The store also indexes entities by id alone, for lookups without a
 type (`node(id:)`).
 
 **Storage key, slot.** Relay: a field name plus its serialized arguments,
-the key under which a value is stored. Here: interned by the compiler to an
-integer slot, so the runtime never hashes a name.
+the key under which a value is stored. Here: computed by the compiler and
+emitted as a constant; the process numbers each key on first use, and a
+record stores the value at that number, so a read through a constant hashes
+nothing. Resolving keys with variables, and fields read through an interface
+or union, once rather than on every read is *(planned)*. See
+[Slots are numbered by the process](decisions/slots-are-numbered-by-the-process.md).
 
 **Store.** Relay's word. All records, retained roots and lifetime state;
 owned by the main actor; read synchronously; written by atomic commits. See
