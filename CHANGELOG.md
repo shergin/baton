@@ -5,6 +5,18 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- Fixed: an entity whose `id` arrives after a linked field is keyed by its
+  id. Relay prints the `id` it adds to a selection last and a server answers
+  in that order, so the ingest had settled such an object on a path key
+  before the `id` came: a second record for the entity, apart from the one
+  every other operation writes. In the Rick and Morty sample the detail's
+  episodes query moved the root link to that record, and the header read
+  missing data until its own response arrived. The ingest now finds the `id`
+  and the `__typename` ahead of the first child, in any order; the look ahead
+  runs only for an object whose identity follows a link. Two recorded
+  responses with the `id` last join `spec/rickandmorty`, and the tests read
+  them through the detail's lenses over the list's records.
+
 ## 0.5.0 (Baton Pass) — 2026-10-03
 
 Honest data on the wire: field errors stored beside their fields, Relay's

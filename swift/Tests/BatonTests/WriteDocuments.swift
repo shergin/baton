@@ -43,6 +43,15 @@ struct WriteDocuments {
     var search: TestSearch
 
     @Query("""
+        query TestSearchOrigins($name: String!) {
+          search(name: $name) {
+            ... on Character { origin { name } }
+          }
+        }
+        """)
+    var searchOrigins: TestSearchOrigins
+
+    @Query("""
         query TestNode($id: ID!) {
           node(id: $id) {
             __typename

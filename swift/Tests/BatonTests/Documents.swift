@@ -2,7 +2,8 @@ import Baton
 
 /// The documents the tests compile against the Rick and Morty schema. The
 /// operation that produced the recorded fixture, a list that prefetches the
-/// header a detail screen reads, and the detail operation itself.
+/// header a detail screen reads, the detail operation itself, and a second
+/// operation on the detail's root field.
 @MainActor
 struct Documents {
     @Query("""
@@ -58,4 +59,13 @@ struct Documents {
         }
         """)
     var headerQuery: TestHeaderQuery
+
+    @Query("""
+        query TestEpisodesQuery($id: ID!) {
+          character(id: $id) {
+            episode { id name }
+          }
+        }
+        """)
+    var episodesQuery: TestEpisodesQuery
 }

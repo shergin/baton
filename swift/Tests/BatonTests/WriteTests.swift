@@ -173,6 +173,29 @@ struct WriteTests {
         #expect(results[2].asCharacter == nil && results[2].asLocation == nil)
     }
 
+    @Test("an object behind a union is keyed by its type and id when both arrive after a link")
+    func abstractIdentityArrivesAfterALink() throws {
+        let store = Store()
+        let payload = Data(#"""
+        {"data":{"search":[
+          {"origin":{"name":"Earth (C-137)","id":"1"},"__typename":"Character","id":"1"},
+          {"origin":null,"id":"2","__typename":"Character"}
+        ]}}
+        """#.utf8)
+        let variables = TestSearchOrigins(name: "1").variables
+        store.commit(try Ingest.normalize(payload, plan: TestSearchOrigins.plan.resolve(variables)))
+
+        #expect(store.existing("Character:1") != nil)
+        #expect(store.existing("Character:2") != nil)
+        #expect(store.existing("Location:1") != nil)
+        #expect(store.count == 6, "three entities and three roots")
+
+        let data = TestSearchOrigins.Data(anchor: Anchor(record: store.root, variables: variables, store: store))
+        let results = try #require(data.search)
+        #expect(results.map { $0.recordID.key } == ["Character:1", "Character:2"])
+        #expect(results[0].asCharacter?.origin?.name == "Earth (C-137)")
+    }
+
     @Test("node(id:) finds a cached entity by id across types")
     func nodeLookup() throws {
         let store = Store()

@@ -1,0 +1,14 @@
+# The operation that produced character-episodes-9.json (variables: id = "9"),
+# as the compiler prints it: the character's `id` is Relay's, added after the
+# `episode` link, and the response carries it there.
+query TestEpisodesQuery(
+  $id: ID!
+) {
+  character(id: $id) {
+    episode {
+      id
+      name
+    }
+    id
+  }
+}

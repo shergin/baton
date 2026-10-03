@@ -116,6 +116,42 @@ struct SpineTests {
         #expect(store.check(TestHeaderQuery.plan.resolve(detail.variables)))
     }
 
+    @Test("an object whose id arrives after a link is keyed by its id, so a detail joins the entity the list fetched")
+    func identityArrivesAfterALink() throws {
+        final class Misses: @unchecked Sendable { var reads: [String] = [] }
+        let misses = Misses()
+        let store = Store()
+        store.reportMissing = { record, slot in misses.reads.append(record.key + "." + slot.storageKey) }
+        store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
+
+        // The detail's header renders from the store, through the lookup.
+        let header = TestHeaderQuery(id: "9")
+        let data = TestHeaderQuery.Data(anchor: Anchor(record: store.root, variables: header.variables, store: store))
+        #expect(data.character?.testHeader.name == "Agency Director")
+
+        // A second operation on the same root field answers first. Its `id` is
+        // the one Relay adds, after the `episode` link, and the server sends
+        // it there.
+        let episodes = TestEpisodesQuery(id: "9")
+        store.commit(try Ingest.normalize(fixture("character-episodes-9"), plan: TestEpisodesQuery.plan.resolve(episodes.variables)))
+        let character = try #require(data.character)
+        #expect(character.recordID.key == "Character:9")
+        #expect(store.existing(#"client:root:character(id:"9")"#) == nil, "no second record for the same entity")
+        #expect(character.testHeader.name == "Agency Director")
+        #expect(character.testHeader.origin?.name == "Earth (Replacement Dimension)")
+        #expect(misses.reads.isEmpty)
+
+        let episodesData = TestEpisodesQuery.Data(anchor: Anchor(record: store.root, variables: episodes.variables, store: store))
+        #expect(episodesData.character?.episode.map { $0.name } == ["Pickle Rick"])
+
+        // The header's own response carries the `id` last as well: it lands on
+        // the same records and changes nothing.
+        let count = store.count
+        let changed = store.commit(try Ingest.normalize(fixture("character-header-9"), plan: TestHeaderQuery.plan.resolve(header.variables)))
+        #expect(changed == 0)
+        #expect(store.count == count)
+    }
+
     @Test("operation values hash by their variables only")
     func operationValueIdentity() {
         let a = TestHeaderQuery(id: "1")

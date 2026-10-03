@@ -434,8 +434,10 @@ public enum Ingest {
         /// Parses one object against a selection; appends its entries; returns its record.
         ///
         /// Entities are keyed `Type:id`. For a selection on an interface or union
-        /// the type is the payload's `__typename` (the compiler puts it first), and
-        /// the slots are resolved against that concrete type when the object ends.
+        /// the type is the payload's `__typename`, and the slots are resolved
+        /// against that concrete type when the object ends. The `id` and the
+        /// `__typename` may arrive anywhere in the object: Relay prints the
+        /// `id` it adds last, and an optimistic response sorts its keys.
         mutating func object(plan: ResolvedSelection, parent: Int32, slot: Slot?, listIndex: Int?, depth: Int, fixedRecord: Int32?) throws -> Int32 {
             try expect(0x7B)
             guard depth < scratch.count else { throw IngestError(offset: position, message: "selection nested deeper than 24 levels") }
@@ -528,6 +530,9 @@ public enum Ingest {
                         continue
                     }
                     if record < 0 {
+                        // A child's key may be a path through this object, so the
+                        // object's own key is settled before the child is read.
+                        try identityAhead(plan: plan, concreteType: &concreteType, pendingID: &pendingID)
                         record = settle(plan: plan, concreteType: concreteType, pendingID: pendingID, parent: parent, slot: slot, listIndex: listIndex)
                     }
                     if plural {
@@ -623,6 +628,39 @@ public enum Ingest {
         func keyMatches(_ field: ResolvedField, _ keyStart: Int) -> Bool {
             field.keyBytes.withUnsafeBufferPointer { key in
                 memcmp(base + keyStart, key.baseAddress!, key.count) == 0
+            }
+        }
+
+        /// Finds the `id` and the `__typename` an object still owes among the
+        /// members after the one at the cursor, which is a link's value, and
+        /// leaves the cursor there. Without it an entity whose `id` follows a
+        /// link would be keyed by its path, apart from the record every other
+        /// operation writes.
+        mutating func identityAhead(plan: ResolvedSelection, concreteType: inout TypeID, pendingID: inout (Int, Int, Bool)?) throws {
+            var needsID = plan.hasID && pendingID == nil
+            var needsType = plan.isAbstract && concreteType == plan.type
+            guard needsID || needsType else { return }
+            let resume = position
+            defer { position = resume }
+            let typename: StaticString = "__typename"
+            try skipValue()
+            while needsID || needsType {
+                skipWhitespace()
+                let byte = peek()
+                if byte == 0x7D { return }
+                if byte == 0x2C { position += 1; continue }
+                let (keyStart, keyEnd, keyEscaped) = try scanString()
+                skipWhitespace(); try expect(0x3A); skipWhitespace()
+                guard !keyEscaped, peek() == 0x22 else { try skipValue(); continue }
+                let (start, end, escaped) = try scanString()
+                let keyLength = keyEnd - keyStart
+                if needsID, keyLength == 2, base[keyStart] == 0x69, base[keyStart + 1] == 0x64 {
+                    pendingID = (start, end, escaped)
+                    needsID = false
+                } else if needsType, keyLength == typename.utf8CodeUnitCount, memcmp(base + keyStart, typename.utf8Start, keyLength) == 0 {
+                    concreteType = Registry.type(Ingest.materialize(base: base, start, end, escaped))
+                    needsType = false
+                }
             }
         }
 
