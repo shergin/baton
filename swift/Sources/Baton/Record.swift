@@ -13,6 +13,12 @@ public final class Record: Observable {
     /// Whether `@deleteRecord` removed it: links to it read as null and lists
     /// skip it, until a payload names it again.
     public private(set) var deleted = false
+    /// Whether the record's row in the image has been read, so that the
+    /// availability check reads it once.
+    private(set) var hydrated = false
+    /// Whether the collector took the record out of the store. A link that
+    /// still holds it is repointed when the image is read.
+    private(set) var swept = false
     private var values: ContiguousArray<Value>
     /// Field errors by slot index; allocated when the first error lands.
     private var errors: [Int32: FieldError]?
@@ -128,6 +134,40 @@ public final class Record: Observable {
     func clear() {
         for index in values.indices { values[index] = .missing }
         errors = nil
+        swept = true
+    }
+
+    /// The record as the image stores it: its values and errors now.
+    func snapshot() -> Persistence.Snapshot {
+        Persistence.Snapshot(record: self, values: values, errors: errors, deleted: deleted)
+    }
+
+    /// The field error beside a slot, without registering the read.
+    func peekError(_ slot: Slot) -> FieldError? {
+        errors?[slot.index]
+    }
+
+    /// Notes that the record's row has been read from the image.
+    func setHydrated() {
+        hydrated = true
+    }
+
+    /// Fills a slot the record lacks with a value read from the image, and
+    /// its field error with it, silently. A slot that holds a value is left
+    /// alone: memory is the truth. Returns whether the slot was filled.
+    func fill(_ slot: Slot, _ value: Value, error: FieldError?) -> Bool {
+        let index = Int(slot.index)
+        if index >= values.count {
+            values.append(contentsOf: repeatElement(.missing, count: index + 1 - values.count))
+        } else {
+            guard case .missing = values[index] else { return false }
+        }
+        values[index] = value
+        if let error {
+            if errors == nil { errors = [:] }
+            errors?[slot.index] = error
+        }
+        return true
     }
 
     /// Marks the record deleted or revives it; the store clears the values

@@ -32,7 +32,25 @@ public final class Store {
     /// Optimistic responses currently applied, oldest first.
     public private(set) var optimisticLayers: [OptimisticLayer] = []
 
-    public init(rootType: TypeID = Registry.type("Query"), mutationType: TypeID = Registry.type("Mutation"), subscriptionType: TypeID = Registry.type("Subscription")) {
+    /// The store's image on disk, when it has one: every commit is written
+    /// behind, and the availability check reads from it what memory lacks.
+    public let persistence: Persistence?
+    /// How many records have been filled from the image.
+    public internal(set) var hydratedRecords = 0
+    /// Fields whose error a batch set or cleared. An error can change while
+    /// the value stays null, so the undo log does not show it and the image
+    /// needs to be told.
+    private var errorTouched: [(record: Record, slot: Slot)] = []
+    /// The image's connection while a check is reading from it.
+    private var reading: Disk?
+
+    public init(
+        rootType: TypeID = Registry.type("Query"),
+        mutationType: TypeID = Registry.type("Mutation"),
+        subscriptionType: TypeID = Registry.type("Subscription"),
+        persistence: Persistence? = nil
+    ) {
+        self.persistence = persistence
         root = Record(type: rootType, key: Store.rootKey)
         mutationRoot = Record(type: mutationType, key: Store.mutationRootKey)
         subscriptionRoot = Record(type: subscriptionType, key: Store.subscriptionRootKey)
@@ -76,6 +94,13 @@ public final class Store {
         records[key] = record
         if let id { byID[id] = record }
         return (record, true)
+    }
+
+    /// The record a stored link names: the one the store holds, deleted or
+    /// not, or a new empty one for the image to fill.
+    func target(key: String, type: TypeID, entity: Bool) -> Record {
+        if let record = records[key] { return record }
+        return record(key: key, type: type, entity: entity)
     }
 
     // MARK: Commits and optimistic layers
@@ -149,14 +174,55 @@ public final class Store {
     public func commit(_ changes: ChangeSet) -> Int {
         if optimisticLayers.isEmpty {
             var transaction = Transaction(direct: true)
-            _ = apply(changes, into: &transaction)
+            persist(apply(changes, into: &transaction))
             return transaction.finish()
         }
         var transaction = Transaction()
         revertLayers(from: 0, into: &transaction)
-        _ = apply(changes, into: &transaction)
+        persist(apply(changes, into: &transaction))
         reapplyLayers(from: 0, into: &transaction)
         return transaction.finish()
+    }
+
+    /// Hands the image what a server's payload changed: a snapshot of every
+    /// changed record, and the changed fields of the root one by one. Called
+    /// while the optimistic layers are lifted, so the values are the server's.
+    private func persist(_ undo: [Undo]) {
+        guard let persistence else { return }
+        defer { errorTouched.removeAll(keepingCapacity: true) }
+        if undo.isEmpty, errorTouched.isEmpty { return }
+        var records: [Persistence.Snapshot] = []
+        var fields: [Persistence.RootField] = []
+        var seen = Set<ObjectIdentifier>()
+        var previous: Record?
+        func add(_ record: Record) {
+            // A commit writes a record's slots in a run, so most repeats are
+            // caught by the record before; the set catches the rest.
+            if record === previous || record === mutationRoot || record === subscriptionRoot { return }
+            previous = record
+            if seen.insert(ObjectIdentifier(record)).inserted { records.append(record.snapshot()) }
+        }
+        for step in undo {
+            switch step {
+            case .slot(let record, let slot, _):
+                if record === root {
+                    fields.append(Persistence.RootField(slot: slot, value: root.peek(slot), error: root.peekError(slot)))
+                } else {
+                    add(record)
+                }
+            case .deleted(let record):
+                add(record)
+            }
+        }
+        for (record, slot) in errorTouched {
+            if record === root {
+                fields.append(Persistence.RootField(slot: slot, value: root.peek(slot), error: root.peekError(slot)))
+            } else {
+                add(record)
+            }
+        }
+        if records.isEmpty, fields.isEmpty { return }
+        persistence.committed(records, root: fields)
     }
 
     /// Applies an optimistic response on top of everything else.
@@ -164,6 +230,7 @@ public final class Store {
         var transaction = Transaction()
         var layer = OptimisticLayer(id: UUID(), changes: changes)
         layer.undo = apply(changes, into: &transaction)
+        errorTouched.removeAll(keepingCapacity: true)
         optimisticLayers.append(layer)
         _ = transaction.finish()
         return layer.id
@@ -186,7 +253,7 @@ public final class Store {
         var transaction = Transaction()
         revertLayers(from: 0, into: &transaction)
         optimisticLayers.removeAll { $0.id == id }
-        _ = apply(changes, into: &transaction)
+        persist(apply(changes, into: &transaction))
         reapplyLayers(from: 0, into: &transaction)
         return transaction.finish()
     }
@@ -214,6 +281,8 @@ public final class Store {
         for position in index..<optimisticLayers.count {
             optimisticLayers[position].undo = apply(optimisticLayers[position].changes, into: &transaction)
         }
+        // An optimistic response is never written to the image.
+        errorTouched.removeAll(keepingCapacity: true)
     }
 
     /// Writes one slot inside a batch: silently, recorded for the net
@@ -297,7 +366,10 @@ public final class Store {
                     value = .list(list)
                 }
                 set(record, entry.slot, value, &transaction, &undo)
-                if record.hasErrors, record.setError(entry.slot, nil) { record.notify(entry.slot) }
+                if record.hasErrors, record.setError(entry.slot, nil) {
+                    record.notify(entry.slot)
+                    if persistence != nil { errorTouched.append((record, entry.slot)) }
+                }
             }
         }
 
@@ -329,7 +401,10 @@ public final class Store {
         // responses carry none.
         for entry in changes.fieldErrors {
             let record = objects[Int(entry.record)]
-            if record.setError(entry.slot, entry.error) { record.notify(entry.slot) }
+            if record.setError(entry.slot, entry.error) {
+                record.notify(entry.slot)
+                if persistence != nil { errorTouched.append((record, entry.slot)) }
+            }
         }
         return undo
     }
@@ -493,34 +568,103 @@ public final class Store {
     /// Whether every field of the selection is present, starting at `record`.
     /// A missing root link with a lookup is satisfied by the cached entity,
     /// and the link is written so later reads are direct.
+    ///
+    /// Memory answers first. When it cannot and the store has an image, the
+    /// same walk runs again with the image at hand, and what it reads becomes
+    /// part of the store: this is how a launch renders its first body from
+    /// the last one's data.
     public func check(_ selection: ResolvedSelection, at record: Record? = nil) -> Bool {
         let record = record ?? root
+        if check(selection, at: record, nil) { return true }
+        // A check an observer starts while the image is being read joins
+        // the read that is open.
+        if let reading { return check(selection, at: record, reading) }
+        guard let persistence else { return false }
+        return persistence.reading { disk in
+            reading = disk
+            defer { reading = nil }
+            return check(selection, at: record, disk)
+        }
+    }
+
+    /// The walk behind `check`. With the image at hand, a record that lacks a
+    /// field reads its row first, a link to a record the collector swept is
+    /// pointed at the live record of that key, and a connection's client
+    /// record is walked while it is still empty.
+    private func check(_ selection: ResolvedSelection, at record: Record, _ disk: Disk?) -> Bool {
         let fields = selection.fields
         for index in fields.indices {
             if fields[index].isTypename || fields[index].deferred != nil { continue }
             let slot = selection.slot(of: index, on: record.type)
+            var value = record.peek(slot)
+            if case .missing = value, let disk, hydrate(record, slot, from: disk) { value = record.peek(slot) }
             switch fields[index].kind {
             case .scalar:
-                if case .missing = record.peek(slot) { return false }
-            case .linked(let child, let plural, let lookupKey, _):
-                switch record.peek(slot) {
+                if case .missing = value { return false }
+            case .linked(let child, let plural, let lookupKey, let connection):
+                switch value {
                 case .missing:
-                    guard !plural, let lookupKey, let target = resolve(lookupKey) else { return false }
-                    guard check(child, at: target) else { return false }
+                    guard !plural, let lookupKey, let target = resolve(lookupKey, disk) else { return false }
+                    guard check(child, at: target, disk) else { return false }
                     record.write(slot, .ref(target))
                 case .null:
-                    continue
-                case .ref(let target):
-                    if target.deleted { continue }
-                    if !check(child, at: target) { return false }
-                case .refs(let targets):
-                    for case let target? in targets where !target.deleted && !check(child, at: target) { return false }
+                    break
+                case .ref(var target):
+                    if let disk {
+                        let found = target
+                        target = live(found, disk)
+                        if target !== found { record.write(slot, .ref(target)) }
+                    }
+                    if !target.deleted, !check(child, at: target, disk) { return false }
+                case .refs(var targets):
+                    if let disk {
+                        var moved = false
+                        for position in targets.indices {
+                            guard let found = targets[position] else { continue }
+                            let target = live(found, disk)
+                            if target !== found {
+                                targets[position] = target
+                                moved = true
+                            }
+                        }
+                        if moved { record.write(slot, .refs(targets)) }
+                    }
+                    for case let target? in targets where !target.deleted && !check(child, at: target, disk) { return false }
                 default:
                     return false
+                }
+                // Lenses read a connection through its client record, which
+                // the walk above does not pass. One the image has yet to fill
+                // is walked here, so its merged pages come back with it.
+                if let connection, let disk, case .ref(let found) = record.peek(selection.slot(of: connection, on: record.type)) {
+                    let unread = found.swept || (!found.hydrated && found.slotCount == 0)
+                    let merged = live(found, disk)
+                    if merged !== found { record.write(selection.slot(of: connection, on: record.type), .ref(merged)) }
+                    if unread, !merged.deleted, !check(child, at: merged, disk) { return false }
                 }
             }
         }
         return true
+    }
+
+    /// A link's target as the store and the image know it together: the live
+    /// record of the key when the collector swept the one the link holds,
+    /// and, for a record that holds nothing yet, its row, so that whether it
+    /// was deleted is known before the walk decides to enter it.
+    private func live(_ found: Record, _ disk: Disk) -> Record {
+        let record = found.swept ? target(key: found.key, type: found.type, entity: found.entityID != nil) : found
+        if !record.hydrated, record.slotCount == 0, record !== root, record !== mutationRoot, record !== subscriptionRoot {
+            _ = hydrate(record, from: disk)
+        }
+        return record
+    }
+
+    /// Reads from the image what a record lacks: the root's field, or the
+    /// record's row, once. Returns whether anything was read.
+    private func hydrate(_ record: Record, _ slot: Slot, from disk: Disk) -> Bool {
+        if record === root { return hydrateRoot(slot, from: disk) }
+        if record.hydrated || record === mutationRoot || record === subscriptionRoot { return false }
+        return hydrate(record, from: disk)
     }
 
     /// Collects every record the selection reaches from the root, for
@@ -601,9 +745,14 @@ public final class Store {
         return (record, selection)
     }
 
-    /// The entity a lookup names, if cached and not deleted.
-    func resolve(_ lookup: LookupKey) -> Record? {
-        let record = lookup.recordKey.map { records[$0] } ?? byID[lookup.value]
+    /// The entity a lookup names, if cached and not deleted. With the image
+    /// at hand, an entity only the image holds counts when its type is known.
+    func resolve(_ lookup: LookupKey, _ disk: Disk? = nil) -> Record? {
+        var record = lookup.recordKey.map { records[$0] } ?? byID[lookup.value]
+        if record == nil, let disk, let type = lookup.type, let key = lookup.recordKey {
+            let candidate = target(key: key, type: type, entity: true)
+            if hydrate(candidate, from: disk) { record = candidate }
+        }
         guard let record, !record.deleted else { return nil }
         return record
     }
