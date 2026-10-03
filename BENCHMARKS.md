@@ -17,8 +17,54 @@ Best ingest and best commit of the fixture at each release below.
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="benchmarks/charts/read-path.svg">
   <source media="(prefers-color-scheme: light)" srcset="benchmarks/charts/read-path-light.svg">
-  <img alt="Ingest and commit, best, from 0.1.0 through 0.5.0" src="benchmarks/charts/read-path.svg">
+  <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
+
+## 0.6.0 — 2026-10-03
+
+Revision: the 0.6.0 tree. Machine: Apple M1 Pro (MacBook Pro), macOS 26.5.2,
+Xcode 26.6, Swift 6.3.3, release build. Same fixture as 0.1.0. The image is
+a SQLite file in the temporary directory of the internal disk, through the
+system's SQLite 3.51.0, with the page cache warm.
+
+The earlier numbers, same day as 0.5.0's: ingest 2.76 ms (2.76), commit into
+an empty store 1.37 ms (1.35), same payload again 183 µs (187), one field
+changed 368 µs (376), untracked read 28.3 ns (29), tracked read 544 ns (536),
+check 105 µs (126), the optimistic cycle 413 µs (413), a connection page
+285 µs best (320), the scroll footprint +4.4 to +4.7 MB (+4.7). Nothing on
+the paths a store without an image takes moved; the check is the 0.3.0
+figure again.
+
+### Persistence: the fixture's 898 records and the root, through the image
+
+| Measurement | Best | Median | Notes |
+|---|---|---|---|
+| Commit into an empty store with the image on (899 records) | 1.49 ms | 1.55 ms | 1.37 ms without: the commit takes a snapshot of each changed record for the writer |
+| Write-behind of that commit, off the main actor | 1.16 ms | 1.25 ms | 898 rows encoded and one transaction; the file is 168 KB, against 686 KB of response |
+| Write-behind of one changed record | 46 µs | 50 µs | the hop to the writer and back included |
+| Hydration: the check reads 898 rows into an empty store | 1.72 ms | 1.78 ms | 1.9 µs a record: a lookup by key, a decode, a fill, inside one read transaction |
+| The check once the records are in memory | 105 µs | 106 µs | the image is not consulted |
+| Hydration right behind a commit of 899 records | 2.87 ms | 3.00 ms | the read writes the pending batch first, so it never sees less than memory knew |
+| First use in a process: open, create the tables, a read that misses | 2.1 ms | — | one shot; 1.6 to 2.3 ms across runs |
+| A launch in a new process, the store asked the moment the image's handle exists | 4.68 ms | 5.36 ms | the main actor waits for the open: SQLite's first use, the file, the launch's own bookkeeping, then the 898 rows |
+| A launch in a new process, the store asked after the image has opened | 1.78 ms | 1.87 ms | the open ran off the main actor, as it does when an app makes its environment before its first view |
+
+What it means: a screen an earlier launch fetched is in the store 1.8 ms
+after its handle asks, with nothing from the network, when the app made its
+environment early enough for the file to open on another thread, and under
+5 ms when it did not. Hydration costs a third more than committing the same
+records from a response (1.72 ms against 1.37 ms): that third is the image.
+Keeping the image costs a commit a tenth of a millisecond on the main actor
+and a millisecond off it. A read that lands behind a write waits for it,
+which is the one place the main actor meets the disk's writer.
+
+The sample, launched twice against the public API: the first launch left 41
+rows, one root field and one fetch time in its image; the second read all 41
+(their generation moved from 1 to 2) before its refetch landed.
+
+Caveats: a Mac, not a phone, and a warm page cache: flash latency on a cold
+launch is not in these numbers, and the roadmap's exit asks for them on an
+iPhone 12-class device.
 
 ## 0.5.0 — 2026-10-03
 

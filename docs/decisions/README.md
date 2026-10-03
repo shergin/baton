@@ -20,3 +20,4 @@ principle, the proof belongs here.
 - [Lookups satisfy root fields from cached entities](lookups.md)
 - [Connections reference page edges and own inserted ones](connections-own-their-edges.md)
 - [Relay's error directives in Swift's terms](error-directives-in-swift.md)
+- [The image is the system's SQLite](the-image-is-sqlite.md)

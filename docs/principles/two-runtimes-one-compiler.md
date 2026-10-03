@@ -39,8 +39,9 @@ divergence is a failing test on both sides.
 
 ## Consequences
 
-- The Swift runtime depends on Foundation and Observation; the Kotlin runtime
-  on the platform's equivalents. No native library ships inside either.
+- The Swift runtime depends on Foundation, Observation and the SQLite the
+  system ships; the Kotlin runtime on the platform's equivalents. No native
+  library ships inside either.
 - A platform developer can read, fix and vendor their runtime without the
   other platform's toolchain.
 - Networking uses the platform stack, with its TLS, proxies, background

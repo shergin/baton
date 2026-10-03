@@ -19,10 +19,10 @@ fn main() {
 
 /// `printf 'version ingest commit\n0.1 2.14 1.24\n…' | kaz line -H --fmt xyy -t 'Ingest and commit' --xlabel release -w 64 -h 16`
 fn read_path(root: &std::path::Path) {
-    let version = [0.1, 0.2, 0.3, 0.4, 0.5];
-    // 0.1.0 table; 0.2.0 remeasurement; 0.3.0, 0.4.0, and 0.5.0 prose bests.
-    let ingest = [2.14, 2.08, 2.16, 2.53, 2.76];
-    let commit = [1.24, 1.15, 1.44, 1.34, 1.35];
+    let version = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6];
+    // 0.1.0 table; 0.2.0 remeasurement; 0.3.0 through 0.6.0 prose bests.
+    let ingest = [2.14, 2.08, 2.16, 2.53, 2.76, 2.76];
+    let commit = [1.24, 1.15, 1.44, 1.34, 1.35, 1.37];
     let plot = Plot::new()
         .layer(Line::xy(&version, &ingest).label("ingest"))
         .layer(Line::xy(&version, &commit).label("commit"))

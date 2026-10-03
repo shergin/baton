@@ -41,8 +41,9 @@ the vocabulary is `docs/terminology.md`. These files outrank any default.
   declaration states its isolation explicitly (`@MainActor` or
   `nonisolated`), because consumers may compile with default main-actor
   isolation.
-- The runtime depends on Foundation and Observation only. The macro package is
-  the only target that may depend on swift-syntax.
+- The runtime depends on Foundation, Observation and the system's SQLite
+  (`import SQLite3`) only; nothing is vendored. The macro package is the only
+  target that may depend on swift-syntax.
 - No `Any`, no dictionaries and no `Codable` on the read path. Records are
   slots; values are enums.
 - Observation key paths used as invalidation channels must be stored
