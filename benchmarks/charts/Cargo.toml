@@ -7,5 +7,7 @@ description = "SVG charts for BENCHMARKS.md. malevich draws them; kaz is that li
 
 # Sibling checkout of github.com/shergin/malevich. The published crate is the
 # same library; the path keeps the charts on the copy this repo was drawn with.
+# `pixel` is the anti-aliased plot panel. flate2 inflates that panel's PNG.
 [dependencies]
-malevich = { path = "../../../malevich" }
+malevich = { path = "../../../malevich", features = ["pixel"] }
+flate2 = "1"
