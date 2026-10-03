@@ -23,7 +23,7 @@ extension Store {
             while !reader.isAtEnd {
                 // A row that stops making sense is used as far as it went:
                 // what follows reads as missing, and the operation refetches.
-                guard let name = reader.varint(), let slot = disk.slot(Int(name), on: record.type),
+                guard let name = reader.index(), let slot = disk.slot(name, on: record.type),
                       let (value, error) = value(&reader, disk)
                 else { return }
                 if record.fill(slot, value, error: error), observed { filled.append(slot) }
@@ -85,7 +85,7 @@ extension Store {
             var items = ContiguousArray<Value>()
             items.reserveCapacity(Int(count))
             for _ in 0..<Int(count) {
-                guard let (item, _) = self.value(&reader, disk) else { return nil }
+                guard let item = scalar(&reader) else { return nil }
                 items.append(item)
             }
             value = .list(items)
@@ -97,11 +97,35 @@ extension Store {
         return (value, FieldError(message: message, path: path))
     }
 
+    /// An element of a stored list of scalars. Lists hold scalars only, so a
+    /// tag of anything else is a damaged row, and nesting cannot recurse.
+    private func scalar(_ reader: inout RowReader) -> Value? {
+        guard let tag = reader.byte() else { return nil }
+        switch tag {
+        case RowTag.null: return .null
+        case RowTag.no: return .bool(false)
+        case RowTag.yes: return .bool(true)
+        case RowTag.int:
+            guard let raw = reader.varint() else { return nil }
+            return .int(Int(Int64(bitPattern: (raw >> 1) ^ (0 &- (raw & 1)))))
+        case RowTag.double:
+            guard let bits = reader.fixed64() else { return nil }
+            return .double(Double(bitPattern: bits))
+        case RowTag.string:
+            return reader.string().map(Value.string)
+        default:
+            return nil
+        }
+    }
+
     /// The record a stored link names; the inner nil is a null entry of a
     /// list, the outer one a row that could not be read.
     private func link(_ reader: inout RowReader, _ disk: Disk) -> Record?? {
         guard let head = reader.varint() else { return nil }
         if head == 0 { return .some(nil) }
+        // A link's head is its type's name id plus one, shifted past the
+        // entity bit: 1 names no type.
+        guard head >= 2, head >> 1 <= UInt64(Int32.max) + 1 else { return nil }
         guard let type = disk.type(Int(head >> 1) - 1), let key = reader.string() else { return nil }
         return .some(target(key: key, type: type, entity: head & 1 != 0))
     }
@@ -124,6 +148,12 @@ struct RowReader {
         guard offset < bytes.count else { return nil }
         defer { offset += 1 }
         return bytes[offset]
+    }
+
+    /// A varint that names a position in a table: at most `Int32.max`.
+    mutating func index() -> Int? {
+        guard let value = varint(), value <= UInt64(Int32.max) else { return nil }
+        return Int(value)
     }
 
     mutating func varint() -> UInt64? {

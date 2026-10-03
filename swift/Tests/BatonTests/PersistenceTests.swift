@@ -26,8 +26,8 @@ struct PersistenceTests {
     /// An environment over the image, as a launch of the app makes one. A
     /// test runs its launches one after another, as a device does, and ends
     /// each with `finish`.
-    func launch(_ transport: any Transport = SilentTransport(), version: String = "") -> Environment {
-        let store = Store(persistence: Persistence(url: image.url, version: version))
+    func launch(_ transport: any Transport = SilentTransport(), version: String = "", sizeLimit: Int = 64 << 20) -> Environment {
+        let store = Store(persistence: Persistence(url: image.url, version: version, sizeLimit: sizeLimit))
         store.reportMissing = nil
         return Environment(transport: transport, store: store)
     }
@@ -324,6 +324,87 @@ struct PersistenceTests {
         await finish(leaving)
         _ = try stored(Fixture(page: 1), in: leaving)
         #expect(throws: NotStored.self) { try stored(Fixture(page: 1), in: launch(version: "2")) }
+    }
+
+    /// Runs SQL against the image through a connection of the test's own;
+    /// `bind` binds the statement's parameters.
+    func sql(_ text: String, _ bind: (OpaquePointer) -> Void = { _ in }) {
+        var db: OpaquePointer?
+        #expect(sqlite3_open(image.url.path, &db) == SQLITE_OK)
+        defer { sqlite3_close(db) }
+        var statement: OpaquePointer?
+        #expect(sqlite3_prepare_v2(db, text, -1, &statement, nil) == SQLITE_OK)
+        defer { sqlite3_finalize(statement) }
+        bind(statement!)
+        let status = sqlite3_step(statement)
+        #expect(status == SQLITE_DONE || status == SQLITE_ROW, "\(text): \(status)")
+    }
+
+    /// The id the image interned a name under.
+    func nameID(_ name: String) -> UInt8 {
+        var db: OpaquePointer?
+        sqlite3_open(image.url.path, &db)
+        defer { sqlite3_close(db) }
+        var statement: OpaquePointer?
+        sqlite3_prepare_v2(db, "SELECT id FROM names WHERE name = ?1", -1, &statement, nil)
+        defer { sqlite3_finalize(statement) }
+        sqlite3_bind_text(statement, 1, name, -1, unsafeBitCast(-1, to: sqlite3_destructor_type.self))
+        #expect(sqlite3_step(statement) == SQLITE_ROW, "the image names \(name)")
+        let id = sqlite3_column_int64(statement, 0)
+        #expect(id < 0x80, "a one-byte varint")
+        return UInt8(id)
+    }
+
+    @Test("an image of another format is a miss, and the next commit starts it again")
+    func anotherFormat() async throws {
+        try await seed(launch())
+        sql("PRAGMA user_version = 99")
+        let next = launch()
+        #expect(throws: NotStored.self) { try stored(Fixture(page: 1), in: next) }
+        try await seed(next)
+        _ = try stored(Fixture(page: 1), in: launch())
+    }
+
+    @Test("an image past its size limit is a miss and starts again")
+    func overTheSizeLimit() async throws {
+        try await seed(launch())
+        let size = try #require(try FileManager.default.attributesOfItem(atPath: image.url.path)[.size] as? Int)
+        #expect(size > 4096)
+        let small = launch(sizeLimit: 4096)
+        #expect(throws: NotStored.self) { try stored(Fixture(page: 1), in: small) }
+        await finish(small)
+        let after = try #require(try FileManager.default.attributesOfItem(atPath: image.url.path)[.size] as? Int)
+        #expect(after < size, "the file was deleted and made again")
+    }
+
+    @Test("a damaged row is read as far as it goes: a name past any table, a link to no type, lists nested in lists, a row cut short")
+    func damagedRows() async throws {
+        try await seed(launch())
+        let character = nameID("Character")
+        // The row format's tags: null 0, string 5, link 6, list 8.
+        let (null, string, link, list): (UInt8, UInt8, UInt8, UInt8) = (0, 5, 6, 8)
+        let rows: [String: [UInt8]] = [
+            // A name id with bit 63 set.
+            "Character:1": [0x02, character] + [UInt8](repeating: 0xFF, count: 9) + [0x01, null],
+            // A link whose head names no type.
+            "Character:2": [0x02, character, nameID("origin"), link, 0x01],
+            // A list of lists, deeper than any stack.
+            "Character:3": [0x02, character, nameID("name")] + Array(repeating: [list, 0x01], count: 200_000).flatMap { $0 } + [null],
+            // A string longer than the row.
+            "Character:4": [0x02, character, nameID("name"), string, 0x7F, 0x41],
+        ]
+        for (key, row) in rows {
+            sql("UPDATE records SET row = ?2 WHERE key = ?1") { statement in
+                sqlite3_bind_text(statement, 1, key, -1, unsafeBitCast(-1, to: sqlite3_destructor_type.self))
+                _ = row.withUnsafeBufferPointer { bytes in
+                    sqlite3_bind_blob(statement, 2, bytes.baseAddress, Int32(bytes.count), unsafeBitCast(-1, to: sqlite3_destructor_type.self))
+                }
+            }
+        }
+        let next = launch()
+        #expect(throws: NotStored.self) { try stored(Fixture(page: 1), in: next) }
+        let morty = try #require(next.store.existing("Character:2"))
+        #expect(!morty.deleted)
     }
 
     @Test("a database that is not an image is left alone, and the store works without one")

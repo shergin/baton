@@ -345,7 +345,7 @@ final class Disk: @unchecked Sendable {
 
     /// The slot a stored name is on a type, interning it for this process.
     func slot(_ name: Int, on type: TypeID) -> Slot? {
-        guard name < names.count else { return nil }
+        guard name >= 0, name < names.count else { return nil }
         let table = Int(type.raw)
         if table >= slots.count { slots.append(contentsOf: repeatElement([], count: table + 1 - slots.count)) }
         if name >= slots[table].count { slots[table].append(contentsOf: repeatElement(-1, count: names.count - slots[table].count)) }
@@ -359,7 +359,7 @@ final class Disk: @unchecked Sendable {
 
     /// The type a stored name is.
     func type(_ name: Int) -> TypeID? {
-        guard name < names.count else { return nil }
+        guard name >= 0, name < names.count else { return nil }
         if name >= types.count { types.append(contentsOf: repeatElement(nil, count: names.count - types.count)) }
         if let type = types[name] { return type }
         let type = Registry.type(names[name])
