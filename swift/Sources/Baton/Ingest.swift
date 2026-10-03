@@ -404,7 +404,7 @@ public enum Ingest {
                         record = target
                         selection = child
                     case .refs(let start, let count):
-                        guard case .index(let offset)? = segments.first, offset < Int(count) else { break }
+                        guard case .index(let offset)? = segments.first, offset >= 0, offset < Int(count) else { break }
                         segments.removeFirst()
                         rendered.append(String(offset))
                         let target = changes.refs[Int(start) + offset]

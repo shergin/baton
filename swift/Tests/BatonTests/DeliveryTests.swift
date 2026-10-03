@@ -134,6 +134,37 @@ struct DeliveryTests {
         #expect(image == "rick.png")
     }
 
+    @Test("a payload that answers an errored field with the same value and no error clears the error; the same error again notifies nothing")
+    func errorsClearWithoutAValueChange() async throws {
+        let environment = Environment(transport: OneResponse(fixture("character-errors")))
+        environment.store.reportMissing = nil
+        _ = try await environment.fetch(TestProfileQuery.self, variables: TestProfileQuery(id: "1").variables)
+        let character = try #require(try profile(environment).testProfile)
+        let plan = TestProfileQuery.plan.resolve(TestProfileQuery(id: "1").variables)
+        let (fired, track) = counter { _ = character.image }
+
+        track()
+        environment.store.commit(try Ingest.normalize(fixture("character-errors"), plan: plan))
+        #expect(fired() == 0, "the same error on the same null changes nothing")
+
+        environment.store.commit(try Ingest.normalize(fixture("character-errors-answered"), plan: plan))
+        #expect(fired() == 1, "the error is gone though the value is still null")
+        guard case .success(nil) = character.image else {
+            Issue.record("expected a null image without an error, got \(character.image)")
+            return
+        }
+
+        track()
+        environment.store.commit(try Ingest.normalize(fixture("character-errors"), plan: plan))
+        #expect(fired() == 2, "the error comes back")
+    }
+
+    @Test("an error whose path names a negative list index does not trap and lands on no row")
+    func negativeErrorIndex() throws {
+        let changes = try Ingest.normalize(fixture("negative-error-index"), plan: TestList.plan.resolve(TestList(page: 1).variables))
+        #expect(!changes.fieldErrors.contains { changes.recordTypes[Int($0.record)] == Registry.type("Character") })
+    }
+
     @Test("@required: NONE drops the enclosing lens, LOG reports the path, THROW throws at the read")
     func required() async throws {
         let store = Store()

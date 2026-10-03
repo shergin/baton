@@ -122,6 +122,12 @@ public final class Store {
         case deleted(Record)
     }
 
+    /// A slot of one record, for sets of slots.
+    private struct SlotKey: Hashable {
+        let record: ObjectIdentifier
+        let slot: Slot
+    }
+
     /// Tracks every slot a batch touched and its value before the batch, so
     /// the batch can notify only the slots whose value differs at the end.
     @MainActor
@@ -131,11 +137,6 @@ public final class Store {
         private let direct: Bool
         private var directCount = 0
         private var originals: [SlotKey: Original] = [:]
-
-        private struct SlotKey: Hashable {
-            let record: ObjectIdentifier
-            let slot: Slot
-        }
 
         private struct Original {
             let record: Record
@@ -320,6 +321,13 @@ public final class Store {
             winners[offsets[Int(entry.record)] + Int(entry.slot.index)] = Int32(position)
         }
 
+        // Slots this change set carries an error for keep it below rather
+        // than clearing it here and setting it again.
+        var erroring = Set<SlotKey>()
+        for entry in changes.fieldErrors {
+            erroring.insert(SlotKey(record: ObjectIdentifier(objects[Int(entry.record)]), slot: entry.slot))
+        }
+
         var undo: [Undo] = []
         for index in 0..<objects.count {
             let record = objects[index]
@@ -333,6 +341,13 @@ public final class Store {
                 let winner = winners[position]
                 if winner < 0 { continue }
                 let entry = changes.entries[Int(winner)]
+                // A field the payload answers without an error has none, whether
+                // or not its value changed.
+                if record.hasErrors, erroring.isEmpty || !erroring.contains(SlotKey(record: ObjectIdentifier(record), slot: entry.slot)),
+                   record.setError(entry.slot, nil) {
+                    record.notify(entry.slot)
+                    if persistence != nil { errorTouched.append((record, entry.slot)) }
+                }
                 let value: Value
                 switch entry.value {
                 case .null: value = .null
@@ -369,10 +384,6 @@ public final class Store {
                     value = .list(list)
                 }
                 set(record, entry.slot, value, &transaction, &undo)
-                if record.hasErrors, record.setError(entry.slot, nil) {
-                    record.notify(entry.slot)
-                    if persistence != nil { errorTouched.append((record, entry.slot)) }
-                }
             }
         }
 
@@ -764,7 +775,7 @@ public final class Store {
             case .ref(let target):
                 record = target
             case .refs(let targets):
-                guard case .index(let offset)? = segments.popFirst(), offset < targets.count, let target = targets[offset] else { return nil }
+                guard case .index(let offset)? = segments.popFirst(), targets.indices.contains(offset), let target = targets[offset] else { return nil }
                 record = target
             default:
                 return nil
