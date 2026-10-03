@@ -45,7 +45,7 @@ func measure(_ label: String, iterations: Int = 20, ops: Int = 1, _ body: () -> 
 }
 
 @MainActor
-func run() throws {
+func run() async throws {
     let fixtureURL = URL(fileURLWithPath: "spec/rickandmorty/characters-page-1.json")
     let data = try Data(contentsOf: fixtureURL)
     let variables = BenchFixture(page: 1).variables
@@ -115,6 +115,66 @@ func run() throws {
     measure("check the fixture plan against the store", iterations: 50) {
         _ = store.check(plan)
     }
+
+    print("lifetime: 42 pages scrolled, release buffer of 10")
+    try await scrollBench(data: data)
 }
 
-try MainActor.assumeIsolated { try run() }
+func footprint() -> Int {
+    var info = task_vm_info_data_t()
+    var count = mach_msg_type_number_t(MemoryLayout<task_vm_info_data_t>.size / MemoryLayout<natural_t>.size)
+    let result = withUnsafeMutablePointer(to: &info) {
+        $0.withMemoryRebound(to: integer_t.self, capacity: Int(count)) {
+            task_info(mach_task_self_, task_flavor_t(TASK_VM_INFO), $0, &count)
+        }
+    }
+    return result == KERN_SUCCESS ? Int(info.phys_footprint) : 0
+}
+
+/// A page of the fixture with every id shifted, so each page is distinct data.
+func shifted(_ data: Data, by offset: Int) -> Data {
+    let text = String(decoding: data, as: UTF8.self)
+    let regex = try! NSRegularExpression(pattern: "\"id\":\"(\\d+)\"")
+    let mutable = NSMutableString(string: text)
+    var location = 0
+    while let match = regex.firstMatch(in: mutable as String, range: NSRange(location: location, length: mutable.length - location)) {
+        let id = Int(mutable.substring(with: match.range(at: 1)))!
+        let replacement = "\"id\":\"\(id + offset)\""
+        mutable.replaceCharacters(in: match.range, with: replacement)
+        location = match.range.location + replacement.utf16.count
+    }
+    return Data((mutable as String).utf8)
+}
+
+@MainActor
+func scrollBench(data: Data) async throws {
+    let pages: [Data] = (1...42).map { page in page == 1 ? data : shifted(data, by: page * 100_000) }
+    let transport = RecordedTransport { request in
+        guard case .int(let page)? = request.variables["page"] else { return nil }
+        return pages[page - 1]
+    }
+    let environment = Environment(transport: transport)
+    environment.releaseBufferSize = 10
+    var baseline = 0
+    var report: [String] = []
+    var collectionCost: [Double] = []
+    for page in 1...42 {
+        let handle = environment.handle(for: BenchFixture(page: page))
+        handle.retain()
+        await handle.settle()
+        handle.release()
+        let start = DispatchTime.now().uptimeNanoseconds
+        environment.collect()
+        collectionCost.append(Double(DispatchTime.now().uptimeNanoseconds - start) / 1_000_000)
+        if page == 1 { baseline = footprint() }
+        if [1, 5, 10, 11, 20, 30, 42].contains(page) {
+            let delta = Double(footprint() - baseline) / 1_048_576
+            report.append("  page \(String(page).padding(toLength: 2, withPad: " ", startingAt: 0)): \(String(environment.store.count).padding(toLength: 6, withPad: " ", startingAt: 0)) records, \(String(environment.rootCount).padding(toLength: 2, withPad: " ", startingAt: 0)) roots, footprint \(delta >= 0 ? "+" : "")\(String(format: "%.1f", delta)) MB since page 1")
+        }
+    }
+    report.forEach { print($0) }
+    collectionCost.sort()
+    print("  collection pass: best \(String(format: "%.2f", collectionCost[0])) ms, median \(String(format: "%.2f", collectionCost[collectionCost.count / 2])) ms, worst \(String(format: "%.2f", collectionCost.last!)) ms")
+}
+
+try await run()
