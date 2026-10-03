@@ -4,7 +4,7 @@ import Observation
 import Testing
 
 @MainActor
-@Suite("Lists")
+@Suite("Lists", .timeLimit(.minutes(1)))
 struct ListTests {
     /// Answers the notes query with page 1 and the pagination query with the
     /// page after the cursor it carries; counts the requests.
@@ -127,7 +127,7 @@ struct ListTests {
         let paging = Environment(transport: gate, store: environment.store)
         #expect(!character.notes.isLoadingNext)
         let loading = Task { try await character.notes.loadNext() }
-        while gate.pending == 0 { await Task.yield() }
+        await until { gate.pending != 0 }
         #expect(character.notes.isLoadingNext)
         gate.respond(notesPage(2))
         try await loading.value
@@ -168,7 +168,7 @@ struct ListTests {
         let optimistic = TestAddNote.OptimisticResponse(addNote: .init(noteEdge: .init(node: .init(id: "client:new", text: "Pending"))))
 
         let mutation = Task { try await mutating.mutate(TestAddNote(characterId: "1", text: "Pending", connections: connections), optimistic: optimistic.variable) }
-        while gate.pending == 0 { await Task.yield() }
+        await until { gate.pending != 0 }
         #expect(character.notes.nodes.map(\.text) == ["Wubba lubba dub dub", "Portal gun needs charging", "Pending"])
 
         // A page arrives while the layer is live: it lands under the optimistic edge.
@@ -184,7 +184,7 @@ struct ListTests {
 
         // A failure reverts the optimistic edge.
         let failing = Task { try await mutating.mutate(TestAddNote(characterId: "1", text: "Doomed", connections: connections), optimistic: TestAddNote.OptimisticResponse(addNote: .init(noteEdge: .init(node: .init(id: "client:doomed", text: "Doomed")))).variable) }
-        while gate.pending == 0 { await Task.yield() }
+        await until { gate.pending != 0 }
         #expect(character.notes.nodes.count == 6)
         gate.fail(TransportError(statusCode: 500, body: "no"))
         await #expect(throws: TransportError.self) { try await failing.value }

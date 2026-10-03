@@ -19,7 +19,7 @@ final class TemporaryImage {
 struct NotStored: Error {}
 
 @MainActor
-@Suite("Persistence")
+@Suite("Persistence", .timeLimit(.minutes(1)))
 struct PersistenceTests {
     let image = TemporaryImage()
 

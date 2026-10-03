@@ -4,7 +4,7 @@ import Observation
 import Testing
 
 @MainActor
-@Suite("Delivery")
+@Suite("Delivery", .timeLimit(.minutes(1)))
 struct DeliveryTests {
     /// Answers every request with the same response.
     final class OneResponse: Transport, @unchecked Sendable {
@@ -256,7 +256,7 @@ struct DeliveryTests {
             let plain = Environment(transport: direct)
             plain.store.reportMissing = nil
             let fetching = Task { try await plain.fetch(TestProfileQuery.self, variables: TestProfileQuery(id: "1").variables) }
-            while direct.continuation == nil { await Task.yield() }
+            await until { direct.continuation != nil }
             direct.release()
             let uncaught = try await fetching.value
             #expect(uncaught.isEmpty)
@@ -267,7 +267,7 @@ struct DeliveryTests {
             environment.store.reportMissing = nil
             let handle = environment.handle(for: TestProfileQuery(id: "1"))
             handle.retain()
-            while case .loading = handle.phase { await Task.yield() }
+            await until { if case .loading = handle.phase { false } else { true } }
             guard case .ready(let data) = handle.phase else {
                 Issue.record("expected .ready after the first part, got \(handle.phase)")
                 return
@@ -307,22 +307,22 @@ struct DeliveryTests {
         let live = environment.subscriptionHandle(for: TestNoteAdded(characterId: "1", connections: [character.notes.connectionID]))
         live.retain()
         #expect(live.isActive)
-        while events.continuation == nil { await Task.yield() }
+        await until { events.continuation != nil }
         #expect(events.requests.first?.operationName == "TestNoteAdded")
 
         events.send(fixture("note-added-1"))
-        while live.events < 1 { await Task.yield() }
+        await until { live.events >= 1 }
         #expect(character.notes.nodes.map(\.text).last == "Live from the garage")
         #expect(live.latest?.noteAdded?.noteEdge?.node?.text == "Live from the garage")
 
         events.send(fixture("note-added-2"))
-        while live.events < 2 { await Task.yield() }
+        await until { live.events >= 2 }
         #expect(character.notes.nodes.count == 4)
         #expect(environment.rootCount == 2, "the subscription is a root while retained")
 
         live.release()
         #expect(!live.isActive)
-        while !events.ended { await Task.yield() }
+        await until { events.ended }
         #expect(environment.rootCount == 1)
     }
 
@@ -342,7 +342,7 @@ struct DeliveryTests {
         #expect(value.subscription == nil)
     }
 
-    @Test("equal subscriptions on one socket are separate: the end of one leaves the other open", .timeLimit(.minutes(1)))
+    @Test("equal subscriptions on one socket are separate: the end of one leaves the other open")
     func equalSubscriptionsOnOneSocket() async throws {
         /// What each reader saw, by reader.
         final class Log: @unchecked Sendable {
@@ -355,10 +355,6 @@ struct DeliveryTests {
             func payloads(of reader: String) -> [String] { lock.withLock { payloads[reader] ?? [] } }
             var finished: [String] { lock.withLock { ended } }
         }
-        func wait(until condition: () -> Bool) async throws {
-            while !condition() { try await Task.sleep(for: .milliseconds(2)) }
-        }
-
         let server = try SocketServer()
         let socket = GraphQLTransportWebSocket(url: try await server.start())
         defer { server.stop() }
@@ -372,7 +368,7 @@ struct DeliveryTests {
             })
         })
 
-        try await wait { server.count(of: "subscribe") == 2 }
+        await until { server.count(of: "subscribe") == 2 }
         #expect(server.offeredProtocols == ["graphql-transport-ws"])
         let ids = server.ids(of: "subscribe")
         #expect(Set(ids).count == 2, "each stream subscribes under its own id")
@@ -381,19 +377,19 @@ struct DeliveryTests {
         // other: a ping answered after the completion shows it sent no
         // `complete` of its own.
         server.send(#"{"id":"\#(ids[0])","type":"complete"}"#)
-        try await wait { log.finished.count == 1 }
+        await until { log.finished.count == 1 }
         server.send(#"{"type":"ping"}"#)
-        try await wait { server.count(of: "pong") == 1 }
+        await until { server.count(of: "pong") == 1 }
         #expect(server.count(of: "complete") == 0)
 
         // The other still receives.
         let survivor = try #require(readers.keys.first { !log.finished.contains($0) })
         server.send(#"{"id":"\#(ids[1])","type":"next","payload":{"data":{"noteAdded":null}}}"#)
-        try await wait { log.payloads(of: survivor) == [#"{"data":{"noteAdded":null}}"#] }
+        await until { log.payloads(of: survivor) == [#"{"data":{"noteAdded":null}}"#] }
 
         // Its reader goes away: the client completes that subscription, by its id.
         readers[survivor]?.cancel()
-        try await wait { server.count(of: "complete") == 1 }
+        await until { server.count(of: "complete") == 1 }
         #expect(server.ids(of: "complete") == [ids[1]])
     }
 

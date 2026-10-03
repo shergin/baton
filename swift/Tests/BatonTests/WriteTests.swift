@@ -27,7 +27,7 @@ final class GatedTransport: Transport, @unchecked Sendable {
 }
 
 @MainActor
-@Suite("Writes")
+@Suite("Writes", .timeLimit(.minutes(1)))
 struct WriteTests {
     /// A store holding the first page of the fixture through the list plan.
     func seededStore() throws -> Store {
@@ -56,7 +56,7 @@ struct WriteTests {
 
         let optimistic = TestSetFavorite.OptimisticResponse(setFavorite: .init(character: .init(id: "1", favorite: true)))
         let mutation = Task { try await environment.mutate(TestSetFavorite(id: "1", favorite: true), optimistic: optimistic.variable) }
-        while transport.pending == 0 { await Task.yield() }
+        await until { transport.pending != 0 }
 
         #expect(rick.favorite == true, "the layer is visible before the server answers")
         #expect(environment.store.optimisticLayers.count == 1)
@@ -75,7 +75,7 @@ struct WriteTests {
 
         let optimistic = TestSetFavorite.OptimisticResponse(setFavorite: .init(character: .init(id: "1", favorite: true)))
         let mutation = Task { try await environment.mutate(TestSetFavorite(id: "1", favorite: true), optimistic: optimistic.variable) }
-        while transport.pending == 0 { await Task.yield() }
+        await until { transport.pending != 0 }
         #expect(rick.favorite == true)
 
         transport.respond(fixture("set-favorite-1"))

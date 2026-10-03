@@ -5,7 +5,7 @@ import Observation
 import Testing
 
 @MainActor
-@Suite("The vertical spine")
+@Suite("The vertical spine", .timeLimit(.minutes(1)))
 struct SpineTests {
     @Test("ingesting the fixture and reading it through lenses agrees with the raw response")
     func theResponseIsTheOracle() throws {
