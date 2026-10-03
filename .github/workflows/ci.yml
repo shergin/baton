@@ -85,17 +85,24 @@ jobs:
       - run: scripts/build-compiler.sh
       - run: swift test
 
-  # A package that depends on Baton, resolved from a clean clone as an app
-  # resolves it: nothing built in the checkout, so the build plugin needs the
-  # compiler bundle a release published. Not a gate until a release has
-  # published one; see the release workflow.
+  # A package that depends on the latest release, resolved from a clean
+  # clone of its tag as an app resolves it: nothing built in the checkout, so
+  # the build plugin needs the compiler bundle the release published, and the
+  # runtime and the compiler are the pair that release shipped. Not a gate
+  # until a release has published a bundle; see the release workflow.
   consumer:
     runs-on: macos-26
     timeout-minutes: 30
     continue-on-error: true
     steps:
+      - name: The latest release's tag
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: echo "tag=$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName --jq .tagName)" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v7
         with:
+          ref: ${{ steps.release.outputs.tag }}
           path: baton
       - name: A consumer package with one document
         run: |

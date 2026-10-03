@@ -12,8 +12,9 @@ are expected and listed without apology.
 - Ingest errors instead of wrong values or traps: an `Int` field given a
   fraction, an exponent or a value outside `Int` fails the response with an
   `IngestError` (it wrapped, rounded, or trapped), and `Int.min` reads. A
-  null inside a list of scalars reads as a null element; it failed the whole
-  response. A `\u` escape cut short by the end of a string, or a high
+  null inside a list of scalars is stored as a null element; it failed the
+  whole response. The generated readers, typed as lists of non-optional
+  values, still leave such elements out. A `\u` escape cut short by the end of a string, or a high
   surrogate followed by an escape that is not a low surrogate, reads as
   U+FFFD; the first read past the string and the second trapped.
 - Storage keys are built from the arguments, not parsed from text. A
@@ -23,6 +24,16 @@ are expected and listed without apology.
   input object's keys were written unquoted and unsorted. Floats in keys are
   written as the runtime renders a variable. A lookup in `baton.json` whose
   argument the selection does not pass is a compile error.
+- Generated code states its isolation: `Types`, `Slots` and every generated
+  type are `nonisolated`, readers stay `@MainActor`, so a target built with
+  the Xcode template's default of main-actor isolation compiles them (it
+  failed on `static let plan`).
+- The compiler comes with the package. A package that depends on Baton
+  downloads the compiler bundle its release published, named by checksum in
+  `Package.swift`; a checkout that built its own with
+  `scripts/build-compiler.sh` runs that one (`BATON_COMPILER=local` or
+  `release` overrides the choice). The release workflow builds the bundle
+  for both Mac architectures and writes the release commit.
 - A handle outlives its environment: a view that releases its handle after
   the environment is gone no longer traps; the release does nothing.
 - A damaged image is a miss, never a crash. A file damaged under the open

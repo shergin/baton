@@ -10,9 +10,17 @@ let compilerRelease = (version: "", checksum: "")
 
 /// The compiler the build plugin runs: the one `scripts/build-compiler.sh`
 /// built into this checkout, or else the bundle the release published.
+/// SwiftPM caches this choice by the manifest's text and environment, not
+/// by what is on disk, so `BATON_COMPILER=local` or `=release` settles it
+/// for a checkout evaluated before its compiler was built.
 let localCompiler = "compiler/dist/batonc.artifactbundle"
-let compiler: Target = compilerRelease.version.isEmpty
+let usesLocalCompiler = switch Context.environment["BATON_COMPILER"] {
+case "local": true
+case "release": false
+default: compilerRelease.version.isEmpty
     || FileManager.default.fileExists(atPath: Context.packageDirectory + "/" + localCompiler + "/info.json")
+}
+let compiler: Target = usesLocalCompiler
     ? .binaryTarget(name: "batonc", path: localCompiler)
     : .binaryTarget(
         name: "batonc",

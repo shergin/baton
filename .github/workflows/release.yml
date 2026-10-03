@@ -19,6 +19,12 @@ on:
 permissions:
   contents: write
 
+# Bash with pipefail: a step whose pipeline fails fails the release before
+# anything is committed or tagged.
+defaults:
+  run:
+    shell: bash
+
 jobs:
   release:
     runs-on: macos-26
@@ -43,6 +49,7 @@ jobs:
       - name: Name the bundle in Package.swift
         run: |
           checksum="$(cat checksum)"
+          [[ "$checksum" =~ ^[0-9a-f]{64}$ ]] || { echo "not a checksum: '$checksum'" >&2; exit 1; }
           sed -i '' "s/^let compilerRelease = .*/let compilerRelease = (version: \"$VERSION\", checksum: \"$checksum\")/" Package.swift
           grep -q "version: \"$VERSION\", checksum: \"$checksum\"" Package.swift
       - name: Write the release commit and its tag
