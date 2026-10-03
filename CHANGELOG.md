@@ -39,6 +39,12 @@ are expected and listed without apology.
 - The Rick and Morty sample's `baton.json` sits beside the sample, like every
   other target's. The package root has none, so a target without its own
   gets the plugin's warning instead of the sample's schema.
+- The Swift emitter has golden tests. `cargo test` compiles the documents of
+  the Swift test target as the build plugin does and compares the generated
+  files byte for byte with `compiler/src/tests/goldens`, and compiles them
+  twice to hold the output deterministic. A change to the emitter or to a
+  test document now arrives with its diff of generated code;
+  `BATON_BLESS=1 cargo test` rewrites the goldens.
 
 ## 0.5.0 (Baton Pass) — 2026-10-03
 

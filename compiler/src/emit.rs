@@ -2353,3 +2353,7 @@ fn escape(name: &str) -> String {
         name.to_string()
     }
 }
+
+#[cfg(test)]
+#[path = "tests/emit_tests.rs"]
+mod tests;
