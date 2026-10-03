@@ -103,7 +103,9 @@ object identified by typename plus key, holding interned slots, per-field
 errors and type-membership bits. Its values are sized by what was written,
 not by how many storage keys the type has. A record `@deleteRecord` removed
 is *deleted*: links to it read as null, lists skip it, its observers are
-told, and a payload that names it again revives it.
+told, and a payload that names it again revives it. Telling the bodies that
+hold a link to it is *(planned)*; see
+[A deletion is announced by its commit](decisions/deletion-is-announced-by-its-commit.md).
 
 **Key.** The configured identity fields of a type (default `id`), combined
 with the typename. Objects without a key get a path-based client id, as in
