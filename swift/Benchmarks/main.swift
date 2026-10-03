@@ -464,9 +464,12 @@ func readPathBench(store: Store, root: BenchFixture.Data) throws {
     // The root link was never fetched and a read does not bind a lookup, so
     // the lens is made over the character the list fetched.
     let owner = BenchNotesSizedQuery.Data.Character(anchor: Anchor(record: try requireValue(store.existing("Character:1")), variables: sized.variables, store: store))
+    // The read makes the fragment's lens and compares its scope by identity,
+    // so no lookup of a variable is timed with it.
+    let bound = owner.benchNotes.anchor.owner
     measure("spread with @arguments, the fragment's lens, per read", iterations: 50, ops: count) {
         var sink = 0
-        for _ in 0..<count where owner.benchNotes.anchor.variables["count"] != nil { sink &+= 1 }
+        for _ in 0..<count where owner.benchNotes.anchor.owner === bound { sink &+= 1 }
         if sink == 42 { print("") }
     }
 }

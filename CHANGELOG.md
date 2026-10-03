@@ -164,9 +164,11 @@ are expected and listed without apology.
   Relay's fragment owner: the scope a lens reads in, which a handle makes
   once and keeps. A root field with a variable argument rendered its key,
   took the registry's lock and hashed it on every read, 232 ns; it reads
-  in 28 ns, against 25 ns for a constant key. A spread with `@arguments`
-  built two dictionaries per read, 453 ns, and gave its child a scope that
-  never compared equal to the last; it binds once and reads in 45 ns. An
+  in 28 ns, against 25 ns for the untracked read of a field with a constant
+  key. A spread with `@arguments` built two dictionaries per read and gave
+  its child a scope that never compared equal to the last: 453 ns for the
+  read and one variable of the child's scope, 45 ns now, and the spread
+  alone makes its lens in 10 ns. An
   `Anchor` is a record, an owner and the record it was reached from, and
   two are equal when those are the same objects. Breaking for code that
   builds anchors: `Anchor(record:owner:parent:)` replaces the `parent:`
