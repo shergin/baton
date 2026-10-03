@@ -468,9 +468,9 @@ struct DeliveryTests {
         #expect(server.ids(of: "complete") == [ids[1]])
     }
 
-    @Test("the multipart parser yields each part's body however the bytes are chunked")
+    @Test("the multipart parser yields each part's body however the bytes are chunked, and drops a preamble")
     func multipart() {
-        let body = "\r\n---\r\nContent-Type: application/json\r\n\r\n{\"data\":{\"a\":1},\"hasNext\":true}\r\n---\r\nContent-Type: application/json\r\n\r\n{\"incremental\":[],\"hasNext\":false}\r\n-----\r\n"
+        let body = "a preamble, which is no part\r\n---\r\nContent-Type: application/json\r\n\r\n{\"data\":{\"a\":1},\"hasNext\":true}\r\n---\r\nContent-Type: application/json\r\n\r\n{\"incremental\":[],\"hasNext\":false}\r\n-----\r\n"
         let bytes = Data(body.utf8)
         for chunk in [1, 7, 64, bytes.count] {
             var parser = MultipartParser(boundary: "-")

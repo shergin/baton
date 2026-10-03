@@ -168,28 +168,40 @@ public struct MultipartParser: Sendable {
 
     /// Feeds one byte; returns the parts completed by it.
     public mutating func push(_ byte: UInt8) -> [Data] {
-        if finished { return [] }
-        buffer.append(byte)
-        guard byte == 0x0A else { return [] }
-        var lineEnd = buffer.count - 1
-        if lineEnd > lineStart, buffer[lineEnd - 1] == 0x0D { lineEnd -= 1 }
-        let line = buffer[lineStart..<lineEnd]
-        var parts: [Data] = []
-        if line.starts(with: delimiter) {
-            if let part = body(buffer[partStart..<lineStart]) { parts.append(part) }
-            if line.count >= delimiter.count + 2, line[line.startIndex + delimiter.count] == 0x2D, line[line.startIndex + delimiter.count + 1] == 0x2D {
-                finished = true
-            }
-            partStart = buffer.count
-        }
-        lineStart = buffer.count
-        return parts
+        push(CollectionOfOne(byte))
     }
 
     /// Feeds a chunk; returns the parts completed within it.
-    public mutating func push(_ chunk: Data) -> [Data] {
+    public mutating func push(_ chunk: some Collection<UInt8>) -> [Data] {
+        if finished { return [] }
+        buffer.append(contentsOf: chunk)
         var parts: [Data] = []
-        for byte in chunk { parts.append(contentsOf: push(byte)) }
+        while let newline = buffer[scanned...].firstIndex(of: 0x0A) {
+            scanned = newline + 1
+            var lineEnd = newline
+            if lineEnd > lineStart, buffer[lineEnd - 1] == 0x0D { lineEnd -= 1 }
+            let line = buffer[lineStart..<lineEnd]
+            guard line.starts(with: delimiter) else {
+                if !inPart {
+                    // A preamble line: nothing keeps it.
+                    buffer.removeSubrange(0..<scanned)
+                    scanned = 0
+                }
+                lineStart = scanned
+                continue
+            }
+            if inPart, let part = body(buffer[0..<lineStart]) { parts.append(part) }
+            inPart = true
+            if line.count >= delimiter.count + 2, line[line.startIndex + delimiter.count] == 0x2D, line[line.startIndex + delimiter.count + 1] == 0x2D {
+                finished = true
+                buffer = []
+                return parts
+            }
+            buffer.removeSubrange(0..<scanned)
+            scanned = 0
+            lineStart = 0
+        }
+        scanned = buffer.count
         return parts
     }
 
@@ -197,7 +209,8 @@ public struct MultipartParser: Sendable {
     public mutating func finish() -> [Data] {
         if finished { return [] }
         finished = true
-        return body(buffer[partStart...]).map { [$0] } ?? []
+        guard inPart else { return [] }
+        return body(buffer[...]).map { [$0] } ?? []
     }
 
     /// A part's body: after its headers' blank line, without the trailing line break.
@@ -205,6 +218,9 @@ public struct MultipartParser: Sendable {
         var bytes = part
         while let last = bytes.last, last == 0x0A || last == 0x0D { bytes = bytes.dropLast() }
         if bytes.isEmpty { return nil }
+        // A part without headers opens with the blank line that ends them.
+        if bytes.first == 0x0A { return Data(bytes.dropFirst()) }
+        if bytes.first == 0x0D, bytes.dropFirst().first == 0x0A { return Data(bytes.dropFirst(2)) }
         var index = bytes.startIndex
         while index < bytes.endIndex {
             if bytes[index] == 0x0A {

@@ -202,6 +202,11 @@ are expected and listed without apology.
   slot per cursor that the record then made room for and the image kept;
   the connection record holds the page's edges, and a field error inside
   the page still lands on the field it names.
+- The multipart reader drops a preamble, which it returned as a first
+  part, lets go of each part once its delimiter is read instead of keeping
+  the whole response, and reads a part without headers. It scans the
+  chunks it is given rather than a byte at a time: 978 KB of 20 parts in
+  16 KB chunks parse in 0.50 ms against 14.6 ms.
 - `@defer` in a mutation or a subscription is a compile error. It compiled,
   and the response was read as one part.
 - The ingest takes a type's name once per selection rather than from the

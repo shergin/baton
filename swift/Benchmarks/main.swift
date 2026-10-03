@@ -364,6 +364,72 @@ func run() async throws {
 
     print("persistence: the fixture's 898 records and the root, through the image")
     await persistenceBench(changes: changes, edited: editedChanges, plan: plan)
+
+    print("incremental delivery: a multipart response of \(MultipartStub.parts) parts, \(MultipartStub.body.count / 1024) KB")
+    try await multipartBench()
+}
+
+/// A server that answers every request with one `multipart/mixed` body,
+/// handed to the loading system in chunks of 16 KB.
+final class MultipartStub: URLProtocol, @unchecked Sendable {
+    static let parts = 20
+    static let body: Data = {
+        let filler = String(repeating: "x", count: 50_000)
+        var text = "preamble\r\n"
+        for index in 0..<parts {
+            text += "---\r\nContent-Type: application/json\r\n\r\n"
+            text += #"{"incremental":[{"data":{"text":""# + filler + #""},"path":["a",\#(index)]}],"hasNext":\#(index < parts - 1)}"#
+            text += "\r\n"
+        }
+        return Data((text + "-----\r\n").utf8)
+    }()
+
+    override class func canInit(with request: URLRequest) -> Bool { true }
+    override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
+    override func stopLoading() {}
+
+    override func startLoading() {
+        let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type": "multipart/mixed; boundary=\"-\""])!
+        client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+        var offset = 0
+        while offset < MultipartStub.body.count {
+            let end = min(offset + 16_384, MultipartStub.body.count)
+            client?.urlProtocol(self, didLoad: MultipartStub.body.subdata(in: offset..<end))
+            offset = end
+        }
+        client?.urlProtocolDidFinishLoading(self)
+    }
+}
+
+@MainActor
+func multipartBench() async throws {
+    let body = MultipartStub.body
+    measure("parse it, in chunks of 16 KB", iterations: 20) {
+        var parser = MultipartParser(boundary: "-")
+        var count = 0
+        var offset = 0
+        while offset < body.count {
+            let end = min(offset + 16_384, body.count)
+            count += parser.push(body[offset..<end]).count
+            offset = end
+        }
+        if count != MultipartStub.parts { print("    parts: \(count)") }
+    }
+    let configuration = URLSessionConfiguration.ephemeral
+    configuration.protocolClasses = [MultipartStub.self]
+    let transport = URLSessionTransport(url: URL(string: "https://stub.invalid/graphql")!, session: URLSession(configuration: configuration))
+    let request = Request(operationName: "Stub", text: "query Stub { a }", persistedID: "", variables: .none, incremental: true)
+    await measureEach("read it through URLSessionTransport, every part", iterations: 10) {
+        let start = DispatchTime.now().uptimeNanoseconds
+        var count = 0
+        do {
+            for try await _ in transport.stream(request) { count += 1 }
+        } catch {
+            print("    failed: \(error)")
+        }
+        if count != MultipartStub.parts { print("    parts: \(count)") }
+        return DispatchTime.now().uptimeNanoseconds - start
+    }
 }
 
 /// The reads that do not go through a constant slot: a root field whose key
