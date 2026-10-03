@@ -98,6 +98,39 @@ struct SpineTests {
         #expect(rows[1].testRow.name == "Morty C-137")
     }
 
+    @Test("a body that reads one field of a record is invalidated by a commit that changes that field and by no other")
+    func oneFieldOfOneRecord() throws {
+        let store = Store()
+        let variables = TestList(page: 1).variables
+        store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(variables)))
+        let data = TestList.Data(anchor: Anchor(record: store.root, variables: variables, store: store))
+        let morty = try #require(data.characters?.results?[1].testRow)
+        #expect(morty.name == "Morty Smith")
+
+        final class Counter: @unchecked Sendable { var fired = 0 }
+        let counter = Counter()
+        func track() {
+            withObservationTracking { _ = morty.name } onChange: { counter.fired += 1 }
+        }
+        func commit(_ from: String, _ to: String) throws {
+            let edited = String(decoding: fixtureData, as: UTF8.self).replacingOccurrences(of: from, with: to)
+            store.commit(try Ingest.normalize(Data(edited.utf8), plan: TestList.plan.resolve(variables)))
+        }
+
+        // Which slots share an invalidation channel depends on the order the
+        // process first touched their constants, so the first half runs only
+        // when the two fields are on different channels.
+        track()
+        let character = Registry.type("Character")
+        if Registry.slot(character, "name").index & 15 != Registry.slot(character, "status").index & 15 {
+            try commit(#""name":"Morty Smith","status":"Alive""#, #""name":"Morty Smith","status":"Dead""#)
+            #expect(counter.fired == 0, "the status changed, which the body did not read")
+            #expect(morty.status == "Dead")
+        }
+        try commit(#""name":"Morty Smith""#, #""name":"Morty C-137""#)
+        #expect(counter.fired == 1, "the name changed")
+    }
+
     @Test("a lens read of a root field falls through to the cached entity")
     func lookupOnRead() throws {
         let store = Store()
