@@ -67,4 +67,14 @@ struct TokenizerTests {
             #expect(leaves.first { $0.path == expected.path } == expected)
         }
     }
+
+    @Test("a custom scalar keeps the text of its token: a string's contents, and any other token as the server wrote it")
+    func customScalarsAreText() throws {
+        let store = Store()
+        store.reportMissing = nil
+        store.commit(try Ingest.normalize(Spec.data("tokenizer/custom-tokens.json"), plan: plan))
+        let data = TestTokenizerQuery.Data(anchor: Anchor(record: store.root, variables: .none, store: store))
+        #expect(data.tokenizer?.json == #"{"b":1, "a":[true,null]}"#)
+        #expect(data.tokenizer?.jsons == ["text", "12345678901234567890", "1.50", "true", #"{"k":"v"}"#, "[1,2]", "-0.0"])
+    }
 }

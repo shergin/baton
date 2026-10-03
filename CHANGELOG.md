@@ -5,6 +5,18 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- A custom scalar is its text: a string's contents, or the bytes of any
+  other token exactly as the server wrote it, so `1.50`, an integer past
+  2^53 and an object or array all read back unchanged. Before, numbers were
+  rounded through `Double`, and objects and arrays were stored as null.
+- Ingest errors instead of wrong values or traps: an `Int` field given a
+  fraction, an exponent or a value outside `Int` fails the response with an
+  `IngestError` (it wrapped, rounded, or trapped), and `Int.min` reads. A
+  null inside a list of scalars reads as a null element; it failed the whole
+  response. A `\u` escape cut short by the end of a string, or a high
+  surrogate followed by an escape that is not a low surrogate, reads as
+  U+FFFD; the first read past the string and the second trapped.
+
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 
 The store outlives the process: an image on disk, written behind every

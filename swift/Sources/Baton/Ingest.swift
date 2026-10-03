@@ -692,21 +692,16 @@ public enum Ingest {
             case .double: return .double(try parseDouble())
             case .bool: return .bool(try parseBool())
             case .custom:
-                switch peek() {
-                case 0x22:
+                // A custom scalar is its text: a string's contents, or the
+                // bytes of any other token as the server wrote them. Nothing
+                // is parsed, so no value is rounded or dropped.
+                if peek() == 0x22 {
                     let (start, end, escaped) = try scanString()
                     return .string(start: Int32(start), end: Int32(end), escaped: escaped)
-                case 0x74, 0x66: return .bool(try parseBool())
-                case 0x7B, 0x5B:
-                    // Structured custom scalars are not stored in this release.
-                    try skipValue()
-                    return .null
-                default:
-                    let start = position
-                    let double = try parseDouble()
-                    let text = UnsafeBufferPointer(start: base + start, count: position - start)
-                    return text.contains(0x2E) || text.contains(0x65) || text.contains(0x45) ? .double(double) : .int(Int(double))
                 }
+                let start = position
+                try skipValue()
+                return .string(start: Int32(start), end: Int32(position), escaped: false)
             }
         }
 
