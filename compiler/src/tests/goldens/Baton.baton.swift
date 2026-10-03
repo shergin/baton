@@ -21,6 +21,7 @@ enum Types {
     static let RemoveNotePayload = Baton.Registry.type("RemoveNotePayload")
     static let SearchResult = Baton.Registry.type("SearchResult")
     static let Subscription = Baton.Registry.type("Subscription")
+    static let Tokenizer = Baton.Registry.type("Tokenizer")
 }
 
 /// Interned storage keys used by this module's documents.
@@ -103,6 +104,7 @@ enum Slots {
     static func Query_search_954c44(_ variables: Baton.Variables) -> Baton.Slot {
         Baton.Registry.slot(Types.Query, "search(name:" + variables.render("name") + ")")
     }
+    static let Query_tokenizer = Baton.Registry.slot(Types.Query, "tokenizer")
     static let RemoveNotePayload_removedNoteId = Baton.Registry.slot(Types.RemoveNotePayload, "removedNoteId")
     static let SearchResult___typename = Baton.Registry.slot(Types.SearchResult, "__typename")
     static let SearchResult_dimension = Baton.Registry.slot(Types.SearchResult, "dimension")
@@ -112,4 +114,15 @@ enum Slots {
     static func Subscription_noteAdded_5f458b(_ variables: Baton.Variables) -> Baton.Slot {
         Baton.Registry.slot(Types.Subscription, "noteAdded(characterId:" + variables.render("characterId") + ")")
     }
+    static let Tokenizer_count = Baton.Registry.slot(Types.Tokenizer, "count")
+    static let Tokenizer_counts = Baton.Registry.slot(Types.Tokenizer, "counts")
+    static let Tokenizer_flag = Baton.Registry.slot(Types.Tokenizer, "flag")
+    static let Tokenizer_flags = Baton.Registry.slot(Types.Tokenizer, "flags")
+    static let Tokenizer_id = Baton.Registry.slot(Types.Tokenizer, "id")
+    static let Tokenizer_json = Baton.Registry.slot(Types.Tokenizer, "json")
+    static let Tokenizer_jsons = Baton.Registry.slot(Types.Tokenizer, "jsons")
+    static let Tokenizer_ratio = Baton.Registry.slot(Types.Tokenizer, "ratio")
+    static let Tokenizer_ratios = Baton.Registry.slot(Types.Tokenizer, "ratios")
+    static let Tokenizer_strings = Baton.Registry.slot(Types.Tokenizer, "strings")
+    static let Tokenizer_text = Baton.Registry.slot(Types.Tokenizer, "text")
 }

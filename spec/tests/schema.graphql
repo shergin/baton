@@ -2,9 +2,10 @@
 # list-side tests need and the public API lacks: a Node interface, a union, a
 # lookup by id across types, mutations with payloads, and a cursor connection
 # of notes on a character with the mutations that edit it, a subscription,
-# the `@defer` directive and a `@semanticNonNull` field. Documents.swift
-# compiles against it unchanged; every document here would also be valid
-# against the public schema except those that use the additions.
+# the `@defer` directive and a `@semanticNonNull` field, and the scalars the
+# tokenizer fixture (`spec/tokenizer/`) reads. Documents.swift compiles
+# against it unchanged; every document here would also be valid against the
+# public schema except those that use the additions.
 
 directive @defer(label: String, if: Boolean = true) on FRAGMENT_SPREAD | INLINE_FRAGMENT
 
@@ -24,6 +25,7 @@ type Query {
   episodesByIds(ids: [ID!]!): [Episode]
   node(id: ID!): Node
   search(name: String!): [SearchResult]
+  tokenizer: Tokenizer
 }
 
 type Mutation {
@@ -56,6 +58,24 @@ type RemoveNotePayload {
 }
 
 union SearchResult = Character | Location | Episode
+
+"""A value the server defines and the client keeps as the token's text."""
+scalar JSON
+
+"""Every scalar shape a response can take, for the tokenizer fixture."""
+type Tokenizer {
+  id: ID
+  text: String
+  strings: [String]
+  count: Int
+  counts: [Int]
+  ratio: Float
+  ratios: [Float]
+  flag: Boolean
+  flags: [Boolean]
+  json: JSON
+  jsons: [JSON]
+}
 
 type Character implements Node {
   id: ID

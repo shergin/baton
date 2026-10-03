@@ -1,0 +1,22 @@
+# The operation that reads the tokenizer fixture (no variables), as the
+# compiler prints it. The types are in `spec/tests/schema.graphql`.
+# `response.json` answers it with every JSON escape, a surrogate pair,
+# negative, fractional and exponent numbers, integers past 2^53, nulls inside
+# scalar lists, a custom scalar given as each kind of JSON value, and members
+# the document does not select. `malformed.json` lists the responses that
+# are not well formed, each with the outcome it must have.
+query TestTokenizerQuery {
+  tokenizer {
+    id
+    text
+    strings
+    count
+    counts
+    ratio
+    ratios
+    flag
+    flags
+    json
+    jsons
+  }
+}
