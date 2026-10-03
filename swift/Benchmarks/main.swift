@@ -1,6 +1,7 @@
 // The bench suite. Every number in BENCHMARKS.md comes from here.
 //
 //   swift run -c release BatonBenchmarks
+//   swift run -c release BatonBenchmarks --quick   (three samples each, for CI)
 import Baton
 import BatonSpec
 import Foundation
@@ -33,6 +34,13 @@ struct BenchmarkDocuments {
         """)
     var rename: BenchRename.Action
 
+    @Mutation("""
+        mutation BenchDelete($id: ID!) {
+          removeNote(id: $id) { removedNoteId @deleteRecord }
+        }
+        """)
+    var delete: BenchDelete.Action
+
     @Fragment("""
         fragment BenchNotes_character on Character
         @refetchable(queryName: "BenchNotesPaginationQuery")
@@ -52,6 +60,27 @@ struct BenchmarkDocuments {
         """)
     var notesQuery: BenchNotesQuery
 
+    @Query("""
+        query BenchNotesSizedQuery($id: ID!, $size: Int) {
+          character(id: $id) { ...BenchNotes_character @arguments(count: $size) }
+        }
+        """)
+    var notesSizedQuery: BenchNotesSizedQuery
+
+    @Query("""
+        query BenchNodeQuery($id: ID!) {
+          node(id: $id) { id }
+        }
+        """)
+    var nodeQuery: BenchNodeQuery
+
+    @Query("""
+        query BenchCharacterQuery($id: ID!) {
+          character(id: $id) { id name }
+        }
+        """)
+    var characterQuery: BenchCharacterQuery
+
     @Fragment("""
         fragment BenchCaught_character on Character {
           image @catch
@@ -61,22 +90,82 @@ struct BenchmarkDocuments {
     var caught: BenchCaught_character
 }
 
-func measure(_ label: String, iterations: Int = 20, ops: Int = 1, _ body: () -> Void) {
+/// `--quick`: three samples per measurement, so CI runs every bench once
+/// without waiting for numbers worth recording.
+let quick = CommandLine.arguments.contains("--quick")
+
+/// How many samples a measurement asked for `iterations` takes.
+func rounds(_ iterations: Int) -> Int { quick ? 3 : iterations }
+
+func format(_ nanoseconds: Double) -> String {
+    nanoseconds >= 1_000_000 ? String(format: "%8.2f ms", nanoseconds / 1_000_000)
+        : nanoseconds >= 1_000 ? String(format: "%8.2f µs", nanoseconds / 1_000)
+        : String(format: "%8.1f ns", nanoseconds)
+}
+
+func report(_ label: String, _ samples: [Double], ops: Int) {
+    let sorted = samples.sorted()
+    let best = sorted[0] / Double(ops)
+    let median = sorted[sorted.count / 2] / Double(ops)
+    print("  \(label.padding(toLength: 64, withPad: " ", startingAt: 0)) best \(format(best))   median \(format(median))")
+}
+
+/// Times `body` alone, `iterations` times; `setup` runs before each sample,
+/// off the clock. An `observer` counts what its scopes received during the
+/// bodies only.
+@MainActor
+func measure(_ label: String, iterations: Int = 20, ops: Int = 1, observer: Observer? = nil, setup: () -> Void = {}, _ body: () -> Void) {
     var samples: [Double] = []
-    for _ in 0..<iterations {
+    for _ in 0..<rounds(iterations) {
+        setup()
         let start = DispatchTime.now().uptimeNanoseconds
         body()
         samples.append(Double(DispatchTime.now().uptimeNanoseconds - start))
+        observer?.settle()
     }
-    samples.sort()
-    let best = samples[0] / Double(ops)
-    let median = samples[samples.count / 2] / Double(ops)
-    let unit: (Double) -> String = { nanoseconds in
-        nanoseconds >= 1_000_000 ? String(format: "%8.2f ms", nanoseconds / 1_000_000)
-            : nanoseconds >= 1_000 ? String(format: "%8.2f µs", nanoseconds / 1_000)
-            : String(format: "%8.1f ns", nanoseconds)
+    report(label, samples, ops: ops)
+}
+
+/// Times an asynchronous step by hand: `body` returns the nanoseconds it
+/// wants counted, so setup and teardown stay off the clock.
+@MainActor
+func measureEach(_ label: String, iterations: Int = 20, ops: Int = 1, _ body: () async -> UInt64) async {
+    var samples: [Double] = []
+    for _ in 0..<rounds(iterations) { samples.append(Double(await body())) }
+    report(label, samples, ops: ops)
+}
+
+/// Counts the notifications the observation scopes it starts receive. A
+/// scope fires once, and one that a sample did not fire stays armed into the
+/// next sample's setup, so each `observe` opens a round of its own and only
+/// what a round received before `settle` counts.
+@MainActor
+final class Observer {
+    private final class Round: @unchecked Sendable {
+        var fired = 0
     }
-    print("  \(label.padding(toLength: 56, withPad: " ", startingAt: 0)) best \(unit(best))   median \(unit(median))")
+
+    /// What the settled rounds received.
+    private(set) var fired = 0
+    private var round = Round()
+
+    /// Registers one scope per element, each reading through `read`.
+    func observe<Element>(_ elements: [Element], _ read: (Element) -> Void) {
+        let round = Round()
+        self.round = round
+        for element in elements {
+            withObservationTracking { read(element) } onChange: { round.fired += 1 }
+        }
+    }
+
+    /// What the open round has received so far.
+    var pending: Int { round.fired }
+
+    /// Counts the current round and closes it.
+    func settle() {
+        fired += round.fired
+        round = Round()
+    }
 }
 
 @MainActor
@@ -84,7 +173,7 @@ func run() async throws {
     let data = Spec.data("rickandmorty/characters-page-1.json")
     let variables = BenchFixture(page: 1).variables
     let plan = BenchFixture.plan.resolve(variables)
-    print("Baton benchmarks — fixture \(data.count) bytes, \(ProcessInfo.processInfo.operatingSystemVersionString)")
+    print("Baton benchmarks — fixture \(data.count) bytes, \(ProcessInfo.processInfo.operatingSystemVersionString)\(quick ? ", quick" : "")")
 
     print("ingest")
     measure("response bytes -> change set", iterations: 30) {
@@ -101,16 +190,21 @@ func run() async throws {
     measure("same payload again (nothing changes)", iterations: 20) {
         store.commit(changes)
     }
+    let root = BenchFixture.Data(anchor: Anchor(record: store.root, variables: variables, store: store))
+    let rows = Array(root.characters!.results!)
     let edited = String(decoding: data, as: UTF8.self).replacingOccurrences(of: "\"name\":\"Morty Smith\"", with: "\"name\":\"Morty C-137\"")
     let editedChanges = try Ingest.normalize(Data(edited.utf8), plan: plan)
-    measure("one field changed, 20 rows observed", iterations: 20) {
+    let names = Observer()
+    measure("one field changed, 20 rows observing their name", iterations: 20, observer: names, setup: {
         store.commit(changes)
+        names.observe(rows) { _ = $0.name }
+    }) {
         store.commit(editedChanges)
     }
+    print("    notifications per commit: \(names.fired / rounds(20)) (the edited row's name)")
+    store.commit(changes)
 
     print("reads")
-    let root = BenchFixture.Data(anchor: Anchor(record: store.root, variables: variables, store: store))
-    let rows = root.characters!.results!
     let reads = rows.count * 8
     measure("untracked lens read, per field", iterations: 50, ops: reads * 20) {
         var sink = 0
@@ -144,52 +238,67 @@ func run() async throws {
         }
         if sink == 42 { print("") }
     }
+    try readPathBench(store: store, root: root)
 
     print("availability")
     measure("check the fixture plan against the store", iterations: 50) {
         _ = store.check(plan)
     }
 
-    print("writes: optimistic layers, one renamed character, 20 rows observed")
-    store.commit(changes)  // back to the fixture after the edited commits above
+    print("writes: optimistic layers, one renamed character, 20 rows observing their name")
     let rename = BenchRename(id: "1", name: "Rick Prime")
     let renamePlan = BenchRename.plan.resolve(rename.variables)
     let optimistic = BenchRename.OptimisticResponse(rename: .init(character: .init(id: "1", name: "Rick Prime"))).variable
     let layerChanges = try Ingest.normalize(Data(("{\"data\":" + optimistic.json + "}").utf8), plan: renamePlan, rootKey: Store.mutationRootKey)
     let answer = try Ingest.normalize(Data(#"{"data":{"rename":{"character":{"id":"1","name":"Rick Prime"}}}}"#.utf8), plan: renamePlan, rootKey: Store.mutationRootKey)
-    final class Counter: @unchecked Sendable { var fired = 0 }
-    let counter = Counter()
-    func observeRows() {
-        for row in rows {
-            withObservationTracking { _ = row.name } onChange: { counter.fired += 1 }
-        }
+    /// Back to the fixture with no layer, every row observing its name.
+    func baseline(_ observer: Observer) {
+        for layer in store.optimisticLayers { store.revertOptimistic(layer.id) }
+        store.commit(changes)
+        observer.observe(rows) { _ = $0.name }
     }
-    measure("apply a layer and revert it", iterations: 50) {
-        observeRows()
-        let layer = store.applyOptimistic(layerChanges)
-        observeRows()
+    var layer = UUID()
+    let applied = Observer()
+    measure("apply a layer", iterations: 50, observer: applied, setup: { baseline(applied) }) {
+        layer = store.applyOptimistic(layerChanges)
+    }
+    let reverted = Observer()
+    measure("revert it", iterations: 50, observer: reverted, setup: {
+        baseline(Observer())
+        layer = store.applyOptimistic(layerChanges)
+        reverted.observe(rows) { _ = $0.name }
+    }) {
         store.revertOptimistic(layer)
     }
-    print("    notifications per apply-and-revert: \(counter.fired / 50)")
-    counter.fired = 0
-    // One tracking scope before the apply, one before the restore: the
-    // phases in between must not fire anything.
-    var phases = [0, 0, 0, 0]
-    measure("apply, commit the fixture under it, resolve, restore", iterations: 20) {
-        var before = counter.fired
-        func account(_ phase: Int) { phases[phase] += counter.fired - before; before = counter.fired }
-        observeRows()
-        let layer = store.applyOptimistic(layerChanges)
-        account(0)
+    let rebased = Observer()
+    measure("commit the fixture under the layer", iterations: 20, observer: rebased, setup: {
+        baseline(Observer())
+        layer = store.applyOptimistic(layerChanges)
+        rebased.observe(rows) { _ = $0.name }
+    }) {
         store.commit(changes)
-        account(1)
-        store.commit(answer, replacingOptimistic: layer)
-        account(2)
-        observeRows()
-        store.commit(changes)
-        account(3)
     }
-    print("    notifications per cycle: apply \(phases[0] / 20), rebase under a server commit \(phases[1] / 20), resolve \(phases[2] / 20), restore \(phases[3] / 20)")
+    let resolved = Observer()
+    measure("resolve the layer with the server's answer", iterations: 20, observer: resolved, setup: {
+        baseline(Observer())
+        layer = store.applyOptimistic(layerChanges)
+        resolved.observe(rows) { _ = $0.name }
+    }) {
+        store.commit(answer, replacingOptimistic: layer)
+    }
+    print("    notifications per step: apply \(applied.fired / rounds(50)), revert \(reverted.fired / rounds(50)), rebase \(rebased.fired / rounds(20)), resolve \(resolved.fired / rounds(20))")
+    baseline(Observer())
+
+    print("a mutation's payload: 66 bytes, one record")
+    let small = Data(#"{"data":{"rename":{"character":{"id":"1","name":"Rick Prime"}}}}"#.utf8)
+    let back = try Ingest.normalize(Data(#"{"data":{"rename":{"character":{"id":"1","name":"Rick Sanchez"}}}}"#.utf8), plan: renamePlan, rootKey: Store.mutationRootKey)
+    measure("ingest", iterations: 200) {
+        _ = try! Ingest.normalize(small, plan: renamePlan, rootKey: Store.mutationRootKey)
+    }
+    measure("commit into the 899-record store, one field changing", iterations: 200, setup: { store.commit(back) }) {
+        store.commit(answer)
+    }
+    store.commit(back)
 
     print("errors: the fixture with a field error on every row's image")
     // The same payload, with `errors` naming each of the 20 rows' image.
@@ -201,12 +310,21 @@ func run() async throws {
     }
     let erroredChanges = try Ingest.normalize(errored, plan: plan)
     print("    errors resolved: \(erroredChanges.fieldErrors.count), uncaught: \(erroredChanges.uncaughtFieldErrors.count)")
-    measure("commit the errors, then clear them (two commits, 20 rows observed)", iterations: 20) {
-        observeRows()
+    let landed = Observer()
+    measure("commit the errors, 20 rows observing their image", iterations: 20, observer: landed, setup: {
+        store.commit(changes)
+        landed.observe(rows) { _ = $0.image }
+    }) {
         store.commit(erroredChanges)
-        observeRows()
+    }
+    let cleared = Observer()
+    measure("commit that clears them, 20 rows observing their image", iterations: 20, observer: cleared, setup: {
+        store.commit(erroredChanges)
+        cleared.observe(rows) { _ = $0.image }
+    }) {
         store.commit(changes)
     }
+    print("    notifications per commit: errors landing \(landed.fired / rounds(20)), errors clearing \(cleared.fired / rounds(20))")
     let caughtRows = rows.map { BenchCaught_character(anchor: $0.anchor) }
     measure("@catch read of a field without an error, per field", iterations: 50, ops: caughtRows.count * 20) {
         var sink = 0
@@ -225,6 +343,12 @@ func run() async throws {
         if sink == 42 { print("") }
     }
 
+    print("root fields: one reader, other root fields written")
+    try rootFieldBench(store: store, root: root)
+
+    print("deletion: one @deleteRecord in a store of about 9,000 records")
+    try deletionBench(data: data, plan: plan)
+
     print("connections: 42 pages of 50 notes merged into one connection")
     try await connectionBench()
 
@@ -235,19 +359,93 @@ func run() async throws {
     await persistenceBench(changes: changes, edited: editedChanges, plan: plan)
 }
 
-/// Times an asynchronous step by hand: `body` returns the nanoseconds it
-/// wants counted, so setup and teardown stay off the clock.
+/// The reads that do not go through a constant slot: a root field whose key
+/// has a variable, a field selected on an interface, and a spread with
+/// `@arguments`.
 @MainActor
-func measureEach(_ label: String, iterations: Int = 20, ops: Int = 1, _ body: () async -> UInt64) async {
-    var samples: [Double] = []
-    for _ in 0..<iterations { samples.append(Double(await body())) }
-    samples.sort()
-    let unit: (Double) -> String = { nanoseconds in
-        nanoseconds >= 1_000_000 ? String(format: "%8.2f ms", nanoseconds / 1_000_000)
-            : nanoseconds >= 1_000 ? String(format: "%8.2f µs", nanoseconds / 1_000)
-            : String(format: "%8.1f ns", nanoseconds)
+func readPathBench(store: Store, root: BenchFixture.Data) throws {
+    let count = 1_000
+    measure("root field with a variable argument, untracked, per read", iterations: 50, ops: count) {
+        var sink = 0
+        for _ in 0..<count where root.characters != nil { sink &+= 1 }
+        if sink == 42 { print("") }
     }
-    print("  \(label.padding(toLength: 56, withPad: " ", startingAt: 0)) best \(unit(samples[0] / Double(ops)))   median \(unit(samples[samples.count / 2] / Double(ops)))")
+    measure("the same, tracked, one body per read", iterations: 50, ops: count) {
+        var sink = 0
+        for _ in 0..<count {
+            withObservationTracking { if root.characters != nil { sink &+= 1 } } onChange: {}
+        }
+        if sink == 42 { print("") }
+    }
+
+    let node = BenchNodeQuery(id: "1")
+    store.commit(try Ingest.normalize(Data(#"{"data":{"node":{"__typename":"Character","id":"1"}}}"#.utf8), plan: BenchNodeQuery.plan.resolve(node.variables)))
+    let character = try requireValue(BenchNodeQuery.Data(anchor: Anchor(record: store.root, variables: node.variables, store: store)).node)
+    measure("field selected on an interface, untracked, per read", iterations: 50, ops: count) {
+        var sink = 0
+        for _ in 0..<count { sink &+= character.id?.utf8.count ?? 0 }
+        if sink == 42 { print("") }
+    }
+
+    let sized = BenchNotesSizedQuery(id: "1", size: 7)
+    let owner = try requireValue(BenchNotesSizedQuery.Data(anchor: Anchor(record: store.root, variables: sized.variables, store: store)).character)
+    measure("spread with @arguments, the fragment's lens, per read", iterations: 50, ops: count) {
+        var sink = 0
+        for _ in 0..<count where owner.benchNotes.anchor.variables["count"] != nil { sink &+= 1 }
+        if sink == 42 { print("") }
+    }
+}
+
+struct MissingBenchData: Error {}
+
+func requireValue<Value>(_ value: Value?) throws -> Value {
+    guard let value else { throw MissingBenchData() }
+    return value
+}
+
+/// How often a body that reads one root field wakes while other root fields
+/// are written, one commit each. Every one of them is a key of its own on the
+/// root record.
+@MainActor
+func rootFieldBench(store: Store, root: BenchFixture.Data) throws {
+    let others = 64
+    let commits = try (1...others).map { offset in
+        let character = BenchCharacterQuery(id: String(900_000 + offset))
+        let payload = #"{"data":{"character":{"id":"\#(900_000 + offset)","name":"Other"}}}"#
+        return try Ingest.normalize(Data(payload.utf8), plan: BenchCharacterQuery.plan.resolve(character.variables))
+    }
+    let reader = Observer()
+    reader.observe([root]) { _ = $0.characters }
+    for changes in commits {
+        store.commit(changes)
+        guard reader.pending > 0 else { continue }
+        reader.settle()
+        reader.observe([root]) { _ = $0.characters }
+    }
+    reader.settle()
+    print("    wakes of a body reading characters(page: 1) while \(others) other root fields are written: \(reader.fired)")
+}
+
+/// A commit whose only edit is one `@deleteRecord`, in a store of ten pages
+/// of the fixture, about 9,000 records. Each sample deletes another
+/// character, one whose id no record of another type has.
+@MainActor
+func deletionBench(data: Data, plan: ResolvedSelection) throws {
+    let store = Store()
+    store.reportMissing = nil
+    for page in 0..<10 {
+        store.commit(try Ingest.normalize(page == 0 ? data : shifted(data, by: page * 100_000), plan: plan))
+    }
+    let ids = (200..<1_000).map(String.init).filter { id in
+        store.existing("Character:" + id) != nil && store.existing("Location:" + id) == nil && store.existing("Episode:" + id) == nil
+    }
+    let deletions = try ids.map { id in
+        try Ingest.normalize(Data(#"{"data":{"removeNote":{"removedNoteId":"\#(id)"}}}"#.utf8), plan: BenchDelete.plan.resolve(BenchDelete(id: id).variables), rootKey: Store.mutationRootKey)
+    }
+    var next = 0
+    measure("commit that deletes one record (\(store.count) records)", iterations: min(20, deletions.count), setup: { next += 1 }) {
+        store.commit(deletions[next - 1])
+    }
 }
 
 /// The image's costs: what a commit pays on the main actor to hand its
@@ -331,7 +529,10 @@ func persistenceBench(changes: ChangeSet, edited: ChangeSet, plan: ResolvedSelec
         try! child.run()
         child.waitUntilExit()
         let text = String(decoding: output.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
-        return UInt64(text.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0
+        guard child.terminationStatus == 0, let elapsed = UInt64(text.trimmingCharacters(in: .whitespacesAndNewlines)) else {
+            fatalError("the launch child failed with status \(child.terminationStatus): \(text)")
+        }
+        return elapsed
     }
     await measureEach("a launch: open and hydrate at once, in a new process", iterations: 15) { launched("--launch") }
     await measureEach("a launch: hydrate after the image has opened", iterations: 15) { launched("--launch-opened") }
@@ -379,10 +580,12 @@ func notesPage(_ page: Int, of pages: Int, size: Int) -> Data {
 func connectionBench() async throws {
     let pages = 42
     let size = 50
+    // Built before any timing: the transport only hands them out.
+    let responses = (1...pages).map { notesPage($0, of: pages, size: size) }
     let transport = RecordedTransport { request in
-        if request.operationName == BenchNotesQuery.name { return notesPage(1, of: pages, size: size) }
+        if request.operationName == BenchNotesQuery.name { return responses[0] }
         guard case .string(let cursor)? = request.variables["cursor"], let number = Int(cursor.dropFirst()) else { return nil }
-        return notesPage((number + 1) / size + 1, of: pages, size: size)
+        return responses[(number + 1) / size]
     }
     let environment = Environment(transport: transport)
     environment.store.reportMissing = nil
@@ -391,21 +594,20 @@ func connectionBench() async throws {
     await handle.settle()
     guard case .ready(let data) = handle.phase, let character = data.character?.benchNotes else { return }
 
-    final class Counter: @unchecked Sendable { var fired = 0 }
-    let counter = Counter()
-    func observe() {
-        withObservationTracking { _ = character.notes.nodes } onChange: { counter.fired += 1 }
-    }
+    let observer = Observer()
     var samples: [Double] = []
     while character.notes.hasNext {
-        observe()
+        observer.observe([character]) { _ = $0.notes.nodes }
         let start = DispatchTime.now().uptimeNanoseconds
         try await character.notes.loadNext()
-        samples.append(Double(DispatchTime.now().uptimeNanoseconds - start) / 1_000)
+        samples.append(Double(DispatchTime.now().uptimeNanoseconds - start))
+        observer.settle()
     }
-    samples.sort()
-    print("  loadNext (transport, ingest, merge), per page of 50           best \(String(format: "%8.2f µs", samples[0]))   median \(String(format: "%8.2f µs", samples[samples.count / 2]))")
-    print("    pages appended: \(samples.count), nodes: \(character.notes.nodes.count), notifications: \(counter.fired) (one per page, on the edges slot)")
+    // As the connection grows: the page appended to 1, 20 and 40 pages.
+    let series = [2, 21, 41].filter { $0 - 2 < samples.count }.map { "page \($0) \(format(samples[$0 - 2]).trimmingCharacters(in: .whitespaces))" }
+    report("loadNext (transport, ingest, merge), per page of 50", samples, ops: 1)
+    print("    by page: \(series.joined(separator: ", "))")
+    print("    pages appended: \(samples.count), nodes: \(character.notes.nodes.count), notifications: \(observer.fired) (one per page, on the edges slot)")
 
     let nodes = character.notes.nodes.count
     measure("nodes of the merged connection (\(nodes) lenses), untracked", iterations: 30) {
@@ -419,10 +621,11 @@ func connectionBench() async throws {
     environment.collect()
     print("    records before collection \(before), after \(environment.store.count) (the pages' own records go; the connection keeps the edges and nodes)")
 
-    counter.fired = 0
-    observe()
+    let refetched = Observer()
+    refetched.observe([character]) { _ = $0.notes.nodes }
     await handle.refetch()
-    print("    refetch of the first page: nodes \(character.notes.nodes.count), notifications \(counter.fired)")
+    refetched.settle()
+    print("    refetch of the first page: nodes \(character.notes.nodes.count), notifications \(refetched.fired)")
 }
 
 func footprint() -> Int {
