@@ -50,6 +50,14 @@ struct BenchmarkDocuments {
         }
         """)
     var notesQuery: BenchNotesQuery
+
+    @Fragment("""
+        fragment BenchCaught_character on Character {
+          image @catch
+          status @required(action: NONE)
+        }
+        """)
+    var caught: BenchCaught_character
 }
 
 func measure(_ label: String, iterations: Int = 20, ops: Int = 1, _ body: () -> Void) {
@@ -182,6 +190,40 @@ func run() async throws {
         account(3)
     }
     print("    notifications per cycle: apply \(phases[0] / 20), rebase under a server commit \(phases[1] / 20), resolve \(phases[2] / 20), restore \(phases[3] / 20)")
+
+    print("errors: the fixture with a field error on every row's image")
+    // The same payload, with `errors` naming each of the 20 rows' image.
+    let erroredText = String(String(decoding: data, as: UTF8.self).dropLast())
+        + ",\"errors\":[" + (0..<20).map { "{\"message\":\"image unavailable\",\"path\":[\"characters\",\"results\",\($0),\"image\"]}" }.joined(separator: ",") + "]}"
+    let errored = Data(erroredText.utf8)
+    measure("ingest with 20 field errors (plain ingest above)", iterations: 30) {
+        _ = try! Ingest.normalize(errored, plan: plan)
+    }
+    let erroredChanges = try Ingest.normalize(errored, plan: plan)
+    print("    errors resolved: \(erroredChanges.fieldErrors.count), uncaught: \(erroredChanges.uncaughtFieldErrors.count)")
+    measure("commit the errors, then clear them (two commits, 20 rows observed)", iterations: 20) {
+        observeRows()
+        store.commit(erroredChanges)
+        observeRows()
+        store.commit(changes)
+    }
+    let caughtRows = rows.map { BenchCaught_character(anchor: $0.anchor) }
+    measure("@catch read of a field without an error, per field", iterations: 50, ops: caughtRows.count * 20) {
+        var sink = 0
+        for _ in 0..<20 {
+            for row in caughtRows {
+                if case .success(let image) = row.image { sink &+= image?.utf8.count ?? 0 }
+            }
+        }
+        if sink == 42 { print("") }
+    }
+    measure("satisfied check of a lens with one @required field, per lens", iterations: 50, ops: caughtRows.count * 20) {
+        var sink = 0
+        for _ in 0..<20 {
+            for row in caughtRows where BenchCaught_character.satisfied(row.anchor) { sink &+= 1 }
+        }
+        if sink == 42 { print("") }
+    }
 
     print("connections: 42 pages of 50 notes merged into one connection")
     try await connectionBench()
