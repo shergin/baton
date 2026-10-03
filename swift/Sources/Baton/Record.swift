@@ -271,4 +271,16 @@ public struct RecordID: Hashable, Sendable {
         identifier = ObjectIdentifier(record)
         key = record.key
     }
+
+    /// The key stays in equality: an identifier is reused once its record
+    /// dies, and a list may still hold the old id.
+    public static func == (lhs: RecordID, rhs: RecordID) -> Bool {
+        lhs.identifier == rhs.identifier && lhs.key == rhs.key
+    }
+
+    /// Hashes the identifier alone, which tells live records apart without
+    /// reading the key's bytes.
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(identifier)
+    }
 }
