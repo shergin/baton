@@ -178,6 +178,10 @@ are expected and listed without apology.
   and keeps the result, and each field's response key bytes and fixed key
   are taken when the static plan is built. Resolving the fixture's plan for
   another page takes 0.69 µs against 8.5 µs without the kept resolutions.
+- A subscription frame, an incremental part's envelope and the `errors`
+  array are read by a scanner of the response bytes alone; each built the
+  plan-driven cursor and its 48 scratch buffers. A 69-byte frame reads in
+  375 ns against 2.21 µs.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

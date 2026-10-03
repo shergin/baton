@@ -261,45 +261,45 @@ public enum Ingest {
         let bytes = [UInt8](data)
         var part = IncrementalPart()
         try bytes.withUnsafeBufferPointer { buffer in
-            var cursor = Cursor(base: buffer.baseAddress!, count: buffer.count, changes: ChangeSet(bytes: [], small: true))
+            var scanner = Scanner(base: buffer.baseAddress!, count: buffer.count)
             var topLevel = IncrementalPart.Item(path: nil, label: nil, id: nil, data: Data())
             var sawTopLevelData = false
-            try cursor.members { key, cursor in
+            try scanner.members { key, scanner in
                 switch key {
                 case "incremental":
-                    try cursor.elements { cursor in
+                    try scanner.elements { scanner in
                         var item = IncrementalPart.Item(path: nil, label: nil, id: nil, data: Data())
-                        try cursor.members { key, cursor in
+                        try scanner.members { key, scanner in
                             switch key {
-                            case "data": item.data = try cursor.rawValue(in: bytes)
-                            case "path": item.path = try cursor.path()
-                            case "label": item.label = try cursor.stringValue()
-                            case "id": item.id = try cursor.stringValue()
-                            default: try cursor.skipValue()
+                            case "data": item.data = try scanner.rawValue(in: bytes)
+                            case "path": item.path = try scanner.path()
+                            case "label": item.label = try scanner.stringValue()
+                            case "id": item.id = try scanner.stringValue()
+                            default: try scanner.skipValue()
                             }
                         }
                         part.items.append(item)
                     }
                 case "pending":
-                    try cursor.elements { cursor in
+                    try scanner.elements { scanner in
                         var pending = IncrementalPart.Pending(id: "", path: [], label: nil)
-                        try cursor.members { key, cursor in
+                        try scanner.members { key, scanner in
                             switch key {
-                            case "id": pending.id = try cursor.stringValue() ?? ""
-                            case "path": pending.path = try cursor.path() ?? []
-                            case "label": pending.label = try cursor.stringValue()
-                            default: try cursor.skipValue()
+                            case "id": pending.id = try scanner.stringValue() ?? ""
+                            case "path": pending.path = try scanner.path() ?? []
+                            case "label": pending.label = try scanner.stringValue()
+                            default: try scanner.skipValue()
                             }
                         }
                         part.pending.append(pending)
                     }
-                case "hasNext": part.hasNext = try cursor.parseBool()
+                case "hasNext": part.hasNext = try scanner.parseBool()
                 case "data":
                     sawTopLevelData = true
-                    topLevel.data = try cursor.rawValue(in: bytes)
-                case "path": topLevel.path = try cursor.path()
-                case "label": topLevel.label = try cursor.stringValue()
-                default: try cursor.skipValue()
+                    topLevel.data = try scanner.rawValue(in: bytes)
+                case "path": topLevel.path = try scanner.path()
+                case "label": topLevel.label = try scanner.stringValue()
+                default: try scanner.skipValue()
                 }
             }
             if sawTopLevelData, topLevel.path != nil {
@@ -316,23 +316,23 @@ public enum Ingest {
         var id: String?
         var payload: Data?
         try bytes.withUnsafeBufferPointer { buffer in
-            var cursor = Cursor(base: buffer.baseAddress!, count: buffer.count, changes: ChangeSet(bytes: [], small: true))
-            try cursor.members { key, cursor in
+            var scanner = Scanner(base: buffer.baseAddress!, count: buffer.count)
+            try scanner.members { key, scanner in
                 switch key {
-                case "type": type = try cursor.stringValue()
-                case "id": id = try cursor.stringValue()
-                case "payload": payload = try cursor.rawValue(in: bytes)
-                default: try cursor.skipValue()
+                case "type": type = try scanner.stringValue()
+                case "id": id = try scanner.stringValue()
+                case "payload": payload = try scanner.rawValue(in: bytes)
+                default: try scanner.skipValue()
                 }
             }
         }
         return (type, id, payload)
     }
 
+    /// The plan-driven reader: a scanner over the response, and the change set
+    /// it fills by the plan.
     struct Cursor {
-        let base: UnsafePointer<UInt8>
-        let count: Int
-        var position = 0
+        var scanner: Scanner
         var changes: ChangeSet
         /// One scratch buffer per nesting depth: (field index, value). Slots are
         /// resolved when the object ends, because abstract selections resolve
@@ -349,10 +349,26 @@ public enum Ingest {
         var rawErrors: [(message: String, path: [PathSegment]?)] = []
 
         init(base: UnsafePointer<UInt8>, count: Int, changes: ChangeSet) {
-            self.base = base
-            self.count = count
+            scanner = Scanner(base: base, count: count)
             self.changes = changes
         }
+
+        var base: UnsafePointer<UInt8> { scanner.base }
+        var position: Int {
+            get { scanner.position }
+            set { scanner.position = newValue }
+        }
+
+        // The lexical layer, which the scanner holds.
+        @inline(__always) func peek() -> UInt8 { scanner.peek() }
+        @inline(__always) mutating func skipWhitespace() { scanner.skipWhitespace() }
+        @inline(__always) mutating func expect(_ byte: UInt8) throws { try scanner.expect(byte) }
+        @inline(__always) mutating func scanString() throws -> (Int, Int, Bool) { try scanner.scanString() }
+        @inline(__always) mutating func literal(_ text: StaticString) throws { try scanner.literal(text) }
+        @inline(__always) mutating func skipValue() throws { try scanner.skipValue() }
+        mutating func parseInt() throws -> Int { try scanner.parseInt() }
+        mutating func parseDouble() throws -> Double { try scanner.parseDouble() }
+        mutating func parseBool() throws -> Bool { try scanner.parseBool() }
 
         mutating func run(root: ResolvedSelection, rootKey: String) throws {
             skipWhitespace()
@@ -399,77 +415,24 @@ public enum Ingest {
             }
         }
 
-        /// Iterates an array's elements, leaving each to the handler.
-        mutating func elements(_ handle: (inout Cursor) throws -> Void) throws {
-            skipWhitespace()
-            try expect(0x5B)
-            while true {
-                skipWhitespace()
-                let byte = peek()
-                if byte == 0x5D { position += 1; return }
-                if byte == 0x2C { position += 1; continue }
-                try handle(&self)
-            }
-        }
-
-        /// A string value, or nil for `null`.
-        mutating func stringValue() throws -> String? {
-            skipWhitespace()
-            if peek() == 0x6E { try literal("null"); return nil }
-            let (start, end, escaped) = try scanString()
-            return Ingest.materialize(base: base, start, end, escaped)
-        }
-
-        /// The bytes of one value, verbatim.
-        mutating func rawValue(in bytes: [UInt8]) throws -> Data {
-            skipWhitespace()
-            let start = position
-            try skipValue()
-            return Data(bytes[start..<position])
-        }
-
-        /// A response path: strings and integers. A path with an index that
-        /// is not an integer names nothing; the response it came with is
-        /// read all the same.
-        mutating func path() throws -> [PathSegment]? {
-            skipWhitespace()
-            if peek() == 0x6E { try literal("null"); return nil }
-            var segments: [PathSegment] = []
-            var readable = true
-            try elements { cursor in
-                if cursor.peek() == 0x22 {
-                    let (start, end, escaped) = try cursor.scanString()
-                    segments.append(.name(Ingest.materialize(base: cursor.base, start, end, escaped)))
-                    return
-                }
-                let start = cursor.position
-                if let index = try? cursor.parseInt() {
-                    segments.append(.index(index))
-                    return
-                }
-                cursor.position = start
-                try cursor.skipValue()
-                readable = false
-            }
-            return readable ? segments : nil
-        }
-
         /// The response's `errors` array: messages and paths.
         mutating func errors() throws {
-            skipWhitespace()
-            if peek() == 0x6E { try literal("null"); return }
-            try elements { cursor in
+            scanner.skipWhitespace()
+            if scanner.peek() == 0x6E { try scanner.literal("null"); return }
+            var read: [(message: String, path: [PathSegment]?)] = []
+            try scanner.elements { scanner in
                 var message = ""
                 var path: [PathSegment]?
-                try cursor.members { key, cursor in
+                try scanner.members { key, scanner in
                     switch key {
-                    case "message": message = try cursor.stringValue() ?? ""
-                    case "path": path = try cursor.path()
-                    default: try cursor.skipValue()
+                    case "message": message = try scanner.stringValue() ?? ""
+                    case "path": path = try scanner.path()
+                    default: try scanner.skipValue()
                     }
                 }
-                cursor.rawErrors.append((message, path))
+                read.append((message, path))
             }
+            rawErrors.append(contentsOf: read)
         }
 
         /// Resolves each error's path through the plan and the entries to the
@@ -796,8 +759,90 @@ public enum Ingest {
                 return .string(start: Int32(start), end: Int32(position), escaped: false)
             }
         }
+    }
 
-        // MARK: lexical layer
+    /// The lexical layer over response bytes: a position and the reads that
+    /// move it. A frame, an incremental part's envelope and the `errors`
+    /// array need nothing more; the cursor adds the plan-driven part.
+    struct Scanner {
+        let base: UnsafePointer<UInt8>
+        let count: Int
+        var position = 0
+
+        init(base: UnsafePointer<UInt8>, count: Int) {
+            self.base = base
+            self.count = count
+        }
+
+        /// Iterates an object's members, leaving each value to the handler.
+        mutating func members(_ handle: (String, inout Scanner) throws -> Void) throws {
+            skipWhitespace()
+            try expect(0x7B)
+            while true {
+                skipWhitespace()
+                let byte = peek()
+                if byte == 0x7D { position += 1; return }
+                if byte == 0x2C { position += 1; continue }
+                let (start, end, escaped) = try scanString()
+                skipWhitespace(); try expect(0x3A); skipWhitespace()
+                try handle(Ingest.materialize(base: base, start, end, escaped), &self)
+            }
+        }
+
+        /// Iterates an array's elements, leaving each to the handler.
+        mutating func elements(_ handle: (inout Scanner) throws -> Void) throws {
+            skipWhitespace()
+            try expect(0x5B)
+            while true {
+                skipWhitespace()
+                let byte = peek()
+                if byte == 0x5D { position += 1; return }
+                if byte == 0x2C { position += 1; continue }
+                try handle(&self)
+            }
+        }
+
+        /// A string value, or nil for `null`.
+        mutating func stringValue() throws -> String? {
+            skipWhitespace()
+            if peek() == 0x6E { try literal("null"); return nil }
+            let (start, end, escaped) = try scanString()
+            return Ingest.materialize(base: base, start, end, escaped)
+        }
+
+        /// The bytes of one value, verbatim.
+        mutating func rawValue(in bytes: [UInt8]) throws -> Data {
+            skipWhitespace()
+            let start = position
+            try skipValue()
+            return Data(bytes[start..<position])
+        }
+
+        /// A response path: strings and integers. A path with an index that
+        /// is not an integer names nothing; the response it came with is
+        /// read all the same.
+        mutating func path() throws -> [PathSegment]? {
+            skipWhitespace()
+            if peek() == 0x6E { try literal("null"); return nil }
+            var segments: [PathSegment] = []
+            var readable = true
+            try elements { scanner in
+                if scanner.peek() == 0x22 {
+                    let (start, end, escaped) = try scanner.scanString()
+                    segments.append(.name(Ingest.materialize(base: scanner.base, start, end, escaped)))
+                    return
+                }
+                let start = scanner.position
+                if let index = try? scanner.parseInt() {
+                    segments.append(.index(index))
+                    return
+                }
+                scanner.position = start
+                try scanner.skipValue()
+                readable = false
+            }
+            return readable ? segments : nil
+        }
 
         @inline(__always) func peek() -> UInt8 { position < count ? base[position] : 0 }
 

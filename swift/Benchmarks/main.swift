@@ -302,6 +302,10 @@ func run() async throws {
         store.commit(answer)
     }
     store.commit(back)
+    let frame = Data(#"{"id":"1","type":"next","payload":{"data":{"noteAdded":{"id":"n9"}}}}"#.utf8)
+    measure("a subscription frame (\(frame.count) bytes), its envelope read", iterations: 200) {
+        _ = try! Ingest.frame(frame)
+    }
 
     print("errors: the fixture with a field error on every row's image")
     // The same payload, with `errors` naming each of the 20 rows' image.
