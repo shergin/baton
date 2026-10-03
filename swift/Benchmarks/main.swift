@@ -31,6 +31,25 @@ struct BenchmarkDocuments {
         }
         """)
     var rename: BenchRename.Action
+
+    @Fragment("""
+        fragment BenchNotes_character on Character
+        @refetchable(queryName: "BenchNotesPaginationQuery")
+        @argumentDefinitions(count: {type: "Int", defaultValue: 50}, cursor: {type: "String"}) {
+          notes(first: $count, after: $cursor) @connection(key: "BenchNotes_notes") {
+            totalCount
+            edges { node { id text created } }
+          }
+        }
+        """)
+    var notes: BenchNotes_character
+
+    @Query("""
+        query BenchNotesQuery($id: ID!) {
+          character(id: $id) { ...BenchNotes_character }
+        }
+        """)
+    var notesQuery: BenchNotesQuery
 }
 
 func measure(_ label: String, iterations: Int = 20, ops: Int = 1, _ body: () -> Void) {
@@ -164,8 +183,76 @@ func run() async throws {
     }
     print("    notifications per cycle: apply \(phases[0] / 20), rebase under a server commit \(phases[1] / 20), resolve \(phases[2] / 20), restore \(phases[3] / 20)")
 
+    print("connections: 42 pages of 50 notes merged into one connection")
+    try await connectionBench()
+
     print("lifetime: 42 pages scrolled, release buffer of 10")
     try await scrollBench(data: data)
+}
+
+/// A synthetic page of the notes connection: the first as the screen's query
+/// delivers it, the rest as the pagination query does.
+func notesPage(_ page: Int, of pages: Int, size: Int) -> Data {
+    let start = (page - 1) * size
+    let edges = (0..<size).map { offset in
+        let number = start + offset
+        return "{\"cursor\":\"c\(number)\",\"node\":{\"__typename\":\"Note\",\"id\":\"n\(number)\",\"text\":\"Note \(number)\",\"created\":\"2026-10-03\"}}"
+    }.joined(separator: ",")
+    let notes = "{\"totalCount\":\(pages * size),\"edges\":[\(edges)],\"pageInfo\":{\"endCursor\":\"c\(start + size - 1)\",\"hasNextPage\":\(page < pages)}}"
+    let body = page == 1
+        ? "{\"character\":{\"id\":\"1\",\"notes\":\(notes)}}"
+        : "{\"node\":{\"__typename\":\"Character\",\"id\":\"1\",\"notes\":\(notes)}}"
+    return Data("{\"data\":\(body)}".utf8)
+}
+
+@MainActor
+func connectionBench() async throws {
+    let pages = 42
+    let size = 50
+    let transport = RecordedTransport { request in
+        if request.operationName == BenchNotesQuery.name { return notesPage(1, of: pages, size: size) }
+        guard case .string(let cursor)? = request.variables["cursor"], let number = Int(cursor.dropFirst()) else { return nil }
+        return notesPage((number + 1) / size + 1, of: pages, size: size)
+    }
+    let environment = Environment(transport: transport)
+    environment.store.reportMissing = nil
+    let handle = environment.handle(for: BenchNotesQuery(id: "1"))
+    handle.retain()
+    await handle.settle()
+    guard case .ready(let data) = handle.phase, let character = data.character?.benchNotes else { return }
+
+    final class Counter: @unchecked Sendable { var fired = 0 }
+    let counter = Counter()
+    func observe() {
+        withObservationTracking { _ = character.notes.nodes } onChange: { counter.fired += 1 }
+    }
+    var samples: [Double] = []
+    while character.notes.hasNext {
+        observe()
+        let start = DispatchTime.now().uptimeNanoseconds
+        try await character.notes.loadNext()
+        samples.append(Double(DispatchTime.now().uptimeNanoseconds - start) / 1_000)
+    }
+    samples.sort()
+    print("  loadNext (transport, ingest, merge), per page of 50           best \(String(format: "%8.2f µs", samples[0]))   median \(String(format: "%8.2f µs", samples[samples.count / 2]))")
+    print("    pages appended: \(samples.count), nodes: \(character.notes.nodes.count), notifications: \(counter.fired) (one per page, on the edges slot)")
+
+    let nodes = character.notes.nodes.count
+    measure("nodes of the merged connection (\(nodes) lenses), untracked", iterations: 30) {
+        _ = character.notes.nodes
+    }
+    measure("nodes of the merged connection, tracked", iterations: 30) {
+        withObservationTracking { _ = character.notes.nodes } onChange: {}
+    }
+
+    let before = environment.store.count
+    environment.collect()
+    print("    records before collection \(before), after \(environment.store.count) (the pages' own records go; the connection keeps the edges and nodes)")
+
+    counter.fired = 0
+    observe()
+    await handle.refetch()
+    print("    refetch of the first page: nodes \(character.notes.nodes.count), notifications \(counter.fired)")
 }
 
 func footprint() -> Int {
