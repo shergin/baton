@@ -1,8 +1,9 @@
-# The test schema: the public Rick and Morty schema plus what the write-side
-# tests need and the public API lacks: a Node interface, a union, a lookup by
-# id across types, and a mutation with a payload. Documents.swift compiles
-# against it unchanged; every document here would also be valid against the
-# public schema except those that use the additions.
+# The test schema: the public Rick and Morty schema plus what the write- and
+# list-side tests need and the public API lacks: a Node interface, a union, a
+# lookup by id across types, mutations with payloads, and a cursor connection
+# of notes on a character with the mutations that edit it. Documents.swift
+# compiles against it unchanged; every document here would also be valid
+# against the public schema except those that use the additions.
 
 interface Node {
   id: ID
@@ -25,10 +26,21 @@ type Query {
 type Mutation {
   setFavorite(id: ID!, favorite: Boolean!): FavoritePayload
   rename(id: ID!, name: String!): FavoritePayload
+  addNote(characterId: ID!, text: String!): AddNotePayload
+  removeNote(id: ID!): RemoveNotePayload
 }
 
 type FavoritePayload {
   character: Character
+}
+
+type AddNotePayload {
+  noteEdge: NoteEdge
+  note: Note
+}
+
+type RemoveNotePayload {
+  removedNoteId: ID
 }
 
 union SearchResult = Character | Location | Episode
@@ -46,6 +58,31 @@ type Character implements Node {
   episode: [Episode]!
   created: String
   favorite: Boolean
+  notes(first: Int, after: String, last: Int, before: String): NoteConnection!
+}
+
+type Note implements Node {
+  id: ID
+  text: String
+  created: String
+}
+
+type NoteConnection {
+  edges: [NoteEdge]
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type NoteEdge {
+  cursor: String!
+  node: Note
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
 }
 
 type Location implements Node {

@@ -1,0 +1,1 @@
+{"data":{"node":{"__typename":"Character","id":"1","name":"Rick Sanchez","notes":{"totalCount":5,"edges":[{"cursor":"c5","node":{"__typename":"Note","id":"n5","text":"Call Birdperson"}}],"pageInfo":{"endCursor":"c5","hasNextPage":false}}}}}
