@@ -295,6 +295,9 @@ struct LifetimeTests {
 
         subscription.retain()
         #expect(!subscription.isActive, "no stream opens without an environment")
+        subscription.release()
+        ready.release()
+        empty.release()
     }
 
     @Test("a view whose environment is replaced resolves its operation again in the new one")
