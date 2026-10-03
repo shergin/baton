@@ -829,14 +829,24 @@ public enum Ingest {
             case 0x72: bytes.append(0x0D)
             case 0x74: bytes.append(0x09)
             case 0x75:
-                var scalar: UInt32 = 0
-                for offset in 1...4 { scalar = scalar << 4 | UInt32(hexValue(base[index + offset])) }
+                // An escape cut short by the end of the string is a
+                // replacement character, and the digits it has are dropped.
+                guard index + 4 < end else {
+                    bytes.append(contentsOf: [0xEF, 0xBF, 0xBD])
+                    index = end
+                    continue
+                }
+                var scalar = hex4(base, index + 1)
                 index += 4
+                // A high surrogate pairs with a low one written as the next
+                // escape. Anything else leaves it unpaired, a replacement
+                // character, and the next escape is read on its own.
                 if scalar >= 0xD800 && scalar < 0xDC00, index + 6 < end, base[index + 1] == 0x5C, base[index + 2] == 0x75 {
-                    var low: UInt32 = 0
-                    for offset in 3...6 { low = low << 4 | UInt32(hexValue(base[index + offset])) }
-                    scalar = 0x10000 + ((scalar - 0xD800) << 10) + (low - 0xDC00)
-                    index += 6
+                    let low = hex4(base, index + 3)
+                    if low >= 0xDC00 && low <= 0xDFFF {
+                        scalar = 0x10000 + ((scalar - 0xD800) << 10) + (low - 0xDC00)
+                        index += 6
+                    }
                 }
                 bytes.append(contentsOf: Array(String(UnicodeScalar(scalar) ?? "\u{FFFD}").utf8))
             default: bytes.append(base[index])
@@ -844,6 +854,14 @@ public enum Ingest {
             index += 1
         }
         return String(decoding: bytes, as: UTF8.self)
+    }
+
+    /// The value of the four hex digits at `start`.
+    @inline(__always)
+    static func hex4(_ base: UnsafePointer<UInt8>, _ start: Int) -> UInt32 {
+        var value: UInt32 = 0
+        for offset in 0..<4 { value = value << 4 | UInt32(hexValue(base[start + offset])) }
+        return value
     }
 
     @inline(__always)

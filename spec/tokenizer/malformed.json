@@ -1,5 +1,7 @@
 [
   {"response": "unterminated.json", "error": "IngestError"},
-  {"response": "lone-low-surrogate.json", "leaves": {"tokenizer.text": "low � alone"}},
-  {"response": "lone-high-surrogate.json", "leaves": {"tokenizer.text": "high �"}}
+  {"response": "lone-low-surrogate.json", "leaves": {"tokenizer.text": "low \ufffd alone"}},
+  {"response": "lone-high-surrogate.json", "leaves": {"tokenizer.text": "high \ufffd"}},
+  {"response": "high-surrogate-then-escape.json", "leaves": {"tokenizer.text": "\ufffdA and \ufffd\n and \ufffd\ud83d\ude00"}},
+  {"response": "short-unicode-escape.json", "leaves": {"tokenizer.strings": ["ab\ufffd", "x\ufffd", "\u00e9\ufffd"]}}
 ]
