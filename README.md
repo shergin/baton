@@ -33,7 +33,51 @@ which view read which field.
 
 The design is in [`docs/vision.md`](docs/vision.md). Constraints it assumes
 live in [`docs/principles/`](docs/principles/). The vocabulary is
-[`docs/terminology.md`](docs/terminology.md).
+[`docs/terminology.md`](docs/terminology.md). How this compares with the
+other native clients is below, and at length in
+[`docs/comparison.md`](docs/comparison.md).
+
+## Compared with the other native clients
+
+Apollo iOS and Apollo Kotlin are the two maintained native GraphQL clients,
+and they share one design. Each generates a model shaped like the operation,
+keeps a string-keyed record store behind it, and re-executes the whole query
+when any field that query read changes. A view cannot read that store on the
+frame it appears: Apollo iOS's read is `async`, and Apollo Kotlin's is
+documented to stay off the main thread. Baton generates a lens per fragment
+and the UI framework observes the record: the first body already has the
+cached data, and a changed field re-renders the view that read it.
+
+The response and read rows are the head-to-head in
+[`BENCHMARKS.md`](BENCHMARKS.md). Rick and Morty, page one: 686 KB, 899
+records, Apple M1 Pro, October 2026. Apollo's response for the same data is
+849 KB, because its normalizer asks for `__typename` on every object. The
+memory and optimistic rows are Baton's 0.5.0 benches on that machine. The
+disk row is 0.6.0. A launch with the file already open reads the fixture
+back in 1.78 ms.
+
+| | Baton 0.6 | Apollo iOS 2.4 | Apollo Kotlin 5.2 |
+|---|---|---|---|
+| The GraphQL | In the view, beside the body | A `.graphql` file, and you write the screen query | A `.graphql` file, merged across the module |
+| A child view receives | A lens: the fields it declared | A snapshot of the parent's dictionary | A nested model the parent can also read |
+| Warm cache, first frame | The data | Loading. The read is `async` | Loading. The read stays off the main thread |
+| One field changes | The view that read it | The whole query, rebuilt into a new tree | The whole query, rebuilt into a new tree |
+| Bytes into the store | 3.4 ms | 318 ms | Rebuilds models into records. Their own bench is below |
+| Read it back | 26 ns a field | 228 ms to rebuild, then 296 ns a field | Rebuilds the operation into models |
+| Memory while scrolling | Plateaus. 42 pages stay near +5 MB | Keeps every record. No eviction | You call GC. TTL and trimming exist |
+| A list | Pages merged in the store, one update per page | One watcher per page, concatenated in the pager | Pages merged in the store |
+| An optimistic write | A typed response, rebased, 0.4 ms for the cycle | A separate mutable model you write into the cache | Opt-in. Watchers then re-run the query |
+| The UI binding | `@Fragment` and `@Query` | None. The tutorial copies into a view model | Experimental Compose helpers, last released 2024 |
+| On disk | System SQLite, one binary row a record | SQLite, one JSON string per record | Binary SQLite, with memory in front |
+
+Apollo Kotlin publishes its own cache bench, which is a different query on a
+2017 Galaxy S8 and excludes JSON parsing: about 800 ms to write and 530 ms
+to read 6,000 records from memory. The cost the two benches share is the
+rebuild of the model tree.
+
+The longer comparison, with the approaches, the smaller Swift clients, the
+sources and the places Apollo is ahead, is
+[`docs/comparison.md`](docs/comparison.md).
 
 ## What it is, and will be
 
@@ -66,8 +110,9 @@ tooling and the road to 1.0. The promises:
   run off it.
 - **Only changed views re-render.** Records are observable objects; a body
   that read `user.name` is invalidated when that field of that record changes
-  and at no other time. A commit of a thousand records costs tens of
-  microseconds on the main thread.
+  and at no other time. An unchanged refetch of the benchmark fixture costs
+  the main actor under 200 µs and no view; committing all 899 records costs
+  about a millisecond.
 - **Honest data.** Nullability is what the schema says; `@required` and
   `@catch` work as in Relay, in Swift's terms (an optional lens, a `Result`,
   a `get throws`); field errors survive caching; staleness is a phase a view
