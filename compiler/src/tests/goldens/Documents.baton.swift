@@ -106,7 +106,7 @@ query Fixture(
     }
 
     public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("characters", key: .dynamic([.literal("characters(page:"), .variable("page"), .literal(")")]), plural: false, selection: Baton.Selection(type: Types.Characters, hasID: false, abstract: false, fields: [
+            .linked("characters", key: .dynamic(Slots.Query_characters_5517f9), plural: false, selection: Baton.Selection(type: Types.Characters, hasID: false, abstract: false, fields: [
                 .linked("info", key: .fixed(Slots.Characters_info), plural: false, selection: Baton.Selection(type: Types.Info, hasID: false, abstract: false, fields: [
                     .scalar("count", key: .fixed(Slots.Info_count), kind: .int, list: false),
                     .scalar("pages", key: .fixed(Slots.Info_pages), kind: .int, list: false),
@@ -156,7 +156,7 @@ query Fixture(
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Query"
-        @MainActor public var characters: Characters? { anchor.linked(Slots.Query_characters_5517f9(anchor.variables)).map(Characters.init(anchor:)) }
+        @MainActor public var characters: Characters? { anchor.linked(anchor.owner.slot(Slots.Query_characters_5517f9)).map(Characters.init(anchor:)) }
 
         nonisolated public struct Characters: Baton.Lens {
             public let anchor: Baton.Anchor
@@ -277,7 +277,7 @@ query TestEpisodesQuery(
     }
 
     public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("character", key: .dynamic([.literal("character(id:"), .variable("id"), .literal(")")]), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+            .linked("character", key: .dynamic(Slots.Query_character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
                 .linked("episode", key: .fixed(Slots.Character_episode), plural: true, selection: Baton.Selection(type: Types.Episode, hasID: true, abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Episode_id), kind: .string, list: false),
                     .scalar("name", key: .fixed(Slots.Episode_name), kind: .string, list: false),
@@ -290,7 +290,7 @@ query TestEpisodesQuery(
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Query"
-        @MainActor public var character: Character? { anchor.linked(Slots.Query_character_bca4f9(anchor.variables)).map(Character.init(anchor:)) }
+        @MainActor public var character: Character? { anchor.linked(anchor.owner.slot(Slots.Query_character_bca4f9)).map(Character.init(anchor:)) }
 
         nonisolated public struct Character: Baton.Lens {
             public let anchor: Baton.Anchor
@@ -356,7 +356,7 @@ fragment TestHeader_character on Character {
     }
 
     public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("character", key: .dynamic([.literal("character(id:"), .variable("id"), .literal(")")]), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+            .linked("character", key: .dynamic(Slots.Query_character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
                 .scalar("name", key: .fixed(Slots.Character_name), kind: .string, list: false),
                 .scalar("status", key: .fixed(Slots.Character_status), kind: .string, list: false),
                 .scalar("species", key: .fixed(Slots.Character_species), kind: .string, list: false),
@@ -373,7 +373,7 @@ fragment TestHeader_character on Character {
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Query"
-        @MainActor public var character: Character? { anchor.linked(Slots.Query_character_bca4f9(anchor.variables)).map(Character.init(anchor:)) }
+        @MainActor public var character: Character? { anchor.linked(anchor.owner.slot(Slots.Query_character_bca4f9)).map(Character.init(anchor:)) }
 
         nonisolated public struct Character: Baton.Lens {
             public let anchor: Baton.Anchor
@@ -440,7 +440,7 @@ fragment TestRow_character on Character {
     }
 
     public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("characters", key: .dynamic([.literal("characters(page:"), .variable("page"), .literal(")")]), plural: false, selection: Baton.Selection(type: Types.Characters, hasID: false, abstract: false, fields: [
+            .linked("characters", key: .dynamic(Slots.Query_characters_5517f9), plural: false, selection: Baton.Selection(type: Types.Characters, hasID: false, abstract: false, fields: [
                 .linked("results", key: .fixed(Slots.Characters_results), plural: true, selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
                     .scalar("name", key: .fixed(Slots.Character_name), kind: .string, list: false),
                     .scalar("status", key: .fixed(Slots.Character_status), kind: .string, list: false),
@@ -459,7 +459,7 @@ fragment TestRow_character on Character {
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Query"
-        @MainActor public var characters: Characters? { anchor.linked(Slots.Query_characters_5517f9(anchor.variables)).map(Characters.init(anchor:)) }
+        @MainActor public var characters: Characters? { anchor.linked(anchor.owner.slot(Slots.Query_characters_5517f9)).map(Characters.init(anchor:)) }
 
         nonisolated public struct Characters: Baton.Lens {
             public let anchor: Baton.Anchor

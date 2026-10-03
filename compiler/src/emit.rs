@@ -73,10 +73,23 @@ impl SlotRef {
     /// The Swift expression that yields the slot.
     fn expression(&self) -> String {
         if self.has_variables() {
-            format!("Slots.{}(anchor.variables)", self.identifier())
+            format!("anchor.owner.slot(Slots.{})", self.identifier())
         } else {
             format!("Slots.{}", self.identifier())
         }
+    }
+
+    /// The parts of a key with variables, as `Baton.KeyPart` literals.
+    fn parts_literal(&self) -> String {
+        let parts: Vec<String> = self
+            .parts
+            .iter()
+            .map(|part| match part {
+                KeyPart::Literal(text) => format!(".literal({})", swift_literal(text)),
+                KeyPart::Variable(name) => format!(".variable({})", swift_literal(name)),
+            })
+            .collect();
+        format!("[{}]", parts.join(", "))
     }
 }
 
@@ -91,6 +104,8 @@ struct Emitter {
     slots: BTreeSet<SlotRef>,
     /// Constant keys read on an interface or union.
     abstract_slots: BTreeSet<SlotRef>,
+    /// The identifiers of the spreads with arguments.
+    sites: BTreeSet<String>,
     types: BTreeSet<String>,
     /// Every fragment's `@argumentDefinitions`, for binding spreads.
     fragment_arguments: BTreeMap<String, Vec<VariablePlan>>,
@@ -148,6 +163,7 @@ pub fn emit(plan: &Plan) -> Output {
     let mut emitter = Emitter {
         slots: BTreeSet::new(),
         abstract_slots: BTreeSet::new(),
+        sites: BTreeSet::new(),
         types: BTreeSet::new(),
         fragment_arguments: plan
             .fragments
@@ -257,10 +273,10 @@ impl Emitter {
             if slot.has_variables() {
                 let _ = writeln!(
                     output,
-                    "    static func {}(_ variables: Baton.Variables) -> Baton.Slot {{\n        Baton.Registry.slot(Types.{}, {})\n    }}",
+                    "    static let {} = Baton.DynamicKey(Types.{}, {})",
                     slot.identifier(),
                     slot.type_name,
-                    key_expression(&slot.parts, "variables")
+                    slot.parts_literal()
                 );
             } else {
                 let _ = writeln!(
@@ -273,6 +289,15 @@ impl Emitter {
             }
         }
         output.push_str("}\n");
+        if !self.sites.is_empty() {
+            output.push_str(
+                "\n/// The spreads with `@arguments`, where an owner binds a fragment's scope once.\nnonisolated enum Sites {\n",
+            );
+            for site in &self.sites {
+                let _ = writeln!(output, "    static let {site} = Baton.ArgumentSite()");
+            }
+            output.push_str("}\n");
+        }
         if !self.abstract_slots.is_empty() {
             output.push_str(
                 "\n/// Storage keys read on interfaces and unions, each resolved once per concrete type.\nnonisolated enum AbstractSlots {\n",
@@ -1085,6 +1110,7 @@ impl Emitter {
                     self.spread_accessor(
                         output,
                         SpreadAccessor {
+                            owner: context.owner,
                             accessor: &accessor,
                             fragment,
                             arguments,
@@ -1126,6 +1152,7 @@ impl Emitter {
                         self.spread_accessor(
                             output,
                             SpreadAccessor {
+                                owner: context.owner,
                                 accessor: alias.as_deref().unwrap_or(&default_name),
                                 fragment,
                                 arguments,
@@ -1610,7 +1637,11 @@ impl Emitter {
                     format!("{}: {value}", swift_literal(&definition.name))
                 })
                 .collect();
-            Some(format!("anchor.binding([{}])", bindings.join(", ")))
+            let site = self.site(spread.owner, spread.accessor);
+            Some(format!(
+                "anchor.binding(Sites.{site}) {{ [{}] }}",
+                bindings.join(", ")
+            ))
         };
         let conditional = type_is_abstract && spread.type_condition != type_name;
         if conditional {
@@ -1694,12 +1725,9 @@ impl Emitter {
         let _ = writeln!(output, "{indent}}}");
     }
 
-    /// The argument a lens accessor passes: a static slot on a concrete type, or
-    /// a storage key resolved against the record's own type when the selection
-    /// is on an interface or union.
     /// A slot as a value: the static slot, or on an interface or union the
-    /// abstract slot taken on the record's type. A key with variables on an
-    /// abstract type is rendered and resolved per read.
+    /// abstract slot taken on the record's type. A key with variables is
+    /// resolved by the anchor's owner, once.
     fn slot_expression(
         &mut self,
         type_name: &str,
@@ -1712,10 +1740,12 @@ impl Emitter {
         self.types.insert(type_name.to_string());
         let slot = SlotRef::new(type_name, storage_key);
         if slot.has_variables() {
-            return format!(
-                "anchor.slot(key: {})",
-                key_expression(&slot.parts, "anchor.variables")
+            let expression = format!(
+                "anchor.owner.slot(Slots.{}, on: anchor.record.type)",
+                slot.identifier()
             );
+            self.slots.insert(slot);
+            return expression;
         }
         let expression = format!("AbstractSlots.{}.on(anchor.record.type)", slot.identifier());
         self.abstract_slots.insert(slot);
@@ -2042,21 +2072,26 @@ impl Emitter {
         expression
     }
 
-    /// The key expression inside a plan: a fixed slot, or the parts a key
-    /// with variables is built from.
+    /// A new site for a spread with arguments, named by its lens's document
+    /// and accessor, and numbered when the document has two of the name.
+    fn site(&mut self, owner: &str, accessor: &str) -> String {
+        let base = format!("{owner}_{accessor}");
+        let mut name = base.clone();
+        let mut count = 1;
+        while self.sites.contains(&name) {
+            count += 1;
+            name = format!("{base}_{count}");
+        }
+        self.sites.insert(name.clone());
+        name
+    }
+
+    /// The key expression inside a plan: a fixed slot, or the key with
+    /// variables an owner renders.
     fn plan_key(&mut self, type_name: &str, storage_key: &StorageKeyPlan) -> String {
         let slot = SlotRef::new(type_name, storage_key);
         let expression = if slot.has_variables() {
-            let parts = slot
-                .parts
-                .iter()
-                .map(|part| match part {
-                    KeyPart::Literal(text) => format!(".literal({})", swift_literal(text)),
-                    KeyPart::Variable(name) => format!(".variable({})", swift_literal(name)),
-                })
-                .collect::<Vec<_>>()
-                .join(", ");
-            format!(".dynamic([{parts}])")
+            format!(".dynamic(Slots.{})", slot.identifier())
         } else {
             format!(".fixed(Slots.{})", slot.identifier())
         };
@@ -2135,6 +2170,8 @@ struct LinkedAccessor<'a> {
 
 /// What a spread accessor is made of.
 struct SpreadAccessor<'a> {
+    /// The fragment or operation whose lens holds the spread.
+    owner: &'a str,
     accessor: &'a str,
     fragment: &'a str,
     arguments: &'a [crate::pipeline::ArgumentPlan],
@@ -2497,18 +2534,6 @@ fn template(parts: &[KeyPart]) -> String {
             KeyPart::Variable(name) => format!("${name}"),
         })
         .collect()
-}
-
-/// A Swift expression that builds the key from `variables`.
-fn key_expression(parts: &[KeyPart], variables: &str) -> String {
-    parts
-        .iter()
-        .map(|part| match part {
-            KeyPart::Literal(text) => swift_literal(text),
-            KeyPart::Variable(name) => format!("{variables}.render({})", swift_literal(name)),
-        })
-        .collect::<Vec<_>>()
-        .join(" + ")
 }
 
 /// A constant as JSON, as the runtime renders the same value given as a

@@ -28,7 +28,7 @@ public enum KeyPart: Sendable {
 public enum StorageKey: Sendable {
     case fixed(Slot)
     /// A key with variables, e.g. `characters(page:$page)`.
-    case dynamic([KeyPart])
+    case dynamic(DynamicKey)
 }
 
 /// A root field that returns an entity by one of its arguments. When the link
@@ -320,13 +320,7 @@ public final class Selection: Sendable {
     private static func render(_ key: StorageKey, _ variables: Variables) -> String {
         switch key {
         case .fixed(let slot): slot.storageKey
-        case .dynamic(let parts):
-            parts.map { part in
-                switch part {
-                case .literal(let text): text
-                case .variable(let name): variables.render(name)
-                }
-            }.joined()
+        case .dynamic(let key): key.render(variables)
         }
     }
 

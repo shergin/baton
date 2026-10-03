@@ -2,7 +2,8 @@
 
 A fragment compiles to a typed, read-only view over one record: a reference
 and one accessor per declared field. Nothing is decoded to hand it to a view.
-The value a parent passes to a child is the fragment itself, pointer-sized.
+The value a parent passes to a child is the fragment itself: a record
+reference and a context.
 
 ## Why
 
@@ -45,7 +46,7 @@ registered, so a view body depends on the fields it read and nothing else.
 - A lens is valid only on the main actor, where the store lives. Code that
   needs a value elsewhere hops there or takes an explicit snapshot.
 - Equality of lenses is identity: same record, same context. SwiftUI's
-  diffing of a view holding a lens is a pointer comparison.
+  diffing of a view holding a lens compares references.
 - A fragment's name appears once in Swift, as the type of the property that
   holds it.
 

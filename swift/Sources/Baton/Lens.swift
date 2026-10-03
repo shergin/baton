@@ -1,31 +1,45 @@
 import SwiftUI
 
-/// Where a lens reads from: one record, the variables that bind any
+/// Where a lens reads from: one record, the owner whose scope binds any
 /// argument-carrying storage key along its path, and the record it was
-/// reached from, which a connection needs for the owner's id.
-public struct Anchor: @unchecked Sendable {
+/// reached from, which a connection needs for its owner's id. Two anchors
+/// are equal when the three are the same objects.
+public struct Anchor: Sendable, Equatable {
     public let record: Record
-    public let variables: Variables
-    @usableFromInline let store: Store?
+    public let owner: Owner
     @usableFromInline let parent: Record?
 
-    public init(record: Record, variables: Variables, store: Store? = nil, parent: Record? = nil) {
+    public init(record: Record, owner: Owner, parent: Record? = nil) {
         self.record = record
-        self.variables = variables
-        self.store = store
+        self.owner = owner
         self.parent = parent
     }
 
-    func child(_ record: Record) -> Anchor {
-        Anchor(record: record, variables: variables, store: store, parent: self.record)
+    /// An anchor in a scope of its own, for a lens made by hand.
+    public init(record: Record, variables: Variables, store: Store? = nil) {
+        self.init(record: record, owner: Owner(variables: variables, store: store))
     }
 
+    /// The variables of the scope.
+    public var variables: Variables { owner.variables }
+    @usableFromInline var store: Store? { owner.store }
+
+    func child(_ record: Record) -> Anchor {
+        Anchor(record: record, owner: owner, parent: self.record)
+    }
+
+    public static func == (lhs: Anchor, rhs: Anchor) -> Bool {
+        lhs.record === rhs.record && lhs.owner === rhs.owner && lhs.parent === rhs.parent
+    }
+}
+
+@MainActor
+extension Anchor {
     /// The same record under a fragment's scope: the parent's variables with
-    /// the fragment's arguments bound over them, as Relay's fragment variables.
-    public func binding(_ values: [String: Variable?]) -> Anchor {
-        var merged = variables.values
-        for (name, value) in values { merged[name] = value ?? .null }
-        return Anchor(record: record, variables: Variables(merged), store: store, parent: parent)
+    /// the fragment's arguments bound over them, as Relay's fragment
+    /// variables. The owner binds each site once.
+    public func binding(_ site: ArgumentSite, _ values: () -> [String: Variable?]) -> Anchor {
+        Anchor(record: record, owner: owner.binding(site, values), parent: parent)
     }
 }
 
@@ -189,7 +203,7 @@ extension Anchor {
         default: unexpected(slot, value)
         }
         let placeholder = store?.placeholder(type) ?? Record(type: type, key: "client:placeholder:" + type.name)
-        return Anchor(record: placeholder, variables: variables)
+        return Anchor(record: placeholder, owner: owner.inert)
     }
 
     /// A plural link. Elements that `keep` rejects are dropped, as Relay nulls a
@@ -355,7 +369,7 @@ extension Anchor {
         nodes.reserveCapacity(edges.count)
         for case let edge? in edges where !edge.deleted {
             guard case .ref(let node) = edge.read(slots.node), !node.deleted else { continue }
-            let anchor = Anchor(record: node, variables: variables, store: store, parent: edge)
+            let anchor = Anchor(record: node, owner: owner, parent: edge)
             if let keep, !keep(anchor) { continue }
             nodes.append(Element(anchor: anchor))
         }

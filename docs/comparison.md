@@ -176,10 +176,10 @@ child a pointer instead of the child's fields. Baton keeps that split, runs
 Relay's front end at a pinned revision behind its own driver, and emits a
 Swift lens where Relay emits a reader.
 
-The lens is a record reference and one accessor per declared field. Reading
-`character.name` loads a slot and registers the read with Observation. A
-parent passes the lens, which is pointer-sized, and has no accessor for the
-child's fields. Masking is the type. There is no snapshot to build, no
+The lens is a record reference, a context and one accessor per declared
+field. Reading `character.name` loads a slot and registers the read with
+Observation. A parent passes the lens, three references, and has no
+accessor for the child's fields. Masking is the type. There is no snapshot to build, no
 seen-record set to intersect, and no second copy of the data to keep equal
 to the first.
 

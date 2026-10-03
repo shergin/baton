@@ -293,7 +293,7 @@ struct ListTests {
         #expect(environment.rootCount == 1, "the refetch is no root of its own")
     }
 
-    @Test("a spread with @arguments binds the fragment's variables; a spread without them takes the defaults")
+    @Test("a spread with @arguments binds the fragment's variables once, so each read of it is the same lens; a spread without them takes the defaults")
     func fragmentArguments() async throws {
         let store = Store()
         store.reportMissing = nil
@@ -304,6 +304,7 @@ struct ListTests {
         #expect(character.anchor.variables["count"] == .int(7))
         #expect(character.anchor.variables["cursor"] == .null)
         #expect(character.notes.nodes.count == 2)
+        #expect(data.character?.testNotes.anchor == character.anchor, "the owner bound the spread once")
 
         let plain = TestNotesQuery.Data(anchor: Anchor(record: store.root, variables: TestNotesQuery(id: "1").variables, store: store))
         #expect(plain.character?.testNotes.anchor.variables["count"] == .int(2), "the @argumentDefinitions default")

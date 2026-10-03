@@ -107,6 +107,8 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
     /// The fetch in flight; its value is the failure it ended with.
     @ObservationIgnored private var task: Task<(any Error)?, Never>?
     @ObservationIgnored let resolved: ResolvedSelection
+    /// The scope every lens of the handle reads in.
+    @ObservationIgnored private let owner: Owner
     @ObservationIgnored public internal(set) var retainCount = 0
     /// Set by `preload`: the first attach finds the fetch already made.
     @ObservationIgnored var preloaded = false
@@ -116,6 +118,7 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
         self.environment = environment
         store = environment.store
         resolved = Op.plan.resolve(operation.variables)
+        owner = Owner(variables: operation.variables, store: environment.store)
     }
 
     var key: AnyHashable { AnyHashable(operation) }
@@ -129,7 +132,7 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
     }
 
     private var anchor: Anchor {
-        Anchor(record: store.root, variables: operation.variables, store: store)
+        Anchor(record: store.root, owner: owner)
     }
 
     private var data: Op.Data { Op.Data(anchor: anchor) }
@@ -449,6 +452,8 @@ public final class SubscriptionHandle<Op: Operation>: AnyOperationHandle {
     @ObservationIgnored private let store: Store
     @ObservationIgnored private var task: Task<Void, Never>?
     @ObservationIgnored let resolved: ResolvedSelection
+    /// The scope every event's lens reads in.
+    @ObservationIgnored private let owner: Owner
     @ObservationIgnored public internal(set) var retainCount = 0
 
     init(operation: Op, environment: Environment) {
@@ -456,6 +461,7 @@ public final class SubscriptionHandle<Op: Operation>: AnyOperationHandle {
         self.environment = environment
         store = environment.store
         resolved = Op.plan.resolve(operation.variables)
+        owner = Owner(variables: operation.variables, store: environment.store)
     }
 
     var key: AnyHashable { AnyHashable(operation) }
@@ -477,7 +483,7 @@ public final class SubscriptionHandle<Op: Operation>: AnyOperationHandle {
                     let changes = try await Ingest.normalized(payload, plan: resolved, rootKey: Store.subscriptionRootKey)
                     store.commit(changes)
                     events += 1
-                    latest = Op.Data(anchor: Anchor(record: store.subscriptionRoot, variables: operation.variables, store: store))
+                    latest = Op.Data(anchor: Anchor(record: store.subscriptionRoot, owner: owner))
                 }
             } catch is CancellationError {
                 return

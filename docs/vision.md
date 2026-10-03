@@ -72,7 +72,8 @@ true, who decides, and what the words are.
 
 1. **A fragment is a lens.** A fragment compiles to a typed, read-only view
    over one record: a reference and one accessor per declared field. Nothing
-   is decoded into a model to hand it to a view; a parent passes a pointer.
+   is decoded into a model to hand it to a view; a parent passes a reference
+   and a context.
    Masking is not enforced, it is structural: the lens has no accessor for a
    field the fragment did not declare.
 2. **The store is the UI's state.** Records are observable objects. A body

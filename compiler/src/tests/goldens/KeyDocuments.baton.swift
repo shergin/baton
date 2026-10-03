@@ -70,11 +70,11 @@ query TestKeys(
                 .scalar("name", key: .fixed(Slots.Character_name), kind: .string, list: false),
                 .scalar("id", key: .fixed(Slots.Character_id), kind: .string, list: false),
             ])),
-            .linked("charactersByIds", key: .dynamic([.literal("charactersByIds(ids:["), .variable("id"), .literal(",\"2\"])")]), plural: true, selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+            .linked("charactersByIds", key: .dynamic(Slots.Query_charactersByIds_0b7f7b), plural: true, selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
                 .scalar("name", key: .fixed(Slots.Character_name), kind: .string, list: false),
                 .scalar("id", key: .fixed(Slots.Character_id), kind: .string, list: false),
             ])),
-            .linked("characters", key: .dynamic([.literal("characters(filter:{\"name\":"), .variable("name"), .literal(",\"status\":\"Alive\"})")]), plural: false, selection: Baton.Selection(type: Types.Characters, hasID: false, abstract: false, fields: [
+            .linked("characters", key: .dynamic(Slots.Query_characters_498461), plural: false, selection: Baton.Selection(type: Types.Characters, hasID: false, abstract: false, fields: [
                 .linked("info", key: .fixed(Slots.Characters_info), plural: false, selection: Baton.Selection(type: Types.Info, hasID: false, abstract: false, fields: [
                     .scalar("count", key: .fixed(Slots.Info_count), kind: .int, list: false),
                 ])),
@@ -87,8 +87,8 @@ query TestKeys(
         public static let typeName = "Query"
         @MainActor public var search: Baton.List<Search>? { anchor.list(Slots.Query_search_6286a6) }
         @MainActor public var character: Character? { anchor.linked(Slots.Query_character_4a2dfc).map(Character.init(anchor:)) }
-        @MainActor public var charactersByIds: Baton.List<CharactersByIds>? { anchor.list(Slots.Query_charactersByIds_0b7f7b(anchor.variables)) }
-        @MainActor public var characters: Characters? { anchor.linked(Slots.Query_characters_498461(anchor.variables)).map(Characters.init(anchor:)) }
+        @MainActor public var charactersByIds: Baton.List<CharactersByIds>? { anchor.list(anchor.owner.slot(Slots.Query_charactersByIds_0b7f7b)) }
+        @MainActor public var characters: Characters? { anchor.linked(anchor.owner.slot(Slots.Query_characters_498461)).map(Characters.init(anchor:)) }
 
         nonisolated public struct Search: Baton.Lens {
             public let anchor: Baton.Anchor

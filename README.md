@@ -31,8 +31,8 @@ other native clients is at the end, and at length in
 
 - **A fragment per view.** GraphQL lives in the Swift file, next to the view
   that reads it, as a full, valid document. A parent passes a child its
-  fragment as a pointer-sized value; a child can read nothing it did not
-  declare.
+  fragment as a record reference and a context; a child can read nothing it
+  did not declare.
 - **One request per screen.** The compiler assembles the operation from the
   fragments spread into it and emits a persisted id for it. Nobody writes the
   screen's query by hand, and nothing waterfalls.

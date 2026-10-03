@@ -29,9 +29,9 @@ verbatim.
 **Fragment arguments.** Relay: `@argumentDefinitions` and `@arguments`. Here:
 the same directives. The compiler inlines them in the normalization plan and
 the operation text, as Relay does; the spread's accessor binds them into the
-child lens's scope over the parent's variables (the passed literal or
-variable, else the default, else null), and storage keys with fragment
-variables resolve against that scope.
+child lens's [owner](#generated) over the parent's variables (the passed
+literal or variable, else the default, else null), once per parent owner,
+and storage keys with fragment variables resolve against that scope.
 
 **Refetchable fragment.** Relay: `@refetchable(queryName:)`, a fragment the
 compiler generates a query for. Here: the same; the lens gets `refetch()`,
@@ -76,11 +76,19 @@ properties of an [operation value](#generated).
 ## Generated
 
 **Lens.** Baton's word. The typed, read-only view a fragment or operation
-root compiles to: a record reference (and a context when variables are
-involved) with one accessor per declared field. Relay has two words,
-fragment reference and fragment data, for what is one value here; "reader"
-is Relay's name for machinery and "view" is SwiftUI's. See
+root compiles to: a record reference and a context, its owner, with one
+accessor per declared field. Relay has two words, fragment reference and
+fragment data, for what is one value here; "reader" is Relay's name for
+machinery and "view" is SwiftUI's. See
 [A fragment is a lens](principles/fragment-is-a-lens.md).
+
+**Owner.** Relay: the fragment owner, the request whose variables a fragment
+reference is read with. Here: the scope a lens reads in, one operation's
+variables or a fragment's arguments bound over them, carried by the lens's
+anchor beside its record. A handle makes one owner and keeps it; a storage
+key with variables is resolved once per owner, and a spread with arguments
+binds its scope once per owner, so later reads render, hash and allocate
+nothing.
 
 **Operation value.** A `Hashable` struct of an operation's variables, the
 thing a parent constructs and a navigation path carries. Inside a view it
@@ -120,8 +128,7 @@ emitted as a constant; the process numbers each key on first use, and a
 record stores the value at that number, so a read through a constant hashes
 nothing. A field read through an interface or union reads an *abstract
 slot*: its key's slot on each concrete type, resolved on that type's first
-read. Resolving keys with variables once rather than on every read is
-*(planned)*. See
+read. A key with variables is resolved once per [owner](#generated). See
 [Slots are numbered by the process](decisions/slots-are-numbered-by-the-process.md).
 
 **Invalidation channel.** Baton's word; Relay tells a fragment's subscribers

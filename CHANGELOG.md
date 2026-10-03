@@ -151,6 +151,17 @@ are expected and listed without apology.
   `AbstractSlot`, which resolves its key once per concrete type: 22 ns per
   untracked read against 56 ns, which took the registry's lock and hashed
   the key on every read. The `key:` readers of `Anchor` are removed.
+- Keys with variables and fragment arguments are resolved once per owner,
+  Relay's fragment owner: the scope a lens reads in, which a handle makes
+  once and keeps. A root field with a variable argument rendered its key,
+  took the registry's lock and hashed it on every read, 232 ns; it reads
+  in 28 ns, against 25 ns for a constant key. A spread with `@arguments`
+  built two dictionaries per read, 453 ns, and gave its child a scope that
+  never compared equal to the last; it binds once and reads in 45 ns. An
+  `Anchor` is a record, an owner and the record it was reached from, and
+  two are equal when those are the same objects. Breaking for code that
+  builds anchors: `Anchor(record:owner:parent:)` replaces the `parent:`
+  form, and `binding` takes the spread's `ArgumentSite`.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 
