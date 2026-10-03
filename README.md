@@ -1,4 +1,6 @@
-<img src="baton.png" alt="A loaf of bread, drawn in one line: the Baton logo" width="160">
+<p align="center">
+  <img src="baton.png" alt="A loaf of bread, drawn in one line: the Baton logo" width="160">
+</p>
 
 # Baton 🥖
 
@@ -67,6 +69,13 @@ the road to 1.0. The promises:
 - **Small everything.** Generated code is one line per field plus data
   tables. The runtime depends on Foundation and Observation. The compiler is
   one prebuilt binary, shared by the Swift and (later) Kotlin runtimes.
+- **Declarative, down to the writes.** What a view needs, how a list pages,
+  what an optimistic response shows and how a mutation edits a list are all
+  directives and values in the GraphQL text beside the view; nothing is
+  wired up at run time. That is also what makes Baton cheap for code that
+  language models write: one file holds the whole contract, the build checks
+  it against the schema at the exact character, and a wrong field is a
+  compile error rather than a runtime surprise.
 
 ## What it will not be
 
@@ -159,6 +168,21 @@ struct IssueList: View {
     }
 }
 ```
+
+## Written by people, or by models
+
+A screen written by a language model has the same shape as one written by a
+person, and goes through the same checks. The fragment beside the view is
+complete, valid GraphQL; the schema decides what exists; the generated lens
+decides what the body may read; the directives decide how data moves
+(`@connection`, `@appendEdge`, `@required`, `@catch`). There is no cache
+policy to configure, no normalizer to teach and no updater function to write,
+so there is nothing a generator has to know that is not in the file in front
+of it. The vocabulary is closed and short ([`docs/terminology.md`](docs/terminology.md))
+and fits in a prompt; the compiler's diagnostics point at the character in
+the GraphQL text that is wrong, which is the feedback a model iterates on
+best. The result is code that is quick to generate, easy to review, and hard
+to get silently wrong.
 
 ## Using it
 
