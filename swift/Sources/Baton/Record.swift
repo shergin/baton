@@ -1,0 +1,87 @@
+import Observation
+
+/// One normalized object in the store, and the observable the UI framework
+/// tracks. A view body that reads a slot is invalidated when that slot of this
+/// record changes, through one of sixteen invalidation channels.
+@MainActor
+public final class Record: Observable {
+    public let type: TypeID
+    /// `Type:id` for entities with a key, a path-based client id otherwise.
+    public let key: String
+    private var values: ContiguousArray<Value>
+    nonisolated private let registrar = ObservationRegistrar()
+
+    init(type: TypeID, key: String) {
+        self.type = type
+        self.key = key
+        values = ContiguousArray(repeating: .missing, count: Registry.slotCount(type))
+    }
+
+    /// Reads a slot and registers the read with the current tracking scope.
+    @inline(__always)
+    public func read(_ slot: Slot) -> Value {
+        registrar.access(self, keyPath: Record.channels[Int(slot.index) & 15])
+        let index = Int(slot.index)
+        return index < values.count ? values[index] : .missing
+    }
+
+    /// Reads without registering; for the store's own bookkeeping.
+    func peek(_ slot: Slot) -> Value {
+        let index = Int(slot.index)
+        return index < values.count ? values[index] : .missing
+    }
+
+    /// Writes a slot. Returns whether the value changed; observers are notified
+    /// only then.
+    @discardableResult
+    func write(_ slot: Slot, _ value: Value) -> Bool {
+        let index = Int(slot.index)
+        if index >= values.count {
+            values.append(contentsOf: repeatElement(.missing, count: index + 1 - values.count))
+        }
+        if values[index] == value { return false }
+        registrar.withMutation(of: self, keyPath: Record.channels[index & 15]) {
+            values[index] = value
+        }
+        return true
+    }
+
+    /// Whether the record is of the given type. Abstract types arrive with
+    /// type-membership bits in a later release.
+    public func `is`(_ type: TypeID) -> Bool { self.type == type }
+
+    // The channels. Each body is distinct on purpose: identical getters are
+    // merged by the optimizer and their key paths then collide in the registrar.
+    nonisolated var ch0: UInt8 { 0 }
+    nonisolated var ch1: UInt8 { 1 }
+    nonisolated var ch2: UInt8 { 2 }
+    nonisolated var ch3: UInt8 { 3 }
+    nonisolated var ch4: UInt8 { 4 }
+    nonisolated var ch5: UInt8 { 5 }
+    nonisolated var ch6: UInt8 { 6 }
+    nonisolated var ch7: UInt8 { 7 }
+    nonisolated var ch8: UInt8 { 8 }
+    nonisolated var ch9: UInt8 { 9 }
+    nonisolated var ch10: UInt8 { 10 }
+    nonisolated var ch11: UInt8 { 11 }
+    nonisolated var ch12: UInt8 { 12 }
+    nonisolated var ch13: UInt8 { 13 }
+    nonisolated var ch14: UInt8 { 14 }
+    nonisolated var ch15: UInt8 { 15 }
+
+    nonisolated(unsafe) static let channels: [KeyPath<Record, UInt8>] = [
+        \.ch0, \.ch1, \.ch2, \.ch3, \.ch4, \.ch5, \.ch6, \.ch7,
+        \.ch8, \.ch9, \.ch10, \.ch11, \.ch12, \.ch13, \.ch14, \.ch15,
+    ]
+}
+
+/// A record's identity, for list diffing. Stable for the record's lifetime.
+public struct RecordID: Hashable, Sendable {
+    let identifier: ObjectIdentifier
+    public let key: String
+
+    @MainActor init(_ record: Record) {
+        identifier = ObjectIdentifier(record)
+        key = record.key
+    }
+}
