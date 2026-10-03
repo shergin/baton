@@ -12,8 +12,8 @@ use std::fmt::Write as _;
 
 use crate::pipeline::{
     ArgumentValuePlan, CatchPlan, ConnectionPlan, ConstantPlan, FragmentPlan, HandlePlan,
-    LookupPlan, OperationPlan, Plan, RefetchPlan, RequiredPlan, SelectionPlan, TypeKind,
-    VariablePlan,
+    LookupPlan, OperationPlan, Plan, RefetchPlan, RequiredPlan, SelectionPlan, StorageKeyPlan,
+    TypeKind, VariablePlan,
 };
 
 /// Generated Swift, grouped by the source file that declared the documents.
@@ -22,36 +22,56 @@ pub struct Output {
     pub shared: String,
 }
 
+/// A part of a storage key as the runtime builds it: text, or an operation
+/// variable rendered as JSON.
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+enum KeyPart {
+    Literal(String),
+    Variable(String),
+}
+
 /// A slot the generated code refers to: a parent type and a storage key.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 struct SlotRef {
     type_name: String,
-    storage_key: String,
+    /// The key with `$name` in place of each variable: what names the slot
+    /// in this module.
+    template: String,
+    field: String,
+    has_arguments: bool,
+    parts: Vec<KeyPart>,
 }
 
 impl SlotRef {
-    fn is_dynamic(&self) -> bool {
-        self.storage_key.contains('$')
+    fn new(type_name: &str, key: &StorageKeyPlan) -> SlotRef {
+        let parts = key_parts(key);
+        SlotRef {
+            type_name: type_name.to_string(),
+            template: template(&parts),
+            field: key.name.clone(),
+            has_arguments: !key.arguments.is_empty(),
+            parts,
+        }
+    }
+
+    fn has_variables(&self) -> bool {
+        self.parts
+            .iter()
+            .any(|part| matches!(part, KeyPart::Variable(_)))
     }
 
     /// `Character_name`, or `Query_characters_1a2b3c` when the key has arguments.
     fn identifier(&self) -> String {
-        let field = self
-            .storage_key
-            .split('(')
-            .next()
-            .unwrap_or(&self.storage_key);
-        if field == self.storage_key {
-            format!("{}_{}", self.type_name, field)
-        } else {
-            let digest = format!("{:x}", md5::compute(self.storage_key.as_bytes()));
-            format!("{}_{}_{}", self.type_name, field, &digest[..6])
+        if !self.has_arguments {
+            return format!("{}_{}", self.type_name, self.field);
         }
+        let digest = format!("{:x}", md5::compute(self.template.as_bytes()));
+        format!("{}_{}_{}", self.type_name, self.field, &digest[..6])
     }
 
     /// The Swift expression that yields the slot.
     fn expression(&self) -> String {
-        if self.is_dynamic() {
+        if self.has_variables() {
             format!("Slots.{}(anchor.variables)", self.identifier())
         } else {
             format!("Slots.{}", self.identifier())
@@ -213,13 +233,13 @@ impl Emitter {
             "}\n\n/// Interned storage keys used by this module's documents.\nnonisolated enum Slots {\n",
         );
         for slot in &self.slots {
-            if slot.is_dynamic() {
+            if slot.has_variables() {
                 let _ = writeln!(
                     output,
                     "    static func {}(_ variables: Baton.Variables) -> Baton.Slot {{\n        Baton.Registry.slot(Types.{}, {})\n    }}",
                     slot.identifier(),
                     slot.type_name,
-                    dynamic_key_expression(&slot.storage_key, "variables")
+                    key_expression(&slot.parts, "variables")
                 );
             } else {
                 let _ = writeln!(
@@ -227,7 +247,7 @@ impl Emitter {
                     "    static let {} = Baton.Registry.slot(Types.{}, {})",
                     slot.identifier(),
                     slot.type_name,
-                    swift_literal(&slot.storage_key)
+                    swift_literal(&slot.template)
                 );
             }
         }
@@ -727,9 +747,7 @@ impl Emitter {
                         let nested = capitalize(alias.as_deref().unwrap_or(name));
                         let lookup_argument = lookup
                             .as_ref()
-                            .map(|lookup| {
-                                format!(", lookup: {}", lookup_expression(lookup, storage_key))
-                            })
+                            .map(|lookup| format!(", lookup: {}", lookup_expression(lookup)))
                             .unwrap_or_default();
                         let _ = writeln!(
                             output,
@@ -1190,7 +1208,7 @@ impl Emitter {
         field: ScalarAccessor<'_>,
         type_name: &str,
         type_is_abstract: bool,
-        storage_key: &str,
+        storage_key: &StorageKeyPlan,
         indent: &str,
     ) {
         let argument = self.read_argument(type_name, type_is_abstract, storage_key);
@@ -1254,7 +1272,7 @@ impl Emitter {
         field: LinkedAccessor<'_>,
         type_name: &str,
         type_is_abstract: bool,
-        storage_key: &str,
+        storage_key: &StorageKeyPlan,
         indent: &str,
     ) {
         let argument = self.read_argument(type_name, type_is_abstract, storage_key);
@@ -1263,7 +1281,7 @@ impl Emitter {
         let base_type = field.base_type;
         let lookup_argument = field
             .lookup
-            .map(|lookup| format!(", lookup: {}", lookup_expression(lookup, storage_key)))
+            .map(|lookup| format!(", lookup: {}", lookup_expression(lookup)))
             .unwrap_or_default();
         let keep = if field.bubbles {
             format!(", keep: {nested}.satisfied")
@@ -1493,22 +1511,14 @@ impl Emitter {
         &mut self,
         type_name: &str,
         type_is_abstract: bool,
-        storage_key: &str,
+        storage_key: &StorageKeyPlan,
     ) -> String {
         if type_is_abstract {
             self.types.insert(type_name.to_string());
-            let slot = SlotRef {
-                type_name: type_name.to_string(),
-                storage_key: storage_key.to_string(),
-            };
-            if slot.is_dynamic() {
-                format!(
-                    "key: {}",
-                    dynamic_key_expression(storage_key, "anchor.variables")
-                )
-            } else {
-                format!("key: {}", swift_literal(storage_key))
-            }
+            format!(
+                "key: {}",
+                key_expression(&key_parts(storage_key), "anchor.variables")
+            )
         } else {
             self.slot(type_name, storage_key)
         }
@@ -1521,22 +1531,14 @@ impl Emitter {
         &mut self,
         type_name: &str,
         type_is_abstract: bool,
-        storage_key: &str,
+        storage_key: &StorageKeyPlan,
     ) -> String {
         if type_is_abstract {
             self.types.insert(type_name.to_string());
-            let slot = SlotRef {
-                type_name: type_name.to_string(),
-                storage_key: storage_key.to_string(),
-            };
-            if slot.is_dynamic() {
-                format!(
-                    "anchor.slot(key: {})",
-                    dynamic_key_expression(storage_key, "anchor.variables")
-                )
-            } else {
-                format!("anchor.slot(key: {})", swift_literal(storage_key))
-            }
+            format!(
+                "anchor.slot(key: {})",
+                key_expression(&key_parts(storage_key), "anchor.variables")
+            )
         } else {
             self.slot(type_name, storage_key)
         }
@@ -1613,9 +1615,7 @@ impl Emitter {
                     let slot = self.plan_key(type_name, storage_key);
                     let lookup_argument = lookup
                         .as_ref()
-                        .map(|lookup| {
-                            format!(", lookup: {}", lookup_expression(lookup, storage_key))
-                        })
+                        .map(|lookup| format!(", lookup: {}", lookup_expression(lookup)))
                         .unwrap_or_default();
                     let connection_argument = connection
                         .as_ref()
@@ -1664,7 +1664,7 @@ impl Emitter {
             Some(ArgumentValuePlan::Variable(name)) => {
                 format!(", {label}: .variable({})", swift_literal(name))
             }
-            Some(ArgumentValuePlan::Constant(_)) => format!(", {label}: .literal"),
+            Some(_) => format!(", {label}: .literal"),
             None => String::new(),
         };
         format!(
@@ -1698,6 +1698,9 @@ impl Emitter {
                     ", connections: .literal([{}])",
                     swift_literal(&constant_text(other))
                 )
+            }
+            Some(ArgumentValuePlan::List(_) | ArgumentValuePlan::Object(_)) => {
+                unreachable!("lowering rejects connections given as a list with variables")
             }
             None => String::new(),
         };
@@ -1827,39 +1830,34 @@ impl Emitter {
         let _ = writeln!(output, "{indent}}}");
     }
 
-    fn slot(&mut self, type_name: &str, storage_key: &str) -> String {
-        let slot = SlotRef {
-            type_name: type_name.to_string(),
-            storage_key: storage_key.to_string(),
-        };
+    fn slot(&mut self, type_name: &str, storage_key: &StorageKeyPlan) -> String {
+        let slot = SlotRef::new(type_name, storage_key);
         let expression = slot.expression();
         self.slots.insert(slot);
         self.types.insert(type_name.to_string());
         expression
     }
 
-    /// The key expression inside a plan: a fixed slot or a dynamic template.
-    fn plan_key(&mut self, type_name: &str, storage_key: &str) -> String {
-        let slot = SlotRef {
-            type_name: type_name.to_string(),
-            storage_key: storage_key.to_string(),
-        };
-        if slot.is_dynamic() {
-            let parts = key_parts(storage_key)
-                .into_iter()
+    /// The key expression inside a plan: a fixed slot, or the parts a key
+    /// with variables is built from.
+    fn plan_key(&mut self, type_name: &str, storage_key: &StorageKeyPlan) -> String {
+        let slot = SlotRef::new(type_name, storage_key);
+        let expression = if slot.has_variables() {
+            let parts = slot
+                .parts
+                .iter()
                 .map(|part| match part {
-                    KeyPart::Literal(text) => format!(".literal({})", swift_literal(&text)),
-                    KeyPart::Variable(name) => format!(".variable(\"{name}\")"),
+                    KeyPart::Literal(text) => format!(".literal({})", swift_literal(text)),
+                    KeyPart::Variable(name) => format!(".variable({})", swift_literal(name)),
                 })
                 .collect::<Vec<_>>()
                 .join(", ");
-            self.slots.insert(slot);
             format!(".dynamic([{parts}])")
         } else {
-            let expression = format!(".fixed(Slots.{})", slot.identifier());
-            self.slots.insert(slot);
-            expression
-        }
+            format!(".fixed(Slots.{})", slot.identifier())
+        };
+        self.slots.insert(slot);
+        expression
     }
 }
 
@@ -2008,39 +2006,160 @@ fn flatten(selections: &[SelectionPlan]) -> Vec<(&SelectionPlan, Option<&str>)> 
     result
 }
 
-enum KeyPart {
-    Literal(String),
-    Variable(String),
-}
-
-/// Splits `characters(page:$page,filter:$filter)` into literal and variable parts.
-fn key_parts(storage_key: &str) -> Vec<KeyPart> {
+/// A storage key as the parts the runtime joins: the name, then the
+/// arguments as `name:value` in order, each value written as JSON the way the
+/// runtime renders a variable (object keys sorted, floats as Swift prints
+/// them), and each variable left as a part of its own.
+fn key_parts(key: &StorageKeyPlan) -> Vec<KeyPart> {
     let mut parts = Vec::new();
-    let mut literal = String::new();
-    let mut characters = storage_key.chars().peekable();
-    while let Some(character) = characters.next() {
-        if character == '$' {
-            if !literal.is_empty() {
-                parts.push(KeyPart::Literal(std::mem::take(&mut literal)));
+    let mut literal = key.name.clone();
+    if !key.arguments.is_empty() {
+        literal.push('(');
+        for (index, argument) in key.arguments.iter().enumerate() {
+            if index > 0 {
+                literal.push(',');
             }
-            let mut name = String::new();
-            while let Some(next) = characters.peek() {
-                if next.is_alphanumeric() || *next == '_' {
-                    name.push(*next);
-                    characters.next();
-                } else {
-                    break;
-                }
-            }
-            parts.push(KeyPart::Variable(name));
-        } else {
-            literal.push(character);
+            literal.push_str(&argument.name);
+            literal.push(':');
+            value_parts(&argument.value, &mut literal, &mut parts);
         }
+        literal.push(')');
     }
     if !literal.is_empty() {
         parts.push(KeyPart::Literal(literal));
     }
     parts
+}
+
+fn value_parts(value: &ArgumentValuePlan, literal: &mut String, parts: &mut Vec<KeyPart>) {
+    match value {
+        ArgumentValuePlan::Variable(name) => {
+            if !literal.is_empty() {
+                parts.push(KeyPart::Literal(std::mem::take(literal)));
+            }
+            parts.push(KeyPart::Variable(name.clone()));
+        }
+        ArgumentValuePlan::Constant(constant) => literal.push_str(&constant_json(constant)),
+        ArgumentValuePlan::List(items) => {
+            literal.push('[');
+            for (index, item) in items.iter().enumerate() {
+                if index > 0 {
+                    literal.push(',');
+                }
+                value_parts(item, literal, parts);
+            }
+            literal.push(']');
+        }
+        ArgumentValuePlan::Object(fields) => {
+            let mut sorted: Vec<&(String, ArgumentValuePlan)> = fields.iter().collect();
+            sorted.sort_by(|left, right| left.0.cmp(&right.0));
+            literal.push('{');
+            for (index, (name, field)) in sorted.into_iter().enumerate() {
+                if index > 0 {
+                    literal.push(',');
+                }
+                literal.push_str(&json_string(name));
+                literal.push(':');
+                value_parts(field, literal, parts);
+            }
+            literal.push('}');
+        }
+    }
+}
+
+/// The key with `$name` for each variable, for naming its slot.
+fn template(parts: &[KeyPart]) -> String {
+    parts
+        .iter()
+        .map(|part| match part {
+            KeyPart::Literal(text) => text.clone(),
+            KeyPart::Variable(name) => format!("${name}"),
+        })
+        .collect()
+}
+
+/// A Swift expression that builds the key from `variables`.
+fn key_expression(parts: &[KeyPart], variables: &str) -> String {
+    parts
+        .iter()
+        .map(|part| match part {
+            KeyPart::Literal(text) => swift_literal(text),
+            KeyPart::Variable(name) => format!("{variables}.render({})", swift_literal(name)),
+        })
+        .collect::<Vec<_>>()
+        .join(" + ")
+}
+
+/// A constant as JSON, as the runtime renders the same value given as a
+/// variable: `Variable.json`.
+fn constant_json(constant: &ConstantPlan) -> String {
+    match constant {
+        ConstantPlan::Null => "null".to_string(),
+        ConstantPlan::Bool(boolean) => boolean.to_string(),
+        ConstantPlan::Int(int) => int.to_string(),
+        ConstantPlan::Float(float) => swift_double(*float),
+        ConstantPlan::String(text) => json_string(text),
+        ConstantPlan::List(items) => format!(
+            "[{}]",
+            items
+                .iter()
+                .map(constant_json)
+                .collect::<Vec<_>>()
+                .join(",")
+        ),
+        ConstantPlan::Object(fields) => {
+            let mut sorted: Vec<&(String, ConstantPlan)> = fields.iter().collect();
+            sorted.sort_by(|left, right| left.0.cmp(&right.0));
+            format!(
+                "{{{}}}",
+                sorted
+                    .into_iter()
+                    .map(|(name, value)| format!("{}:{}", json_string(name), constant_json(value)))
+                    .collect::<Vec<_>>()
+                    .join(",")
+            )
+        }
+    }
+}
+
+/// A double as Swift's `description` prints it: the shortest digits that
+/// read back, in exponent form when the exponent is 16 or more or below -4,
+/// with `.0` on a whole number otherwise.
+fn swift_double(value: f64) -> String {
+    let scientific = format!("{value:e}");
+    let (mantissa, exponent) = scientific
+        .split_once('e')
+        .expect("Rust writes an exponent in `{:e}`");
+    let exponent: i32 = exponent.parse().expect("the exponent is an integer");
+    if !(-4..16).contains(&exponent) {
+        let sign = if exponent < 0 { '-' } else { '+' };
+        return format!("{mantissa}e{sign}{:02}", exponent.abs());
+    }
+    let decimal = format!("{value}");
+    if decimal.contains('.') {
+        decimal
+    } else {
+        format!("{decimal}.0")
+    }
+}
+
+/// A JSON string literal, escaped as `Variable.quote` escapes one.
+fn json_string(text: &str) -> String {
+    let mut output = String::with_capacity(text.len() + 2);
+    output.push('"');
+    for character in text.chars() {
+        match character {
+            '"' => output.push_str("\\\""),
+            '\\' => output.push_str("\\\\"),
+            '\n' => output.push_str("\\n"),
+            '\r' => output.push_str("\\r"),
+            '\t' => output.push_str("\\t"),
+            other if (other as u32) < 0x20 => output.push_str(&format!("\\u{:04x}", other as u32)),
+            other => output.push(other),
+        }
+    }
+    output.push('"');
+    output
 }
 
 /// A Swift string literal for text that may contain quotes or backslashes
@@ -2058,18 +2177,6 @@ fn swift_literal(text: &str) -> String {
     }
     output.push('"');
     output
-}
-
-/// A Swift expression building the storage key from `variables`.
-fn dynamic_key_expression(storage_key: &str, variables: &str) -> String {
-    key_parts(storage_key)
-        .into_iter()
-        .map(|part| match part {
-            KeyPart::Literal(text) => swift_literal(&text),
-            KeyPart::Variable(name) => format!("{variables}.render(\"{name}\")"),
-        })
-        .collect::<Vec<_>>()
-        .join(" + ")
 }
 
 /// A `Baton.Variable` expression for a constant.
@@ -2137,33 +2244,50 @@ fn argument_expression(value: &ArgumentValuePlan) -> String {
     match value {
         ArgumentValuePlan::Variable(name) => format!("anchor.variables[{}]", swift_literal(name)),
         ArgumentValuePlan::Constant(constant) => variable_literal(constant),
+        ArgumentValuePlan::List(items) => format!(
+            ".list([{}])",
+            items
+                .iter()
+                .map(|item| format!("{} ?? .null", argument_expression(item)))
+                .collect::<Vec<_>>()
+                .join(", ")
+        ),
+        ArgumentValuePlan::Object(fields) => format!(
+            ".object([{}])",
+            fields
+                .iter()
+                .map(|(name, field)| format!(
+                    "{}: {} ?? .null",
+                    swift_literal(name),
+                    argument_expression(field)
+                ))
+                .collect::<Vec<_>>()
+                .join(", ")
+        ),
     }
 }
 
 /// The lookup: the entity type (or none, for an id across types) and the
-/// argument's value, a variable or a literal in the storage key.
-fn lookup_expression(lookup: &LookupPlan, storage_key: &str) -> String {
-    let argument_prefix = format!("{}:", lookup.argument);
-    let inside = storage_key
-        .split_once('(')
-        .map(|(_, rest)| rest.trim_end_matches(')'))
-        .unwrap_or("");
-    let value = inside
-        .split(',')
-        .find_map(|pair| pair.strip_prefix(&argument_prefix))
-        .unwrap_or("");
+/// argument's value, a variable or a constant written as a record key writes
+/// it: a string as itself, anything else as JSON.
+fn lookup_expression(lookup: &LookupPlan) -> String {
     let type_expression = match &lookup.type_name {
         Some(type_name) => format!("Types.{type_name}"),
         None => "nil".to_string(),
     };
-    if let Some(variable) = value.strip_prefix('$') {
-        format!("Baton.Lookup(type: {type_expression}, key: .variable(\"{variable}\"))")
-    } else {
-        format!(
-            "Baton.Lookup(type: {type_expression}, key: .literal(\"{}\"))",
-            value.trim_matches('"')
-        )
-    }
+    let key = match &lookup.value {
+        ArgumentValuePlan::Variable(name) => format!(".variable({})", swift_literal(name)),
+        ArgumentValuePlan::Constant(ConstantPlan::String(text)) => {
+            format!(".literal({})", swift_literal(text))
+        }
+        ArgumentValuePlan::Constant(constant) => {
+            format!(".literal({})", swift_literal(&constant_json(constant)))
+        }
+        ArgumentValuePlan::List(_) | ArgumentValuePlan::Object(_) => {
+            unreachable!("lowering rejects a lookup argument that is a list or an object")
+        }
+    };
+    format!("Baton.Lookup(type: {type_expression}, key: {key})")
 }
 
 fn scalar_reader(kind: TypeKind, list: bool) -> (&'static str, String) {

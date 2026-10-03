@@ -64,6 +64,7 @@ struct OracleCase: Sendable, CustomTestStringConvertible {
         OracleCase("tests/notes-refetch", fixture("notes-refetch"), TestNotesPaginationQuery(count: 2, id: "1"), override: (["node.name"], .string("Rick Prime"))),
         OracleCase("tests/add-note-node-n7", fixture("add-note-node-n7"), TestAddNoteNode(characterId: "1", text: "Node appended", connections: []), root: .mutation, override: (["addNote.note.text"], .string("Edited"))),
         OracleCase("tests/add-note-node-n0", fixture("add-note-node-n0"), TestAddNoteNodeFirst(characterId: "1", text: "Node first", connections: []), root: .mutation, override: (["addNote.note.text"], .string("Edited"))),
+        OracleCase("tests/keys-1", fixture("keys-1"), TestKeys(id: "7", name: "Rick"), override: (["characters.info.count"], .int(2))),
         OracleCase("tests/search-1", fixture("search-1"), TestSearch(name: "1"), override: (["search.1.dimension"], .string("Dimension C-138")), persisted: false),
         OracleCase("tests/search-origins-1", fixture("search-origins-1"), TestSearchOrigins(name: "1"), override: (["search.0.origin.name"], .string("Earth (C-138)")), persisted: false),
         OracleCase("tests/set-favorite-1", fixture("set-favorite-1"), TestSetFavorite(id: "1", favorite: true), root: .mutation, override: (["setFavorite.character.favorite"], .bool(false))),

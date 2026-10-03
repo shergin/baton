@@ -101,15 +101,23 @@ nonisolated enum Slots {
     static let PageInfo_hasNextPage = Baton.Registry.slot(Types.PageInfo, "hasNextPage")
     static let PageInfo_hasPreviousPage = Baton.Registry.slot(Types.PageInfo, "hasPreviousPage")
     static let PageInfo_startCursor = Baton.Registry.slot(Types.PageInfo, "startCursor")
+    static let Query_character_4a2dfc = Baton.Registry.slot(Types.Query, "character(id:\"a,b\")")
     static func Query_character_bca4f9(_ variables: Baton.Variables) -> Baton.Slot {
         Baton.Registry.slot(Types.Query, "character(id:" + variables.render("id") + ")")
+    }
+    static func Query_characters_498461(_ variables: Baton.Variables) -> Baton.Slot {
+        Baton.Registry.slot(Types.Query, "characters(filter:{\"name\":" + variables.render("name") + ",\"status\":\"Alive\"})")
     }
     static func Query_characters_5517f9(_ variables: Baton.Variables) -> Baton.Slot {
         Baton.Registry.slot(Types.Query, "characters(page:" + variables.render("page") + ")")
     }
+    static func Query_charactersByIds_0b7f7b(_ variables: Baton.Variables) -> Baton.Slot {
+        Baton.Registry.slot(Types.Query, "charactersByIds(ids:[" + variables.render("id") + ",\"2\"])")
+    }
     static func Query_node_8f7d08(_ variables: Baton.Variables) -> Baton.Slot {
         Baton.Registry.slot(Types.Query, "node(id:" + variables.render("id") + ")")
     }
+    static let Query_search_6286a6 = Baton.Registry.slot(Types.Query, "search(name:\"$0.00\")")
     static func Query_search_954c44(_ variables: Baton.Variables) -> Baton.Slot {
         Baton.Registry.slot(Types.Query, "search(name:" + variables.render("name") + ")")
     }

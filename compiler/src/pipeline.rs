@@ -9,7 +9,7 @@ use std::time::{Duration, Instant};
 
 use common::{Diagnostic, DirectiveName, NamedItem, NoopPerfLogger, SourceLocationKey};
 use graphql_ir::{
-    ConditionValue, FragmentDefinition, FragmentDefinitionNameSet, Program, Selection,
+    ConditionValue, Field, FragmentDefinition, FragmentDefinitionNameSet, Program, Selection,
 };
 use graphql_syntax::OperationKind;
 use graphql_text_printer::{PrinterOptions, print_full_operation};
@@ -148,7 +148,7 @@ pub enum TypeKind {
 }
 
 /// A GraphQL constant, as a fragment argument or a variable default.
-#[derive(Debug, Clone, serde::Serialize)]
+#[derive(Debug, Clone, PartialEq, serde::Serialize)]
 #[serde(tag = "kind", content = "value", rename_all = "snake_case")]
 pub enum ConstantPlan {
     Null,
@@ -160,18 +160,30 @@ pub enum ConstantPlan {
     Object(Vec<(String, ConstantPlan)>),
 }
 
-/// An argument value: a variable of the enclosing scope, or a constant.
-#[derive(Debug, Clone, serde::Serialize)]
+/// An argument value: a variable of the enclosing scope, a constant, or a
+/// list or object whose items may be either.
+#[derive(Debug, Clone, PartialEq, serde::Serialize)]
 #[serde(tag = "kind", content = "value", rename_all = "snake_case")]
 pub enum ArgumentValuePlan {
     Variable(String),
     Constant(ConstantPlan),
+    List(Vec<ArgumentValuePlan>),
+    Object(Vec<(String, ArgumentValuePlan)>),
 }
 
-#[derive(Debug, Clone, serde::Serialize)]
+#[derive(Debug, Clone, PartialEq, serde::Serialize)]
 pub struct ArgumentPlan {
     pub name: String,
     pub value: ArgumentValuePlan,
+}
+
+/// Relay's storage key, as a tree: the field name and its arguments, sorted
+/// by name. The emitter writes it as the runtime renders one; nothing parses
+/// it again.
+#[derive(Debug, Clone, PartialEq, serde::Serialize)]
+pub struct StorageKeyPlan {
+    pub name: String,
+    pub arguments: Vec<ArgumentPlan>,
 }
 
 /// A root field that returns an entity addressable by one of its arguments,
@@ -181,6 +193,8 @@ pub struct LookupPlan {
     /// `None` resolves by id across types.
     pub type_name: Option<String>,
     pub argument: String,
+    /// The argument's value in the document.
+    pub value: ArgumentValuePlan,
 }
 
 /// A `@connection` field: the client record pages merge into, and the cursor
@@ -189,7 +203,7 @@ pub struct LookupPlan {
 pub struct ConnectionPlan {
     pub key: String,
     /// Relay's handle key with the filters: `__Key_connection(states:"OPEN")`.
-    pub storage_key: String,
+    pub storage_key: StorageKeyPlan,
     pub edge_type: String,
     pub page_info_type: String,
     pub after: Option<ArgumentValuePlan>,
@@ -235,7 +249,7 @@ pub enum SelectionPlan {
         /// `@semanticNonNull` in the schema: null only when an error occurred.
         semantic_non_null: bool,
         list: bool,
-        storage_key: String,
+        storage_key: StorageKeyPlan,
         handle: Option<HandlePlan>,
         required: Option<RequiredPlan>,
         catch: Option<CatchPlan>,
@@ -257,7 +271,7 @@ pub enum SelectionPlan {
         /// Whether the target type is an interface or union: records are then
         /// keyed and sloted by the payload's `__typename`.
         is_abstract: bool,
-        storage_key: String,
+        storage_key: StorageKeyPlan,
         lookup: Option<LookupPlan>,
         connection: Option<ConnectionPlan>,
         handle: Option<HandlePlan>,
@@ -355,7 +369,7 @@ pub fn compile(
     timings.transform = started.elapsed();
 
     let started = Instant::now();
-    let plan = lower(&schema, &programs, config);
+    let plan = lower(&schema, &programs, config)?;
     timings.lower = started.elapsed();
 
     Ok(Compiled { plan, timings })
@@ -403,6 +417,8 @@ struct Lowering<'a> {
     schema: &'a SDLSchema,
     programs: &'a Programs,
     config: &'a Config,
+    /// Errors found while lowering, reported together at the end.
+    diagnostics: std::cell::RefCell<Vec<Diagnostic>>,
 }
 
 fn directive_name(name: &str) -> DirectiveName {
@@ -410,11 +426,16 @@ fn directive_name(name: &str) -> DirectiveName {
 }
 
 /// Lowers Relay's reader and normalization programs into the plan IR.
-fn lower(schema: &SDLSchema, programs: &Programs, config: &Config) -> Plan {
+fn lower(
+    schema: &SDLSchema,
+    programs: &Programs,
+    config: &Config,
+) -> Result<Plan, Vec<Diagnostic>> {
     let lowering = Lowering {
         schema,
         programs,
         config,
+        diagnostics: std::cell::RefCell::new(Vec::new()),
     };
     let mut plan = Plan::default();
     for fragment in programs.reader.fragments() {
@@ -484,7 +505,12 @@ fn lower(schema: &SDLSchema, programs: &Programs, config: &Config) -> Plan {
     }
     plan.operations
         .sort_by(|left, right| left.name.cmp(&right.name));
-    plan
+    let diagnostics = lowering.diagnostics.into_inner();
+    if diagnostics.is_empty() {
+        Ok(plan)
+    } else {
+        Err(diagnostics)
+    }
 }
 
 fn has_deferred(selections: &[SelectionPlan]) -> bool {
@@ -627,11 +653,25 @@ impl Lowering<'_> {
         let directive = extract_handle_field_directives(directives).next()?;
         let values = extract_values_from_handle_field_directive(directive);
         let arguments = values.handle_args.unwrap_or_default();
+        let connections = arguments
+            .named(common::ArgumentName("connections".intern()))
+            .and_then(|argument| {
+                let value = argument_value_plan(&argument.value.item);
+                if matches!(
+                    value,
+                    ArgumentValuePlan::List(_) | ArgumentValuePlan::Object(_)
+                ) {
+                    self.diagnostics.borrow_mut().push(Diagnostic::error(
+                        "pass the connection ids as one variable or as a list of constants",
+                        argument.value.location,
+                    ));
+                    return None;
+                }
+                Some(value)
+            });
         Some(HandlePlan {
             kind: values.handle.lookup().to_string(),
-            connections: arguments
-                .named(common::ArgumentName("connections".intern()))
-                .map(|argument| argument_value_plan(&argument.value.item)),
+            connections,
             edge_type_name: arguments
                 .named(common::ArgumentName("edgeTypeName".intern()))
                 .and_then(|argument| match &argument.value.item {
@@ -731,9 +771,36 @@ impl Lowering<'_> {
                         .lookups
                         .iter()
                         .find(|lookup| lookup.field == format!("{parent_name}.{name}"))
-                        .map(|lookup| LookupPlan {
-                            type_name: lookup.type_name.clone(),
-                            argument: lookup.argument.clone(),
+                        .and_then(|lookup| {
+                            let argument = field
+                                .arguments
+                                .named(common::ArgumentName(lookup.argument.as_str().intern()));
+                            let Some(argument) = argument else {
+                                self.diagnostics.borrow_mut().push(Diagnostic::error(
+                                    format!(
+                                        "baton.json looks `{parent_name}.{name}` up by `{}`, which this selection does not pass",
+                                        lookup.argument
+                                    ),
+                                    field.alias_or_name_location(),
+                                ));
+                                return None;
+                            };
+                            let value = argument_value_plan(&argument.value.item);
+                            if matches!(value, ArgumentValuePlan::List(_) | ArgumentValuePlan::Object(_)) {
+                                self.diagnostics.borrow_mut().push(Diagnostic::error(
+                                    format!(
+                                        "the lookup argument `{}` of `{parent_name}.{name}` must be a variable or a constant",
+                                        lookup.argument
+                                    ),
+                                    argument.value.location,
+                                ));
+                                return None;
+                            }
+                            Some(LookupPlan {
+                                type_name: lookup.type_name.clone(),
+                                argument: lookup.argument.clone(),
+                                value,
+                            })
                         });
                     let mut handle = self.handle(&field.directives);
                     let mut connection = None;
@@ -929,25 +996,21 @@ impl Lowering<'_> {
     }
 }
 
-/// Relay's storage key: the field name, plus `(arg:value,...)` when the field
-/// has arguments. Variables are kept symbolic; the runtime binds them.
-fn storage_key(name: &str, arguments: &[graphql_ir::Argument]) -> String {
-    if arguments.is_empty() {
-        return name.to_string();
-    }
+/// Relay's storage key: the field name and its arguments sorted by name.
+/// Variables stay symbolic; the runtime binds them.
+fn storage_key(name: &str, arguments: &[graphql_ir::Argument]) -> StorageKeyPlan {
     let mut sorted: Vec<&graphql_ir::Argument> = arguments.iter().collect();
     sorted.sort_by_key(|argument| argument.name.item.0.lookup());
-    let rendered: Vec<String> = sorted
-        .iter()
-        .map(|argument| {
-            format!(
-                "{}:{}",
-                argument.name.item.0.lookup(),
-                render_value(&argument.value.item)
-            )
-        })
-        .collect();
-    format!("{}({})", name, rendered.join(","))
+    StorageKeyPlan {
+        name: name.to_string(),
+        arguments: sorted
+            .into_iter()
+            .map(|argument| ArgumentPlan {
+                name: argument.name.item.0.lookup().to_string(),
+                value: argument_value_plan(&argument.value.item),
+            })
+            .collect(),
+    }
 }
 
 fn constant_plan(value: &graphql_ir::ConstantValue) -> ConstantPlan {
@@ -976,8 +1039,8 @@ fn constant_plan(value: &graphql_ir::ConstantValue) -> ConstantPlan {
     }
 }
 
-/// An argument as the plan carries it: a variable name or a constant. Lists
-/// and objects that mix variables in are kept as their rendered text.
+/// An argument as the plan carries it: a variable name, a constant, or a
+/// list or object of either.
 fn argument_value_plan(value: &graphql_ir::Value) -> ArgumentValuePlan {
     match value {
         graphql_ir::Value::Constant(constant) => {
@@ -986,81 +1049,19 @@ fn argument_value_plan(value: &graphql_ir::Value) -> ArgumentValuePlan {
         graphql_ir::Value::Variable(variable) => {
             ArgumentValuePlan::Variable(variable.name.item.0.lookup().to_string())
         }
-        other => ArgumentValuePlan::Constant(ConstantPlan::String(render_value(other))),
-    }
-}
-
-/// A constant argument as JSON, the way Relay's `formatStorageKey` renders it:
-/// enums as strings, object keys in source order (the IR sorts them).
-fn render_constant(value: &graphql_ir::ConstantValue) -> String {
-    match value {
-        graphql_ir::ConstantValue::Int(int) => int.to_string(),
-        graphql_ir::ConstantValue::Float(float) => float.as_float().to_string(),
-        graphql_ir::ConstantValue::String(string) | graphql_ir::ConstantValue::Enum(string) => {
-            json_string(string.lookup())
-        }
-        graphql_ir::ConstantValue::Boolean(boolean) => boolean.to_string(),
-        graphql_ir::ConstantValue::Null() => "null".to_string(),
-        graphql_ir::ConstantValue::List(items) => {
-            let items: Vec<String> = items.iter().map(render_constant).collect();
-            format!("[{}]", items.join(","))
-        }
-        graphql_ir::ConstantValue::Object(fields) => {
-            let mut sorted: Vec<&graphql_ir::ConstantArgument> = fields.iter().collect();
-            sorted.sort_by_key(|field| field.name.item.0.lookup());
-            let fields: Vec<String> = sorted
-                .iter()
-                .map(|field| {
-                    format!(
-                        "{}:{}",
-                        json_string(field.name.item.0.lookup()),
-                        render_constant(&field.value.item)
-                    )
-                })
-                .collect();
-            format!("{{{}}}", fields.join(","))
-        }
-    }
-}
-
-fn json_string(text: &str) -> String {
-    let mut output = String::with_capacity(text.len() + 2);
-    output.push('"');
-    for character in text.chars() {
-        match character {
-            '"' => output.push_str("\\\""),
-            '\\' => output.push_str("\\\\"),
-            '\n' => output.push_str("\\n"),
-            '\r' => output.push_str("\\r"),
-            '\t' => output.push_str("\\t"),
-            other if (other as u32) < 0x20 => output.push_str(&format!("\\u{:04x}", other as u32)),
-            other => output.push(other),
-        }
-    }
-    output.push('"');
-    output
-}
-
-fn render_value(value: &graphql_ir::Value) -> String {
-    match value {
-        graphql_ir::Value::Constant(constant) => render_constant(constant),
-        graphql_ir::Value::Variable(variable) => format!("${}", variable.name.item.0.lookup()),
         graphql_ir::Value::List(items) => {
-            let items: Vec<String> = items.iter().map(render_value).collect();
-            format!("[{}]", items.join(","))
+            ArgumentValuePlan::List(items.iter().map(argument_value_plan).collect())
         }
-        graphql_ir::Value::Object(fields) => {
-            let fields: Vec<String> = fields
+        graphql_ir::Value::Object(fields) => ArgumentValuePlan::Object(
+            fields
                 .iter()
                 .map(|field| {
-                    format!(
-                        "{}:{}",
-                        field.name.item.0.lookup(),
-                        render_value(&field.value.item)
+                    (
+                        field.name.item.0.lookup().to_string(),
+                        argument_value_plan(&field.value.item),
                     )
                 })
-                .collect();
-            format!("{{{}}}", fields.join(","))
-        }
+                .collect(),
+        ),
     }
 }

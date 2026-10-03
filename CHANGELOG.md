@@ -16,6 +16,13 @@ are expected and listed without apology.
   response. A `\u` escape cut short by the end of a string, or a high
   surrogate followed by an escape that is not a low surrogate, reads as
   U+FFFD; the first read past the string and the second trapped.
+- Storage keys are built from the arguments, not parsed from text. A
+  string argument holding `$` (`price(format: "$0.00")`) was read as a
+  variable, a lookup argument holding a comma was cut at it, and a list or
+  input object with a variable inside was stored under its own text; an
+  input object's keys were written unquoted and unsorted. Floats in keys are
+  written as the runtime renders a variable. A lookup in `baton.json` whose
+  argument the selection does not pass is a compile error.
 - A handle outlives its environment: a view that releases its handle after
   the environment is gone no longer traps; the release does nothing.
 - A damaged image is a miss, never a crash. A file damaged under the open

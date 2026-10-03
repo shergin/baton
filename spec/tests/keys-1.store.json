@@ -1,0 +1,10 @@
+{
+  "Character:2": {"__typename": "Character", "id": "2", "name": "Morty Smith"},
+  "Character:7": {"__typename": "Character", "id": "7", "name": "Rick Sanchez"},
+  "Character:a,b": {"__typename": "Character", "id": "a,b", "name": "Comma"},
+  "client:root": {"__typename": "Query", "character(id:\"a,b\")": {"__ref": "Character:a,b"}, "characters(filter:{\"name\":\"Rick\",\"status\":\"Alive\"})": {"__ref": "client:root:characters(filter:{\"name\":\"Rick\",\"status\":\"Alive\"})"}, "charactersByIds(ids:[\"7\",\"2\"])": {"__refs": ["Character:7", "Character:2"]}, "search(name:\"$0.00\")": {"__refs": []}},
+  "client:root:characters(filter:{\"name\":\"Rick\",\"status\":\"Alive\"})": {"__typename": "Characters", "info": {"__ref": "client:root:characters(filter:{\"name\":\"Rick\",\"status\":\"Alive\"}):info"}},
+  "client:root:characters(filter:{\"name\":\"Rick\",\"status\":\"Alive\"}):info": {"__typename": "Info", "count": 1},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}
