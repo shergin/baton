@@ -165,14 +165,15 @@ public enum Ingest {
     }
 
     /// Normalizes one object, as a deferred part delivers it: the selection
-    /// the part fills, at the record its path named.
-    public static func normalizeObject(_ data: Data, plan: ResolvedSelection, rootKey: String) throws -> ChangeSet {
+    /// the part fills, at the record its path named, read as that record's
+    /// concrete type.
+    public static func normalizeObject(_ data: Data, plan: ResolvedSelection, key: String, type: TypeID, entity: Bool) throws -> ChangeSet {
         let bytes = [UInt8](data)
         var changes = ChangeSet(bytes: bytes)
         try bytes.withUnsafeBufferPointer { buffer in
             var cursor = Cursor(base: buffer.baseAddress!, count: buffer.count, changes: changes)
             cursor.skipWhitespace()
-            let rootID = cursor.changes.record(for: rootKey, type: plan.type, entity: false)
+            let rootID = cursor.changes.record(for: key, type: type, entity: entity)
             _ = try cursor.object(plan: plan, parent: rootID, slot: nil, listIndex: nil, depth: 0, fixedRecord: rootID)
             changes = cursor.changes
         }
@@ -423,10 +424,11 @@ public enum Ingest {
                 var resolved: (Int32, Slot)?
                 var segments = path[...]
                 walk: while let segment = segments.popFirst() {
-                    guard case .name(let name) = segment, let index = selection.field(named: name) else { break walk }
-                    let field = selection.fields[index]
+                        let variant = selection.variant(for: changes.recordTypes[Int(record)])
+                    guard case .name(let name) = segment, let index = variant.field(named: name) else { break walk }
+                    let field = variant.fields[index]
                     caught = caught || field.caught
-                    let slot = selection.slot(of: index, on: changes.recordTypes[Int(record)])
+                    let slot = field.slot
                     resolved = (record, slot)
                     guard case .linked(let child, _, _, _) = field.kind,
                           let position = positions[UInt64(UInt32(bitPattern: record)) << 32 | UInt64(UInt32(bitPattern: slot.index))]
@@ -456,21 +458,26 @@ public enum Ingest {
 
         /// Parses one object against a selection; appends its entries; returns its record.
         ///
-        /// Entities are keyed `Type:id`. For a selection on an interface or union
-        /// the type is the payload's `__typename`, and the slots are resolved
-        /// against that concrete type when the object ends. The `id` and the
-        /// `__typename` may arrive anywhere in the object: Relay prints the
-        /// `id` it adds last, and an optimistic response sorts its keys.
+        /// Entities are keyed `Type:id`. For a selection on an interface or
+        /// union the record's type is the payload's `__typename`, settled
+        /// before any key is matched, because it picks the variant the object
+        /// is read with: its fields and their slots. Relay prints `__typename`
+        /// first, so settling it reads one key. The `id` may arrive anywhere:
+        /// Relay prints the `id` it adds last, and an optimistic response
+        /// sorts its keys.
         mutating func object(plan: ResolvedSelection, parent: Int32, slot: Slot?, listIndex: Int?, depth: Int, fixedRecord: Int32?) throws -> Int32 {
             try expect(0x7B)
             guard depth < scratch.count else { throw IngestError(offset: position, message: "selection nested deeper than 24 levels") }
             scratch[depth].removeAll(keepingCapacity: true)
             extra[depth].removeAll(keepingCapacity: true)
             var record: Int32 = fixedRecord ?? -1
-            var concreteType = plan.type
+            var concreteType = fixedRecord.map { changes.recordTypes[Int($0)] } ?? plan.type
             var pendingID: (Int, Int, Bool)? = nil
+            if plan.isAbstract, fixedRecord == nil {
+                try identity(of: plan, afterValue: false, wantsID: false, concreteType: &concreteType, pendingID: &pendingID)
+            }
             var expected = 0
-            let fields = plan.fields
+            let fields = plan.variant(for: concreteType).fields
             let fieldCount = fields.count
             while true {
                 skipWhitespace()
@@ -498,15 +505,8 @@ public enum Ingest {
                 let field = fields[matched]
 
                 if field.isTypename {
-                    // Kept as the record's type, not as a field.
-                    if peek() == 0x6E { try literal("null"); continue }
-                    let (start, end, escaped) = try scanString()
-                    if plan.isAbstract {
-                        concreteType = Registry.type(Ingest.materialize(base: base, start, end, escaped))
-                        if record < 0, let (idStart, idEnd, idEscaped) = pendingID {
-                            record = changes.record(for: concreteType.name + ":" + Ingest.materialize(base: base, idStart, idEnd, idEscaped), type: concreteType, entity: true)
-                        }
-                    }
+                    // The record's type, settled before the first key.
+                    try skipValue()
                     continue
                 }
 
@@ -543,12 +543,7 @@ public enum Ingest {
                     let value = try scalarValue(scalar)
                     if plan.hasID && field.keyBytes.count == 2 && field.keyBytes[0] == 0x69 && field.keyBytes[1] == 0x64,
                        case .string(let start, let end, let escaped) = value, record < 0 {
-                        if plan.isAbstract && concreteType == plan.type {
-                            // The typename has not arrived; settle when it does, or at the end.
-                            pendingID = (Int(start), Int(end), escaped)
-                        } else {
-                            record = changes.record(for: concreteType.name + ":" + Ingest.materialize(base: base, Int(start), Int(end), escaped), type: concreteType, entity: true)
-                        }
+                        record = changes.record(for: concreteType.name + ":" + Ingest.materialize(base: base, Int(start), Int(end), escaped), type: concreteType, entity: true)
                     }
                     scratch[depth].append((matched, value))
                     if let handle = field.handle { deletion(handle, value) }
@@ -561,7 +556,7 @@ public enum Ingest {
                     if record < 0 {
                         // A child's key may be a path through this object, so the
                         // object's own key is settled before the child is read.
-                        try identityAhead(plan: plan, concreteType: &concreteType, pendingID: &pendingID)
+                        try identity(of: plan, afterValue: true, wantsID: true, concreteType: &concreteType, pendingID: &pendingID)
                         record = settle(plan: plan, concreteType: concreteType, pendingID: pendingID, parent: parent, slot: slot, listIndex: listIndex)
                     }
                     if plural {
@@ -600,21 +595,11 @@ public enum Ingest {
             if record < 0 {
                 record = settle(plan: plan, concreteType: concreteType, pendingID: pendingID, parent: parent, slot: slot, listIndex: listIndex)
             }
-            if plan.isAbstract {
-                let slots = plan.slots(for: concreteType)
-                for (index, value) in scratch[depth] {
-                    changes.entries.append(ChangeSet.Entry(record: record, slot: slots[index], value: value))
-                }
-                for (key, _, value) in extra[depth] {
-                    changes.entries.append(ChangeSet.Entry(record: record, slot: Registry.slot(concreteType, key), value: value))
-                }
-            } else {
-                for (index, value) in scratch[depth] {
-                    changes.entries.append(ChangeSet.Entry(record: record, slot: fields[index].slot, value: value))
-                }
-                for (_, slot, value) in extra[depth] {
-                    changes.entries.append(ChangeSet.Entry(record: record, slot: slot, value: value))
-                }
+            for (index, value) in scratch[depth] {
+                changes.entries.append(ChangeSet.Entry(record: record, slot: fields[index].slot, value: value))
+            }
+            for (_, slot, value) in extra[depth] {
+                changes.entries.append(ChangeSet.Entry(record: record, slot: slot, value: value))
             }
             return record
         }
@@ -660,19 +645,21 @@ public enum Ingest {
             }
         }
 
-        /// Finds the `id` and the `__typename` an object still owes among the
-        /// members after the one at the cursor, which is a link's value, and
-        /// leaves the cursor there. Without it an entity whose `id` follows a
-        /// link would be keyed by its path, apart from the record every other
-        /// operation writes.
-        mutating func identityAhead(plan: ResolvedSelection, concreteType: inout TypeID, pendingID: inout (Int, Int, Bool)?) throws {
-            var needsID = plan.hasID && pendingID == nil
+        /// Finds what an object's identity still lacks among its members, and
+        /// leaves the cursor where it was: the `__typename` of an abstract
+        /// selection, from the object's first member, before any key is
+        /// matched; the `id`, from the member after the one at the cursor,
+        /// which is a link's value. Without the id an entity whose `id`
+        /// follows a link would be keyed by its path, apart from the record
+        /// every other operation writes.
+        mutating func identity(of plan: ResolvedSelection, afterValue: Bool, wantsID: Bool, concreteType: inout TypeID, pendingID: inout (Int, Int, Bool)?) throws {
+            var needsID = wantsID && plan.hasID && pendingID == nil
             var needsType = plan.isAbstract && concreteType == plan.type
             guard needsID || needsType else { return }
             let resume = position
             defer { position = resume }
             let typename: StaticString = "__typename"
-            try skipValue()
+            if afterValue { try skipValue() }
             while needsID || needsType {
                 skipWhitespace()
                 let byte = peek()

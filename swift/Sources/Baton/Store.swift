@@ -640,10 +640,15 @@ public final class Store {
 
     /// The walk in memory: whether the store holds every field as it stands.
     private func holds(_ selection: ResolvedSelection, at record: Record) -> Bool {
-        let fields = selection.fields
+        selection.isAbstract ? holds(selection.variant(for: record.type).fields, at: record) : holds(selection.fields, at: record)
+    }
+
+    /// The walk over one record's fields. They are taken as a parameter and
+    /// read in place, so neither the list nor a field is retained per record.
+    private func holds(_ fields: [ResolvedField], at record: Record) -> Bool {
         for index in fields.indices {
             if fields[index].isTypename || fields[index].deferred != nil { continue }
-            let slot = selection.slot(of: index, on: record.type)
+            let slot = fields[index].slot
             switch fields[index].kind {
             case .scalar:
                 if case .missing = record.peek(slot) { return false }
@@ -673,10 +678,13 @@ public final class Store {
     /// at the live record of that key; a connection's client record is walked
     /// while it is still unread.
     private func fill(_ selection: ResolvedSelection, at record: Record, from disk: Disk) -> Bool {
-        let fields = selection.fields
+        selection.isAbstract ? fill(selection.variant(for: record.type).fields, at: record, from: disk) : fill(selection.fields, at: record, from: disk)
+    }
+
+    private func fill(_ fields: [ResolvedField], at record: Record, from disk: Disk) -> Bool {
         for index in fields.indices {
             if fields[index].isTypename || fields[index].deferred != nil { continue }
-            let slot = selection.slot(of: index, on: record.type)
+            let slot = fields[index].slot
             if case .missing = record.peek(slot) { hydrate(record, slot, from: disk) }
             switch fields[index].kind {
             case .scalar:
@@ -711,10 +719,10 @@ public final class Store {
                 // Lenses read a connection through its client record, which
                 // the walk above does not pass. One the image has yet to fill
                 // is walked here, so its merged pages come back with it.
-                if let connection, case .ref(let found) = record.peek(selection.slot(of: connection, on: record.type)) {
+                if let connection, case .ref(let found) = record.peek(connection.slot) {
                     let unread = found.swept || (!found.hydrated && found.slotCount == 0)
                     let merged = live(found, disk)
-                    if merged !== found { record.write(selection.slot(of: connection, on: record.type), .ref(merged)) }
+                    if merged !== found { record.write(connection.slot, .ref(merged)) }
                     if unread, !merged.deleted, !fill(child, at: merged, from: disk) { return false }
                 }
             }
@@ -751,12 +759,19 @@ public final class Store {
     func mark(_ selection: ResolvedSelection, from record: Record? = nil, into reachable: inout Set<ObjectIdentifier>) {
         let record = record ?? root
         reachable.insert(ObjectIdentifier(record))
-        let fields = selection.fields
+        if selection.isAbstract {
+            mark(selection.variant(for: record.type).fields, from: record, into: &reachable)
+        } else {
+            mark(selection.fields, from: record, into: &reachable)
+        }
+    }
+
+    private func mark(_ fields: [ResolvedField], from record: Record, into reachable: inout Set<ObjectIdentifier>) {
         for index in fields.indices {
             guard case .linked(let child, _, _, let connection) = fields[index].kind else { continue }
-            mark(record.peek(selection.slot(of: index, on: record.type)), child, into: &reachable)
+            mark(record.peek(fields[index].slot), child, into: &reachable)
             if let connection {
-                mark(record.peek(selection.slot(of: connection, on: record.type)), child, into: &reachable)
+                mark(record.peek(connection.slot), child, into: &reachable)
             }
         }
     }
@@ -811,10 +826,11 @@ public final class Store {
         var selection = selection
         var segments = path[...]
         while let segment = segments.popFirst() {
-            guard case .name(let name) = segment, let index = selection.field(named: name),
-                  case .linked(let child, _, _, _) = selection.fields[index].kind
+            let variant = selection.variant(for: record.type)
+            guard case .name(let name) = segment, let index = variant.field(named: name),
+                  case .linked(let child, _, _, _) = variant.fields[index].kind
             else { return nil }
-            switch record.peek(selection.slot(of: index, on: record.type)) {
+            switch record.peek(variant.fields[index].slot) {
             case .ref(let target):
                 record = target
             case .refs(let targets):

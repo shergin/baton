@@ -88,7 +88,9 @@ enum Oracle {
     // MARK: The response
 
     private static func walk(_ object: [String: Any], _ selection: ResolvedSelection, _ path: String, _ leaves: inout [Leaf]) throws {
-        for field in selection.fields {
+        // The response's own typename picks the fields, as the ingest's does.
+        let type = selection.isAbstract ? (object["__typename"] as? String).map(Registry.type) ?? selection.type : selection.type
+        for field in selection.variant(for: type).fields {
             guard let value = object[field.responseKey] else { continue }
             let here = path.isEmpty ? field.responseKey : path + "." + field.responseKey
             if field.responseKey == "__typename" {
@@ -152,14 +154,13 @@ enum Oracle {
     // MARK: The store
 
     @MainActor private static func walk(_ record: Record, _ selection: ResolvedSelection, _ path: String, _ leaves: inout [Leaf]) {
-        for field in selection.fields {
+        for field in selection.variant(for: record.type).fields {
             let here = path.isEmpty ? field.responseKey : path + "." + field.responseKey
             if field.responseKey == "__typename" {
                 leaves.append(Leaf(path: here, value: .string(record.type.name)))
                 continue
             }
-            let slot = selection.isAbstract ? Registry.slot(record.type, field.storageKey) : field.slot
-            let value = record.read(slot)
+            let value = record.read(field.slot)
             if case .missing = value { continue }
             switch field.kind {
             case .scalar(let kind, _):

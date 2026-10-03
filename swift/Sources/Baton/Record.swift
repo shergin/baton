@@ -80,6 +80,9 @@ public final class Record: Observable {
     /// Writes a slot without notifying. Returns the previous value when the
     /// value changed, `nil` when it was equal. Batches notify at their end.
     func writeSilently(_ slot: Slot, _ value: Value) -> Value? {
+        // A slot of another type would land at an index this type uses for
+        // another field.
+        assert(slot.type == type, "a \(slot.type.name) slot written into a \(type.name) record")
         let index = Int(slot.index)
         if index >= values.count {
             values.append(contentsOf: repeatElement(.missing, count: index + 1 - values.count))
