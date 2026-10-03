@@ -121,6 +121,14 @@ are expected and listed without apology.
   root fields other screens fetched (four wakes of an unrelated root-field
   reader in the bench, now none). A tracked read costs about 620 ns against
   560 on an M1 Pro; an untracked read is unchanged at 29 ns.
+- A schema whose root types have other names, such as `QueryRoot` or
+  `query_root`, works: the compiler interns them by the names the store's
+  root records have, `Query`, `Mutation` and `Subscription`, as Relay's
+  root record is a `__Root` in any schema. Before, the root fields' slots
+  belonged to the schema's type and were written into a record of another.
+  A schema that renames a root and also has a type of that root's store
+  name is an error. `Store(rootType:mutationType:subscriptionType:)` is
+  removed.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

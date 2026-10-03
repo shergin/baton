@@ -129,3 +129,51 @@ fn an_interface_whose_implementers_have_ids_is_keyed_by_id_though_it_declares_no
         "Character and Location, which implement Named, have ids"
     );
 }
+
+const RENAMED_ROOTS: &str = "
+schema { query: QueryRoot, mutation: mutation_root }
+type QueryRoot { character(id: ID!): Character }
+type mutation_root { rename(id: ID!, name: String!): Character }
+type Character { id: ID! name: String }
+";
+
+#[test]
+fn a_root_type_the_schema_names_otherwise_is_interned_by_the_store_root_name() {
+    let compiled = compile(
+        RENAMED_ROOTS,
+        "schema.graphql",
+        &[
+            document("query Probe { character(id: \"1\") { name } }"),
+            document("mutation Rename { rename(id: \"1\", name: \"a\") { name } }"),
+        ],
+        &Config::default(),
+    )
+    .unwrap_or_else(|errors| panic!("{errors:?}"));
+    let shared = crate::emit::emit(&compiled.plan).shared;
+    assert!(shared.contains("static let QueryRoot = Baton.Registry.type(\"Query\")"));
+    assert!(shared.contains("static let mutation_root = Baton.Registry.type(\"Mutation\")"));
+    assert!(shared.contains("static let Character = Baton.Registry.type(\"Character\")"));
+}
+
+#[test]
+fn a_type_named_like_a_store_root_beside_a_root_named_otherwise_is_an_error() {
+    let sdl = format!("{RENAMED_ROOTS}\ntype Query {{ id: ID }}\n");
+    let Err(errors) = compile(
+        &sdl,
+        "schema.graphql",
+        &[document("query Probe { character(id: \"1\") { name } }")],
+        &Config::default(),
+    ) else {
+        panic!("the schema compiled");
+    };
+    let messages: Vec<String> = errors
+        .iter()
+        .map(|error| error.message().to_string())
+        .collect();
+    assert_eq!(
+        messages,
+        vec![
+            "the query type is `QueryRoot` and another type is named `Query`: the store types its query root `Query`, so the two would share their fields"
+        ]
+    );
+}

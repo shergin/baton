@@ -173,7 +173,10 @@ the rebase explicit.)
 
 **Mutation root.** The record mutation payloads hang off,
 `client:root:mutation`, beside the query root. Entities inside a payload
-merge into their own records as always.
+merge into their own records as always. The three root records are typed `Query`,
+`Mutation` and `Subscription` whatever the schema calls its root types, as
+Relay's root record is a `__Root` in any schema: the compiler interns a
+`QueryRoot` or a `query_root` by the store's name.
 
 **Abstract selection.** A selection on an interface or union. The compiler
 adds `__typename`; the ingest keys the object by the concrete type the

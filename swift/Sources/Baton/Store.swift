@@ -10,7 +10,9 @@ public final class Store {
     nonisolated public static let mutationRootKey = "client:root:mutation"
     nonisolated public static let subscriptionRootKey = "client:root:subscription"
 
-    /// The record query root fields hang off.
+    /// The record query root fields hang off. The three roots are typed
+    /// `Query`, `Mutation` and `Subscription` whatever the schema calls its
+    /// root types; the compiler interns those types by these names.
     public let root: Record
     /// The record mutation payloads hang off; their entities merge as usual.
     public let mutationRoot: Record
@@ -48,16 +50,11 @@ public final class Store {
     /// `@required` read.
     private var nullsOrErrorsChanged = false
 
-    public init(
-        rootType: TypeID = Registry.type("Query"),
-        mutationType: TypeID = Registry.type("Mutation"),
-        subscriptionType: TypeID = Registry.type("Subscription"),
-        persistence: Persistence? = nil
-    ) {
+    public init(persistence: Persistence? = nil) {
         self.persistence = persistence
-        root = Record(type: rootType, key: Store.rootKey)
-        mutationRoot = Record(type: mutationType, key: Store.mutationRootKey)
-        subscriptionRoot = Record(type: subscriptionType, key: Store.subscriptionRootKey)
+        root = Record(type: Registry.type("Query"), key: Store.rootKey)
+        mutationRoot = Record(type: Registry.type("Mutation"), key: Store.mutationRootKey)
+        subscriptionRoot = Record(type: Registry.type("Subscription"), key: Store.subscriptionRootKey)
         records[Store.rootKey] = root
         records[Store.mutationRootKey] = mutationRoot
         records[Store.subscriptionRootKey] = subscriptionRoot

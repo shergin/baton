@@ -97,6 +97,8 @@ struct Emitter {
     deferred_fragments: BTreeSet<String>,
     /// The possible types of each abstract type condition tested as a set.
     possible_sets: BTreeMap<String, Vec<String>>,
+    /// The schema's root types the store knows by another name.
+    root_names: BTreeMap<String, String>,
 }
 
 /// What the lenses of one document share: the fragment's `@refetchable` data
@@ -164,6 +166,7 @@ pub fn emit(plan: &Plan) -> Output {
             .collect(),
         deferred_fragments,
         possible_sets: BTreeMap::new(),
+        root_names: plan.root_names.clone(),
     };
     let mut files: BTreeMap<String, String> = BTreeMap::new();
     for fragment in &plan.fragments {
@@ -228,9 +231,12 @@ impl Emitter {
         output
             .push_str("/// Interned schema types used by this module's documents.\nnonisolated enum Types {\n");
         for type_name in &self.types {
+            // A root type is interned by the name the store's root record
+            // has, so its slots are numbered where the root's values are.
+            let interned = self.root_names.get(type_name).unwrap_or(type_name);
             let _ = writeln!(
                 output,
-                "    static let {type_name} = Baton.Registry.type(\"{type_name}\")"
+                "    static let {type_name} = Baton.Registry.type(\"{interned}\")"
             );
         }
         for (condition, types) in &self.possible_sets {

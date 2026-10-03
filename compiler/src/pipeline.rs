@@ -4,6 +4,7 @@
 //! Everything in this file up to `lower` is Relay's; everything after is ours.
 //! The plan IR is the seam: emitters never see Relay types.
 
+use std::collections::BTreeMap;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
@@ -54,7 +55,19 @@ impl Timings {
 pub struct Plan {
     pub fragments: Vec<FragmentPlan>,
     pub operations: Vec<OperationPlan>,
+    /// The schema's root types the store knows by another name, such as
+    /// `QueryRoot` by `Query`.
+    #[serde(skip_serializing_if = "BTreeMap::is_empty")]
+    pub root_names: BTreeMap<String, String>,
 }
+
+/// The names the store types its three root records by, whatever the schema
+/// calls its root types, as Relay's root record is a `__Root` in any schema.
+const ROOT_NAMES: [(OperationKind, &str); 3] = [
+    (OperationKind::Query, "Query"),
+    (OperationKind::Mutation, "Mutation"),
+    (OperationKind::Subscription, "Subscription"),
+];
 
 #[derive(Debug, Clone, serde::Serialize)]
 pub struct FragmentPlan {
@@ -356,6 +369,7 @@ pub fn compile(
     if !errors.is_empty() {
         return Err(errors);
     }
+    let root_names = root_names(&schema, schema_path)?;
 
     let started = Instant::now();
     let mut definitions = Vec::new();
@@ -397,10 +411,54 @@ pub fn compile(
     timings.transform = started.elapsed();
 
     let started = Instant::now();
-    let plan = lower(&schema, &programs, config)?;
+    let mut plan = lower(&schema, &programs, config)?;
+    plan.root_names = root_names;
     timings.lower = started.elapsed();
 
     Ok(Compiled { plan, timings })
+}
+
+/// The schema's root types whose names differ from the store's. A slot is
+/// numbered within its type, so every slot of a root field must belong to
+/// the type the store's root record has; another type of the schema that
+/// already has that name would share its numbering, and is an error.
+fn root_names(
+    schema: &SDLSchema,
+    schema_path: &str,
+) -> Result<BTreeMap<String, String>, Vec<Diagnostic>> {
+    let location = common::Location::new(
+        SourceLocationKey::standalone(schema_path),
+        common::Span::new(0, 0),
+    );
+    let mut names = BTreeMap::new();
+    let mut errors = Vec::new();
+    for (kind, store_name) in ROOT_NAMES {
+        let root = match kind {
+            OperationKind::Query => schema.query_type(),
+            OperationKind::Mutation => schema.mutation_type(),
+            OperationKind::Subscription => schema.subscription_type(),
+        };
+        let Some(root) = root else { continue };
+        let name = schema.get_type_name(root).lookup().to_string();
+        if name == store_name {
+            continue;
+        }
+        if schema.get_type(store_name.intern()).is_some() {
+            errors.push(Diagnostic::error(
+                format!(
+                    "the {kind} type is `{name}` and another type is named `{store_name}`: the store types its {kind} root `{store_name}`, so the two would share their fields"
+                ),
+                location,
+            ));
+            continue;
+        }
+        names.insert(name, store_name.to_string());
+    }
+    if errors.is_empty() {
+        Ok(names)
+    } else {
+        Err(errors)
+    }
 }
 
 /// Checks each lookup in `baton.json` against the schema: the root field
