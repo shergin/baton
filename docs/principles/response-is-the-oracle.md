@@ -63,7 +63,9 @@ response in `spec/` that has data and a document that reads it: after the
 commit; for those under the query root, from the image in a second store;
 and under an optimistic layer that overrides one leaf, then after it is
 reverted. A deferred response is checked as its first part with the later
-parts merged in at their paths. Beside each response the oracle reads,
+parts merged in at their paths. `tokenizer/custom-tokens.json` is read
+through the lens instead, because the layer's JSON round trip would rewrite
+the tokens it keeps as text. Beside each response the oracle reads,
 `<response>.store.json` is the store the commit must produce: every record
 by key, links written as Relay writes them (`{"__ref": key}`), in sorted
 order, one record a line; identity and record layout change only with a
