@@ -1,0 +1,8 @@
+{
+  "Note:n7": {"__typename": "Note", "id": "n7", "text": "Second live note"},
+  "client:root": {"__typename": "Query"},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription", "noteAdded(characterId:\"1\")": {"__ref": "client:root:subscription:noteAdded(characterId:\"1\")"}},
+  "client:root:subscription:noteAdded(characterId:\"1\")": {"__typename": "NoteAddedPayload", "noteEdge": {"__ref": "client:root:subscription:noteAdded(characterId:\"1\"):noteEdge"}},
+  "client:root:subscription:noteAdded(characterId:\"1\"):noteEdge": {"__typename": "NoteEdge", "cursor": "c7", "node": {"__ref": "Note:n7"}}
+}

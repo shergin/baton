@@ -74,7 +74,7 @@ struct OracleCase: Sendable, CustomTestStringConvertible {
 @MainActor
 @Suite("The response is the oracle", .timeLimit(.minutes(1)))
 struct OracleTests {
-    @Test("the store reads back every leaf of the response: after the commit, from the image in a second store, and under a layer that overrides one leaf", arguments: OracleCase.all)
+    @Test("the store reads back every leaf of the response, after the commit as its dump in spec/ says, from the image in a second store, and under a layer that overrides one leaf", arguments: OracleCase.all)
     func theStoreAgreesWithTheResponse(_ oracle: OracleCase) async throws {
         let expected = try Oracle.leaves(of: oracle.response, plan: oracle.plan)
         #expect(!expected.isEmpty)
@@ -84,6 +84,7 @@ struct OracleTests {
         store.reportMissing = nil
         store.commit(try Ingest.normalize(oracle.response, plan: oracle.plan, rootKey: oracle.root.key))
         expectSame(Oracle.leaves(of: oracle.root.record(in: store), plan: oracle.plan), expected, "after the commit")
+        StoreDump.expectMatches(store, oracle.name)
 
         if oracle.persisted {
             await persistence.flush()

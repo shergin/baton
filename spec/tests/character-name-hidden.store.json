@@ -1,0 +1,6 @@
+{
+  "Character:1": {"__errors": {"name": {"message": "name hidden", "path": "character.name"}}, "__typename": "Character", "id": "1", "name": null, "species": "Human"},
+  "client:root": {"__typename": "Query", "character(id:\"1\")": {"__ref": "Character:1"}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

@@ -60,6 +60,10 @@ Swift tests and benchmarks through `BatonSpec`. The reference reader is
 `JSONSerialization` reads it, and the store's records by the same resolved
 plan, and `OracleTests` requires the two to yield the same leaves for every
 response in `spec/`, after the commit, from the image in a second store, and
-under an optimistic layer that overrides one leaf. Planned: expected store
-contents beside the responses, and the same files run by the Kotlin runtime.
+under an optimistic layer that overrides one leaf. Beside each response,
+`<response>.store.json` is the store it must produce: every record by key,
+links written as Relay writes them (`{"__ref": key}`), in sorted order, one
+record a line; identity and record layout change only with a reviewed
+change to those files (`BATON_BLESS=1 swift test` rewrites them). Planned:
+the same files run by the Kotlin runtime.
 This section may rot; the rest must not.

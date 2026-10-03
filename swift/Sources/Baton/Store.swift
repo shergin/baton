@@ -71,6 +71,9 @@ public final class Store {
 
     public func existing(_ key: String) -> Record? { records[key] }
 
+    /// Every record the store holds, by key; for the store dumps under `spec/`.
+    package var recordsByKey: [String: Record] { records }
+
     /// The entity with this id, whatever its type.
     public func existing(id: String) -> Record? { byID[id] }
 

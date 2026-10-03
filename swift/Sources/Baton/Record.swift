@@ -147,6 +147,16 @@ public final class Record: Observable {
         errors?[slot.index]
     }
 
+    /// Every slot that holds a value, with its error; for the store dumps
+    /// under `spec/`.
+    package var storedSlots: [(slot: Slot, value: Value, error: FieldError?)] {
+        values.indices.compactMap { index in
+            if case .missing = values[index] { return nil }
+            let slot = Slot(type: type, index: Int32(index))
+            return (slot, values[index], errors?[Int32(index)])
+        }
+    }
+
     /// Notes that the record's row has been read from the image.
     func setHydrated() {
         hydrated = true
