@@ -65,6 +65,7 @@ struct ConditionDocuments {
           character(id: $id) {
             name
             __typename @include(if: $withStatus)
+            species @include(if: $withStatus)
             status @include(if: $withStatus) @catch
             origin @include(if: $withStatus) @catch { name }
           }

@@ -284,7 +284,7 @@ nonisolated public struct TestStrictConditions: Baton.Operation {
 
     public static let name = "TestStrictConditions"
     public static let kind = Baton.OperationKind.query
-    public static let persistedID = "eca77c6fd8deca0ff9a73b225c461e7d"
+    public static let persistedID = "eeef5e0e488f7abba8c06d913f07d04a"
     public static let throwsOnFieldError = true
     public static let text = #"""
 query TestStrictConditions(
@@ -294,6 +294,7 @@ query TestStrictConditions(
   character(id: $id) {
     name
     __typename @include(if: $withStatus)
+    species @include(if: $withStatus)
     status @include(if: $withStatus)
     origin @include(if: $withStatus) {
       name
@@ -321,6 +322,7 @@ query TestStrictConditions(
             .linked("character", key: .dynamic(Slots.Query_character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
                 .scalar("__typename", key: .fixed(Slots.Character___typename), kind: .string, list: false, guards: [[.init("withStatus", passing: true)]]),
                 .scalar("name", key: .fixed(Slots.Character_name), kind: .string, list: false),
+                .scalar("species", key: .fixed(Slots.Character_species), kind: .string, list: false, guards: [[.init("withStatus", passing: true)]]),
                 .scalar("status", key: .fixed(Slots.Character_status), kind: .string, list: false, caught: true, guards: [[.init("withStatus", passing: true)]]),
                 .linked("origin", key: .fixed(Slots.Character_origin), plural: false, caught: true, guards: [[.init("withStatus", passing: true)]], selection: Baton.Selection(type: Types.Location, hasID: true, abstract: false, fields: [
                     .scalar("name", key: .fixed(Slots.Location_name), kind: .string, list: false, caught: true),
@@ -358,12 +360,16 @@ query TestStrictConditions(
             public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Character"
             @MainActor public var name: String? { anchor.string(Slots.Character_name) }
+            @MainActor public var species: String? { anchor.selects("withStatus", true) ? anchor.requiredString(Slots.Character_species) : nil }
             @MainActor public var status: Result<String?, Baton.FieldErrors>? { anchor.selects("withStatus", true) ? anchor.caught(Slots.Character_status) { $0.string(Slots.Character_status) } : nil }
             @MainActor public var origin: Result<Origin?, Baton.FieldErrors>? { anchor.selects("withStatus", true) ? anchor.caught(Slots.Character_origin, within: Origin.fieldErrors) { $0.linked(Slots.Character_origin).map(Origin.init(anchor:)) } : nil }
             /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
             @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
                 var errors: [Baton.FieldError] = []
                 anchor.collectError(Slots.Character_name, into: &errors)
+                if anchor.selects("withStatus", true) {
+                    anchor.collectError(Slots.Character_species, into: &errors)
+                }
                 return errors
             }
             /// The lens, or the field errors in it as a thrown `FieldErrors`.

@@ -89,24 +89,28 @@ struct ConditionTests {
         }
     }
 
-    @Test("a caught field under a condition keeps its error out of an operation that throws, and a field the condition left out has none")
+    @Test("a caught field under a condition keeps its error to itself, an uncaught one fails an operation that throws, and a field the condition left out has none")
     func caughtUnderCondition() throws {
         let fetched = TestStrictConditions(id: "1", withStatus: true)
         let store = Store()
+        store.reportMissing = nil
         store.commit(try Ingest.normalize(fixture("strict-conditions-caught"), plan: TestStrictConditions.plan.resolve(fetched.variables)))
         let anchor = Anchor(record: store.root, variables: fetched.variables, store: store)
-        #expect(TestStrictConditions.Data.fieldErrors(anchor).isEmpty, "the status error is caught where it is read")
-        let character = try #require(try TestStrictConditions.Data.throwing(anchor).character)
-        guard case .failure(let errors)? = character.status else {
-            Issue.record("the caught status reads its error")
+        #expect(TestStrictConditions.Data.fieldErrors(anchor).map(\.message) == ["species is private"], "the caught status and origin keep theirs")
+        #expect(throws: FieldErrors.self) { try TestStrictConditions.Data.throwing(anchor) }
+        let character = try #require(TestStrictConditions.Data(anchor: anchor).character)
+        guard case .failure(let status)? = character.status, case .failure(let origin)? = character.origin else {
+            Issue.record("each caught field reads its own error")
             return
         }
-        #expect(errors.errors.map(\.message) == ["status is private"])
-        #expect(try character.origin?.get()?.name == "Earth (C-137)")
+        #expect(status.errors.map(\.message) == ["status is private"])
+        #expect(origin.errors.map(\.message) == ["origin name is private"], "a caught link holds the errors inside it")
 
         let unselected = TestStrictConditions(id: "1", withStatus: false)
         let left = Anchor(record: store.root, variables: unselected.variables, store: store)
-        #expect(TestStrictConditions.Data.fieldErrors(left).isEmpty)
-        #expect(try #require(try TestStrictConditions.Data.throwing(left).character).status == nil)
+        #expect(TestStrictConditions.Data.fieldErrors(left).isEmpty, "the species error is on a field the condition left out")
+        let plain = try #require(try TestStrictConditions.Data.throwing(left).character)
+        #expect(plain.status == nil)
+        #expect(plain.species == nil)
     }
 }
