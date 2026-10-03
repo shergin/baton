@@ -1,9 +1,12 @@
 # The test schema: the public Rick and Morty schema plus what the write- and
 # list-side tests need and the public API lacks: a Node interface, a union, a
 # lookup by id across types, mutations with payloads, and a cursor connection
-# of notes on a character with the mutations that edit it. Documents.swift
+# of notes on a character with the mutations that edit it, a subscription,
+# the `@defer` directive and a `@semanticNonNull` field. Documents.swift
 # compiles against it unchanged; every document here would also be valid
 # against the public schema except those that use the additions.
+
+directive @defer(label: String, if: Boolean = true) on FRAGMENT_SPREAD | INLINE_FRAGMENT
 
 interface Node {
   id: ID
@@ -30,6 +33,15 @@ type Mutation {
   removeNote(id: ID!): RemoveNotePayload
 }
 
+type Subscription {
+  noteAdded(characterId: ID!): NoteAddedPayload
+}
+
+type NoteAddedPayload {
+  noteEdge: NoteEdge
+  character: Character
+}
+
 type FavoritePayload {
   character: Character
 }
@@ -49,7 +61,7 @@ type Character implements Node {
   id: ID
   name: String
   status: String
-  species: String
+  species: String @semanticNonNull
   type: String
   gender: String
   origin: Location
