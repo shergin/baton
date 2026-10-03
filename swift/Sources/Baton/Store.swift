@@ -8,11 +8,14 @@ import Observation
 public final class Store {
     nonisolated public static let rootKey = "client:root"
     nonisolated public static let mutationRootKey = "client:root:mutation"
+    nonisolated public static let subscriptionRootKey = "client:root:subscription"
 
     /// The record query root fields hang off.
     public let root: Record
     /// The record mutation payloads hang off; their entities merge as usual.
     public let mutationRoot: Record
+    /// The record subscription payloads hang off.
+    public let subscriptionRoot: Record
     private var records: [String: Record] = [:]
     /// Entities by id, across types, for `node(id:)`-style lookups.
     private var byID: [String: Record] = [:]
@@ -29,11 +32,13 @@ public final class Store {
     /// Optimistic responses currently applied, oldest first.
     public private(set) var optimisticLayers: [OptimisticLayer] = []
 
-    public init(rootType: TypeID = Registry.type("Query"), mutationType: TypeID = Registry.type("Mutation")) {
+    public init(rootType: TypeID = Registry.type("Query"), mutationType: TypeID = Registry.type("Mutation"), subscriptionType: TypeID = Registry.type("Subscription")) {
         root = Record(type: rootType, key: Store.rootKey)
         mutationRoot = Record(type: mutationType, key: Store.mutationRootKey)
+        subscriptionRoot = Record(type: subscriptionType, key: Store.subscriptionRootKey)
         records[Store.rootKey] = root
         records[Store.mutationRootKey] = mutationRoot
+        records[Store.subscriptionRootKey] = subscriptionRoot
         #if DEBUG
         reportMissing = { record, slot in
             print("Baton: missing data: \(record.key).\(slot.storageKey) was read but never fetched; the owning operation will refetch")
@@ -295,6 +300,7 @@ public final class Store {
                     value = .list(list)
                 }
                 set(record, entry.slot, value, &transaction, &undo)
+                if record.hasErrors, record.setError(entry.slot, nil) { record.notify(entry.slot) }
             }
         }
 
@@ -319,6 +325,14 @@ public final class Store {
                 guard let record = byID[id], !record.deleted else { continue }
                 delete(record, &transaction, &undo)
             }
+        }
+
+        // Field errors land beside the field; an error arriving counts as a
+        // change of the slot. They are not part of the undo log: optimistic
+        // responses carry none.
+        for entry in changes.fieldErrors {
+            let record = objects[Int(entry.record)]
+            if record.setError(entry.slot, entry.error) { record.notify(entry.slot) }
         }
         return undo
     }
@@ -486,7 +500,7 @@ public final class Store {
         let record = record ?? root
         let fields = selection.fields
         for index in fields.indices {
-            if fields[index].isTypename { continue }
+            if fields[index].isTypename || fields[index].deferred != nil { continue }
             let slot = selection.slot(of: index, on: record.type)
             switch fields[index].kind {
             case .scalar:
@@ -549,7 +563,7 @@ public final class Store {
     func sweep(keeping reachable: Set<ObjectIdentifier>) -> Int {
         var swept = Set<ObjectIdentifier>()
         for (key, record) in records
-        where key != Store.rootKey && key != Store.mutationRootKey && !reachable.contains(ObjectIdentifier(record)) {
+        where key != Store.rootKey && key != Store.mutationRootKey && key != Store.subscriptionRootKey && !reachable.contains(ObjectIdentifier(record)) {
             swept.insert(ObjectIdentifier(record))
             records.removeValue(forKey: key)
             if let id = record.entityID, byID[id] === record {
@@ -560,8 +574,34 @@ public final class Store {
         if !swept.isEmpty {
             root.prune(swept)
             mutationRoot.prune(swept)
+            subscriptionRoot.prune(swept)
         }
         return swept.count
+    }
+
+    /// The record and selection a response path names, from the root: for an
+    /// incremental part's `path`. Nil when the path leads through data the
+    /// store never received.
+    func walk(_ path: [Ingest.PathSegment], _ selection: ResolvedSelection, from record: Record? = nil) -> (Record, ResolvedSelection)? {
+        var record = record ?? root
+        var selection = selection
+        var segments = path[...]
+        while let segment = segments.popFirst() {
+            guard case .name(let name) = segment, let index = selection.field(named: name),
+                  case .linked(let child, _, _, _) = selection.fields[index].kind
+            else { return nil }
+            switch record.peek(selection.slot(of: index, on: record.type)) {
+            case .ref(let target):
+                record = target
+            case .refs(let targets):
+                guard case .index(let offset)? = segments.popFirst(), offset < targets.count, let target = targets[offset] else { return nil }
+                record = target
+            default:
+                return nil
+            }
+            selection = child
+        }
+        return (record, selection)
     }
 
     /// The entity a lookup names, if cached and not deleted.

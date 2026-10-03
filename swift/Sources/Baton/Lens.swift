@@ -31,16 +31,27 @@ public struct Anchor: @unchecked Sendable {
 
 /// A typed, read-only view over one record: a fragment's or an operation's
 /// data. The compiler generates one struct per selection; this protocol is
-/// what they share.
+/// what they share. The static checks are generated where a directive asks
+/// for them and default to the permissive answer elsewhere.
 public protocol Lens: Sendable {
     var anchor: Anchor { get }
     init(anchor: Anchor)
     static var typeName: String { get }
+    /// Whether every `@required` field of the selection is present.
+    @MainActor static func satisfied(_ anchor: Anchor) -> Bool
+    /// The field errors in the selection, for `@catch` and `@throwOnFieldError`.
+    @MainActor static func fieldErrors(_ anchor: Anchor) -> [FieldError]
+    /// Whether a deferred fragment's fields have arrived.
+    @MainActor static func isPresent(_ anchor: Anchor) -> Bool
 }
 
 extension Lens {
     /// The record's identity, for list diffing.
     @MainActor public var recordID: RecordID { RecordID(anchor.record) }
+
+    @MainActor public static func satisfied(_ anchor: Anchor) -> Bool { true }
+    @MainActor public static func fieldErrors(_ anchor: Anchor) -> [FieldError] { [] }
+    @MainActor public static func isPresent(_ anchor: Anchor) -> Bool { true }
 }
 
 @MainActor
@@ -50,6 +61,10 @@ extension Anchor {
     }
 
     private var anchor: Anchor { self }
+
+    /// The slot of a storage key on the record's own type, for selections on
+    /// interfaces and unions.
+    @inline(__always) public func slot(key: String) -> Slot { Registry.slot(record.type, key) }
 
     public func string(_ slot: Slot) -> String? {
         switch record.read(slot) {
@@ -134,16 +149,18 @@ extension Anchor {
         linked(slot, lookup: lookup) ?? child(Record(type: type, key: record.key + ":" + slot.storageKey + ":missing"))
     }
 
-    public func list<Element: Lens>(_ slot: Slot) -> List<Element>? {
+    /// A plural link. Elements that `keep` rejects are dropped, as Relay nulls a
+    /// list item whose `@required` field is null.
+    public func list<Element: Lens>(_ slot: Slot, keep: ((Anchor) -> Bool)? = nil) -> List<Element>? {
         switch record.read(slot) {
-        case .refs(let records): return List(records: records, anchor: self)
+        case .refs(let records): return List(records: records, anchor: self, keep: keep)
         case .missing: missing(slot); return nil
         default: return nil
         }
     }
 
-    public func requiredList<Element: Lens>(_ slot: Slot) -> List<Element> {
-        list(slot) ?? List(records: [], anchor: self)
+    public func requiredList<Element: Lens>(_ slot: Slot, keep: ((Anchor) -> Bool)? = nil) -> List<Element> {
+        list(slot, keep: keep) ?? List(records: [], anchor: self, keep: nil)
     }
 }
 
@@ -151,28 +168,136 @@ extension Anchor {
 /// resolved against the record's concrete type.
 @MainActor
 extension Anchor {
-    @inline(__always) private func slot(_ key: String) -> Slot { Registry.slot(record.type, key) }
+    public func string(key: String) -> String? { string(slot(key: key)) }
+    public func requiredString(key: String) -> String { requiredString(slot(key: key)) }
+    public func int(key: String) -> Int? { int(slot(key: key)) }
+    public func requiredInt(key: String) -> Int { requiredInt(slot(key: key)) }
+    public func double(key: String) -> Double? { double(slot(key: key)) }
+    public func requiredDouble(key: String) -> Double { requiredDouble(slot(key: key)) }
+    public func bool(key: String) -> Bool? { bool(slot(key: key)) }
+    public func requiredBool(key: String) -> Bool { requiredBool(slot(key: key)) }
+    public func strings(key: String) -> [String]? { strings(slot(key: key)) }
+    public func requiredStrings(key: String) -> [String] { requiredStrings(slot(key: key)) }
+    public func ints(key: String) -> [Int]? { ints(slot(key: key)) }
+    public func requiredInts(key: String) -> [Int] { requiredInts(slot(key: key)) }
+    public func doubles(key: String) -> [Double]? { doubles(slot(key: key)) }
+    public func requiredDoubles(key: String) -> [Double] { requiredDoubles(slot(key: key)) }
+    public func bools(key: String) -> [Bool]? { bools(slot(key: key)) }
+    public func requiredBools(key: String) -> [Bool] { requiredBools(slot(key: key)) }
+    public func linked(key: String, lookup: Lookup? = nil) -> Anchor? { linked(slot(key: key), lookup: lookup) }
+    public func requiredLinked(key: String, type: TypeID, lookup: Lookup? = nil) -> Anchor { requiredLinked(slot(key: key), type: type, lookup: lookup) }
+    public func list<Element: Lens>(key: String, keep: ((Anchor) -> Bool)? = nil) -> List<Element>? { list(slot(key: key), keep: keep) }
+    public func requiredList<Element: Lens>(key: String, keep: ((Anchor) -> Bool)? = nil) -> List<Element> { requiredList(slot(key: key), keep: keep) }
+}
 
-    public func string(key: String) -> String? { string(slot(key)) }
-    public func requiredString(key: String) -> String { requiredString(slot(key)) }
-    public func int(key: String) -> Int? { int(slot(key)) }
-    public func requiredInt(key: String) -> Int { requiredInt(slot(key)) }
-    public func double(key: String) -> Double? { double(slot(key)) }
-    public func requiredDouble(key: String) -> Double { requiredDouble(slot(key)) }
-    public func bool(key: String) -> Bool? { bool(slot(key)) }
-    public func requiredBool(key: String) -> Bool { requiredBool(slot(key)) }
-    public func strings(key: String) -> [String]? { strings(slot(key)) }
-    public func requiredStrings(key: String) -> [String] { requiredStrings(slot(key)) }
-    public func ints(key: String) -> [Int]? { ints(slot(key)) }
-    public func requiredInts(key: String) -> [Int] { requiredInts(slot(key)) }
-    public func doubles(key: String) -> [Double]? { doubles(slot(key)) }
-    public func requiredDoubles(key: String) -> [Double] { requiredDoubles(slot(key)) }
-    public func bools(key: String) -> [Bool]? { bools(slot(key)) }
-    public func requiredBools(key: String) -> [Bool] { requiredBools(slot(key)) }
-    public func linked(key: String, lookup: Lookup? = nil) -> Anchor? { linked(slot(key), lookup: lookup) }
-    public func requiredLinked(key: String, type: TypeID, lookup: Lookup? = nil) -> Anchor { requiredLinked(slot(key), type: type, lookup: lookup) }
-    public func list<Element: Lens>(key: String) -> List<Element>? { list(slot(key)) }
-    public func requiredList<Element: Lens>(key: String) -> List<Element> { requiredList(slot(key)) }
+/// Honest data: the readers behind `@required`, `@catch`,
+/// `@throwOnFieldError` and `@defer`. Field errors live beside the field they
+/// name; a required field that is null bubbles, logs or throws as the
+/// directive says; a deferred fragment is present once its fields are.
+@MainActor
+extension Anchor {
+    /// Whether a `@required` field is present. When it is not and the action is
+    /// LOG, the environment is told.
+    public func hasValue(_ slot: Slot, path: String, log: Bool) -> Bool {
+        switch record.read(slot) {
+        case .missing, .null: return requiredMissing(path: path, log: log)
+        default: return true
+        }
+    }
+
+    /// Reports a `@required(action: LOG)` field that is null; always false, so a
+    /// guard can return it.
+    public func requiredMissing(path: String, log: Bool) -> Bool {
+        if log { store?.environment?.requiredFieldMissing?(record, path) }
+        return false
+    }
+
+    /// Whether the field has arrived, for a deferred fragment's presence.
+    public func present(_ slot: Slot) -> Bool {
+        if case .missing = record.read(slot) { return false }
+        return true
+    }
+
+    /// `@required(action: THROW)` on a scalar: the value, or the field's error,
+    /// or `RequiredFieldError` when null.
+    public func throwing<T>(_ slot: Slot, path: String, _ read: (Anchor) -> T?) throws -> T {
+        if let error = record.error(slot) { throw FieldErrors([error]) }
+        guard let value = read(self) else { throw RequiredFieldError(path: path) }
+        return value
+    }
+
+    /// `@required(action: THROW)` on a link: the linked record, satisfied, or
+    /// the field's error, or `RequiredFieldError`.
+    public func throwingLinked(_ slot: Slot, lookup: Lookup? = nil, path: String, satisfied: (Anchor) -> Bool) throws -> Anchor {
+        if let error = record.error(slot) { throw FieldErrors([error]) }
+        guard let target = linked(slot, lookup: lookup), satisfied(target) else { throw RequiredFieldError(path: path) }
+        return target
+    }
+
+    /// `@required(action: THROW)` on a plural link.
+    public func throwingList<Element: Lens>(_ slot: Slot, path: String, keep: ((Anchor) -> Bool)? = nil) throws -> List<Element> {
+        if let error = record.error(slot) { throw FieldErrors([error]) }
+        guard let list: List<Element> = list(slot, keep: keep) else { throw RequiredFieldError(path: path) }
+        return list
+    }
+
+    /// `@catch` on a scalar: the value, or the field's error.
+    public func caught<T>(_ slot: Slot, _ read: (Anchor) -> T) -> Result<T, FieldErrors> {
+        if let error = record.error(slot) { return .failure(FieldErrors([error])) }
+        return .success(read(self))
+    }
+
+    /// `@catch` on a link: the lens, or the field's error and every error
+    /// inside the linked selection.
+    public func caught<T>(_ slot: Slot, within: (Anchor) -> [FieldError], _ read: (Anchor) -> T) -> Result<T, FieldErrors> {
+        var errors: [FieldError] = []
+        collectErrors(slot, within: within, into: &errors)
+        if !errors.isEmpty { return .failure(FieldErrors(errors)) }
+        return .success(read(self))
+    }
+
+    /// `@catch` on a plural link.
+    public func caughtList<Element: Lens>(_ slot: Slot, within: (Anchor) -> [FieldError], keep: ((Anchor) -> Bool)? = nil) -> Result<List<Element>?, FieldErrors> {
+        var errors: [FieldError] = []
+        collectErrors(list: slot, within: within, into: &errors)
+        if !errors.isEmpty { return .failure(FieldErrors(errors)) }
+        return .success(list(slot, keep: keep))
+    }
+
+    public func caughtRequiredList<Element: Lens>(_ slot: Slot, within: (Anchor) -> [FieldError], keep: ((Anchor) -> Bool)? = nil) -> Result<List<Element>, FieldErrors> {
+        caughtList(slot, within: within, keep: keep).map { (list: List<Element>?) in list ?? List(records: [], anchor: self, keep: nil) }
+    }
+
+    /// Appends the field's own error, if any.
+    public func collectError(_ slot: Slot, into errors: inout [FieldError]) {
+        if let error = record.error(slot) { errors.append(error) }
+    }
+
+    /// Appends the error a `@required(action: THROW)` field raises when null.
+    public func collectRequired(_ slot: Slot, path: String, into errors: inout [FieldError]) {
+        switch record.read(slot) {
+        case .missing, .null: errors.append(.required(path: path))
+        default: return
+        }
+    }
+
+    /// Appends the field's own error and the errors inside the linked record.
+    public func collectErrors(_ slot: Slot, within: (Anchor) -> [FieldError], into errors: inout [FieldError]) {
+        collectError(slot, into: &errors)
+        if case .ref(let target) = record.read(slot), !target.deleted {
+            errors.append(contentsOf: within(child(target)))
+        }
+    }
+
+    /// Appends the field's own error and the errors inside every linked record.
+    public func collectErrors(list slot: Slot, within: (Anchor) -> [FieldError], into errors: inout [FieldError]) {
+        collectError(slot, into: &errors)
+        if case .refs(let targets) = record.read(slot) {
+            for case let target? in targets where !target.deleted {
+                errors.append(contentsOf: within(child(target)))
+            }
+        }
+    }
 }
 
 /// Connections: the state Relay keeps on the connection record, read from the
@@ -235,7 +360,7 @@ extension Anchor {
     /// Fetches the fragment again with the lens's variables; the records
     /// update in place.
     public func refetch<Op: Operation>(_ operation: Op.Type, _ refetch: Refetch) async throws {
-        try await environment().fetch(operation, variables: Variables(refetchVariables(refetch, owner: record)))
+        _ = try await environment().fetch(operation, variables: Variables(refetchVariables(refetch, owner: record)))
     }
 
     /// The refetch query's variables: the lens's scope filtered to the query's
@@ -256,17 +381,20 @@ extension Anchor {
     }
 }
 
-/// A plural link: lenses over the linked records, in order. Null elements and
-/// deleted records are dropped; `@required` semantics for list items arrive
-/// with 0.5.
+/// A plural link: lenses over the linked records, in order. Null elements,
+/// deleted records and elements the caller rejects (a `@required` field of
+/// theirs is null) are dropped.
 public struct List<Element: Lens>: RandomAccessCollection, @unchecked Sendable {
     let records: ContiguousArray<Record>
     let anchor: Anchor
 
-    @MainActor init(records: ContiguousArray<Record?>, anchor: Anchor) {
+    @MainActor init(records: ContiguousArray<Record?>, anchor: Anchor, keep: ((Anchor) -> Bool)?) {
         var present = ContiguousArray<Record>()
         present.reserveCapacity(records.count)
-        for case let record? in records where !record.deleted { present.append(record) }
+        for case let record? in records where !record.deleted {
+            if let keep, !keep(anchor.child(record)) { continue }
+            present.append(record)
+        }
         self.records = present
         self.anchor = anchor
     }

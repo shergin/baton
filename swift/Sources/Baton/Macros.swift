@@ -17,6 +17,9 @@ public macro Query(_ document: StaticString, fetchPolicy: FetchPolicy = .storeAn
 @attached(peer, names: prefixed(_))
 public macro Mutation(_ document: StaticString) = #externalMacro(module: "BatonMacros", type: "MutationMacro")
 
-/// Marks a subscription. Spike stage: a marker only.
-@attached(peer)
-public macro Subscription(_ document: StaticString) = #externalMacro(module: "BatonMacros", type: "FragmentMacro")
+/// Marks a property as a subscription value and carries its GraphQL. The
+/// parent passes the variables; the storage subscribes while the view lives
+/// and the body reads the resolved handle: its events, latest data and error.
+@attached(accessor, names: named(init), named(get))
+@attached(peer, names: prefixed(_))
+public macro Subscription(_ document: StaticString) = #externalMacro(module: "BatonMacros", type: "SubscriptionMacro")

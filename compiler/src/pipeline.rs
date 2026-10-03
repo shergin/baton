@@ -7,7 +7,7 @@
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
-use common::{Diagnostic, NamedItem, NoopPerfLogger, SourceLocationKey};
+use common::{Diagnostic, DirectiveName, NamedItem, NoopPerfLogger, SourceLocationKey};
 use graphql_ir::{
     ConditionValue, FragmentDefinition, FragmentDefinitionNameSet, Program, Selection,
 };
@@ -17,11 +17,12 @@ use intern::Lookup;
 use intern::string_key::Intern;
 use relay_config::ProjectConfig;
 use relay_transforms::{
-    FragmentAliasMetadata, Programs, RefetchableMetadata, apply_transforms,
-    disallow_reserved_aliases, disallow_typename_on_root,
-    extract_connection_metadata_from_directive, extract_handle_field_directives,
-    extract_values_from_handle_field_directive, validate_connections,
-    validate_global_variable_names, validate_no_double_underscore_alias,
+    CATCH_DIRECTIVE_NAME, CHILDREN_CAN_BUBBLE_METADATA_KEY, CatchMetadataDirective, CatchTo,
+    FragmentAliasMetadata, Programs, RefetchableMetadata, RequiredAction,
+    RequiredMetadataDirective, apply_transforms, disallow_reserved_aliases,
+    disallow_typename_on_root, extract_connection_metadata_from_directive,
+    extract_handle_field_directives, extract_values_from_handle_field_directive,
+    validate_connections, validate_global_variable_names, validate_no_double_underscore_alias,
     validate_no_unselectable_selections, validate_relay_directives, validate_static_args,
     validate_unused_fragment_variables, validate_unused_variables,
 };
@@ -67,6 +68,10 @@ pub struct FragmentPlan {
     pub arguments: Vec<VariablePlan>,
     /// `@refetchable`: the generated query and how to bind it.
     pub refetch: Option<RefetchPlan>,
+    /// `@throwOnFieldError`: a field error anywhere inside throws at the spread.
+    pub throws_on_field_error: bool,
+    /// Whether a `@required` field of the fragment can null the whole fragment.
+    pub bubbles: bool,
     pub reader: Vec<SelectionPlan>,
 }
 
@@ -102,6 +107,12 @@ pub struct OperationPlan {
     pub variables: Vec<VariablePlan>,
     pub text: String,
     pub id: String,
+    /// `@throwOnFieldError`: an uncaught field error fails the operation.
+    pub throws_on_field_error: bool,
+    /// Whether a `@required` field at the root can null the whole result.
+    pub bubbles: bool,
+    /// Whether any part of the response may arrive incrementally.
+    pub has_deferred: bool,
     pub reader: Vec<SelectionPlan>,
     pub normalization: Vec<SelectionPlan>,
 }
@@ -194,6 +205,20 @@ pub struct HandlePlan {
     pub edge_type_name: Option<String>,
 }
 
+/// `@required(action:)`: the action and Relay's dotted path for messages.
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct RequiredPlan {
+    /// `NONE`, `LOG` or `THROW`.
+    pub action: String,
+    pub path: String,
+}
+
+/// `@catch(to:)`: `RESULT` or `NULL`.
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct CatchPlan {
+    pub to: String,
+}
+
 /// The plan IR is built once per compilation and read by the emitters, so the
 /// size difference between a scalar and a linked field is of no account.
 #[allow(clippy::large_enum_variant)]
@@ -207,9 +232,16 @@ pub enum SelectionPlan {
         base_type: String,
         base_kind: TypeKind,
         non_null: bool,
+        /// `@semanticNonNull` in the schema: null only when an error occurred.
+        semantic_non_null: bool,
         list: bool,
         storage_key: String,
         handle: Option<HandlePlan>,
+        required: Option<RequiredPlan>,
+        catch: Option<CatchPlan>,
+        /// Whether the field or an ancestor carries `@catch`, so an error on
+        /// it does not fail a `@throwOnFieldError` operation.
+        caught: bool,
     },
     Linked {
         name: String,
@@ -218,6 +250,7 @@ pub enum SelectionPlan {
         base_type: String,
         base_kind: TypeKind,
         non_null: bool,
+        semantic_non_null: bool,
         plural: bool,
         /// Whether the target type defines an `id` field (identity by typename and id).
         has_id: bool,
@@ -228,12 +261,21 @@ pub enum SelectionPlan {
         lookup: Option<LookupPlan>,
         connection: Option<ConnectionPlan>,
         handle: Option<HandlePlan>,
+        required: Option<RequiredPlan>,
+        catch: Option<CatchPlan>,
+        caught: bool,
+        /// Whether a `@required` child can null this field.
+        bubbles: bool,
         selections: Vec<SelectionPlan>,
     },
     Inline {
         type_condition: Option<String>,
         /// An explicit `@alias(as:)` name.
         alias: Option<String>,
+        /// `@defer`: the label the incremental part carries.
+        deferred: Option<String>,
+        catch: Option<CatchPlan>,
+        bubbles: bool,
         selections: Vec<SelectionPlan>,
     },
     Spread {
@@ -348,8 +390,9 @@ fn validate(program: &Program, project_config: &ProjectConfig) -> Result<(), Vec
 }
 
 /// Which program a selection set comes from. The reader reads a connection
-/// through Relay's handle key; the normalization writes the server field and
-/// carries the handle beside it.
+/// through Relay's handle key and carries the required and catch metadata; the
+/// normalization writes the server field, carries the handle beside it, and
+/// keeps the raw `@catch` for the error accounting.
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Side {
     Reader,
@@ -360,6 +403,10 @@ struct Lowering<'a> {
     schema: &'a SDLSchema,
     programs: &'a Programs,
     config: &'a Config,
+}
+
+fn directive_name(name: &str) -> DirectiveName {
+    DirectiveName(name.intern())
 }
 
 /// Lowers Relay's reader and normalization programs into the plan IR.
@@ -379,11 +426,15 @@ fn lower(schema: &SDLSchema, programs: &Programs, config: &Config) -> Plan {
     for operation in programs.normalization.operations() {
         let name = operation.name.item.0.lookup();
         let root_type = schema.get_type_name(operation.type_).lookup().to_string();
-        let reader = programs
-            .reader
-            .operation(operation.name.item)
+        let reader_operation = programs.reader.operation(operation.name.item);
+        let reader = reader_operation
             .map(|reader_operation| {
-                lowering.selections(&reader_operation.selections, operation.type_, Side::Reader)
+                lowering.selections(
+                    &reader_operation.selections,
+                    operation.type_,
+                    Side::Reader,
+                    false,
+                )
             })
             .unwrap_or_default();
         let text = programs
@@ -397,6 +448,12 @@ fn lower(schema: &SDLSchema, programs: &Programs, config: &Config) -> Plan {
                 )
             })
             .unwrap_or_default();
+        let normalization = lowering.selections(
+            &operation.selections,
+            operation.type_,
+            Side::Normalization,
+            false,
+        );
         plan.operations.push(OperationPlan {
             name: name.to_string(),
             source: operation.name.location.source_location().path().to_string(),
@@ -410,17 +467,38 @@ fn lower(schema: &SDLSchema, programs: &Programs, config: &Config) -> Plan {
             variables: lowering.variables(&operation.variable_definitions),
             id: format!("{:x}", md5::compute(text.as_bytes())),
             text,
+            throws_on_field_error: operation
+                .directives
+                .named(directive_name("throwOnFieldError"))
+                .is_some(),
+            bubbles: reader_operation.is_some_and(|reader_operation| {
+                reader_operation
+                    .directives
+                    .named(*CHILDREN_CAN_BUBBLE_METADATA_KEY)
+                    .is_some()
+            }),
+            has_deferred: has_deferred(&normalization),
             reader,
-            normalization: lowering.selections(
-                &operation.selections,
-                operation.type_,
-                Side::Normalization,
-            ),
+            normalization,
         });
     }
     plan.operations
         .sort_by(|left, right| left.name.cmp(&right.name));
     plan
+}
+
+fn has_deferred(selections: &[SelectionPlan]) -> bool {
+    selections.iter().any(|selection| match selection {
+        SelectionPlan::Inline {
+            deferred,
+            selections,
+            ..
+        } => deferred.is_some() || has_deferred(selections),
+        SelectionPlan::Linked { selections, .. } | SelectionPlan::Condition { selections, .. } => {
+            has_deferred(selections)
+        }
+        _ => false,
+    })
 }
 
 impl Lowering<'_> {
@@ -436,7 +514,20 @@ impl Lowering<'_> {
             type_is_abstract: fragment.type_condition.is_abstract_type(),
             arguments: self.variables(&fragment.variable_definitions),
             refetch: self.refetch(fragment),
-            reader: self.selections(&fragment.selections, fragment.type_condition, Side::Reader),
+            throws_on_field_error: fragment
+                .directives
+                .named(directive_name("throwOnFieldError"))
+                .is_some(),
+            bubbles: fragment
+                .directives
+                .named(*CHILDREN_CAN_BUBBLE_METADATA_KEY)
+                .is_some(),
+            reader: self.selections(
+                &fragment.selections,
+                fragment.type_condition,
+                Side::Reader,
+                false,
+            ),
         }
     }
 
@@ -552,17 +643,64 @@ impl Lowering<'_> {
         })
     }
 
+    /// The `@required` metadata the reader program carries.
+    fn required(&self, directives: &[graphql_ir::Directive]) -> Option<RequiredPlan> {
+        let metadata = RequiredMetadataDirective::find(directives)?;
+        Some(RequiredPlan {
+            action: match metadata.action {
+                RequiredAction::None => "NONE",
+                RequiredAction::Log => "LOG",
+                RequiredAction::Throw
+                | RequiredAction::DangerouslyThrowOnSemanticallyNullableField => "THROW",
+            }
+            .to_string(),
+            path: metadata.path.lookup().to_string(),
+        })
+    }
+
+    /// The `@catch` metadata the reader program carries.
+    fn catch(&self, directives: &[graphql_ir::Directive]) -> Option<CatchPlan> {
+        let metadata = CatchMetadataDirective::find(directives)?;
+        Some(CatchPlan {
+            to: match metadata.to {
+                CatchTo::Result => "RESULT",
+                CatchTo::Null => "NULL",
+            }
+            .to_string(),
+        })
+    }
+
+    /// Whether the field carries `@catch` in whatever form the program keeps
+    /// it: the reader's metadata, or the normalization's raw directive.
+    fn is_caught(&self, directives: &[graphql_ir::Directive]) -> bool {
+        CatchMetadataDirective::find(directives).is_some()
+            || directives.named(*CATCH_DIRECTIVE_NAME).is_some()
+    }
+
+    fn bubbles(&self, directives: &[graphql_ir::Directive]) -> bool {
+        directives
+            .named(*CHILDREN_CAN_BUBBLE_METADATA_KEY)
+            .is_some()
+    }
+
+    /// `@semanticNonNull` makes a nullable field non-null in the absence of errors.
+    fn semantic_non_null(&self, definition: &schema::definitions::Field) -> bool {
+        !definition.type_.is_non_null() && definition.semantic_type().is_non_null()
+    }
+
     fn selections(
         &self,
         selections: &[Selection],
         parent_type: Type,
         side: Side,
+        caught: bool,
     ) -> Vec<SelectionPlan> {
         selections
             .iter()
             .map(|selection| match selection {
                 Selection::ScalarField(field) => {
                     let definition = self.schema.field(field.definition.item);
+                    let field_caught = caught || self.is_caught(&field.directives);
                     SelectionPlan::Scalar {
                         name: definition.name.item.lookup().to_string(),
                         alias: field.alias.map(|alias| alias.item.lookup().to_string()),
@@ -574,9 +712,13 @@ impl Lowering<'_> {
                             .to_string(),
                         base_kind: self.type_kind(definition.type_.inner()),
                         non_null: definition.type_.is_non_null(),
+                        semantic_non_null: self.semantic_non_null(definition),
                         list: definition.type_.is_list(),
                         storage_key: storage_key(definition.name.item.lookup(), &field.arguments),
                         handle: self.handle(&field.directives),
+                        required: self.required(&field.directives),
+                        catch: self.catch(&field.directives),
+                        caught: field_caught,
                     }
                 }
                 Selection::LinkedField(field) => {
@@ -646,6 +788,7 @@ impl Lowering<'_> {
                             before: cursor("before"),
                         });
                     }
+                    let field_caught = caught || self.is_caught(&field.directives);
                     SelectionPlan::Linked {
                         name: name.to_string(),
                         alias: field.alias.map(|alias| alias.item.lookup().to_string()),
@@ -653,6 +796,7 @@ impl Lowering<'_> {
                         base_type: self.schema.get_type_name(target).lookup().to_string(),
                         base_kind: self.type_kind(target),
                         non_null: definition.type_.is_non_null(),
+                        semantic_non_null: self.semantic_non_null(definition),
                         plural: definition.type_.is_list(),
                         has_id: self.type_has_id(target),
                         is_abstract: target.is_abstract_type(),
@@ -660,7 +804,11 @@ impl Lowering<'_> {
                         lookup,
                         connection,
                         handle,
-                        selections: self.selections(&field.selections, target, side),
+                        required: self.required(&field.directives),
+                        catch: self.catch(&field.directives),
+                        caught: field_caught,
+                        bubbles: self.bubbles(&field.directives),
+                        selections: self.selections(&field.selections, target, side, field_caught),
                     }
                 }
                 Selection::InlineFragment(inline) => {
@@ -681,15 +829,34 @@ impl Lowering<'_> {
                             };
                             (default.as_deref() != Some(alias)).then(|| alias.to_string())
                         });
+                    let deferred = inline
+                        .directives
+                        .named(directive_name("defer"))
+                        .and_then(|directive| {
+                            directive
+                                .arguments
+                                .named(common::ArgumentName("label".intern()))
+                        })
+                        .and_then(|label| match &label.value.item {
+                            graphql_ir::Value::Constant(graphql_ir::ConstantValue::String(
+                                text,
+                            )) => Some(text.lookup().to_string()),
+                            _ => None,
+                        });
+                    let inline_caught = caught || self.is_caught(&inline.directives);
                     SelectionPlan::Inline {
                         type_condition: inline
                             .type_condition
                             .map(|type_| self.schema.get_type_name(type_).lookup().to_string()),
                         alias,
+                        deferred,
+                        catch: self.catch(&inline.directives),
+                        bubbles: self.bubbles(&inline.directives),
                         selections: self.selections(
                             &inline.selections,
                             inline.type_condition.unwrap_or(parent_type),
                             side,
+                            inline_caught,
                         ),
                     }
                 }
@@ -723,7 +890,7 @@ impl Lowering<'_> {
                         ConditionValue::Constant(_) => None,
                     },
                     passing: condition.passing_value,
-                    selections: self.selections(&condition.selections, parent_type, side),
+                    selections: self.selections(&condition.selections, parent_type, side, caught),
                 },
             })
             .collect()

@@ -56,6 +56,41 @@ public struct QueryMacro: AccessorMacro, PeerMacro {
     }
 }
 
+/// Turns `var live: NoteAddedSubscription` into a computed property over
+/// `_live: SubscriptionStorage<Op>` with an init accessor, so `init(live:)`
+/// still exists and `live` reads the resolved value.
+public struct SubscriptionMacro: AccessorMacro, PeerMacro {
+    public static func expansion(
+        of node: AttributeSyntax,
+        providingAccessorsOf declaration: some DeclSyntaxProtocol,
+        in context: some MacroExpansionContext
+    ) throws -> [AccessorDeclSyntax] {
+        let (name, _) = try requireTypedProperty(declaration, attribute: node)
+        return [
+            """
+            @storageRestrictions(initializes: _\(raw: name))
+            init(initialValue) {
+                _\(raw: name) = Baton.SubscriptionStorage(initialValue)
+            }
+            """,
+            """
+            get {
+                _\(raw: name).resolved
+            }
+            """,
+        ]
+    }
+
+    public static func expansion(
+        of node: AttributeSyntax,
+        providingPeersOf declaration: some DeclSyntaxProtocol,
+        in context: some MacroExpansionContext
+    ) throws -> [DeclSyntax] {
+        let (name, type) = try requireTypedProperty(declaration, attribute: node)
+        return ["private var _\(raw: name): Baton.SubscriptionStorage<\(type.trimmed)>"]
+    }
+}
+
 /// Turns `var star: StarMutation.Action` into a computed property over
 /// `_star: MutationStorage<StarMutation>`, so the view gets an action and the
 /// memberwise initializer does not mention it.
@@ -113,5 +148,5 @@ private func requireTypedProperty(_ declaration: some DeclSyntaxProtocol, attrib
 
 @main
 struct BatonMacrosPlugin: CompilerPlugin {
-    let providingMacros: [Macro.Type] = [FragmentMacro.self, QueryMacro.self, MutationMacro.self]
+    let providingMacros: [Macro.Type] = [FragmentMacro.self, QueryMacro.self, MutationMacro.self, SubscriptionMacro.self]
 }

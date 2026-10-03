@@ -2,9 +2,10 @@ import Foundation
 
 /// A normalized response, not yet in the store: records by key, one flat list
 /// of (record, slot, value) entries in arrival order, reference lists in a
-/// shared arena, strings as byte ranges into the response, and the edits the
-/// plan's connections and edge directives ask for. Nothing is materialized
-/// until the commit decides which values won and which changed.
+/// shared arena, strings as byte ranges into the response, the edits the
+/// plan's connections and edge directives ask for, and the field errors the
+/// response carried, resolved to the records and slots they name. Nothing is
+/// materialized until the commit decides which values won and which changed.
 public struct ChangeSet: Sendable {
     public enum RawValue: Sendable {
         case null
@@ -34,6 +35,15 @@ public struct ChangeSet: Sendable {
         case deleteRecord(id: String)
     }
 
+    /// A field error resolved to the record and slot its path names, and
+    /// whether a `@catch` on the way there handles it.
+    public struct FieldErrorEntry: Sendable {
+        public let record: Int32
+        public let slot: Slot
+        public let error: FieldError
+        public let caught: Bool
+    }
+
     public let bytes: [UInt8]
     public internal(set) var recordKeys: ContiguousArray<String> = []
     public internal(set) var recordTypes: ContiguousArray<TypeID> = []
@@ -43,16 +53,23 @@ public struct ChangeSet: Sendable {
     public internal(set) var refs: ContiguousArray<Int32> = []
     public internal(set) var scalars: ContiguousArray<RawValue> = []
     public internal(set) var edits: ContiguousArray<Edit> = []
+    public internal(set) var fieldErrors: ContiguousArray<FieldErrorEntry> = []
     var index: [String: Int32] = [:]
 
-    init(bytes: [UInt8]) {
+    init(bytes: [UInt8], small: Bool = false) {
         self.bytes = bytes
+        if small { return }
         index.reserveCapacity(1024)
         recordKeys.reserveCapacity(1024)
         recordTypes.reserveCapacity(1024)
         recordIsEntity.reserveCapacity(1024)
         entries.reserveCapacity(32_768)
         refs.reserveCapacity(8_192)
+    }
+
+    /// The field errors no `@catch` handles; they fail a `@throwOnFieldError` operation.
+    public var uncaughtFieldErrors: [FieldError] {
+        fieldErrors.filter { !$0.caught }.map(\.error)
     }
 
     @inline(__always)
@@ -95,6 +112,36 @@ public struct IngestError: Error, CustomStringConvertible, Sendable {
 /// Decodes a GraphQL response straight into a change set, following a resolved
 /// plan. One pass, no intermediate tree, no model.
 public enum Ingest {
+    /// One step of a response path: a field by response key, or a list index.
+    public enum PathSegment: Sendable, Hashable {
+        case name(String)
+        case index(Int)
+    }
+
+    /// A deferred part's content: the items it delivers, the parts it
+    /// announces, and whether more follow. Reads the June 2023 incremental
+    /// format (`incremental[{data, path, label}]`), the 2024 one
+    /// (`pending[{id, path, label}]`, `incremental[{id, data}]`), and Relay's
+    /// (`{data, path, label}` per part).
+    public struct IncrementalPart: Sendable {
+        public struct Item: Sendable {
+            public var path: [PathSegment]?
+            public var label: String?
+            public var id: String?
+            public var data: Data
+        }
+
+        public struct Pending: Sendable {
+            public var id: String
+            public var path: [PathSegment]
+            public var label: String?
+        }
+
+        public var items: [Item] = []
+        public var pending: [Pending] = []
+        public var hasNext = false
+    }
+
     public static func normalize(_ data: Data, plan: ResolvedSelection, rootKey: String = Store.rootKey) throws -> ChangeSet {
         let bytes = [UInt8](data)
         var changes = ChangeSet(bytes: bytes)
@@ -104,6 +151,94 @@ public enum Ingest {
             changes = cursor.changes
         }
         return changes
+    }
+
+    /// Normalizes one object, as a deferred part delivers it: the selection
+    /// the part fills, at the record its path named.
+    public static func normalizeObject(_ data: Data, plan: ResolvedSelection, rootKey: String) throws -> ChangeSet {
+        let bytes = [UInt8](data)
+        var changes = ChangeSet(bytes: bytes)
+        try bytes.withUnsafeBufferPointer { buffer in
+            var cursor = Cursor(base: buffer.baseAddress!, count: buffer.count, changes: changes)
+            cursor.skipWhitespace()
+            let rootID = cursor.changes.record(for: rootKey, type: plan.type, entity: false)
+            _ = try cursor.object(plan: plan, parent: rootID, slot: nil, listIndex: nil, depth: 0, fixedRecord: rootID)
+            changes = cursor.changes
+        }
+        return changes
+    }
+
+    /// Reads a part of an incremental response after the first.
+    public static func incremental(_ data: Data) throws -> IncrementalPart {
+        let bytes = [UInt8](data)
+        var part = IncrementalPart()
+        try bytes.withUnsafeBufferPointer { buffer in
+            var cursor = Cursor(base: buffer.baseAddress!, count: buffer.count, changes: ChangeSet(bytes: [], small: true))
+            var topLevel = IncrementalPart.Item(path: nil, label: nil, id: nil, data: Data())
+            var sawTopLevelData = false
+            try cursor.members { key, cursor in
+                switch key {
+                case "incremental":
+                    try cursor.elements { cursor in
+                        var item = IncrementalPart.Item(path: nil, label: nil, id: nil, data: Data())
+                        try cursor.members { key, cursor in
+                            switch key {
+                            case "data": item.data = try cursor.rawValue(in: bytes)
+                            case "path": item.path = try cursor.path()
+                            case "label": item.label = try cursor.stringValue()
+                            case "id": item.id = try cursor.stringValue()
+                            default: try cursor.skipValue()
+                            }
+                        }
+                        part.items.append(item)
+                    }
+                case "pending":
+                    try cursor.elements { cursor in
+                        var pending = IncrementalPart.Pending(id: "", path: [], label: nil)
+                        try cursor.members { key, cursor in
+                            switch key {
+                            case "id": pending.id = try cursor.stringValue() ?? ""
+                            case "path": pending.path = try cursor.path() ?? []
+                            case "label": pending.label = try cursor.stringValue()
+                            default: try cursor.skipValue()
+                            }
+                        }
+                        part.pending.append(pending)
+                    }
+                case "hasNext": part.hasNext = try cursor.parseBool()
+                case "data":
+                    sawTopLevelData = true
+                    topLevel.data = try cursor.rawValue(in: bytes)
+                case "path": topLevel.path = try cursor.path()
+                case "label": topLevel.label = try cursor.stringValue()
+                default: try cursor.skipValue()
+                }
+            }
+            if sawTopLevelData, topLevel.path != nil {
+                part.items.append(topLevel)
+            }
+        }
+        return part
+    }
+
+    /// Reads a `graphql-transport-ws` frame: its type, id and payload bytes.
+    public static func frame(_ data: Data) throws -> (type: String?, id: String?, payload: Data?) {
+        let bytes = [UInt8](data)
+        var type: String?
+        var id: String?
+        var payload: Data?
+        try bytes.withUnsafeBufferPointer { buffer in
+            var cursor = Cursor(base: buffer.baseAddress!, count: buffer.count, changes: ChangeSet(bytes: [], small: true))
+            try cursor.members { key, cursor in
+                switch key {
+                case "type": type = try cursor.stringValue()
+                case "id": id = try cursor.stringValue()
+                case "payload": payload = try cursor.rawValue(in: bytes)
+                default: try cursor.skipValue()
+                }
+            }
+        }
+        return (type, id, payload)
     }
 
     struct Cursor {
@@ -122,6 +257,8 @@ public enum Ingest {
         /// Client fields written beside the object's own, per depth: the
         /// connection links, by storage key and declared slot.
         var extra: [ContiguousArray<(String, Slot, ChangeSet.RawValue)>] = (0..<24).map { _ in [] }
+        /// The response's `errors`, as read; resolved against the plan at the end.
+        var rawErrors: [(message: String, path: [PathSegment]?)] = []
 
         init(base: UnsafePointer<UInt8>, count: Int, changes: ChangeSet) {
             self.base = base
@@ -131,34 +268,167 @@ public enum Ingest {
 
         mutating func run(root: ResolvedSelection, rootKey: String) throws {
             skipWhitespace()
-            try expect(0x7B)
             var sawData = false
-            while true {
-                skipWhitespace()
-                if peek() == 0x7D { position += 1; break }
-                let (start, end, escaped) = try scanString()
-                skipWhitespace(); try expect(0x3A); skipWhitespace()
-                if !escaped && end - start == 4 && memcmp(base + start, "data", 4) == 0 {
-                    if peek() == 0x6E {
-                        try literal("null")
+            var rootID: Int32 = -1
+            try members { key, cursor in
+                switch key {
+                case "data":
+                    if cursor.peek() == 0x6E {
+                        try cursor.literal("null")
                     } else {
-                        let rootID = changes.record(for: rootKey, type: root.type, entity: false)
-                        _ = try object(plan: root, parent: rootID, slot: nil, listIndex: nil, depth: 0, fixedRecord: rootID)
+                        rootID = cursor.changes.record(for: rootKey, type: root.type, entity: false)
+                        _ = try cursor.object(plan: root, parent: rootID, slot: nil, listIndex: nil, depth: 0, fixedRecord: rootID)
                         sawData = true
                     }
-                } else if !escaped && end - start == 6 && memcmp(base + start, "errors", 6) == 0 {
-                    let errorsStart = position
-                    try skipValue()
-                    if !sawData {
-                        throw IngestError(offset: errorsStart, message: "the response carries errors and no data")
-                    }
-                } else {
-                    try skipValue()
+                case "errors":
+                    try cursor.errors()
+                default:
+                    try cursor.skipValue()
                 }
-                skipWhitespace()
-                if peek() == 0x2C { position += 1 }
             }
-            if !sawData { throw IngestError(offset: position, message: "no data in response") }
+            if !sawData {
+                if !rawErrors.isEmpty { throw GraphQLErrors(messages: rawErrors.map(\.message)) }
+                throw IngestError(offset: position, message: "no data in response")
+            }
+            if !rawErrors.isEmpty {
+                resolveErrors(root: root, rootID: rootID)
+            }
+        }
+
+        /// Iterates an object's members, leaving each value to the handler.
+        mutating func members(_ handle: (String, inout Cursor) throws -> Void) throws {
+            skipWhitespace()
+            try expect(0x7B)
+            while true {
+                skipWhitespace()
+                let byte = peek()
+                if byte == 0x7D { position += 1; return }
+                if byte == 0x2C { position += 1; continue }
+                let (start, end, escaped) = try scanString()
+                skipWhitespace(); try expect(0x3A); skipWhitespace()
+                try handle(Ingest.materialize(base: base, start, end, escaped), &self)
+            }
+        }
+
+        /// Iterates an array's elements, leaving each to the handler.
+        mutating func elements(_ handle: (inout Cursor) throws -> Void) throws {
+            skipWhitespace()
+            try expect(0x5B)
+            while true {
+                skipWhitespace()
+                let byte = peek()
+                if byte == 0x5D { position += 1; return }
+                if byte == 0x2C { position += 1; continue }
+                try handle(&self)
+            }
+        }
+
+        /// A string value, or nil for `null`.
+        mutating func stringValue() throws -> String? {
+            skipWhitespace()
+            if peek() == 0x6E { try literal("null"); return nil }
+            let (start, end, escaped) = try scanString()
+            return Ingest.materialize(base: base, start, end, escaped)
+        }
+
+        /// The bytes of one value, verbatim.
+        mutating func rawValue(in bytes: [UInt8]) throws -> Data {
+            skipWhitespace()
+            let start = position
+            try skipValue()
+            return Data(bytes[start..<position])
+        }
+
+        /// A response path: strings and integers.
+        mutating func path() throws -> [PathSegment]? {
+            skipWhitespace()
+            if peek() == 0x6E { try literal("null"); return nil }
+            var segments: [PathSegment] = []
+            try elements { cursor in
+                if cursor.peek() == 0x22 {
+                    let (start, end, escaped) = try cursor.scanString()
+                    segments.append(.name(Ingest.materialize(base: cursor.base, start, end, escaped)))
+                } else {
+                    segments.append(.index(try cursor.parseInt()))
+                }
+            }
+            return segments
+        }
+
+        /// The response's `errors` array: messages and paths.
+        mutating func errors() throws {
+            skipWhitespace()
+            if peek() == 0x6E { try literal("null"); return }
+            try elements { cursor in
+                var message = ""
+                var path: [PathSegment]?
+                try cursor.members { key, cursor in
+                    switch key {
+                    case "message": message = try cursor.stringValue() ?? ""
+                    case "path": path = try cursor.path()
+                    default: try cursor.skipValue()
+                    }
+                }
+                cursor.rawErrors.append((message, path))
+            }
+        }
+
+        /// Resolves each error's path through the plan and the entries to the
+        /// record and slot it names; a path that leads nowhere is dropped.
+        mutating func resolveErrors(root: ResolvedSelection, rootID: Int32) {
+            var positions: [UInt64: Int] = [:]
+            positions.reserveCapacity(changes.entries.count)
+            for (position, entry) in changes.entries.enumerated() {
+                positions[UInt64(UInt32(bitPattern: entry.record)) << 32 | UInt64(UInt32(bitPattern: entry.slot.index))] = position
+            }
+            for (message, path) in rawErrors {
+                guard let path, !path.isEmpty else { continue }
+                var record = rootID
+                var selection = root
+                var caught = false
+                var resolved: (Int32, Slot)?
+                var rendered: [String] = []
+                var segments = path[...]
+                while let segment = segments.popFirst() {
+                    guard case .name(let name) = segment, let index = selection.field(named: name) else { break }
+                    rendered.append(name)
+                    let field = selection.fields[index]
+                    caught = caught || field.caught
+                    let slot = selection.slot(of: index, on: changes.recordTypes[Int(record)])
+                    resolved = (record, slot)
+                    guard case .linked(let child, _, _, _) = field.kind,
+                          let position = positions[UInt64(UInt32(bitPattern: record)) << 32 | UInt64(UInt32(bitPattern: slot.index))]
+                    else { break }
+                    switch changes.entries[position].value {
+                    case .ref(let target):
+                        record = target
+                        selection = child
+                    case .refs(let start, let count):
+                        guard case .index(let offset)? = segments.first, offset < Int(count) else { break }
+                        segments.removeFirst()
+                        rendered.append(String(offset))
+                        let target = changes.refs[Int(start) + offset]
+                        if target < 0 { break }
+                        record = target
+                        selection = child
+                    default:
+                        break
+                    }
+                }
+                guard let (record, slot) = resolved else { continue }
+                for segment in segments {
+                    switch segment {
+                    case .name(let name): rendered.append(name)
+                    case .index(let offset): rendered.append(String(offset))
+                    }
+                }
+                changes.fieldErrors.append(ChangeSet.FieldErrorEntry(
+                    record: record,
+                    slot: slot,
+                    error: FieldError(message: message, path: rendered.joined(separator: ".")),
+                    caught: caught
+                ))
+            }
         }
 
         /// Parses one object against a selection; appends its entries; returns its record.
@@ -464,6 +734,7 @@ public enum Ingest {
         }
 
         mutating func parseBool() throws -> Bool {
+            skipWhitespace()
             if peek() == 0x74 { try literal("true"); return true }
             try literal("false")
             return false

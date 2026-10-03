@@ -28,8 +28,20 @@ public protocol Operation: Hashable, Sendable {
     static var text: String { get }
     static var persistedID: String { get }
     static var plan: Plan { get }
+    /// `@throwOnFieldError`: an uncaught field error fails the operation.
+    static var throwsOnFieldError: Bool { get }
+    /// Whether a `@required` field at the root can null the whole result.
+    static var bubbles: Bool { get }
+    /// Whether the response may arrive in parts (`@defer`).
+    static var hasDeferred: Bool { get }
     var variables: Variables { get }
     var resolution: OperationHandle<Self>? { get set }
+}
+
+extension Operation {
+    public static var throwsOnFieldError: Bool { false }
+    public static var bubbles: Bool { false }
+    public static var hasDeferred: Bool { false }
 }
 
 /// The state of a resolved operation. Always synchronously readable.
@@ -97,8 +109,25 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
 
     var key: AnyHashable { AnyHashable(operation) }
 
-    private var data: Op.Data {
-        Op.Data(anchor: Anchor(record: environment.store.root, variables: operation.variables, store: environment.store))
+    private var anchor: Anchor {
+        Anchor(record: environment.store.root, variables: operation.variables, store: environment.store)
+    }
+
+    private var data: Op.Data { Op.Data(anchor: anchor) }
+
+    /// The phase the store's data deserves: ready, unless the operation's
+    /// policies say otherwise. `@throwOnFieldError` fails on an uncaught field
+    /// error anywhere in the selection; a root whose `@required` fields bubble
+    /// fails, because there is no null data.
+    private func evaluate() -> Phase<Op.Data> {
+        if Op.throwsOnFieldError {
+            let errors = Op.Data.fieldErrors(anchor)
+            if !errors.isEmpty { return .failed(FieldErrors(errors)) }
+        }
+        if Op.bubbles, !Op.Data.satisfied(anchor) {
+            return .failed(RequiredFieldError(path: Op.name))
+        }
+        return .ready(data)
     }
 
     /// Whether the store holds every field the operation selects.
@@ -117,7 +146,7 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
     func apply(_ policy: FetchPolicy) {
         let complete = isComplete
         if complete, policy != .networkOnly, case .loading = phase {
-            phase = .ready(data)
+            phase = evaluate()
         }
         switch policy {
         case .storeOnly:
@@ -150,13 +179,22 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
                 isRefreshing = false
             }
             do {
-                try await environment.fetch(operation)
+                try await environment.fetch(operation) { [weak self] in
+                    // A deferred response renders its first part at once.
+                    guard let self, !Task.isCancelled else { return }
+                    fetchTime = .now
+                    fetchEpoch = environment.store.invalidationEpoch
+                    phase = evaluate()
+                }
                 guard !Task.isCancelled else { return }
                 fetchTime = .now
                 fetchEpoch = environment.store.invalidationEpoch
-                phase = .ready(data)
+                phase = evaluate()
             } catch is CancellationError {
                 return
+            } catch let error as FieldErrors {
+                // `@throwOnFieldError`: the data is in the store, the phase says why it is not shown.
+                phase = .failed(error)
             } catch {
                 if case .ready = phase {
                     // Earlier data stays visible; the failure shows through the end of isRefreshing.
@@ -298,5 +336,156 @@ public struct MutationStorage<Op: Operation>: DynamicProperty {
 
     public var action: MutationAction<Op> {
         MutationAction(environment: environment, state: state)
+    }
+}
+
+// MARK: Subscriptions
+
+/// The live side of a subscription value: the stream it holds open, how many
+/// events arrived, the latest event's data, and the error that ended it.
+/// Each event is normalized with the operation's plan at the subscription root
+/// and committed, so its entities merge and its edge directives apply.
+@MainActor
+@Observable
+public final class SubscriptionHandle<Op: Operation>: AnyOperationHandle {
+    public let operation: Op
+    /// How many events have been committed.
+    public private(set) var events = 0
+    /// The latest event, as a lens over the subscription root.
+    public private(set) var latest: Op.Data?
+    /// The error that ended the stream, if one did.
+    public private(set) var error: (any Error)?
+    /// Whether the stream is open.
+    public private(set) var isActive = false
+    @ObservationIgnored private unowned let environment: Environment
+    @ObservationIgnored private var task: Task<Void, Never>?
+    @ObservationIgnored let resolved: ResolvedSelection
+    @ObservationIgnored public internal(set) var retainCount = 0
+
+    init(operation: Op, environment: Environment) {
+        self.operation = operation
+        self.environment = environment
+        resolved = Op.plan.resolve(operation.variables)
+    }
+
+    var key: AnyHashable { AnyHashable(operation) }
+
+    /// Opens the stream unless it is open.
+    func start() {
+        guard task == nil else { return }
+        isActive = true
+        error = nil
+        task = Task { [weak self] in
+            guard let self else { return }
+            defer {
+                task = nil
+                isActive = false
+            }
+            do {
+                for try await payload in environment.subscribe(operation) {
+                    guard !Task.isCancelled else { return }
+                    let changes = try await Task.detached(priority: .userInitiated) { [resolved] in
+                        try Ingest.normalize(payload, plan: resolved, rootKey: Store.subscriptionRootKey)
+                    }.value
+                    environment.store.commit(changes)
+                    events += 1
+                    latest = Op.Data(anchor: Anchor(record: environment.store.subscriptionRoot, variables: operation.variables, store: environment.store))
+                }
+            } catch is CancellationError {
+                return
+            } catch {
+                self.error = error
+            }
+        }
+    }
+
+    /// Keeps the stream open and the latest event's records alive.
+    public func retain() {
+        retainCount += 1
+        environment.didRetain(self)
+        start()
+    }
+
+    /// Balances `retain()`. At zero the stream closes; nothing is buffered.
+    public func release() {
+        retainCount -= 1
+        if retainCount <= 0 {
+            retainCount = 0
+            cancel()
+            environment.didEnd(self)
+        }
+    }
+
+    func refetchIfStale() {}
+
+    func mark(into reachable: inout Set<ObjectIdentifier>) {
+        environment.store.mark(resolved, from: environment.store.subscriptionRoot, into: &reachable)
+    }
+
+    func cancel() {
+        task?.cancel()
+        task = nil
+        isActive = false
+    }
+}
+
+/// A subscription value, resolved inside a view through `@Subscription`.
+extension Operation {
+    /// The live side, when the value was resolved by a view.
+    @MainActor public var subscription: SubscriptionHandle<Self>? { SubscriptionResolution.handle(for: self) }
+}
+
+/// Where `@Subscription` storage parks the handle a value resolves to, so the
+/// operation value's accessors can reach it without a second stored property.
+@MainActor
+enum SubscriptionResolution {
+    private static var handles: [AnyHashable: AnyObject] = [:]
+
+    static func set<Op: Operation>(_ handle: SubscriptionHandle<Op>?, for operation: Op) {
+        if let handle { handles[AnyHashable(operation)] = handle } else { handles.removeValue(forKey: AnyHashable(operation)) }
+    }
+
+    static func handle<Op: Operation>(for operation: Op) -> SubscriptionHandle<Op>? {
+        handles[AnyHashable(operation)] as? SubscriptionHandle<Op>
+    }
+}
+
+/// What a `@Subscription` property expands to: subscribes while the view
+/// lives, closes the stream when SwiftUI drops the view's state, and hands out
+/// the operation value with the handle attached.
+@MainActor
+public struct SubscriptionStorage<Op: Operation>: DynamicProperty {
+    @SwiftUI.Environment(\.baton) private var environment
+    @State private var box = Box()
+    private let value: Op
+
+    final class Box: @unchecked Sendable {
+        nonisolated(unsafe) var handle: SubscriptionHandle<Op>?
+
+        deinit {
+            guard let handle else { return }
+            Task { @MainActor in handle.release() }
+        }
+    }
+
+    public init(_ value: Op) {
+        self.value = value
+    }
+
+    public nonisolated mutating func update() {
+        MainActor.assumeIsolated {
+            if box.handle?.operation != value {
+                box.handle?.release()
+                let handle = Environment.resolve(environment).subscriptionHandle(for: value)
+                handle.retain()
+                box.handle = handle
+            }
+        }
+    }
+
+    /// The value, with its live side registered for `subscription`.
+    public var resolved: Op {
+        SubscriptionResolution.set(box.handle, for: value)
+        return value
     }
 }

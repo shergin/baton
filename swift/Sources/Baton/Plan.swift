@@ -178,13 +178,18 @@ public struct PlanField: Sendable {
     public let key: StorageKey
     public let kind: Kind
     public let handle: Handle?
+    /// The `@defer` label of the part that carries the field, when deferred.
+    public let deferred: String?
+    /// Whether the field or an ancestor carries `@catch`, so an error on it
+    /// does not fail a `@throwOnFieldError` operation.
+    public let caught: Bool
 
-    public static func scalar(_ responseKey: String, key: StorageKey, kind: ScalarKind, list: Bool, handle: Handle? = nil) -> PlanField {
-        PlanField(responseKey: responseKey, key: key, kind: .scalar(kind, list: list), handle: handle)
+    public static func scalar(_ responseKey: String, key: StorageKey, kind: ScalarKind, list: Bool, handle: Handle? = nil, deferred: String? = nil, caught: Bool = false) -> PlanField {
+        PlanField(responseKey: responseKey, key: key, kind: .scalar(kind, list: list), handle: handle, deferred: deferred, caught: caught)
     }
 
-    public static func linked(_ responseKey: String, key: StorageKey, plural: Bool, lookup: Lookup? = nil, connection: ConnectionPlan? = nil, handle: Handle? = nil, selection: Selection) -> PlanField {
-        PlanField(responseKey: responseKey, key: key, kind: .linked(selection, plural: plural, lookup: lookup, connection: connection), handle: handle)
+    public static func linked(_ responseKey: String, key: StorageKey, plural: Bool, lookup: Lookup? = nil, connection: ConnectionPlan? = nil, handle: Handle? = nil, deferred: String? = nil, caught: Bool = false, selection: Selection) -> PlanField {
+        PlanField(responseKey: responseKey, key: key, kind: .linked(selection, plural: plural, lookup: lookup, connection: connection), handle: handle, deferred: deferred, caught: caught)
     }
 }
 
@@ -247,7 +252,9 @@ public final class Selection: Sendable {
                             connections: Selection.connections(handle.connections, variables),
                             edgeType: handle.edgeType
                         )
-                    }
+                    },
+                    deferred: field.deferred,
+                    caught: field.caught
                 )
             }
         )
@@ -354,6 +361,7 @@ public final class ResolvedSelection: Sendable {
     public let isAbstract: Bool
     public let fields: [ResolvedField]
     private let concreteSlots = Mutex<[TypeID: [Slot]]>([:])
+    private let deferredParts = Mutex<[String: ResolvedSelection]>([:])
 
     init(type: TypeID, hasID: Bool, isAbstract: Bool, fields: [ResolvedField]) {
         self.type = type
@@ -383,6 +391,28 @@ public final class ResolvedSelection: Sendable {
     func slot(of connection: ResolvedConnection, on type: TypeID) -> Slot {
         isAbstract ? Registry.slot(type, connection.storageKey) : connection.slot
     }
+
+    /// The field with a response key, for walking a response path.
+    func field(named responseKey: String) -> Int? {
+        fields.firstIndex { $0.responseKey == responseKey }
+    }
+
+    /// The selection an incremental part with this `@defer` label fills: the
+    /// fields the label marks, on the same record. Cached per label.
+    func deferred(_ label: String) -> ResolvedSelection? {
+        deferredParts.withLock { cache in
+            if let part = cache[label] { return part }
+            let part = ResolvedSelection(
+                type: type,
+                hasID: hasID,
+                isAbstract: isAbstract,
+                fields: fields.filter { $0.deferred == label }.map { $0.undeferred() }
+            )
+            if part.fields.isEmpty { return nil }
+            cache[label] = part
+            return part
+        }
+    }
 }
 
 public struct ResolvedField: Sendable {
@@ -399,15 +429,26 @@ public struct ResolvedField: Sendable {
     public let slot: Slot
     public let kind: Kind
     public let handle: ResolvedHandle?
+    /// The `@defer` label of the part that carries the field; the availability
+    /// check does not wait for it.
+    public let deferred: String?
+    public let caught: Bool
     let isTypename: Bool
 
-    init(responseKey: String, storageKey: String, slot: Slot, kind: Kind, handle: ResolvedHandle?) {
+    init(responseKey: String, storageKey: String, slot: Slot, kind: Kind, handle: ResolvedHandle?, deferred: String?, caught: Bool) {
         self.responseKey = responseKey
         keyBytes = Array(responseKey.utf8)
         self.storageKey = storageKey
         self.slot = slot
         self.kind = kind
         self.handle = handle
+        self.deferred = deferred
+        self.caught = caught
         isTypename = responseKey == "__typename"
+    }
+
+    /// The same field as the incremental part delivers it: no longer deferred.
+    func undeferred() -> ResolvedField {
+        ResolvedField(responseKey: responseKey, storageKey: storageKey, slot: slot, kind: kind, handle: handle, deferred: nil, caught: caught)
     }
 }

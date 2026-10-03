@@ -14,6 +14,8 @@ public final class Record: Observable {
     /// skip it, until a payload names it again.
     public private(set) var deleted = false
     private var values: ContiguousArray<Value>
+    /// Field errors by slot index; allocated when the first error lands.
+    private var errors: [Int32: FieldError]?
     nonisolated private let registrar = ObservationRegistrar()
 
     /// Values are sized by what is written, not by how many storage keys the
@@ -86,6 +88,28 @@ public final class Record: Observable {
         registrar.withMutation(of: self, keyPath: Record.channels[Int(slot.index) & 15]) {}
     }
 
+    /// The field error stored beside a slot, registering the read.
+    public func error(_ slot: Slot) -> FieldError? {
+        registrar.access(self, keyPath: Record.channels[Int(slot.index) & 15])
+        return errors?[slot.index]
+    }
+
+    /// Whether any slot carries an error; for the commit's fast path.
+    var hasErrors: Bool { errors != nil }
+
+    /// Stores or clears a slot's error, silently. Returns whether it changed.
+    func setError(_ slot: Slot, _ error: FieldError?) -> Bool {
+        if let error {
+            if errors == nil { errors = [:] }
+            if errors?[slot.index] == error { return false }
+            errors?[slot.index] = error
+            return true
+        }
+        guard errors?.removeValue(forKey: slot.index) != nil else { return false }
+        if errors?.isEmpty == true { errors = nil }
+        return true
+    }
+
     /// Notifies every observer of the record; for deletion and revival, which
     /// change what every field reads as.
     func notifyAll() {
@@ -102,6 +126,7 @@ public final class Record: Observable {
     /// anything still holding it reads missing data and reports it.
     func clear() {
         for index in values.indices { values[index] = .missing }
+        errors = nil
     }
 
     /// Marks the record deleted or revives it; the store clears the values
