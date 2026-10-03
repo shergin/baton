@@ -136,6 +136,14 @@ are expected and listed without apology.
   The `lookup:` parameters of `Anchor.linked`, `requiredLinked` and
   `throwingLinked` are removed. See
   [the decision](docs/decisions/lookups-bind-in-the-check.md).
+- Readers say what they could not read. A `required*` reader that finds a
+  null reports it through the new `Store.reportUnexpected`, and one that
+  finds no value reports the miss; both still return the zero value. A
+  value of another kind than the reader's reads nil and is reported; it
+  was nil silently. A `@required` field the store never received is
+  reported missing before its lens bubbles. A non-null link without a
+  record reads one placeholder per type, so the fields below it report
+  nothing a second time; a record was allocated per read.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

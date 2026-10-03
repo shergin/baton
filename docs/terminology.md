@@ -195,7 +195,9 @@ failure of the fetch.
 **Heal.** Baton's word for the response to missing data: record the event,
 mark the owning operation stale, refetch. See
 [Honest data](principles/honest-data.md). Today: `Store.reportMissing` is
-called; the refetch is *(planned)*.
+called; the refetch is *(planned)*. A value the generated type cannot hold,
+a null in a field typed non-null or a value of another kind, is reported
+through `Store.reportUnexpected`; it is not a miss, so nothing heals it.
 
 ## Compiler
 

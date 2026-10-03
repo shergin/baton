@@ -26,6 +26,18 @@ public final class Store {
     /// print by default; a product can route it to its own reporting.
     public var reportMissing: ((Record, Slot) -> Void)?
 
+    /// Called when a lens reads a value its generated type cannot hold: a
+    /// null in a field typed non-null, or a value of another kind than the
+    /// field's. The read returns the type's zero value, or nil. Debug builds
+    /// print by default.
+    public var reportUnexpected: ((Record, Slot, Value) -> Void)?
+
+    /// The stand-in a non-null link without a record reads, one per type and
+    /// never in `records`: its fields are all missing, and the anchor over it
+    /// has no store, so a lens below reads zero values and reports nothing a
+    /// second time.
+    private var placeholders: [TypeID: Record] = [:]
+
     /// Called when a bare id names live records of more than one type, so
     /// `@deleteRecord` or a lookup without a type cannot tell which: the id
     /// and the records. Nothing is deleted or resolved. Debug builds print
@@ -62,6 +74,9 @@ public final class Store {
         reportMissing = { record, slot in
             print("Baton: missing data: \(record.key).\(slot.storageKey) was read but never fetched; the miss was recorded")
         }
+        reportUnexpected = { record, slot, value in
+            print("Baton: \(record.key).\(slot.storageKey) holds \(value), which its reader's type cannot hold; it read as a zero value or nil")
+        }
         reportAmbiguousIdentity = { id, records in
             print("Baton: the id \(id) names \(records.map(\.key).joined(separator: ", ")); nothing was done for it")
         }
@@ -70,6 +85,14 @@ public final class Store {
 
     /// Marks everything fetched so far as stale.
     public func invalidate() { invalidationEpoch += 1 }
+
+    /// The placeholder record of a type.
+    func placeholder(_ type: TypeID) -> Record {
+        if let record = placeholders[type] { return record }
+        let record = Record(type: type, key: "client:placeholder:" + type.name)
+        placeholders[type] = record
+        return record
+    }
 
     public var count: Int { records.count }
 

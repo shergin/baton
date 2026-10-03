@@ -62,6 +62,10 @@ extension Anchor {
         anchor.store?.reportMissing?(record, slot)
     }
 
+    private func unexpected(_ slot: Slot, _ value: Value) {
+        store?.reportUnexpected?(record, slot, value)
+    }
+
     private var anchor: Anchor { self }
 
     /// The slot of a storage key on the record's own type, for selections on
@@ -75,96 +79,136 @@ extension Anchor {
         variables[variable] == .bool(passing)
     }
 
-    public func string(_ slot: Slot) -> String? {
-        switch record.read(slot) {
+    /// The field's value read as a string. A null reads as nil, and is
+    /// reported when the field is typed non-null.
+    @inline(__always)
+    private func string(_ slot: Slot, nonNull: Bool) -> String? {
+        let value = record.read(slot)
+        switch value {
         case .string(let string): return string
         case .int(let int): return String(int)
         case .double(let double): return String(double)
         case .bool(let bool): return bool ? "true" : "false"
+        case .null: if nonNull { unexpected(slot, value) }; return nil
         case .missing: missing(slot); return nil
-        default: return nil
+        default: unexpected(slot, value); return nil
         }
     }
 
-    public func requiredString(_ slot: Slot) -> String { string(slot) ?? "" }
+    public func string(_ slot: Slot) -> String? { string(slot, nonNull: false) }
+    public func requiredString(_ slot: Slot) -> String { string(slot, nonNull: true) ?? "" }
 
-    public func int(_ slot: Slot) -> Int? {
-        switch record.read(slot) {
+    @inline(__always)
+    private func int(_ slot: Slot, nonNull: Bool) -> Int? {
+        let value = record.read(slot)
+        switch value {
         case .int(let int): return int
-        case .double(let double): return Int(exactly: double)
+        case .double(let double):
+            if let int = Int(exactly: double) { return int }
+            unexpected(slot, value)
+            return nil
+        case .null: if nonNull { unexpected(slot, value) }; return nil
         case .missing: missing(slot); return nil
-        default: return nil
+        default: unexpected(slot, value); return nil
         }
     }
 
-    public func requiredInt(_ slot: Slot) -> Int { int(slot) ?? 0 }
+    public func int(_ slot: Slot) -> Int? { int(slot, nonNull: false) }
+    public func requiredInt(_ slot: Slot) -> Int { int(slot, nonNull: true) ?? 0 }
 
-    public func double(_ slot: Slot) -> Double? {
-        switch record.read(slot) {
+    @inline(__always)
+    private func double(_ slot: Slot, nonNull: Bool) -> Double? {
+        let value = record.read(slot)
+        switch value {
         case .double(let double): return double
         case .int(let int): return Double(int)
+        case .null: if nonNull { unexpected(slot, value) }; return nil
         case .missing: missing(slot); return nil
-        default: return nil
+        default: unexpected(slot, value); return nil
         }
     }
 
-    public func requiredDouble(_ slot: Slot) -> Double { double(slot) ?? 0 }
+    public func double(_ slot: Slot) -> Double? { double(slot, nonNull: false) }
+    public func requiredDouble(_ slot: Slot) -> Double { double(slot, nonNull: true) ?? 0 }
 
-    public func bool(_ slot: Slot) -> Bool? {
-        switch record.read(slot) {
+    @inline(__always)
+    private func bool(_ slot: Slot, nonNull: Bool) -> Bool? {
+        let value = record.read(slot)
+        switch value {
         case .bool(let bool): return bool
+        case .null: if nonNull { unexpected(slot, value) }; return nil
         case .missing: missing(slot); return nil
-        default: return nil
+        default: unexpected(slot, value); return nil
         }
     }
 
-    public func requiredBool(_ slot: Slot) -> Bool { bool(slot) ?? false }
+    public func bool(_ slot: Slot) -> Bool? { bool(slot, nonNull: false) }
+    public func requiredBool(_ slot: Slot) -> Bool { bool(slot, nonNull: true) ?? false }
 
-    public func strings(_ slot: Slot) -> [String]? { scalars(slot) { if case .string(let string) = $0 { string } else { nil } } }
-    public func requiredStrings(_ slot: Slot) -> [String] { strings(slot) ?? [] }
-    public func ints(_ slot: Slot) -> [Int]? { scalars(slot) { if case .int(let int) = $0 { int } else { nil } } }
-    public func requiredInts(_ slot: Slot) -> [Int] { ints(slot) ?? [] }
-    public func doubles(_ slot: Slot) -> [Double]? { scalars(slot) { if case .double(let double) = $0 { double } else { nil } } }
-    public func requiredDoubles(_ slot: Slot) -> [Double] { doubles(slot) ?? [] }
-    public func bools(_ slot: Slot) -> [Bool]? { scalars(slot) { if case .bool(let bool) = $0 { bool } else { nil } } }
-    public func requiredBools(_ slot: Slot) -> [Bool] { bools(slot) ?? [] }
+    public func strings(_ slot: Slot) -> [String]? { scalars(slot, nonNull: false) { if case .string(let string) = $0 { string } else { nil } } }
+    public func requiredStrings(_ slot: Slot) -> [String] { scalars(slot, nonNull: true) { if case .string(let string) = $0 { string } else { nil } } ?? [] }
+    public func ints(_ slot: Slot) -> [Int]? { scalars(slot, nonNull: false) { if case .int(let int) = $0 { int } else { nil } } }
+    public func requiredInts(_ slot: Slot) -> [Int] { scalars(slot, nonNull: true) { if case .int(let int) = $0 { int } else { nil } } ?? [] }
+    public func doubles(_ slot: Slot) -> [Double]? { scalars(slot, nonNull: false) { if case .double(let double) = $0 { double } else { nil } } }
+    public func requiredDoubles(_ slot: Slot) -> [Double] { scalars(slot, nonNull: true) { if case .double(let double) = $0 { double } else { nil } } ?? [] }
+    public func bools(_ slot: Slot) -> [Bool]? { scalars(slot, nonNull: false) { if case .bool(let bool) = $0 { bool } else { nil } } }
+    public func requiredBools(_ slot: Slot) -> [Bool] { scalars(slot, nonNull: true) { if case .bool(let bool) = $0 { bool } else { nil } } ?? [] }
 
-    private func scalars<T>(_ slot: Slot, _ transform: (Value) -> T?) -> [T]? {
-        switch record.read(slot) {
+    private func scalars<T>(_ slot: Slot, nonNull: Bool, _ transform: (Value) -> T?) -> [T]? {
+        let value = record.read(slot)
+        switch value {
         case .list(let values): return values.compactMap(transform)
+        case .null: if nonNull { unexpected(slot, value) }; return nil
         case .missing: missing(slot); return nil
-        default: return nil
+        default: unexpected(slot, value); return nil
         }
     }
 
     /// The record behind a singular link. A deleted record reads as null. A
     /// lookup was bound by the availability check, so a read never writes.
     public func linked(_ slot: Slot) -> Anchor? {
-        switch record.read(slot) {
+        let value = record.read(slot)
+        switch value {
         case .ref(let target): return target.deleted ? nil : child(target)
+        case .null: return nil
         case .missing: missing(slot); return nil
-        default: return nil
+        default: unexpected(slot, value); return nil
         }
     }
 
-    /// A non-null link. When the data is missing, a detached empty record of the
-    /// expected type stands in so reads yield zero values, and the miss is reported.
+    /// A non-null link. When it has no record, missing or null, the type's
+    /// placeholder stands in so reads yield zero values, and the link alone
+    /// is reported. A deleted record reads the placeholder unreported.
     public func requiredLinked(_ slot: Slot, type: TypeID) -> Anchor {
-        linked(slot) ?? child(Record(type: type, key: record.key + ":" + slot.storageKey + ":missing"))
+        let value = record.read(slot)
+        switch value {
+        case .ref(let target) where !target.deleted: return child(target)
+        case .ref: break
+        case .missing: missing(slot)
+        default: unexpected(slot, value)
+        }
+        let placeholder = store?.placeholder(type) ?? Record(type: type, key: "client:placeholder:" + type.name)
+        return Anchor(record: placeholder, variables: variables)
     }
 
     /// A plural link. Elements that `keep` rejects are dropped, as Relay nulls a
     /// list item whose `@required` field is null.
     public func list<Element: Lens>(_ slot: Slot, keep: ((Anchor) -> Bool)? = nil) -> List<Element>? {
-        switch record.read(slot) {
-        case .refs(let records): return List(records: records, anchor: self, keep: keep)
-        case .missing: missing(slot); return nil
-        default: return nil
-        }
+        list(slot, nonNull: false, keep: keep)
     }
 
     public func requiredList<Element: Lens>(_ slot: Slot, keep: ((Anchor) -> Bool)? = nil) -> List<Element> {
-        list(slot, keep: keep) ?? List(records: [], anchor: self, keep: nil)
+        list(slot, nonNull: true, keep: keep) ?? List(records: [], anchor: self, keep: nil)
+    }
+
+    private func list<Element: Lens>(_ slot: Slot, nonNull: Bool, keep: ((Anchor) -> Bool)?) -> List<Element>? {
+        let value = record.read(slot)
+        switch value {
+        case .refs(let records): return List(records: records, anchor: self, keep: keep)
+        case .null: if nonNull { unexpected(slot, value) }; return nil
+        case .missing: missing(slot); return nil
+        default: unexpected(slot, value); return nil
+        }
     }
 }
 
@@ -204,7 +248,10 @@ extension Anchor {
     /// LOG, the environment is told.
     public func hasValue(_ slot: Slot, path: String, log: Bool) -> Bool {
         switch record.read(slot) {
-        case .missing, .null: return requiredMissing(path: path, log: log)
+        case .missing:
+            missing(slot)
+            return requiredMissing(path: path, log: log)
+        case .null: return requiredMissing(path: path, log: log)
         default: return true
         }
     }
@@ -280,7 +327,10 @@ extension Anchor {
     /// Appends the error a `@required(action: THROW)` field raises when null.
     public func collectRequired(_ slot: Slot, path: String, into errors: inout [FieldError]) {
         switch record.read(slot) {
-        case .missing, .null: errors.append(.required(path: path))
+        case .missing:
+            missing(slot)
+            errors.append(.required(path: path))
+        case .null: errors.append(.required(path: path))
         default: return
         }
     }
