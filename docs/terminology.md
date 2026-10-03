@@ -83,11 +83,11 @@ changed.
 
 **Root, retain, release buffer.** Relay's words. An operation whose handle is
 alive retains its records; a released root waits in a buffer (default ten)
-before its records become collectable. *(planned)*
+before its records become collectable.
 
-**Invalidation, TTL.** Relay's and Apollo's shared words. A record or the
-store marked stale forces the next read policy to refetch; a time-to-live
-does the same by age. *(planned)*
+**Invalidation, TTL.** Relay's and Apollo's shared words. `Environment.invalidate()`
+marks every fetched operation stale and refetches the retained ones;
+`queryCacheExpiration` does the same by age. Stale data stays readable.
 
 **Optimistic overlay.** Relay: optimistic updates applied in a layer that is
 rebased on each commit. Here: the same, applied on a scratch overlay so only
@@ -130,8 +130,9 @@ a change set by following a plan.
 renders. Here: `preload(operationValue)`; the destination's handle dedupes
 against it.
 
-**Fetch policy.** Relay's four: store-or-network, store-and-network,
-network-only, store-only, decided over an availability check. *(planned)*
+**Fetch policy.** Relay's four, as `@Query("…", fetchPolicy:)`:
+`storeOrNetwork`, `storeAndNetwork` (default), `networkOnly`, `storeOnly`;
+decided on attach over the availability check and staleness.
 
 **Lookup.** Baton's word for a root field configured in `baton.json` as
 returning an entity by one of its arguments, so a cached entity satisfies the

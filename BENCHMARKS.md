@@ -5,6 +5,40 @@ machine. Every number comes from `swift run -c release BatonBenchmarks` (or
 the comparison package named in its section), recorded with the revision,
 machine, OS and date. Append; never edit a past entry.
 
+## 0.2.0 — 2026-10-02
+
+Revision: the 0.2.0 tree. Machine: Apple M1 Pro (MacBook Pro), macOS 26.5.2,
+Xcode 26.6, Swift 6.3.3, release build. Same fixture as 0.1.0.
+
+The 0.1.0 measurements are unchanged within noise (ingest 2.08 ms, commit
+1.15 ms, same payload 164 µs, untracked read 26 ns, tracked read 524 ns,
+check 114 µs).
+
+### Lifetime: 42 pages scrolled through a release buffer of 10
+
+Each page is the fixture with every id shifted, so pages share no records;
+each page's handle is retained, settled, released, and a collection runs.
+
+| Page | Records in store | Roots | Footprint since page 1 |
+|---|---|---|---|
+| 1 | 899 | 1 | +0.0 MB |
+| 5 | 4,491 | 5 | +2.5 MB |
+| 10 | 8,981 | 10 | +5.8 MB |
+| 11 | 8,981 | 10 | +6.4 MB |
+| 20 | 8,981 | 10 | +6.5 MB |
+| 30 | 8,981 | 10 | +6.5 MB |
+| 42 | 8,981 | 10 | +6.5 MB |
+
+Collection pass over about 9,000 records (mark from 10 roots, sweep about
+900): best 0.30 ms, median 3.8 ms, worst 5.0 ms, on the main actor. The
+median is dominated by the sweep's dictionary removals and record clearing;
+an off-main mark and a budgeted sweep are on the watch list, with this number
+as the trigger if it grows past a frame on a phone.
+
+What it means: memory is bounded by the buffer, not by how far the user
+scrolls, and nothing a mounted or recently left screen can reach is ever
+collected.
+
 ## 0.1.0 — 2026-10-02
 
 Revision: the 0.1.0 tree. Machine: Apple M1 Pro (MacBook Pro), macOS 26.5.2,

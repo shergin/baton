@@ -1,9 +1,9 @@
 # Baton
 
-**Status: 0.1.0, the vertical spine.** One query runs through every layer,
-with tests and benchmarks behind the two claims it makes: cached data in the
-first body, and one changed field re-rendering one row. The API will break
-freely until 1.0.
+**Status: 0.2.0.** One query runs through every layer, with tests and
+benchmarks behind the claims: cached data in the first body, one changed
+field re-rendering one row, and memory bounded by a release buffer rather
+than by how far the user scrolls. The API will break freely until 1.0.
 
 Relay for SwiftUI and Compose. A view declares the GraphQL fragment it reads,
 beside its body. The compiler aggregates the fragments of a screen into one
@@ -26,10 +26,12 @@ live in [`docs/principles/`](docs/principles/). The vocabulary is
 
 ## What it is, and will be
 
-Shipped in 0.1.0: the compiler over Relay's front end, lens types, the
+Shipped so far: the compiler over Relay's front end, lens types, the
 observable store, the one-pass ingest, `@Fragment` and `@Query` for SwiftUI,
-lookups, the sample. Still to come, in order: lifetime, mutations, lists,
-errors and `@defer`, persistence. The promises:
+lookups, the sample (0.1.0); retained roots, the release buffer, collection,
+the four fetch policies, invalidation and expiration, preload (0.2.0). Still
+to come, in order: mutations, lists, errors and `@defer`, persistence. The
+promises:
 
 - **A fragment per view.** GraphQL lives in the Swift file, next to the view
   that reads it, as a full, valid document. A parent passes a child its

@@ -5,6 +5,41 @@ are expected and listed without apology.
 
 ## Unreleased
 
+## 0.2.0 (First Leg) — 2026-10-02
+
+Lifetime: the store now forgets, on purpose and on Relay's terms.
+
+- Retained roots. A `@Query` storage retains its handle while the view lives
+  and releases it when SwiftUI drops the view's state. Released handles wait
+  in a release buffer (`Environment.releaseBufferSize`, default 10, oldest
+  out first); retained and buffered handles are the roots that keep records
+  alive.
+- Collection. Mark and sweep over the roots' plans, coalesced into one pass
+  per batch of releases; swept records are cleared so cycles break, and the
+  root's links to them are dropped. `Environment.collect()` runs it on demand.
+- Fetch policies, as `@Query("…", fetchPolicy:)`: `storeOrNetwork`,
+  `storeAndNetwork` (the default), `networkOnly`, `storeOnly`. A `storeOnly`
+  operation without data fails with `MissingDataError`.
+- Staleness. `Environment.invalidate()` marks everything stale and refetches
+  retained handles while their data stays visible; `queryCacheExpiration`
+  does the same by age; `isStale` on every operation value.
+- Preload parks a fetching handle in the buffer; a view attaching within the
+  window finds the request in flight or the data present. Equal operation
+  values share one handle and never fetch twice at once; `settle()` awaits
+  the fetch in flight.
+- `RecordedTransport` takes a responder closure, for tests and benchmarks that
+  serve many pages.
+- The compiler's scanner skips attribute arguments after the GraphQL literal.
+
+Tests: re-entry within the buffer makes no request and eviction does;
+collection removes unreachable records and keeps shared ones; each policy's
+first-attach behaviour; invalidation and expiration refetch; preload. The
+bench scrolls 42 synthetic pages through a buffer of 10 and reports records,
+roots and footprint per page, plus the cost of a collection pass.
+
+Deliberately not added: field-level invalidation, off-main marking, a
+collection budget per pass, `holdGC` for optimistic updates (0.3).
+
 ## 0.1.0 (Starting Blocks) — 2026-10-02
 
 The vertical spine: one query through every layer, done properly, against the
