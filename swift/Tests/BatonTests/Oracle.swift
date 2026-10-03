@@ -19,6 +19,19 @@ indirect enum LeafValue: Equatable, Sendable, CustomStringConvertible {
     case string(String)
     case list([LeafValue])
 
+    /// Doubles compare by their bits, so a zero that lost its sign differs.
+    static func == (lhs: LeafValue, rhs: LeafValue) -> Bool {
+        switch (lhs, rhs) {
+        case (.null, .null): true
+        case let (.bool(a), .bool(b)): a == b
+        case let (.int(a), .int(b)): a == b
+        case let (.double(a), .double(b)): a.bitPattern == b.bitPattern
+        case let (.string(a), .string(b)): a == b
+        case let (.list(a), .list(b)): a == b
+        default: false
+        }
+    }
+
     var description: String {
         switch self {
         case .null: "null"

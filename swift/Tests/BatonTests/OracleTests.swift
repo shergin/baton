@@ -32,19 +32,23 @@ struct OracleCase: Sendable, CustomTestStringConvertible {
     /// The leaves an optimistic layer overrides, and the value they show:
     /// one leaf, or several aliases of one storage key.
     let override: (paths: [String], value: LeafValue)
-    /// Whether a second store over the image answers the whole plan: the
-    /// image keeps what hangs off the query root only.
+    /// Whether the image is read back: it keeps what hangs off the query
+    /// root only.
     let persisted: Bool
+    /// Whether the response answers every field the plan selects, so that
+    /// the availability check passes on it.
+    let complete: Bool
 
     var testDescription: String { name }
 
-    init<Op: Baton.Operation>(_ name: String, _ response: Data, _ operation: Op, root: Root = .query, override: ([String], LeafValue), persisted: Bool = true) {
+    init<Op: Baton.Operation>(_ name: String, _ response: Data, _ operation: Op, root: Root = .query, override: ([String], LeafValue), complete: Bool = true) {
         self.name = name
         self.response = response
         plan = Op.plan.resolve(operation.variables)
         self.root = root
         self.override = override
-        self.persisted = persisted && root == .query
+        persisted = root == .query
+        self.complete = complete
     }
 
     static let all: [OracleCase] = [
@@ -53,8 +57,10 @@ struct OracleCase: Sendable, CustomTestStringConvertible {
         OracleCase("rickandmorty/character-header-9", Spec.data("rickandmorty/character-header-9.json"), TestHeaderQuery(id: "9"), override: (["character.name"], .string("Director"))),
         OracleCase("tests/character-errors", fixture("character-errors"), TestProfileQuery(id: "1"), override: (["character.species"], .string("Cyborg"))),
         OracleCase("tests/character-deferred-1", fixture("character-deferred-1"), TestProfileQuery(id: "1"), override: (["character.species"], .string("Cyborg"))),
+        OracleCase("tests/character-deferred-1-pending", fixture("character-deferred-1-pending"), TestProfileQuery(id: "1"), override: (["character.species"], .string("Cyborg"))),
         OracleCase("tests/character-name-hidden", fixture("character-name-hidden"), TestStrictQuery(id: "1"), override: (["character.species"], .string("Cyborg"))),
-        OracleCase("tests/characters-7-8", fixture("characters-7-8"), TestList(page: 1), override: (["characters.results.1.name"], .string("Rick Prime")), persisted: false),
+        OracleCase("tests/characters-7-8", fixture("characters-7-8"), TestList(page: 1), override: (["characters.results.1.name"], .string("Rick Prime")), complete: false),
+        OracleCase("tests/characters-with-gaps", fixture("characters-with-gaps"), TestList(page: 1), override: (["characters.results.2.name"], .string("Rick Prime")), complete: false),
         OracleCase("tests/notes-page-1", notesPage(1), TestNotesQuery(id: "1"), override: (["character.name"], .string("Rick Prime"))),
         OracleCase("tests/notes-page-2", notesPage(2), TestNotesPaginationQuery(count: 2, cursor: "c2", id: "1"), override: (["node.notes.edges.0.node.text"], .string("Get Schwiftier"))),
         OracleCase("tests/notes-page-3", notesPage(3), TestNotesPaginationQuery(count: 2, cursor: "c4", id: "1"), override: (["node.notes.edges.0.node.text"], .string("Get Schwiftier"))),
@@ -65,11 +71,12 @@ struct OracleCase: Sendable, CustomTestStringConvertible {
         OracleCase("tests/add-note-node-n7", fixture("add-note-node-n7"), TestAddNoteNode(characterId: "1", text: "Node appended", connections: []), root: .mutation, override: (["addNote.note.text"], .string("Edited"))),
         OracleCase("tests/add-note-node-n0", fixture("add-note-node-n0"), TestAddNoteNodeFirst(characterId: "1", text: "Node first", connections: []), root: .mutation, override: (["addNote.note.text"], .string("Edited"))),
         OracleCase("tests/keys-1", fixture("keys-1"), TestKeys(id: "7", name: "Rick"), override: (["characters.info.count"], .int(2))),
-        OracleCase("tests/search-1", fixture("search-1"), TestSearch(name: "1"), override: (["search.1.dimension"], .string("Dimension C-138")), persisted: false),
-        OracleCase("tests/search-origins-1", fixture("search-origins-1"), TestSearchOrigins(name: "1"), override: (["search.0.origin.name"], .string("Earth (C-138)")), persisted: false),
+        OracleCase("tests/search-1", fixture("search-1"), TestSearch(name: "1"), override: (["search.1.dimension"], .string("Dimension C-138")), complete: false),
+        OracleCase("tests/search-origins-1", fixture("search-origins-1"), TestSearchOrigins(name: "1"), override: (["search.0.origin.name"], .string("Earth (C-138)")), complete: false),
         OracleCase("tests/set-favorite-1", fixture("set-favorite-1"), TestSetFavorite(id: "1", favorite: true), root: .mutation, override: (["setFavorite.character.favorite"], .bool(false))),
         OracleCase("tests/rename-1", fixture("rename-1"), TestRename(id: "1", name: "Rick Prime"), root: .mutation, override: (["rename.character.name"], .string("Rick Two"))),
         OracleCase("tests/add-note-n9", fixture("add-note-n9"), TestAddNote(characterId: "1", text: "Appended", connections: []), root: .mutation, override: (["addNote.noteEdge.node.text"], .string("Edited"))),
+        OracleCase("tests/add-note-n9-pending", fixture("add-note-n9-pending"), TestAddNote(characterId: "1", text: "Pending", connections: []), root: .mutation, override: (["addNote.noteEdge.node.text"], .string("Edited"))),
         OracleCase("tests/add-note-n0", fixture("add-note-n0"), TestAddNoteFirst(characterId: "1", text: "First", connections: []), root: .mutation, override: (["addNote.noteEdge.cursor"], .string("c00"))),
         OracleCase("tests/remove-note-n2", fixture("remove-note-n2"), TestRemoveNote(id: "n2", connections: []), root: .mutation, override: (["removeNote.removedNoteId", "removeNote.deleted"], .string("n3"))),
         OracleCase("tests/note-added-1", fixture("note-added-1"), TestNoteAdded(characterId: "1", connections: []), root: .subscription, override: (["noteAdded.noteEdge.node.text"], .string("Edited"))),
@@ -98,7 +105,8 @@ struct OracleTests {
             let second = Store(persistence: Persistence(url: image.url))
             second.reportMissing = nil
             let environment = Environment(transport: SilentTransport(), store: second)
-            #expect(environment.store.check(oracle.plan), "the image answers the plan")
+            let answered = environment.store.check(oracle.plan)
+            if oracle.complete { #expect(answered, "the image answers the plan") }
             expectSame(Oracle.leaves(of: second.root, plan: oracle.plan), expected, "from the image")
         }
 
