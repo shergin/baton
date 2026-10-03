@@ -202,6 +202,8 @@ are expected and listed without apology.
   slot per cursor that the record then made room for and the image kept;
   the connection record holds the page's edges, and a field error inside
   the page still lands on the field it names.
+- `@defer` in a mutation or a subscription is a compile error. It compiled,
+  and the response was read as one part.
 - The ingest takes a type's name once per selection rather than from the
   registry, under its lock, for every entity and path key, and reads a
   list of links into a buffer kept per depth rather than a new array per

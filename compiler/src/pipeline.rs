@@ -668,6 +668,17 @@ fn lower(
             key_by_response(&mut normalization);
             key_by_response(&mut reader);
         }
+        // A mutation's payload and a subscription's event each arrive whole:
+        // neither is read as a stream of parts.
+        if operation.kind != OperationKind::Query && has_deferred(&normalization) {
+            lowering.diagnostics.borrow_mut().push(Diagnostic::error(
+                format!(
+                    "`@defer` in the {} `{name}`: its response arrives in one part, so nothing can be deferred",
+                    operation.kind
+                ),
+                operation.name.location,
+            ));
+        }
         plan.operations.push(OperationPlan {
             name: name.to_string(),
             source: operation.name.location.source_location().path().to_string(),

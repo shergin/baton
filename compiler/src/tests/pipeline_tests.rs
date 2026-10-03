@@ -177,3 +177,25 @@ fn a_type_named_like_a_store_root_beside_a_root_named_otherwise_is_an_error() {
         ]
     );
 }
+
+#[test]
+fn defer_in_a_mutation_or_a_subscription_is_an_error() {
+    assert_eq!(
+        errors(
+            "{}",
+            "mutation Probe { rename(id: \"1\", name: \"a\") { character { id ...ProbeName @defer(label: \"later\") } } } fragment ProbeName on Character { name }"
+        ),
+        vec![
+            "`@defer` in the mutation `Probe`: its response arrives in one part, so nothing can be deferred"
+        ]
+    );
+    assert_eq!(
+        errors(
+            "{}",
+            "subscription Probe { noteAdded(characterId: \"1\") { character { id ...ProbeName @defer(label: \"later\") } } } fragment ProbeName on Character { name }"
+        ),
+        vec![
+            "`@defer` in the subscription `Probe`: its response arrives in one part, so nothing can be deferred"
+        ]
+    );
+}
