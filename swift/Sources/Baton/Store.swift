@@ -43,6 +43,10 @@ public final class Store {
     private var errorTouched: [(record: Record, slot: Slot)] = []
     /// The image's connection while a check is reading from it.
     private var reading: Disk?
+    /// Whether the batch in progress changed a field error, a null, or
+    /// whether a record is deleted: what `@throwOnFieldError` and bubbling
+    /// `@required` read.
+    private var nullsOrErrorsChanged = false
 
     public init(
         rootType: TypeID = Registry.type("Query"),
@@ -89,6 +93,7 @@ public final class Store {
             if record.deleted {
                 record.setDeleted(false)
                 record.notifyAll()
+                nullsOrErrorsChanged = true
             }
             return (record, false)
         }
@@ -176,6 +181,7 @@ public final class Store {
     /// changed.
     @discardableResult
     public func commit(_ changes: ChangeSet) -> Int {
+        defer { reevaluateIfNeeded() }
         if optimisticLayers.isEmpty {
             var transaction = Transaction(direct: true)
             persist(apply(changes, into: &transaction))
@@ -186,6 +192,14 @@ public final class Store {
         persist(apply(changes, into: &transaction))
         reapplyLayers(from: 0, into: &transaction)
         return transaction.finish()
+    }
+
+    /// Lets the environment settle the phases that read errors and nulls,
+    /// once the batch that changed one has notified.
+    private func reevaluateIfNeeded() {
+        guard nullsOrErrorsChanged else { return }
+        nullsOrErrorsChanged = false
+        environment?.reevaluate()
     }
 
     /// Hands the image what a server's payload changed: a snapshot of every
@@ -231,6 +245,7 @@ public final class Store {
 
     /// Applies an optimistic response on top of everything else.
     public func applyOptimistic(_ changes: ChangeSet) -> UUID {
+        defer { reevaluateIfNeeded() }
         var transaction = Transaction()
         var layer = OptimisticLayer(id: UUID(), changes: changes)
         layer.undo = apply(changes, into: &transaction)
@@ -243,6 +258,7 @@ public final class Store {
     /// Removes an optimistic layer; later layers are re-applied over the gap.
     public func revertOptimistic(_ id: UUID) {
         guard let index = optimisticLayers.firstIndex(where: { $0.id == id }) else { return }
+        defer { reevaluateIfNeeded() }
         var transaction = Transaction()
         revertLayers(from: index, into: &transaction)
         optimisticLayers.remove(at: index)
@@ -254,6 +270,7 @@ public final class Store {
     /// replaced by the payload in one batch.
     @discardableResult
     public func commit(_ changes: ChangeSet, replacingOptimistic id: UUID) -> Int {
+        defer { reevaluateIfNeeded() }
         var transaction = Transaction()
         revertLayers(from: 0, into: &transaction)
         optimisticLayers.removeAll { $0.id == id }
@@ -269,10 +286,12 @@ public final class Store {
                 case .slot(let record, let slot, let value):
                     if let previous = record.writeSilently(slot, value) {
                         transaction.touched(record, slot, before: previous)
+                        noteNulls(previous, value)
                     }
                 case .deleted(let record):
                     record.setDeleted(false)
                     record.notifyAll()
+                    nullsOrErrorsChanged = true
                 }
             }
         }
@@ -295,7 +314,14 @@ public final class Store {
         if let previous = record.writeSilently(slot, value) {
             transaction.touched(record, slot, before: previous)
             undo.append(.slot(record, slot, previous))
+            noteNulls(previous, value)
         }
+    }
+
+    /// Notes a write to or from null for the batch.
+    @inline(__always)
+    private func noteNulls(_ previous: Value, _ value: Value) {
+        if case .null = value { nullsOrErrorsChanged = true } else if case .null = previous { nullsOrErrorsChanged = true }
     }
 
     /// Writes a change set silently: last entry wins per (record, slot); a
@@ -346,6 +372,7 @@ public final class Store {
                 if record.hasErrors, erroring.isEmpty || !erroring.contains(SlotKey(record: ObjectIdentifier(record), slot: entry.slot)),
                    record.setError(entry.slot, nil) {
                     record.notify(entry.slot)
+                    nullsOrErrorsChanged = true
                     if persistence != nil { errorTouched.append((record, entry.slot)) }
                 }
                 let value: Value
@@ -387,6 +414,7 @@ public final class Store {
                     // Nobody can have read a record this batch created.
                     if let previous = record.writeSilently(entry.slot, value) {
                         undo.append(.slot(record, entry.slot, previous))
+                        noteNulls(previous, value)
                     }
                 } else {
                     set(record, entry.slot, value, &transaction, &undo)
@@ -424,6 +452,7 @@ public final class Store {
             let record = objects[Int(entry.record)]
             if record.setError(entry.slot, entry.error) {
                 record.notify(entry.slot)
+                nullsOrErrorsChanged = true
                 if persistence != nil { errorTouched.append((record, entry.slot)) }
             }
         }
@@ -581,6 +610,7 @@ public final class Store {
         }
         record.setDeleted(true)
         record.notifyAll()
+        nullsOrErrorsChanged = true
         undo.append(.deleted(record))
     }
 

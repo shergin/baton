@@ -67,8 +67,9 @@ extension Operation {
     /// Whether the data predates an invalidation or the cache expiration.
     @MainActor public var isStale: Bool { resolution?.isStale ?? false }
 
-    /// Fetches again and commits; the data stays visible meanwhile.
-    @MainActor public func refetch() async { await resolution?.refetch() }
+    /// Fetches again and commits; the data stays visible meanwhile, and a
+    /// failure is thrown here rather than shown in place of it.
+    @MainActor public func refetch() async throws { try await resolution?.refetch() }
 
     /// After a failure, fetches again.
     @MainActor public func retry() { resolution?.retry() }
@@ -81,6 +82,9 @@ protocol AnyOperationHandle: AnyObject {
     var key: AnyHashable { get }
     func mark(into reachable: inout Set<ObjectIdentifier>)
     func refetchIfStale()
+    /// Settles the phase again after a commit changed a field error or a
+    /// null, for policies that read them.
+    func reevaluate()
     func cancel()
 }
 
@@ -100,9 +104,12 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
     /// after the environment is gone, which then does nothing.
     @ObservationIgnored private(set) weak var environment: Environment?
     @ObservationIgnored private let store: Store
-    @ObservationIgnored private var task: Task<Void, Never>?
+    /// The fetch in flight; its value is the failure it ended with.
+    @ObservationIgnored private var task: Task<(any Error)?, Never>?
     @ObservationIgnored let resolved: ResolvedSelection
     @ObservationIgnored public internal(set) var retainCount = 0
+    /// Set by `preload`: the first attach finds the fetch already made.
+    @ObservationIgnored var preloaded = false
 
     init(operation: Op, environment: Environment) {
         self.operation = operation
@@ -112,6 +119,14 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
     }
 
     var key: AnyHashable { AnyHashable(operation) }
+
+    /// Moves to the next phase. Ready after ready is no change: both carry a
+    /// lens over the same root, so a fetch that changed nothing re-runs no
+    /// body that reads the phase.
+    private func settle(_ next: Phase<Op.Data>) {
+        if case .ready = phase, case .ready = next { return }
+        phase = next
+    }
 
     private var anchor: Anchor {
         Anchor(record: store.root, variables: operation.variables, store: store)
@@ -172,10 +187,23 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
     /// Applies a policy on attach: renders what the store allows, fetches
     /// when the policy asks for it.
     func apply(_ policy: FetchPolicy) {
+        // A preload's fetch is the first attach's: in flight or done, it is
+        // not made again.
+        if preloaded {
+            preloaded = false
+            if task != nil || fetchTime != nil { return }
+        }
+        if policy == .networkOnly {
+            // What the store holds is not asked; a handle no one shows yet
+            // waits for its own response.
+            if retainCount == 0 { phase = .loading }
+            fetch()
+            return
+        }
         let hydrated = store.hydratedRecords
         let complete = isComplete
         if complete { takeAge(hydrated: store.hydratedRecords != hydrated) }
-        if complete, policy != .networkOnly, case .loading = phase {
+        if complete, case .loading = phase {
             phase = evaluate()
         }
         switch policy {
@@ -185,10 +213,7 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
             }
         case .storeOrNetwork:
             if !complete || isStale { fetch() }
-        case .storeAndNetwork:
-            fetch()
-        case .networkOnly:
-            if fetchTime == nil { phase = .loading }
+        case .storeAndNetwork, .networkOnly:
             fetch()
         }
     }
@@ -213,49 +238,52 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
         }
         if case .ready = phase { isRefreshing = true }
         task = Task { [weak self] in
-            guard let self, let environment else { return }
+            guard let self, let environment else { return nil }
             var failure: (any Error)?
             do {
                 try await environment.fetch(operation) { [weak self] in
                     // A deferred response renders its first part at once.
                     guard let self, !Task.isCancelled else { return }
                     didFetch()
-                    phase = evaluate()
+                    settle(evaluate())
                 }
             } catch {
                 failure = error
             }
             // A cancelled fetch was superseded or evicted. The handle's state
             // belongs to whoever cancelled it, however the fetch ended.
-            guard !Task.isCancelled else { return }
+            guard !Task.isCancelled else { return nil }
             task = nil
             isRefreshing = false
             switch failure {
             case nil:
                 didFetch()
-                phase = evaluate()
+                settle(evaluate())
             case is CancellationError:
-                return
+                return nil
             case let error as FieldErrors:
                 // `@throwOnFieldError`: the data is in the store, the phase says why it is not shown.
                 phase = .failed(error)
             case let error?:
-                // Earlier data stays visible; the failure shows through the end of isRefreshing.
-                if case .ready = phase { return }
+                // Earlier data stays visible; `refetch()` throws the failure.
+                if case .ready = phase { return error }
                 phase = .failed(error)
             }
+            return failure
         }
     }
 
-    /// Fetches again and waits for the result; the data stays visible meanwhile.
-    public func refetch() async {
+    /// Fetches again and waits for the result; the data stays visible
+    /// meanwhile, and a failure is thrown rather than shown in its place. A
+    /// refetch that a later fetch superseded returns without one.
+    public func refetch() async throws {
         start()
-        await task?.value
+        if let failure = await task?.value { throw failure }
     }
 
     /// Waits for an in-flight fetch, if any.
     public func settle() async {
-        await task?.value
+        _ = await task?.value
     }
 
     public func retry() {
@@ -282,6 +310,18 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
 
     func refetchIfStale() {
         if isStale { fetch() }
+    }
+
+    func reevaluate() {
+        guard Op.throwsOnFieldError || Op.bubbles else { return }
+        switch phase {
+        case .loading:
+            return
+        case .failed(let error) where !(error is FieldErrors || error is RequiredFieldError):
+            return
+        default:
+            settle(evaluate())
+        }
     }
 
     func mark(into reachable: inout Set<ObjectIdentifier>) {
@@ -469,6 +509,8 @@ public final class SubscriptionHandle<Op: Operation>: AnyOperationHandle {
     }
 
     func refetchIfStale() {}
+
+    func reevaluate() {}
 
     func mark(into reachable: inout Set<ObjectIdentifier>) {
         store.mark(resolved, from: store.subscriptionRoot, into: &reachable)

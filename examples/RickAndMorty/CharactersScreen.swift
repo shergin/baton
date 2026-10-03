@@ -61,7 +61,7 @@ struct CharactersScreen: View {
         .navigationTitle("Characters")
         .toolbar {
             Button("Refresh", systemImage: "arrow.clockwise") {
-                Task { await characters.refetch() }
+                Task { try? await characters.refetch() }
             }
         }
     }

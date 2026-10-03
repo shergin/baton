@@ -262,6 +262,27 @@ struct DeliveryTests {
         }
     }
 
+    @Test("a @throwOnFieldError operation fails when a later commit puts an error in its selection, and recovers when one clears it")
+    func throwingPhaseFollowsCommits() async throws {
+        let environment = Environment(transport: OneResponse(fixture("character-deferred-1")))
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestStrictQuery(id: "1"))
+        handle.retain()
+        await handle.settle()
+        guard case .ready = handle.phase else { Issue.record("expected ready, got \(handle.phase)"); return }
+
+        // Another operation's response names the same character's name as errored.
+        let plan = TestProfileQuery.plan.resolve(TestProfileQuery(id: "1").variables)
+        let hidden = String(decoding: fixture("character-deferred-1"), as: UTF8.self)
+            .replacingOccurrences(of: #""name":"Rick Sanchez""#, with: #""name":null"#)
+            .replacingOccurrences(of: #","hasNext":true}"#, with: #","errors":[{"message":"name hidden","path":["character","name"]}]}"#)
+        environment.store.commit(try Ingest.normalize(Data(hidden.utf8), plan: plan))
+        guard case .failed(let error) = handle.phase, error is FieldErrors else { Issue.record("expected the field error, got \(handle.phase)"); return }
+
+        environment.store.commit(try Ingest.normalize(fixture("character-deferred-1"), plan: plan))
+        guard case .ready = handle.phase else { Issue.record("expected ready again, got \(handle.phase)"); return }
+    }
+
     @Test("a response with errors and no data fails the fetch with the messages")
     func requestErrors() async throws {
         let environment = Environment(transport: OneResponse(fixture("not-authorized")))

@@ -24,6 +24,17 @@ are expected and listed without apology.
   input object's keys were written unquoted and unsorted. Floats in keys are
   written as the runtime renders a variable. A lookup in `baton.json` whose
   argument the selection does not pass is a compile error.
+- `refetch()` on an operation value and on its handle is `async throws`:
+  a refetch that fails throws its error, and the data on screen stays. It
+  was dropped before. Breaking: a call site needs `try`.
+- `phase` changes only when it changes. A fetch that changed nothing
+  assigned an equal `.ready` and re-ran every body that read the phase; a
+  ready handle now stays as it is. A `@throwOnFieldError` or bubbling
+  operation's phase follows any commit that changes a field error, a null
+  or a deletion in the store, not only its own fetch. `.networkOnly` no
+  longer sends a handle another view shows back to `.loading`, nor reads
+  the store, and the image, to decide. A preload's fetch serves the first
+  attach; the attach made a second request when the preload had finished.
 - A field error under a parent the server nulled lands on that parent. The
   walk that places an error left a `switch` where it meant to stop, so an
   error at `character.origin.name` with `origin` null was stored on

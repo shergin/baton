@@ -1,5 +1,6 @@
 import Baton
 import Foundation
+import Observation
 import SwiftUI
 import Testing
 
@@ -197,7 +198,7 @@ struct LifetimeTests {
         await until { transport.pending >= 1 }
         #expect(handle.isRefreshing)
 
-        let refetch = Task { await handle.refetch() }
+        let refetch = Task { try await handle.refetch() }
         await until { transport.pending >= 2 }
 
         // The superseded fetch answers; this transport does not hear the
@@ -214,10 +215,62 @@ struct LifetimeTests {
         #expect(transport.pending == 1)
 
         transport.respond(fixtureData)
-        await refetch.value
+        try await refetch.value
         #expect(!handle.isRefreshing)
         #expect(transport.pending == 0)
         #expect(morty.name == "Morty Smith")
+    }
+
+    @Test("a refetch that changes nothing re-runs no body that reads the phase, and one that fails throws while the data stays")
+    func phaseChangesOnlyWhenItChanges() async throws {
+        let attempts = Attempts()
+        let transport = RecordedTransport { _ in attempts.next() == 3 ? nil : fixtureData }
+        let environment = Environment(transport: transport)
+        let handle = environment.handle(for: TestList(page: 1))
+        handle.retain()
+        await handle.settle()
+        guard case .ready = handle.phase else { Issue.record("expected ready, got \(handle.phase)"); return }
+
+        final class Counter: @unchecked Sendable { var fired = 0 }
+        let counter = Counter()
+        withObservationTracking { _ = handle.phase } onChange: { counter.fired += 1 }
+        try await handle.refetch()
+        #expect(counter.fired == 0, "ready again over the same root is no change")
+
+        await #expect(throws: TransportError.self) { try await handle.refetch() }
+        #expect(counter.fired == 0)
+        guard case .ready = handle.phase else { Issue.record("the data stays visible, got \(handle.phase)"); return }
+        #expect(!handle.isRefreshing)
+    }
+
+    @Test("networkOnly does not send a handle someone shows back to loading, and does not read the store to decide")
+    func networkOnlyOnAShownHandle() async throws {
+        let transport = transport()
+        let environment = Environment(transport: transport)
+        let shown = environment.handle(for: TestList(page: 1), fetchPolicy: .networkOnly)
+        shown.retain()
+        await shown.settle()
+        guard case .ready = shown.phase else { Issue.record("expected ready, got \(shown.phase)"); return }
+        let again = environment.handle(for: TestList(page: 1), fetchPolicy: .networkOnly)
+        #expect(again === shown)
+        guard case .ready = again.phase else { Issue.record("a second view's attach left the first one's data, got \(again.phase)"); return }
+        await again.settle()
+        #expect(transport.requestCount == 2)
+    }
+
+    @Test("a preload's fetch serves the first attach, in flight or done")
+    func preloadServesTheFirstAttach() async {
+        let transport = transport()
+        let environment = Environment(transport: transport)
+        let preloaded = environment.preload(TestList(page: 1))
+        await preloaded.settle()
+        let attached = environment.handle(for: TestList(page: 1))
+        #expect(attached === preloaded)
+        await attached.settle()
+        #expect(transport.requestCount == 1, "the attach after a finished preload makes no request")
+        _ = environment.handle(for: TestList(page: 1))
+        await attached.settle()
+        #expect(transport.requestCount == 2, "the next attach follows its policy")
     }
 
     @Test("a preloaded operation is waiting in the buffer when the view attaches")
@@ -284,10 +337,10 @@ struct LifetimeTests {
         empty.retain()
         environment = nil
 
-        await ready.refetch()
+        try await ready.refetch()
         #expect(!ready.isRefreshing)
         guard case .ready = ready.phase else { Issue.record("the data stays visible, got \(ready.phase)"); return }
-        await ready.refetch()
+        try await ready.refetch()
         #expect(!ready.isRefreshing, "a second refetch does not hang either")
 
         empty.retry()

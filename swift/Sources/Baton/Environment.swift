@@ -72,12 +72,22 @@ public final class Environment {
     }
 
     /// Starts fetching before any view asks; the handle waits in the release
-    /// buffer for a view to attach.
+    /// buffer for a view to attach, and that attach makes no request of its
+    /// own.
     @discardableResult
     public func preload<Op: Operation>(_ operation: Op, fetchPolicy: FetchPolicy = .storeAndNetwork) -> OperationHandle<Op> {
         let handle = handle(for: operation, fetchPolicy: fetchPolicy)
+        handle.preloaded = true
         if handle.retainCount == 0 { park(handle.key) }
         return handle
+    }
+
+    /// Settles again the phases a commit's field errors or nulls can change:
+    /// those of retained `@throwOnFieldError` and bubbling operations.
+    func reevaluate() {
+        for handle in handles.values where handle.retainCount > 0 {
+            handle.reevaluate()
+        }
     }
 
     /// Marks every handle's data stale. Retained handles refetch at once; the

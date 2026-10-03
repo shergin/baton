@@ -626,7 +626,7 @@ func connectionBench() async throws {
 
     let refetched = Observer()
     refetched.observe([character]) { _ = $0.notes.nodes }
-    await handle.refetch()
+    try await handle.refetch()
     refetched.settle()
     print("    refetch of the first page: nodes \(character.notes.nodes.count), notifications \(refetched.fired)")
 }
