@@ -16,6 +16,8 @@ are expected and listed without apology.
   response. A `\u` escape cut short by the end of a string, or a high
   surrogate followed by an escape that is not a low surrogate, reads as
   U+FFFD; the first read past the string and the second trapped.
+- A handle outlives its environment: a view that releases its handle after
+  the environment is gone no longer traps; the release does nothing.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

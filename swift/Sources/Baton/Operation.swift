@@ -96,7 +96,10 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
     /// When this handle last committed a response.
     public private(set) var fetchTime: ContinuousClock.Instant?
     @ObservationIgnored private(set) var fetchEpoch = 0
-    @ObservationIgnored private unowned let environment: Environment
+    /// The environment that made the handle. A view may release its handle
+    /// after the environment is gone, which then does nothing.
+    @ObservationIgnored private weak var environment: Environment?
+    @ObservationIgnored private let store: Store
     @ObservationIgnored private var task: Task<Void, Never>?
     @ObservationIgnored let resolved: ResolvedSelection
     @ObservationIgnored public internal(set) var retainCount = 0
@@ -104,13 +107,14 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
     init(operation: Op, environment: Environment) {
         self.operation = operation
         self.environment = environment
+        store = environment.store
         resolved = Op.plan.resolve(operation.variables)
     }
 
     var key: AnyHashable { AnyHashable(operation) }
 
     private var anchor: Anchor {
-        Anchor(record: environment.store.root, variables: operation.variables, store: environment.store)
+        Anchor(record: store.root, variables: operation.variables, store: store)
     }
 
     private var data: Op.Data { Op.Data(anchor: anchor) }
@@ -131,13 +135,13 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
     }
 
     /// Whether the store holds every field the operation selects.
-    public var isComplete: Bool { environment.store.check(resolved) }
+    public var isComplete: Bool { store.check(resolved) }
 
     /// Whether the data predates `Environment.invalidate()` or the expiration.
     public var isStale: Bool {
         guard case .ready = phase else { return false }
-        if fetchEpoch < environment.store.invalidationEpoch { return true }
-        if let expiration = environment.queryCacheExpiration, let fetchTime, fetchTime + expiration < .now { return true }
+        if fetchEpoch < store.invalidationEpoch { return true }
+        if let expiration = environment?.queryCacheExpiration, let fetchTime, fetchTime + expiration < .now { return true }
         return false
     }
 
@@ -148,29 +152,29 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
     /// image's, which a later launch reads the age from.
     private func didFetch() {
         fetchTime = .now
-        fetchEpoch = environment.store.invalidationEpoch
-        environment.store.persistence?.fetched(imageKey)
+        fetchEpoch = store.invalidationEpoch
+        store.persistence?.fetched(imageKey)
     }
 
     /// Gives data this handle did not fetch the age the image knows: the time
     /// since an earlier launch fetched it. Data that had to be read from the
     /// image and has no such time is stale.
     private func takeAge(hydrated: Bool) {
-        guard fetchTime == nil, let persistence = environment.store.persistence else { return }
+        guard fetchTime == nil, let persistence = store.persistence else { return }
         if let age = persistence.age(of: imageKey) {
             fetchTime = .now - .seconds(age)
-            fetchEpoch = environment.store.invalidationEpoch
+            fetchEpoch = store.invalidationEpoch
         } else if hydrated {
-            fetchEpoch = environment.store.invalidationEpoch - 1
+            fetchEpoch = store.invalidationEpoch - 1
         }
     }
 
     /// Applies a policy on attach: renders what the store allows, fetches
     /// when the policy asks for it.
     func apply(_ policy: FetchPolicy) {
-        let hydrated = environment.store.hydratedRecords
+        let hydrated = store.hydratedRecords
         let complete = isComplete
-        if complete { takeAge(hydrated: environment.store.hydratedRecords != hydrated) }
+        if complete { takeAge(hydrated: store.hydratedRecords != hydrated) }
         if complete, policy != .networkOnly, case .loading = phase {
             phase = evaluate()
         }
@@ -199,7 +203,7 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
         task?.cancel()
         if case .ready = phase { isRefreshing = true }
         task = Task { [weak self] in
-            guard let self else { return }
+            guard let self, let environment else { return }
             var failure: (any Error)?
             do {
                 try await environment.fetch(operation) { [weak self] in
@@ -254,7 +258,7 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
     /// and must balance it with `release()`.
     public func retain() {
         retainCount += 1
-        environment.didRetain(self)
+        environment?.didRetain(self)
     }
 
     /// Balances `retain()`. At zero the handle enters the release buffer.
@@ -262,7 +266,7 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
         retainCount -= 1
         if retainCount <= 0 {
             retainCount = 0
-            environment.didRelease(self)
+            environment?.didRelease(self)
         }
     }
 
@@ -271,7 +275,7 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
     }
 
     func mark(into reachable: inout Set<ObjectIdentifier>) {
-        environment.store.mark(resolved, into: &reachable)
+        store.mark(resolved, into: &reachable)
     }
 
     func cancel() {
@@ -386,7 +390,10 @@ public final class SubscriptionHandle<Op: Operation>: AnyOperationHandle {
     public private(set) var error: (any Error)?
     /// Whether the stream is open.
     public private(set) var isActive = false
-    @ObservationIgnored private unowned let environment: Environment
+    /// The environment that made the handle; releasing the handle after it
+    /// is gone does nothing.
+    @ObservationIgnored private weak var environment: Environment?
+    @ObservationIgnored private let store: Store
     @ObservationIgnored private var task: Task<Void, Never>?
     @ObservationIgnored let resolved: ResolvedSelection
     @ObservationIgnored public internal(set) var retainCount = 0
@@ -394,6 +401,7 @@ public final class SubscriptionHandle<Op: Operation>: AnyOperationHandle {
     init(operation: Op, environment: Environment) {
         self.operation = operation
         self.environment = environment
+        store = environment.store
         resolved = Op.plan.resolve(operation.variables)
     }
 
@@ -405,7 +413,7 @@ public final class SubscriptionHandle<Op: Operation>: AnyOperationHandle {
         isActive = true
         error = nil
         task = Task { [weak self] in
-            guard let self else { return }
+            guard let self, let environment else { return }
             defer {
                 task = nil
                 isActive = false
@@ -416,9 +424,9 @@ public final class SubscriptionHandle<Op: Operation>: AnyOperationHandle {
                     let changes = try await Task.detached(priority: .userInitiated) { [resolved] in
                         try Ingest.normalize(payload, plan: resolved, rootKey: Store.subscriptionRootKey)
                     }.value
-                    environment.store.commit(changes)
+                    store.commit(changes)
                     events += 1
-                    latest = Op.Data(anchor: Anchor(record: environment.store.subscriptionRoot, variables: operation.variables, store: environment.store))
+                    latest = Op.Data(anchor: Anchor(record: store.subscriptionRoot, variables: operation.variables, store: store))
                 }
             } catch is CancellationError {
                 return
@@ -431,7 +439,7 @@ public final class SubscriptionHandle<Op: Operation>: AnyOperationHandle {
     /// Keeps the stream open and the latest event's records alive.
     public func retain() {
         retainCount += 1
-        environment.didRetain(self)
+        environment?.didRetain(self)
         SubscriptionResolution.add(self)
         start()
     }
@@ -443,14 +451,14 @@ public final class SubscriptionHandle<Op: Operation>: AnyOperationHandle {
             retainCount = 0
             cancel()
             SubscriptionResolution.remove(self)
-            environment.didEnd(self)
+            environment?.didEnd(self)
         }
     }
 
     func refetchIfStale() {}
 
     func mark(into reachable: inout Set<ObjectIdentifier>) {
-        environment.store.mark(resolved, from: environment.store.subscriptionRoot, into: &reachable)
+        store.mark(resolved, from: store.subscriptionRoot, into: &reachable)
     }
 
     func cancel() {

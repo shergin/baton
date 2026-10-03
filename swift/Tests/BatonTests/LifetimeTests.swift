@@ -210,4 +210,18 @@ struct LifetimeTests {
         guard case .ready = attached.phase else { Issue.record("expected ready"); return }
         #expect(transport.requestCount == 1)
     }
+
+    @Test("a handle released after its environment is gone does nothing")
+    func releaseAfterTheEnvironment() {
+        var environment: Environment? = Environment(transport: SilentTransport())
+        let handle = environment!.handle(for: TestList(page: 1), fetchPolicy: .storeOnly)
+        let subscription = environment!.subscriptionHandle(for: TestNoteAdded(characterId: "1", connections: []))
+        handle.retain()
+        subscription.retain()
+        environment = nil
+        handle.release()
+        subscription.release()
+        #expect(handle.retainCount == 0)
+        #expect(!subscription.isActive)
+    }
 }
