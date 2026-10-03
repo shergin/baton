@@ -54,12 +54,17 @@ public final class Store {
     /// The record for a key, created on first sight. An entity is indexed by
     /// its id; a deleted record a payload names again comes back.
     func record(key: String, type: TypeID, entity: Bool) -> Record {
+        record(key: key, type: type, entity: entity).record
+    }
+
+    /// The record for a key, and whether this call created it.
+    private func record(key: String, type: TypeID, entity: Bool) -> (record: Record, created: Bool) {
         if let record = records[key] {
             if record.deleted {
                 record.setDeleted(false)
                 record.notifyAll()
             }
-            return record
+            return (record, false)
         }
         let record = Record(type: type, key: key)
         records[key] = record
@@ -68,7 +73,7 @@ public final class Store {
             record.entityID = id
             byID[id] = record
         }
-        return record
+        return (record, true)
     }
 
     // MARK: Commits and optimistic layers
@@ -225,8 +230,11 @@ public final class Store {
     private func apply(_ changes: ChangeSet, into transaction: inout Transaction) -> [Undo] {
         var objects = ContiguousArray<Record>()
         objects.reserveCapacity(changes.recordKeys.count)
+        var created = [Bool](repeating: false, count: changes.recordKeys.count)
         for index in 0..<changes.recordKeys.count {
-            objects.append(record(key: changes.recordKeys[index], type: changes.recordTypes[index], entity: changes.recordIsEntity[index]))
+            let found = record(key: changes.recordKeys[index], type: changes.recordTypes[index], entity: changes.recordIsEntity[index]) as (record: Record, created: Bool)
+            objects.append(found.record)
+            created[index] = found.created
         }
 
         var offsets = [Int](repeating: 0, count: objects.count + 1)
@@ -241,6 +249,12 @@ public final class Store {
         var undo: [Undo] = []
         for index in 0..<objects.count {
             let record = objects[index]
+            if created[index] {
+                // A new record makes room once, for the highest slot it receives.
+                var highest = offsets[index + 1] - 1
+                while highest >= offsets[index], winners[highest] < 0 { highest -= 1 }
+                if highest >= offsets[index] { record.reserve(highest - offsets[index] + 1) }
+            }
             for position in offsets[index]..<offsets[index + 1] {
                 let winner = winners[position]
                 if winner < 0 { continue }

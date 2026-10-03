@@ -316,21 +316,35 @@ public struct LookupKey: Sendable {
 }
 
 /// A connection with its variables bound: the client key on the parent, the
-/// slots, and how the page it describes joins the connection.
-public struct ResolvedConnection: Sendable {
+/// slots, and how the page it describes joins the connection. A class, so a
+/// field's kind stays one word wide and the ingest copies nothing per key.
+public final class ResolvedConnection: Sendable {
     public let storageKey: String
     /// The client slot on the selection's declared type; abstract selections
     /// resolve it per concrete type instead.
     public let slot: Slot
     public let slots: ConnectionSlots
     public let mode: ConnectionMode
+
+    init(storageKey: String, slot: Slot, slots: ConnectionSlots, mode: ConnectionMode) {
+        self.storageKey = storageKey
+        self.slot = slot
+        self.slots = slots
+        self.mode = mode
+    }
 }
 
 /// A handle with its connection ids bound.
-public struct ResolvedHandle: Sendable {
+public final class ResolvedHandle: Sendable {
     public let kind: Handle.Kind
     public let connections: [String]
     public let edgeType: TypeID?
+
+    init(kind: Handle.Kind, connections: [String], edgeType: TypeID?) {
+        self.kind = kind
+        self.connections = connections
+        self.edgeType = edgeType
+    }
 }
 
 /// A plan with variables bound: slots instead of keys, byte keys for matching.

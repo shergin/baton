@@ -16,10 +16,19 @@ public final class Record: Observable {
     private var values: ContiguousArray<Value>
     nonisolated private let registrar = ObservationRegistrar()
 
+    /// Values are sized by what is written, not by how many storage keys the
+    /// type has: a cursor-paginated field registers a slot per page on its
+    /// parent type, and records of that type must not pay for pages they
+    /// never saw.
     init(type: TypeID, key: String) {
         self.type = type
         self.key = key
-        values = ContiguousArray(repeating: .missing, count: Registry.slotCount(type))
+        values = []
+    }
+
+    /// Makes room for the slots a batch is about to write.
+    func reserve(_ count: Int) {
+        values.reserveCapacity(count)
     }
 
     /// Reads a slot and registers the read with the current tracking scope.
