@@ -1,6 +1,6 @@
 {
   "client:root": {"__typename": "Query"},
-  "client:root:mutation": {"__typename": "Mutation", "removeNote(id:\"n2\")": {"__ref": "client:root:mutation:removeNote(id:\"n2\")"}},
-  "client:root:mutation:removeNote(id:\"n2\")": {"__typename": "RemoveNotePayload", "removedNoteId": "n2"},
+  "client:root:mutation": {"__typename": "Mutation", "removeNote": {"__ref": "client:root:mutation:removeNote"}},
+  "client:root:mutation:removeNote": {"__typename": "RemoveNotePayload", "removedNoteId": "n2"},
   "client:root:subscription": {"__typename": "Subscription"}
 }

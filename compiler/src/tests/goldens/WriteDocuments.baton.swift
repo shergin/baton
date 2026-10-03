@@ -142,7 +142,7 @@ mutation TestRename(
     }
 
     public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
-            .linked("rename", key: .dynamic(Slots.Mutation_rename_04af03), plural: false, selection: Baton.Selection(type: Types.FavoritePayload, hasID: false, abstract: false, fields: [
+            .linked("rename", key: .fixed(Slots.Mutation_rename), plural: false, selection: Baton.Selection(type: Types.FavoritePayload, hasID: false, abstract: false, fields: [
                 .linked("character", key: .fixed(Slots.FavoritePayload_character), plural: false, selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Character_id), kind: .string, list: false),
                     .scalar("name", key: .fixed(Slots.Character_name), kind: .string, list: false),
@@ -154,7 +154,7 @@ mutation TestRename(
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Mutation"
-        @MainActor public var rename: Rename? { anchor.linked(anchor.owner.slot(Slots.Mutation_rename_04af03)).map(Rename.init(anchor:)) }
+        @MainActor public var rename: Rename? { anchor.linked(Slots.Mutation_rename).map(Rename.init(anchor:)) }
 
         nonisolated public struct Rename: Baton.Lens {
             public let anchor: Baton.Anchor
@@ -464,7 +464,7 @@ mutation TestSetFavorite(
     }
 
     public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
-            .linked("setFavorite", key: .dynamic(Slots.Mutation_setFavorite_4ebf00), plural: false, selection: Baton.Selection(type: Types.FavoritePayload, hasID: false, abstract: false, fields: [
+            .linked("setFavorite", key: .fixed(Slots.Mutation_setFavorite), plural: false, selection: Baton.Selection(type: Types.FavoritePayload, hasID: false, abstract: false, fields: [
                 .linked("character", key: .fixed(Slots.FavoritePayload_character), plural: false, selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Character_id), kind: .string, list: false),
                     .scalar("name", key: .fixed(Slots.Character_name), kind: .string, list: false),
@@ -477,7 +477,7 @@ mutation TestSetFavorite(
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Mutation"
-        @MainActor public var setFavorite: SetFavorite? { anchor.linked(anchor.owner.slot(Slots.Mutation_setFavorite_4ebf00)).map(SetFavorite.init(anchor:)) }
+        @MainActor public var setFavorite: SetFavorite? { anchor.linked(Slots.Mutation_setFavorite).map(SetFavorite.init(anchor:)) }
 
         nonisolated public struct SetFavorite: Baton.Lens {
             public let anchor: Baton.Anchor

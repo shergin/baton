@@ -1,7 +1,7 @@
 {
   "Note:n7": {"__typename": "Note", "id": "n7", "text": "Node appended"},
   "client:root": {"__typename": "Query"},
-  "client:root:mutation": {"__typename": "Mutation", "addNote(characterId:\"1\",text:\"Node appended\")": {"__ref": "client:root:mutation:addNote(characterId:\"1\",text:\"Node appended\")"}},
-  "client:root:mutation:addNote(characterId:\"1\",text:\"Node appended\")": {"__typename": "AddNotePayload", "note": {"__ref": "Note:n7"}},
+  "client:root:mutation": {"__typename": "Mutation", "addNote": {"__ref": "client:root:mutation:addNote"}},
+  "client:root:mutation:addNote": {"__typename": "AddNotePayload", "note": {"__ref": "Note:n7"}},
   "client:root:subscription": {"__typename": "Subscription"}
 }

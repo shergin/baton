@@ -167,7 +167,7 @@ mutation TestAddNote(
     }
 
     public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
-            .linked("addNote", key: .dynamic(Slots.Mutation_addNote_14b07d), plural: false, selection: Baton.Selection(type: Types.AddNotePayload, hasID: false, abstract: false, fields: [
+            .linked("addNote", key: .fixed(Slots.Mutation_addNote), plural: false, selection: Baton.Selection(type: Types.AddNotePayload, hasID: false, abstract: false, fields: [
                 .linked("noteEdge", key: .fixed(Slots.AddNotePayload_noteEdge), plural: false, handle: Baton.Handle(kind: .appendEdge, connections: .variable("connections")), selection: Baton.Selection(type: Types.NoteEdge, hasID: false, abstract: false, fields: [
                     .scalar("cursor", key: .fixed(Slots.NoteEdge_cursor), kind: .string, list: false),
                     .linked("node", key: .fixed(Slots.NoteEdge_node), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
@@ -182,7 +182,7 @@ mutation TestAddNote(
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Mutation"
-        @MainActor public var addNote: AddNote? { anchor.linked(anchor.owner.slot(Slots.Mutation_addNote_14b07d)).map(AddNote.init(anchor:)) }
+        @MainActor public var addNote: AddNote? { anchor.linked(Slots.Mutation_addNote).map(AddNote.init(anchor:)) }
 
         nonisolated public struct AddNote: Baton.Lens {
             public let anchor: Baton.Anchor
@@ -325,7 +325,7 @@ mutation TestAddNoteFirst(
     }
 
     public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
-            .linked("addNote", key: .dynamic(Slots.Mutation_addNote_14b07d), plural: false, selection: Baton.Selection(type: Types.AddNotePayload, hasID: false, abstract: false, fields: [
+            .linked("addNote", key: .fixed(Slots.Mutation_addNote), plural: false, selection: Baton.Selection(type: Types.AddNotePayload, hasID: false, abstract: false, fields: [
                 .linked("noteEdge", key: .fixed(Slots.AddNotePayload_noteEdge), plural: false, handle: Baton.Handle(kind: .prependEdge, connections: .variable("connections")), selection: Baton.Selection(type: Types.NoteEdge, hasID: false, abstract: false, fields: [
                     .scalar("cursor", key: .fixed(Slots.NoteEdge_cursor), kind: .string, list: false),
                     .linked("node", key: .fixed(Slots.NoteEdge_node), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
@@ -340,7 +340,7 @@ mutation TestAddNoteFirst(
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Mutation"
-        @MainActor public var addNote: AddNote? { anchor.linked(anchor.owner.slot(Slots.Mutation_addNote_14b07d)).map(AddNote.init(anchor:)) }
+        @MainActor public var addNote: AddNote? { anchor.linked(Slots.Mutation_addNote).map(AddNote.init(anchor:)) }
 
         nonisolated public struct AddNote: Baton.Lens {
             public let anchor: Baton.Anchor
@@ -480,7 +480,7 @@ mutation TestAddNoteNode(
     }
 
     public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
-            .linked("addNote", key: .dynamic(Slots.Mutation_addNote_14b07d), plural: false, selection: Baton.Selection(type: Types.AddNotePayload, hasID: false, abstract: false, fields: [
+            .linked("addNote", key: .fixed(Slots.Mutation_addNote), plural: false, selection: Baton.Selection(type: Types.AddNotePayload, hasID: false, abstract: false, fields: [
                 .linked("note", key: .fixed(Slots.AddNotePayload_note), plural: false, handle: Baton.Handle(kind: .appendNode, connections: .variable("connections"), edgeType: Types.NoteEdge), selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note_id), kind: .string, list: false),
                     .scalar("text", key: .fixed(Slots.Note_text), kind: .string, list: false),
@@ -492,7 +492,7 @@ mutation TestAddNoteNode(
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Mutation"
-        @MainActor public var addNote: AddNote? { anchor.linked(anchor.owner.slot(Slots.Mutation_addNote_14b07d)).map(AddNote.init(anchor:)) }
+        @MainActor public var addNote: AddNote? { anchor.linked(Slots.Mutation_addNote).map(AddNote.init(anchor:)) }
 
         nonisolated public struct AddNote: Baton.Lens {
             public let anchor: Baton.Anchor
@@ -608,7 +608,7 @@ mutation TestAddNoteNodeFirst(
     }
 
     public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
-            .linked("addNote", key: .dynamic(Slots.Mutation_addNote_14b07d), plural: false, selection: Baton.Selection(type: Types.AddNotePayload, hasID: false, abstract: false, fields: [
+            .linked("addNote", key: .fixed(Slots.Mutation_addNote), plural: false, selection: Baton.Selection(type: Types.AddNotePayload, hasID: false, abstract: false, fields: [
                 .linked("note", key: .fixed(Slots.AddNotePayload_note), plural: false, handle: Baton.Handle(kind: .prependNode, connections: .variable("connections"), edgeType: Types.NoteEdge), selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note_id), kind: .string, list: false),
                     .scalar("text", key: .fixed(Slots.Note_text), kind: .string, list: false),
@@ -620,7 +620,7 @@ mutation TestAddNoteNodeFirst(
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Mutation"
-        @MainActor public var addNote: AddNote? { anchor.linked(anchor.owner.slot(Slots.Mutation_addNote_14b07d)).map(AddNote.init(anchor:)) }
+        @MainActor public var addNote: AddNote? { anchor.linked(Slots.Mutation_addNote).map(AddNote.init(anchor:)) }
 
         nonisolated public struct AddNote: Baton.Lens {
             public let anchor: Baton.Anchor
@@ -791,7 +791,7 @@ mutation TestDeleteNote(
     }
 
     public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
-            .linked("removeNote", key: .dynamic(Slots.Mutation_removeNote_d28b99), plural: false, selection: Baton.Selection(type: Types.RemoveNotePayload, hasID: false, abstract: false, fields: [
+            .linked("removeNote", key: .fixed(Slots.Mutation_removeNote), plural: false, selection: Baton.Selection(type: Types.RemoveNotePayload, hasID: false, abstract: false, fields: [
                 .scalar("removedNoteId", key: .fixed(Slots.RemoveNotePayload_removedNoteId), kind: .string, list: false, handle: Baton.Handle(kind: .deleteRecord)),
             ])),
         ]))
@@ -800,7 +800,7 @@ mutation TestDeleteNote(
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Mutation"
-        @MainActor public var removeNote: RemoveNote? { anchor.linked(anchor.owner.slot(Slots.Mutation_removeNote_d28b99)).map(RemoveNote.init(anchor:)) }
+        @MainActor public var removeNote: RemoveNote? { anchor.linked(Slots.Mutation_removeNote).map(RemoveNote.init(anchor:)) }
 
         nonisolated public struct RemoveNote: Baton.Lens {
             public let anchor: Baton.Anchor
@@ -1391,7 +1391,7 @@ mutation TestRemoveNote(
     }
 
     public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
-            .linked("removeNote", key: .dynamic(Slots.Mutation_removeNote_d28b99), plural: false, selection: Baton.Selection(type: Types.RemoveNotePayload, hasID: false, abstract: false, fields: [
+            .linked("removeNote", key: .fixed(Slots.Mutation_removeNote), plural: false, selection: Baton.Selection(type: Types.RemoveNotePayload, hasID: false, abstract: false, fields: [
                 .scalar("removedNoteId", key: .fixed(Slots.RemoveNotePayload_removedNoteId), kind: .string, list: false, handle: Baton.Handle(kind: .deleteEdge, connections: .variable("connections"))),
                 .scalar("deleted", key: .fixed(Slots.RemoveNotePayload_removedNoteId), kind: .string, list: false, handle: Baton.Handle(kind: .deleteRecord)),
             ])),
@@ -1401,7 +1401,7 @@ mutation TestRemoveNote(
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Mutation"
-        @MainActor public var removeNote: RemoveNote? { anchor.linked(anchor.owner.slot(Slots.Mutation_removeNote_d28b99)).map(RemoveNote.init(anchor:)) }
+        @MainActor public var removeNote: RemoveNote? { anchor.linked(Slots.Mutation_removeNote).map(RemoveNote.init(anchor:)) }
 
         nonisolated public struct RemoveNote: Baton.Lens {
             public let anchor: Baton.Anchor

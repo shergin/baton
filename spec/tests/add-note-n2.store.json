@@ -1,8 +1,8 @@
 {
   "Note:n2": {"__typename": "Note", "id": "n2", "text": "Portal gun needs charging"},
   "client:root": {"__typename": "Query"},
-  "client:root:mutation": {"__typename": "Mutation", "addNote(characterId:\"1\",text:\"Portal gun needs charging\")": {"__ref": "client:root:mutation:addNote(characterId:\"1\",text:\"Portal gun needs charging\")"}},
-  "client:root:mutation:addNote(characterId:\"1\",text:\"Portal gun needs charging\")": {"__typename": "AddNotePayload", "noteEdge": {"__ref": "client:root:mutation:addNote(characterId:\"1\",text:\"Portal gun needs charging\"):noteEdge"}},
-  "client:root:mutation:addNote(characterId:\"1\",text:\"Portal gun needs charging\"):noteEdge": {"__typename": "NoteEdge", "cursor": "c2", "node": {"__ref": "Note:n2"}},
+  "client:root:mutation": {"__typename": "Mutation", "addNote": {"__ref": "client:root:mutation:addNote"}},
+  "client:root:mutation:addNote": {"__typename": "AddNotePayload", "noteEdge": {"__ref": "client:root:mutation:addNote:noteEdge"}},
+  "client:root:mutation:addNote:noteEdge": {"__typename": "NoteEdge", "cursor": "c2", "node": {"__ref": "Note:n2"}},
   "client:root:subscription": {"__typename": "Subscription"}
 }

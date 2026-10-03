@@ -87,6 +87,16 @@ struct WriteTests {
         #expect(environment.store.mutationRoot !== environment.store.root)
     }
 
+    @Test("a mutation's root field is keyed without its input, so a call with a new input numbers no new slot")
+    func mutationRootKeys() throws {
+        let mutation = Registry.type("Mutation")
+        let first = TestRename.plan.resolve(TestRename(id: "1", name: "Rick Prime").variables)
+        let count = Registry.slotCount(mutation)
+        let second = TestRename.plan.resolve(TestRename(id: "1", name: "a name no other test sends").variables)
+        #expect(Registry.slotCount(mutation) == count)
+        #expect(first.variant(for: mutation).fields.map(\.slot) == second.variant(for: mutation).fields.map(\.slot))
+    }
+
     @Test("a server payload commits under a live layer and the layer stays on top until it resolves")
     func layerRebasesUnderCommits() throws {
         let store = try seededStore()

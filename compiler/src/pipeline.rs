@@ -418,6 +418,43 @@ pub fn compile(
     Ok(Compiled { plan, timings })
 }
 
+/// A mutation's root fields keyed without their arguments: the payload is
+/// read once by the caller, and a key that carried the input would number
+/// a new slot for every distinct one. An aliased field keeps its alias in
+/// the key, as `addNote(as:"first")`, so two fields never share a slot.
+fn key_by_response(selections: &mut [SelectionPlan]) {
+    for selection in selections {
+        match selection {
+            SelectionPlan::Scalar {
+                name,
+                alias,
+                storage_key,
+                ..
+            }
+            | SelectionPlan::Linked {
+                name,
+                alias,
+                storage_key,
+                ..
+            } => {
+                *storage_key = StorageKeyPlan {
+                    name: name.clone(),
+                    arguments: alias
+                        .iter()
+                        .map(|alias| ArgumentPlan {
+                            name: "as".to_string(),
+                            value: ArgumentValuePlan::Constant(ConstantPlan::String(alias.clone())),
+                        })
+                        .collect(),
+                };
+            }
+            SelectionPlan::Inline { selections, .. }
+            | SelectionPlan::Condition { selections, .. } => key_by_response(selections),
+            SelectionPlan::Spread { .. } => {}
+        }
+    }
+}
+
 /// The schema's root types whose names differ from the store's. A slot is
 /// numbered within its type, so every slot of a root field must belong to
 /// the type the store's root record has; another type of the schema that
@@ -620,12 +657,17 @@ fn lower(
                 )
             })
             .unwrap_or_default();
-        let normalization = lowering.selections(
+        let mut normalization = lowering.selections(
             &operation.selections,
             operation.type_,
             Side::Normalization,
             false,
         );
+        let mut reader = reader;
+        if operation.kind == OperationKind::Mutation {
+            key_by_response(&mut normalization);
+            key_by_response(&mut reader);
+        }
         plan.operations.push(OperationPlan {
             name: name.to_string(),
             source: operation.name.location.source_location().path().to_string(),

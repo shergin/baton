@@ -182,7 +182,10 @@ the rebase explicit.)
 
 **Mutation root.** The record mutation payloads hang off,
 `client:root:mutation`, beside the query root. Entities inside a payload
-merge into their own records as always. The three root records are typed `Query`,
+merge into their own records as always. Its fields are keyed without their
+arguments, `addNote` rather than `addNote(text:"…")`, and an aliased one by
+its alias, `addNote(as:"first")`: the caller reads a payload once, and a
+key per input would number a slot for every call. The three root records are typed `Query`,
 `Mutation` and `Subscription` whatever the schema calls its root types, as
 Relay's root record is a `__Root` in any schema: the compiler interns a
 `QueryRoot` or a `query_root` by the store's name.

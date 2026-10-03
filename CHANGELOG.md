@@ -192,6 +192,11 @@ are expected and listed without apology.
 - A floating-point number is read where it lies in the response; each one
   was copied into a new array first, and a number the plan skips was
   parsed.
+- A mutation's root fields are keyed without their arguments. Each
+  distinct input numbered a permanent slot on `Mutation`, named by the
+  input's text; now a field is keyed by its name, or by its alias when it
+  has one. The store dumps under `spec/` changed accordingly. The data a
+  `mutate` returns is the latest payload of its field.
 - The ingest takes a type's name once per selection rather than from the
   registry, under its lock, for every entity and path key, and reads a
   list of links into a buffer kept per depth rather than a new array per
