@@ -5,6 +5,80 @@ are expected and listed without apology.
 
 ## Unreleased
 
+## 0.5.0 (Baton Pass) — 2026-10-03
+
+Honest data on the wire: field errors stored beside their fields, Relay's
+error directives in Swift's terms, `@defer` over the incremental formats, and
+subscriptions.
+
+- Field errors. The ingest reads a response's `errors`, resolves each `path`
+  through the plan to the record and slot it names, and the commit stores the
+  error beside the field; a payload that answers the field clears it, and
+  either change notifies the field. A plain accessor reads an errored field
+  as null, as before; `@catch` reads the error; a cached read sees what the
+  network read saw. A response with `data: null` and errors fails the fetch
+  with `GraphQLErrors`; errors whose path leads nowhere in the plan are dropped.
+- `@required(action:)`. A required field reads non-optional. NONE and LOG
+  bubble at the lens boundary, as Relay nulls the enclosing object: the
+  accessor that produces a lens (a linked field, a spread, a list element, a
+  connection node) produces nil when a required field in it is null, through
+  a generated `satisfied`; LOG also reports the path through
+  `Environment.requiredFieldMissing`. THROW makes the field's own accessor
+  `get throws`, raising `RequiredFieldError`. A root whose required fields
+  bubble fails the operation, since there is no null data.
+- `@catch(to:)`. RESULT makes the accessor a `Result<T, FieldErrors>` whose
+  failure holds the field's error and every error below it, THROW-required
+  nulls included; NULL keeps the optional type and reads errors as null.
+- `@throwOnFieldError`. On a fragment, the spread accessor is `get throws`
+  and throws `FieldErrors` for an uncaught error inside; on an operation, an
+  uncaught field error puts the handle in `.failed(FieldErrors)` with the
+  data in the store regardless. Under either, and inside `@catch`,
+  `@semanticNonNull` fields read non-optional, as Relay types them.
+- `Environment.errorBehavior` sends the `onError` request parameter
+  (`PROPAGATE`, `NULL`, `ABORT`) when set.
+- `@defer`. An operation with a deferred spread asks for `multipart/mixed`
+  and reads the parts as they arrive: the first commits and renders, each
+  later part is normalized at the record its path names with the fields its
+  label marks, and the availability check does not wait for deferred fields.
+  Three shapes are read: the June 2023 `incremental[{data, path, label}]`,
+  the 2024 `pending`/`incremental[{id, data}]`/`completed`, and Relay's
+  `{data, path, label}` per part. A deferred spread's accessor is nil until
+  the fragment's fields are present. The schema has to declare `@defer`; a
+  server without it gets Relay's "Unknown directive", which is the truth.
+- Subscriptions. `@Subscription("…") var live: NoteAddedSubscription` expands
+  like `@Query`: the storage subscribes while the view lives and closes the
+  stream when it goes; the handle exposes `events`, `latest`, `error` and
+  `isActive`. Every event is normalized at `client:root:subscription` and
+  committed, so its entities merge and edge directives on a subscription
+  payload work. `GraphQLTransportWebSocket` speaks `graphql-transport-ws` over
+  `URLSessionWebSocketTask`; `SubscriptionTransport` is the protocol behind
+  it, passed as `Environment(transport:subscriptions:)`.
+- `Transport.stream(_:)`, with a default that answers once;
+  `MultipartParser` splits `multipart/mixed` bodies however the bytes arrive.
+- The GitHub sample: `@catch` on the repository lookup shows the server's
+  reason for a missing repository; issue rows require an author with
+  `@required(action: LOG)`, so an issue without one is no row.
+
+Tests: field errors land beside the field and a plain read, a `@catch` read, a
+`@catch(to: NULL)` read and a cached read each see what they should; a
+payload that answers an errored field clears the error and notifies; NONE
+drops the list element, LOG reports the path, THROW throws at the read;
+`@throwOnFieldError` throws at the spread and fails the operation while a
+caught error does not; a semantic field reads non-optional; a response with
+errors and no data fails with the messages; `onError` is sent; a deferred
+fragment is absent after the first part and present after the second in both
+incremental formats; a subscription's events commit and append through
+`@appendEdge` and the stream closes on release; the multipart parser splits
+parts at any chunking. The bench measures a payload with twenty field errors
+and the cost of a `@catch` read and a `satisfied` check.
+
+Deliberately not added: `@stream`; operation-level `@catch` (accepted, no
+effect; `@throwOnFieldError` is the operation's policy); reconnection and
+retry for the WebSocket transport beyond a clean error; `extensions` on
+field errors; a sample screen for `@defer` or subscriptions, because neither
+public API supports them (both ship on fixtures); the missing-data heal (a
+refetch of the owning operation), still planned.
+
 ## 0.4.0 (Hand-off) — 2026-10-03
 
 Lists: Relay's connections with pagination, fragment arguments, `@alias(as:)`,

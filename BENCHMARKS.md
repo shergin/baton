@@ -5,6 +5,36 @@ machine. Every number comes from `swift run -c release BatonBenchmarks` (or
 the comparison package named in its section), recorded with the revision,
 machine, OS and date. Append; never edit a past entry.
 
+## 0.5.0 — 2026-10-03
+
+Revision: the 0.5.0 tree. Machine: Apple M1 Pro (MacBook Pro), macOS 26.5.2,
+Xcode 26.6, Swift 6.3.3, release build. Same fixture as 0.1.0; the error
+bench adds an `errors` array naming every row's `image` to it.
+
+The earlier numbers, same day as 0.4.0's: ingest 2.76 ms (2.53), commit into
+an empty store 1.35 ms (1.34), same payload again 187 µs (184), one field
+changed 376 µs (372), untracked read 29 ns (28.5), tracked read 536 ns (552),
+check 126 µs (127), the optimistic cycle 413 µs (414), a connection page
+320 µs best (281), the scroll footprint +4.7 MB (+4.2 to +5.0). The ingest
+moved by a quarter of a millisecond: every field record now carries the
+deferred label and the caught flag, and the response's top level is read
+through a general member walk instead of two byte compares. The rest is
+within the day's noise.
+
+### Errors: the fixture with a field error on every row's image
+
+| Measurement | Best | Median | Notes |
+|---|---|---|---|
+| Ingest of the fixture with 20 field errors | 3.00 ms | 3.10 ms | 2.76 ms without; the difference is the index of entries the path walk needs, built only when errors exist |
+| Commit the errors, then clear them, 20 rows observed (two commits) | 409 µs | 417 µs | each errored slot notifies once when the error lands and once when it clears |
+| `@catch` read of a field without an error, per field | 122 ns | 122 ns | a `Result`, a closure and the error lookup, against 29 ns for a plain read |
+| `satisfied` check of a lens with one `@required` field, per lens | 29 ns | 29 ns | one tracked read |
+
+What it means: a response without errors pays nothing for the machinery; one
+with errors pays a path walk per error; a view that opts into `@catch` pays
+a hundred nanoseconds per field it catches, and a `@required` lens costs a
+read per required field at the boundary that produces it.
+
 ## 0.4.0 — 2026-10-03
 
 Revision: the 0.4.0 tree. Machine: Apple M1 Pro (MacBook Pro), macOS 26.5.2,

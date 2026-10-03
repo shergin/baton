@@ -1,11 +1,15 @@
+<img src="baton.png" alt="A loaf of bread, drawn in one line: the Baton logo" width="160">
+
 # Baton 🥖
 
-**Status: 0.4.0.** Reads, writes and lists run through every layer, with
-tests and benchmarks behind the claims: cached data in the first body, one
-changed field re-rendering one row, memory bounded by a release buffer rather
-than by how far the user scrolls, optimistic responses that show at once,
-rebase under every commit and revert on failure, and connections that merge
-their pages in the store and grow by one notification per page. The API will
+**Status: 0.5.0.** Reads, writes, lists and errors run through every layer,
+with tests and benchmarks behind the claims: cached data in the first body,
+one changed field re-rendering one row, memory bounded by a release buffer
+rather than by how far the user scrolls, optimistic responses that show at
+once, rebase under every commit and revert on failure, connections that merge
+their pages in the store and grow by one notification per page, field errors
+stored beside their fields and read through Relay's directives, deferred
+fragments that arrive after the first frame, and subscriptions. The API will
 break freely until 1.0.
 
 Relay for SwiftUI and Compose. A view declares the GraphQL fragment it reads,
@@ -36,8 +40,11 @@ buffer, collection, the four fetch policies, invalidation and expiration,
 preload (0.2.0); `@Mutation` as an action value, optimistic layers, abstract
 types, lookups by id across types, the GitHub sample (0.3.0); `@connection`
 with merged pages and `loadNext`, `@refetchable`, fragment arguments,
-`@alias(as:)`, the edge directives (0.4.0). Still to come, in order: errors
-and `@defer`, persistence. The promises:
+`@alias(as:)`, the edge directives (0.4.0); field errors beside their fields,
+`@required`, `@catch`, `@throwOnFieldError` with `@semanticNonNull`,
+`onError`, `@defer` over the incremental formats, subscriptions over
+`graphql-transport-ws` (0.5.0). Still to come: persistence, then tooling and
+the road to 1.0. The promises:
 
 - **A fragment per view.** GraphQL lives in the Swift file, next to the view
   that reads it, as a full, valid document. A parent passes a child its
@@ -54,8 +61,9 @@ and `@defer`, persistence. The promises:
   and at no other time. A commit of a thousand records costs tens of
   microseconds on the main thread.
 - **Honest data.** Nullability is what the schema says; `@required` and
-  `@catch` work as in Relay; field errors survive caching; staleness is a
-  phase a view can read.
+  `@catch` work as in Relay, in Swift's terms (an optional lens, a `Result`,
+  a `get throws`); field errors survive caching; staleness is a phase a view
+  can read.
 - **Small everything.** Generated code is one line per field plus data
   tables. The runtime depends on Foundation and Observation. The compiler is
   one prebuilt binary, shared by the Swift and (later) Kotlin runtimes.
@@ -173,7 +181,7 @@ until artifact bundles are published.
 In a relay, the baton is the thing that is actually handed over. Here it is
 the data a screen hands each view: exactly what the view asked for, nothing
 else. In Russian the same word, батон, is a loaf of bread, which is why the
-symbol is 🥖; a proper logo will follow.
+symbol is 🥖 and the logo is a loaf.
 
 ## License
 

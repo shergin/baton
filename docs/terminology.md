@@ -42,6 +42,34 @@ and updates the records in place. New variables replace the lens.
 the only way behaviour is attached to data; the set is Relay's
 ([Relay's words](principles/relays-words.md)).
 
+**Required.** Relay: `@required(action: NONE | LOG | THROW)`, a field the
+view cannot do without. Here: the field reads non-optional. NONE and LOG
+bubble at the lens boundary, as Relay nulls the enclosing object: the
+accessor that produces the lens produces nil when a required field in it is
+null (a generated `satisfied` checks), and LOG reports the path through
+`Environment.requiredFieldMissing`. THROW makes the field's accessor
+`get throws`, raising `RequiredFieldError`. A root that bubbles fails the
+operation.
+
+**Catch.** Relay: `@catch(to: RESULT | NULL)`, a field or aliased spread
+whose errors the view handles. Here: RESULT makes the accessor a
+`Result<T, FieldErrors>` whose failure holds the field's error and every
+error below it, THROW-required nulls included; NULL keeps the optional type
+and reads errors as null.
+
+**Throw on field error.** Relay: `@throwOnFieldError` on a fragment or
+operation, the policy under which `@semanticNonNull` fields are typed
+non-null. Here: a fragment's spread accessor is `get throws` and throws
+`FieldErrors` for an uncaught error inside; an operation with an uncaught
+field error is `.failed(FieldErrors)` with its data in the store. Semantic
+non-null fields read non-optional under either, and inside `@catch`.
+
+**Deferred fragment.** GraphQL: `...F @defer(label:)`, a fragment the server
+may deliver in a later part. Here: the spread's accessor is optional and nil
+until the fragment's fields are present (a generated `isPresent`); the plan
+marks the deferred fields with the label, the availability check does not
+wait for them, and each part is normalized at the record its path names.
+
 **Variables.** GraphQL: an operation's parameters. Here: the stored
 properties of an [operation value](#generated).
 
@@ -122,9 +150,18 @@ payload names and resolves slots against that type; a lens exposes
 `as<Type>` accessors and conditional spreads. Relay's rule holds: a spread
 inside an inline fragment on an abstract selection carries `@alias`.
 
+**Field error.** GraphQL: an entry of a response's `errors` with a `path`.
+Here: resolved by the ingest to the record and slot the path names and
+stored beside the field (`FieldError`: message and dotted path); a payload
+that answers the field clears it; either change notifies the field. Read
+through [catch](#documents) and [throw on field error](#documents); a plain
+read sees null. A response with errors and no data is a `GraphQLErrors`
+failure of the fetch.
+
 **Heal.** Baton's word for the response to missing data: record the event,
 mark the owning operation stale, refetch. See
-[Honest data](principles/honest-data.md). *(planned)*
+[Honest data](principles/honest-data.md). Today: `Store.reportMissing` is
+called; the refetch is *(planned)*.
 
 ## Compiler
 
@@ -149,8 +186,22 @@ plans, ids.
 Here the same, injected through SwiftUI's environment as `\.baton`. Chosen
 over "client" (Apollo's word) by [Relay's words](principles/relays-words.md).
 
-**Transport.** The protocol behind which HTTP, WebSocket and multipart
-incremental delivery live; URLSession implements it.
+**Transport.** The protocol behind which HTTP and multipart incremental
+delivery live: `execute` answers once, `stream` yields the parts of a
+deferred response. `URLSessionTransport` implements both; `MultipartParser`
+splits the parts.
+
+**Subscription.** GraphQL: an operation whose events arrive over time. Here:
+`@Subscription("…")` expands like `@Query`: the storage subscribes while the
+view lives and closes the stream when it goes; the handle exposes `events`,
+`latest`, `error`, `isActive`. Each event is normalized at the subscription
+root (`client:root:subscription`) and committed, so edge directives on its
+payload work. `SubscriptionTransport` is the protocol;
+`GraphQLTransportWebSocket` speaks `graphql-transport-ws`.
+
+**Error behavior.** The GraphQL spec's `onError` request parameter
+(`PROPAGATE`, `NULL`, `ABORT`). Here: `Environment.errorBehavior`, sent when
+set and never inferred.
 
 **Ingest.** The off-main-actor stage that decodes response bytes straight into
 a change set by following a plan.

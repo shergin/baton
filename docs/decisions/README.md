@@ -19,3 +19,4 @@ principle, the proof belongs here.
 - [Floors at the 26 releases](platform-floors.md)
 - [Lookups satisfy root fields from cached entities](lookups.md)
 - [Connections reference page edges and own inserted ones](connections-own-their-edges.md)
+- [Relay's error directives in Swift's terms](error-directives-in-swift.md)

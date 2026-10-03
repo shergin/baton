@@ -67,8 +67,13 @@ comes from and [Relay's words](relays-words.md) for the directive vocabulary.
 
 ## Spelled today
 
-Nothing is spelled yet. Planned: `phase` on an operation value
-(`.loading`, `.ready(data)`, `.failed(error)`) with `isRefreshing`;
-`@required(action:)`, `@catch(to:)`; a `missingData` event on the
-environment; zero values per scalar through a `Scalar` protocol requirement.
-This section may rot; the rest must not.
+As of 0.5.0: `phase` on an operation value (`.loading`, `.ready(data)`,
+`.failed(error)`) with `isRefreshing` and `isStale`; field errors stored
+beside the field and read through `@catch(to:)` as a `Result`;
+`@required(action:)` bubbling at the lens boundary, logging through
+`Environment.requiredFieldMissing`, or throwing from the accessor;
+`@throwOnFieldError` failing the operation or throwing at the spread, with
+`@semanticNonNull` types under it; `Environment.errorBehavior` for `onError`;
+`Store.reportMissing` for missing data, with zero values from the `required*`
+readers. Still planned: the heal's refetch of the owning operation. This
+section may rot; the rest must not.
