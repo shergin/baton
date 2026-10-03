@@ -24,6 +24,12 @@ are expected and listed without apology.
   with an error of its own (URLSession reports the cancellation as one)
   could also put a loading handle in `.failed`. A cancelled fetch now leaves
   the handle to whoever cancelled it.
+- Fixed: a subscription value's handle is dropped when its last owner
+  releases it. `@Subscription` storage used to list the handle on every body
+  and nothing took it off, so each subscription value an app ever showed
+  kept its handle for the life of the process. The handle now lists itself
+  on `retain()` and leaves on the last `release()`, so `subscription` also
+  answers for an owner that is not a view.
 - The Rick and Morty sample's `baton.json` sits beside the sample, like every
   other target's. The package root has none, so a target without its own
   gets the plugin's warning instead of the sample's schema.

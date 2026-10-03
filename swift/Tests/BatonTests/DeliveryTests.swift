@@ -333,6 +333,22 @@ struct DeliveryTests {
         #expect(environment.rootCount == 1)
     }
 
+    @Test("a subscription value reaches its handle while the handle is retained, and not after")
+    func subscriptionResolution() {
+        let environment = Environment(transport: SilentTransport(), subscriptions: Events())
+        let value = TestNoteAdded(characterId: "1", connections: [])
+        #expect(value.subscription == nil)
+
+        let live = environment.subscriptionHandle(for: value)
+        live.retain()
+        live.retain()
+        #expect(value.subscription === live)
+        live.release()
+        #expect(value.subscription === live, "one owner is left")
+        live.release()
+        #expect(value.subscription == nil)
+    }
+
     @Test("the multipart parser yields each part's body however the bytes are chunked")
     func multipart() {
         let body = "\r\n---\r\nContent-Type: application/json\r\n\r\n{\"data\":{\"a\":1},\"hasNext\":true}\r\n---\r\nContent-Type: application/json\r\n\r\n{\"incremental\":[],\"hasNext\":false}\r\n-----\r\n"

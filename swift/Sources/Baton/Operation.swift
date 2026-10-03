@@ -408,6 +408,7 @@ public final class SubscriptionHandle<Op: Operation>: AnyOperationHandle {
     public func retain() {
         retainCount += 1
         environment.didRetain(self)
+        SubscriptionResolution.add(self)
         start()
     }
 
@@ -417,6 +418,7 @@ public final class SubscriptionHandle<Op: Operation>: AnyOperationHandle {
         if retainCount <= 0 {
             retainCount = 0
             cancel()
+            SubscriptionResolution.remove(self)
             environment.didEnd(self)
         }
     }
@@ -436,18 +438,28 @@ public final class SubscriptionHandle<Op: Operation>: AnyOperationHandle {
 
 /// A subscription value, resolved inside a view through `@Subscription`.
 extension Operation {
-    /// The live side, when the value was resolved by a view.
+    /// The live side, while a view or another owner retains its handle.
     @MainActor public var subscription: SubscriptionHandle<Self>? { SubscriptionResolution.handle(for: self) }
 }
 
-/// Where `@Subscription` storage parks the handle a value resolves to, so the
-/// operation value's accessors can reach it without a second stored property.
+/// Where a subscription value finds its handle, so the value's accessors can
+/// reach it without a second stored property. A handle is listed while it is
+/// retained and dropped when its last owner releases it. The list is keyed by
+/// the value alone: equal values in two environments share an entry, and the
+/// handle retained last answers.
 @MainActor
 enum SubscriptionResolution {
     private static var handles: [AnyHashable: AnyObject] = [:]
 
-    static func set<Op: Operation>(_ handle: SubscriptionHandle<Op>?, for operation: Op) {
-        if let handle { handles[AnyHashable(operation)] = handle } else { handles.removeValue(forKey: AnyHashable(operation)) }
+    static func add<Op: Operation>(_ handle: SubscriptionHandle<Op>) {
+        handles[AnyHashable(handle.operation)] = handle
+    }
+
+    /// Drops the handle's entry, unless another handle has taken it.
+    static func remove<Op: Operation>(_ handle: SubscriptionHandle<Op>) {
+        let key = AnyHashable(handle.operation)
+        guard handles[key] === handle else { return }
+        handles.removeValue(forKey: key)
     }
 
     static func handle<Op: Operation>(for operation: Op) -> SubscriptionHandle<Op>? {
@@ -488,9 +500,7 @@ public struct SubscriptionStorage<Op: Operation>: DynamicProperty {
         }
     }
 
-    /// The value, with its live side registered for `subscription`.
-    public var resolved: Op {
-        SubscriptionResolution.set(box.handle, for: value)
-        return value
-    }
+    /// The value; `subscription` reaches its live side while the storage
+    /// retains the handle.
+    public var resolved: Op { value }
 }
