@@ -137,25 +137,20 @@ extension Anchor {
         }
     }
 
-    /// The record behind a singular link, resolving a lookup when the link was
-    /// never fetched but the entity is cached. A deleted record reads as null.
-    public func linked(_ slot: Slot, lookup: Lookup? = nil) -> Anchor? {
+    /// The record behind a singular link. A deleted record reads as null. A
+    /// lookup was bound by the availability check, so a read never writes.
+    public func linked(_ slot: Slot) -> Anchor? {
         switch record.read(slot) {
         case .ref(let target): return target.deleted ? nil : child(target)
-        case .missing:
-            if let lookup, let store, let target = store.resolveLookup(on: record, slot: slot, lookup: lookup, variables: variables) {
-                return child(target)
-            }
-            missing(slot)
-            return nil
+        case .missing: missing(slot); return nil
         default: return nil
         }
     }
 
     /// A non-null link. When the data is missing, a detached empty record of the
     /// expected type stands in so reads yield zero values, and the miss is reported.
-    public func requiredLinked(_ slot: Slot, type: TypeID, lookup: Lookup? = nil) -> Anchor {
-        linked(slot, lookup: lookup) ?? child(Record(type: type, key: record.key + ":" + slot.storageKey + ":missing"))
+    public func requiredLinked(_ slot: Slot, type: TypeID) -> Anchor {
+        linked(slot) ?? child(Record(type: type, key: record.key + ":" + slot.storageKey + ":missing"))
     }
 
     /// A plural link. Elements that `keep` rejects are dropped, as Relay nulls a
@@ -193,8 +188,8 @@ extension Anchor {
     public func requiredDoubles(key: String) -> [Double] { requiredDoubles(slot(key: key)) }
     public func bools(key: String) -> [Bool]? { bools(slot(key: key)) }
     public func requiredBools(key: String) -> [Bool] { requiredBools(slot(key: key)) }
-    public func linked(key: String, lookup: Lookup? = nil) -> Anchor? { linked(slot(key: key), lookup: lookup) }
-    public func requiredLinked(key: String, type: TypeID, lookup: Lookup? = nil) -> Anchor { requiredLinked(slot(key: key), type: type, lookup: lookup) }
+    public func linked(key: String) -> Anchor? { linked(slot(key: key)) }
+    public func requiredLinked(key: String, type: TypeID) -> Anchor { requiredLinked(slot(key: key), type: type) }
     public func list<Element: Lens>(key: String, keep: ((Anchor) -> Bool)? = nil) -> List<Element>? { list(slot(key: key), keep: keep) }
     public func requiredList<Element: Lens>(key: String, keep: ((Anchor) -> Bool)? = nil) -> List<Element> { requiredList(slot(key: key), keep: keep) }
 }
@@ -237,9 +232,9 @@ extension Anchor {
 
     /// `@required(action: THROW)` on a link: the linked record, satisfied, or
     /// the field's error, or `RequiredFieldError`.
-    public func throwingLinked(_ slot: Slot, lookup: Lookup? = nil, path: String, satisfied: (Anchor) -> Bool) throws -> Anchor {
+    public func throwingLinked(_ slot: Slot, path: String, satisfied: (Anchor) -> Bool) throws -> Anchor {
         if let error = record.error(slot) { throw FieldErrors([error]) }
-        guard let target = linked(slot, lookup: lookup), satisfied(target) else { throw RequiredFieldError(path: path) }
+        guard let target = linked(slot), satisfied(target) else { throw RequiredFieldError(path: path) }
         return target
     }
 

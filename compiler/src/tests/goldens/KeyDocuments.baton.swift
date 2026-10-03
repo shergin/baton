@@ -86,7 +86,7 @@ query TestKeys(
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Query"
         @MainActor public var search: Baton.List<Search>? { anchor.list(Slots.Query_search_6286a6) }
-        @MainActor public var character: Character? { anchor.linked(Slots.Query_character_4a2dfc, lookup: Baton.Lookup(type: Types.Character, key: .literal("a,b"))).map(Character.init(anchor:)) }
+        @MainActor public var character: Character? { anchor.linked(Slots.Query_character_4a2dfc).map(Character.init(anchor:)) }
         @MainActor public var charactersByIds: Baton.List<CharactersByIds>? { anchor.list(Slots.Query_charactersByIds_0b7f7b(anchor.variables)) }
         @MainActor public var characters: Characters? { anchor.linked(Slots.Query_characters_498461(anchor.variables)).map(Characters.init(anchor:)) }
 

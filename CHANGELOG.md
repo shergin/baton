@@ -129,6 +129,13 @@ are expected and listed without apology.
   A schema that renames a root and also has a type of that root's store
   name is an error. `Store(rootType:mutationType:subscriptionType:)` is
   removed.
+- Reads never write. A lens read of a root field that was never fetched
+  resolved its lookup and wrote the link, notifying, inside the body that
+  read it. The availability check binds a lookup before a handle is ready,
+  as it did; a lens read of a missing link now reads nil and reports it.
+  The `lookup:` parameters of `Anchor.linked`, `requiredLinked` and
+  `throwingLinked` are removed. See
+  [the decision](docs/decisions/lookups-bind-in-the-check.md).
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

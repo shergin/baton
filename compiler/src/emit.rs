@@ -745,11 +745,9 @@ impl Emitter {
                     required: Some(required),
                     storage_key,
                     plural,
-                    lookup,
                     bubbles,
                     alias,
                     name,
-                    base_type,
                     ..
                 } if required.action != "THROW" => {
                     let slot = self.slot_expression(type_name, type_is_abstract, storage_key);
@@ -762,15 +760,9 @@ impl Emitter {
                         );
                     } else {
                         let nested = capitalize(alias.as_deref().unwrap_or(name));
-                        let lookup_argument = match lookup {
-                            Some(lookup) => {
-                                format!(", lookup: {}", self.lookup_expression(lookup, base_type))
-                            }
-                            None => String::new(),
-                        };
                         let _ = writeln!(
                             output,
-                            "{indent}    guard let child = anchor.linked({slot}{lookup_argument}), {nested}.satisfied(child) else {{ return anchor.requiredMissing(path: {}, log: {}) }}",
+                            "{indent}    guard let child = anchor.linked({slot}), {nested}.satisfied(child) else {{ return anchor.requiredMissing(path: {}, log: {}) }}",
                             swift_literal(&required.path),
                             required.action == "LOG"
                         );
@@ -1024,7 +1016,6 @@ impl Emitter {
                     plural,
                     is_abstract,
                     storage_key,
-                    lookup,
                     connection,
                     required,
                     catch,
@@ -1048,7 +1039,6 @@ impl Emitter {
                             bubbles: *bubbles,
                             required: required.as_ref(),
                             catch: catch.as_ref(),
-                            lookup: lookup.as_ref(),
                         },
                         type_name,
                         type_is_abstract,
@@ -1408,10 +1398,6 @@ impl Emitter {
         let property = escape(field.property);
         let nested = field.nested;
         let base_type = field.base_type;
-        let lookup_argument = match field.lookup {
-            Some(lookup) => format!(", lookup: {}", self.lookup_expression(lookup, base_type)),
-            None => String::new(),
-        };
         let keep = if field.bubbles {
             format!(", keep: {nested}.satisfied")
         } else {
@@ -1503,13 +1489,13 @@ impl Emitter {
                 let (value_type, read) = if optional {
                     (
                         format!("{nested}?"),
-                        format!("$0.linked({argument}{lookup_argument}){guarded}"),
+                        format!("$0.linked({argument}){guarded}"),
                     )
                 } else {
                     (
                         nested.to_string(),
                         format!(
-                            "{nested}(anchor: $0.requiredLinked({argument}, type: Types.{base_type}{lookup_argument}))"
+                            "{nested}(anchor: $0.requiredLinked({argument}, type: Types.{base_type}))"
                         ),
                     )
                 };
@@ -1531,7 +1517,7 @@ impl Emitter {
                     &property,
                     nested.to_string(),
                     format!(
-                        "{nested}(anchor: try anchor.throwingLinked({slot}{lookup_argument}, path: {path}, satisfied: {nested}.satisfied))"
+                        "{nested}(anchor: try anchor.throwingLinked({slot}, path: {path}, satisfied: {nested}.satisfied))"
                     ),
                     true,
                     condition,
@@ -1543,7 +1529,7 @@ impl Emitter {
                     indent,
                     &property,
                     format!("{nested}?"),
-                    format!("anchor.linked({argument}{lookup_argument}){guarded}"),
+                    format!("anchor.linked({argument}){guarded}"),
                     false,
                     condition,
                 );
@@ -1555,7 +1541,7 @@ impl Emitter {
                     &property,
                     nested.to_string(),
                     format!(
-                        "{nested}(anchor: anchor.requiredLinked({argument}, type: Types.{base_type}{lookup_argument}))"
+                        "{nested}(anchor: anchor.requiredLinked({argument}, type: Types.{base_type}))"
                     ),
                     false,
                     condition,
@@ -2140,7 +2126,6 @@ struct LinkedAccessor<'a> {
     bubbles: bool,
     required: Option<&'a RequiredPlan>,
     catch: Option<&'a CatchPlan>,
-    lookup: Option<&'a LookupPlan>,
 }
 
 /// What a spread accessor is made of.

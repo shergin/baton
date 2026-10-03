@@ -44,7 +44,7 @@ struct SpineTests {
         environment.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(listVariables)))
 
         // The detail's root field `character(id: "1")` was never fetched; the
-        // lookup satisfies it from the cached entity, synchronously.
+        // check binds its lookup to the cached entity, synchronously.
         let cached = environment.handle(for: TestHeaderQuery(id: "1"))
         guard case .ready(let data) = cached.phase else {
             Issue.record("expected .ready on creation, got \(cached.phase)")
@@ -125,17 +125,21 @@ struct SpineTests {
         #expect(counter.fired == 1, "the name changed")
     }
 
-    @Test("a lens read of a root field falls through to the cached entity")
-    func lookupOnRead() throws {
+    @Test("a lens read never writes: a root field the store lacks reads nil until the check binds its lookup to the cached entity")
+    func lookupBindsInTheCheck() throws {
+        final class Misses: @unchecked Sendable { var reads: [String] = [] }
+        let misses = Misses()
         let store = Store()
+        store.reportMissing = { record, slot in misses.reads.append(record.key + "." + slot.storageKey) }
         let variables = TestList(page: 1).variables
         store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(variables)))
 
         let detail = TestHeaderQuery(id: "3")
         let data = TestHeaderQuery.Data(anchor: Anchor(record: store.root, variables: detail.variables, store: store))
-        #expect(data.character?.testHeader.name == "Summer Smith")
-        // The link is now written, so the plan checks as available.
+        #expect(data.character == nil, "the read does not resolve the lookup")
+        #expect(misses.reads == [#"client:root.character(id:"3")"#])
         #expect(store.check(TestHeaderQuery.plan.resolve(detail.variables)))
+        #expect(data.character?.testHeader.name == "Summer Smith", "the check wrote the link")
     }
 
     @Test("an object whose id arrives after a link is keyed by its id, so a detail joins the entity the list fetched")
@@ -146,8 +150,10 @@ struct SpineTests {
         store.reportMissing = { record, slot in misses.reads.append(record.key + "." + slot.storageKey) }
         store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
 
-        // The detail's header renders from the store, through the lookup.
+        // The detail's header renders from the store, through the lookup the
+        // check binds.
         let header = TestHeaderQuery(id: "9")
+        #expect(store.check(TestHeaderQuery.plan.resolve(header.variables)))
         let data = TestHeaderQuery.Data(anchor: Anchor(record: store.root, variables: header.variables, store: store))
         #expect(data.character?.testHeader.name == "Agency Director")
 

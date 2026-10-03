@@ -316,6 +316,7 @@ struct ListTests {
         store.reportMissing = nil
         store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
         let query = TestAliasQuery(id: "1")
+        #expect(store.check(TestAliasQuery.plan.resolve(query.variables)), "the lookup finds the character the list fetched")
         let data = TestAliasQuery.Data(anchor: Anchor(record: store.root, variables: query.variables, store: store))
         #expect(data.character?.row.name == "Rick Sanchez")
     }

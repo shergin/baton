@@ -917,16 +917,4 @@ public final class Store {
         }
         return found[0]
     }
-
-    /// Resolves a lookup for a lens read: the cached entity for a root field
-    /// that was never fetched, written back as the link.
-    func resolveLookup(on record: Record, slot: Slot, lookup: Lookup, variables: Variables) -> Record? {
-        let value = switch lookup.key {
-        case .variable(let name): variables.keyText(name)
-        case .literal(let text): text
-        }
-        guard let target = resolve(LookupKey(type: lookup.type, possibleTypes: lookup.possibleTypes, value: value)) else { return nil }
-        record.write(slot, .ref(target))
-        return target
-    }
 }
