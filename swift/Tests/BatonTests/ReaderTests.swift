@@ -138,6 +138,20 @@ struct ReaderTests {
         #expect(first.testNotes.anchor.owner !== second.testNotes.anchor.owner)
     }
 
+    @Test("fields named like the module's shared enums get lenses of other names, so a spread with arguments inside them still binds")
+    func reservedNames() throws {
+        let store = Store()
+        store.reportMissing = nil
+        store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
+        #expect(store.check(TestHeaderQuery.plan.resolve(TestHeaderQuery(id: "1").variables)))
+        let query = TestReservedNames(id: "1")
+        let data = TestReservedNames.Data(anchor: Anchor(record: store.root, variables: query.variables, store: store))
+        let sites: TestReservedNames.Data.SitesLens? = data.sites
+        #expect(sites?.testNotes.anchor.variables["count"] == .int(1))
+        #expect(data.types?.id == "1")
+        #expect(data.slots?.id == "1")
+    }
+
     @Test("a @required field the store never received is reported missing before its lens bubbles")
     func missingRequiredField() throws {
         let reports = Reports()

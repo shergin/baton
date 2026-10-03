@@ -130,6 +130,7 @@ nonisolated enum Sites {
     static let TestNotesSizedQuery_testNotes = Baton.ArgumentSite()
     static let TestRecentNotesPaginationQuery_testRecentNotes = Baton.ArgumentSite()
     static let TestRecentNotesQuery_testRecentNotes = Baton.ArgumentSite()
+    static let TestReservedNames_testNotes = Baton.ArgumentSite()
     static let TestTwoScopes_testNotes = Baton.ArgumentSite()
     static let TestTwoScopes_testNotes_2 = Baton.ArgumentSite()
 }

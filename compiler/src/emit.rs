@@ -801,7 +801,7 @@ impl Emitter {
                             required.action == "LOG"
                         );
                     } else {
-                        let nested = capitalize(alias.as_deref().unwrap_or(name));
+                        let nested = nested_type_name(alias.as_deref().unwrap_or(name));
                         let _ = writeln!(
                             output,
                             "{indent}    guard let child = anchor.linked({slot}), {nested}.satisfied(child) else {{ return anchor.requiredMissing(path: {}, log: {}) }}",
@@ -883,7 +883,7 @@ impl Emitter {
                     ..
                 } => {
                     let slot = self.slot_expression(type_name, type_is_abstract, storage_key);
-                    let nested = capitalize(alias.as_deref().unwrap_or(name));
+                    let nested = nested_type_name(alias.as_deref().unwrap_or(name));
                     if *plural {
                         let _ = writeln!(
                             output,
@@ -911,7 +911,7 @@ impl Emitter {
                     let _ = writeln!(
                         output,
                         "{indent}    errors.append(contentsOf: {}.fieldErrors(anchor))",
-                        capitalize(alias)
+                        nested_type_name(alias)
                     );
                 }
                 _ => {}
@@ -2815,8 +2815,34 @@ fn spread_accessor_names(
     names
 }
 
+/// The names generated code refers to unqualified from inside a lens: the
+/// module's shared enums, the runtime's module, and Swift types the
+/// accessors spell. A nested lens of one of these names would shadow it.
+const RESERVED_TYPE_NAMES: [&str; 9] = [
+    "Baton",
+    "Types",
+    "Slots",
+    "AbstractSlots",
+    "Sites",
+    "Result",
+    "String",
+    "Int",
+    "Bool",
+];
+
+/// A nested lens's type name: the field's, capitalized, with `Lens` after
+/// one that would shadow a name generated code relies on.
+fn nested_type_name(property: &str) -> String {
+    let name = capitalize(property);
+    if RESERVED_TYPE_NAMES.contains(&name.as_str()) {
+        name + "Lens"
+    } else {
+        name
+    }
+}
+
 fn unique_nested_name(property: &str, nested: &[Nested]) -> String {
-    let base = capitalize(property);
+    let base = nested_type_name(property);
     let mut candidate = base.clone();
     let mut counter = 2;
     while nested.iter().any(|child| child.name == candidate) {

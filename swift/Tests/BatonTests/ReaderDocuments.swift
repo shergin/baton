@@ -2,8 +2,8 @@ import Baton
 
 /// The documents behind the reader tests, against the test schema: a root
 /// field and a link `@required` all the way up, a non-null list under
-/// `@catch`, and one scope holding two keys with variables and two spreads
-/// with arguments.
+/// `@catch`, one scope holding two keys with variables and two spreads
+/// with arguments, and fields named like the module's shared enums.
 @MainActor
 struct ReaderDocuments {
     @Query("""
@@ -37,4 +37,13 @@ struct ReaderDocuments {
         }
         """)
     var twoScopes: TestTwoScopes
+
+    @Query("""
+        query TestReservedNames($id: ID!) {
+          sites: character(id: $id) { id ...TestNotes_character @arguments(count: 1) }
+          types: character(id: $id) { id }
+          slots: character(id: $id) { id }
+        }
+        """)
+    var reservedNames: TestReservedNames
 }

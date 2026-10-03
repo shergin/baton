@@ -222,6 +222,130 @@ query TestRequiredOrigin(
     }
 }
 
+/// Operation value for `query TestReservedNames`.
+nonisolated public struct TestReservedNames: Baton.Operation {
+    public var id: String
+    public var resolution: Baton.OperationHandle<Self>? = nil
+
+    public init(id: String) {
+        self.id = id
+    }
+
+    public static let name = "TestReservedNames"
+    public static let kind = Baton.OperationKind.query
+    public static let persistedID = "5ebef09abdd944666af9974ee50e9565"
+    public static let text = #"""
+query TestReservedNames(
+  $id: ID!
+) {
+  sites: character(id: $id) {
+    id
+    ...TestNotes_character_35kO5h
+  }
+  types: character(id: $id) {
+    id
+  }
+  slots: character(id: $id) {
+    id
+  }
+}
+
+fragment TestNotes_character_35kO5h on Character {
+  name
+  notes(first: 1) {
+    totalCount
+    edges {
+      node {
+        id
+        text
+        __typename
+      }
+      cursor
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+  }
+  id
+}
+"""#
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["id": Baton.Variable(id)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+
+    public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
+            .linked("sites", key: .dynamic(Slots.Query_character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                .scalar("id", key: .fixed(Slots.Character_id), kind: .string, list: false),
+                .scalar("name", key: .fixed(Slots.Character_name), kind: .string, list: false),
+                .linked("notes", key: .fixed(Slots.Character_notes_969630), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character___TestNotes_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo)), selection: Baton.Selection(type: Types.NoteConnection, hasID: false, abstract: false, fields: [
+                    .scalar("totalCount", key: .fixed(Slots.NoteConnection_totalCount), kind: .int, list: false),
+                    .linked("edges", key: .fixed(Slots.NoteConnection_edges), plural: true, selection: Baton.Selection(type: Types.NoteEdge, hasID: false, abstract: false, fields: [
+                        .linked("node", key: .fixed(Slots.NoteEdge_node), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                            .scalar("__typename", key: .fixed(Slots.Note___typename), kind: .string, list: false),
+                            .scalar("id", key: .fixed(Slots.Note_id), kind: .string, list: false),
+                            .scalar("text", key: .fixed(Slots.Note_text), kind: .string, list: false),
+                        ])),
+                        .scalar("cursor", key: .fixed(Slots.NoteEdge_cursor), kind: .string, list: false),
+                    ])),
+                    .linked("pageInfo", key: .fixed(Slots.NoteConnection_pageInfo), plural: false, selection: Baton.Selection(type: Types.PageInfo, hasID: false, abstract: false, fields: [
+                        .scalar("endCursor", key: .fixed(Slots.PageInfo_endCursor), kind: .string, list: false),
+                        .scalar("hasNextPage", key: .fixed(Slots.PageInfo_hasNextPage), kind: .bool, list: false),
+                    ])),
+                ])),
+            ])),
+            .linked("types", key: .dynamic(Slots.Query_character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                .scalar("id", key: .fixed(Slots.Character_id), kind: .string, list: false),
+            ])),
+            .linked("slots", key: .dynamic(Slots.Query_character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                .scalar("id", key: .fixed(Slots.Character_id), kind: .string, list: false),
+            ])),
+        ]))
+
+    nonisolated public struct Data: Baton.Lens {
+        public let anchor: Baton.Anchor
+        public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Query"
+        @MainActor public var sites: SitesLens? { anchor.linked(anchor.owner.slot(Slots.Query_character_bca4f9)).map(SitesLens.init(anchor:)) }
+        @MainActor public var types: TypesLens? { anchor.linked(anchor.owner.slot(Slots.Query_character_bca4f9)).map(TypesLens.init(anchor:)) }
+        @MainActor public var slots: SlotsLens? { anchor.linked(anchor.owner.slot(Slots.Query_character_bca4f9)).map(SlotsLens.init(anchor:)) }
+
+        nonisolated public struct SitesLens: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Character"
+            @MainActor public var id: String? { anchor.string(Slots.Character_id) }
+            @MainActor public var testNotes: TestNotes_character {
+                let bound = anchor.binding(Sites.TestReservedNames_testNotes) { ["count": .int(1), "cursor": .null] }
+                return TestNotes_character(anchor: bound)
+            }
+        }
+
+        nonisolated public struct TypesLens: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Character"
+            @MainActor public var id: String? { anchor.string(Slots.Character_id) }
+        }
+
+        nonisolated public struct SlotsLens: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Character"
+            @MainActor public var id: String? { anchor.string(Slots.Character_id) }
+        }
+    }
+}
+
 /// Operation value for `query TestTwoScopes`.
 nonisolated public struct TestTwoScopes: Baton.Operation {
     public var a: String
