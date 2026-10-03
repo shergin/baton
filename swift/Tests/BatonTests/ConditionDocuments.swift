@@ -47,4 +47,15 @@ struct ConditionDocuments {
         }
         """)
     var twoSpreads: TestTwoSpreads
+
+    @Query("""
+        query TestNodeDeferred($id: ID!) {
+          node(id: $id) {
+            id
+            ... on Character { name }
+            ...TestAppearances_character @defer @alias(as: "appearances")
+          }
+        }
+        """)
+    var nodeDeferred: TestNodeDeferred
 }

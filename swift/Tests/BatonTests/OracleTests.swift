@@ -152,6 +152,23 @@ struct OracleTests {
         expectSame(Oracle.leaves(of: environment.store.root, plan: plan), expected, "after both parts")
     }
 
+    @Test("a deferred part under an abstract selection reads back as its record's own type")
+    func deferredPartOnAnAbstractSelection() async throws {
+        let first = fixture("node-deferred-1")
+        let second = fixture("node-deferred-2")
+        let environment = Environment(transport: Parts([first, second]))
+        environment.store.reportMissing = nil
+        let operation = TestNodeDeferred(id: "1")
+        try await environment.fetch(operation)
+
+        let plan = TestNodeDeferred.plan.resolve(operation.variables)
+        let expected = try Oracle.leaves(of: try Oracle.merging([second], into: first), plan: plan)
+        #expect(expected.contains { $0.path == "node.episode.1.air_date" })
+        expectSame(Oracle.leaves(of: environment.store.root, plan: plan), expected, "after both parts")
+        let data = try #require(TestNodeDeferred.Data(anchor: Anchor(record: environment.store.root, variables: operation.variables, store: environment.store)).node)
+        #expect(data.appearances?.testAppearances?.episode.map(\.name) == ["Pilot", "Lawnmower Dog"])
+    }
+
     /// Compares two leaf lists and names the first leaf where they part.
     func expectSame(_ actual: [Leaf], _ expected: [Leaf], _ stage: String, sourceLocation: SourceLocation = #_sourceLocation) {
         guard actual != expected else { return }

@@ -95,6 +95,107 @@ query TestConditions(
     }
 }
 
+/// Operation value for `query TestNodeDeferred`.
+nonisolated public struct TestNodeDeferred: Baton.Operation {
+    public var id: String
+    public var resolution: Baton.OperationHandle<Self>? = nil
+
+    public init(id: String) {
+        self.id = id
+    }
+
+    public static let name = "TestNodeDeferred"
+    public static let kind = Baton.OperationKind.query
+    public static let persistedID = "1703a24c13ec9d8c30b8e12f802ab40f"
+    public static let hasDeferred = true
+    public static let text = #"""
+query TestNodeDeferred(
+  $id: ID!
+) {
+  node(id: $id) {
+    __typename
+    id
+    ... on Character {
+      name
+    }
+    ...TestAppearances_character @defer(label: "TestNodeDeferred$defer$TestAppearances_character")
+  }
+}
+
+fragment TestAppearances_character on Character {
+  episode {
+    name
+    air_date
+    id
+  }
+}
+"""#
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["id": Baton.Variable(id)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+
+    public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
+            .linked("node", key: .dynamic([.literal("node(id:"), .variable("id"), .literal(")")]), plural: false, lookup: Baton.Lookup(type: nil, key: .variable("id")), selection: Baton.Selection(type: Types.Node, hasID: true, abstract: true, variants: [
+                .init(types: [Types.Character], fields: [
+                    .scalar("__typename", key: .fixed(Slots.Character___typename), kind: .string, list: false),
+                    .scalar("id", key: .fixed(Slots.Character_id), kind: .string, list: false),
+                    .scalar("name", key: .fixed(Slots.Character_name), kind: .string, list: false),
+                    .linked("episode", key: .fixed(Slots.Character_episode), plural: true, deferred: "TestNodeDeferred$defer$TestAppearances_character", selection: Baton.Selection(type: Types.Episode, hasID: true, abstract: false, fields: [
+                        .scalar("name", key: .fixed(Slots.Episode_name), kind: .string, list: false),
+                        .scalar("air_date", key: .fixed(Slots.Episode_air_date), kind: .string, list: false),
+                        .scalar("id", key: .fixed(Slots.Episode_id), kind: .string, list: false),
+                    ])),
+                ]),
+                .init(types: nil, fields: [
+                    .scalar("__typename", key: .fixed(Slots.Node___typename), kind: .string, list: false),
+                    .scalar("id", key: .fixed(Slots.Node_id), kind: .string, list: false),
+                ]),
+            ])),
+        ]))
+
+    nonisolated public struct Data: Baton.Lens {
+        public let anchor: Baton.Anchor
+        public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Query"
+        @MainActor public var node: Node? { anchor.linked(Slots.Query_node_8f7d08(anchor.variables), lookup: Baton.Lookup(type: nil, key: .variable("id"))).map(Node.init(anchor:)) }
+
+        nonisolated public struct Node: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Node"
+            @MainActor public var id: String? { anchor.string(key: "id") }
+            @MainActor public var asCharacter: AsCharacter? { anchor.record.is(Types.Character) ? AsCharacter(anchor: anchor) : nil }
+            @MainActor public var appearances: Appearances? { anchor.record.is(Types.Character) ? Appearances(anchor: anchor) : nil }
+
+            nonisolated public struct AsCharacter: Baton.Lens {
+                public let anchor: Baton.Anchor
+                public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                public static let typeName = "Character"
+                @MainActor public var name: String? { anchor.string(Slots.Character_name) }
+            }
+
+            nonisolated public struct Appearances: Baton.Lens {
+                public let anchor: Baton.Anchor
+                public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                public static let typeName = "Character"
+                @MainActor public var testAppearances: TestAppearances_character? {
+                    guard TestAppearances_character.isPresent(anchor) else { return nil }
+                    return TestAppearances_character(anchor: anchor)
+                }
+            }
+        }
+    }
+}
+
 /// Operation value for `query TestNodeFields`.
 nonisolated public struct TestNodeFields: Baton.Operation {
     public var id: String
