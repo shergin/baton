@@ -111,8 +111,12 @@ Relay. The store also indexes entities by id alone, for lookups without a
 type (`node(id:)`).
 
 **Storage key, slot.** Relay: a field name plus its serialized arguments,
-the key under which a value is stored. Here: interned by the compiler to an
-integer slot, so the runtime never hashes a name.
+the key under which a value is stored. Here: computed by the compiler and
+emitted as a constant; the process numbers each key on first use, and a
+record stores the value at that number, so a read through a constant hashes
+nothing. Resolving keys with variables, and fields read through an interface
+or union, once rather than on every read is *(planned)*. See
+[Slots are numbered by the process](decisions/slots-are-numbered-by-the-process.md).
 
 **Store.** Relay's word. All records, retained roots and lifetime state;
 owned by the main actor; read synchronously; written by atomic commits. See
