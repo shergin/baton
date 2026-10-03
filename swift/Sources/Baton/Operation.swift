@@ -474,9 +474,7 @@ public final class SubscriptionHandle<Op: Operation>: AnyOperationHandle {
             do {
                 for try await payload in environment.subscribe(operation) {
                     guard !Task.isCancelled else { return }
-                    let changes = try await Task.detached(priority: .userInitiated) { [resolved] in
-                        try Ingest.normalize(payload, plan: resolved, rootKey: Store.subscriptionRootKey)
-                    }.value
+                    let changes = try await Ingest.normalized(payload, plan: resolved, rootKey: Store.subscriptionRootKey)
                     store.commit(changes)
                     events += 1
                     latest = Op.Data(anchor: Anchor(record: store.subscriptionRoot, variables: operation.variables, store: store))

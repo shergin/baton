@@ -129,9 +129,10 @@ public final class Environment {
         let resolved = Op.plan.resolve(variables)
         if !Op.hasDeferred {
             let data = try await transport.execute(request)
-            let changes = try await Task.detached(priority: .userInitiated) {
-                try Ingest.normalize(data, plan: resolved)
-            }.value
+            let changes = try await Ingest.normalized(data, plan: resolved)
+            // A fetch superseded while its response was on the way or being
+            // read must not land after the one that replaced it.
+            try Task.checkCancellation()
             store.commit(changes)
             return changes.uncaughtFieldErrors
         }
@@ -141,9 +142,8 @@ public final class Environment {
         for try await part in transport.stream(request) {
             if first {
                 first = false
-                let changes = try await Task.detached(priority: .userInitiated) {
-                    try Ingest.normalize(part, plan: resolved)
-                }.value
+                let changes = try await Ingest.normalized(part, plan: resolved)
+                try Task.checkCancellation()
                 store.commit(changes)
                 uncaught.append(contentsOf: changes.uncaughtFieldErrors)
                 // The 2024 format announces the parts to come in the first one.
@@ -161,6 +161,7 @@ public final class Environment {
                       let deferred = selection.deferred(label)
                 else { continue }
                 let changes = try Ingest.normalizeObject(item.data, plan: deferred, rootKey: record.key)
+                try Task.checkCancellation()
                 store.commit(changes)
                 uncaught.append(contentsOf: changes.uncaughtFieldErrors)
             }
@@ -190,9 +191,9 @@ public final class Environment {
         let uncaught: [FieldError]
         do {
             let data = try await transport.execute(request(Op.self, variables: operation.variables))
-            let changes = try await Task.detached(priority: .userInitiated) {
-                try Ingest.normalize(data, plan: resolved, rootKey: Store.mutationRootKey)
-            }.value
+            // No cancellation check: the server has applied the mutation, and
+            // its payload commits whoever stopped waiting for it.
+            let changes = try await Ingest.normalized(data, plan: resolved, rootKey: Store.mutationRootKey)
             if let layer {
                 store.commit(changes, replacingOptimistic: layer)
             } else {

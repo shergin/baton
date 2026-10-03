@@ -157,6 +157,13 @@ public enum Ingest {
         return changes
     }
 
+    /// Normalizes a response off the caller's actor and inside the caller's
+    /// task, so the caller's cancellation and priority reach it.
+    @concurrent
+    nonisolated static func normalized(_ data: Data, plan: ResolvedSelection, rootKey: String = Store.rootKey) async throws -> ChangeSet {
+        try normalize(data, plan: plan, rootKey: rootKey)
+    }
+
     /// Normalizes one object, as a deferred part delivers it: the selection
     /// the part fills, at the record its path named.
     public static func normalizeObject(_ data: Data, plan: ResolvedSelection, rootKey: String) throws -> ChangeSet {

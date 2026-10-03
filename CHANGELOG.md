@@ -24,6 +24,11 @@ are expected and listed without apology.
   input object's keys were written unquoted and unsorted. Floats in keys are
   written as the runtime renders a variable. A lookup in `baton.json` whose
   argument the selection does not pass is a compile error.
+- A superseded fetch does not commit. A response that arrived, or was still
+  being read, after a refetch replaced its fetch landed after the newer one
+  when the transport did not hear the cancellation. Ingest now runs in the
+  fetch's own task, so cancellation and priority reach it; a mutation's
+  payload commits whoever stopped waiting, because the server applied it.
 - `refetch()` on an operation value and on its handle is `async throws`:
   a refetch that fails throws its error, and the data on screen stays. It
   was dropped before. Breaking: a call site needs `try`.

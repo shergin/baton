@@ -184,7 +184,7 @@ struct LifetimeTests {
         #expect(transport.requestCount == 2)
     }
 
-    @Test("a refetch during a fetch supersedes it: one fetch stays in flight and the handle follows it")
+    @Test("a refetch during a fetch supersedes it: one fetch stays in flight, the superseded response is not committed, and the handle follows the refetch")
     func refetchDuringAFetch() async throws {
         let transport = GatedTransport()
         let environment = Environment(transport: transport)
@@ -202,11 +202,15 @@ struct LifetimeTests {
         await until { transport.pending >= 2 }
 
         // The superseded fetch answers; this transport does not hear the
-        // cancellation. The handle keeps following the refetch.
+        // cancellation. Its response is not committed: the handle follows the
+        // refetch alone.
         let renamed = String(decoding: fixtureData, as: UTF8.self)
             .replacingOccurrences(of: "\"name\":\"Morty Smith\"", with: "\"name\":\"Morty C-137\"")
         transport.respond(Data(renamed.utf8))
-        await until { morty.name == "Morty C-137" }
+        // Long past the few milliseconds the response takes to read: had it
+        // been committed, it would be in the store by now.
+        try await Task.sleep(for: .milliseconds(200))
+        #expect(morty.name == "Morty Smith", "the superseded response did not land")
         #expect(handle.isRefreshing, "the refetch is still in flight")
 
         // Another attach finds that fetch and starts none of its own.
@@ -214,11 +218,13 @@ struct LifetimeTests {
         for _ in 0..<100 { await Task.yield() }
         #expect(transport.pending == 1)
 
-        transport.respond(fixtureData)
+        let refetched = String(decoding: fixtureData, as: UTF8.self)
+            .replacingOccurrences(of: "\"name\":\"Morty Smith\"", with: "\"name\":\"Morty Prime\"")
+        transport.respond(Data(refetched.utf8))
         try await refetch.value
         #expect(!handle.isRefreshing)
         #expect(transport.pending == 0)
-        #expect(morty.name == "Morty Smith")
+        #expect(morty.name == "Morty Prime", "the refetch's response did")
     }
 
     @Test("a refetch that changes nothing re-runs no body that reads the phase, and one that fails throws while the data stays")
