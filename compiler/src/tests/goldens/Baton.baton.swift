@@ -26,8 +26,10 @@ enum Types {
 
 /// Interned storage keys used by this module's documents.
 enum Slots {
+    static let AddNotePayload_note = Baton.Registry.slot(Types.AddNotePayload, "note")
     static let AddNotePayload_noteEdge = Baton.Registry.slot(Types.AddNotePayload, "noteEdge")
     static let Character___TestNotes_notes_connection = Baton.Registry.slot(Types.Character, "__TestNotes_notes_connection")
+    static let Character___TestRecentNotes_notes_connection = Baton.Registry.slot(Types.Character, "__TestRecentNotes_notes_connection")
     static let Character_created = Baton.Registry.slot(Types.Character, "created")
     static let Character_episode = Baton.Registry.slot(Types.Character, "episode")
     static let Character_favorite = Baton.Registry.slot(Types.Character, "favorite")
@@ -40,6 +42,7 @@ enum Slots {
         Baton.Registry.slot(Types.Character, "notes(after:null,first:" + variables.render("size") + ")")
     }
     static let Character_notes_4958eb = Baton.Registry.slot(Types.Character, "notes(after:null,first:2)")
+    static let Character_notes_94703e = Baton.Registry.slot(Types.Character, "notes(before:null,last:2)")
     static let Character_origin = Baton.Registry.slot(Types.Character, "origin")
     static let Character_species = Baton.Registry.slot(Types.Character, "species")
     static let Character_status = Baton.Registry.slot(Types.Character, "status")
@@ -75,11 +78,15 @@ enum Slots {
         Baton.Registry.slot(Types.Mutation, "setFavorite(favorite:" + variables.render("favorite") + ",id:" + variables.render("id") + ")")
     }
     static let Node___TestNotes_notes_connection = Baton.Registry.slot(Types.Node, "__TestNotes_notes_connection")
+    static let Node___TestRecentNotes_notes_connection = Baton.Registry.slot(Types.Node, "__TestRecentNotes_notes_connection")
     static let Node___typename = Baton.Registry.slot(Types.Node, "__typename")
     static let Node_id = Baton.Registry.slot(Types.Node, "id")
     static let Node_name = Baton.Registry.slot(Types.Node, "name")
     static func Node_notes_a9400e(_ variables: Baton.Variables) -> Baton.Slot {
         Baton.Registry.slot(Types.Node, "notes(after:" + variables.render("cursor") + ",first:" + variables.render("count") + ")")
+    }
+    static func Node_notes_d859b7(_ variables: Baton.Variables) -> Baton.Slot {
+        Baton.Registry.slot(Types.Node, "notes(before:" + variables.render("cursor") + ",last:" + variables.render("count") + ")")
     }
     static let Note___typename = Baton.Registry.slot(Types.Note, "__typename")
     static let Note_id = Baton.Registry.slot(Types.Note, "id")
@@ -92,6 +99,8 @@ enum Slots {
     static let NoteEdge_node = Baton.Registry.slot(Types.NoteEdge, "node")
     static let PageInfo_endCursor = Baton.Registry.slot(Types.PageInfo, "endCursor")
     static let PageInfo_hasNextPage = Baton.Registry.slot(Types.PageInfo, "hasNextPage")
+    static let PageInfo_hasPreviousPage = Baton.Registry.slot(Types.PageInfo, "hasPreviousPage")
+    static let PageInfo_startCursor = Baton.Registry.slot(Types.PageInfo, "startCursor")
     static func Query_character_bca4f9(_ variables: Baton.Variables) -> Baton.Slot {
         Baton.Registry.slot(Types.Query, "character(id:" + variables.render("id") + ")")
     }

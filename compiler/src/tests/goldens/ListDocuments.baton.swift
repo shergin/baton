@@ -61,6 +61,64 @@ public struct TestNotes_character: Baton.Lens {
     }
 }
 
+/// Lens for `fragment TestRecentNotes_character on Character`.
+public struct TestRecentNotes_character: Baton.Lens {
+    public let anchor: Baton.Anchor
+    public init(anchor: Baton.Anchor) { self.anchor = anchor }
+    public static let typeName = "Character"
+    @MainActor public var notes: Notes { Notes(anchor: anchor.requiredLinked(Slots.Character___TestRecentNotes_notes_connection, type: Types.NoteConnection)) }
+    @MainActor public var id: String? { anchor.string(Slots.Character_id) }
+    /// How the fragment is fetched again: `TestRecentNotesPaginationQuery` with the lens's variables.
+    public static let refetchable = Baton.Refetch(variables: ["count", "cursor", "id"], identifier: "id", first: nil, after: nil, last: "count", before: "cursor")
+    /// Fetches the fragment again through `TestRecentNotesPaginationQuery` with its current variables; the records update in place.
+    @MainActor public func refetch() async throws { try await anchor.refetch(TestRecentNotesPaginationQuery.self, TestRecentNotes_character.refetchable) }
+
+    public struct Notes: Baton.Lens {
+        public let anchor: Baton.Anchor
+        public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "NoteConnection"
+        @MainActor public var edges: Baton.List<Edges>? { anchor.list(Slots.NoteConnection_edges) }
+        @MainActor public var pageInfo: PageInfo { PageInfo(anchor: anchor.requiredLinked(Slots.NoteConnection_pageInfo, type: Types.PageInfo)) }
+        /// The connection's slots: edges, nodes, cursors and the page info, for the store's merge and the state below.
+        public static let connection = Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo)
+        /// The edges' nodes, in order, without nulls.
+        @MainActor public var nodes: [Edges.Node] { anchor.nodes(Self.connection).map(Edges.Node.init(anchor:)) }
+        /// Whether the server has edges after the last one, from the merged `pageInfo`.
+        @MainActor public var hasNext: Bool { anchor.hasNext(Self.connection) }
+        @MainActor public var hasPrevious: Bool { anchor.hasPrevious(Self.connection) }
+        @MainActor public var isLoadingNext: Bool { anchor.isLoadingNext(Self.connection) }
+        @MainActor public var isLoadingPrevious: Bool { anchor.isLoadingPrevious(Self.connection) }
+        /// Relay's connection id, for the `connections` argument of the edge directives.
+        @MainActor public var connectionID: String { anchor.record.key }
+        /// Fetches the previous `count` edges through `TestRecentNotesPaginationQuery` and prepends them; a no-op while loading or at the start.
+        @MainActor public func loadPrevious(_ count: Int = 2) async throws { try await anchor.loadPrevious(TestRecentNotesPaginationQuery.self, Self.connection, TestRecentNotes_character.refetchable, count: count) }
+
+        public struct Edges: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "NoteEdge"
+            @MainActor public var node: Node? { anchor.linked(Slots.NoteEdge_node).map(Node.init(anchor:)) }
+            @MainActor public var cursor: String { anchor.requiredString(Slots.NoteEdge_cursor) }
+
+            public struct Node: Baton.Lens {
+                public let anchor: Baton.Anchor
+                public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                public static let typeName = "Note"
+                @MainActor public var id: String? { anchor.string(Slots.Note_id) }
+                @MainActor public var text: String? { anchor.string(Slots.Note_text) }
+            }
+        }
+
+        public struct PageInfo: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "PageInfo"
+            @MainActor public var hasPreviousPage: Bool { anchor.requiredBool(Slots.PageInfo_hasPreviousPage) }
+            @MainActor public var startCursor: String? { anchor.string(Slots.PageInfo_startCursor) }
+        }
+    }
+}
+
 /// Operation value for `mutation TestAddNote`.
 public struct TestAddNote: Baton.Operation {
     public var characterId: String
@@ -374,6 +432,262 @@ extension Baton.MutationAction where Op == TestAddNoteFirst {
     @MainActor @discardableResult
     public func callAsFunction(characterId: String, text: String, connections: [String], optimistic: TestAddNoteFirst.OptimisticResponse? = nil) async throws -> TestAddNoteFirst.Data {
         try await commit(TestAddNoteFirst(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
+    }
+}
+
+/// Operation value for `mutation TestAddNoteNode`.
+public struct TestAddNoteNode: Baton.Operation {
+    public var characterId: String
+    public var text: String
+    public var connections: [String]
+    public var resolution: Baton.OperationHandle<Self>? = nil
+
+    public init(characterId: String, text: String, connections: [String]) {
+        self.characterId = characterId
+        self.text = text
+        self.connections = connections
+    }
+
+    public static let name = "TestAddNoteNode"
+    public static let kind = Baton.OperationKind.mutation
+    public static let persistedID = "357de83e8eff33b95dfd7673a6ba3df9"
+    public static let text = #"""
+mutation TestAddNoteNode(
+  $characterId: ID!
+  $text: String!
+) {
+  addNote(characterId: $characterId, text: $text) {
+    note {
+      id
+      text
+    }
+  }
+}
+"""#
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["characterId": Baton.Variable(characterId), "text": Baton.Variable(text), "connections": Baton.Variable(connections)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.characterId == rhs.characterId && lhs.text == rhs.text && lhs.connections == rhs.connections
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(characterId)
+        hasher.combine(text)
+        hasher.combine(connections)
+    }
+
+    public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
+            .linked("addNote", key: .dynamic([.literal("addNote(characterId:"), .variable("characterId"), .literal(",text:"), .variable("text"), .literal(")")]), plural: false, selection: Baton.Selection(type: Types.AddNotePayload, hasID: false, abstract: false, fields: [
+                .linked("note", key: .fixed(Slots.AddNotePayload_note), plural: false, handle: Baton.Handle(kind: .appendNode, connections: .variable("connections"), edgeType: Types.NoteEdge), selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                    .scalar("id", key: .fixed(Slots.Note_id), kind: .string, list: false),
+                    .scalar("text", key: .fixed(Slots.Note_text), kind: .string, list: false),
+                ])),
+            ])),
+        ]))
+
+    public struct Data: Baton.Lens {
+        public let anchor: Baton.Anchor
+        public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Mutation"
+        @MainActor public var addNote: AddNote? { anchor.linked(Slots.Mutation_addNote_14b07d(anchor.variables)).map(AddNote.init(anchor:)) }
+
+        public struct AddNote: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "AddNotePayload"
+            @MainActor public var note: Note? { anchor.linked(Slots.AddNotePayload_note).map(Note.init(anchor:)) }
+
+            public struct Note: Baton.Lens {
+                public let anchor: Baton.Anchor
+                public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                public static let typeName = "Note"
+                @MainActor public var id: String? { anchor.string(Slots.Note_id) }
+                @MainActor public var text: String? { anchor.string(Slots.Note_text) }
+            }
+        }
+    }
+
+    public typealias Action = Baton.MutationAction<Self>
+
+    /// A partial response to show before the server answers; absent fields leave the store untouched.
+    public struct OptimisticResponse: Sendable {
+        public var addNote: AddNote?
+        public init(addNote: AddNote? = nil) {
+            self.addNote = addNote
+        }
+        public var variable: Baton.Variable {
+            var fields: [String: Baton.Variable] = [:]
+            if let addNote { fields["addNote"] = addNote.variable }
+            return .object(fields)
+        }
+
+        /// A partial response to show before the server answers; absent fields leave the store untouched.
+        public struct AddNote: Sendable {
+            public var note: Note?
+            public init(note: Note? = nil) {
+                self.note = note
+            }
+            public var variable: Baton.Variable {
+                var fields: [String: Baton.Variable] = [:]
+                if let note { fields["note"] = note.variable }
+                return .object(fields)
+            }
+
+            /// A partial response to show before the server answers; absent fields leave the store untouched.
+            public struct Note: Sendable {
+                public var id: String?
+                public var text: String?
+                public init(id: String? = nil, text: String? = nil) {
+                    self.id = id
+                    self.text = text
+                }
+                public var variable: Baton.Variable {
+                    var fields: [String: Baton.Variable] = [:]
+                    if let id { fields["id"] = Baton.Variable(id) }
+                    if let text { fields["text"] = Baton.Variable(text) }
+                    return .object(fields)
+                }
+            }
+        }
+    }
+}
+
+extension Baton.MutationAction where Op == TestAddNoteNode {
+    /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
+    @MainActor @discardableResult
+    public func callAsFunction(characterId: String, text: String, connections: [String], optimistic: TestAddNoteNode.OptimisticResponse? = nil) async throws -> TestAddNoteNode.Data {
+        try await commit(TestAddNoteNode(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
+    }
+}
+
+/// Operation value for `mutation TestAddNoteNodeFirst`.
+public struct TestAddNoteNodeFirst: Baton.Operation {
+    public var characterId: String
+    public var text: String
+    public var connections: [String]
+    public var resolution: Baton.OperationHandle<Self>? = nil
+
+    public init(characterId: String, text: String, connections: [String]) {
+        self.characterId = characterId
+        self.text = text
+        self.connections = connections
+    }
+
+    public static let name = "TestAddNoteNodeFirst"
+    public static let kind = Baton.OperationKind.mutation
+    public static let persistedID = "f305c5381cda7e9235357eef859387d9"
+    public static let text = #"""
+mutation TestAddNoteNodeFirst(
+  $characterId: ID!
+  $text: String!
+) {
+  addNote(characterId: $characterId, text: $text) {
+    note {
+      id
+      text
+    }
+  }
+}
+"""#
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["characterId": Baton.Variable(characterId), "text": Baton.Variable(text), "connections": Baton.Variable(connections)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.characterId == rhs.characterId && lhs.text == rhs.text && lhs.connections == rhs.connections
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(characterId)
+        hasher.combine(text)
+        hasher.combine(connections)
+    }
+
+    public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
+            .linked("addNote", key: .dynamic([.literal("addNote(characterId:"), .variable("characterId"), .literal(",text:"), .variable("text"), .literal(")")]), plural: false, selection: Baton.Selection(type: Types.AddNotePayload, hasID: false, abstract: false, fields: [
+                .linked("note", key: .fixed(Slots.AddNotePayload_note), plural: false, handle: Baton.Handle(kind: .prependNode, connections: .variable("connections"), edgeType: Types.NoteEdge), selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                    .scalar("id", key: .fixed(Slots.Note_id), kind: .string, list: false),
+                    .scalar("text", key: .fixed(Slots.Note_text), kind: .string, list: false),
+                ])),
+            ])),
+        ]))
+
+    public struct Data: Baton.Lens {
+        public let anchor: Baton.Anchor
+        public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Mutation"
+        @MainActor public var addNote: AddNote? { anchor.linked(Slots.Mutation_addNote_14b07d(anchor.variables)).map(AddNote.init(anchor:)) }
+
+        public struct AddNote: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "AddNotePayload"
+            @MainActor public var note: Note? { anchor.linked(Slots.AddNotePayload_note).map(Note.init(anchor:)) }
+
+            public struct Note: Baton.Lens {
+                public let anchor: Baton.Anchor
+                public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                public static let typeName = "Note"
+                @MainActor public var id: String? { anchor.string(Slots.Note_id) }
+                @MainActor public var text: String? { anchor.string(Slots.Note_text) }
+            }
+        }
+    }
+
+    public typealias Action = Baton.MutationAction<Self>
+
+    /// A partial response to show before the server answers; absent fields leave the store untouched.
+    public struct OptimisticResponse: Sendable {
+        public var addNote: AddNote?
+        public init(addNote: AddNote? = nil) {
+            self.addNote = addNote
+        }
+        public var variable: Baton.Variable {
+            var fields: [String: Baton.Variable] = [:]
+            if let addNote { fields["addNote"] = addNote.variable }
+            return .object(fields)
+        }
+
+        /// A partial response to show before the server answers; absent fields leave the store untouched.
+        public struct AddNote: Sendable {
+            public var note: Note?
+            public init(note: Note? = nil) {
+                self.note = note
+            }
+            public var variable: Baton.Variable {
+                var fields: [String: Baton.Variable] = [:]
+                if let note { fields["note"] = note.variable }
+                return .object(fields)
+            }
+
+            /// A partial response to show before the server answers; absent fields leave the store untouched.
+            public struct Note: Sendable {
+                public var id: String?
+                public var text: String?
+                public init(id: String? = nil, text: String? = nil) {
+                    self.id = id
+                    self.text = text
+                }
+                public var variable: Baton.Variable {
+                    var fields: [String: Baton.Variable] = [:]
+                    if let id { fields["id"] = Baton.Variable(id) }
+                    if let text { fields["text"] = Baton.Variable(text) }
+                    return .object(fields)
+                }
+            }
+        }
+    }
+}
+
+extension Baton.MutationAction where Op == TestAddNoteNodeFirst {
+    /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
+    @MainActor @discardableResult
+    public func callAsFunction(characterId: String, text: String, connections: [String], optimistic: TestAddNoteNodeFirst.OptimisticResponse? = nil) async throws -> TestAddNoteNodeFirst.Data {
+        try await commit(TestAddNoteNodeFirst(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
     }
 }
 
@@ -737,6 +1051,199 @@ fragment TestNotes_character_2H9PL on Character {
             @MainActor public var testNotes: TestNotes_character {
                 let bound = anchor.binding(["count": anchor.variables["size"], "cursor": .null])
                 return TestNotes_character(anchor: bound)
+            }
+        }
+    }
+}
+
+/// Operation value for `query TestRecentNotesPaginationQuery`.
+public struct TestRecentNotesPaginationQuery: Baton.Operation {
+    public var count: Int?
+    public var cursor: String?
+    public var id: String
+    public var resolution: Baton.OperationHandle<Self>? = nil
+
+    public init(count: Int? = nil, cursor: String? = nil, id: String) {
+        self.count = count
+        self.cursor = cursor
+        self.id = id
+    }
+
+    public static let name = "TestRecentNotesPaginationQuery"
+    public static let kind = Baton.OperationKind.query
+    public static let persistedID = "1968a7fa8350f2d0c78f7540977995a5"
+    public static let text = #"""
+query TestRecentNotesPaginationQuery(
+  $count: Int = 2
+  $cursor: String
+  $id: ID!
+) {
+  node(id: $id) {
+    __typename
+    ...TestRecentNotes_character_1G22uz
+    id
+  }
+}
+
+fragment TestRecentNotes_character_1G22uz on Character {
+  notes(last: $count, before: $cursor) {
+    edges {
+      node {
+        id
+        text
+        __typename
+      }
+      cursor
+    }
+    pageInfo {
+      hasPreviousPage
+      startCursor
+    }
+  }
+  id
+}
+"""#
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["count": Baton.Variable(count), "cursor": Baton.Variable(cursor), "id": Baton.Variable(id)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.count == rhs.count && lhs.cursor == rhs.cursor && lhs.id == rhs.id
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(count)
+        hasher.combine(cursor)
+        hasher.combine(id)
+    }
+
+    public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
+            .linked("node", key: .dynamic([.literal("node(id:"), .variable("id"), .literal(")")]), plural: false, lookup: Baton.Lookup(type: nil, key: .variable("id")), selection: Baton.Selection(type: Types.Node, hasID: true, abstract: true, fields: [
+                .scalar("__typename", key: .fixed(Slots.Node___typename), kind: .string, list: false),
+                .scalar("id", key: .fixed(Slots.Node_id), kind: .string, list: false),
+                .linked("notes", key: .dynamic([.literal("notes(before:"), .variable("cursor"), .literal(",last:"), .variable("count"), .literal(")")]), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Node___TestRecentNotes_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo), before: .variable("cursor")), selection: Baton.Selection(type: Types.NoteConnection, hasID: false, abstract: false, fields: [
+                    .linked("edges", key: .fixed(Slots.NoteConnection_edges), plural: true, selection: Baton.Selection(type: Types.NoteEdge, hasID: false, abstract: false, fields: [
+                        .linked("node", key: .fixed(Slots.NoteEdge_node), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                            .scalar("id", key: .fixed(Slots.Note_id), kind: .string, list: false),
+                            .scalar("text", key: .fixed(Slots.Note_text), kind: .string, list: false),
+                            .scalar("__typename", key: .fixed(Slots.Note___typename), kind: .string, list: false),
+                        ])),
+                        .scalar("cursor", key: .fixed(Slots.NoteEdge_cursor), kind: .string, list: false),
+                    ])),
+                    .linked("pageInfo", key: .fixed(Slots.NoteConnection_pageInfo), plural: false, selection: Baton.Selection(type: Types.PageInfo, hasID: false, abstract: false, fields: [
+                        .scalar("hasPreviousPage", key: .fixed(Slots.PageInfo_hasPreviousPage), kind: .bool, list: false),
+                        .scalar("startCursor", key: .fixed(Slots.PageInfo_startCursor), kind: .string, list: false),
+                    ])),
+                ])),
+            ])),
+        ]))
+
+    public struct Data: Baton.Lens {
+        public let anchor: Baton.Anchor
+        public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Query"
+        @MainActor public var node: Node? { anchor.linked(Slots.Query_node_8f7d08(anchor.variables), lookup: Baton.Lookup(type: nil, key: .variable("id"))).map(Node.init(anchor:)) }
+
+        public struct Node: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Node"
+            @MainActor public var testRecentNotes: TestRecentNotes_character? {
+                let bound = anchor.binding(["count": anchor.variables["count"], "cursor": anchor.variables["cursor"]])
+                guard anchor.record.is(Types.Character) else { return nil }
+                return TestRecentNotes_character(anchor: bound)
+            }
+        }
+    }
+}
+
+/// Operation value for `query TestRecentNotesQuery`.
+public struct TestRecentNotesQuery: Baton.Operation {
+    public var id: String
+    public var resolution: Baton.OperationHandle<Self>? = nil
+
+    public init(id: String) {
+        self.id = id
+    }
+
+    public static let name = "TestRecentNotesQuery"
+    public static let kind = Baton.OperationKind.query
+    public static let persistedID = "e322c577573ae41444b924f8ee688008"
+    public static let text = #"""
+query TestRecentNotesQuery(
+  $id: ID!
+) {
+  character(id: $id) {
+    ...TestRecentNotes_character
+    id
+  }
+}
+
+fragment TestRecentNotes_character on Character {
+  notes(last: 2) {
+    edges {
+      node {
+        id
+        text
+        __typename
+      }
+      cursor
+    }
+    pageInfo {
+      hasPreviousPage
+      startCursor
+    }
+  }
+  id
+}
+"""#
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["id": Baton.Variable(id)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+
+    public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
+            .linked("character", key: .dynamic([.literal("character(id:"), .variable("id"), .literal(")")]), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                .linked("notes", key: .fixed(Slots.Character_notes_94703e), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character___TestRecentNotes_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo)), selection: Baton.Selection(type: Types.NoteConnection, hasID: false, abstract: false, fields: [
+                    .linked("edges", key: .fixed(Slots.NoteConnection_edges), plural: true, selection: Baton.Selection(type: Types.NoteEdge, hasID: false, abstract: false, fields: [
+                        .linked("node", key: .fixed(Slots.NoteEdge_node), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                            .scalar("id", key: .fixed(Slots.Note_id), kind: .string, list: false),
+                            .scalar("text", key: .fixed(Slots.Note_text), kind: .string, list: false),
+                            .scalar("__typename", key: .fixed(Slots.Note___typename), kind: .string, list: false),
+                        ])),
+                        .scalar("cursor", key: .fixed(Slots.NoteEdge_cursor), kind: .string, list: false),
+                    ])),
+                    .linked("pageInfo", key: .fixed(Slots.NoteConnection_pageInfo), plural: false, selection: Baton.Selection(type: Types.PageInfo, hasID: false, abstract: false, fields: [
+                        .scalar("hasPreviousPage", key: .fixed(Slots.PageInfo_hasPreviousPage), kind: .bool, list: false),
+                        .scalar("startCursor", key: .fixed(Slots.PageInfo_startCursor), kind: .string, list: false),
+                    ])),
+                ])),
+                .scalar("id", key: .fixed(Slots.Character_id), kind: .string, list: false),
+            ])),
+        ]))
+
+    public struct Data: Baton.Lens {
+        public let anchor: Baton.Anchor
+        public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Query"
+        @MainActor public var character: Character? { anchor.linked(Slots.Query_character_bca4f9(anchor.variables), lookup: Baton.Lookup(type: Types.Character, key: .variable("id"))).map(Character.init(anchor:)) }
+
+        public struct Character: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Character"
+            @MainActor public var testRecentNotes: TestRecentNotes_character {
+                let bound = anchor.binding(["count": .int(2), "cursor": .null])
+                return TestRecentNotes_character(anchor: bound)
             }
         }
     }

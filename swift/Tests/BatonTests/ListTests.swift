@@ -212,6 +212,87 @@ struct ListTests {
         #expect(character.notes.edges?.count == 1)
     }
 
+    @Test("loadPrevious fetches before the start cursor, prepends, and is a no-op at the start")
+    func loadPrevious() async throws {
+        let transport = RecordedTransport { request in
+            if request.operationName == TestRecentNotesQuery.name { return fixture("recent-notes-page-1") }
+            switch request.variables["cursor"] {
+            case .string("c4")?: return fixture("recent-notes-page-2")
+            case .string("c2")?: return fixture("recent-notes-page-3")
+            default: return nil
+            }
+        }
+        let environment = Environment(transport: transport)
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestRecentNotesQuery(id: "1"))
+        handle.retain()
+        await handle.settle()
+        guard case .ready(let data) = handle.phase else { throw TransportError(statusCode: 0, body: "the last page did not arrive") }
+        let notes = try #require(data.character?.testRecentNotes.notes)
+        #expect(notes.nodes.map(\.id) == ["n4", "n5"])
+        #expect(notes.hasPrevious)
+
+        try await notes.loadPrevious()
+        #expect(transport.requests.last?.operationName == "TestRecentNotesPaginationQuery")
+        #expect(transport.requests.last?.variables["cursor"] == .string("c4"))
+        #expect(transport.requests.last?.variables["count"] == .int(2))
+        #expect(transport.requests.last?.variables["id"] == .string("1"))
+        #expect(notes.nodes.map(\.id) == ["n2", "n3", "n4", "n5"], "the earlier page goes in front")
+        #expect(!notes.isLoadingPrevious)
+
+        try await notes.loadPrevious(1)
+        #expect(transport.requests.last?.variables["count"] == .int(1))
+        #expect(notes.nodes.map(\.id) == ["n1", "n2", "n3", "n4", "n5"])
+        #expect(!notes.hasPrevious)
+
+        try await notes.loadPrevious()
+        #expect(transport.requestCount == 3, "nothing before the start")
+    }
+
+    @Test("@appendNode and @prependNode wrap the payload's node in an edge of the connection named by the variable")
+    func nodeDirectives() async throws {
+        let (environment, character) = try await seededEnvironment()
+        let connections = [character.notes.connectionID]
+        let (fired, track) = counter { _ = character.notes.nodes }
+
+        track()
+        let appended = TestAddNoteNode(characterId: "1", text: "Node appended", connections: connections)
+        environment.store.commit(try Ingest.normalize(fixture("add-note-node-n7"), plan: TestAddNoteNode.plan.resolve(appended.variables), rootKey: Store.mutationRootKey))
+        #expect(character.notes.nodes.map(\.text) == ["Wubba lubba dub dub", "Portal gun needs charging", "Node appended"])
+        #expect(fired() == 1)
+        #expect(character.notes.edges?.last?.cursor == "", "the edge the store made has no cursor")
+
+        let prepended = TestAddNoteNodeFirst(characterId: "1", text: "Node first", connections: connections)
+        environment.store.commit(try Ingest.normalize(fixture("add-note-node-n0"), plan: TestAddNoteNodeFirst.plan.resolve(prepended.variables), rootKey: Store.mutationRootKey))
+        #expect(character.notes.nodes.map(\.text) == ["Node first", "Wubba lubba dub dub", "Portal gun needs charging", "Node appended"])
+
+        // The same node again is not wrapped twice.
+        environment.store.commit(try Ingest.normalize(fixture("add-note-node-n7"), plan: TestAddNoteNode.plan.resolve(appended.variables), rootKey: Store.mutationRootKey))
+        #expect(character.notes.nodes.count == 4)
+    }
+
+    @Test("refetch fetches the fragment again with its variables and the owner's id, and the records update in place")
+    func refetch() async throws {
+        let transport = RecordedTransport { request in
+            request.operationName == TestNotesQuery.name ? notesPage(1) : fixture("notes-refetch")
+        }
+        let (environment, character) = try await seededEnvironment(transport)
+        let first = try #require(character.notes.nodes.first)
+        #expect(first.text == "Wubba lubba dub dub")
+        let (fired, track) = counter { _ = first.text }
+        track()
+
+        try await character.refetch()
+        let request = try #require(transport.requests.last)
+        #expect(request.operationName == "TestNotesPaginationQuery")
+        #expect(request.variables["id"] == .string("1"))
+        #expect(request.variables["count"] == .int(2))
+        #expect(first.text == "Wubba lubba dub dub!", "the lens over the same record reads the new value")
+        #expect(fired() == 1)
+        #expect(character.notes.nodes.count == 2)
+        #expect(environment.rootCount == 1, "the refetch is no root of its own")
+    }
+
     @Test("a spread with @arguments binds the fragment's variables; a spread without them takes the defaults")
     func fragmentArguments() async throws {
         let store = Store()

@@ -1,5 +1,6 @@
 import Baton
 import Foundation
+import SwiftUI
 import Testing
 
 /// A second page of the fixture: the same shape, every id shifted so the
@@ -16,6 +17,28 @@ func shiftedFixture(by offset: Int) -> Data {
         location = match.range.location + replacement.utf16.count
     }
     return Data((mutable as String).utf8)
+}
+
+/// Counts the requests a transport has answered, across threads.
+final class Attempts: @unchecked Sendable {
+    private let lock = NSLock()
+    private var count = 0
+
+    /// The number of this attempt, from 1.
+    func next() -> Int { lock.withLock { count += 1; return count } }
+}
+
+/// A view holding an operation's storage, as a `@Query` property expands to.
+struct StorageProbe: View {
+    let storage: OperationStorage<TestHeaderQuery>
+
+    var body: some View {
+        if case .ready(let data) = storage.resolved.phase {
+            Text(data.character?.testHeader.name ?? "")
+        } else {
+            Text("loading")
+        }
+    }
 }
 
 @MainActor
@@ -211,9 +234,48 @@ struct LifetimeTests {
         #expect(transport.requestCount == 1)
     }
 
+    @Test("retry after a failure fetches again and the handle becomes ready")
+    func retry() async {
+        let attempts = Attempts()
+        let transport = RecordedTransport { _ in attempts.next() == 1 ? nil : fixtureData }
+        let environment = Environment(transport: transport)
+        let handle = environment.handle(for: TestList(page: 1))
+        handle.retain()
+        await handle.settle()
+        guard case .failed = handle.phase else { Issue.record("expected the first fetch to fail, got \(handle.phase)"); return }
+
+        handle.retry()
+        guard case .loading = handle.phase else { Issue.record("a retry shows loading, got \(handle.phase)"); return }
+        await handle.settle()
+        guard case .ready(let data) = handle.phase else { Issue.record("expected ready after the retry, got \(handle.phase)"); return }
+        #expect(data.characters?.results?.first?.testRow.name == "Rick Sanchez")
+        #expect(transport.requestCount == 2)
+    }
+
+    @Test("a view's storage retains its handle while the view lives and releases it when the view goes away")
+    func storageLifetime() async throws {
+        let environment = Environment(transport: SilentTransport())
+        environment.releaseBufferSize = 0
+        environment.store.reportMissing = nil
+        environment.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
+        // The renderer installs the view's state, runs the storage's update
+        // and draws once; the pool lets its view graph go when it ends.
+        autoreleasepool {
+            let probe = StorageProbe(storage: OperationStorage(TestHeaderQuery(id: "1"), fetchPolicy: .storeOnly))
+            let renderer = ImageRenderer(content: probe.environment(\.baton, environment))
+            #expect(renderer.cgImage != nil)
+            #expect(environment.handle(for: TestHeaderQuery(id: "1"), fetchPolicy: .storeOnly).retainCount == 1, "the storage retained the handle it resolved")
+        }
+
+        let handle = environment.handle(for: TestHeaderQuery(id: "1"), fetchPolicy: .storeOnly)
+        guard case .ready = handle.phase else { Issue.record("expected ready from the store, got \(handle.phase)"); return }
+        await until { handle.retainCount == 0 }
+        #expect(environment.rootCount == 0, "released with an empty buffer, the handle is no root")
+    }
+
     @Test("a handle released after its environment is gone does nothing")
     func releaseAfterTheEnvironment() {
-        var environment: Environment? = Environment(transport: SilentTransport())
+        var environment: Baton.Environment? = Baton.Environment(transport: SilentTransport())
         let handle = environment!.handle(for: TestList(page: 1), fetchPolicy: .storeOnly)
         let subscription = environment!.subscriptionHandle(for: TestNoteAdded(characterId: "1", connections: []))
         handle.retain()

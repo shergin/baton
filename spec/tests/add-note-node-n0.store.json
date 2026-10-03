@@ -1,0 +1,7 @@
+{
+  "Note:n0": {"__typename": "Note", "id": "n0", "text": "Node first"},
+  "client:root": {"__typename": "Query"},
+  "client:root:mutation": {"__typename": "Mutation", "addNote(characterId:\"1\",text:\"Node first\")": {"__ref": "client:root:mutation:addNote(characterId:\"1\",text:\"Node first\")"}},
+  "client:root:mutation:addNote(characterId:\"1\",text:\"Node first\")": {"__typename": "AddNotePayload", "note": {"__ref": "Note:n0"}},
+  "client:root:subscription": {"__typename": "Subscription"}
+}
