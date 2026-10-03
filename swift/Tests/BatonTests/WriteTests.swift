@@ -78,7 +78,7 @@ struct WriteTests {
         while transport.pending == 0 { await Task.yield() }
         #expect(rick.favorite == true)
 
-        transport.respond(Data(#"{"data":{"setFavorite":{"character":{"id":"1","name":"Rick Sanchez","favorite":true}}}}"#.utf8))
+        transport.respond(fixture("set-favorite-1"))
         let data = try await mutation.value
         #expect(data.setFavorite?.character?.favorite == true)
         #expect(data.setFavorite?.character?.name == "Rick Sanchez")
@@ -109,7 +109,7 @@ struct WriteTests {
         #expect(changed == 1, "only Morty's name changed in the end")
 
         // The mutation's own answer replaces the layer; nothing visible changes.
-        let answer = Data(#"{"data":{"rename":{"character":{"id":"1","name":"Rick Prime"}}}}"#.utf8)
+        let answer = fixture("rename-1")
         let net = store.commit(try Ingest.normalize(answer, plan: TestRename.plan.resolve(rename.variables), rootKey: Store.mutationRootKey), replacingOptimistic: layer)
         #expect(net == 0)
         #expect(rick.name == "Rick Prime")
@@ -132,7 +132,7 @@ struct WriteTests {
         #expect(counter.fired == 1, "the apply changed the name")
 
         track()
-        let answer = Data(#"{"data":{"rename":{"character":{"id":"1","name":"Rick Prime"}}}}"#.utf8)
+        let answer = fixture("rename-1")
         store.commit(try Ingest.normalize(answer, plan: TestRename.plan.resolve(rename.variables), rootKey: Store.mutationRootKey), replacingOptimistic: first)
         #expect(counter.fired == 1, "the answer agreed with the layer: no notification")
 
@@ -149,13 +149,7 @@ struct WriteTests {
     @Test("objects behind a union are keyed by their concrete type, whichever order the typename arrives in")
     func abstractObjectsKeyByTypename() throws {
         let store = Store()
-        let payload = Data(#"""
-        {"data":{"search":[
-          {"__typename":"Character","id":"1","name":"Rick Sanchez"},
-          {"id":"1","name":"Earth (C-137)","dimension":"Dimension C-137","__typename":"Location"},
-          {"__typename":"Episode","id":"1","name":"Pilot"}
-        ]}}
-        """#.utf8)
+        let payload = fixture("search-1")
         let variables = TestSearch(name: "1").variables
         store.commit(try Ingest.normalize(payload, plan: TestSearch.plan.resolve(variables)))
 
@@ -176,12 +170,7 @@ struct WriteTests {
     @Test("an object behind a union is keyed by its type and id when both arrive after a link")
     func abstractIdentityArrivesAfterALink() throws {
         let store = Store()
-        let payload = Data(#"""
-        {"data":{"search":[
-          {"origin":{"name":"Earth (C-137)","id":"1"},"__typename":"Character","id":"1"},
-          {"origin":null,"id":"2","__typename":"Character"}
-        ]}}
-        """#.utf8)
+        let payload = fixture("search-origins-1")
         let variables = TestSearchOrigins(name: "1").variables
         store.commit(try Ingest.normalize(payload, plan: TestSearchOrigins.plan.resolve(variables)))
 
@@ -200,7 +189,7 @@ struct WriteTests {
     func nodeLookup() throws {
         let store = Store()
         store.reportMissing = nil
-        let list = Data(#"{"data":{"characters":{"results":[{"id":"7","name":"Abradolf Lincler"},{"id":"8","name":"Adjudicator Rick"}]}}}"#.utf8)
+        let list = fixture("characters-7-8")
         store.commit(try Ingest.normalize(list, plan: TestList.plan.resolve(TestList(page: 1).variables)))
 
         let variables = TestNode(id: "8").variables

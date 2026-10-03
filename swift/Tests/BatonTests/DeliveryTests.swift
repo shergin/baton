@@ -3,12 +3,6 @@ import Foundation
 import Observation
 import Testing
 
-/// A recorded response or part, by file name.
-func fixture(_ name: String) -> Data {
-    let url = Bundle.module.url(forResource: name, withExtension: "json", subdirectory: "Fixtures")!
-    return try! Data(contentsOf: url)
-}
-
 @MainActor
 @Suite("Delivery")
 struct DeliveryTests {
@@ -190,8 +184,7 @@ struct DeliveryTests {
         #expect(strict.species == "Human")
 
         // An operation with @throwOnFieldError fails on an uncaught error inside its selection.
-        let hidden = Data(#"{"data":{"character":{"id":"1","name":null,"species":"Human"}},"errors":[{"message":"name hidden","path":["character","name"]}]}"#.utf8)
-        let failing = Environment(transport: OneResponse(hidden))
+        let failing = Environment(transport: OneResponse(fixture("character-name-hidden")))
         failing.store.reportMissing = nil
         let handle = failing.handle(for: TestStrictQuery(id: "1"))
         handle.retain()
@@ -217,7 +210,7 @@ struct DeliveryTests {
 
     @Test("a response with errors and no data fails the fetch with the messages")
     func requestErrors() async throws {
-        let environment = Environment(transport: OneResponse(Data(#"{"data":null,"errors":[{"message":"not authorized"}]}"#.utf8)))
+        let environment = Environment(transport: OneResponse(fixture("not-authorized")))
         let handle = environment.handle(for: TestProfileQuery(id: "1"))
         handle.retain()
         await handle.settle()

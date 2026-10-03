@@ -2,6 +2,7 @@
 //
 //   swift run -c release BatonBenchmarks
 import Baton
+import BatonSpec
 import Foundation
 import Observation
 
@@ -80,8 +81,7 @@ func measure(_ label: String, iterations: Int = 20, ops: Int = 1, _ body: () -> 
 
 @MainActor
 func run() async throws {
-    let fixtureURL = URL(fileURLWithPath: "spec/rickandmorty/characters-page-1.json")
-    let data = try Data(contentsOf: fixtureURL)
+    let data = Spec.data("rickandmorty/characters-page-1.json")
     let variables = BenchFixture(page: 1).variables
     let plan = BenchFixture.plan.resolve(variables)
     print("Baton benchmarks — fixture \(data.count) bytes, \(ProcessInfo.processInfo.operatingSystemVersionString)")

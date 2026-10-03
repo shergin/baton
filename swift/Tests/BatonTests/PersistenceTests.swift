@@ -129,7 +129,7 @@ struct PersistenceTests {
         let before = try stored(Fixture(page: 1), in: second)
         #expect(before.characters?.results?[0].name == "Rick Sanchez", "the layer was never written")
         #expect(before.characters?.results?[0].status == "Busy", "the commit under it was")
-        let answer = Data(#"{"data":{"rename":{"character":{"id":"1","name":"Rick Prime"}}}}"#.utf8)
+        let answer = fixture("rename-1")
         second.store.commit(try Ingest.normalize(answer, plan: TestRename.plan.resolve(rename.variables), rootKey: Store.mutationRootKey))
         await finish(second)
 
@@ -174,7 +174,7 @@ struct PersistenceTests {
         #expect(notes.nodes.count == 4)
         // A removal: the edge leaves the connection, the record is deleted.
         let removal = TestRemoveNote(id: "n2", connections: [notes.connectionID])
-        let payload = Data(#"{"data":{"removeNote":{"removedNoteId":"n2","deleted":"n2"}}}"#.utf8)
+        let payload = fixture("remove-note-n2")
         first.store.commit(try Ingest.normalize(payload, plan: TestRemoveNote.plan.resolve(removal.variables), rootKey: Store.mutationRootKey))
         await finish(first)
 

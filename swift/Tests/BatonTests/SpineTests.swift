@@ -1,13 +1,8 @@
 import Baton
+import BatonSpec
 import Foundation
 import Observation
 import Testing
-
-/// The recorded response for `Fixture(page: 1)`.
-let fixtureData: Data = {
-    let url = Bundle.module.url(forResource: "characters-page-1", withExtension: "json", subdirectory: "Fixtures")!
-    return try! Data(contentsOf: url)
-}()
 
 @MainActor
 @Suite("The vertical spine")
@@ -133,7 +128,7 @@ struct SpineTests {
         // the one Relay adds, after the `episode` link, and the server sends
         // it there.
         let episodes = TestEpisodesQuery(id: "9")
-        store.commit(try Ingest.normalize(fixture("character-episodes-9"), plan: TestEpisodesQuery.plan.resolve(episodes.variables)))
+        store.commit(try Ingest.normalize(Spec.data("rickandmorty/character-episodes-9.json"), plan: TestEpisodesQuery.plan.resolve(episodes.variables)))
         let character = try #require(data.character)
         #expect(character.recordID.key == "Character:9")
         #expect(store.existing(#"client:root:character(id:"9")"#) == nil, "no second record for the same entity")
@@ -147,7 +142,7 @@ struct SpineTests {
         // The header's own response carries the `id` last as well: it lands on
         // the same records and changes nothing.
         let count = store.count
-        let changed = store.commit(try Ingest.normalize(fixture("character-header-9"), plan: TestHeaderQuery.plan.resolve(header.variables)))
+        let changed = store.commit(try Ingest.normalize(Spec.data("rickandmorty/character-header-9.json"), plan: TestHeaderQuery.plan.resolve(header.variables)))
         #expect(changed == 0)
         #expect(store.count == count)
     }

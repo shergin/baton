@@ -37,11 +37,17 @@ let package = Package(
             dependencies: ["batonc"],
             path: "swift/Plugins/BatonPlugin"
         ),
+        // The fixtures under `spec/`, read in place by the tests and the
+        // benchmarks.
+        .target(
+            name: "BatonSpec",
+            path: "swift/Spec",
+            swiftSettings: [.swiftLanguageMode(.v6)]
+        ),
         .testTarget(
             name: "BatonTests",
-            dependencies: ["Baton"],
+            dependencies: ["Baton", "BatonSpec"],
             path: "swift/Tests/BatonTests",
-            resources: [.copy("Fixtures")],
             swiftSettings: [.swiftLanguageMode(.v6)],
             plugins: ["BatonPlugin"]
         ),
@@ -63,7 +69,7 @@ let package = Package(
         ),
         .executableTarget(
             name: "BatonBenchmarks",
-            dependencies: ["Baton"],
+            dependencies: ["Baton", "BatonSpec"],
             path: "swift/Benchmarks",
             swiftSettings: [.swiftLanguageMode(.v6)],
             plugins: ["BatonPlugin"]

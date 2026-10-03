@@ -3,12 +3,6 @@ import Foundation
 import Observation
 import Testing
 
-/// A recorded page of the notes connection, by file name.
-func notesPage(_ number: Int) -> Data {
-    let url = Bundle.module.url(forResource: "notes-page-\(number)", withExtension: "json", subdirectory: "Fixtures")!
-    return try! Data(contentsOf: url)
-}
-
 @MainActor
 @Suite("Lists")
 struct ListTests {
@@ -150,13 +144,13 @@ struct ListTests {
 
         track()
         let appended = TestAddNote(characterId: "1", text: "Appended", connections: connections)
-        let payload = Data(#"{"data":{"addNote":{"noteEdge":{"cursor":"c9","node":{"id":"n9","text":"Appended"}}}}}"#.utf8)
+        let payload = fixture("add-note-n9")
         environment.store.commit(try Ingest.normalize(payload, plan: TestAddNote.plan.resolve(appended.variables), rootKey: Store.mutationRootKey))
         #expect(character.notes.nodes.map(\.text) == ["Wubba lubba dub dub", "Portal gun needs charging", "Appended"])
         #expect(fired() == 1)
 
         let prepended = TestAddNoteFirst(characterId: "1", text: "First", connections: connections)
-        let first = Data(#"{"data":{"addNote":{"noteEdge":{"cursor":"c0","node":{"id":"n0","text":"First"}}}}}"#.utf8)
+        let first = fixture("add-note-n0")
         environment.store.commit(try Ingest.normalize(first, plan: TestAddNoteFirst.plan.resolve(prepended.variables), rootKey: Store.mutationRootKey))
         #expect(character.notes.nodes.map(\.text) == ["First", "Wubba lubba dub dub", "Portal gun needs charging", "Appended"])
 
@@ -182,7 +176,7 @@ struct ListTests {
         environment.store.commit(try Ingest.normalize(notesPage(2), plan: TestNotesPaginationQuery.plan.resolve(variables)))
         #expect(character.notes.nodes.map(\.text) == ["Wubba lubba dub dub", "Portal gun needs charging", "Get Schwifty", "Avoid the Citadel", "Pending"])
 
-        gate.respond(Data(#"{"data":{"addNote":{"noteEdge":{"cursor":"c9","node":{"id":"n9","text":"Pending"}}}}}"#.utf8))
+        gate.respond(fixture("add-note-n9-pending"))
         _ = try await mutation.value
         #expect(character.notes.nodes.map(\.text) == ["Wubba lubba dub dub", "Portal gun needs charging", "Get Schwifty", "Avoid the Citadel", "Pending"])
         #expect(character.notes.nodes.last?.id == "n9")
@@ -206,7 +200,7 @@ struct ListTests {
 
         track()
         let removal = TestRemoveNote(id: "n2", connections: [character.notes.connectionID])
-        let payload = Data(#"{"data":{"removeNote":{"removedNoteId":"n2","deleted":"n2"}}}"#.utf8)
+        let payload = fixture("remove-note-n2")
         environment.store.commit(try Ingest.normalize(payload, plan: TestRemoveNote.plan.resolve(removal.variables), rootKey: Store.mutationRootKey))
         #expect(character.notes.nodes.map(\.text) == ["Wubba lubba dub dub"])
         #expect(fired() == 1, "the deleted record's observer was told")

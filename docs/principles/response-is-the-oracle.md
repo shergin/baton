@@ -54,6 +54,12 @@ value to give.
 
 ## Spelled today
 
-Nothing is spelled yet. Planned: `spec/` with fixtures, a `ReferenceReader`
-in the test target only, and conformance tests that every runtime runs.
+`spec/` holds the schemas and the recorded responses, read in place by the
+Swift tests and benchmarks through `BatonSpec`. The reference reader is
+`Oracle` in the test target only: it walks a response's JSON, as
+`JSONSerialization` reads it, and the store's records by the same resolved
+plan, and `OracleTests` requires the two to yield the same leaves for every
+response in `spec/`, after the commit, from the image in a second store, and
+under an optimistic layer that overrides one leaf. Planned: expected store
+contents beside the responses, and the same files run by the Kotlin runtime.
 This section may rot; the rest must not.
