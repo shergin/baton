@@ -43,6 +43,18 @@ are expected and listed without apology.
   condition does not select; `totalCount @include(if: $x)` read 0 and
   reported missing data. A field selected twice, or a fragment spread
   twice, emits one accessor: the file did not compile.
+- Identity is the key alone. The store indexed entities by bare id as well,
+  last created wins across types, and `@deleteRecord`, `@deleteEdge` and
+  lookups without a type resolved through it: in the Rick and Morty data
+  `Character:1`, `Location:1` and `Episode:1` coexist, and the index named
+  the episode. The index is gone. `@deleteRecord` deletes the one live
+  record of any type with the id, and when several types have it deletes
+  nothing and calls the new `Store.reportAmbiguousIdentity` (debug builds
+  print); `@deleteEdge` drops the edges whose node has the id; a lookup
+  without a type probes the field's possible types with the same rule. A
+  lookup the image cannot answer no longer leaves an empty record behind.
+  `Store.existing(id:)` is removed. An interface is keyed by id when the
+  types that implement it have one, as a union is.
 - A superseded fetch does not commit. A response that arrived, or was still
   being read, after a refetch replaced its fetch landed after the newer one
   when the transport did not hear the cancellation. Ingest now runs in the

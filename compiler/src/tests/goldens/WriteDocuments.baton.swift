@@ -55,7 +55,7 @@ query TestNode(
     }
 
     public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("node", key: .dynamic([.literal("node(id:"), .variable("id"), .literal(")")]), plural: false, lookup: Baton.Lookup(type: nil, key: .variable("id")), selection: Baton.Selection(type: Types.Node, hasID: true, abstract: true, variants: [
+            .linked("node", key: .dynamic([.literal("node(id:"), .variable("id"), .literal(")")]), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, hasID: true, abstract: true, variants: [
                 .init(types: [Types.Character, Types.Episode], fields: [
                     .scalar("__typename", key: .fixed(Slots.Node___typename), kind: .string, list: false),
                     .scalar("id", key: .fixed(Slots.Node_id), kind: .string, list: false),
@@ -72,7 +72,7 @@ query TestNode(
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Query"
-        @MainActor public var node: Node? { anchor.linked(Slots.Query_node_8f7d08(anchor.variables), lookup: Baton.Lookup(type: nil, key: .variable("id"))).map(Node.init(anchor:)) }
+        @MainActor public var node: Node? { anchor.linked(Slots.Query_node_8f7d08(anchor.variables), lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id"))).map(Node.init(anchor:)) }
 
         nonisolated public struct Node: Baton.Lens {
             public let anchor: Baton.Anchor

@@ -56,6 +56,11 @@ public enum Registry {
         state.withLock { $0.typeNames[Int(type.raw)] }
     }
 
+    /// Every type interned so far, by name.
+    static func typeNames() -> [String] {
+        state.withLock { $0.typeNames }
+    }
+
     public static func storageKey(_ slot: Slot) -> String {
         state.withLock { $0.slotKeys[Int(slot.type.raw)][Int(slot.index)] }
     }

@@ -25,6 +25,8 @@ nonisolated enum Types {
     static let Tokenizer = Baton.Registry.type("Tokenizer")
     /// The types that satisfy `... on Named`.
     static let Named_possible: Set<Baton.TypeID> = [Types.Character, Types.Location]
+    /// The types that satisfy `... on Node`.
+    static let Node_possible: Set<Baton.TypeID> = [Types.Character, Types.Episode, Types.Location, Types.Note]
 }
 
 /// Interned storage keys used by this module's documents.

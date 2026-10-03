@@ -412,7 +412,7 @@ final class Disk: @unchecked Sendable {
         // their own and are written as themselves.
         if record.key.hasPrefix(Disk.mutationPayloads) || record.key.hasPrefix(Disk.subscriptionPayloads) { return true }
         scratch.removeAll(keepingCapacity: true)
-        scratch.append((snapshot.deleted ? 1 : 0) | (record.entityID != nil ? 2 : 0))
+        scratch.append((snapshot.deleted ? 1 : 0) | (record.isEntity ? 2 : 0))
         append(varint: UInt64(name(of: record.type)))
         for index in snapshot.values.indices {
             if case .missing = snapshot.values[index] { continue }
@@ -526,7 +526,7 @@ final class Disk: @unchecked Sendable {
             scratch.append(0)
             return
         }
-        append(varint: UInt64(name(of: target.type) + 1) << 1 | (target.entityID != nil ? 1 : 0))
+        append(varint: UInt64(name(of: target.type) + 1) << 1 | (target.isEntity ? 1 : 0))
         append(target.key)
     }
 

@@ -203,6 +203,19 @@ struct PersistenceTests {
         #expect(second.store.hydratedRecords == 2, "the character and its origin, not the list")
     }
 
+    @Test("a lookup the image cannot answer leaves no record behind")
+    func aLookupThatMisses() async throws {
+        let first = launch()
+        first.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
+        await finish(first)
+
+        let second = launch()
+        let count = second.store.count
+        #expect(throws: NotStored.self) { try stored(TestHeaderQuery(id: "999"), in: second) }
+        #expect(second.store.existing("Character:999") == nil)
+        #expect(second.store.count == count)
+    }
+
     @Test("data keeps its age across a launch: fresh data is not refetched, expired data is, and an invalidation ages everything")
     func ageSurvives() async throws {
         let transport = RecordedTransport { _ in fixtureData }

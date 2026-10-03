@@ -743,6 +743,7 @@ impl Emitter {
                     bubbles,
                     alias,
                     name,
+                    base_type,
                     ..
                 } if required.action != "THROW" => {
                     let slot = self.slot_expression(type_name, type_is_abstract, storage_key);
@@ -755,10 +756,12 @@ impl Emitter {
                         );
                     } else {
                         let nested = capitalize(alias.as_deref().unwrap_or(name));
-                        let lookup_argument = lookup
-                            .as_ref()
-                            .map(|lookup| format!(", lookup: {}", lookup_expression(lookup)))
-                            .unwrap_or_default();
+                        let lookup_argument = match lookup {
+                            Some(lookup) => {
+                                format!(", lookup: {}", self.lookup_expression(lookup, base_type))
+                            }
+                            None => String::new(),
+                        };
                         let _ = writeln!(
                             output,
                             "{indent}    guard let child = anchor.linked({slot}{lookup_argument}), {nested}.satisfied(child) else {{ return anchor.requiredMissing(path: {}, log: {}) }}",
@@ -1255,6 +1258,40 @@ impl Emitter {
         }
     }
 
+    /// The lookup: the entity type, or for a field that returns an interface
+    /// or union the set of its possible types, and the argument's value, a
+    /// variable or a constant written as a record key writes it: a string as
+    /// itself, anything else as JSON.
+    fn lookup_expression(&mut self, lookup: &LookupPlan, base_type: &str) -> String {
+        let types = match &lookup.type_name {
+            Some(type_name) => {
+                self.types.insert(type_name.clone());
+                format!("type: Types.{type_name}")
+            }
+            None => {
+                for type_name in &lookup.possible_types {
+                    self.types.insert(type_name.clone());
+                }
+                self.possible_sets
+                    .insert(base_type.to_string(), lookup.possible_types.clone());
+                format!("type: nil, possibleTypes: Types.{base_type}_possible")
+            }
+        };
+        let key = match &lookup.value {
+            ArgumentValuePlan::Variable(name) => format!(".variable({})", swift_literal(name)),
+            ArgumentValuePlan::Constant(ConstantPlan::String(text)) => {
+                format!(".literal({})", swift_literal(text))
+            }
+            ArgumentValuePlan::Constant(constant) => {
+                format!(".literal({})", swift_literal(&constant_json(constant)))
+            }
+            ArgumentValuePlan::List(_) | ArgumentValuePlan::Object(_) => {
+                unreachable!("lowering rejects a lookup argument that is a list or an object")
+            }
+        };
+        format!("Baton.Lookup({types}, key: {key})")
+    }
+
     /// The name of the shared type set of a condition's possible types,
     /// emitted once in the shared file.
     fn possible_set(&mut self, condition: &str, member: &Member) -> String {
@@ -1382,10 +1419,10 @@ impl Emitter {
         let property = escape(field.property);
         let nested = field.nested;
         let base_type = field.base_type;
-        let lookup_argument = field
-            .lookup
-            .map(|lookup| format!(", lookup: {}", lookup_expression(lookup)))
-            .unwrap_or_default();
+        let lookup_argument = match field.lookup {
+            Some(lookup) => format!(", lookup: {}", self.lookup_expression(lookup, base_type)),
+            None => String::new(),
+        };
         let keep = if field.bubbles {
             format!(", keep: {nested}.satisfied")
         } else {
@@ -1802,10 +1839,13 @@ impl Emitter {
                     connection,
                     selection,
                 } => {
-                    let lookup_argument = lookup
-                        .as_ref()
-                        .map(|lookup| format!(", lookup: {}", lookup_expression(lookup)))
-                        .unwrap_or_default();
+                    let lookup_argument = match lookup {
+                        Some(lookup) => format!(
+                            ", lookup: {}",
+                            self.lookup_expression(lookup, &selection.type_name)
+                        ),
+                        None => String::new(),
+                    };
                     let connection_argument = connection
                         .as_ref()
                         .map(|connection| {
@@ -2649,29 +2689,6 @@ fn argument_expression(value: &ArgumentValuePlan) -> String {
                 .join(", ")
         ),
     }
-}
-
-/// The lookup: the entity type (or none, for an id across types) and the
-/// argument's value, a variable or a constant written as a record key writes
-/// it: a string as itself, anything else as JSON.
-fn lookup_expression(lookup: &LookupPlan) -> String {
-    let type_expression = match &lookup.type_name {
-        Some(type_name) => format!("Types.{type_name}"),
-        None => "nil".to_string(),
-    };
-    let key = match &lookup.value {
-        ArgumentValuePlan::Variable(name) => format!(".variable({})", swift_literal(name)),
-        ArgumentValuePlan::Constant(ConstantPlan::String(text)) => {
-            format!(".literal({})", swift_literal(text))
-        }
-        ArgumentValuePlan::Constant(constant) => {
-            format!(".literal({})", swift_literal(&constant_json(constant)))
-        }
-        ArgumentValuePlan::List(_) | ArgumentValuePlan::Object(_) => {
-            unreachable!("lowering rejects a lookup argument that is a list or an object")
-        }
-    };
-    format!("Baton.Lookup(type: {type_expression}, key: {key})")
 }
 
 fn scalar_reader(kind: TypeKind, list: bool) -> (&'static str, String) {

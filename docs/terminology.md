@@ -108,9 +108,11 @@ hold a link to it is *(planned)*; see
 [A deletion is announced by its commit](decisions/deletion-is-announced-by-its-commit.md).
 
 **Key.** The configured identity fields of a type (default `id`), combined
-with the typename. Objects without a key get a path-based client id, as in
-Relay. The store also indexes entities by id alone, for lookups without a
-type (`node(id:)`).
+with the typename: `Type:id`. Objects without a key get a path-based client
+id, as in Relay; under an interface or union the path ends in the record's
+concrete type. The store has no index by id alone: a lookup without a type
+(`node(id:)`) and `@deleteRecord` probe `Type:id` for each possible type,
+and act only when exactly one live record has the id.
 
 **Storage key, slot.** Relay: a field name plus its serialized arguments,
 the key under which a value is stored. Here: computed by the compiler and

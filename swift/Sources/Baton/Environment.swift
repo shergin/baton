@@ -160,7 +160,7 @@ public final class Environment {
                       let (record, selection) = store.walk(path, resolved),
                       let deferred = selection.deferred(label)
                 else { continue }
-                let changes = try Ingest.normalizeObject(item.data, plan: deferred, key: record.key, type: record.type, entity: record.entityID != nil)
+                let changes = try Ingest.normalizeObject(item.data, plan: deferred, key: record.key, type: record.type, entity: record.isEntity)
                 try Task.checkCancellation()
                 store.commit(changes)
                 uncaught.append(contentsOf: changes.uncaughtFieldErrors)

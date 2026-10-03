@@ -8,8 +8,8 @@ public final class Record: Observable {
     nonisolated public let type: TypeID
     /// `Type:id` for entities with a key, a path-based client id otherwise.
     nonisolated public let key: String
-    /// The id of an entity, for the store's index and for refetching by id.
-    nonisolated public let entityID: String?
+    /// Where the id starts inside `key`, or -1 for a record keyed by its path.
+    nonisolated let idOffset: Int32
     /// Whether `@deleteRecord` removed it: links to it read as null and lists
     /// skip it, until a payload names it again.
     public private(set) var deleted = false
@@ -28,11 +28,26 @@ public final class Record: Observable {
     /// type has: a cursor-paginated field registers a slot per page on its
     /// parent type, and records of that type must not pay for pages they
     /// never saw.
-    init(type: TypeID, key: String, entityID: String? = nil) {
+    init(type: TypeID, key: String, idOffset: Int32 = -1) {
         self.type = type
         self.key = key
-        self.entityID = entityID
+        self.idOffset = idOffset
         values = []
+    }
+
+    /// Whether the record is an entity, keyed `Type:id`.
+    nonisolated var isEntity: Bool { idOffset >= 0 }
+
+    /// The id of an entity, for refetching by id; nil for a record keyed by
+    /// its path.
+    nonisolated public var entityID: String? {
+        guard idOffset >= 0 else { return nil }
+        return String(key.utf8.dropFirst(Int(idOffset)))
+    }
+
+    /// Whether the record is an entity with this id, without making a string.
+    nonisolated func hasID(_ id: String) -> Bool {
+        idOffset >= 0 && key.utf8.dropFirst(Int(idOffset)).elementsEqual(id.utf8)
     }
 
     /// Makes room for the slots a batch is about to write.

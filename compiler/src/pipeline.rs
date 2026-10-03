@@ -192,8 +192,10 @@ pub struct StorageKeyPlan {
 /// so a cached entity can satisfy the field before it was ever fetched.
 #[derive(Debug, Clone, PartialEq, serde::Serialize)]
 pub struct LookupPlan {
-    /// `None` resolves by id across types.
+    /// `None` resolves by id among `possible_types`.
     pub type_name: Option<String>,
+    /// The concrete types the field returns, for a lookup without a type.
+    pub possible_types: Vec<String>,
     pub argument: String,
     /// The argument's value in the document.
     pub value: ArgumentValuePlan,
@@ -938,6 +940,7 @@ impl Lowering<'_> {
                             }
                             Some(LookupPlan {
                                 type_name: lookup.type_name.clone(),
+                                possible_types: self.possible_types(target),
                                 argument: lookup.argument.clone(),
                                 value,
                             })

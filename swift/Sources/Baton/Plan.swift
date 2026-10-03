@@ -33,8 +33,8 @@ public enum StorageKey: Sendable {
 
 /// A root field that returns an entity by one of its arguments. When the link
 /// is missing from the store, the entity satisfies it: `Type:key` when the
-/// type is known, or the record with that id across types when it is not
-/// (`node(id:)`).
+/// type is known, or the one live record `T:key` among the field's possible
+/// types when it is not (`node(id:)`).
 public struct Lookup: Sendable {
     public enum Key: Sendable {
         case variable(String)
@@ -42,10 +42,13 @@ public struct Lookup: Sendable {
     }
 
     public let type: TypeID?
+    /// The concrete types a lookup without a type probes.
+    public let possibleTypes: Set<TypeID>
     public let key: Key
 
-    public init(type: TypeID?, key: Key) {
+    public init(type: TypeID?, possibleTypes: Set<TypeID> = [], key: Key) {
         self.type = type
+        self.possibleTypes = possibleTypes
         self.key = key
     }
 }
@@ -284,7 +287,7 @@ public final class Selection: Sendable {
                     case .variable(let name): variables.keyText(name)
                     case .literal(let text): text
                     }
-                    return LookupKey(type: lookup.type, value: value)
+                    return LookupKey(type: lookup.type, possibleTypes: lookup.possibleTypes, value: value)
                 },
                 connection: connection.map { connection in
                     let key = Selection.render(connection.key, variables)
@@ -368,12 +371,12 @@ public final class Selection: Sendable {
     }
 }
 
-/// A bound lookup: the record key `Type:value`, or the id alone across types.
+/// A bound lookup: the record key `Type:value`, or the id among the
+/// possible types.
 public struct LookupKey: Sendable {
     public let type: TypeID?
+    public let possibleTypes: Set<TypeID>
     public let value: String
-
-    var recordKey: String? { type.map { $0.name + ":" + value } }
 }
 
 /// A connection with its variables bound: the client key on the parent, the

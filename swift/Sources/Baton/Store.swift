@@ -17,14 +17,18 @@ public final class Store {
     /// The record subscription payloads hang off.
     public let subscriptionRoot: Record
     private var records: [String: Record] = [:]
-    /// Entities by id, across types, for `node(id:)`-style lookups.
-    private var byID: [String: Record] = [:]
     /// The environment that owns the store, for lenses that fetch.
     weak var environment: Environment?
 
     /// Called when a lens reads a slot the store never received. Debug builds
     /// print by default; a product can route it to its own reporting.
     public var reportMissing: ((Record, Slot) -> Void)?
+
+    /// Called when a bare id names live records of more than one type, so
+    /// `@deleteRecord` or a lookup without a type cannot tell which: the id
+    /// and the records. Nothing is deleted or resolved. Debug builds print
+    /// by default.
+    public var reportAmbiguousIdentity: ((String, [Record]) -> Void)?
 
     /// Bumped by `invalidate()`; handles fetched before it are stale.
     public private(set) var invalidationEpoch = 0
@@ -63,7 +67,10 @@ public final class Store {
         records[Store.subscriptionRootKey] = subscriptionRoot
         #if DEBUG
         reportMissing = { record, slot in
-            print("Baton: missing data: \(record.key).\(slot.storageKey) was read but never fetched; the owning operation will refetch")
+            print("Baton: missing data: \(record.key).\(slot.storageKey) was read but never fetched; the miss was recorded")
+        }
+        reportAmbiguousIdentity = { id, records in
+            print("Baton: the id \(id) names \(records.map(\.key).joined(separator: ", ")); nothing was done for it")
         }
         #endif
     }
@@ -78,11 +85,8 @@ public final class Store {
     /// Every record the store holds, by key; for the store dumps under `spec/`.
     package var recordsByKey: [String: Record] { records }
 
-    /// The entity with this id, whatever its type.
-    public func existing(id: String) -> Record? { byID[id] }
-
-    /// The record for a key, created on first sight. An entity is indexed by
-    /// its id; a deleted record a payload names again comes back.
+    /// The record for a key, created on first sight; a deleted record a
+    /// payload names again comes back.
     func record(key: String, type: TypeID, entity: Bool) -> Record {
         record(key: key, type: type, entity: entity).record
     }
@@ -97,10 +101,8 @@ public final class Store {
             }
             return (record, false)
         }
-        let id = entity ? String(key.dropFirst(type.name.count + 1)) : nil
-        let record = Record(type: type, key: key, entityID: id)
+        let record = Record(type: type, key: key, idOffset: entity ? Int32(type.name.utf8.count + 1) : -1)
         records[key] = record
-        if let id { byID[id] = record }
         return (record, true)
     }
 
@@ -435,12 +437,13 @@ public final class Store {
                     insert(node: objects[Int(node)], edgeType: edgeType, into: key, prepend: prepend, &transaction, &undo)
                 }
             case .deleteEdge(let id, let connections):
-                guard let node = byID[id] else { continue }
                 for key in connections {
-                    deleteEdges(of: node, from: key, &transaction, &undo)
+                    deleteEdges(of: id, from: key, &transaction, &undo)
                 }
             case .deleteRecord(let id):
-                guard let record = byID[id], !record.deleted else { continue }
+                // The directive names a bare id; the record is the one live
+                // entity of any type with it.
+                guard let record = entity(id: id, among: Registry.typeNames()) else { continue }
                 delete(record, &transaction, &undo)
             }
         }
@@ -585,15 +588,15 @@ public final class Store {
         set(connection, edgesSlot, .refs(edges), &transaction, &undo)
     }
 
-    /// Removes every edge whose node is the record from a connection named by id.
-    private func deleteEdges(of node: Record, from connectionKey: String, _ transaction: inout Transaction, _ undo: inout [Undo]) {
+    /// Removes every edge whose node is an entity with this id, of whatever
+    /// type, from a connection named by id.
+    private func deleteEdges(of id: String, from connectionKey: String, _ transaction: inout Transaction, _ undo: inout [Undo]) {
         guard let connection = records[connectionKey], !connection.deleted else { return }
         let edgesSlot = Registry.slot(connection.type, "edges")
         let edges = Store.edges(connection, edgesSlot)
-        let target = ObjectIdentifier(node)
         let kept = edges.filter { edge in
-            guard let edge else { return true }
-            return Store.node(of: edge, Registry.slot(edge.type, "node")) != target
+            guard let edge, case .ref(let node) = edge.peek(Registry.slot(edge.type, "node")) else { return true }
+            return !node.hasID(id)
         }
         if kept.count == edges.count { return }
         set(connection, edgesSlot, .refs(ContiguousArray(kept)), &transaction, &undo)
@@ -735,7 +738,7 @@ public final class Store {
     /// and, for a record that holds nothing yet, its row, so that whether it
     /// was deleted is known before the walk decides to enter it.
     private func live(_ found: Record, _ disk: Disk) -> Record {
-        let record = found.swept ? target(key: found.key, type: found.type, entity: found.entityID != nil) : found
+        let record = found.swept ? target(key: found.key, type: found.type, entity: found.isEntity) : found
         if !record.hydrated, record.slotCount == 0, record !== root, record !== mutationRoot, record !== subscriptionRoot {
             _ = hydrate(record, from: disk)
         }
@@ -805,9 +808,6 @@ public final class Store {
         for key in unreachable {
             guard let record = records.removeValue(forKey: key) else { continue }
             swept.insert(ObjectIdentifier(record))
-            if let id = record.entityID, byID[id] === record {
-                byID.removeValue(forKey: id)
-            }
             record.clear()
         }
         if !swept.isEmpty {
@@ -847,13 +847,46 @@ public final class Store {
     /// The entity a lookup names, if cached and not deleted. With the image
     /// at hand, an entity only the image holds counts when its type is known.
     func resolve(_ lookup: LookupKey, _ disk: Disk? = nil) -> Record? {
-        var record = lookup.recordKey.map { records[$0] } ?? byID[lookup.value]
-        if record == nil, let disk, let type = lookup.type, let key = lookup.recordKey {
-            let candidate = target(key: key, type: type, entity: true)
-            if hydrate(candidate, from: disk) { record = candidate }
+        if let type = lookup.type {
+            return resolve(type, lookup.value, disk)
         }
-        guard let record, !record.deleted else { return nil }
-        return record
+        // Without a type, the field's possible types are probed; an id they
+        // share among live records resolves to none of them.
+        if let record = entity(id: lookup.value, among: lookup.possibleTypes.map(\.name)) { return record }
+        guard let disk else { return nil }
+        let found = lookup.possibleTypes.compactMap { resolve($0, lookup.value, disk) }
+        guard found.count == 1 else {
+            if found.count > 1 { reportAmbiguousIdentity?(lookup.value, found) }
+            return nil
+        }
+        return found[0]
+    }
+
+    /// The entity `Type:id`: live in memory, or, with the image at hand, read
+    /// from it. A record is registered only once the image had its row, so
+    /// a miss leaves nothing behind.
+    private func resolve(_ type: TypeID, _ id: String, _ disk: Disk?) -> Record? {
+        let key = type.name + ":" + id
+        if let record = records[key] { return record.deleted ? nil : record }
+        guard let disk else { return nil }
+        let candidate = Record(type: type, key: key, idOffset: Int32(type.name.utf8.count + 1))
+        guard hydrate(candidate, from: disk) else { return nil }
+        records[key] = candidate
+        return candidate.deleted ? nil : candidate
+    }
+
+    /// The one live entity with this id among the named types. None, or an
+    /// id more than one of them has, is no record; the second is reported.
+    private func entity(id: String, among typeNames: [String]) -> Record? {
+        var found: [Record] = []
+        for name in typeNames {
+            if let record = records[name + ":" + id], !record.deleted { found.append(record) }
+        }
+        guard found.count == 1 else {
+            if found.count > 1 { reportAmbiguousIdentity?(id, found) }
+            return nil
+        }
+        return found[0]
     }
 
     /// Resolves a lookup for a lens read: the cached entity for a root field
@@ -863,7 +896,7 @@ public final class Store {
         case .variable(let name): variables.keyText(name)
         case .literal(let text): text
         }
-        guard let target = resolve(LookupKey(type: lookup.type, value: value)) else { return nil }
+        guard let target = resolve(LookupKey(type: lookup.type, possibleTypes: lookup.possibleTypes, value: value)) else { return nil }
         record.write(slot, .ref(target))
         return target
     }
