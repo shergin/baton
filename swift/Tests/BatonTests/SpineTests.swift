@@ -22,7 +22,7 @@ struct SpineTests {
         let tree = try JSONSerialization.jsonObject(with: fixtureData) as! [String: Any]
         let rawResults = ((tree["data"] as! [String: Any])["characters"] as! [String: Any])["results"] as! [[String: Any]]
 
-        #expect(store.count == 899)
+        #expect(store.count == 900, "898 entities and two roots")
         #expect(changed > 0)
         let data = Fixture.Data(anchor: Anchor(record: store.root, variables: variables, store: store))
         let results = try #require(data.characters?.results)

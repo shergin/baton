@@ -1,0 +1,55 @@
+import Baton
+
+/// The documents behind the write-side tests, against the test schema: a
+/// mutation with a payload, a union, and a lookup by id across types.
+@MainActor
+struct WriteDocuments {
+    @Fragment("""
+        fragment TestFavorite_character on Character {
+          id
+          name
+          favorite
+        }
+        """)
+    var favorite: TestFavorite_character
+
+    @Mutation("""
+        mutation TestSetFavorite($id: ID!, $favorite: Boolean!) {
+          setFavorite(id: $id, favorite: $favorite) {
+            character { id name favorite }
+          }
+        }
+        """)
+    var setFavorite: TestSetFavorite.Action
+
+    @Mutation("""
+        mutation TestRename($id: ID!, $name: String!) {
+          rename(id: $id, name: $name) {
+            character { id name }
+          }
+        }
+        """)
+    var rename: TestRename.Action
+
+    @Query("""
+        query TestSearch($name: String!) {
+          search(name: $name) {
+            __typename
+            ... on Character { id name }
+            ... on Location { id name dimension }
+          }
+        }
+        """)
+    var search: TestSearch
+
+    @Query("""
+        query TestNode($id: ID!) {
+          node(id: $id) {
+            __typename
+            ... on Character { id name }
+            ... on Episode { id name }
+          }
+        }
+        """)
+    var node: TestNode
+}

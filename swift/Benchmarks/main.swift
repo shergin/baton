@@ -24,6 +24,13 @@ struct BenchmarkDocuments {
         }
         """)
     var fixture: BenchFixture
+
+    @Mutation("""
+        mutation BenchRename($id: ID!, $name: String!) {
+          rename(id: $id, name: $name) { character { id name } }
+        }
+        """)
+    var rename: BenchRename.Action
 }
 
 func measure(_ label: String, iterations: Int = 20, ops: Int = 1, _ body: () -> Void) {
@@ -115,6 +122,47 @@ func run() async throws {
     measure("check the fixture plan against the store", iterations: 50) {
         _ = store.check(plan)
     }
+
+    print("writes: optimistic layers, one renamed character, 20 rows observed")
+    store.commit(changes)  // back to the fixture after the edited commits above
+    let rename = BenchRename(id: "1", name: "Rick Prime")
+    let renamePlan = BenchRename.plan.resolve(rename.variables)
+    let optimistic = BenchRename.OptimisticResponse(rename: .init(character: .init(id: "1", name: "Rick Prime"))).variable
+    let layerChanges = try Ingest.normalize(Data(("{\"data\":" + optimistic.json + "}").utf8), plan: renamePlan, rootKey: Store.mutationRootKey)
+    let answer = try Ingest.normalize(Data(#"{"data":{"rename":{"character":{"id":"1","name":"Rick Prime"}}}}"#.utf8), plan: renamePlan, rootKey: Store.mutationRootKey)
+    final class Counter: @unchecked Sendable { var fired = 0 }
+    let counter = Counter()
+    func observeRows() {
+        for row in rows {
+            withObservationTracking { _ = row.name } onChange: { counter.fired += 1 }
+        }
+    }
+    measure("apply a layer and revert it", iterations: 50) {
+        observeRows()
+        let layer = store.applyOptimistic(layerChanges)
+        observeRows()
+        store.revertOptimistic(layer)
+    }
+    print("    notifications per apply-and-revert: \(counter.fired / 50)")
+    counter.fired = 0
+    // One tracking scope before the apply, one before the restore: the
+    // phases in between must not fire anything.
+    var phases = [0, 0, 0, 0]
+    measure("apply, commit the fixture under it, resolve, restore", iterations: 20) {
+        var before = counter.fired
+        func account(_ phase: Int) { phases[phase] += counter.fired - before; before = counter.fired }
+        observeRows()
+        let layer = store.applyOptimistic(layerChanges)
+        account(0)
+        store.commit(changes)
+        account(1)
+        store.commit(answer, replacingOptimistic: layer)
+        account(2)
+        observeRows()
+        store.commit(changes)
+        account(3)
+    }
+    print("    notifications per cycle: apply \(phases[0] / 20), rebase under a server commit \(phases[1] / 20), resolve \(phases[2] / 20), restore \(phases[3] / 20)")
 
     print("lifetime: 42 pages scrolled, release buffer of 10")
     try await scrollBench(data: data)
