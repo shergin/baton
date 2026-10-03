@@ -1,0 +1,7 @@
+{
+  "Character:1": {"__typename": "Character", "id": "1", "name": "Rick Sanchez", "origin": {"__ref": "Location:1"}, "species": "Human", "status": "Alive"},
+  "Location:1": {"__typename": "Location", "dimension": "Dimension C-137", "id": "1", "name": "Earth (C-137)"},
+  "client:root": {"__typename": "Query", "character(id:\"1\")": {"__ref": "Character:1"}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

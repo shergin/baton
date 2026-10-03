@@ -334,7 +334,7 @@ fn field(
 /// The disjunction of conjunctions, simplified: a conjunction that holds
 /// always makes the whole always (empty), a contradictory one is dropped,
 /// and repeats go.
-fn any(conjunctions: Vec<Vec<Guard>>) -> Vec<Vec<Guard>> {
+pub fn any(conjunctions: Vec<Vec<Guard>>) -> Vec<Vec<Guard>> {
     let mut alternatives: Vec<Vec<Guard>> = Vec::new();
     for mut conjunction in conjunctions {
         conjunction.sort();

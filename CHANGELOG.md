@@ -34,6 +34,15 @@ are expected and listed without apology.
   `@skip` into guards the plan settles once per set of variables; the
   ingest reads an object by its type's variant, and the check, collection
   and deferred parts follow the same variants.
+- Lenses follow types and conditions. A type condition on an interface
+  emitted `asNode` behind a test of the record's concrete type, so it was
+  always nil; it is now tested against the set of types that satisfy it,
+  emitted once in the shared file, and folds into the parent when every
+  type the parent admits satisfies it. An accessor under `@include` or
+  `@skip` is optional and reads nil, reporting nothing missing, when its
+  condition does not select; `totalCount @include(if: $x)` read 0 and
+  reported missing data. A field selected twice, or a fragment spread
+  twice, emits one accessor: the file did not compile.
 - A superseded fetch does not commit. A response that arrived, or was still
   being read, after a refetch replaced its fetch landed after the newer one
   when the transport did not hear the cancellation. Ingest now runs in the

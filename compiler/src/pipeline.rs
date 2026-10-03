@@ -291,6 +291,8 @@ pub enum SelectionPlan {
         type_condition: Option<String>,
         /// The concrete types the type condition admits, sorted.
         condition_types: Option<Vec<String>>,
+        /// How the type condition stands to the parent's possible types.
+        condition_class: Option<ConditionClass>,
         /// An explicit `@alias(as:)` name.
         alias: Option<String>,
         /// `@defer`: the label the incremental part carries.
@@ -310,6 +312,19 @@ pub enum SelectionPlan {
         passing: bool,
         selections: Vec<SelectionPlan>,
     },
+}
+
+/// How an inline fragment's type condition stands to the types its parent
+/// admits: every one of them satisfies it, one does, or several do.
+#[derive(Debug, Clone, PartialEq, serde::Serialize)]
+#[serde(tag = "kind", content = "type", rename_all = "snake_case")]
+pub enum ConditionClass {
+    /// The fields fold into the parent's lens.
+    Always,
+    /// A record of this concrete type, and only of it, satisfies it.
+    Concrete(String),
+    /// Records of several concrete types satisfy it.
+    Set,
 }
 
 /// Output of a successful compilation.
@@ -665,6 +680,23 @@ impl Lowering<'_> {
         names
     }
 
+    /// How a type condition stands to the parent's possible types.
+    fn condition_class(&self, parent: Type, condition: Type) -> ConditionClass {
+        let admitted = self.possible_types(condition);
+        let satisfying: Vec<String> = self
+            .possible_types(parent)
+            .into_iter()
+            .filter(|type_name| admitted.contains(type_name))
+            .collect();
+        if parent == condition || satisfying.len() == self.possible_types(parent).len() {
+            ConditionClass::Always
+        } else if let [only] = satisfying.as_slice() {
+            ConditionClass::Concrete(only.clone())
+        } else {
+            ConditionClass::Set
+        }
+    }
+
     /// The named type of a field on `parent`, for the connection's edge and
     /// page info types.
     fn field_type_name(&self, parent: Type, field: &str) -> String {
@@ -950,6 +982,9 @@ impl Lowering<'_> {
                         condition_types: inline
                             .type_condition
                             .map(|type_| self.possible_types(type_)),
+                        condition_class: inline
+                            .type_condition
+                            .map(|type_| self.condition_class(parent_type, type_)),
                         alias,
                         deferred,
                         catch: self.catch(&inline.directives),

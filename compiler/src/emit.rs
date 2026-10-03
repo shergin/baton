@@ -12,9 +12,9 @@ use std::fmt::Write as _;
 
 use crate::decide::{self, Guard, NormalizationField, NormalizationKind, NormalizationSelection};
 use crate::pipeline::{
-    ArgumentValuePlan, CatchPlan, ConnectionPlan, ConstantPlan, FragmentPlan, HandlePlan,
-    LookupPlan, OperationPlan, Plan, RefetchPlan, RequiredPlan, SelectionPlan, StorageKeyPlan,
-    TypeKind, VariablePlan,
+    ArgumentValuePlan, CatchPlan, ConditionClass, ConnectionPlan, ConstantPlan, FragmentPlan,
+    HandlePlan, LookupPlan, OperationPlan, Plan, RefetchPlan, RequiredPlan, SelectionPlan,
+    StorageKeyPlan, TypeKind, VariablePlan,
 };
 
 /// Generated Swift, grouped by the source file that declared the documents.
@@ -95,6 +95,8 @@ struct Emitter {
     fragment_flags: BTreeMap<String, FragmentFlags>,
     /// Fragments spread with `@defer` somewhere: their lenses get `isPresent`.
     deferred_fragments: BTreeSet<String>,
+    /// The possible types of each abstract type condition tested as a set.
+    possible_sets: BTreeMap<String, Vec<String>>,
 }
 
 /// What the lenses of one document share: the fragment's `@refetchable` data
@@ -161,6 +163,7 @@ pub fn emit(plan: &Plan) -> Output {
             })
             .collect(),
         deferred_fragments,
+        possible_sets: BTreeMap::new(),
     };
     let mut files: BTreeMap<String, String> = BTreeMap::new();
     for fragment in &plan.fragments {
@@ -228,6 +231,14 @@ impl Emitter {
             let _ = writeln!(
                 output,
                 "    static let {type_name} = Baton.Registry.type(\"{type_name}\")"
+            );
+        }
+        for (condition, types) in &self.possible_sets {
+            let members: Vec<String> = types.iter().map(|name| format!("Types.{name}")).collect();
+            let _ = writeln!(
+                output,
+                "    /// The types that satisfy `... on {condition}`.\n    static let {condition}_possible: Set<Baton.TypeID> = [{}]",
+                members.join(", ")
             );
         }
         output.push_str(
@@ -467,11 +478,12 @@ impl Emitter {
         let inner = format!("{indent}    ");
         let mut nested: Vec<Nested> = Vec::new();
         let mut spread_names = spread_accessor_names(selections, type_name);
+        let members = members(selections);
         self.accessors(
             output,
             type_name,
             type_is_abstract,
-            selections,
+            &members,
             &inner,
             &mut nested,
             &mut spread_names,
@@ -484,13 +496,13 @@ impl Emitter {
             self.connection_members(output, connection, type_name, selections, context, &inner);
         }
         if bubbles {
-            self.satisfied_function(output, type_name, type_is_abstract, selections, &inner);
+            self.satisfied_function(output, type_name, type_is_abstract, &members, &inner);
         }
         if context.handles_errors() {
-            self.field_errors_function(output, type_name, type_is_abstract, selections, &inner);
+            self.field_errors_function(output, type_name, type_is_abstract, &members, &inner);
         }
         if is_fragment_root && self.deferred_fragments.contains(name) {
-            self.is_present_function(output, type_name, type_is_abstract, selections, &inner);
+            self.is_present_function(output, type_name, type_is_abstract, &members, &inner);
         }
         for child in nested {
             output.push('\n');
@@ -688,7 +700,7 @@ impl Emitter {
         output: &mut String,
         type_name: &str,
         type_is_abstract: bool,
-        selections: &[SelectionPlan],
+        members: &[Member],
         indent: &str,
     ) {
         let _ = writeln!(
@@ -699,8 +711,17 @@ impl Emitter {
             output,
             "{indent}@MainActor public static func satisfied(_ anchor: Baton.Anchor) -> Bool {{"
         );
-        for (selection, _) in own_fields(selections, type_name) {
-            match selection {
+        for member in own_members(members) {
+            // A field a condition left out cannot null the lens.
+            let condition = guard_condition(&member.guards);
+            let (indent, close) = match &condition {
+                Some(condition) => {
+                    let _ = writeln!(output, "{indent}    if {condition} {{");
+                    (format!("{indent}    "), format!("{indent}    }}"))
+                }
+                None => (indent.to_string(), String::new()),
+            };
+            match &member.selection {
                 SelectionPlan::Scalar {
                     required: Some(required),
                     storage_key,
@@ -748,6 +769,9 @@ impl Emitter {
                 }
                 _ => {}
             }
+            if !close.is_empty() {
+                let _ = writeln!(output, "{close}");
+            }
         }
         let _ = writeln!(output, "{indent}    return true");
         let _ = writeln!(output, "{indent}}}");
@@ -761,7 +785,7 @@ impl Emitter {
         output: &mut String,
         type_name: &str,
         type_is_abstract: bool,
-        selections: &[SelectionPlan],
+        members: &[Member],
         indent: &str,
     ) {
         let _ = writeln!(
@@ -773,8 +797,17 @@ impl Emitter {
             "{indent}@MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {{"
         );
         let _ = writeln!(output, "{indent}    var errors: [Baton.FieldError] = []");
-        for (selection, _) in own_fields(selections, type_name) {
-            match selection {
+        for member in own_members(members) {
+            // A field a condition left out has no error to collect.
+            let condition = guard_condition(&member.guards);
+            let (indent, close) = match &condition {
+                Some(condition) => {
+                    let _ = writeln!(output, "{indent}    if {condition} {{");
+                    (format!("{indent}    "), format!("{indent}    }}"))
+                }
+                None => (indent.to_string(), String::new()),
+            };
+            match &member.selection {
                 SelectionPlan::Scalar {
                     name,
                     storage_key,
@@ -844,6 +877,9 @@ impl Emitter {
                     // An aliased spread is a masking boundary with its own policy;
                     // an aliased selection set is a nested lens of this one.
                     if matches!(child.as_slice(), [SelectionPlan::Spread { .. }]) {
+                        if !close.is_empty() {
+                            let _ = writeln!(output, "{close}");
+                        }
                         continue;
                     }
                     let _ = writeln!(
@@ -853,6 +889,9 @@ impl Emitter {
                     );
                 }
                 _ => {}
+            }
+            if !close.is_empty() {
+                let _ = writeln!(output, "{close}");
             }
         }
         let _ = writeln!(output, "{indent}    return errors");
@@ -895,24 +934,29 @@ impl Emitter {
         output: &mut String,
         type_name: &str,
         type_is_abstract: bool,
-        selections: &[SelectionPlan],
+        members: &[Member],
         indent: &str,
     ) {
         let mut checks: Vec<String> = Vec::new();
-        for (selection, _) in own_fields(selections, type_name) {
-            match selection {
+        for member in own_members(members) {
+            let check = match &member.selection {
                 SelectionPlan::Scalar {
                     name, storage_key, ..
                 } if name != "__typename" => {
                     let slot = self.slot_expression(type_name, type_is_abstract, storage_key);
-                    checks.push(format!("anchor.present({slot})"));
+                    format!("anchor.present({slot})")
                 }
                 SelectionPlan::Linked { storage_key, .. } => {
                     let slot = self.slot_expression(type_name, type_is_abstract, storage_key);
-                    checks.push(format!("anchor.present({slot})"));
+                    format!("anchor.present({slot})")
                 }
-                _ => {}
-            }
+                _ => continue,
+            };
+            // A field a condition left out is not waited for.
+            checks.push(match guard_condition(&member.guards) {
+                Some(condition) => format!("(!({condition}) || {check})"),
+                None => check,
+            });
         }
         let _ = writeln!(
             output,
@@ -935,14 +979,16 @@ impl Emitter {
         output: &mut String,
         type_name: &str,
         type_is_abstract: bool,
-        selections: &[SelectionPlan],
+        members: &[Member],
         indent: &str,
         nested: &mut Vec<Nested>,
         spread_names: &mut BTreeMap<String, String>,
         context: Context<'_>,
     ) {
-        for selection in selections {
-            match selection {
+        for member in members {
+            let condition = guard_condition(&member.guards);
+            let condition = condition.as_deref();
+            match &member.selection {
                 SelectionPlan::Scalar {
                     name,
                     alias,
@@ -974,6 +1020,7 @@ impl Emitter {
                         type_is_abstract,
                         storage_key,
                         indent,
+                        condition,
                     );
                 }
                 SelectionPlan::Linked {
@@ -1015,6 +1062,7 @@ impl Emitter {
                         type_is_abstract,
                         storage_key,
                         indent,
+                        condition,
                     );
                     nested.push(Nested {
                         name: nested_name,
@@ -1048,10 +1096,12 @@ impl Emitter {
                         type_name,
                         type_is_abstract,
                         indent,
+                        condition,
                     );
                 }
                 SelectionPlan::Inline {
                     type_condition,
+                    condition_class,
                     alias,
                     deferred,
                     catch,
@@ -1087,54 +1137,86 @@ impl Emitter {
                             type_name,
                             type_is_abstract,
                             indent,
+                            condition,
                         );
                         continue;
                     }
+                    // A type condition some of the parent's types satisfy reads
+                    // as an optional nested lens: on the one type that can, or
+                    // through the abstract type's keys when several can.
+                    let condition_lens = match (type_condition, condition_class) {
+                        (Some(condition), Some(ConditionClass::Concrete(concrete))) => {
+                            self.types.insert(concrete.clone());
+                            Some((
+                                condition.clone(),
+                                concrete.clone(),
+                                false,
+                                format!("anchor.record.is(Types.{concrete})"),
+                            ))
+                        }
+                        (Some(condition), Some(ConditionClass::Set)) => {
+                            let set = self.possible_set(condition, member);
+                            Some((
+                                condition.clone(),
+                                condition.clone(),
+                                true,
+                                format!("Types.{set}.contains(anchor.record.type)"),
+                            ))
+                        }
+                        _ => None,
+                    };
                     if let Some(alias) = alias {
                         // `@alias(as:)` on other selections: a nested lens.
                         let nested_name = unique_nested_name(alias, nested);
-                        let condition_type = type_condition.as_deref().unwrap_or(type_name);
-                        let conditional = type_condition
-                            .as_deref()
-                            .is_some_and(|condition| condition != type_name);
-                        if conditional {
-                            self.types.insert(condition_type.to_string());
-                        }
+                        let (lens_type, lens_abstract) = match &condition_lens {
+                            Some((_, lens_type, lens_abstract, _)) => {
+                                (lens_type.clone(), *lens_abstract)
+                            }
+                            None => (type_name.to_string(), type_is_abstract),
+                        };
                         let mut guards: Vec<String> = Vec::new();
-                        if conditional {
-                            guards.push(format!("anchor.record.is(Types.{condition_type})"));
+                        if let Some(condition) = condition {
+                            guards.push(condition.to_string());
+                        }
+                        if let Some((_, _, _, test)) = &condition_lens {
+                            guards.push(test.clone());
                         }
                         if *bubbles {
                             guards.push(format!("{nested_name}.satisfied(anchor)"));
                         }
+                        let property = escape(alias);
                         match catch.as_ref().map(|catch| catch.to.as_str()) {
+                            Some("RESULT") if guards.is_empty() => {
+                                let _ = writeln!(
+                                    output,
+                                    "{indent}@MainActor public var {property}: Result<{nested_name}, Baton.FieldErrors> {{ {nested_name}.caught(anchor) }}"
+                                );
+                            }
                             Some("RESULT") => {
                                 let _ = writeln!(
                                     output,
-                                    "{indent}@MainActor public var {}: Result<{nested_name}, Baton.FieldErrors> {{ {nested_name}.caught(anchor) }}",
-                                    escape(alias)
+                                    "{indent}@MainActor public var {property}: Result<{nested_name}, Baton.FieldErrors>? {{ {} ? {nested_name}.caught(anchor) : nil }}",
+                                    guards.join(" && ")
                                 );
                             }
                             _ if guards.is_empty() => {
                                 let _ = writeln!(
                                     output,
-                                    "{indent}@MainActor public var {}: {nested_name} {{ {nested_name}(anchor: anchor) }}",
-                                    escape(alias)
+                                    "{indent}@MainActor public var {property}: {nested_name} {{ {nested_name}(anchor: anchor) }}"
                                 );
                             }
                             _ => {
                                 let _ = writeln!(
                                     output,
-                                    "{indent}@MainActor public var {}: {nested_name}? {{ {} ? {nested_name}(anchor: anchor) : nil }}",
-                                    escape(alias),
+                                    "{indent}@MainActor public var {property}: {nested_name}? {{ {} ? {nested_name}(anchor: anchor) : nil }}",
                                     guards.join(" && ")
                                 );
                             }
                         }
                         nested.push(Nested {
                             name: nested_name,
-                            type_name: condition_type.to_string(),
-                            is_abstract: false,
+                            type_name: lens_type,
+                            is_abstract: lens_abstract,
                             selections: child.clone(),
                             connection: None,
                             bubbles: *bubbles,
@@ -1142,56 +1224,57 @@ impl Emitter {
                         });
                         continue;
                     }
-                    match type_condition {
-                        Some(condition) if condition != type_name => {
-                            let nested_name = format!("As{condition}");
-                            self.types.insert(condition.clone());
-                            let _ = writeln!(
-                                output,
-                                "{indent}@MainActor public var as{condition}: {nested_name}? {{ anchor.record.is(Types.{condition}) ? {nested_name}(anchor: anchor) : nil }}"
-                            );
-                            nested.push(Nested {
-                                name: nested_name,
-                                type_name: condition.clone(),
-                                is_abstract: false,
-                                selections: child.clone(),
-                                connection: None,
-                                bubbles: false,
-                                within_catch: false,
-                            });
-                        }
-                        _ => self.accessors(
-                            output,
-                            type_name,
-                            type_is_abstract,
-                            child,
-                            indent,
-                            nested,
-                            spread_names,
-                            context,
-                        ),
-                    }
-                }
-                SelectionPlan::Condition {
-                    selections: child, ..
-                } => {
-                    // `@include` / `@skip`: read as if present; a skipped field reads as missing.
-                    self.accessors(
+                    let Some((condition_name, lens_type, lens_abstract, test)) = condition_lens
+                    else {
+                        // `members` folds every other inline fragment into the lens.
+                        continue;
+                    };
+                    let nested_name = format!("As{condition_name}");
+                    let test = match condition {
+                        Some(condition) => format!("{condition} && {test}"),
+                        None => test,
+                    };
+                    let _ = writeln!(
                         output,
-                        type_name,
-                        type_is_abstract,
-                        child,
-                        indent,
-                        nested,
-                        spread_names,
-                        context,
+                        "{indent}@MainActor public var as{condition_name}: {nested_name}? {{ {test} ? {nested_name}(anchor: anchor) : nil }}"
                     );
+                    nested.push(Nested {
+                        name: nested_name,
+                        type_name: lens_type,
+                        is_abstract: lens_abstract,
+                        selections: child.clone(),
+                        connection: None,
+                        bubbles: false,
+                        within_catch: false,
+                    });
+                }
+                SelectionPlan::Condition { .. } => {
+                    unreachable!("members turns conditions into guards")
                 }
             }
         }
     }
 
+    /// The name of the shared type set of a condition's possible types,
+    /// emitted once in the shared file.
+    fn possible_set(&mut self, condition: &str, member: &Member) -> String {
+        let SelectionPlan::Inline {
+            condition_types: Some(types),
+            ..
+        } = &member.selection
+        else {
+            unreachable!("a set condition has its possible types");
+        };
+        for type_name in types {
+            self.types.insert(type_name.clone());
+        }
+        self.possible_sets
+            .insert(condition.to_string(), types.clone());
+        format!("{condition}_possible")
+    }
+
     /// A scalar accessor: plain, `@required`, `@catch` or throwing.
+    #[allow(clippy::too_many_arguments)]
     fn scalar_accessor(
         &mut self,
         output: &mut String,
@@ -1200,6 +1283,7 @@ impl Emitter {
         type_is_abstract: bool,
         storage_key: &StorageKeyPlan,
         indent: &str,
+        condition: Option<&str>,
     ) {
         let argument = self.read_argument(type_name, type_is_abstract, storage_key);
         let property = escape(field.property);
@@ -1219,36 +1303,63 @@ impl Emitter {
                 } else {
                     (format!("{swift_type}?"), format!("$0.{reader}({argument})"))
                 };
-                let _ = writeln!(
+                write_accessor(
                     output,
-                    "{indent}@MainActor public var {property}: Result<{value_type}, Baton.FieldErrors> {{ anchor.caught({slot}) {{ {read} }} }}"
+                    indent,
+                    &property,
+                    format!("Result<{value_type}, Baton.FieldErrors>"),
+                    format!("anchor.caught({slot}) {{ {read} }}"),
+                    false,
+                    condition,
                 );
             }
             (Some("NULL"), _) => {
-                let _ = writeln!(
+                write_accessor(
                     output,
-                    "{indent}@MainActor public var {property}: {swift_type}? {{ anchor.{reader}({argument}) }}"
+                    indent,
+                    &property,
+                    format!("{swift_type}?"),
+                    format!("anchor.{reader}({argument})"),
+                    false,
+                    condition,
                 );
             }
             (_, Some("THROW")) => {
                 let slot = self.slot_expression(type_name, type_is_abstract, storage_key);
                 let path =
                     swift_literal(&field.required.map(|r| r.path.clone()).unwrap_or_default());
-                let _ = writeln!(
+                write_accessor(
                     output,
-                    "{indent}@MainActor public var {property}: {swift_type} {{ get throws {{ try anchor.throwing({slot}, path: {path}) {{ $0.{reader}({argument}) }} }} }}"
+                    indent,
+                    &property,
+                    swift_type.clone(),
+                    format!(
+                        "try anchor.throwing({slot}, path: {path}) {{ $0.{reader}({argument}) }}"
+                    ),
+                    true,
+                    condition,
                 );
             }
             _ if field.non_null => {
-                let _ = writeln!(
+                write_accessor(
                     output,
-                    "{indent}@MainActor public var {property}: {swift_type} {{ anchor.{required_reader}({argument}) }}"
+                    indent,
+                    &property,
+                    swift_type.clone(),
+                    format!("anchor.{required_reader}({argument})"),
+                    false,
+                    condition,
                 );
             }
             _ => {
-                let _ = writeln!(
+                write_accessor(
                     output,
-                    "{indent}@MainActor public var {property}: {swift_type}? {{ anchor.{reader}({argument}) }}"
+                    indent,
+                    &property,
+                    format!("{swift_type}?"),
+                    format!("anchor.{reader}({argument})"),
+                    false,
+                    condition,
                 );
             }
         }
@@ -1256,6 +1367,7 @@ impl Emitter {
 
     /// A linked accessor: plain, bubbling, `@required`, `@catch` or throwing,
     /// singular or plural.
+    #[allow(clippy::too_many_arguments)]
     fn linked_accessor(
         &mut self,
         output: &mut String,
@@ -1264,6 +1376,7 @@ impl Emitter {
         type_is_abstract: bool,
         storage_key: &StorageKeyPlan,
         indent: &str,
+        condition: Option<&str>,
     ) {
         let argument = self.read_argument(type_name, type_is_abstract, storage_key);
         let property = escape(field.property);
@@ -1286,34 +1399,63 @@ impl Emitter {
                 (Some("RESULT"), _) => {
                     let slot = self.slot_expression(type_name, type_is_abstract, storage_key);
                     if field.non_null {
-                        let _ = writeln!(
+                        write_accessor(
                             output,
-                            "{indent}@MainActor public var {property}: Result<Baton.List<{nested}>, Baton.FieldErrors> {{ anchor.caughtRequiredList({slot}, within: {nested}.fieldErrors{keep}) }}"
+                            indent,
+                            &property,
+                            format!("Result<Baton.List<{nested}>, Baton.FieldErrors>"),
+                            format!(
+                                "anchor.caughtRequiredList({slot}, within: {nested}.fieldErrors{keep})"
+                            ),
+                            false,
+                            condition,
                         );
                     } else {
-                        let _ = writeln!(
+                        write_accessor(
                             output,
-                            "{indent}@MainActor public var {property}: Result<Baton.List<{nested}>?, Baton.FieldErrors> {{ anchor.caughtList({slot}, within: {nested}.fieldErrors{keep}) }}"
+                            indent,
+                            &property,
+                            format!("Result<Baton.List<{nested}>?, Baton.FieldErrors>"),
+                            format!(
+                                "anchor.caughtList({slot}, within: {nested}.fieldErrors{keep})"
+                            ),
+                            false,
+                            condition,
                         );
                     }
                 }
                 (_, Some("THROW")) => {
                     let slot = self.slot_expression(type_name, type_is_abstract, storage_key);
-                    let _ = writeln!(
+                    write_accessor(
                         output,
-                        "{indent}@MainActor public var {property}: Baton.List<{nested}> {{ get throws {{ try anchor.throwingList({slot}, path: {path}{keep}) }} }}"
+                        indent,
+                        &property,
+                        format!("Baton.List<{nested}>"),
+                        format!("try anchor.throwingList({slot}, path: {path}{keep})"),
+                        true,
+                        condition,
                     );
                 }
                 _ if field.non_null && catch_to != Some("NULL") => {
-                    let _ = writeln!(
+                    write_accessor(
                         output,
-                        "{indent}@MainActor public var {property}: Baton.List<{nested}> {{ anchor.requiredList({argument}{keep}) }}"
+                        indent,
+                        &property,
+                        format!("Baton.List<{nested}>"),
+                        format!("anchor.requiredList({argument}{keep})"),
+                        false,
+                        condition,
                     );
                 }
                 _ => {
-                    let _ = writeln!(
+                    write_accessor(
                         output,
-                        "{indent}@MainActor public var {property}: Baton.List<{nested}>? {{ anchor.list({argument}{keep}) }}"
+                        indent,
+                        &property,
+                        format!("Baton.List<{nested}>?"),
+                        format!("anchor.list({argument}{keep})"),
+                        false,
+                        condition,
                     );
                 }
             }
@@ -1345,28 +1487,52 @@ impl Emitter {
                         ),
                     )
                 };
-                let _ = writeln!(
+                write_accessor(
                     output,
-                    "{indent}@MainActor public var {property}: Result<{value_type}, Baton.FieldErrors> {{ anchor.caught({slot}, within: {nested}.fieldErrors) {{ {read} }} }}"
+                    indent,
+                    &property,
+                    format!("Result<{value_type}, Baton.FieldErrors>"),
+                    format!("anchor.caught({slot}, within: {nested}.fieldErrors) {{ {read} }}"),
+                    false,
+                    condition,
                 );
             }
             (_, Some("THROW")) => {
                 let slot = self.slot_expression(type_name, type_is_abstract, storage_key);
-                let _ = writeln!(
+                write_accessor(
                     output,
-                    "{indent}@MainActor public var {property}: {nested} {{ get throws {{ {nested}(anchor: try anchor.throwingLinked({slot}{lookup_argument}, path: {path}, satisfied: {nested}.satisfied)) }} }}"
+                    indent,
+                    &property,
+                    nested.to_string(),
+                    format!(
+                        "{nested}(anchor: try anchor.throwingLinked({slot}{lookup_argument}, path: {path}, satisfied: {nested}.satisfied))"
+                    ),
+                    true,
+                    condition,
                 );
             }
             _ if optional => {
-                let _ = writeln!(
+                write_accessor(
                     output,
-                    "{indent}@MainActor public var {property}: {nested}? {{ anchor.linked({argument}{lookup_argument}){guarded} }}"
+                    indent,
+                    &property,
+                    format!("{nested}?"),
+                    format!("anchor.linked({argument}{lookup_argument}){guarded}"),
+                    false,
+                    condition,
                 );
             }
             _ => {
-                let _ = writeln!(
+                write_accessor(
                     output,
-                    "{indent}@MainActor public var {property}: {nested} {{ {nested}(anchor: anchor.requiredLinked({argument}, type: Types.{base_type}{lookup_argument})) }}"
+                    indent,
+                    &property,
+                    nested.to_string(),
+                    format!(
+                        "{nested}(anchor: anchor.requiredLinked({argument}, type: Types.{base_type}{lookup_argument}))"
+                    ),
+                    false,
+                    condition,
                 );
             }
         }
@@ -1378,6 +1544,7 @@ impl Emitter {
     /// match, the spread is deferred, or the fragment's required fields can
     /// null it; it throws when the fragment has `@throwOnFieldError`; it is a
     /// `Result` under `@catch`.
+    #[allow(clippy::too_many_arguments)]
     fn spread_accessor(
         &mut self,
         output: &mut String,
@@ -1385,6 +1552,7 @@ impl Emitter {
         type_name: &str,
         type_is_abstract: bool,
         indent: &str,
+        condition: Option<&str>,
     ) {
         let fragment = spread.fragment;
         let flags = self
@@ -1421,6 +1589,9 @@ impl Emitter {
         }
         let anchor = if bound.is_some() { "bound" } else { "anchor" };
         let mut guards: Vec<String> = Vec::new();
+        if let Some(condition) = condition {
+            guards.push(condition.to_string());
+        }
         if conditional {
             guards.push(format!("anchor.record.is(Types.{})", spread.type_condition));
         }
@@ -1874,6 +2045,51 @@ impl Emitter {
     }
 }
 
+/// Writes an accessor: `property` of `swift_type`, reading `body`. Under a
+/// guard the accessor is optional and returns nil without a read when the
+/// guard fails, so a field a condition left out reports nothing missing.
+#[allow(clippy::too_many_arguments)]
+fn write_accessor(
+    output: &mut String,
+    indent: &str,
+    property: &str,
+    swift_type: String,
+    body: String,
+    throws: bool,
+    condition: Option<&str>,
+) {
+    let Some(condition) = condition else {
+        if throws {
+            let _ = writeln!(
+                output,
+                "{indent}@MainActor public var {property}: {swift_type} {{ get throws {{ {body} }} }}"
+            );
+        } else {
+            let _ = writeln!(
+                output,
+                "{indent}@MainActor public var {property}: {swift_type} {{ {body} }}"
+            );
+        }
+        return;
+    };
+    let optional = if swift_type.ends_with('?') {
+        swift_type
+    } else {
+        format!("{swift_type}?")
+    };
+    if throws {
+        let _ = writeln!(
+            output,
+            "{indent}@MainActor public var {property}: {optional} {{ get throws {{ guard {condition} else {{ return nil }}; return {body} }} }}"
+        );
+    } else {
+        let _ = writeln!(
+            output,
+            "{indent}@MainActor public var {property}: {optional} {{ {condition} ? {body} : nil }}"
+        );
+    }
+}
+
 /// What a scalar accessor is made of.
 struct ScalarAccessor<'a> {
     property: &'a str,
@@ -1908,39 +2124,180 @@ struct SpreadAccessor<'a> {
     catch: Option<&'a CatchPlan>,
 }
 
-/// The selections a lens reads directly: its own fields, those of inline
-/// fragments on its type without an alias, and those of conditions; aliased
-/// inline fragments come along as themselves, so the caller can name their
-/// lens.
-fn own_fields<'a>(
-    selections: &'a [SelectionPlan],
-    type_name: &str,
-) -> Vec<(&'a SelectionPlan, Option<&'a str>)> {
-    let mut result = Vec::new();
-    for selection in selections {
-        match selection {
-            SelectionPlan::Inline {
-                type_condition,
-                alias: None,
-                selections: child,
-                deferred,
-                ..
-            } => match type_condition {
-                Some(condition) if condition != type_name => {}
-                _ => result.extend(
-                    own_fields(child, type_name)
-                        .into_iter()
-                        .map(|(inner, label)| (inner, label.or(deferred.as_deref()))),
-                ),
-            },
-            SelectionPlan::Condition {
-                selections: child, ..
-            } => result.extend(own_fields(child, type_name)),
-            SelectionPlan::Spread { .. } => {}
-            other => result.push((other, None)),
+/// One thing a lens reads, after its occurrences merged: a field, a spread
+/// or an inline fragment, and the `@include` and `@skip` conditions it is
+/// fetched under (empty: always).
+struct Member {
+    /// The first occurrence; a linked field's or an inline fragment's
+    /// selections are those of every occurrence.
+    selection: SelectionPlan,
+    guards: Vec<Vec<Guard>>,
+}
+
+/// A selection at a lens's own level and the conditions on the way to it.
+type Occurrence = (SelectionPlan, Vec<Guard>);
+
+/// What a lens over `selections` reads, each thing once: conditions become
+/// guards, an inline fragment every type satisfies folds into the lens, and
+/// a field per response key, a spread per fragment and an inline fragment
+/// per type condition merge their occurrences. A merged field's children
+/// keep the conditions of the occurrence that selected them, when the
+/// occurrences' conditions differ.
+fn members(selections: &[SelectionPlan]) -> Vec<Member> {
+    let mut occurrences: Vec<Occurrence> = Vec::new();
+    gather(selections, &[], &mut occurrences);
+    let mut groups: Vec<(Option<String>, Vec<Occurrence>)> = Vec::new();
+    for (selection, guard) in occurrences {
+        let identity = member_identity(&selection);
+        match groups
+            .iter_mut()
+            .find(|(existing, _)| identity.is_some() && *existing == identity)
+        {
+            Some((_, members)) => members.push((selection, guard)),
+            None => groups.push((identity, vec![(selection, guard)])),
         }
     }
-    result
+    groups
+        .into_iter()
+        .map(|(_, occurrences)| {
+            let guards = decide::any(occurrences.iter().map(|(_, guard)| guard.clone()).collect());
+            let differ = occurrences
+                .iter()
+                .any(|(_, guard)| *guard != occurrences[0].1);
+            let mut selection = occurrences[0].0.clone();
+            if let SelectionPlan::Linked { selections, .. }
+            | SelectionPlan::Inline { selections, .. } = &mut selection
+            {
+                *selections = occurrences
+                    .iter()
+                    .flat_map(|(occurrence, guard)| {
+                        let children = match occurrence {
+                            SelectionPlan::Linked { selections, .. }
+                            | SelectionPlan::Inline { selections, .. } => selections.clone(),
+                            _ => Vec::new(),
+                        };
+                        if differ {
+                            under(guard, children)
+                        } else {
+                            children
+                        }
+                    })
+                    .collect();
+            }
+            Member { selection, guards }
+        })
+        .collect()
+}
+
+/// The selections at a lens's own level, each with the conditions on the
+/// way to it: through conditions, and through inline fragments that fold
+/// into the lens.
+fn gather(
+    selections: &[SelectionPlan],
+    guard: &[Guard],
+    into: &mut Vec<(SelectionPlan, Vec<Guard>)>,
+) {
+    for selection in selections {
+        match selection {
+            SelectionPlan::Condition {
+                variable,
+                passing,
+                selections: child,
+            } => {
+                let mut inner = guard.to_vec();
+                if let Some(variable) = variable {
+                    inner.push(Guard {
+                        variable: variable.clone(),
+                        passing: *passing,
+                    });
+                }
+                gather(child, &inner, into);
+            }
+            SelectionPlan::Inline {
+                condition_class,
+                alias: None,
+                deferred,
+                selections: child,
+                ..
+            } if !(deferred.is_some()
+                && matches!(child.as_slice(), [SelectionPlan::Spread { .. }]))
+                && matches!(condition_class, None | Some(ConditionClass::Always)) =>
+            {
+                gather(child, guard, into)
+            }
+            other => into.push((other.clone(), guard.to_vec())),
+        }
+    }
+}
+
+/// What makes two occurrences one member; `None` for one that stays apart.
+fn member_identity(selection: &SelectionPlan) -> Option<String> {
+    match selection {
+        SelectionPlan::Scalar { name, alias, .. } | SelectionPlan::Linked { name, alias, .. } => {
+            Some(format!("field {}", alias.as_deref().unwrap_or(name)))
+        }
+        SelectionPlan::Spread { fragment, .. } => Some(format!("spread {fragment}")),
+        SelectionPlan::Inline {
+            type_condition: Some(condition),
+            alias: None,
+            deferred: None,
+            ..
+        } => Some(format!("on {condition}")),
+        _ => None,
+    }
+}
+
+/// `selections` under a conjunction of conditions, as nested conditions.
+fn under(guard: &[Guard], selections: Vec<SelectionPlan>) -> Vec<SelectionPlan> {
+    guard
+        .iter()
+        .rev()
+        .fold(selections, |selections, condition| {
+            vec![SelectionPlan::Condition {
+                variable: Some(condition.variable.clone()),
+                passing: condition.passing,
+                selections,
+            }]
+        })
+}
+
+/// The Swift test of a member's guards, or none when it is always fetched.
+fn guard_condition(guards: &[Vec<Guard>]) -> Option<String> {
+    if guards.is_empty() {
+        return None;
+    }
+    let alternatives: Vec<String> = guards
+        .iter()
+        .map(|conjunction| {
+            conjunction
+                .iter()
+                .map(|guard| {
+                    format!(
+                        "anchor.selects({}, {})",
+                        swift_literal(&guard.variable),
+                        guard.passing
+                    )
+                })
+                .collect::<Vec<_>>()
+                .join(" && ")
+        })
+        .collect();
+    if alternatives.len() == 1 {
+        Some(alternatives[0].clone())
+    } else {
+        Some(format!("({})", alternatives.join(" || ")))
+    }
+}
+
+/// The members a lens's own checks cover: its fields, and inline fragments
+/// it names with an alias. Spreads and lenses on other types check
+/// themselves.
+fn own_members(members: &[Member]) -> impl Iterator<Item = &Member> {
+    members.iter().filter(|member| match &member.selection {
+        SelectionPlan::Scalar { .. } | SelectionPlan::Linked { .. } => true,
+        SelectionPlan::Inline { alias, .. } => alias.is_some(),
+        _ => false,
+    })
 }
 
 /// The response keys of the `edges` field and of its `node`, and whether the

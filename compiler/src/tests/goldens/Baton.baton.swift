@@ -11,6 +11,7 @@ nonisolated enum Types {
     static let Info = Baton.Registry.type("Info")
     static let Location = Baton.Registry.type("Location")
     static let Mutation = Baton.Registry.type("Mutation")
+    static let Named = Baton.Registry.type("Named")
     static let Node = Baton.Registry.type("Node")
     static let Note = Baton.Registry.type("Note")
     static let NoteAddedPayload = Baton.Registry.type("NoteAddedPayload")
@@ -22,6 +23,8 @@ nonisolated enum Types {
     static let SearchResult = Baton.Registry.type("SearchResult")
     static let Subscription = Baton.Registry.type("Subscription")
     static let Tokenizer = Baton.Registry.type("Tokenizer")
+    /// The types that satisfy `... on Named`.
+    static let Named_possible: Set<Baton.TypeID> = [Types.Character, Types.Location]
 }
 
 /// Interned storage keys used by this module's documents.

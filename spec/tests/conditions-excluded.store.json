@@ -1,0 +1,7 @@
+{
+  "Character:1": {"__typename": "Character", "id": "1", "name": "Rick Sanchez", "origin": {"__ref": "Location:1"}},
+  "Location:1": {"__typename": "Location", "id": "1"},
+  "client:root": {"__typename": "Query", "character(id:\"1\")": {"__ref": "Character:1"}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

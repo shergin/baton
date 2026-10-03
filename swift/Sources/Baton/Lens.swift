@@ -66,6 +66,13 @@ extension Anchor {
     /// interfaces and unions.
     @inline(__always) public func slot(key: String) -> Slot { Registry.slot(record.type, key) }
 
+    /// Whether an `@include` or `@skip` condition selects: the variable has
+    /// the value. An accessor under a condition that does not select reads
+    /// as nil and reports nothing missing.
+    public func selects(_ variable: String, _ passing: Bool) -> Bool {
+        variables[variable] == .bool(passing)
+    }
+
     public func string(_ slot: Slot) -> String? {
         switch record.read(slot) {
         case .string(let string): return string
