@@ -2,12 +2,13 @@ import Baton
 import SwiftUI
 
 /// `node(id:)` is a lookup by id across types: an issue the triage list
-/// fetched is already in the store, and the rest is fetched.
+/// fetched is already in the store, and the rest is fetched. The spread is
+/// aliased, so the lens exposes it as `detail`.
 struct IssueScreen: View {
     @Query("""
         query IssueQuery($id: ID!) {
           node(id: $id) {
-            ... on Issue { ...IssueDetail_issue @alias }
+            ... on Issue { ...IssueDetail_issue @alias(as: "detail") }
           }
         }
         """)
@@ -15,8 +16,8 @@ struct IssueScreen: View {
 
     var body: some View {
         PhaseView(phase: issue.phase, retry: issue.retry) { data in
-            if let detail = data.node?.asIssue?.issueDetail {
-                IssueDetail(issue: detail) { await issue.refetch() }
+            if let detail = data.node?.asIssue?.detail {
+                IssueDetail(issue: detail)
             } else {
                 ContentUnavailableView("Not an issue", systemImage: "questionmark")
             }
@@ -24,9 +25,14 @@ struct IssueScreen: View {
     }
 }
 
+/// The issue with its comments as a cursor connection. The fragment is
+/// refetchable, so the connection loads further pages with its own query, and
+/// the composer appends to it declaratively.
 struct IssueDetail: View {
     @Fragment("""
-        fragment IssueDetail_issue on Issue {
+        fragment IssueDetail_issue on Issue
+        @refetchable(queryName: "IssueDetailPaginationQuery")
+        @argumentDefinitions(count: {type: "Int", defaultValue: 30}, cursor: {type: "String"}) {
           id
           number
           title
@@ -36,14 +42,13 @@ struct IssueDetail: View {
           repository { nameWithOwner name owner { login } }
           author { login }
           reactionGroups { content viewerHasReacted reactors { totalCount } }
-          comments(first: 30) {
+          comments(first: $count, after: $cursor) @connection(key: "IssueDetail_comments") {
             totalCount
-            nodes { id bodyText createdAt author { login } }
+            edges { node { id bodyText createdAt author { login } } }
           }
         }
         """)
     var issue: IssueDetail_issue
-    let refetch: () async -> Void
 
     var body: some View {
         ScrollView {
@@ -74,18 +79,22 @@ struct IssueDetail: View {
                 }
                 Divider()
                 Text("\(issue.comments.totalCount) comments").font(.headline)
-                if let comments = issue.comments.nodes {
-                    ForEach(comments) { comment in
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("\(comment.author?.login ?? "ghost") · \(shortDate(comment.createdAt))")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                            Text(comment.bodyText)
-                        }
-                        .padding(.vertical, 4)
+                ForEach(issue.comments.nodes) { comment in
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("\(comment.author?.login ?? "ghost") · \(shortDate(comment.createdAt))")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        Text(comment.bodyText)
                     }
+                    .padding(.vertical, 4)
                 }
-                CommentComposer(subjectID: issue.id, refetch: refetch)
+                if issue.comments.hasNext {
+                    Button(issue.comments.isLoadingNext ? "Loading…" : "Load more comments") {
+                        Task { try? await issue.comments.loadNext() }
+                    }
+                    .disabled(issue.comments.isLoadingNext)
+                }
+                CommentComposer(subjectID: issue.id, connectionID: issue.comments.connectionID)
             }
             .padding()
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -94,18 +103,20 @@ struct IssueDetail: View {
     }
 }
 
-/// Adds a comment. The new comment's record lands in the store, but the
-/// issue's `comments` list is not told about it until the edge directives of
-/// 0.4, so the composer refetches the issue after the commit.
+/// Adds a comment. The payload's edge is appended to the comments connection
+/// by `@appendEdge`, so the list grows without a refetch; the connection is
+/// named through the `connections` variable, as in Relay.
 struct CommentComposer: View {
     let subjectID: String
-    let refetch: () async -> Void
+    let connectionID: String
     @State private var text = ""
 
     @Mutation("""
-        mutation CommentComposerAddComment($input: AddCommentInput!) {
+        mutation CommentComposerAddComment($input: AddCommentInput!, $connections: [ID!]!) {
           addComment(input: $input) {
-            commentEdge { node { id bodyText createdAt author { login } } }
+            commentEdge @appendEdge(connections: $connections) {
+              node { id bodyText createdAt author { login } }
+            }
           }
         }
         """)
@@ -118,9 +129,11 @@ struct CommentComposer: View {
                 let body = text
                 Task {
                     do {
-                        try await addComment(input: .object(["subjectId": .string(subjectID), "body": .string(body)]))
+                        try await addComment(
+                            input: .object(["subjectId": .string(subjectID), "body": .string(body)]),
+                            connections: [connectionID]
+                        )
                         text = ""
-                        await refetch()
                     } catch {
                         print("comment failed: \(error)")
                     }

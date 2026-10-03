@@ -8,8 +8,8 @@ struct RepositoryScreen: View {
             nameWithOwner
             description
             forkCount
-            issues(states: OPEN) { totalCount }
             ...StarButton_repository
+            ...IssueList_repository
           }
         }
         """)
@@ -18,24 +18,63 @@ struct RepositoryScreen: View {
     var body: some View {
         PhaseView(phase: repository.phase, retry: repository.retry) { data in
             if let repo = data.repository {
-                VStack(alignment: .leading, spacing: 12) {
-                    Text(repo.nameWithOwner).font(.title2.bold())
-                    if let description = repo.description { Text(description) }
-                    HStack(spacing: 16) {
-                        Label("\(repo.forkCount) forks", systemImage: "tuningfork")
-                        Label("\(repo.issues.totalCount) open issues", systemImage: "circle")
-                        StarButton(repository: repo.starButton)
+                List {
+                    Section {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text(repo.nameWithOwner).font(.title2.bold())
+                            if let description = repo.description { Text(description) }
+                            HStack(spacing: 16) {
+                                Label("\(repo.forkCount) forks", systemImage: "tuningfork")
+                                StarButton(repository: repo.starButton)
+                            }
+                            .foregroundStyle(.secondary)
+                        }
+                        .padding(.vertical, 4)
                     }
-                    .foregroundStyle(.secondary)
-                    Spacer()
+                    IssueList(repository: repo.issueList)
                 }
-                .padding()
-                .frame(maxWidth: .infinity, alignment: .leading)
             } else {
                 ContentUnavailableView("No such repository", systemImage: "questionmark.folder")
             }
         }
         .navigationTitle("\(repository.owner)/\(repository.name)")
+    }
+}
+
+/// Open issues as a cursor connection. The fragment is refetchable, so the
+/// connection lens can fetch the next page with the fragment's own query; the
+/// pages merge into one list in the store, and `hasNext` and `isLoadingNext`
+/// are read from it like any other field.
+struct IssueList: View {
+    @Fragment("""
+        fragment IssueList_repository on Repository
+        @refetchable(queryName: "IssueListPaginationQuery")
+        @argumentDefinitions(count: {type: "Int", defaultValue: 20}, cursor: {type: "String"}) {
+          issues(first: $count, after: $cursor, states: OPEN, orderBy: {field: CREATED_AT, direction: DESC})
+            @connection(key: "IssueList_issues") {
+            totalCount
+            edges { node { id ...IssueRow_issue } }
+          }
+        }
+        """)
+    var repository: IssueList_repository
+
+    var body: some View {
+        Section("\(repository.issues.totalCount) open issues") {
+            ForEach(repository.issues.nodes) { issue in
+                NavigationLink(value: IssueQuery(id: issue.id)) { IssueRow(issue: issue.issueRow) }
+            }
+            if repository.issues.hasNext {
+                HStack {
+                    Spacer()
+                    ProgressView()
+                    Spacer()
+                }
+                .task(id: repository.issues.pageInfo.endCursor) {
+                    try? await repository.issues.loadNext()
+                }
+            }
+        }
     }
 }
 
