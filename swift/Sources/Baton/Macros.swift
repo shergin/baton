@@ -5,10 +5,11 @@
 public macro Fragment(_ document: StaticString) = #externalMacro(module: "BatonMacros", type: "FragmentMacro")
 
 /// Marks a property as an operation value and carries the operation's GraphQL.
-/// The parent passes the variables; the body reads the resolved handle.
+/// The parent passes the variables; the body reads the resolved handle. The
+/// fetch policy decides what the store may answer and when the network is asked.
 @attached(accessor, names: named(init), named(get))
 @attached(peer, names: prefixed(_))
-public macro Query(_ document: StaticString) = #externalMacro(module: "BatonMacros", type: "QueryMacro")
+public macro Query(_ document: StaticString, fetchPolicy: FetchPolicy = .storeAndNetwork) = #externalMacro(module: "BatonMacros", type: "QueryMacro")
 
 /// Marks a mutation. Spike stage: a marker only.
 @attached(peer)

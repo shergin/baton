@@ -50,6 +50,26 @@ public final class Record: Observable {
     /// type-membership bits in a later release.
     public func `is`(_ type: TypeID) -> Bool { self.type == type }
 
+    /// Forgets every value, silently: the record is leaving the store, and
+    /// anything still holding it reads missing data and reports it.
+    func clear() {
+        for index in values.indices { values[index] = .missing }
+    }
+
+    /// Drops links to swept records, silently; used on the root.
+    func prune(_ swept: Set<ObjectIdentifier>) {
+        for index in values.indices {
+            switch values[index] {
+            case .ref(let target) where swept.contains(ObjectIdentifier(target)):
+                values[index] = .missing
+            case .refs(let targets) where targets.contains(where: { $0.map { swept.contains(ObjectIdentifier($0)) } ?? false }):
+                values[index] = .missing
+            default:
+                continue
+            }
+        }
+    }
+
     // The channels. Each body is distinct on purpose: identical getters are
     // merged by the optimizer and their key paths then collide in the registrar.
     nonisolated var ch0: UInt8 { 0 }

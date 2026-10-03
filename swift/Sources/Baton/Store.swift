@@ -14,6 +14,12 @@ public final class Store {
     /// print by default; a product can route it to its own reporting.
     public var reportMissing: ((Record, Slot) -> Void)?
 
+    /// Bumped by `invalidate()`; handles fetched before it are stale.
+    public private(set) var invalidationEpoch = 0
+
+    /// Marks everything fetched so far as stale.
+    public func invalidate() { invalidationEpoch += 1 }
+
     public init(rootType: TypeID = Registry.type("Query")) {
         root = Record(type: rootType, key: Store.rootKey)
         records[Store.rootKey] = root
@@ -132,6 +138,40 @@ public final class Store {
             }
         }
         return true
+    }
+
+    /// Collects every record the selection reaches from the root, for collection.
+    func mark(_ selection: ResolvedSelection, from record: Record? = nil, into reachable: inout Set<ObjectIdentifier>) {
+        let record = record ?? root
+        reachable.insert(ObjectIdentifier(record))
+        for field in selection.fields {
+            guard case .linked(let child, _, _) = field.kind else { continue }
+            switch record.peek(field.slot) {
+            case .ref(let target):
+                mark(child, from: target, into: &reachable)
+            case .refs(let targets):
+                for case let target? in targets {
+                    mark(child, from: target, into: &reachable)
+                }
+            default:
+                continue
+            }
+        }
+    }
+
+    /// Removes every record not in `reachable` (the root stays), clears their
+    /// slots so cycles break, and drops the root's links to them. Returns how
+    /// many records were removed.
+    @discardableResult
+    func sweep(keeping reachable: Set<ObjectIdentifier>) -> Int {
+        var swept = Set<ObjectIdentifier>()
+        for (key, record) in records where key != Store.rootKey && !reachable.contains(ObjectIdentifier(record)) {
+            swept.insert(ObjectIdentifier(record))
+            records.removeValue(forKey: key)
+            record.clear()
+        }
+        if !swept.isEmpty { root.prune(swept) }
+        return swept.count
     }
 
     /// Resolves a lookup for a lens read: the cached entity for a root field

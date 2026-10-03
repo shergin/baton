@@ -60,23 +60,34 @@ public struct URLSessionTransport: Transport {
     }
 }
 
-/// Serves recorded responses by operation name; for tests, previews and benchmarks.
+/// Serves recorded responses by operation name, or through a responder that
+/// sees the whole request; for tests, previews and benchmarks.
 public final class RecordedTransport: Transport, @unchecked Sendable {
     private let lock = NSLock()
     private var responses: [String: Data]
+    private let responder: (@Sendable (Request) -> Data?)?
     public private(set) var requests: [Request] = []
 
     public init(_ responses: [String: Data] = [:]) {
         self.responses = responses
+        responder = nil
+    }
+
+    public init(responder: @escaping @Sendable (Request) -> Data?) {
+        responses = [:]
+        self.responder = responder
     }
 
     public func record(_ operationName: String, _ data: Data) {
         lock.withLock { responses[operationName] = data }
     }
 
+    public var requestCount: Int { lock.withLock { requests.count } }
+
     public func execute(_ request: Request) async throws -> Data {
         try lock.withLock {
             requests.append(request)
+            if let responder, let data = responder(request) { return data }
             guard let data = responses[request.operationName] else {
                 throw TransportError(statusCode: 0, body: "no recorded response for \(request.operationName)")
             }

@@ -30,11 +30,12 @@ public struct QueryMacro: AccessorMacro, PeerMacro {
         in context: some MacroExpansionContext
     ) throws -> [AccessorDeclSyntax] {
         let (name, _) = try requireTypedProperty(declaration, attribute: node)
+        let policy = labeledArgument("fetchPolicy", of: node) ?? ".storeAndNetwork"
         return [
             """
             @storageRestrictions(initializes: _\(raw: name))
             init(initialValue) {
-                _\(raw: name) = Baton.OperationStorage(initialValue)
+                _\(raw: name) = Baton.OperationStorage(initialValue, fetchPolicy: \(raw: policy))
             }
             """,
             """
@@ -53,6 +54,12 @@ public struct QueryMacro: AccessorMacro, PeerMacro {
         let (name, type) = try requireTypedProperty(declaration, attribute: node)
         return ["private var _\(raw: name): Baton.OperationStorage<\(type.trimmed)>"]
     }
+}
+
+/// The source text of a labeled attribute argument, if present.
+private func labeledArgument(_ label: String, of attribute: AttributeSyntax) -> String? {
+    guard case .argumentList(let arguments) = attribute.arguments else { return nil }
+    return arguments.first { $0.label?.text == label }?.expression.trimmedDescription
 }
 
 @discardableResult
