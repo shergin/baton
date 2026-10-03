@@ -55,8 +55,9 @@ stays visible while refreshing. Named after `AsyncImagePhase`, the platform's
 own word for the same shape.
 
 **Action.** A mutation as a callable value, after SwiftUI's `dismiss` and
-`openURL`: called with variables and an optional optimistic response, exposes
-`isInFlight`. *(planned)*
+`openURL`: called with one labelled argument per variable and an optional
+`optimistic:` response, `async throws`, returns the mutation's data lens,
+exposes `isInFlight`. `@Mutation("…") var star: StarMutation.Action`.
 
 ## Store
 
@@ -66,7 +67,8 @@ errors and type-membership bits.
 
 **Key.** The configured identity fields of a type (default `id`), combined
 with the typename. Objects without a key get a path-based client id, as in
-Relay.
+Relay. The store also indexes entities by id alone, for lookups without a
+type (`node(id:)`).
 
 **Storage key, slot.** Relay: a field name plus its serialized arguments,
 the key under which a value is stored. Here: interned by the compiler to an
@@ -89,9 +91,23 @@ before its records become collectable.
 marks every fetched operation stale and refetches the retained ones;
 `queryCacheExpiration` does the same by age. Stale data stays readable.
 
-**Optimistic overlay.** Relay: optimistic updates applied in a layer that is
-rebased on each commit. Here: the same, applied on a scratch overlay so only
-the net difference reaches the visible records. *(planned)*
+**Optimistic layer.** Relay's optimistic update, applied as a layer that is
+rebased on each commit. Here: a typed `OptimisticResponse` ingested like a
+server response and applied with an undo log; a commit under live layers
+lifts them, applies the payload, re-applies them, and notifies only slots
+whose value differs in the end. The server's answer replaces the layer; a
+failure reverts it. (Relay says "optimistic update"; the layer is what makes
+the rebase explicit.)
+
+**Mutation root.** The record mutation payloads hang off,
+`client:root:mutation`, beside the query root. Entities inside a payload
+merge into their own records as always.
+
+**Abstract selection.** A selection on an interface or union. The compiler
+adds `__typename`; the ingest keys the object by the concrete type the
+payload names and resolves slots against that type; a lens exposes
+`as<Type>` accessors and conditional spreads. Relay's rule holds: a spread
+inside an inline fragment on an abstract selection carries `@alias`.
 
 **Heal.** Baton's word for the response to missing data: record the event,
 mark the owning operation stale, refetch. See

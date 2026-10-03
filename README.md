@@ -1,9 +1,11 @@
 # Baton
 
-**Status: 0.2.0.** One query runs through every layer, with tests and
+**Status: 0.3.0.** Reads and writes run through every layer, with tests and
 benchmarks behind the claims: cached data in the first body, one changed
-field re-rendering one row, and memory bounded by a release buffer rather
-than by how far the user scrolls. The API will break freely until 1.0.
+field re-rendering one row, memory bounded by a release buffer rather than
+by how far the user scrolls, and optimistic responses that show at once,
+rebase under every commit and revert on failure. The API will break freely
+until 1.0.
 
 Relay for SwiftUI and Compose. A view declares the GraphQL fragment it reads,
 beside its body. The compiler aggregates the fragments of a screen into one
@@ -28,10 +30,12 @@ live in [`docs/principles/`](docs/principles/). The vocabulary is
 
 Shipped so far: the compiler over Relay's front end, lens types, the
 observable store, the one-pass ingest, `@Fragment` and `@Query` for SwiftUI,
-lookups, the sample (0.1.0); retained roots, the release buffer, collection,
-the four fetch policies, invalidation and expiration, preload (0.2.0). Still
-to come, in order: mutations, lists, errors and `@defer`, persistence. The
-promises:
+lookups, the Rick and Morty sample (0.1.0); retained roots, the release
+buffer, collection, the four fetch policies, invalidation and expiration,
+preload (0.2.0); `@Mutation` as an action value, optimistic layers, abstract
+types, lookups by id across types, the GitHub sample (0.3.0). Still to come,
+in order: lists and the edge directives, errors and `@defer`, persistence.
+The promises:
 
 - **A fragment per view.** GraphQL lives in the Swift file, next to the view
   that reads it, as a full, valid document. A parent passes a child its
@@ -124,8 +128,10 @@ struct CharactersScreen: View {
 Add the package and the plugin to a target, put `baton.json` with the schema
 path (and lookups) at the package root, and build. The plugin runs `batonc`
 for every Swift file that declares GraphQL and reports schema errors at the
-GraphQL text. `swift run RickAndMorty` opens the sample; `swift test` runs the
-proofs; `swift run -c release BatonBenchmarks` prints the numbers behind
+GraphQL text. `swift run RickAndMorty` opens the read-only sample;
+`GITHUB_TOKEN=$(gh auth token) swift run GitHubTriage` opens the one with
+writes, unions and a 1,800-definition schema; `swift test` runs the proofs;
+`swift run -c release BatonBenchmarks` prints the numbers behind
 [`BENCHMARKS.md`](BENCHMARKS.md).
 
 Requires the 26 releases of Apple's platforms and Swift 6.2 tools. The

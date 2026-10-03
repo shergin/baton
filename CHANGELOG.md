@@ -5,6 +5,68 @@ are expected and listed without apology.
 
 ## Unreleased
 
+## 0.3.0 (Exchange Zone) — 2026-10-03
+
+The write side: mutations as action values, optimistic responses as layers
+that rebase under every commit, abstract types, lookups by id, and a second
+sample against GitHub's API.
+
+- Mutations. `@Mutation("…") var star: StarMutation.Action` expands to an
+  action value after SwiftUI's `dismiss` and `openURL`: the compiler generates
+  `callAsFunction` with one labelled parameter per variable plus
+  `optimistic:`; it is `async throws`, returns the mutation's data lens, and
+  `isInFlight` is observable. Mutation payloads root at
+  `client:root:mutation`; the entities inside merge into their records as
+  always, so a view reading a repository re-renders when a star mutation
+  answers.
+- Optimistic responses. The compiler generates an `OptimisticResponse`
+  builder tree per mutation (every field optional, memberwise initializers).
+  It renders to JSON and goes through the same ingest and plan as a server
+  response, so optimistic data obeys the oracle rule and masking. The store
+  keeps optimistic layers with undo logs; a commit while layers exist lifts
+  them, applies the payload, re-applies them, and notifies only slots whose
+  value differs in the end. The server's answer replaces its layer in one
+  batch; a failure reverts it and the error is rethrown.
+- Abstract types. Selections on interfaces and unions key each object by
+  the payload's `__typename` (the compiler adds it to every abstract
+  selection; the ingest settles the key when the typename arrives, before or
+  after the id). Lenses read such selections through the record's concrete
+  type; `asRepository`-style accessors and conditional spreads work. Relay's
+  rule applies unchanged: a spread inside an inline fragment on an abstract
+  selection needs `@alias`.
+- Lookups by id across types. A lookup without a `type` (`Query.node`)
+  resolves through an id index the store keeps for every entity, so
+  `node(id:)` renders from the store for anything a list already fetched.
+- Per-target `baton.json`: read from the target's directory first, then the
+  package root, so one package holds the Rick and Morty sample, the GitHub
+  sample, the tests and the benchmarks against three schemas.
+- The GitHub sample (`examples/GitHubTriage`,
+  `GITHUB_TOKEN=$(gh auth token) swift run GitHubTriage`): the viewer's
+  assigned and authored issues and pull requests over the `SearchResultItem`
+  union, a repository screen with an optimistic star toggle, an issue screen
+  with comments and reactions and a comment composer. Its schema has about
+  1,800 definitions and compiles in 35 ms.
+- The compiler renders constant arguments in storage keys as JSON, as
+  Relay's `formatStorageKey` does (`issues(states:"OPEN")`), and escapes them
+  in generated Swift; it accepts `<Operation>.Action` and module-qualified
+  property types.
+- `TransportError` has a public initializer, for transports and tests.
+
+Tests: an optimistic response shows at once and is reverted when the server
+fails; the server's answer replaces the layer in one batch and the mutation
+returns its data; a server payload commits under a live layer and the layer
+stays on top until it resolves; resolving or reverting a layer notifies only
+the slots whose value differs in the end; objects behind a union are keyed by
+their concrete type in either typename order; `node(id:)` finds a cached
+entity by id across types.
+
+Deliberately not added: the declarative edge directives (`@appendEdge`,
+`@prependEdge`, `@deleteEdge`, `@deleteRecord`), which ship with
+`@connection` in 0.4; imperative updaters; `@alias(as:)` renaming (the
+directive is accepted, the accessor keeps its default name); typed input
+objects (variables of input-object type are still `Baton.Variable`); a
+mutation queue or offline retry (never, see the non-goals).
+
 ## 0.2.0 (First Leg) — 2026-10-02
 
 Lifetime: the store now forgets, on purpose and on Relay's terms.

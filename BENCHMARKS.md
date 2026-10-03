@@ -5,6 +5,37 @@ machine. Every number comes from `swift run -c release BatonBenchmarks` (or
 the comparison package named in its section), recorded with the revision,
 machine, OS and date. Append; never edit a past entry.
 
+## 0.3.0 — 2026-10-03
+
+Revision: the 0.3.0 tree. Machine: Apple M1 Pro (MacBook Pro), macOS 26.5.2,
+Xcode 26.6, Swift 6.3.3, release build. Same fixture as 0.1.0; the writes use
+the test schema's `rename` mutation on top of it.
+
+The read-side numbers hold: ingest 2.16 ms, same payload again 164 µs, one
+field changed 331 µs, untracked read 26 ns, tracked read 542 ns, availability
+check 104 µs (115 µs in 0.1.0; the check no longer copies plan fields). The
+commit into an empty store is 1.44 ms against 1.24 ms: every changed slot now
+also lands in an undo log, which is what lets a layer rebase.
+
+### Writes: optimistic layers, one renamed character, 20 rows observed
+
+| Measurement | Best | Median | Notifications |
+|---|---|---|---|
+| Apply a layer (one field on one record) and revert it | 41 µs | 48 µs | 2: one at the apply, one at the revert |
+| Apply, commit the whole fixture under the layer, resolve with the server's answer, restore | 375 µs | 394 µs | apply 1, rebase 0, resolve 0, restore 1 |
+
+What it means: an optimistic response costs microseconds and exactly the
+notifications its visible change deserves. A server payload of 899 records
+arriving while a layer is live costs the rebase about 200 µs more than a
+plain commit (lift the layer, apply, re-apply) and notifies nothing, because
+nothing visible changed; the answer that resolves the layer notifies nothing
+either, because it agrees with the layer. The row observes a change twice in
+the cycle: when the layer appears and when the restore commit changes the
+name back.
+
+GitHub's schema (1,558,210 bytes, about 1,800 definitions) builds in Relay's
+front end in 33 ms; the GitHub sample's six documents compile in 35 ms.
+
 ## 0.2.0 — 2026-10-02
 
 Revision: the 0.2.0 tree. Machine: Apple M1 Pro (MacBook Pro), macOS 26.5.2,
