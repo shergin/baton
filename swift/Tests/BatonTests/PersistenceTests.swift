@@ -407,6 +407,28 @@ struct PersistenceTests {
         #expect(!morty.deleted)
     }
 
+    @Test("a Float the image holds where the document reads an Int reads as nil, not a trap or a truncation")
+    func aFloatWhereAnIntIsRead() async throws {
+        try await seed(launch())
+        let info = "client:root:characters(page:1):info"
+        // A row of the info record: its type, then `count` holding a double
+        // past any Int and `pages` holding 2.5.
+        func double(_ value: Double) -> [UInt8] { [4] + withUnsafeBytes(of: value.bitPattern.littleEndian) { Array($0) } }
+        let row: [UInt8] = [0, nameID("Info"), nameID("count")] + double(1e300) + [nameID("pages")] + double(2.5)
+        sql("UPDATE records SET row = ?2 WHERE key = ?1") { statement in
+            sqlite3_bind_text(statement, 1, info, -1, unsafeBitCast(-1, to: sqlite3_destructor_type.self))
+            _ = row.withUnsafeBufferPointer { bytes in
+                sqlite3_bind_blob(statement, 2, bytes.baseAddress, Int32(bytes.count), unsafeBitCast(-1, to: sqlite3_destructor_type.self))
+            }
+        }
+        let next = launch()
+        let store = next.store
+        let data = Fixture.Data(anchor: Anchor(record: store.root, variables: Fixture(page: 1).variables, store: store))
+        _ = store.check(Fixture.plan.resolve(Fixture(page: 1).variables))
+        #expect(data.characters?.info?.count == nil)
+        #expect(data.characters?.info?.pages == nil)
+    }
+
     @Test("a database that is not an image is left alone, and the store works without one")
     func foreignDatabase() async throws {
         var db: OpaquePointer?

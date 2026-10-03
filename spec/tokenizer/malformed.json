@@ -9,5 +9,7 @@
   {"response": "int-above-uint64.json", "error": "IngestError"},
   {"response": "int-fraction.json", "error": "IngestError"},
   {"response": "int-exponent.json", "error": "IngestError"},
-  {"response": "int-list-overflow.json", "error": "IngestError"}
+  {"response": "int-list-overflow.json", "error": "IngestError"},
+  {"response": "high-surrogate-then-private-use.json", "leaves": {"tokenizer.text": "\ufffd\ue000"}},
+  {"response": "non-hex-escapes.json", "leaves": {"tokenizer.strings": ["\ufffdABC\\", "\ufffd12\"zz", "\ufffddcZZ", "\ufffd\ufffddcZZ"]}}
 ]

@@ -77,4 +77,22 @@ struct TokenizerTests {
         #expect(data.tokenizer?.json == #"{"b":1, "a":[true,null]}"#)
         #expect(data.tokenizer?.jsons == ["text", "12345678901234567890", "1.50", "true", #"{"k":"v"}"#, "[1,2]", "-0.0"])
     }
+
+    @Test("an entity whose id is a custom scalar given as a number is one record, whether its id comes before a link or after it")
+    func numericCustomIDs() throws {
+        let query = Registry.type("Query")
+        let user = Registry.type("TestNumericUser")
+        func entity(_ fields: [PlanField]) -> Selection { Selection(type: user, hasID: true, fields: fields) }
+        let id = PlanField.scalar("id", key: .fixed(Registry.slot(user, "id")), kind: .custom, list: false)
+        let plan = Plan(root: Selection(type: query, hasID: false, fields: [
+            .linked("user", key: .fixed(Registry.slot(query, "user")), plural: false, selection: entity([
+                id,
+                .linked("friend", key: .fixed(Registry.slot(user, "friend")), plural: false, selection: entity([id])),
+            ])),
+        ])).resolve(.none)
+        let first = try Ingest.normalize(Data(#"{"data":{"user":{"id":42,"friend":{"id":7}}}}"#.utf8), plan: plan)
+        let last = try Ingest.normalize(Data(#"{"data":{"user":{"friend":{"id":7},"id":42}}}"#.utf8), plan: plan)
+        #expect(first.recordKeys.contains("TestNumericUser:42"))
+        #expect(Set(last.recordKeys) == Set(first.recordKeys))
+    }
 }

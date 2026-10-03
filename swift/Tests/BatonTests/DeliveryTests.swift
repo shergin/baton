@@ -165,6 +165,13 @@ struct DeliveryTests {
         #expect(!changes.fieldErrors.contains { changes.recordTypes[Int($0.record)] == Registry.type("Character") })
     }
 
+    @Test("an error whose path holds an index that is not an integer names nothing, and the data commits")
+    func floatErrorIndex() throws {
+        let changes = try Ingest.normalize(fixture("float-error-index"), plan: TestList.plan.resolve(TestList(page: 1).variables))
+        #expect(changes.recordKeys.contains("Character:1"))
+        #expect(changes.fieldErrors.isEmpty)
+    }
+
     @Test("@required: NONE drops the enclosing lens, LOG reports the path, THROW throws at the read")
     func required() async throws {
         let store = Store()

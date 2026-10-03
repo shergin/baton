@@ -1,0 +1,1 @@
+{"data":{"characters":{"results":[{"id":"1","name":"Rick Sanchez"}]}},"errors":[{"message":"a float index","path":["characters","results",0.0,"name"]}]}

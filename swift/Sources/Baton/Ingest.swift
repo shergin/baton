@@ -339,20 +339,30 @@ public enum Ingest {
             return Data(bytes[start..<position])
         }
 
-        /// A response path: strings and integers.
+        /// A response path: strings and integers. A path with an index that
+        /// is not an integer names nothing; the response it came with is
+        /// read all the same.
         mutating func path() throws -> [PathSegment]? {
             skipWhitespace()
             if peek() == 0x6E { try literal("null"); return nil }
             var segments: [PathSegment] = []
+            var readable = true
             try elements { cursor in
                 if cursor.peek() == 0x22 {
                     let (start, end, escaped) = try cursor.scanString()
                     segments.append(.name(Ingest.materialize(base: cursor.base, start, end, escaped)))
-                } else {
-                    segments.append(.index(try cursor.parseInt()))
+                    return
                 }
+                let start = cursor.position
+                if let index = try? cursor.parseInt() {
+                    segments.append(.index(index))
+                    return
+                }
+                cursor.position = start
+                try cursor.skipValue()
+                readable = false
             }
-            return segments
+            return readable ? segments : nil
         }
 
         /// The response's `errors` array: messages and paths.
@@ -657,10 +667,20 @@ public enum Ingest {
                 if byte == 0x2C { position += 1; continue }
                 let (keyStart, keyEnd, keyEscaped) = try scanString()
                 skipWhitespace(); try expect(0x3A); skipWhitespace()
+                let keyLength = keyEnd - keyStart
+                let isID = !keyEscaped && keyLength == 2 && base[keyStart] == 0x69 && base[keyStart + 1] == 0x64
+                // An id of a custom scalar may be a number: its text keys the
+                // record, as it does when the id comes before the link.
+                if needsID, isID, peek() == 0x2D || (peek() >= 0x30 && peek() <= 0x39) {
+                    let start = position
+                    try skipValue()
+                    pendingID = (start, position, false)
+                    needsID = false
+                    continue
+                }
                 guard !keyEscaped, peek() == 0x22 else { try skipValue(); continue }
                 let (start, end, escaped) = try scanString()
-                let keyLength = keyEnd - keyStart
-                if needsID, keyLength == 2, base[keyStart] == 0x69, base[keyStart + 1] == 0x64 {
+                if needsID, isID {
                     pendingID = (start, end, escaped)
                     needsID = false
                 } else if needsType, keyLength == typename.utf8CodeUnitCount, memcmp(base + keyStart, typename.utf8Start, keyLength) == 0 {
@@ -849,17 +869,22 @@ public enum Ingest {
                     index = end
                     continue
                 }
-                var scalar = hex4(base, index + 1)
+                // One without four hex digits is a replacement character, and
+                // what follows the `u` is read as the string's own bytes, as
+                // the scan that found the string's end read them.
+                guard var scalar = hex4(base, index + 1) else {
+                    bytes.append(contentsOf: [0xEF, 0xBF, 0xBD])
+                    index += 1
+                    continue
+                }
                 index += 4
                 // A high surrogate pairs with a low one written as the next
                 // escape. Anything else leaves it unpaired, a replacement
                 // character, and the next escape is read on its own.
-                if scalar >= 0xD800 && scalar < 0xDC00, index + 6 < end, base[index + 1] == 0x5C, base[index + 2] == 0x75 {
-                    let low = hex4(base, index + 3)
-                    if low >= 0xDC00 && low <= 0xDFFF {
-                        scalar = 0x10000 + ((scalar - 0xD800) << 10) + (low - 0xDC00)
-                        index += 6
-                    }
+                if scalar >= 0xD800 && scalar < 0xDC00, index + 6 < end, base[index + 1] == 0x5C, base[index + 2] == 0x75,
+                   let low = hex4(base, index + 3), low >= 0xDC00 && low <= 0xDFFF {
+                    scalar = 0x10000 + ((scalar - 0xD800) << 10) + (low - 0xDC00)
+                    index += 6
                 }
                 bytes.append(contentsOf: Array(String(UnicodeScalar(scalar) ?? "\u{FFFD}").utf8))
             default: bytes.append(base[index])
@@ -869,21 +894,24 @@ public enum Ingest {
         return String(decoding: bytes, as: UTF8.self)
     }
 
-    /// The value of the four hex digits at `start`.
+    /// The value of the four hex digits at `start`, or nil when one is not.
     @inline(__always)
-    static func hex4(_ base: UnsafePointer<UInt8>, _ start: Int) -> UInt32 {
+    static func hex4(_ base: UnsafePointer<UInt8>, _ start: Int) -> UInt32? {
         var value: UInt32 = 0
-        for offset in 0..<4 { value = value << 4 | UInt32(hexValue(base[start + offset])) }
+        for offset in 0..<4 {
+            guard let digit = hexValue(base[start + offset]) else { return nil }
+            value = value << 4 | UInt32(digit)
+        }
         return value
     }
 
     @inline(__always)
-    static func hexValue(_ byte: UInt8) -> UInt8 {
+    static func hexValue(_ byte: UInt8) -> UInt8? {
         switch byte {
         case 0x30...0x39: byte - 0x30
         case 0x61...0x66: byte - 0x61 + 10
         case 0x41...0x46: byte - 0x41 + 10
-        default: 0
+        default: nil
         }
     }
 }
