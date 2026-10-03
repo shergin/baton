@@ -10,7 +10,7 @@ struct BatonPlugin: BuildToolPlugin {
         guard let target = target as? SourceModuleTarget else { return [] }
         return try Self.commands(
             targetName: target.name,
-            sources: target.sourceFiles(withSuffix: ".swift").map(\.url),
+            sources: target.sourceFiles.filter { ["swift", "graphql"].contains($0.url.pathExtension) }.map(\.url),
             packageDirectory: context.package.directoryURL,
             workDirectory: context.pluginWorkDirectoryURL,
             tool: try context.tool(named: "batonc").url
@@ -19,22 +19,26 @@ struct BatonPlugin: BuildToolPlugin {
 
     /// Builds the single `batonc generate` command for a set of sources.
     static func commands(targetName: String, sources: [URL], packageDirectory: URL, workDirectory: URL, tool: URL) throws -> [Command] {
-        let configuration = try Configuration.load(from: packageDirectory)
+        let configurationFile = packageDirectory.appending(path: "baton.json")
+        let configuration = try Configuration.load(at: configurationFile)
         let schema = packageDirectory.appending(path: configuration.schema)
         let outputDirectory = workDirectory.appending(path: "Generated")
+        let shared = outputDirectory.appending(path: "Baton.baton.swift")
 
-        var inputs: [URL] = [schema]
-        var arguments = ["generate", "--schema", schema.path(percentEncoded: false)]
+        var inputs: [URL] = [schema, configurationFile]
+        var arguments = ["generate", "--config", configurationFile.path(percentEncoded: false), "--shared", shared.path(percentEncoded: false)]
         var outputs: [URL] = []
         for source in sources {
             inputs.append(source)
+            // Documents in .graphql files compile too; only Swift files get a sibling output.
             arguments.append(source.path(percentEncoded: false))
-            guard declaresGraphQL(source) else { continue }
+            guard source.pathExtension == "swift", declaresGraphQL(source) else { continue }
             let output = outputDirectory.appending(path: source.deletingPathExtension().lastPathComponent + ".baton.swift")
             outputs.append(output)
             arguments += ["--emit", "\(source.path(percentEncoded: false))=\(output.path(percentEncoded: false))"]
         }
         guard !outputs.isEmpty else { return [] }
+        outputs.append(shared)
 
         return [
             .buildCommand(
@@ -57,8 +61,7 @@ struct BatonPlugin: BuildToolPlugin {
 struct Configuration: Decodable {
     var schema: String
 
-    static func load(from directory: URL) throws -> Configuration {
-        let url = directory.appending(path: "baton.json")
+    static func load(at url: URL) throws -> Configuration {
         let data = try Data(contentsOf: url)
         return try JSONDecoder().decode(Configuration.self, from: data)
     }
@@ -73,7 +76,7 @@ extension BatonPlugin: XcodeBuildToolPlugin {
     func createBuildCommands(context: XcodePluginContext, target: XcodeTarget) throws -> [Command] {
         try Self.commands(
             targetName: target.displayName,
-            sources: target.inputFiles.filter { $0.url.pathExtension == "swift" }.map(\.url),
+            sources: target.inputFiles.filter { ["swift", "graphql"].contains($0.url.pathExtension) }.map(\.url),
             packageDirectory: context.xcodeProject.directoryURL,
             workDirectory: context.pluginWorkDirectoryURL,
             tool: try context.tool(named: "batonc").url

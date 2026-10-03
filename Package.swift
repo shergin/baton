@@ -16,7 +16,8 @@ let package = Package(
         .target(
             name: "Baton",
             dependencies: ["BatonMacros"],
-            path: "swift/Sources/Baton"
+            path: "swift/Sources/Baton",
+            swiftSettings: [.swiftLanguageMode(.v6)]
         ),
         .macro(
             name: "BatonMacros",
@@ -36,10 +37,26 @@ let package = Package(
             dependencies: ["batonc"],
             path: "swift/Plugins/BatonPlugin"
         ),
-        .executableTarget(
-            name: "S0Client",
+        .testTarget(
+            name: "BatonTests",
             dependencies: ["Baton"],
-            path: "swift/Spike/S0Client",
+            path: "swift/Tests/BatonTests",
+            resources: [.copy("Fixtures")],
+            swiftSettings: [.swiftLanguageMode(.v6)],
+            plugins: ["BatonPlugin"]
+        ),
+        .executableTarget(
+            name: "RickAndMorty",
+            dependencies: ["Baton"],
+            path: "examples/RickAndMorty",
+            swiftSettings: [.swiftLanguageMode(.v6)],
+            plugins: ["BatonPlugin"]
+        ),
+        .executableTarget(
+            name: "BatonBenchmarks",
+            dependencies: ["Baton"],
+            path: "swift/Benchmarks",
+            swiftSettings: [.swiftLanguageMode(.v6)],
             plugins: ["BatonPlugin"]
         ),
     ]
