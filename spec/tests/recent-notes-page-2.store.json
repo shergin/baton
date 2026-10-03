@@ -1,5 +1,5 @@
 {
-  "Character:1": {"__TestRecentNotes_notes_connection": {"__ref": "Character:1:__TestRecentNotes_notes_connection"}, "__typename": "Character", "id": "1", "notes(before:\"c4\",last:2)": {"__ref": "Character:1:notes(before:\"c4\",last:2)"}},
+  "Character:1": {"__TestRecentNotes_notes_connection": {"__ref": "Character:1:__TestRecentNotes_notes_connection"}, "__typename": "Character", "id": "1"},
   "Character:1:__TestRecentNotes_notes_connection": {"__typename": "NoteConnection", "edges": {"__refs": ["Character:1:notes(before:\"c4\",last:2):edges:0", "Character:1:notes(before:\"c4\",last:2):edges:1"]}, "pageInfo": {"__ref": "Character:1:__TestRecentNotes_notes_connection:pageInfo"}},
   "Character:1:__TestRecentNotes_notes_connection:pageInfo": {"__typename": "PageInfo", "hasPreviousPage": true, "startCursor": "c2"},
   "Character:1:notes(before:\"c4\",last:2)": {"__typename": "NoteConnection", "edges": {"__refs": ["Character:1:notes(before:\"c4\",last:2):edges:0", "Character:1:notes(before:\"c4\",last:2):edges:1"]}, "pageInfo": {"__ref": "Character:1:notes(before:\"c4\",last:2):pageInfo"}},

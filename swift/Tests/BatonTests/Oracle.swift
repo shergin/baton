@@ -79,9 +79,9 @@ enum Oracle {
     }
 
     /// The leaves of the store, read by the same plan from the root.
-    @MainActor static func leaves(of root: Record, plan: ResolvedSelection) -> [Leaf] {
+    @MainActor static func leaves(of root: Record, in store: Store, plan: ResolvedSelection) -> [Leaf] {
         var leaves: [Leaf] = []
-        walk(root, plan, "", &leaves)
+        walk(root, store, plan, "", &leaves)
         return leaves
     }
 
@@ -153,14 +153,21 @@ enum Oracle {
 
     // MARK: The store
 
-    @MainActor private static func walk(_ record: Record, _ selection: ResolvedSelection, _ path: String, _ leaves: inout [Leaf]) {
+    @MainActor private static func walk(_ record: Record, _ store: Store, _ selection: ResolvedSelection, _ path: String, _ leaves: inout [Leaf]) {
         for field in selection.variant(for: record.type).fields {
             let here = path.isEmpty ? field.responseKey : path + "." + field.responseKey
             if field.responseKey == "__typename" {
                 leaves.append(Leaf(path: here, value: .string(record.type.name)))
                 continue
             }
-            let value = record.read(field.slot)
+            var value = record.read(field.slot)
+            // A page that joined its connection after a cursor keeps no link
+            // on the parent; its record is where the connection's merge left
+            // it, under the parent's key and the page's storage key.
+            if case .missing = value, case .linked(_, _, _, .some) = field.kind,
+               let page = store.existing(record.key + ":" + field.storageKey) {
+                value = .ref(page)
+            }
             if case .missing = value { continue }
             switch field.kind {
             case .scalar(let kind, _):
@@ -168,12 +175,12 @@ enum Oracle {
             case .linked(let child, _, _, _):
                 switch value {
                 case .ref(let target) where !target.deleted:
-                    walk(target, child, here, &leaves)
+                    walk(target, store, child, here, &leaves)
                 case .refs(let targets):
                     for (offset, target) in targets.enumerated() {
                         let item = here + "." + String(offset)
                         if let target, !target.deleted {
-                            walk(target, child, item, &leaves)
+                            walk(target, store, child, item, &leaves)
                         } else {
                             leaves.append(Leaf(path: item, value: .null))
                         }

@@ -139,6 +139,16 @@ public struct ChangeSet: Sendable {
         starts = grouped
     }
 
+    /// The page a connection field of a record delivered, found through the
+    /// merge it asked for: a page after a cursor keeps no link of its own.
+    func page(_ record: Int32, _ connection: ResolvedConnection) -> RawValue? {
+        guard case .ref(let connectionRecord)? = entry(record, connection.slot)?.value else { return nil }
+        for case .merge(connectionRecord, let page, _, _) in edits {
+            return .ref(page)
+        }
+        return nil
+    }
+
     /// The entry of a record's slot, once grouped.
     func entry(_ record: Int32, _ slot: Slot) -> Entry? {
         for position in Int(starts[Int(record)])..<Int(starts[Int(record) + 1])
@@ -468,8 +478,10 @@ public enum Ingest {
                     caught = caught || field.caught
                     let slot = field.slot
                     resolved = (record, slot)
-                    guard case .linked(let child, _, _, _) = field.kind, let entry = changes.entry(record, slot) else { break walk }
-                    switch entry.value {
+                    guard case .linked(let child, _, _, let connection) = field.kind,
+                          let value = changes.entry(record, slot)?.value ?? connection.flatMap({ changes.page(record, $0) })
+                    else { break walk }
+                    switch value {
                     case .ref(let target):
                         record = target
                         selection = child
@@ -626,13 +638,18 @@ public enum Ingest {
                         }
                     } else {
                         let childRecord = try object(plan: child, parent: record, storageKey: field.storageKey, listIndex: nil, depth: depth + 1, fixedRecord: nil)
-                        scratch[depth].append((matched, .ref(childRecord)))
                         if let connection {
                             // The page is the server's field; the connection record it
                             // merges into hangs off the parent by Relay's handle key.
+                            // A page that joins the connection after a cursor keeps no
+                            // link of its own, which would be a key per cursor on the
+                            // parent: the connection holds its edges.
+                            if case .replace = connection.mode { scratch[depth].append((matched, .ref(childRecord))) }
                             let connectionRecord = changes.record(for: changes.recordKeys[Int(record)] + ":" + connection.storageKey, type: child.type, entity: false)
                             extra[depth].append((connection.storageKey, connection.slot, .ref(connectionRecord)))
                             changes.edits.append(.merge(connection: connectionRecord, page: childRecord, slots: connection.slots, mode: connection.mode))
+                        } else {
+                            scratch[depth].append((matched, .ref(childRecord)))
                         }
                         if let handle = field.handle { insertion(handle, childRecord) }
                     }

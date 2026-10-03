@@ -311,6 +311,25 @@ struct ListTests {
         #expect(store.existing("Character:1:notes(after:null,first:7)") != nil, "the page is stored under the inlined arguments")
     }
 
+    @Test("a page after a cursor keeps no link on its parent, and a field error inside it lands on the field it names")
+    func pageAfterACursor() throws {
+        let store = Store()
+        store.reportMissing = nil
+        store.commit(try Ingest.normalize(notesPage(1), plan: TestNotesQuery.plan.resolve(TestNotesQuery(id: "1").variables)))
+        let next = TestNotesPaginationQuery(count: 2, cursor: "c2", id: "1")
+        let changes = try Ingest.normalize(fixture("notes-page-2-errors"), plan: TestNotesPaginationQuery.plan.resolve(next.variables))
+        let placed = try #require(changes.fieldErrors.first)
+        #expect(changes.recordKeys[Int(placed.record)] == "Note:n3")
+        #expect(placed.slot.storageKey == "text")
+        store.commit(changes)
+        let character = try #require(store.existing("Character:1"))
+        guard case .missing = character.read(Registry.slot(character.type, #"notes(after:"c2",first:2)"#)) else {
+            Issue.record("the page's link was written")
+            return
+        }
+        #expect(store.existing("Note:n3")?.error(Registry.slot(Registry.type("Note"), "text"))?.message == "text hidden")
+    }
+
     @Test("@alias(as:) names the spread's accessor")
     func aliasRenames() throws {
         let store = Store()

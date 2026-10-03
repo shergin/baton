@@ -1,5 +1,5 @@
 {
-  "Character:1": {"__TestNotes_notes_connection": {"__ref": "Character:1:__TestNotes_notes_connection"}, "__typename": "Character", "id": "1", "name": "Rick Sanchez", "notes(after:\"c2\",first:2)": {"__ref": "Character:1:notes(after:\"c2\",first:2)"}},
+  "Character:1": {"__TestNotes_notes_connection": {"__ref": "Character:1:__TestNotes_notes_connection"}, "__typename": "Character", "id": "1", "name": "Rick Sanchez"},
   "Character:1:__TestNotes_notes_connection": {"__typename": "NoteConnection", "edges": {"__refs": ["Character:1:notes(after:\"c2\",first:2):edges:0", "Character:1:notes(after:\"c2\",first:2):edges:1"]}, "pageInfo": {"__ref": "Character:1:__TestNotes_notes_connection:pageInfo"}, "totalCount": 5},
   "Character:1:__TestNotes_notes_connection:pageInfo": {"__typename": "PageInfo", "endCursor": "c4", "hasNextPage": true},
   "Character:1:notes(after:\"c2\",first:2)": {"__typename": "NoteConnection", "edges": {"__refs": ["Character:1:notes(after:\"c2\",first:2):edges:0", "Character:1:notes(after:\"c2\",first:2):edges:1"]}, "pageInfo": {"__ref": "Character:1:notes(after:\"c2\",first:2):pageInfo"}, "totalCount": 5},

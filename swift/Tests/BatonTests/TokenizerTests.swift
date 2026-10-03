@@ -63,7 +63,7 @@ struct TokenizerTests {
         let store = Store()
         store.reportMissing = nil
         store.commit(try Ingest.normalize(data, plan: plan))
-        let leaves = Oracle.leaves(of: store.root, plan: plan)
+        let leaves = Oracle.leaves(of: store.root, in: store, plan: plan)
         for expected in response.leaves {
             #expect(leaves.first { $0.path == expected.path } == expected)
         }
@@ -103,7 +103,7 @@ struct TokenizerTests {
 
         store.commit(try Ingest.normalize(try Oracle.replacing(path, with: value, in: response), plan: plan))
         #expect(counter.fired == 1)
-        #expect(Oracle.leaves(of: store.root, plan: plan).first { $0.path == path }?.value == value)
+        #expect(Oracle.leaves(of: store.root, in: store, plan: plan).first { $0.path == path }?.value == value)
     }
 
     @Test("an entity whose id is a custom scalar given as a number is one record, whether its id comes before a link or after it")
