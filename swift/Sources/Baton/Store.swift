@@ -659,11 +659,25 @@ public final class Store {
 
     private func contains(_ connection: Record, node: ObjectIdentifier?) -> Bool {
         guard let node else { return false }
+        var nodeSlot = NodeSlot()
         for case let edge? in Store.edges(connection, Registry.slot(connection.type, "edges"))
-        where Store.node(of: edge, Registry.slot(edge.type, "node")) == node {
+        where Store.node(of: edge, nodeSlot.on(edge.type)) == node {
             return true
         }
         return false
+    }
+
+    /// The `node` slot of the edges a walk over a connection meets, taken
+    /// from the registry once per edge type rather than once per edge.
+    private struct NodeSlot {
+        private var slot: Slot?
+
+        mutating func on(_ type: TypeID) -> Slot {
+            if let slot, slot.type == type { return slot }
+            let found = Registry.slot(type, "node")
+            slot = found
+            return found
+        }
     }
 
     private func append(_ edge: Record, to connection: Record, prepend: Bool, _ transaction: inout Transaction, _ undo: inout [Undo]) {
@@ -679,8 +693,9 @@ public final class Store {
         guard let connection = records[connectionKey], !connection.deleted else { return }
         let edgesSlot = Registry.slot(connection.type, "edges")
         let edges = Store.edges(connection, edgesSlot)
+        var nodeSlot = NodeSlot()
         let kept = edges.filter { edge in
-            guard let edge, case .ref(let node) = edge.peek(Registry.slot(edge.type, "node")) else { return true }
+            guard let edge, case .ref(let node) = edge.peek(nodeSlot.on(edge.type)) else { return true }
             return !node.hasID(id)
         }
         if kept.count == edges.count { return }
