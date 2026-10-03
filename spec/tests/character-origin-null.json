@@ -1,0 +1,1 @@
+{"data":{"character":{"id":"1","name":"Rick Sanchez","origin":null,"status":"Alive","image":"rick.png","location":{"id":"20","name":"Earth (Replacement Dimension)","dimension":"Replacement Dimension"},"gender":"Male","species":"Human","type":"Genius"}},"errors":[{"message":"origin name unavailable","path":["character","origin","name"]},{"message":"the service is degraded"}]}

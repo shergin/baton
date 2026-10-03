@@ -159,6 +159,21 @@ struct DeliveryTests {
         #expect(fired() == 2, "the error comes back")
     }
 
+    @Test("an error under a parent the server nulled lands on that parent with its whole path, and one with no path still counts")
+    func errorsUnderANullParent() throws {
+        let changes = try Ingest.normalize(fixture("character-origin-null"), plan: TestProfileQuery.plan.resolve(TestProfileQuery(id: "1").variables))
+        let store = Store()
+        store.reportMissing = nil
+        store.commit(changes)
+        let character = try #require(store.existing("Character:1"))
+        let type = Registry.type("Character")
+        #expect(character.error(Registry.slot(type, "origin")) == FieldError(message: "origin name unavailable", path: "character.origin.name"))
+        #expect(character.error(Registry.slot(type, "name")) == nil, "not on the sibling of the null link")
+        #expect(changes.fieldErrors.count == 1)
+        #expect(changes.unplacedErrors == [FieldError(message: "the service is degraded", path: "")])
+        #expect(changes.uncaughtFieldErrors.contains(FieldError(message: "the service is degraded", path: "")))
+    }
+
     @Test("an error whose path names a negative list index does not trap and lands on no row")
     func negativeErrorIndex() throws {
         let changes = try Ingest.normalize(fixture("negative-error-index"), plan: TestList.plan.resolve(TestList(page: 1).variables))
@@ -170,6 +185,7 @@ struct DeliveryTests {
         let changes = try Ingest.normalize(fixture("float-error-index"), plan: TestList.plan.resolve(TestList(page: 1).variables))
         #expect(changes.recordKeys.contains("Character:1"))
         #expect(changes.fieldErrors.isEmpty)
+        #expect(changes.unplacedErrors.map(\.message) == ["a float index"])
     }
 
     @Test("@required: NONE drops the enclosing lens, LOG reports the path, THROW throws at the read")

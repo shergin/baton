@@ -54,6 +54,9 @@ public struct ChangeSet: Sendable {
     public internal(set) var scalars: ContiguousArray<RawValue> = []
     public internal(set) var edits: ContiguousArray<Edit> = []
     public internal(set) var fieldErrors: ContiguousArray<FieldErrorEntry> = []
+    /// Errors the response carried without a path, or with one that names
+    /// no field it selected: nothing in the store holds them.
+    public internal(set) var unplacedErrors: [FieldError] = []
     var index: [String: Int32] = [:]
 
     init(bytes: [UInt8], small: Bool = false) {
@@ -67,9 +70,10 @@ public struct ChangeSet: Sendable {
         refs.reserveCapacity(8_192)
     }
 
-    /// The field errors no `@catch` handles; they fail a `@throwOnFieldError` operation.
+    /// The field errors no `@catch` handles, placed or not; they fail a
+    /// `@throwOnFieldError` operation.
     public var uncaughtFieldErrors: [FieldError] {
-        fieldErrors.filter { !$0.caught }.map(\.error)
+        fieldErrors.filter { !$0.caught }.map(\.error) + unplacedErrors
     }
 
     @inline(__always)
@@ -384,7 +388,10 @@ public enum Ingest {
         }
 
         /// Resolves each error's path through the plan and the entries to the
-        /// record and slot it names; a path that leads nowhere is dropped.
+        /// record and slot it names. The walk stops at a field whose value is
+        /// null, a link the response does not continue, or a list index it
+        /// does not have, and the error lands on the last field it reached:
+        /// with GraphQL's null propagation, that is the nullable ancestor.
         mutating func resolveErrors(root: ResolvedSelection, rootID: Int32) {
             var positions: [UInt64: Int] = [:]
             positions.reserveCapacity(changes.entries.count)
@@ -392,52 +399,51 @@ public enum Ingest {
                 positions[UInt64(UInt32(bitPattern: entry.record)) << 32 | UInt64(UInt32(bitPattern: entry.slot.index))] = position
             }
             for (message, path) in rawErrors {
-                guard let path, !path.isEmpty else { continue }
+                let rendered = (path ?? []).map { segment in
+                    switch segment {
+                    case .name(let name): name
+                    case .index(let offset): String(offset)
+                    }
+                }.joined(separator: ".")
+                let error = FieldError(message: message, path: rendered)
+                guard let path, !path.isEmpty else {
+                    changes.unplacedErrors.append(error)
+                    continue
+                }
                 var record = rootID
                 var selection = root
                 var caught = false
                 var resolved: (Int32, Slot)?
-                var rendered: [String] = []
                 var segments = path[...]
-                while let segment = segments.popFirst() {
-                    guard case .name(let name) = segment, let index = selection.field(named: name) else { break }
-                    rendered.append(name)
+                walk: while let segment = segments.popFirst() {
+                    guard case .name(let name) = segment, let index = selection.field(named: name) else { break walk }
                     let field = selection.fields[index]
                     caught = caught || field.caught
                     let slot = selection.slot(of: index, on: changes.recordTypes[Int(record)])
                     resolved = (record, slot)
                     guard case .linked(let child, _, _, _) = field.kind,
                           let position = positions[UInt64(UInt32(bitPattern: record)) << 32 | UInt64(UInt32(bitPattern: slot.index))]
-                    else { break }
+                    else { break walk }
                     switch changes.entries[position].value {
                     case .ref(let target):
                         record = target
                         selection = child
                     case .refs(let start, let count):
-                        guard case .index(let offset)? = segments.first, offset >= 0, offset < Int(count) else { break }
+                        guard case .index(let offset)? = segments.first, offset >= 0, offset < Int(count) else { break walk }
                         segments.removeFirst()
-                        rendered.append(String(offset))
                         let target = changes.refs[Int(start) + offset]
-                        if target < 0 { break }
+                        if target < 0 { break walk }
                         record = target
                         selection = child
                     default:
-                        break
+                        break walk
                     }
                 }
-                guard let (record, slot) = resolved else { continue }
-                for segment in segments {
-                    switch segment {
-                    case .name(let name): rendered.append(name)
-                    case .index(let offset): rendered.append(String(offset))
-                    }
+                guard let (record, slot) = resolved else {
+                    changes.unplacedErrors.append(error)
+                    continue
                 }
-                changes.fieldErrors.append(ChangeSet.FieldErrorEntry(
-                    record: record,
-                    slot: slot,
-                    error: FieldError(message: message, path: rendered.joined(separator: ".")),
-                    caught: caught
-                ))
+                changes.fieldErrors.append(ChangeSet.FieldErrorEntry(record: record, slot: slot, error: error, caught: caught))
             }
         }
 

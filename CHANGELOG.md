@@ -24,6 +24,13 @@ are expected and listed without apology.
   input object's keys were written unquoted and unsorted. Floats in keys are
   written as the runtime renders a variable. A lookup in `baton.json` whose
   argument the selection does not pass is a compile error.
+- A field error under a parent the server nulled lands on that parent. The
+  walk that places an error left a `switch` where it meant to stop, so an
+  error at `character.origin.name` with `origin` null was stored on
+  `character.name`. An error keeps its whole path, and one with no path, or
+  a path that names nothing selected, is kept in
+  `ChangeSet.unplacedErrors` and counts as uncaught for
+  `@throwOnFieldError`; before, it was dropped.
 - Generated code states its isolation: `Types`, `Slots` and every generated
   type are `nonisolated`, readers stay `@MainActor`, so a target built with
   the Xcode template's default of main-actor isolation compiles them (it
