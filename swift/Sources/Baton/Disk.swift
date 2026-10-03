@@ -20,6 +20,10 @@ final class Disk: @unchecked Sendable {
     static let applicationID: Int64 = 0x4241_544E
     /// Client fields that describe a request in flight, not data.
     static let requestState: Set<String> = ["__isLoadingNext", "__isLoadingPrevious"]
+    /// The key prefixes of records that hang off the mutation and the
+    /// subscription root by path.
+    static let mutationPayloads = Store.mutationRootKey + ":"
+    static let subscriptionPayloads = Store.subscriptionRootKey + ":"
 
     enum Opening {
         case already
@@ -110,9 +114,6 @@ final class Disk: @unchecked Sendable {
 
     private func connect() throws(Failure) -> [String: Double] {
         try? FileManager.default.createDirectory(atPath: (path as NSString).deletingLastPathComponent, withIntermediateDirectories: true)
-        if let size = (try? FileManager.default.attributesOfItem(atPath: path))?[.size] as? Int, size > sizeLimit {
-            throw .unreadable
-        }
         var handle: OpaquePointer?
         let status = sqlite3_open_v2(path, &handle, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_NOMUTEX, nil)
         db = handle
@@ -129,6 +130,10 @@ final class Disk: @unchecked Sendable {
         let fresh = application == 0 && format == 0 && tables == 0
         if !fresh, application != Disk.applicationID { throw .unavailable }
         if !fresh, format != Disk.format { throw .unreadable }
+        // An image that outgrew its limit starts over.
+        if let size = (try? FileManager.default.attributesOfItem(atPath: path))?[.size] as? Int, size > sizeLimit {
+            throw .unreadable
+        }
 
         // Cache-grade durability: a commit does not wait for the disk, and a
         // checkpoint does not force the drive's own cache. A crash loses the
@@ -395,7 +400,7 @@ final class Disk: @unchecked Sendable {
         // What hangs off the mutation and subscription roots by path is a
         // payload, read once by its caller; entities inside it have keys of
         // their own and are written as themselves.
-        if record.key.hasPrefix(Store.mutationRootKey) || record.key.hasPrefix(Store.subscriptionRootKey) { return true }
+        if record.key.hasPrefix(Disk.mutationPayloads) || record.key.hasPrefix(Disk.subscriptionPayloads) { return true }
         scratch.removeAll(keepingCapacity: true)
         scratch.append((snapshot.deleted ? 1 : 0) | (record.entityID != nil ? 2 : 0))
         append(varint: UInt64(name(of: record.type)))
