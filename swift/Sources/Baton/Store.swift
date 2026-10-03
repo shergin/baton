@@ -71,13 +71,10 @@ public final class Store {
             }
             return (record, false)
         }
-        let record = Record(type: type, key: key)
+        let id = entity ? String(key.dropFirst(type.name.count + 1)) : nil
+        let record = Record(type: type, key: key, entityID: id)
         records[key] = record
-        if entity {
-            let id = String(key.dropFirst(type.name.count + 1))
-            record.entityID = id
-            byID[id] = record
-        }
+        if let id { byID[id] = record }
         return (record, true)
     }
 

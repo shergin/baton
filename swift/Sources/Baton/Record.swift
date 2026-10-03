@@ -5,11 +5,11 @@ import Observation
 /// record changes, through one of sixteen invalidation channels.
 @MainActor
 public final class Record: Observable {
-    public let type: TypeID
+    nonisolated public let type: TypeID
     /// `Type:id` for entities with a key, a path-based client id otherwise.
-    public let key: String
+    nonisolated public let key: String
     /// The id of an entity, for the store's index and for refetching by id.
-    public internal(set) var entityID: String?
+    nonisolated public let entityID: String?
     /// Whether `@deleteRecord` removed it: links to it read as null and lists
     /// skip it, until a payload names it again.
     public private(set) var deleted = false
@@ -22,9 +22,10 @@ public final class Record: Observable {
     /// type has: a cursor-paginated field registers a slot per page on its
     /// parent type, and records of that type must not pay for pages they
     /// never saw.
-    init(type: TypeID, key: String) {
+    init(type: TypeID, key: String, entityID: String? = nil) {
         self.type = type
         self.key = key
+        self.entityID = entityID
         values = []
     }
 
