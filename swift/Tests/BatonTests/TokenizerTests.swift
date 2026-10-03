@@ -1,6 +1,7 @@
 import Baton
 import BatonSpec
 import Foundation
+import Observation
 import Testing
 
 /// A response of the tokenizer fixture that is not well formed, and what
@@ -76,6 +77,33 @@ struct TokenizerTests {
         let data = TestTokenizerQuery.Data(anchor: Anchor(record: store.root, variables: .none, store: store))
         #expect(data.tokenizer?.json == #"{"b":1, "a":[true,null]}"#)
         #expect(data.tokenizer?.jsons == ["text", "12345678901234567890", "1.50", "true", #"{"k":"v"}"#, "[1,2]", "-0.0"])
+    }
+
+    @Test("a list of scalars that changes in one element is stored again, and an equal one notifies nothing", arguments: [
+        ("tokenizer.strings", LeafValue.list([.string("plain"), .null, .string("été"), .string("changed"), .null])),
+        ("tokenizer.counts", LeafValue.list([.int(0), .int(1), .null])),
+        ("tokenizer.ratios", LeafValue.list([.double(1000), .double(0.5)])),
+        ("tokenizer.flags", LeafValue.list([.bool(true), .null, .bool(true)])),
+    ])
+    func scalarListChanges(_ path: String, _ value: LeafValue) throws {
+        let store = Store()
+        store.reportMissing = nil
+        let response = Spec.data("tokenizer/response.json")
+        store.commit(try Ingest.normalize(response, plan: plan))
+        let tokenizer = try #require(store.existing("Tokenizer:t1"))
+        let field = String(path.split(separator: ".").last!)
+        let slot = Registry.slot(tokenizer.type, field)
+        final class Counter: @unchecked Sendable { var fired = 0 }
+        let counter = Counter()
+        func observe() { withObservationTracking { _ = tokenizer.read(slot) } onChange: { counter.fired += 1 } }
+
+        observe()
+        store.commit(try Ingest.normalize(response, plan: plan))
+        #expect(counter.fired == 0, "the same list is no change")
+
+        store.commit(try Ingest.normalize(try Oracle.replacing(path, with: value, in: response), plan: plan))
+        #expect(counter.fired == 1)
+        #expect(Oracle.leaves(of: store.root, plan: plan).first { $0.path == path }?.value == value)
     }
 
     @Test("an entity whose id is a custom scalar given as a number is one record, whether its id comes before a link or after it")

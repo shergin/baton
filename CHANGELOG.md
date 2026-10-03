@@ -170,6 +170,9 @@ are expected and listed without apology.
   takes 152 µs against 182, a commit that changes one field 154 µs against
   185, and the ingest 2.95 ms against 2.78. Placing field errors scans the
   record's entries instead of indexing every entry.
+- A commit compares a list where it is stored before building the new
+  one, so a list that did not change allocates nothing: the fixture's
+  unchanged payload commits in 133 µs against 152.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

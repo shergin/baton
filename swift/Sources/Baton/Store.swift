@@ -390,6 +390,38 @@ public final class Store {
     /// value equal to the slot's current value is neither allocated nor
     /// recorded. The edits follow: connection pages merge, edges insert,
     /// records delete. Returns the undo log of what changed.
+    /// Whether a stored list of links holds the records the change set's
+    /// list names, in order.
+    private static func same(_ existing: ContiguousArray<Record?>, _ changes: ChangeSet, _ start: Int32, _ count: Int32, _ objects: ContiguousArray<Record>) -> Bool {
+        guard existing.count == Int(count) else { return false }
+        for offset in 0..<Int(count) {
+            let target = changes.refs[Int(start) + offset]
+            if target < 0 {
+                if existing[offset] != nil { return false }
+            } else if existing[offset] !== objects[Int(target)] {
+                return false
+            }
+        }
+        return true
+    }
+
+    /// Whether a stored list of scalars holds the values the change set's
+    /// list gives, in order.
+    private static func same(_ existing: ContiguousArray<Value>, _ changes: ChangeSet, _ start: Int32, _ count: Int32) -> Bool {
+        guard existing.count == Int(count) else { return false }
+        for offset in 0..<Int(count) {
+            switch (changes.scalars[Int(start) + offset], existing[offset]) {
+            case (.null, .null): continue
+            case (.bool(let new), .bool(let old)) where new == old: continue
+            case (.int(let new), .int(let old)) where new == old: continue
+            case (.double(let new), .double(let old)) where new == old: continue
+            case (.string(let from, let to, let escaped), .string(let old)) where changes.stringEquals(from, to, escaped: escaped, old): continue
+            default: return false
+            }
+        }
+        return true
+    }
+
     private func apply(_ changes: ChangeSet, into transaction: inout Transaction) -> [Undo] {
         var objects = ContiguousArray<Record>()
         objects.reserveCapacity(changes.recordKeys.count)
@@ -442,6 +474,10 @@ public final class Store {
                     value = .string(changes.string(start, end, escaped: escaped))
                 case .ref(let target): value = .ref(objects[Int(target)])
                 case .refs(let start, let count):
+                    // An unchanged list is compared where it is, not built.
+                    if case .refs(let existing) = record.peek(entry.slot), Store.same(existing, changes, start, count, objects) {
+                        continue
+                    }
                     var list = ContiguousArray<Record?>()
                     list.reserveCapacity(Int(count))
                     for offset in 0..<Int(count) {
@@ -450,6 +486,9 @@ public final class Store {
                     }
                     value = .refs(list)
                 case .list(let start, let count):
+                    if case .list(let existing) = record.peek(entry.slot), Store.same(existing, changes, start, count) {
+                        continue
+                    }
                     var list = ContiguousArray<Value>()
                     list.reserveCapacity(Int(count))
                     for offset in 0..<Int(count) {
