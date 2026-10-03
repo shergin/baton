@@ -1,0 +1,83 @@
+# Continuous integration: the gates run locally before a commit, on the
+# toolchains the README names. The Swift jobs build the compiler from the
+# same checkout first, because the package's build plugin runs it and the
+# repository does not carry the binary.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  # The compiler: formatting, lints as errors, and the tests, the goldens of
+  # the Swift emitter among them. On Linux, because nothing in the compiler is
+  # Apple's and the Kotlin runtime's builds will run it there.
+  compiler:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: compiler
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: compiler
+      - run: cargo fmt --check
+      - run: cargo clippy --all-targets -- -D warnings
+      - run: cargo test
+
+  # The package on the current Xcode. Every target builds with warnings as
+  # errors: the runtime, the macros, both samples, the benchmarks and the
+  # tests, generated code included.
+  swift:
+    runs-on: macos-26
+    # A test that waits for a condition that never comes would otherwise hold
+    # the runner for six hours.
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: compiler
+          shared-key: batonc
+      - run: scripts/build-compiler.sh
+      - run: swift build --build-tests -Xswiftc -warnings-as-errors
+      - run: swift test -Xswiftc -warnings-as-errors
+      # The optimizer merges identical getters, and a record's invalidation
+      # channels are key paths to getters; only a release build can show them
+      # collide.
+      - run: swift test -c release
+      # The samples and the tests are macOS executables, so nothing above
+      # compiles the library for the platform it is written for.
+      - run: >
+          xcodebuild build -quiet -scheme Baton
+          -destination 'generic/platform=iOS Simulator'
+          -skipMacroValidation -skipPackagePluginValidation
+
+  # The declared floor is a contract, so it is tested as one: the package
+  # builds and its tests pass on Xcode 26.0, the first with Swift 6.2 tools.
+  floor:
+    runs-on: macos-26
+    timeout-minutes: 45
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.0.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: compiler
+          shared-key: batonc
+      - run: scripts/build-compiler.sh
+      - run: swift test
