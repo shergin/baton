@@ -63,15 +63,18 @@ public struct ChangeSet: Sendable {
     public internal(set) var unplacedErrors: [FieldError] = []
     var index: [String: Int32] = [:]
 
-    init(bytes: [UInt8], small: Bool = false) {
+    /// Reserves by the response's size: the Rick and Morty fixture writes an
+    /// entry per 33 bytes, a record per 760 and a list element per 250, and
+    /// the estimates round each up.
+    init(bytes: [UInt8]) {
         self.bytes = bytes
-        if small { return }
-        index.reserveCapacity(1024)
-        recordKeys.reserveCapacity(1024)
-        recordTypes.reserveCapacity(1024)
-        recordIsEntity.reserveCapacity(1024)
-        entries.reserveCapacity(32_768)
-        refs.reserveCapacity(8_192)
+        let records = bytes.count / 512 + 4
+        index.reserveCapacity(records)
+        recordKeys.reserveCapacity(records)
+        recordTypes.reserveCapacity(records)
+        recordIsEntity.reserveCapacity(records)
+        entries.reserveCapacity(bytes.count / 24 + 8)
+        refs.reserveCapacity(bytes.count / 128 + 4)
     }
 
     /// Groups the entries by record and keeps the last one per slot, each at
@@ -223,13 +226,13 @@ public enum Ingest {
 
     public static func normalize(_ data: Data, plan: ResolvedSelection, rootKey: String = Store.rootKey) throws -> ChangeSet {
         let bytes = [UInt8](data)
-        var changes = ChangeSet(bytes: bytes)
-        try bytes.withUnsafeBufferPointer { buffer in
-            var cursor = Cursor(base: buffer.baseAddress!, count: buffer.count, changes: changes)
+        // The change set is made inside the cursor and moved out, so no copy
+        // is held while the cursor appends and nothing is copied on write.
+        return try bytes.withUnsafeBufferPointer { buffer in
+            var cursor = Cursor(base: buffer.baseAddress!, count: buffer.count, changes: ChangeSet(bytes: bytes))
             try cursor.run(root: plan, rootKey: rootKey)
-            changes = cursor.changes
+            return cursor.changes
         }
-        return changes
     }
 
     /// Normalizes a response off the caller's actor and inside the caller's
@@ -244,16 +247,14 @@ public enum Ingest {
     /// concrete type.
     public static func normalizeObject(_ data: Data, plan: ResolvedSelection, key: String, type: TypeID, entity: Bool) throws -> ChangeSet {
         let bytes = [UInt8](data)
-        var changes = ChangeSet(bytes: bytes)
-        try bytes.withUnsafeBufferPointer { buffer in
-            var cursor = Cursor(base: buffer.baseAddress!, count: buffer.count, changes: changes)
+        return try bytes.withUnsafeBufferPointer { buffer in
+            var cursor = Cursor(base: buffer.baseAddress!, count: buffer.count, changes: ChangeSet(bytes: bytes))
             cursor.skipWhitespace()
             let rootID = cursor.changes.record(for: key, type: type, entity: entity)
             _ = try cursor.object(plan: plan, parent: rootID, slot: nil, listIndex: nil, depth: 0, fixedRecord: rootID)
             cursor.changes.group()
-            changes = cursor.changes
+            return cursor.changes
         }
-        return changes
     }
 
     /// Reads a part of an incremental response after the first.
@@ -336,15 +337,14 @@ public enum Ingest {
         var changes: ChangeSet
         /// One scratch buffer per nesting depth: (field index, value). Slots are
         /// resolved when the object ends, because abstract selections resolve
-        /// them against the concrete type the payload names.
-        var scratch: [ContiguousArray<(Int, ChangeSet.RawValue)>] = (0..<24).map { _ in
-            var array = ContiguousArray<(Int, ChangeSet.RawValue)>()
-            array.reserveCapacity(32)
-            return array
-        }
+        /// them against the concrete type the payload names. Made when the
+        /// walk first reaches the depth, and reused after.
+        var scratch: [ContiguousArray<(Int, ChangeSet.RawValue)>] = []
         /// Client fields written beside the object's own, per depth: the
         /// connection links, by storage key and declared slot.
-        var extra: [ContiguousArray<(String, Slot, ChangeSet.RawValue)>] = (0..<24).map { _ in [] }
+        var extra: [ContiguousArray<(String, Slot, ChangeSet.RawValue)>] = []
+        /// How deep a selection may nest.
+        static let depthLimit = 24
         /// The response's `errors`, as read; resolved against the plan at the end.
         var rawErrors: [(message: String, path: [PathSegment]?)] = []
 
@@ -500,9 +500,16 @@ public enum Ingest {
         /// sorts its keys.
         mutating func object(plan: ResolvedSelection, parent: Int32, slot: Slot?, listIndex: Int?, depth: Int, fixedRecord: Int32?) throws -> Int32 {
             try expect(0x7B)
-            guard depth < scratch.count else { throw IngestError(offset: position, message: "selection nested deeper than 24 levels") }
-            scratch[depth].removeAll(keepingCapacity: true)
-            extra[depth].removeAll(keepingCapacity: true)
+            guard depth < Cursor.depthLimit else { throw IngestError(offset: position, message: "selection nested deeper than 24 levels") }
+            if depth == scratch.count {
+                var buffer = ContiguousArray<(Int, ChangeSet.RawValue)>()
+                buffer.reserveCapacity(16)
+                scratch.append(buffer)
+                extra.append([])
+            } else {
+                scratch[depth].removeAll(keepingCapacity: true)
+                extra[depth].removeAll(keepingCapacity: true)
+            }
             var record: Int32 = fixedRecord ?? -1
             var concreteType = fixedRecord.map { changes.recordTypes[Int($0)] } ?? plan.type
             var pendingID: (Int, Int, Bool)? = nil

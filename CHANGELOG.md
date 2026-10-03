@@ -182,6 +182,13 @@ are expected and listed without apology.
   array are read by a scanner of the response bytes alone; each built the
   plan-driven cursor and its 48 scratch buffers. A 69-byte frame reads in
   375 ns against 2.21 µs.
+- A small response costs what it is. The change set reserved room for
+  32,768 entries whatever the response, the cursor made 48 scratch buffers
+  before reading a byte, and the change set the ingest returned was copied
+  on its first append. Reservations now follow the response's size, a
+  buffer is made when the walk first reaches its depth, and the change set
+  is built where it is filled: a 64-byte mutation payload ingests in 2.4 µs
+  against 4.5 µs.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 
