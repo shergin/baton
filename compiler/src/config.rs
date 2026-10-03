@@ -5,6 +5,7 @@ use std::path::{Path, PathBuf};
 
 /// A root field that returns an entity addressable by one of its arguments.
 #[derive(Debug, Clone, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Lookup {
     /// `Type.field`, e.g. `Query.character`.
     pub field: String,
@@ -18,19 +19,26 @@ pub struct Lookup {
 }
 
 #[derive(Debug, Clone, Default, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Config {
     /// Path of the schema SDL, relative to the configuration file.
     #[serde(default)]
     pub schema: String,
     #[serde(default)]
     pub lookups: Vec<Lookup>,
+    /// Where the configuration was read from, for its diagnostics.
+    #[serde(skip)]
+    pub path: PathBuf,
 }
 
 impl Config {
     pub fn load(path: &Path) -> Result<Config, String> {
         let text = std::fs::read_to_string(path)
             .map_err(|error| format!("batonc: cannot read {}: {error}", path.display()))?;
-        serde_json::from_str(&text).map_err(|error| format!("batonc: {}: {error}", path.display()))
+        let mut config: Config = serde_json::from_str(&text)
+            .map_err(|error| format!("batonc: {}: {error}", path.display()))?;
+        config.path = path.to_path_buf();
+        Ok(config)
     }
 
     /// The schema path resolved against the configuration file's directory.

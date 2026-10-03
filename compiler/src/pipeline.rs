@@ -350,6 +350,10 @@ pub fn compile(
     )?;
     let schema = Arc::new(schema);
     timings.schema = started.elapsed();
+    let errors = validate_lookups(&schema, config);
+    if !errors.is_empty() {
+        return Err(errors);
+    }
 
     let started = Instant::now();
     let mut definitions = Vec::new();
@@ -395,6 +399,71 @@ pub fn compile(
     timings.lower = started.elapsed();
 
     Ok(Compiled { plan, timings })
+}
+
+/// Checks each lookup in `baton.json` against the schema: the root field
+/// exists and takes the argument, and `type` is the field's concrete return
+/// type, omitted only when the field returns an interface or a union.
+fn validate_lookups(schema: &SDLSchema, config: &Config) -> Vec<Diagnostic> {
+    let location = common::Location::new(
+        SourceLocationKey::standalone(&config.path.to_string_lossy()),
+        common::Span::new(0, 0),
+    );
+    let mut errors = Vec::new();
+    for lookup in &config.lookups {
+        let mut fail = |message: String| errors.push(Diagnostic::error(message, location));
+        let Some((type_name, field_name)) = lookup.field.split_once('.') else {
+            fail(format!(
+                "the lookup `{}` names no field: write `Type.field`",
+                lookup.field
+            ));
+            continue;
+        };
+        let Some(parent) = schema.get_type(type_name.intern()) else {
+            fail(format!(
+                "the lookup `{}` names the type `{type_name}`, which the schema does not have",
+                lookup.field
+            ));
+            continue;
+        };
+        let Some(field) = schema.named_field(parent, field_name.intern()) else {
+            fail(format!(
+                "the lookup `{}` names a field `{type_name}` does not have",
+                lookup.field
+            ));
+            continue;
+        };
+        let field = schema.field(field);
+        if field
+            .arguments
+            .named(common::ArgumentName(lookup.argument.as_str().intern()))
+            .is_none()
+        {
+            fail(format!(
+                "the lookup `{}` takes `{}`, which the field has no argument of",
+                lookup.field, lookup.argument
+            ));
+        }
+        let returns = field.type_.inner();
+        let returned = schema.get_type_name(returns).lookup();
+        match (&lookup.type_name, returns.is_abstract_type()) {
+            (Some(named), false) if named == returned => {}
+            (Some(named), false) => fail(format!(
+                "the lookup `{}` names the type `{named}`, but the field returns `{returned}`",
+                lookup.field
+            )),
+            (Some(_), true) => fail(format!(
+                "`{}` returns `{returned}`, an interface or union: the lookup takes no `type`, and finds the id among its types",
+                lookup.field
+            )),
+            (None, false) => fail(format!(
+                "`{}` returns `{returned}`: name it as the lookup's `type`",
+                lookup.field
+            )),
+            (None, true) => {}
+        }
+    }
+    errors
 }
 
 /// The subset of Relay's validations that apply to Baton's directive set,
@@ -1135,3 +1204,7 @@ fn argument_value_plan(value: &graphql_ir::Value) -> ArgumentValuePlan {
         ),
     }
 }
+
+#[cfg(test)]
+#[path = "tests/pipeline_tests.rs"]
+mod tests;
