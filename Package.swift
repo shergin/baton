@@ -51,6 +51,16 @@ let package = Package(
             swiftSettings: [.swiftLanguageMode(.v6)],
             plugins: ["BatonPlugin"]
         ),
+        .testTarget(
+            name: "BatonMacrosTests",
+            dependencies: [
+                "BatonMacros",
+                .product(name: "SwiftSyntaxMacroExpansion", package: "swift-syntax"),
+                .product(name: "SwiftSyntaxMacrosGenericTestSupport", package: "swift-syntax"),
+            ],
+            path: "swift/Tests/BatonMacrosTests",
+            swiftSettings: [.swiftLanguageMode(.v6)]
+        ),
         .executableTarget(
             name: "RickAndMorty",
             dependencies: ["Baton"],
