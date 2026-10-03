@@ -23,6 +23,7 @@ public final class Environment {
     public init(transport: any Transport, store: Store = Store()) {
         self.store = store
         self.transport = transport
+        store.environment = self
     }
 
     public convenience init(url: URL, headers: [String: String] = [:]) {
@@ -65,18 +66,33 @@ public final class Environment {
 
     /// Fetches an operation and commits the response; the handle, if any, follows.
     public func fetch<Op: Operation>(_ operation: Op) async throws {
+        try await fetch(Op.self, variables: operation.variables)
+    }
+
+    /// Fetches an operation by its type and variables and commits the response.
+    /// No handle and no root come of it: refetches and pagination run this way,
+    /// and the records they fill stay alive through whatever reaches them.
+    public func fetch<Op: Operation>(_ operation: Op.Type, variables: Variables) async throws {
         let request = Request(
             operationName: Op.name,
             text: Op.text,
             persistedID: Op.persistedID,
-            variables: operation.variables
+            variables: variables
         )
         let data = try await transport.execute(request)
-        let resolved = Op.plan.resolve(operation.variables)
+        let resolved = Op.plan.resolve(variables)
         let changes = try await Task.detached(priority: .userInitiated) {
             try Ingest.normalize(data, plan: resolved)
         }.value
         store.commit(changes)
+    }
+
+    /// Fetches a page of a connection: the loading flag on the connection
+    /// record is set for the duration, and the commit merges the page.
+    func paginate<Op: Operation>(_ operation: Op.Type, variables: Variables, connection: Record, loading: Slot) async throws {
+        connection.write(loading, .bool(true))
+        defer { connection.write(loading, .bool(false)) }
+        try await fetch(operation, variables: variables)
     }
 
     /// Commits a mutation. The optimistic response, if any, is ingested with the

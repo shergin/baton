@@ -7,7 +7,7 @@
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
-use common::{Diagnostic, NoopPerfLogger, SourceLocationKey};
+use common::{Diagnostic, NamedItem, NoopPerfLogger, SourceLocationKey};
 use graphql_ir::{
     ConditionValue, FragmentDefinition, FragmentDefinitionNameSet, Program, Selection,
 };
@@ -17,8 +17,11 @@ use intern::Lookup;
 use intern::string_key::Intern;
 use relay_config::ProjectConfig;
 use relay_transforms::{
-    Programs, apply_transforms, disallow_reserved_aliases, disallow_typename_on_root,
-    validate_connections, validate_global_variable_names, validate_no_double_underscore_alias,
+    FragmentAliasMetadata, Programs, RefetchableMetadata, apply_transforms,
+    disallow_reserved_aliases, disallow_typename_on_root,
+    extract_connection_metadata_from_directive, extract_handle_field_directives,
+    extract_values_from_handle_field_directive, validate_connections,
+    validate_global_variable_names, validate_no_double_underscore_alias,
     validate_no_unselectable_selections, validate_relay_directives, validate_static_args,
     validate_unused_fragment_variables, validate_unused_variables,
 };
@@ -60,8 +63,33 @@ pub struct FragmentPlan {
     pub type_condition: String,
     /// Whether the type condition is an interface or union.
     pub type_is_abstract: bool,
+    /// `@argumentDefinitions`, with defaults.
     pub arguments: Vec<VariablePlan>,
+    /// `@refetchable`: the generated query and how to bind it.
+    pub refetch: Option<RefetchPlan>,
     pub reader: Vec<SelectionPlan>,
+}
+
+/// How a `@refetchable` fragment is fetched again: the generated query, the
+/// variable carrying the owner's id, and the connection it paginates.
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct RefetchPlan {
+    pub operation: String,
+    /// The query's variable names: the fragment's arguments and the globals it uses.
+    pub variables: Vec<String>,
+    /// The variable the owner's id is passed as (`id`), when the query roots at `node`.
+    pub identifier: Option<String>,
+    pub connection: Option<PaginationPlan>,
+}
+
+/// The variables a fragment's one connection paginates by.
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct PaginationPlan {
+    pub path: Vec<String>,
+    pub first: Option<String>,
+    pub after: Option<String>,
+    pub last: Option<String>,
+    pub before: Option<String>,
 }
 
 #[derive(Debug, Clone, serde::Serialize)]
@@ -88,6 +116,7 @@ pub struct VariablePlan {
     pub base_kind: TypeKind,
     pub non_null: bool,
     pub list: bool,
+    pub default_value: Option<ConstantPlan>,
 }
 
 /// What kind of named type a field or variable has.
@@ -107,6 +136,33 @@ pub enum TypeKind {
     InputObject,
 }
 
+/// A GraphQL constant, as a fragment argument or a variable default.
+#[derive(Debug, Clone, serde::Serialize)]
+#[serde(tag = "kind", content = "value", rename_all = "snake_case")]
+pub enum ConstantPlan {
+    Null,
+    Bool(bool),
+    Int(i64),
+    Float(f64),
+    String(String),
+    List(Vec<ConstantPlan>),
+    Object(Vec<(String, ConstantPlan)>),
+}
+
+/// An argument value: a variable of the enclosing scope, or a constant.
+#[derive(Debug, Clone, serde::Serialize)]
+#[serde(tag = "kind", content = "value", rename_all = "snake_case")]
+pub enum ArgumentValuePlan {
+    Variable(String),
+    Constant(ConstantPlan),
+}
+
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct ArgumentPlan {
+    pub name: String,
+    pub value: ArgumentValuePlan,
+}
+
 /// A root field that returns an entity addressable by one of its arguments,
 /// so a cached entity can satisfy the field before it was ever fetched.
 #[derive(Debug, Clone, serde::Serialize)]
@@ -116,6 +172,31 @@ pub struct LookupPlan {
     pub argument: String,
 }
 
+/// A `@connection` field: the client record pages merge into, and the cursor
+/// arguments that decide whether a page replaces, appends or prepends.
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct ConnectionPlan {
+    pub key: String,
+    /// Relay's handle key with the filters: `__Key_connection(states:"OPEN")`.
+    pub storage_key: String,
+    pub edge_type: String,
+    pub page_info_type: String,
+    pub after: Option<ArgumentValuePlan>,
+    pub before: Option<ArgumentValuePlan>,
+}
+
+/// An edge directive on a mutation payload field, as Relay's handle.
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct HandlePlan {
+    /// `appendEdge`, `prependEdge`, `appendNode`, `prependNode`, `deleteEdge`, `deleteRecord`.
+    pub kind: String,
+    pub connections: Option<ArgumentValuePlan>,
+    pub edge_type_name: Option<String>,
+}
+
+/// The plan IR is built once per compilation and read by the emitters, so the
+/// size difference between a scalar and a linked field is of no account.
+#[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, serde::Serialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum SelectionPlan {
@@ -128,6 +209,7 @@ pub enum SelectionPlan {
         non_null: bool,
         list: bool,
         storage_key: String,
+        handle: Option<HandlePlan>,
     },
     Linked {
         name: String,
@@ -144,15 +226,21 @@ pub enum SelectionPlan {
         is_abstract: bool,
         storage_key: String,
         lookup: Option<LookupPlan>,
+        connection: Option<ConnectionPlan>,
+        handle: Option<HandlePlan>,
         selections: Vec<SelectionPlan>,
     },
     Inline {
         type_condition: Option<String>,
+        /// An explicit `@alias(as:)` name.
+        alias: Option<String>,
         selections: Vec<SelectionPlan>,
     },
     Spread {
         fragment: String,
         type_condition: String,
+        /// `@arguments`, bound by the parent lens into the child's scope.
+        arguments: Vec<ArgumentPlan>,
     },
     Condition {
         variable: Option<String>,
@@ -259,6 +347,15 @@ fn validate(program: &Program, project_config: &ProjectConfig) -> Result<(), Vec
     }
 }
 
+/// Which program a selection set comes from. The reader reads a connection
+/// through Relay's handle key; the normalization writes the server field and
+/// carries the handle beside it.
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Side {
+    Reader,
+    Normalization,
+}
+
 struct Lowering<'a> {
     schema: &'a SDLSchema,
     programs: &'a Programs,
@@ -286,7 +383,7 @@ fn lower(schema: &SDLSchema, programs: &Programs, config: &Config) -> Plan {
             .reader
             .operation(operation.name.item)
             .map(|reader_operation| {
-                lowering.selections(&reader_operation.selections, operation.type_)
+                lowering.selections(&reader_operation.selections, operation.type_, Side::Reader)
             })
             .unwrap_or_default();
         let text = programs
@@ -314,7 +411,11 @@ fn lower(schema: &SDLSchema, programs: &Programs, config: &Config) -> Plan {
             id: format!("{:x}", md5::compute(text.as_bytes())),
             text,
             reader,
-            normalization: lowering.selections(&operation.selections, operation.type_),
+            normalization: lowering.selections(
+                &operation.selections,
+                operation.type_,
+                Side::Normalization,
+            ),
         });
     }
     plan.operations
@@ -334,8 +435,50 @@ impl Lowering<'_> {
                 .to_string(),
             type_is_abstract: fragment.type_condition.is_abstract_type(),
             arguments: self.variables(&fragment.variable_definitions),
-            reader: self.selections(&fragment.selections, fragment.type_condition),
+            refetch: self.refetch(fragment),
+            reader: self.selections(&fragment.selections, fragment.type_condition, Side::Reader),
         }
+    }
+
+    /// The `@refetchable` metadata Relay attached: the generated query's name
+    /// and variables, the id variable, and the one connection it paginates.
+    fn refetch(&self, fragment: &FragmentDefinition) -> Option<RefetchPlan> {
+        let metadata = RefetchableMetadata::find(&fragment.directives)?;
+        let operation = metadata.operation_name.0.lookup().to_string();
+        let variables = self
+            .programs
+            .normalization
+            .operation(metadata.operation_name)
+            .map(|query| {
+                query
+                    .variable_definitions
+                    .iter()
+                    .map(|variable| variable.name.item.0.lookup().to_string())
+                    .collect()
+            })
+            .unwrap_or_default();
+        let connection = extract_connection_metadata_from_directive(&fragment.directives)
+            .filter(|metadatas| metadatas.len() == 1)
+            .and_then(|metadatas| {
+                let metadata = &metadatas[0];
+                let path = metadata.path.as_ref()?;
+                Some(PaginationPlan {
+                    path: path.iter().map(|part| part.lookup().to_string()).collect(),
+                    first: metadata.first.map(|name| name.lookup().to_string()),
+                    after: metadata.after.map(|name| name.lookup().to_string()),
+                    last: metadata.last.map(|name| name.lookup().to_string()),
+                    before: metadata.before.map(|name| name.lookup().to_string()),
+                })
+            });
+        Some(RefetchPlan {
+            operation,
+            variables,
+            identifier: metadata
+                .identifier_info
+                .as_ref()
+                .map(|info| info.identifier_query_variable_name.lookup().to_string()),
+            connection,
+        })
     }
 
     fn variables(&self, definitions: &[graphql_ir::VariableDefinition]) -> Vec<VariablePlan> {
@@ -352,6 +495,10 @@ impl Lowering<'_> {
                 base_kind: self.type_kind(variable.type_.inner()),
                 non_null: variable.type_.is_non_null(),
                 list: variable.type_.is_list(),
+                default_value: variable
+                    .default_value
+                    .as_ref()
+                    .map(|value| constant_plan(&value.item)),
             })
             .collect()
     }
@@ -370,7 +517,47 @@ impl Lowering<'_> {
         }
     }
 
-    fn selections(&self, selections: &[Selection], parent_type: Type) -> Vec<SelectionPlan> {
+    /// The named type of a field on `parent`, for the connection's edge and
+    /// page info types.
+    fn field_type_name(&self, parent: Type, field: &str) -> String {
+        self.schema
+            .named_field(parent, field.intern())
+            .map(|id| {
+                self.schema
+                    .get_type_name(self.schema.field(id).type_.inner())
+                    .lookup()
+                    .to_string()
+            })
+            .unwrap_or_default()
+    }
+
+    /// The edge directive or connection handle Relay attached to a field.
+    fn handle(&self, directives: &[graphql_ir::Directive]) -> Option<HandlePlan> {
+        let directive = extract_handle_field_directives(directives).next()?;
+        let values = extract_values_from_handle_field_directive(directive);
+        let arguments = values.handle_args.unwrap_or_default();
+        Some(HandlePlan {
+            kind: values.handle.lookup().to_string(),
+            connections: arguments
+                .named(common::ArgumentName("connections".intern()))
+                .map(|argument| argument_value_plan(&argument.value.item)),
+            edge_type_name: arguments
+                .named(common::ArgumentName("edgeTypeName".intern()))
+                .and_then(|argument| match &argument.value.item {
+                    graphql_ir::Value::Constant(graphql_ir::ConstantValue::String(name)) => {
+                        Some(name.lookup().to_string())
+                    }
+                    _ => None,
+                }),
+        })
+    }
+
+    fn selections(
+        &self,
+        selections: &[Selection],
+        parent_type: Type,
+        side: Side,
+    ) -> Vec<SelectionPlan> {
         selections
             .iter()
             .map(|selection| match selection {
@@ -389,6 +576,7 @@ impl Lowering<'_> {
                         non_null: definition.type_.is_non_null(),
                         list: definition.type_.is_list(),
                         storage_key: storage_key(definition.name.item.lookup(), &field.arguments),
+                        handle: self.handle(&field.directives),
                     }
                 }
                 Selection::LinkedField(field) => {
@@ -405,6 +593,59 @@ impl Lowering<'_> {
                             type_name: lookup.type_name.clone(),
                             argument: lookup.argument.clone(),
                         });
+                    let mut handle = self.handle(&field.directives);
+                    let mut connection = None;
+                    let mut field_storage_key = storage_key(name, &field.arguments);
+                    if handle
+                        .as_ref()
+                        .is_some_and(|handle| handle.kind == "connection")
+                    {
+                        handle = None;
+                        let directive = extract_handle_field_directives(&field.directives)
+                            .next()
+                            .expect("the connection handle was found above");
+                        let values = extract_values_from_handle_field_directive(directive);
+                        let handle_name = format!("__{}_connection", values.key.lookup());
+                        // Relay's reader keeps only the filter arguments; the
+                        // normalization keeps them all, and the connection
+                        // record's key is the handle with the filters.
+                        let filtered: Vec<graphql_ir::Argument> = field
+                            .arguments
+                            .iter()
+                            .filter(|argument| match &values.filters {
+                                Some(filters) => filters.contains(&argument.name.item.0),
+                                None => false,
+                            })
+                            .cloned()
+                            .collect();
+                        let client_key = match side {
+                            Side::Reader => storage_key(&handle_name, &field.arguments),
+                            Side::Normalization => storage_key(&handle_name, &filtered),
+                        };
+                        if side == Side::Reader {
+                            field_storage_key = client_key.clone();
+                        }
+                        let cursor = |argument: &str| {
+                            field
+                                .arguments
+                                .named(common::ArgumentName(argument.intern()))
+                                .map(|argument| argument_value_plan(&argument.value.item))
+                                .filter(|value| {
+                                    !matches!(
+                                        value,
+                                        ArgumentValuePlan::Constant(ConstantPlan::Null)
+                                    )
+                                })
+                        };
+                        connection = Some(ConnectionPlan {
+                            key: values.key.lookup().to_string(),
+                            storage_key: client_key,
+                            edge_type: self.field_type_name(target, "edges"),
+                            page_info_type: self.field_type_name(target, "pageInfo"),
+                            after: cursor("after"),
+                            before: cursor("before"),
+                        });
+                    }
                     SelectionPlan::Linked {
                         name: name.to_string(),
                         alias: field.alias.map(|alias| alias.item.lookup().to_string()),
@@ -415,20 +656,43 @@ impl Lowering<'_> {
                         plural: definition.type_.is_list(),
                         has_id: self.type_has_id(target),
                         is_abstract: target.is_abstract_type(),
-                        storage_key: storage_key(name, &field.arguments),
+                        storage_key: field_storage_key,
                         lookup,
-                        selections: self.selections(&field.selections, target),
+                        connection,
+                        handle,
+                        selections: self.selections(&field.selections, target, side),
                     }
                 }
-                Selection::InlineFragment(inline) => SelectionPlan::Inline {
-                    type_condition: inline
-                        .type_condition
-                        .map(|type_| self.schema.get_type_name(type_).lookup().to_string()),
-                    selections: self.selections(
-                        &inline.selections,
-                        inline.type_condition.unwrap_or(parent_type),
-                    ),
-                },
+                Selection::InlineFragment(inline) => {
+                    let alias =
+                        FragmentAliasMetadata::find(&inline.directives).and_then(|metadata| {
+                            let alias = metadata.alias.item.lookup();
+                            let default: Option<String> = if metadata.wraps_spread {
+                                match inline.selections.first() {
+                                    Some(Selection::FragmentSpread(spread)) => {
+                                        Some(spread.fragment.item.0.lookup().to_string())
+                                    }
+                                    _ => None,
+                                }
+                            } else {
+                                inline.type_condition.map(|type_| {
+                                    self.schema.get_type_name(type_).lookup().to_string()
+                                })
+                            };
+                            (default.as_deref() != Some(alias)).then(|| alias.to_string())
+                        });
+                    SelectionPlan::Inline {
+                        type_condition: inline
+                            .type_condition
+                            .map(|type_| self.schema.get_type_name(type_).lookup().to_string()),
+                        alias,
+                        selections: self.selections(
+                            &inline.selections,
+                            inline.type_condition.unwrap_or(parent_type),
+                            side,
+                        ),
+                    }
+                }
                 Selection::FragmentSpread(spread) => SelectionPlan::Spread {
                     fragment: spread.fragment.item.0.lookup().to_string(),
                     type_condition: self
@@ -442,6 +706,14 @@ impl Lowering<'_> {
                                 .to_string()
                         })
                         .unwrap_or_default(),
+                    arguments: spread
+                        .arguments
+                        .iter()
+                        .map(|argument| ArgumentPlan {
+                            name: argument.name.item.0.lookup().to_string(),
+                            value: argument_value_plan(&argument.value.item),
+                        })
+                        .collect(),
                 },
                 Selection::Condition(condition) => SelectionPlan::Condition {
                     variable: match &condition.value {
@@ -451,7 +723,7 @@ impl Lowering<'_> {
                         ConditionValue::Constant(_) => None,
                     },
                     passing: condition.passing_value,
-                    selections: self.selections(&condition.selections, parent_type),
+                    selections: self.selections(&condition.selections, parent_type, side),
                 },
             })
             .collect()
@@ -509,6 +781,46 @@ fn storage_key(name: &str, arguments: &[graphql_ir::Argument]) -> String {
         })
         .collect();
     format!("{}({})", name, rendered.join(","))
+}
+
+fn constant_plan(value: &graphql_ir::ConstantValue) -> ConstantPlan {
+    match value {
+        graphql_ir::ConstantValue::Int(int) => ConstantPlan::Int(*int),
+        graphql_ir::ConstantValue::Float(float) => ConstantPlan::Float(float.as_float()),
+        graphql_ir::ConstantValue::String(string) | graphql_ir::ConstantValue::Enum(string) => {
+            ConstantPlan::String(string.lookup().to_string())
+        }
+        graphql_ir::ConstantValue::Boolean(boolean) => ConstantPlan::Bool(*boolean),
+        graphql_ir::ConstantValue::Null() => ConstantPlan::Null,
+        graphql_ir::ConstantValue::List(items) => {
+            ConstantPlan::List(items.iter().map(constant_plan).collect())
+        }
+        graphql_ir::ConstantValue::Object(fields) => ConstantPlan::Object(
+            fields
+                .iter()
+                .map(|field| {
+                    (
+                        field.name.item.0.lookup().to_string(),
+                        constant_plan(&field.value.item),
+                    )
+                })
+                .collect(),
+        ),
+    }
+}
+
+/// An argument as the plan carries it: a variable name or a constant. Lists
+/// and objects that mix variables in are kept as their rendered text.
+fn argument_value_plan(value: &graphql_ir::Value) -> ArgumentValuePlan {
+    match value {
+        graphql_ir::Value::Constant(constant) => {
+            ArgumentValuePlan::Constant(constant_plan(constant))
+        }
+        graphql_ir::Value::Variable(variable) => {
+            ArgumentValuePlan::Variable(variable.name.item.0.lookup().to_string())
+        }
+        other => ArgumentValuePlan::Constant(ConstantPlan::String(render_value(other))),
+    }
 }
 
 /// A constant argument as JSON, the way Relay's `formatStorageKey` renders it:

@@ -8,6 +8,11 @@ public final class Record: Observable {
     public let type: TypeID
     /// `Type:id` for entities with a key, a path-based client id otherwise.
     public let key: String
+    /// The id of an entity, for the store's index and for refetching by id.
+    public internal(set) var entityID: String?
+    /// Whether `@deleteRecord` removed it: links to it read as null and lists
+    /// skip it, until a payload names it again.
+    public private(set) var deleted = false
     private var values: ContiguousArray<Value>
     nonisolated private let registrar = ObservationRegistrar()
 
@@ -30,6 +35,14 @@ public final class Record: Observable {
         let index = Int(slot.index)
         return index < values.count ? values[index] : .missing
     }
+
+    /// Reads a slot by index without registering; for copying between records.
+    func peek(index: Int) -> Value {
+        index < values.count ? values[index] : .missing
+    }
+
+    /// How many slots hold a value or could; for copying between records.
+    var slotCount: Int { values.count }
 
     /// Writes a slot. Returns whether the value changed; observers are notified
     /// only then.
@@ -64,6 +77,14 @@ public final class Record: Observable {
         registrar.withMutation(of: self, keyPath: Record.channels[Int(slot.index) & 15]) {}
     }
 
+    /// Notifies every observer of the record; for deletion and revival, which
+    /// change what every field reads as.
+    func notifyAll() {
+        for channel in Record.channels {
+            registrar.withMutation(of: self, keyPath: channel) {}
+        }
+    }
+
     /// Whether the record is of the given type: its concrete type, from the
     /// payload's `__typename` for interface- and union-typed fields.
     public func `is`(_ type: TypeID) -> Bool { self.type == type }
@@ -72,6 +93,12 @@ public final class Record: Observable {
     /// anything still holding it reads missing data and reports it.
     func clear() {
         for index in values.indices { values[index] = .missing }
+    }
+
+    /// Marks the record deleted or revives it; the store clears the values
+    /// around it and notifies.
+    func setDeleted(_ deleted: Bool) {
+        self.deleted = deleted
     }
 
     /// Drops links to swept records, silently; used on the root.

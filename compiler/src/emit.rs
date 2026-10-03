@@ -1,6 +1,7 @@
 //! The Swift emitter: lens types, operation values, plan tables, mutation
-//! actions with their optimistic builders, and the shared file of interned
-//! types and slots. Everything here reads the plan IR only.
+//! actions with their optimistic builders, connection lenses with their
+//! pagination, and the shared file of interned types and slots. Everything
+//! here reads the plan IR only.
 //!
 //! Output per host file `X.swift` is `X.baton.swift`; the per-target
 //! `Baton.baton.swift` carries `Types` and `Slots`.
@@ -9,7 +10,8 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::fmt::Write as _;
 
 use crate::pipeline::{
-    FragmentPlan, LookupPlan, OperationPlan, Plan, SelectionPlan, TypeKind, VariablePlan,
+    ArgumentValuePlan, ConnectionPlan, ConstantPlan, FragmentPlan, HandlePlan, LookupPlan,
+    OperationPlan, Plan, RefetchPlan, SelectionPlan, TypeKind, VariablePlan,
 };
 
 /// Generated Swift, grouped by the source file that declared the documents.
@@ -58,20 +60,38 @@ impl SlotRef {
 struct Emitter {
     slots: BTreeSet<SlotRef>,
     types: BTreeSet<String>,
+    /// Every fragment's `@argumentDefinitions`, for binding spreads.
+    fragment_arguments: BTreeMap<String, Vec<VariablePlan>>,
 }
 
-/// A nested lens type still to be written: name, GraphQL type, abstractness, selections.
+/// What the lenses of one document share: the fragment's `@refetchable` data,
+/// reached from a nested connection lens through the fragment's name.
+#[derive(Clone, Copy)]
+struct Context<'a> {
+    owner: &'a str,
+    refetch: Option<&'a RefetchPlan>,
+    arguments: &'a [VariablePlan],
+}
+
+/// A nested lens type still to be written: name, GraphQL type, abstractness,
+/// selections, and the connection it reads when the field is one.
 struct Nested {
     name: String,
     type_name: String,
     is_abstract: bool,
     selections: Vec<SelectionPlan>,
+    connection: Option<ConnectionPlan>,
 }
 
 pub fn emit(plan: &Plan) -> Output {
     let mut emitter = Emitter {
         slots: BTreeSet::new(),
         types: BTreeSet::new(),
+        fragment_arguments: plan
+            .fragments
+            .iter()
+            .map(|fragment| (fragment.name.clone(), fragment.arguments.clone()))
+            .collect(),
     };
     let mut files: BTreeMap<String, String> = BTreeMap::new();
     for fragment in &plan.fragments {
@@ -145,6 +165,11 @@ impl Emitter {
             "/// Lens for `fragment {} on {}`.",
             fragment.name, fragment.type_condition
         );
+        let context = Context {
+            owner: &fragment.name,
+            refetch: fragment.refetch.as_ref(),
+            arguments: &fragment.arguments,
+        };
         self.lens_struct(
             &mut output,
             &fragment.name,
@@ -152,6 +177,9 @@ impl Emitter {
             fragment.type_is_abstract,
             &fragment.reader,
             "",
+            context,
+            None,
+            true,
         );
         output.push('\n');
         output
@@ -250,6 +278,11 @@ impl Emitter {
         output.push_str(")\n\n");
 
         // The root lens.
+        let context = Context {
+            owner: &operation.name,
+            refetch: None,
+            arguments: &operation.variables,
+        };
         self.lens_struct(
             &mut output,
             "Data",
@@ -257,6 +290,9 @@ impl Emitter {
             false,
             &operation.reader,
             "    ",
+            context,
+            None,
+            false,
         );
 
         if operation.kind == "mutation" {
@@ -293,7 +329,10 @@ impl Emitter {
         output
     }
 
-    /// Writes a lens struct for a selection set on `type_name`.
+    /// Writes a lens struct for a selection set on `type_name`. A fragment root
+    /// with `@refetchable` gets `refetch()`; a connection field's lens gets the
+    /// connection state and, inside a refetchable fragment, `loadNext`.
+    #[allow(clippy::too_many_arguments)]
     fn lens_struct(
         &mut self,
         output: &mut String,
@@ -302,6 +341,9 @@ impl Emitter {
         type_is_abstract: bool,
         selections: &[SelectionPlan],
         indent: &str,
+        context: Context<'_>,
+        connection: Option<&ConnectionPlan>,
+        is_fragment_root: bool,
     ) {
         self.types.insert(type_name.to_string());
         let _ = writeln!(output, "{indent}public struct {name}: Baton.Lens {{");
@@ -326,6 +368,12 @@ impl Emitter {
             &mut nested,
             &mut spread_names,
         );
+        if is_fragment_root && let Some(refetch) = context.refetch {
+            self.refetch_members(output, refetch, context, &inner);
+        }
+        if let Some(connection) = connection {
+            self.connection_members(output, connection, type_name, selections, context, &inner);
+        }
         for child in nested {
             output.push('\n');
             self.lens_struct(
@@ -335,9 +383,168 @@ impl Emitter {
                 child.is_abstract,
                 &child.selections,
                 &inner,
+                context,
+                child.connection.as_ref(),
+                false,
             );
         }
         let _ = writeln!(output, "{indent}}}");
+    }
+
+    /// The `@refetchable` surface of a fragment lens: the descriptor of its
+    /// query and `refetch()`.
+    fn refetch_members(
+        &mut self,
+        output: &mut String,
+        refetch: &RefetchPlan,
+        context: Context<'_>,
+        indent: &str,
+    ) {
+        let option = |value: &Option<String>| match value {
+            Some(name) => swift_literal(name),
+            None => "nil".to_string(),
+        };
+        let pagination = refetch.connection.as_ref();
+        let _ = writeln!(
+            output,
+            "{indent}/// How the fragment is fetched again: `{}` with the lens's variables.",
+            refetch.operation
+        );
+        let _ = writeln!(
+            output,
+            "{indent}public static let refetchable = Baton.Refetch(variables: [{}], identifier: {}, first: {}, after: {}, last: {}, before: {})",
+            refetch
+                .variables
+                .iter()
+                .map(|name| swift_literal(name))
+                .collect::<Vec<_>>()
+                .join(", "),
+            option(&refetch.identifier),
+            option(&pagination.and_then(|p| p.first.clone())),
+            option(&pagination.and_then(|p| p.after.clone())),
+            option(&pagination.and_then(|p| p.last.clone())),
+            option(&pagination.and_then(|p| p.before.clone())),
+        );
+        let _ = writeln!(
+            output,
+            "{indent}/// Fetches the fragment again through `{}` with its current variables; the records update in place.",
+            refetch.operation
+        );
+        let _ = writeln!(
+            output,
+            "{indent}@MainActor public func refetch() async throws {{ try await anchor.refetch({}.self, {}.refetchable) }}",
+            refetch.operation, context.owner
+        );
+    }
+
+    /// The connection surface of a lens over a `@connection` field: Relay's
+    /// state read from the store, `nodes`, and pagination when the fragment is
+    /// refetchable.
+    fn connection_members(
+        &mut self,
+        output: &mut String,
+        connection: &ConnectionPlan,
+        type_name: &str,
+        selections: &[SelectionPlan],
+        context: Context<'_>,
+        indent: &str,
+    ) {
+        self.types.insert(connection.edge_type.clone());
+        self.types.insert(connection.page_info_type.clone());
+        let _ = writeln!(
+            output,
+            "{indent}/// The connection's slots: edges, nodes, cursors and the page info, for the store's merge and the state below."
+        );
+        let _ = writeln!(
+            output,
+            "{indent}public static let connection = Baton.ConnectionSlots(connection: Types.{type_name}, edge: Types.{}, pageInfo: Types.{})",
+            connection.edge_type, connection.page_info_type
+        );
+        if let Some((edges, node)) = edge_node_properties(selections) {
+            let _ = writeln!(
+                output,
+                "{indent}/// The edges' nodes, in order, without nulls."
+            );
+            let _ = writeln!(
+                output,
+                "{indent}@MainActor public var nodes: [{edges}.{node}] {{ anchor.nodes(Self.connection).map({edges}.{node}.init(anchor:)) }}",
+                edges = capitalize(&edges),
+                node = capitalize(&node)
+            );
+        }
+        let _ = writeln!(
+            output,
+            "{indent}/// Whether the server has edges after the last one, from the merged `pageInfo`."
+        );
+        let _ = writeln!(
+            output,
+            "{indent}@MainActor public var hasNext: Bool {{ anchor.hasNext(Self.connection) }}"
+        );
+        let _ = writeln!(
+            output,
+            "{indent}@MainActor public var hasPrevious: Bool {{ anchor.hasPrevious(Self.connection) }}"
+        );
+        let _ = writeln!(
+            output,
+            "{indent}@MainActor public var isLoadingNext: Bool {{ anchor.isLoadingNext(Self.connection) }}"
+        );
+        let _ = writeln!(
+            output,
+            "{indent}@MainActor public var isLoadingPrevious: Bool {{ anchor.isLoadingPrevious(Self.connection) }}"
+        );
+        let _ = writeln!(
+            output,
+            "{indent}/// Relay's connection id, for the `connections` argument of the edge directives."
+        );
+        let _ = writeln!(
+            output,
+            "{indent}@MainActor public var connectionID: String {{ anchor.record.key }}"
+        );
+
+        let Some(refetch) = context.refetch else {
+            return;
+        };
+        let Some(pagination) = refetch.connection.as_ref() else {
+            return;
+        };
+        let default_count = |variable: &Option<String>| -> String {
+            variable
+                .as_ref()
+                .and_then(|name| context.arguments.iter().find(|a| &a.name == name))
+                .and_then(|definition| match &definition.default_value {
+                    Some(ConstantPlan::Int(count)) => Some(format!(" = {count}")),
+                    _ => None,
+                })
+                .unwrap_or_default()
+        };
+        if pagination.first.is_some() && pagination.after.is_some() {
+            let _ = writeln!(
+                output,
+                "{indent}/// Fetches the next `count` edges through `{}` and appends them; a no-op while loading or at the end.",
+                refetch.operation
+            );
+            let _ = writeln!(
+                output,
+                "{indent}@MainActor public func loadNext(_ count: Int{}) async throws {{ try await anchor.loadNext({}.self, Self.connection, {}.refetchable, count: count) }}",
+                default_count(&pagination.first),
+                refetch.operation,
+                context.owner
+            );
+        }
+        if pagination.last.is_some() && pagination.before.is_some() {
+            let _ = writeln!(
+                output,
+                "{indent}/// Fetches the previous `count` edges through `{}` and prepends them; a no-op while loading or at the start.",
+                refetch.operation
+            );
+            let _ = writeln!(
+                output,
+                "{indent}@MainActor public func loadPrevious(_ count: Int{}) async throws {{ try await anchor.loadPrevious({}.self, Self.connection, {}.refetchable, count: count) }}",
+                default_count(&pagination.last),
+                refetch.operation,
+                context.owner
+            );
+        }
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -394,6 +601,7 @@ impl Emitter {
                     is_abstract,
                     storage_key,
                     lookup,
+                    connection,
                     selections: child,
                     ..
                 } => {
@@ -439,57 +647,112 @@ impl Emitter {
                         type_name: base_type.clone(),
                         is_abstract: *is_abstract,
                         selections: child.clone(),
+                        connection: connection.clone(),
                     });
                 }
                 SelectionPlan::Spread {
                     fragment,
                     type_condition,
+                    arguments,
                 } => {
                     let accessor = spread_names
                         .get(fragment)
                         .cloned()
                         .unwrap_or_else(|| lower_camel(fragment));
-                    if !type_is_abstract || type_condition == type_name {
-                        let _ = writeln!(
-                            output,
-                            "{indent}@MainActor public var {accessor}: {fragment} {{ {fragment}(anchor: anchor) }}"
-                        );
-                    } else {
-                        self.types.insert(type_condition.clone());
-                        let _ = writeln!(
-                            output,
-                            "{indent}@MainActor public var {accessor}: {fragment}? {{ anchor.record.is(Types.{type_condition}) ? {fragment}(anchor: anchor) : nil }}"
-                        );
-                    }
+                    self.spread_accessor(
+                        output,
+                        &accessor,
+                        fragment,
+                        arguments,
+                        type_name,
+                        type_is_abstract,
+                        type_condition,
+                        indent,
+                    );
                 }
                 SelectionPlan::Inline {
                     type_condition,
+                    alias,
                     selections: child,
-                } => match type_condition {
-                    Some(condition) if condition != type_name => {
-                        let nested_name = format!("As{condition}");
-                        self.types.insert(condition.clone());
-                        let _ = writeln!(
-                            output,
-                            "{indent}@MainActor public var as{condition}: {nested_name}? {{ anchor.record.is(Types.{condition}) ? {nested_name}(anchor: anchor) : nil }}"
-                        );
+                } => {
+                    if let Some(alias) = alias {
+                        // `@alias(as:)`: a spread keeps its lens under the given
+                        // name; any other selection becomes a nested lens.
+                        if let [
+                            SelectionPlan::Spread {
+                                fragment,
+                                type_condition: spread_condition,
+                                arguments,
+                            },
+                        ] = child.as_slice()
+                        {
+                            self.spread_accessor(
+                                output,
+                                alias,
+                                fragment,
+                                arguments,
+                                type_name,
+                                type_is_abstract,
+                                spread_condition,
+                                indent,
+                            );
+                            continue;
+                        }
+                        let nested_name = unique_nested_name(alias, nested);
+                        let condition_type = type_condition.as_deref().unwrap_or(type_name);
+                        match type_condition {
+                            Some(condition) if condition != type_name => {
+                                self.types.insert(condition.clone());
+                                let _ = writeln!(
+                                    output,
+                                    "{indent}@MainActor public var {}: {nested_name}? {{ anchor.record.is(Types.{condition}) ? {nested_name}(anchor: anchor) : nil }}",
+                                    escape(alias)
+                                );
+                            }
+                            _ => {
+                                let _ = writeln!(
+                                    output,
+                                    "{indent}@MainActor public var {}: {nested_name} {{ {nested_name}(anchor: anchor) }}",
+                                    escape(alias)
+                                );
+                            }
+                        }
                         nested.push(Nested {
                             name: nested_name,
-                            type_name: condition.clone(),
+                            type_name: condition_type.to_string(),
                             is_abstract: false,
                             selections: child.clone(),
+                            connection: None,
                         });
+                        continue;
                     }
-                    _ => self.accessors(
-                        output,
-                        type_name,
-                        type_is_abstract,
-                        child,
-                        indent,
-                        nested,
-                        spread_names,
-                    ),
-                },
+                    match type_condition {
+                        Some(condition) if condition != type_name => {
+                            let nested_name = format!("As{condition}");
+                            self.types.insert(condition.clone());
+                            let _ = writeln!(
+                                output,
+                                "{indent}@MainActor public var as{condition}: {nested_name}? {{ anchor.record.is(Types.{condition}) ? {nested_name}(anchor: anchor) : nil }}"
+                            );
+                            nested.push(Nested {
+                                name: nested_name,
+                                type_name: condition.clone(),
+                                is_abstract: false,
+                                selections: child.clone(),
+                                connection: None,
+                            });
+                        }
+                        _ => self.accessors(
+                            output,
+                            type_name,
+                            type_is_abstract,
+                            child,
+                            indent,
+                            nested,
+                            spread_names,
+                        ),
+                    }
+                }
                 SelectionPlan::Condition {
                     selections: child, ..
                 } => {
@@ -505,6 +768,59 @@ impl Emitter {
                     );
                 }
             }
+        }
+    }
+
+    /// A spread's accessor. The child's scope is the parent's variables with
+    /// the fragment's `@argumentDefinitions` bound: the passed argument, else
+    /// the default, else null.
+    #[allow(clippy::too_many_arguments)]
+    fn spread_accessor(
+        &mut self,
+        output: &mut String,
+        accessor: &str,
+        fragment: &str,
+        arguments: &[crate::pipeline::ArgumentPlan],
+        type_name: &str,
+        type_is_abstract: bool,
+        type_condition: &str,
+        indent: &str,
+    ) {
+        let definitions = self
+            .fragment_arguments
+            .get(fragment)
+            .cloned()
+            .unwrap_or_default();
+        let anchor = if definitions.is_empty() {
+            "anchor".to_string()
+        } else {
+            let bindings: Vec<String> = definitions
+                .iter()
+                .map(|definition| {
+                    let value = arguments
+                        .iter()
+                        .find(|argument| argument.name == definition.name)
+                        .map(|argument| argument_expression(&argument.value))
+                        .or_else(|| definition.default_value.as_ref().map(variable_literal))
+                        .unwrap_or_else(|| ".null".to_string());
+                    format!("{}: {value}", swift_literal(&definition.name))
+                })
+                .collect();
+            format!("anchor.binding([{}])", bindings.join(", "))
+        };
+        if !type_is_abstract || type_condition == type_name {
+            let _ = writeln!(
+                output,
+                "{indent}@MainActor public var {}: {fragment} {{ {fragment}(anchor: {anchor}) }}",
+                escape(accessor)
+            );
+        } else {
+            self.types.insert(type_condition.to_string());
+            let _ = writeln!(
+                output,
+                "{indent}@MainActor public var {}: {fragment}? {{ anchor.record.is(Types.{type_condition}) ? {fragment}(anchor: {anchor}) : nil }}",
+                escape(accessor)
+            );
         }
     }
 
@@ -563,6 +879,7 @@ impl Emitter {
                     base_kind,
                     list,
                     storage_key,
+                    handle,
                     ..
                 } => {
                     let slot = self.plan_key(type_name, storage_key);
@@ -573,9 +890,13 @@ impl Emitter {
                         TypeKind::String | TypeKind::Id | TypeKind::Enum => "string",
                         _ => "custom",
                     };
+                    let handle_argument = handle
+                        .as_ref()
+                        .map(|handle| format!(", handle: {}", self.handle_expression(handle)))
+                        .unwrap_or_default();
                     let _ = write!(
                         output,
-                        ".scalar(\"{}\", key: {slot}, kind: .{kind}, list: {list}),",
+                        ".scalar(\"{}\", key: {slot}, kind: .{kind}, list: {list}{handle_argument}),",
                         alias.as_deref().unwrap_or(name)
                     );
                 }
@@ -588,6 +909,8 @@ impl Emitter {
                     is_abstract,
                     storage_key,
                     lookup,
+                    connection,
+                    handle,
                     selections: child,
                     ..
                 } => {
@@ -598,9 +921,22 @@ impl Emitter {
                             format!(", lookup: {}", lookup_expression(lookup, storage_key))
                         })
                         .unwrap_or_default();
+                    let connection_argument = connection
+                        .as_ref()
+                        .map(|connection| {
+                            format!(
+                                ", connection: {}",
+                                self.connection_expression(type_name, base_type, connection)
+                            )
+                        })
+                        .unwrap_or_default();
+                    let handle_argument = handle
+                        .as_ref()
+                        .map(|handle| format!(", handle: {}", self.handle_expression(handle)))
+                        .unwrap_or_default();
                     let _ = write!(
                         output,
-                        ".linked(\"{}\", key: {slot}, plural: {plural}{lookup_argument}, selection: ",
+                        ".linked(\"{}\", key: {slot}, plural: {plural}{lookup_argument}{connection_argument}{handle_argument}, selection: ",
                         alias.as_deref().unwrap_or(name)
                     );
                     self.selection_plan(output, base_type, *has_id, *is_abstract, child, depth + 1);
@@ -613,6 +949,72 @@ impl Emitter {
             let _ = write!(output, "\n{pad}");
         }
         output.push_str("])");
+    }
+
+    /// The plan's description of a connection: the client key on the parent
+    /// type, the slots of the connection, edge and page info types, and the
+    /// cursor arguments that pick the merge mode.
+    fn connection_expression(
+        &mut self,
+        parent_type: &str,
+        connection_type: &str,
+        connection: &ConnectionPlan,
+    ) -> String {
+        let key = self.plan_key(parent_type, &connection.storage_key);
+        self.types.insert(connection.edge_type.clone());
+        self.types.insert(connection.page_info_type.clone());
+        let cursor = |value: &Option<ArgumentValuePlan>, label: &str| match value {
+            Some(ArgumentValuePlan::Variable(name)) => {
+                format!(", {label}: .variable({})", swift_literal(name))
+            }
+            Some(ArgumentValuePlan::Constant(_)) => format!(", {label}: .literal"),
+            None => String::new(),
+        };
+        format!(
+            "Baton.ConnectionPlan(key: {key}, slots: Baton.ConnectionSlots(connection: Types.{connection_type}, edge: Types.{}, pageInfo: Types.{}){}{})",
+            connection.edge_type,
+            connection.page_info_type,
+            cursor(&connection.after, "after"),
+            cursor(&connection.before, "before")
+        )
+    }
+
+    /// The plan's description of an edge directive.
+    fn handle_expression(&mut self, handle: &HandlePlan) -> String {
+        let connections = match &handle.connections {
+            Some(ArgumentValuePlan::Variable(name)) => {
+                format!(", connections: .variable({})", swift_literal(name))
+            }
+            Some(ArgumentValuePlan::Constant(ConstantPlan::List(items))) => format!(
+                ", connections: .literal([{}])",
+                items
+                    .iter()
+                    .map(|item| match item {
+                        ConstantPlan::String(text) => swift_literal(text),
+                        other => swift_literal(&constant_text(other)),
+                    })
+                    .collect::<Vec<_>>()
+                    .join(", ")
+            ),
+            Some(ArgumentValuePlan::Constant(other)) => {
+                format!(
+                    ", connections: .literal([{}])",
+                    swift_literal(&constant_text(other))
+                )
+            }
+            None => String::new(),
+        };
+        let edge_type = match &handle.edge_type_name {
+            Some(name) => {
+                self.types.insert(name.clone());
+                format!(", edgeType: Types.{name}")
+            }
+            None => String::new(),
+        };
+        format!(
+            "Baton.Handle(kind: .{}{connections}{edge_type})",
+            handle.kind
+        )
     }
 
     /// Writes the optimistic-response builder tree for a mutation: one struct
@@ -746,7 +1148,7 @@ impl Emitter {
             let parts = key_parts(storage_key)
                 .into_iter()
                 .map(|part| match part {
-                    KeyPart::Literal(text) => format!(".literal(\"{text}\")"),
+                    KeyPart::Literal(text) => format!(".literal({})", swift_literal(&text)),
                     KeyPart::Variable(name) => format!(".variable(\"{name}\")"),
                 })
                 .collect::<Vec<_>>()
@@ -759,6 +1161,39 @@ impl Emitter {
             expression
         }
     }
+}
+
+/// The response keys of the `edges` field and of its `node`, when the
+/// connection selects them and does not select a `nodes` field itself.
+fn edge_node_properties(selections: &[SelectionPlan]) -> Option<(String, String)> {
+    let flat = flatten(selections);
+    let has_nodes_field = flat.iter().any(|selection| match selection {
+        SelectionPlan::Scalar { name, alias, .. } | SelectionPlan::Linked { name, alias, .. } => {
+            alias.as_deref().unwrap_or(name) == "nodes"
+        }
+        _ => false,
+    });
+    if has_nodes_field {
+        return None;
+    }
+    let edges = flat.iter().find_map(|selection| match selection {
+        SelectionPlan::Linked {
+            name,
+            alias,
+            selections,
+            ..
+        } if name == "edges" && alias.is_none() => Some((name.clone(), selections)),
+        _ => None,
+    })?;
+    let node = flatten(edges.1)
+        .iter()
+        .find_map(|selection| match selection {
+            SelectionPlan::Linked { name, alias, .. } if name == "node" && alias.is_none() => {
+                Some(name.clone())
+            }
+            _ => None,
+        })?;
+    Some((edges.0, node))
 }
 
 fn parameter_list(variables: &[VariablePlan]) -> String {
@@ -824,7 +1259,6 @@ fn key_parts(storage_key: &str) -> Vec<KeyPart> {
     parts
 }
 
-/// A Swift expression building the storage key from `variables`.
 /// A Swift string literal for text that may contain quotes or backslashes
 /// (storage keys carry JSON-rendered arguments).
 fn swift_literal(text: &str) -> String {
@@ -842,6 +1276,7 @@ fn swift_literal(text: &str) -> String {
     output
 }
 
+/// A Swift expression building the storage key from `variables`.
 fn dynamic_key_expression(storage_key: &str, variables: &str) -> String {
     key_parts(storage_key)
         .into_iter()
@@ -851,6 +1286,74 @@ fn dynamic_key_expression(storage_key: &str, variables: &str) -> String {
         })
         .collect::<Vec<_>>()
         .join(" + ")
+}
+
+/// A `Baton.Variable` expression for a constant.
+fn variable_literal(constant: &ConstantPlan) -> String {
+    match constant {
+        ConstantPlan::Null => ".null".to_string(),
+        ConstantPlan::Bool(boolean) => format!(".bool({boolean})"),
+        ConstantPlan::Int(int) => format!(".int({int})"),
+        ConstantPlan::Float(float) => format!(".double({float:?})"),
+        ConstantPlan::String(text) => format!(".string({})", swift_literal(text)),
+        ConstantPlan::List(items) => format!(
+            ".list([{}])",
+            items
+                .iter()
+                .map(variable_literal)
+                .collect::<Vec<_>>()
+                .join(", ")
+        ),
+        ConstantPlan::Object(fields) if fields.is_empty() => ".object([:])".to_string(),
+        ConstantPlan::Object(fields) => format!(
+            ".object([{}])",
+            fields
+                .iter()
+                .map(|(name, value)| format!(
+                    "{}: {}",
+                    swift_literal(name),
+                    variable_literal(value)
+                ))
+                .collect::<Vec<_>>()
+                .join(", ")
+        ),
+    }
+}
+
+/// A constant's text, for the rare constant list of connection ids.
+fn constant_text(constant: &ConstantPlan) -> String {
+    match constant {
+        ConstantPlan::Null => "null".to_string(),
+        ConstantPlan::Bool(boolean) => boolean.to_string(),
+        ConstantPlan::Int(int) => int.to_string(),
+        ConstantPlan::Float(float) => float.to_string(),
+        ConstantPlan::String(text) => text.clone(),
+        ConstantPlan::List(items) => format!(
+            "[{}]",
+            items
+                .iter()
+                .map(constant_text)
+                .collect::<Vec<_>>()
+                .join(",")
+        ),
+        ConstantPlan::Object(fields) => format!(
+            "{{{}}}",
+            fields
+                .iter()
+                .map(|(name, value)| format!("{name}:{}", constant_text(value)))
+                .collect::<Vec<_>>()
+                .join(",")
+        ),
+    }
+}
+
+/// A spread argument as the parent lens binds it: the parent's variable, or
+/// a constant.
+fn argument_expression(value: &ArgumentValuePlan) -> String {
+    match value {
+        ArgumentValuePlan::Variable(name) => format!("anchor.variables[{}]", swift_literal(name)),
+        ArgumentValuePlan::Constant(constant) => variable_literal(constant),
+    }
 }
 
 /// The lookup: the entity type (or none, for an id across types) and the
@@ -921,23 +1424,28 @@ fn variable_type(variable: &VariablePlan) -> String {
     }
 }
 
-/// Default spread accessor names: the fragment's owner prefix in lower camel
-/// case, falling back to the whole name when two spreads would collide.
-/// The spreads a lens exposes directly: its own, and those inside inline
-/// fragments and conditions that flatten into it (an inline fragment on the
-/// lens's own type, as `@alias` produces; one on another type is a nested
-/// lens with its own table).
+/// The spreads a lens exposes under derived names: its own, and those inside
+/// inline fragments and conditions that flatten into it (an inline fragment
+/// on the lens's own type, as `@alias` produces; one on another type is a
+/// nested lens with its own table). Spreads under an explicit `@alias(as:)`
+/// are named by it and left out.
 fn collect_spreads<'a>(selections: &'a [SelectionPlan], type_name: &str, into: &mut Vec<&'a str>) {
     for selection in selections {
         match selection {
             SelectionPlan::Spread { fragment, .. } => into.push(fragment.as_str()),
             SelectionPlan::Inline {
                 type_condition,
+                alias,
                 selections: child,
-            } => match type_condition {
-                Some(condition) if condition != type_name => {}
-                _ => collect_spreads(child, type_name, into),
-            },
+            } => {
+                if alias.is_some() {
+                    continue;
+                }
+                match type_condition {
+                    Some(condition) if condition != type_name => {}
+                    _ => collect_spreads(child, type_name, into),
+                }
+            }
             SelectionPlan::Condition {
                 selections: child, ..
             } => collect_spreads(child, type_name, into),
@@ -946,6 +1454,8 @@ fn collect_spreads<'a>(selections: &'a [SelectionPlan], type_name: &str, into: &
     }
 }
 
+/// Default spread accessor names: the fragment's owner prefix in lower camel
+/// case, falling back to the whole name when two spreads would collide.
 fn spread_accessor_names(
     selections: &[SelectionPlan],
     type_name: &str,

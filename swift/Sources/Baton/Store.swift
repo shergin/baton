@@ -16,6 +16,8 @@ public final class Store {
     private var records: [String: Record] = [:]
     /// Entities by id, across types, for `node(id:)`-style lookups.
     private var byID: [String: Record] = [:]
+    /// The environment that owns the store, for lenses that fetch.
+    weak var environment: Environment?
 
     /// Called when a lens reads a slot the store never received. Debug builds
     /// print by default; a product can route it to its own reporting.
@@ -49,12 +51,22 @@ public final class Store {
     /// The entity with this id, whatever its type.
     public func existing(id: String) -> Record? { byID[id] }
 
-    func record(key: String, type: TypeID) -> Record {
-        if let record = records[key] { return record }
+    /// The record for a key, created on first sight. An entity is indexed by
+    /// its id; a deleted record a payload names again comes back.
+    func record(key: String, type: TypeID, entity: Bool) -> Record {
+        if let record = records[key] {
+            if record.deleted {
+                record.setDeleted(false)
+                record.notifyAll()
+            }
+            return record
+        }
         let record = Record(type: type, key: key)
         records[key] = record
-        if !key.hasPrefix("client:"), let colon = key.firstIndex(of: ":") {
-            byID[String(key[key.index(after: colon)...])] = record
+        if entity {
+            let id = String(key.dropFirst(type.name.count + 1))
+            record.entityID = id
+            byID[id] = record
         }
         return record
     }
@@ -68,10 +80,11 @@ public final class Store {
         var undo: [Undo] = []
     }
 
-    struct Undo: @unchecked Sendable {
-        let record: Record
-        let slot: Slot
-        let value: Value
+    /// One step of a batch, reversed when a layer lifts.
+    enum Undo: @unchecked Sendable {
+        case slot(Record, Slot, Value)
+        /// The batch deleted the record; lifting it revives the record.
+        case deleted(Record)
     }
 
     /// Tracks every slot a batch touched and its value before the batch, so
@@ -82,11 +95,17 @@ public final class Store {
         /// change back within the batch, so there is nothing to net out.
         private let direct: Bool
         private var directCount = 0
-        private var originals: [SlotKey: Undo] = [:]
+        private var originals: [SlotKey: Original] = [:]
 
         private struct SlotKey: Hashable {
             let record: ObjectIdentifier
             let slot: Slot
+        }
+
+        private struct Original {
+            let record: Record
+            let slot: Slot
+            let value: Value
         }
 
         init(direct: Bool = false) {
@@ -100,15 +119,15 @@ public final class Store {
                 return
             }
             let key = SlotKey(record: ObjectIdentifier(record), slot: slot)
-            if originals[key] == nil { originals[key] = Undo(record: record, slot: slot, value: before) }
+            if originals[key] == nil { originals[key] = Original(record: record, slot: slot, value: before) }
         }
 
         /// Notifies changed slots; returns how many changed.
         func finish() -> Int {
             if direct { return directCount }
             var changed = 0
-            for undo in originals.values where undo.record.peek(undo.slot) != undo.value {
-                undo.record.notify(undo.slot)
+            for original in originals.values where original.record.peek(original.slot) != original.value {
+                original.record.notify(original.slot)
                 changed += 1
             }
             return changed
@@ -168,8 +187,14 @@ public final class Store {
     private func revertLayers(from index: Int, into transaction: inout Transaction) {
         for layer in optimisticLayers[index...].reversed() {
             for undo in layer.undo.reversed() {
-                if let previous = undo.record.writeSilently(undo.slot, undo.value) {
-                    transaction.touched(undo.record, undo.slot, before: previous)
+                switch undo {
+                case .slot(let record, let slot, let value):
+                    if let previous = record.writeSilently(slot, value) {
+                        transaction.touched(record, slot, before: previous)
+                    }
+                case .deleted(let record):
+                    record.setDeleted(false)
+                    record.notifyAll()
                 }
             }
         }
@@ -184,14 +209,24 @@ public final class Store {
         }
     }
 
+    /// Writes one slot inside a batch: silently, recorded for the net
+    /// notification and for the undo log.
+    private func set(_ record: Record, _ slot: Slot, _ value: Value, _ transaction: inout Transaction, _ undo: inout [Undo]) {
+        if let previous = record.writeSilently(slot, value) {
+            transaction.touched(record, slot, before: previous)
+            undo.append(.slot(record, slot, previous))
+        }
+    }
+
     /// Writes a change set silently: last entry wins per (record, slot); a
     /// value equal to the slot's current value is neither allocated nor
-    /// recorded. Returns the undo log of the slots that changed.
+    /// recorded. The edits follow: connection pages merge, edges insert,
+    /// records delete. Returns the undo log of what changed.
     private func apply(_ changes: ChangeSet, into transaction: inout Transaction) -> [Undo] {
         var objects = ContiguousArray<Record>()
         objects.reserveCapacity(changes.recordKeys.count)
         for index in 0..<changes.recordKeys.count {
-            objects.append(record(key: changes.recordKeys[index], type: changes.recordTypes[index]))
+            objects.append(record(key: changes.recordKeys[index], type: changes.recordTypes[index], entity: changes.recordIsEntity[index]))
         }
 
         var offsets = [Int](repeating: 0, count: objects.count + 1)
@@ -245,13 +280,187 @@ public final class Store {
                     }
                     value = .list(list)
                 }
-                if let previous = record.writeSilently(entry.slot, value) {
-                    transaction.touched(record, entry.slot, before: previous)
-                    undo.append(Undo(record: record, slot: entry.slot, value: previous))
+                set(record, entry.slot, value, &transaction, &undo)
+            }
+        }
+
+        for edit in changes.edits {
+            switch edit {
+            case .merge(let connection, let page, let slots, let mode):
+                merge(objects[Int(connection)], page: objects[Int(page)], slots: slots, mode: mode, &transaction, &undo)
+            case .insertEdge(let edge, let connections, let prepend):
+                for key in connections {
+                    insert(edge: objects[Int(edge)], into: key, prepend: prepend, &transaction, &undo)
                 }
+            case .insertNode(let node, let edgeType, let connections, let prepend):
+                for key in connections {
+                    insert(node: objects[Int(node)], edgeType: edgeType, into: key, prepend: prepend, &transaction, &undo)
+                }
+            case .deleteEdge(let id, let connections):
+                guard let node = byID[id] else { continue }
+                for key in connections {
+                    deleteEdges(of: node, from: key, &transaction, &undo)
+                }
+            case .deleteRecord(let id):
+                guard let record = byID[id], !record.deleted else { continue }
+                delete(record, &transaction, &undo)
             }
         }
         return undo
+    }
+
+    // MARK: Connections
+
+    private static func edges(_ record: Record, _ slot: Slot) -> ContiguousArray<Record?> {
+        if case .refs(let edges) = record.peek(slot) { return edges }
+        return []
+    }
+
+    private static func node(of edge: Record, _ slot: Slot) -> ObjectIdentifier? {
+        if case .ref(let node) = edge.peek(slot) { return ObjectIdentifier(node) }
+        return nil
+    }
+
+    /// Edges in order with every node at most once; null edges are dropped.
+    private static func merged(_ first: ContiguousArray<Record?>, _ second: ContiguousArray<Record?>, nodeSlot: Slot) -> ContiguousArray<Record?> {
+        var result = ContiguousArray<Record?>()
+        result.reserveCapacity(first.count + second.count)
+        var seen = Set<ObjectIdentifier>()
+        seen.reserveCapacity(first.count + second.count)
+        for case let edge? in first {
+            if let node = node(of: edge, nodeSlot), !seen.insert(node).inserted { continue }
+            result.append(edge)
+        }
+        for case let edge? in second {
+            if let node = node(of: edge, nodeSlot), !seen.insert(node).inserted { continue }
+            result.append(edge)
+        }
+        return result
+    }
+
+    /// Merges a page into its connection record, as Relay's connection handler
+    /// does: the connection's own fields follow the page; edges replace,
+    /// append or prepend by the cursor the page was fetched with, deduplicated
+    /// by node; the page info merges per direction. A page fetched after a
+    /// cursor that is no longer the end is ignored.
+    private func merge(_ connection: Record, page: Record, slots: ConnectionSlots, mode: ConnectionMode, _ transaction: inout Transaction, _ undo: inout [Undo]) {
+        for index in 0..<page.slotCount where index != Int(slots.edges.index) && index != Int(slots.pageInfoLink.index) {
+            let value = page.peek(index: index)
+            if case .missing = value { continue }
+            set(connection, Slot(type: slots.connection, index: Int32(index)), value, &transaction, &undo)
+        }
+
+        let pageInfo: Record
+        if case .ref(let existing) = connection.peek(slots.pageInfoLink) {
+            pageInfo = existing
+        } else {
+            pageInfo = record(key: connection.key + ":pageInfo", type: slots.pageInfo, entity: false)
+            set(connection, slots.pageInfoLink, .ref(pageInfo), &transaction, &undo)
+        }
+        let existing = Store.edges(connection, slots.edges)
+        let incoming = Store.edges(page, slots.edges)
+        let merged: ContiguousArray<Record?>
+        let copied: [Slot]
+        switch mode {
+        case .replace:
+            merged = Store.merged(incoming, [], nodeSlot: slots.node)
+            copied = [slots.hasNextPage, slots.hasPreviousPage, slots.startCursor, slots.endCursor]
+        case .append(let after):
+            if let after, !existing.isEmpty, case .string(let end) = pageInfo.peek(slots.endCursor), end != after { return }
+            merged = Store.merged(existing, incoming, nodeSlot: slots.node)
+            copied = [slots.hasNextPage, slots.endCursor]
+        case .prepend(let before):
+            if let before, !existing.isEmpty, case .string(let start) = pageInfo.peek(slots.startCursor), start != before { return }
+            merged = Store.merged(incoming, existing, nodeSlot: slots.node)
+            copied = [slots.hasPreviousPage, slots.startCursor]
+        }
+        set(connection, slots.edges, .refs(merged), &transaction, &undo)
+        if case .ref(let serverPageInfo) = page.peek(slots.pageInfoLink) {
+            for slot in copied {
+                let value = serverPageInfo.peek(slot)
+                if case .missing = value { continue }
+                set(pageInfo, slot, value, &transaction, &undo)
+            }
+        }
+    }
+
+    /// Inserts a copy of a payload's edge into a connection named by id, unless
+    /// an edge for the same node is already there. The copy is the
+    /// connection's own record, as in Relay: the payload's edge record is
+    /// keyed by its path, so the next mutation of the same kind would alias it.
+    private func insert(edge: Record, into connectionKey: String, prepend: Bool, _ transaction: inout Transaction, _ undo: inout [Undo]) {
+        guard let connection = records[connectionKey], !connection.deleted else { return }
+        if contains(connection, node: Store.node(of: edge, Registry.slot(edge.type, "node"))) { return }
+        let copy = ownEdge(of: connection, type: edge.type, &transaction, &undo)
+        for index in 0..<edge.slotCount {
+            let value = edge.peek(index: index)
+            if case .missing = value { continue }
+            set(copy, Slot(type: edge.type, index: Int32(index)), value, &transaction, &undo)
+        }
+        append(copy, to: connection, prepend: prepend, &transaction, &undo)
+    }
+
+    /// Wraps a node in a new edge record of the connection and inserts it.
+    private func insert(node: Record, edgeType: TypeID, into connectionKey: String, prepend: Bool, _ transaction: inout Transaction, _ undo: inout [Undo]) {
+        guard let connection = records[connectionKey], !connection.deleted else { return }
+        if contains(connection, node: ObjectIdentifier(node)) { return }
+        let edge = ownEdge(of: connection, type: edgeType, &transaction, &undo)
+        set(edge, Registry.slot(edgeType, "node"), .ref(node), &transaction, &undo)
+        set(edge, Registry.slot(edgeType, "cursor"), .null, &transaction, &undo)
+        append(edge, to: connection, prepend: prepend, &transaction, &undo)
+    }
+
+    /// A new edge record owned by the connection, numbered by Relay's
+    /// `__connection_next_edge_index` client field.
+    private func ownEdge(of connection: Record, type: TypeID, _ transaction: inout Transaction, _ undo: inout [Undo]) -> Record {
+        let indexSlot = Registry.slot(connection.type, "__connection_next_edge_index")
+        let index: Int = if case .int(let index) = connection.peek(indexSlot) { index } else { 0 }
+        set(connection, indexSlot, .int(index + 1), &transaction, &undo)
+        return record(key: connection.key + ":edges:" + String(index), type: type, entity: false)
+    }
+
+    private func contains(_ connection: Record, node: ObjectIdentifier?) -> Bool {
+        guard let node else { return false }
+        for case let edge? in Store.edges(connection, Registry.slot(connection.type, "edges"))
+        where Store.node(of: edge, Registry.slot(edge.type, "node")) == node {
+            return true
+        }
+        return false
+    }
+
+    private func append(_ edge: Record, to connection: Record, prepend: Bool, _ transaction: inout Transaction, _ undo: inout [Undo]) {
+        let edgesSlot = Registry.slot(connection.type, "edges")
+        var edges = Store.edges(connection, edgesSlot)
+        if prepend { edges.insert(edge, at: 0) } else { edges.append(edge) }
+        set(connection, edgesSlot, .refs(edges), &transaction, &undo)
+    }
+
+    /// Removes every edge whose node is the record from a connection named by id.
+    private func deleteEdges(of node: Record, from connectionKey: String, _ transaction: inout Transaction, _ undo: inout [Undo]) {
+        guard let connection = records[connectionKey], !connection.deleted else { return }
+        let edgesSlot = Registry.slot(connection.type, "edges")
+        let edges = Store.edges(connection, edgesSlot)
+        let target = ObjectIdentifier(node)
+        let kept = edges.filter { edge in
+            guard let edge else { return true }
+            return Store.node(of: edge, Registry.slot(edge.type, "node")) != target
+        }
+        if kept.count == edges.count { return }
+        set(connection, edgesSlot, .refs(ContiguousArray(kept)), &transaction, &undo)
+    }
+
+    /// Deletes a record: its values are cleared through the undo log, it is
+    /// marked deleted so links to it read as null, and every observer of it
+    /// is notified.
+    private func delete(_ record: Record, _ transaction: inout Transaction, _ undo: inout [Undo]) {
+        for index in 0..<record.slotCount {
+            let value = record.peek(index: index)
+            if case .missing = value { continue }
+            set(record, Slot(type: record.type, index: Int32(index)), .missing, &transaction, &undo)
+        }
+        record.setDeleted(true)
+        record.notifyAll()
+        undo.append(.deleted(record))
     }
 
     // MARK: Availability, marking, sweeping
@@ -264,11 +473,11 @@ public final class Store {
         let fields = selection.fields
         for index in fields.indices {
             if fields[index].isTypename { continue }
-            let slot = selection.isAbstract ? selection.slots(for: record.type)[index] : fields[index].slot
+            let slot = selection.slot(of: index, on: record.type)
             switch fields[index].kind {
             case .scalar:
                 if case .missing = record.peek(slot) { return false }
-            case .linked(let child, let plural, let lookupKey):
+            case .linked(let child, let plural, let lookupKey, _):
                 switch record.peek(slot) {
                 case .missing:
                     guard !plural, let lookupKey, let target = resolve(lookupKey) else { return false }
@@ -277,9 +486,10 @@ public final class Store {
                 case .null:
                     continue
                 case .ref(let target):
+                    if target.deleted { continue }
                     if !check(child, at: target) { return false }
                 case .refs(let targets):
-                    for case let target? in targets where !check(child, at: target) { return false }
+                    for case let target? in targets where !target.deleted && !check(child, at: target) { return false }
                 default:
                     return false
                 }
@@ -288,24 +498,33 @@ public final class Store {
         return true
     }
 
-    /// Collects every record the selection reaches from the root, for collection.
+    /// Collects every record the selection reaches from the root, for
+    /// collection. A connection is reached through its client slot as well as
+    /// through the page the operation fetched, so merged pages live as long as
+    /// any root reaches the connection.
     func mark(_ selection: ResolvedSelection, from record: Record? = nil, into reachable: inout Set<ObjectIdentifier>) {
         let record = record ?? root
         reachable.insert(ObjectIdentifier(record))
         let fields = selection.fields
         for index in fields.indices {
-            guard case .linked(let child, _, _) = fields[index].kind else { continue }
-            let slot = selection.isAbstract ? selection.slots(for: record.type)[index] : fields[index].slot
-            switch record.peek(slot) {
-            case .ref(let target):
-                mark(child, from: target, into: &reachable)
-            case .refs(let targets):
-                for case let target? in targets {
-                    mark(child, from: target, into: &reachable)
-                }
-            default:
-                continue
+            guard case .linked(let child, _, _, let connection) = fields[index].kind else { continue }
+            mark(record.peek(selection.slot(of: index, on: record.type)), child, into: &reachable)
+            if let connection {
+                mark(record.peek(selection.slot(of: connection, on: record.type)), child, into: &reachable)
             }
+        }
+    }
+
+    private func mark(_ value: Value, _ child: ResolvedSelection, into reachable: inout Set<ObjectIdentifier>) {
+        switch value {
+        case .ref(let target):
+            mark(child, from: target, into: &reachable)
+        case .refs(let targets):
+            for case let target? in targets {
+                mark(child, from: target, into: &reachable)
+            }
+        default:
+            return
         }
     }
 
@@ -319,8 +538,8 @@ public final class Store {
         where key != Store.rootKey && key != Store.mutationRootKey && !reachable.contains(ObjectIdentifier(record)) {
             swept.insert(ObjectIdentifier(record))
             records.removeValue(forKey: key)
-            if !key.hasPrefix("client:"), let colon = key.firstIndex(of: ":") {
-                byID.removeValue(forKey: String(key[key.index(after: colon)...]))
+            if let id = record.entityID, byID[id] === record {
+                byID.removeValue(forKey: id)
             }
             record.clear()
         }
@@ -331,10 +550,11 @@ public final class Store {
         return swept.count
     }
 
-    /// The entity a lookup names, if cached.
+    /// The entity a lookup names, if cached and not deleted.
     func resolve(_ lookup: LookupKey) -> Record? {
-        if let key = lookup.recordKey { return records[key] }
-        return byID[lookup.value]
+        let record = lookup.recordKey.map { records[$0] } ?? byID[lookup.value]
+        guard let record, !record.deleted else { return nil }
+        return record
     }
 
     /// Resolves a lookup for a lens read: the cached entity for a root field

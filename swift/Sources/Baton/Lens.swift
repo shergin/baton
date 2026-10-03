@@ -1,19 +1,32 @@
 import SwiftUI
 
-/// Where a lens reads from: one record, and the variables that bind any
-/// argument-carrying storage key along its path.
+/// Where a lens reads from: one record, the variables that bind any
+/// argument-carrying storage key along its path, and the record it was
+/// reached from, which a connection needs for the owner's id.
 public struct Anchor: @unchecked Sendable {
     public let record: Record
     public let variables: Variables
     let store: Store?
+    let parent: Record?
 
-    public init(record: Record, variables: Variables, store: Store? = nil) {
+    public init(record: Record, variables: Variables, store: Store? = nil, parent: Record? = nil) {
         self.record = record
         self.variables = variables
         self.store = store
+        self.parent = parent
     }
 
-    func child(_ record: Record) -> Anchor { Anchor(record: record, variables: variables, store: store) }
+    func child(_ record: Record) -> Anchor {
+        Anchor(record: record, variables: variables, store: store, parent: self.record)
+    }
+
+    /// The same record under a fragment's scope: the parent's variables with
+    /// the fragment's arguments bound over them, as Relay's fragment variables.
+    public func binding(_ values: [String: Variable?]) -> Anchor {
+        var merged = variables.values
+        for (name, value) in values { merged[name] = value ?? .null }
+        return Anchor(record: record, variables: Variables(merged), store: store, parent: parent)
+    }
 }
 
 /// A typed, read-only view over one record: a fragment's or an operation's
@@ -101,10 +114,10 @@ extension Anchor {
     }
 
     /// The record behind a singular link, resolving a lookup when the link was
-    /// never fetched but the entity is cached.
+    /// never fetched but the entity is cached. A deleted record reads as null.
     public func linked(_ slot: Slot, lookup: Lookup? = nil) -> Anchor? {
         switch record.read(slot) {
-        case .ref(let target): return child(target)
+        case .ref(let target): return target.deleted ? nil : child(target)
         case .missing:
             if let lookup, let store, let target = store.resolveLookup(on: record, slot: slot, lookup: lookup, variables: variables) {
                 return child(target)
@@ -162,8 +175,90 @@ extension Anchor {
     public func requiredList<Element: Lens>(key: String) -> List<Element> { requiredList(slot(key)) }
 }
 
-/// A plural link: lenses over the linked records, in order. Null elements are
-/// dropped; `@required` semantics for list items arrive with 0.5.
+/// Connections: the state Relay keeps on the connection record, read from the
+/// store, and the fetches that extend or refresh it. The anchor's record is
+/// the connection record; its parent is the fragment's owner.
+@MainActor
+extension Anchor {
+    private func pageInfo(_ slots: ConnectionSlots) -> Record? {
+        if case .ref(let record) = record.read(slots.pageInfoLink) { return record }
+        return nil
+    }
+
+    private func flag(_ record: Record?, _ slot: Slot) -> Bool {
+        if case .bool(let bool)? = record?.read(slot) { return bool }
+        return false
+    }
+
+    /// The edges' nodes, in order, without null edges, null nodes or deleted
+    /// records.
+    public func nodes(_ slots: ConnectionSlots) -> [Anchor] {
+        guard case .refs(let edges) = record.read(slots.edges) else { return [] }
+        var nodes: [Anchor] = []
+        nodes.reserveCapacity(edges.count)
+        for case let edge? in edges where !edge.deleted {
+            if case .ref(let node) = edge.read(slots.node), !node.deleted {
+                nodes.append(Anchor(record: node, variables: variables, store: store, parent: edge))
+            }
+        }
+        return nodes
+    }
+
+    public func hasNext(_ slots: ConnectionSlots) -> Bool { flag(pageInfo(slots), slots.hasNextPage) }
+    public func hasPrevious(_ slots: ConnectionSlots) -> Bool { flag(pageInfo(slots), slots.hasPreviousPage) }
+    public func isLoadingNext(_ slots: ConnectionSlots) -> Bool { flag(record, slots.isLoadingNext) }
+    public func isLoadingPrevious(_ slots: ConnectionSlots) -> Bool { flag(record, slots.isLoadingPrevious) }
+
+    /// Fetches the next `count` edges with the fragment's refetch query, after
+    /// the merged end cursor; the commit appends them. A no-op while a page is
+    /// loading or when there is no next page.
+    public func loadNext<Op: Operation>(_ operation: Op.Type, _ slots: ConnectionSlots, _ refetch: Refetch, count: Int) async throws {
+        guard let first = refetch.first, let after = refetch.after else { return }
+        guard hasNext(slots), !isLoadingNext(slots), let pageInfo = pageInfo(slots), case .string(let cursor) = pageInfo.peek(slots.endCursor) else { return }
+        var values = refetchVariables(refetch, owner: parent)
+        values[first] = .int(count)
+        values[after] = .string(cursor)
+        try await environment().paginate(operation, variables: Variables(values), connection: record, loading: slots.isLoadingNext)
+    }
+
+    /// Fetches the previous `count` edges before the merged start cursor; the
+    /// commit prepends them.
+    public func loadPrevious<Op: Operation>(_ operation: Op.Type, _ slots: ConnectionSlots, _ refetch: Refetch, count: Int) async throws {
+        guard let last = refetch.last, let before = refetch.before else { return }
+        guard hasPrevious(slots), !isLoadingPrevious(slots), let pageInfo = pageInfo(slots), case .string(let cursor) = pageInfo.peek(slots.startCursor) else { return }
+        var values = refetchVariables(refetch, owner: parent)
+        values[last] = .int(count)
+        values[before] = .string(cursor)
+        try await environment().paginate(operation, variables: Variables(values), connection: record, loading: slots.isLoadingPrevious)
+    }
+
+    /// Fetches the fragment again with the lens's variables; the records
+    /// update in place.
+    public func refetch<Op: Operation>(_ operation: Op.Type, _ refetch: Refetch) async throws {
+        try await environment().fetch(operation, variables: Variables(refetchVariables(refetch, owner: record)))
+    }
+
+    /// The refetch query's variables: the lens's scope filtered to the query's
+    /// definitions, plus the owner's id.
+    private func refetchVariables(_ refetch: Refetch, owner: Record?) -> [String: Variable] {
+        var values = variables.values.filter { refetch.variables.contains($0.key) }
+        if let identifier = refetch.identifier, let id = owner?.entityID {
+            values[identifier] = .string(id)
+        }
+        return values
+    }
+
+    private func environment() throws -> Environment {
+        guard let environment = store?.environment else {
+            throw TransportError(statusCode: 0, body: "the lens has no environment: it was read outside a store, so it cannot fetch")
+        }
+        return environment
+    }
+}
+
+/// A plural link: lenses over the linked records, in order. Null elements and
+/// deleted records are dropped; `@required` semantics for list items arrive
+/// with 0.5.
 public struct List<Element: Lens>: RandomAccessCollection, @unchecked Sendable {
     let records: ContiguousArray<Record>
     let anchor: Anchor
@@ -171,7 +266,7 @@ public struct List<Element: Lens>: RandomAccessCollection, @unchecked Sendable {
     @MainActor init(records: ContiguousArray<Record?>, anchor: Anchor) {
         var present = ContiguousArray<Record>()
         present.reserveCapacity(records.count)
-        for case let record? in records { present.append(record) }
+        for case let record? in records where !record.deleted { present.append(record) }
         self.records = present
         self.anchor = anchor
     }
@@ -186,5 +281,11 @@ extension ForEach where Content: View, ID == RecordID {
     @MainActor
     public init<Element: Lens>(_ list: List<Element>, @ViewBuilder content: @escaping (Element) -> Content) where Data == List<Element> {
         self.init(list, id: \.recordID, content: content)
+    }
+
+    /// Iterates lenses, identified by record; for a connection's `nodes`.
+    @MainActor
+    public init<Element: Lens>(_ lenses: [Element], @ViewBuilder content: @escaping (Element) -> Content) where Data == [Element] {
+        self.init(lenses, id: \.recordID, content: content)
     }
 }

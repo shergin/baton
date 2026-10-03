@@ -2,8 +2,9 @@ import Foundation
 
 /// A normalized response, not yet in the store: records by key, one flat list
 /// of (record, slot, value) entries in arrival order, reference lists in a
-/// shared arena, and strings as byte ranges into the response. Nothing is
-/// materialized until the commit decides which values won and which changed.
+/// shared arena, strings as byte ranges into the response, and the edits the
+/// plan's connections and edge directives ask for. Nothing is materialized
+/// until the commit decides which values won and which changed.
 public struct ChangeSet: Sendable {
     public enum RawValue: Sendable {
         case null
@@ -22,12 +23,26 @@ public struct ChangeSet: Sendable {
         public let value: RawValue
     }
 
+    /// What the store does after writing the entries: a connection page's
+    /// merge, or an edge directive of a mutation payload. Records are indices
+    /// into this change set; connections are named by their record keys.
+    public enum Edit: Sendable {
+        case merge(connection: Int32, page: Int32, slots: ConnectionSlots, mode: ConnectionMode)
+        case insertEdge(edge: Int32, connections: [String], prepend: Bool)
+        case insertNode(node: Int32, edgeType: TypeID, connections: [String], prepend: Bool)
+        case deleteEdge(id: String, connections: [String])
+        case deleteRecord(id: String)
+    }
+
     public let bytes: [UInt8]
     public internal(set) var recordKeys: ContiguousArray<String> = []
     public internal(set) var recordTypes: ContiguousArray<TypeID> = []
+    /// Whether the record is an entity keyed `Type:id`, for the store's id index.
+    public internal(set) var recordIsEntity: ContiguousArray<Bool> = []
     public internal(set) var entries: ContiguousArray<Entry> = []
     public internal(set) var refs: ContiguousArray<Int32> = []
     public internal(set) var scalars: ContiguousArray<RawValue> = []
+    public internal(set) var edits: ContiguousArray<Edit> = []
     var index: [String: Int32] = [:]
 
     init(bytes: [UInt8]) {
@@ -35,16 +50,18 @@ public struct ChangeSet: Sendable {
         index.reserveCapacity(1024)
         recordKeys.reserveCapacity(1024)
         recordTypes.reserveCapacity(1024)
+        recordIsEntity.reserveCapacity(1024)
         entries.reserveCapacity(32_768)
         refs.reserveCapacity(8_192)
     }
 
     @inline(__always)
-    mutating func record(for key: String, type: TypeID) -> Int32 {
+    mutating func record(for key: String, type: TypeID, entity: Bool) -> Int32 {
         if let id = index[key] { return id }
         let id = Int32(recordKeys.count)
         recordKeys.append(key)
         recordTypes.append(type)
+        recordIsEntity.append(entity)
         index[key] = id
         return id
     }
@@ -102,6 +119,9 @@ public enum Ingest {
             array.reserveCapacity(32)
             return array
         }
+        /// Client fields written beside the object's own, per depth: the
+        /// connection links, by storage key and declared slot.
+        var extra: [ContiguousArray<(String, Slot, ChangeSet.RawValue)>] = (0..<24).map { _ in [] }
 
         init(base: UnsafePointer<UInt8>, count: Int, changes: ChangeSet) {
             self.base = base
@@ -122,7 +142,7 @@ public enum Ingest {
                     if peek() == 0x6E {
                         try literal("null")
                     } else {
-                        let rootID = changes.record(for: rootKey, type: root.type)
+                        let rootID = changes.record(for: rootKey, type: root.type, entity: false)
                         _ = try object(plan: root, parent: rootID, slot: nil, listIndex: nil, depth: 0, fixedRecord: rootID)
                         sawData = true
                     }
@@ -150,6 +170,7 @@ public enum Ingest {
             try expect(0x7B)
             guard depth < scratch.count else { throw IngestError(offset: position, message: "selection nested deeper than 24 levels") }
             scratch[depth].removeAll(keepingCapacity: true)
+            extra[depth].removeAll(keepingCapacity: true)
             var record: Int32 = fixedRecord ?? -1
             var concreteType = plan.type
             var pendingID: (Int, Int, Bool)? = nil
@@ -188,7 +209,7 @@ public enum Ingest {
                     if plan.isAbstract {
                         concreteType = Registry.type(Ingest.materialize(base: base, start, end, escaped))
                         if record < 0, let (idStart, idEnd, idEscaped) = pendingID {
-                            record = changes.record(for: concreteType.name + ":" + Ingest.materialize(base: base, idStart, idEnd, idEscaped), type: concreteType)
+                            record = changes.record(for: concreteType.name + ":" + Ingest.materialize(base: base, idStart, idEnd, idEscaped), type: concreteType, entity: true)
                         }
                     }
                     continue
@@ -210,8 +231,10 @@ public enum Ingest {
                             let next = peek()
                             if next == 0x5D { position += 1; break }
                             if next == 0x2C { position += 1; continue }
-                            changes.scalars.append(try scalarValue(scalar))
+                            let value = try scalarValue(scalar)
+                            changes.scalars.append(value)
                             items += 1
+                            if let handle = field.handle { deletion(handle, value) }
                         }
                         scratch[depth].append((matched, .list(start: start, count: Int32(items))))
                         continue
@@ -223,11 +246,12 @@ public enum Ingest {
                             // The typename has not arrived; settle when it does, or at the end.
                             pendingID = (Int(start), Int(end), escaped)
                         } else {
-                            record = changes.record(for: concreteType.name + ":" + Ingest.materialize(base: base, Int(start), Int(end), escaped), type: concreteType)
+                            record = changes.record(for: concreteType.name + ":" + Ingest.materialize(base: base, Int(start), Int(end), escaped), type: concreteType, entity: true)
                         }
                     }
                     scratch[depth].append((matched, value))
-                case .linked(let child, let plural, _):
+                    if let handle = field.handle { deletion(handle, value) }
+                case .linked(let child, let plural, _, let connection):
                     if peek() == 0x6E {
                         try literal("null")
                         scratch[depth].append((matched, .null))
@@ -252,9 +276,20 @@ public enum Ingest {
                         let start = Int32(changes.refs.count)
                         changes.refs.append(contentsOf: collected)
                         scratch[depth].append((matched, .refs(start: start, count: Int32(collected.count))))
+                        if let handle = field.handle {
+                            for target in collected where target >= 0 { insertion(handle, target) }
+                        }
                     } else {
                         let childRecord = try object(plan: child, parent: record, slot: field.slot, listIndex: nil, depth: depth + 1, fixedRecord: nil)
                         scratch[depth].append((matched, .ref(childRecord)))
+                        if let connection {
+                            // The page is the server's field; the connection record it
+                            // merges into hangs off the parent by Relay's handle key.
+                            let connectionRecord = changes.record(for: changes.recordKeys[Int(record)] + ":" + connection.storageKey, type: child.type, entity: false)
+                            extra[depth].append((connection.storageKey, connection.slot, .ref(connectionRecord)))
+                            changes.edits.append(.merge(connection: connectionRecord, page: childRecord, slots: connection.slots, mode: connection.mode))
+                        }
+                        if let handle = field.handle { insertion(handle, childRecord) }
                     }
                 }
             }
@@ -266,12 +301,52 @@ public enum Ingest {
                 for (index, value) in scratch[depth] {
                     changes.entries.append(ChangeSet.Entry(record: record, slot: slots[index], value: value))
                 }
+                for (key, _, value) in extra[depth] {
+                    changes.entries.append(ChangeSet.Entry(record: record, slot: Registry.slot(concreteType, key), value: value))
+                }
             } else {
                 for (index, value) in scratch[depth] {
                     changes.entries.append(ChangeSet.Entry(record: record, slot: fields[index].slot, value: value))
                 }
+                for (_, slot, value) in extra[depth] {
+                    changes.entries.append(ChangeSet.Entry(record: record, slot: slot, value: value))
+                }
             }
             return record
+        }
+
+        /// Records the edit an edge directive asks for on a linked field's record.
+        mutating func insertion(_ handle: ResolvedHandle, _ target: Int32) {
+            switch handle.kind {
+            case .appendEdge:
+                changes.edits.append(.insertEdge(edge: target, connections: handle.connections, prepend: false))
+            case .prependEdge:
+                changes.edits.append(.insertEdge(edge: target, connections: handle.connections, prepend: true))
+            case .appendNode:
+                if let edgeType = handle.edgeType {
+                    changes.edits.append(.insertNode(node: target, edgeType: edgeType, connections: handle.connections, prepend: false))
+                }
+            case .prependNode:
+                if let edgeType = handle.edgeType {
+                    changes.edits.append(.insertNode(node: target, edgeType: edgeType, connections: handle.connections, prepend: true))
+                }
+            case .deleteEdge, .deleteRecord:
+                return
+            }
+        }
+
+        /// Records the edit a delete directive asks for on an id value.
+        mutating func deletion(_ handle: ResolvedHandle, _ value: ChangeSet.RawValue) {
+            guard case .string(let start, let end, let escaped) = value else { return }
+            let id = Ingest.materialize(base: base, Int(start), Int(end), escaped)
+            switch handle.kind {
+            case .deleteRecord:
+                changes.edits.append(.deleteRecord(id: id))
+            case .deleteEdge:
+                changes.edits.append(.deleteEdge(id: id, connections: handle.connections))
+            default:
+                return
+            }
         }
 
         @inline(__always)
@@ -286,12 +361,12 @@ public enum Ingest {
         @inline(__always)
         mutating func settle(plan: ResolvedSelection, concreteType: TypeID, pendingID: (Int, Int, Bool)?, parent: Int32, slot: Slot?, listIndex: Int?) -> Int32 {
             if let (start, end, escaped) = pendingID {
-                return changes.record(for: concreteType.name + ":" + Ingest.materialize(base: base, start, end, escaped), type: concreteType)
+                return changes.record(for: concreteType.name + ":" + Ingest.materialize(base: base, start, end, escaped), type: concreteType, entity: true)
             }
             let parentKey = changes.recordKeys[Int(parent)]
             let storageKey = slot.map(Registry.storageKey) ?? ""
-            if let listIndex { return changes.record(for: parentKey + ":" + storageKey + ":" + String(listIndex), type: concreteType) }
-            return changes.record(for: parentKey + ":" + storageKey, type: concreteType)
+            if let listIndex { return changes.record(for: parentKey + ":" + storageKey + ":" + String(listIndex), type: concreteType, entity: false) }
+            return changes.record(for: parentKey + ":" + storageKey, type: concreteType, entity: false)
         }
 
         mutating func scalarValue(_ scalar: ScalarKind) throws -> ChangeSet.RawValue {

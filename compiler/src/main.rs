@@ -237,16 +237,20 @@ fn check_property_types(documents: &[Document], plan: &pipeline::Plan) -> Vec<Re
             continue;
         };
         let expected: Option<&str> = match embedded.marker {
+            // The longest name the text contains: `TestAddNote` is inside
+            // `TestAddNoteFirst`.
             Marker::Fragment => plan
                 .fragments
                 .iter()
                 .map(|fragment| fragment.name.as_str())
-                .find(|name| document.text.contains(name)),
+                .filter(|name| document.text.contains(name))
+                .max_by_key(|name| name.len()),
             _ => plan
                 .operations
                 .iter()
                 .map(|operation| operation.name.as_str())
-                .find(|name| document.text.contains(name)),
+                .filter(|name| document.text.contains(name))
+                .max_by_key(|name| name.len()),
         };
         let Some(expected) = expected else { continue };
         // Module-qualified spellings are accepted: `App.Foo` names `Foo`.
