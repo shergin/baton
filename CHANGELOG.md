@@ -16,6 +16,9 @@ are expected and listed without apology.
   runs only for an object whose identity follows a link. Two recorded
   responses with the `id` last join `spec/rickandmorty`, and the tests read
   them through the detail's lenses over the list's records.
+- The Rick and Morty sample's `baton.json` sits beside the sample, like every
+  other target's. The package root has none, so a target without its own
+  gets the plugin's warning instead of the sample's schema.
 
 ## 0.5.0 (Baton Pass) — 2026-10-03
 

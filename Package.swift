@@ -49,6 +49,7 @@ let package = Package(
             name: "RickAndMorty",
             dependencies: ["Baton"],
             path: "examples/RickAndMorty",
+            exclude: ["baton.json"],
             swiftSettings: [.swiftLanguageMode(.v6)],
             plugins: ["BatonPlugin"]
         ),

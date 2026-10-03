@@ -187,7 +187,8 @@ to get silently wrong.
 ## Using it
 
 Add the package and the plugin to a target, put `baton.json` with the schema
-path (and lookups) at the package root, and build. The plugin runs `batonc`
+path (and lookups) in the target's directory or at the package root, and
+build. The plugin runs `batonc`
 for every Swift file that declares GraphQL and reports schema errors at the
 GraphQL text. `swift run RickAndMorty` opens the read-only sample;
 `GITHUB_TOKEN=$(gh auth token) swift run GitHubTriage` opens the one with
