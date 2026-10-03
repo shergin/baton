@@ -88,4 +88,25 @@ struct ConditionTests {
             #expect((character.again != nil) == again)
         }
     }
+
+    @Test("a caught field under a condition keeps its error out of an operation that throws, and a field the condition left out has none")
+    func caughtUnderCondition() throws {
+        let fetched = TestStrictConditions(id: "1", withStatus: true)
+        let store = Store()
+        store.commit(try Ingest.normalize(fixture("strict-conditions-caught"), plan: TestStrictConditions.plan.resolve(fetched.variables)))
+        let anchor = Anchor(record: store.root, variables: fetched.variables, store: store)
+        #expect(TestStrictConditions.Data.fieldErrors(anchor).isEmpty, "the status error is caught where it is read")
+        let character = try #require(try TestStrictConditions.Data.throwing(anchor).character)
+        guard case .failure(let errors)? = character.status else {
+            Issue.record("the caught status reads its error")
+            return
+        }
+        #expect(errors.errors.map(\.message) == ["status is private"])
+        #expect(try character.origin?.get()?.name == "Earth (C-137)")
+
+        let unselected = TestStrictConditions(id: "1", withStatus: false)
+        let left = Anchor(record: store.root, variables: unselected.variables, store: store)
+        #expect(TestStrictConditions.Data.fieldErrors(left).isEmpty)
+        #expect(try #require(try TestStrictConditions.Data.throwing(left).character).status == nil)
+    }
 }

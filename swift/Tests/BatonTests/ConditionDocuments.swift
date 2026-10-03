@@ -4,8 +4,9 @@ import Baton
 /// `@skip` both ways, a field repeated under a condition with other children,
 /// a union whose members read disjoint fields, one alias under two types, an
 /// interface only some members implement, an abstract selection read through
-/// its own fields, and one fragment spread twice and once more under a
-/// condition.
+/// its own fields, one fragment spread twice and once more under a
+/// condition, and caught fields and `__typename` under a condition in an
+/// operation that throws on field errors.
 @MainActor
 struct ConditionDocuments {
     @Query("""
@@ -58,4 +59,16 @@ struct ConditionDocuments {
         }
         """)
     var nodeDeferred: TestNodeDeferred
+
+    @Query("""
+        query TestStrictConditions($id: ID!, $withStatus: Boolean!) @throwOnFieldError {
+          character(id: $id) {
+            name
+            __typename @include(if: $withStatus)
+            status @include(if: $withStatus) @catch
+            origin @include(if: $withStatus) @catch { name }
+          }
+        }
+        """)
+    var strictConditions: TestStrictConditions
 }

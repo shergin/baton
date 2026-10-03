@@ -807,6 +807,9 @@ impl Emitter {
         );
         let _ = writeln!(output, "{indent}    var errors: [Baton.FieldError] = []");
         for member in own_members(members) {
+            if !collects_errors(&member.selection) {
+                continue;
+            }
             // A field a condition left out has no error to collect.
             let condition = guard_condition(&member.guards);
             let (indent, close) = match &condition {
@@ -818,15 +821,10 @@ impl Emitter {
             };
             match &member.selection {
                 SelectionPlan::Scalar {
-                    name,
                     storage_key,
-                    catch,
                     required,
                     ..
                 } => {
-                    if name == "__typename" || catch.is_some() {
-                        continue;
-                    }
                     let slot = self.slot_expression(type_name, type_is_abstract, storage_key);
                     let _ = writeln!(
                         output,
@@ -846,14 +844,10 @@ impl Emitter {
                     name,
                     alias,
                     storage_key,
-                    catch,
                     required,
                     plural,
                     ..
                 } => {
-                    if catch.is_some() {
-                        continue;
-                    }
                     let slot = self.slot_expression(type_name, type_is_abstract, storage_key);
                     let nested = capitalize(alias.as_deref().unwrap_or(name));
                     if *plural {
@@ -878,19 +872,8 @@ impl Emitter {
                     }
                 }
                 SelectionPlan::Inline {
-                    alias: Some(alias),
-                    catch: None,
-                    selections: child,
-                    ..
+                    alias: Some(alias), ..
                 } => {
-                    // An aliased spread is a masking boundary with its own policy;
-                    // an aliased selection set is a nested lens of this one.
-                    if matches!(child.as_slice(), [SelectionPlan::Spread { .. }]) {
-                        if !close.is_empty() {
-                            let _ = writeln!(output, "{close}");
-                        }
-                        continue;
-                    }
                     let _ = writeln!(
                         output,
                         "{indent}    errors.append(contentsOf: {}.fieldErrors(anchor))",
@@ -2305,6 +2288,24 @@ fn under(guard: &[Guard], selections: Vec<SelectionPlan>) -> Vec<SelectionPlan> 
                 selections,
             }]
         })
+}
+
+/// Whether a member has field errors its lens collects. `__typename` has
+/// none, a `@catch` field keeps its own, and an aliased spread is a masking
+/// boundary with its own policy; an aliased selection set is a nested lens
+/// whose errors are this lens's.
+fn collects_errors(selection: &SelectionPlan) -> bool {
+    match selection {
+        SelectionPlan::Scalar { name, catch, .. } => name != "__typename" && catch.is_none(),
+        SelectionPlan::Linked { catch, .. } => catch.is_none(),
+        SelectionPlan::Inline {
+            alias: Some(_),
+            catch: None,
+            selections,
+            ..
+        } => !matches!(selections.as_slice(), [SelectionPlan::Spread { .. }]),
+        _ => false,
+    }
 }
 
 /// The Swift test of a member's guards, or none when it is always fetched.

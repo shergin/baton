@@ -271,6 +271,140 @@ query TestNodeFields(
     }
 }
 
+/// Operation value for `query TestStrictConditions`.
+nonisolated public struct TestStrictConditions: Baton.Operation {
+    public var id: String
+    public var withStatus: Bool
+    public var resolution: Baton.OperationHandle<Self>? = nil
+
+    public init(id: String, withStatus: Bool) {
+        self.id = id
+        self.withStatus = withStatus
+    }
+
+    public static let name = "TestStrictConditions"
+    public static let kind = Baton.OperationKind.query
+    public static let persistedID = "eca77c6fd8deca0ff9a73b225c461e7d"
+    public static let throwsOnFieldError = true
+    public static let text = #"""
+query TestStrictConditions(
+  $id: ID!
+  $withStatus: Boolean!
+) {
+  character(id: $id) {
+    name
+    __typename @include(if: $withStatus)
+    status @include(if: $withStatus)
+    origin @include(if: $withStatus) {
+      name
+      id
+    }
+    id
+  }
+}
+"""#
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["id": Baton.Variable(id), "withStatus": Baton.Variable(withStatus)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.id == rhs.id && lhs.withStatus == rhs.withStatus
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+        hasher.combine(withStatus)
+    }
+
+    public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
+            .linked("character", key: .dynamic([.literal("character(id:"), .variable("id"), .literal(")")]), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                .scalar("__typename", key: .fixed(Slots.Character___typename), kind: .string, list: false, guards: [[.init("withStatus", passing: true)]]),
+                .scalar("name", key: .fixed(Slots.Character_name), kind: .string, list: false),
+                .scalar("status", key: .fixed(Slots.Character_status), kind: .string, list: false, caught: true, guards: [[.init("withStatus", passing: true)]]),
+                .linked("origin", key: .fixed(Slots.Character_origin), plural: false, caught: true, guards: [[.init("withStatus", passing: true)]], selection: Baton.Selection(type: Types.Location, hasID: true, abstract: false, fields: [
+                    .scalar("name", key: .fixed(Slots.Location_name), kind: .string, list: false, caught: true),
+                    .scalar("id", key: .fixed(Slots.Location_id), kind: .string, list: false, caught: true),
+                ])),
+                .scalar("id", key: .fixed(Slots.Character_id), kind: .string, list: false),
+            ])),
+        ]))
+
+    nonisolated public struct Data: Baton.Lens {
+        public let anchor: Baton.Anchor
+        public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Query"
+        @MainActor public var character: Character? { anchor.linked(Slots.Query_character_bca4f9(anchor.variables), lookup: Baton.Lookup(type: Types.Character, key: .variable("id"))).map(Character.init(anchor:)) }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectErrors(Slots.Query_character_bca4f9(anchor.variables), within: Character.fieldErrors, into: &errors)
+            return errors
+        }
+        /// The lens, or the field errors in it as a thrown `FieldErrors`.
+        @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self {
+            let errors = fieldErrors(anchor)
+            if !errors.isEmpty { throw Baton.FieldErrors(errors) }
+            return Self(anchor: anchor)
+        }
+        /// The lens, or the field errors in it as a `Result`.
+        @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(Baton.FieldErrors(errors))
+        }
+
+        nonisolated public struct Character: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Character"
+            @MainActor public var name: String? { anchor.string(Slots.Character_name) }
+            @MainActor public var status: Result<String?, Baton.FieldErrors>? { anchor.selects("withStatus", true) ? anchor.caught(Slots.Character_status) { $0.string(Slots.Character_status) } : nil }
+            @MainActor public var origin: Result<Origin?, Baton.FieldErrors>? { anchor.selects("withStatus", true) ? anchor.caught(Slots.Character_origin, within: Origin.fieldErrors) { $0.linked(Slots.Character_origin).map(Origin.init(anchor:)) } : nil }
+            /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+            @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+                var errors: [Baton.FieldError] = []
+                anchor.collectError(Slots.Character_name, into: &errors)
+                return errors
+            }
+            /// The lens, or the field errors in it as a thrown `FieldErrors`.
+            @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self {
+                let errors = fieldErrors(anchor)
+                if !errors.isEmpty { throw Baton.FieldErrors(errors) }
+                return Self(anchor: anchor)
+            }
+            /// The lens, or the field errors in it as a `Result`.
+            @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+                let errors = fieldErrors(anchor)
+                return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(Baton.FieldErrors(errors))
+            }
+
+            nonisolated public struct Origin: Baton.Lens {
+                public let anchor: Baton.Anchor
+                public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                public static let typeName = "Location"
+                @MainActor public var name: String? { anchor.string(Slots.Location_name) }
+                /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+                @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+                    var errors: [Baton.FieldError] = []
+                    anchor.collectError(Slots.Location_name, into: &errors)
+                    return errors
+                }
+                /// The lens, or the field errors in it as a thrown `FieldErrors`.
+                @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self {
+                    let errors = fieldErrors(anchor)
+                    if !errors.isEmpty { throw Baton.FieldErrors(errors) }
+                    return Self(anchor: anchor)
+                }
+                /// The lens, or the field errors in it as a `Result`.
+                @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+                    let errors = fieldErrors(anchor)
+                    return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(Baton.FieldErrors(errors))
+                }
+            }
+        }
+    }
+}
+
 /// Operation value for `query TestTwoSpreads`.
 nonisolated public struct TestTwoSpreads: Baton.Operation {
     public var id: String

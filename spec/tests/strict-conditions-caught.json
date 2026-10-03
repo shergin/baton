@@ -1,0 +1,1 @@
+{"data":{"character":{"id":"1","name":"Rick Sanchez","__typename":"Character","status":null,"origin":{"id":"1","name":"Earth (C-137)"}}},"errors":[{"message":"status is private","path":["character","status"]}]}
