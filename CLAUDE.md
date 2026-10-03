@@ -29,6 +29,9 @@ the vocabulary is `docs/terminology.md`. These files outrank any default.
 ## Tests
 
 - Production code comes first; tests serve it and come second.
+- Existing tests never define the library's behaviour; the architecture and
+  the purity of its concepts do. When a test stands in the way of the right
+  design, the test changes.
 - Only Opus-tier models write or update tests; Fable does not. Fable's part
   in testing is conceptual and strategic: what to prove and why. When Fable
   runs the main context, it hands writing and updating tests to an
