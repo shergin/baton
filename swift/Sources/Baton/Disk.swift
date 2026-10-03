@@ -49,19 +49,19 @@ final class Disk: @unchecked Sendable {
     private var damaged = false
     private(set) var generation: Int64 = 0
 
+    /// The prepared statements of the open connection. They are dropped
+    /// with it, so a statement can never be stepped after its connection
+    /// closed.
+    private struct Prepared {
+        let selectRecord, upsertRecord, useRecord: OpaquePointer
+        let selectRoot, upsertRoot, useRoot: OpaquePointer
+        let upsertFetch, upsertName: OpaquePointer
+        let begin, beginReading, commit, rollback: OpaquePointer
+    }
+
+    /// Every statement prepared on the connection, finalized when it closes.
     private var statements: [OpaquePointer] = []
-    private var selectRecord: OpaquePointer?
-    private var upsertRecord: OpaquePointer?
-    private var useRecord: OpaquePointer?
-    private var selectRoot: OpaquePointer?
-    private var upsertRoot: OpaquePointer?
-    private var useRoot: OpaquePointer?
-    private var upsertFetch: OpaquePointer?
-    private var upsertName: OpaquePointer?
-    private var begin: OpaquePointer?
-    private var beginReading: OpaquePointer?
-    private var commit: OpaquePointer?
-    private var rollback: OpaquePointer?
+    private var prepared: Prepared?
 
     /// Names by id, and back.
     private var names: [String] = []
@@ -187,22 +187,25 @@ final class Disk: @unchecked Sendable {
             times[String(cString: operation)] = sqlite3_column_double(statement, 1)
         }
 
-        selectRecord = try prepare("SELECT used, row FROM records WHERE key = ?1")
-        upsertRecord = try prepare("INSERT OR REPLACE INTO records(key, used, row) VALUES(?1, ?2, ?3)")
-        useRecord = try prepare("UPDATE records SET used = ?2 WHERE key = ?1")
-        selectRoot = try prepare("SELECT used, cell FROM root WHERE field = ?1")
-        upsertRoot = try prepare("INSERT OR REPLACE INTO root(field, used, cell) VALUES(?1, ?2, ?3)")
-        useRoot = try prepare("UPDATE root SET used = ?2 WHERE field = ?1")
-        upsertFetch = try prepare("INSERT OR REPLACE INTO fetches(operation, used, time) VALUES(?1, ?2, ?3)")
-        upsertName = try prepare("INSERT OR REPLACE INTO names(id, name) VALUES(?1, ?2)")
-        begin = try prepare("BEGIN IMMEDIATE")
-        beginReading = try prepare("BEGIN")
-        commit = try prepare("COMMIT")
-        rollback = try prepare("ROLLBACK")
+        prepared = Prepared(
+            selectRecord: try prepare("SELECT used, row FROM records WHERE key = ?1"),
+            upsertRecord: try prepare("INSERT OR REPLACE INTO records(key, used, row) VALUES(?1, ?2, ?3)"),
+            useRecord: try prepare("UPDATE records SET used = ?2 WHERE key = ?1"),
+            selectRoot: try prepare("SELECT used, cell FROM root WHERE field = ?1"),
+            upsertRoot: try prepare("INSERT OR REPLACE INTO root(field, used, cell) VALUES(?1, ?2, ?3)"),
+            useRoot: try prepare("UPDATE root SET used = ?2 WHERE field = ?1"),
+            upsertFetch: try prepare("INSERT OR REPLACE INTO fetches(operation, used, time) VALUES(?1, ?2, ?3)"),
+            upsertName: try prepare("INSERT OR REPLACE INTO names(id, name) VALUES(?1, ?2)"),
+            begin: try prepare("BEGIN IMMEDIATE"),
+            beginReading: try prepare("BEGIN"),
+            commit: try prepare("COMMIT"),
+            rollback: try prepare("ROLLBACK")
+        )
         return times
     }
 
     private func close() {
+        prepared = nil
         for statement in statements { sqlite3_finalize(statement) }
         statements.removeAll()
         if let db { sqlite3_close_v2(db) }
@@ -281,8 +284,7 @@ final class Disk: @unchecked Sendable {
     }
 
     /// Steps a prepared statement that returns no rows.
-    private func run(_ statement: OpaquePointer?) -> Bool {
-        guard let statement else { return false }
+    private func run(_ statement: OpaquePointer) -> Bool {
         let status = sqlite3_step(statement)
         sqlite3_reset(statement)
         if status == SQLITE_DONE { return true }
@@ -294,13 +296,14 @@ final class Disk: @unchecked Sendable {
 
     /// Opens the read transaction a hydration runs in.
     func beginRead() -> Bool {
-        run(beginReading)
+        guard let prepared else { return false }
+        return run(prepared.beginReading)
     }
 
     /// Closes the read transaction. Returns the rows the read found carrying
     /// an older generation, for the writer to stamp.
     func endRead() -> Persistence.Work? {
-        _ = run(commit)
+        if let prepared { _ = run(prepared.commit) }
         defer {
             readRecords.removeAll()
             readRoot.removeAll()
@@ -312,17 +315,18 @@ final class Disk: @unchecked Sendable {
 
     /// Calls `body` with the record's row, if the image has one.
     func record(_ key: String, _ body: (UnsafeRawBufferPointer) -> Void) -> Bool {
-        read(selectRecord, key, body)
+        guard let prepared else { return false }
+        return read(prepared.selectRecord, key, isRecord: true, body)
     }
 
     /// Calls `body` with a root field's cell, if the image has one.
     func rootField(_ storageKey: String, _ body: (UnsafeRawBufferPointer) -> Void) -> Bool {
-        read(selectRoot, storageKey, body)
+        guard let prepared else { return false }
+        return read(prepared.selectRoot, storageKey, isRecord: false, body)
     }
 
-    private func read(_ statement: OpaquePointer?, _ key: String, _ body: (UnsafeRawBufferPointer) -> Void) -> Bool {
-        guard let statement else { return false }
-        return key.withCString { text in
+    private func read(_ statement: OpaquePointer, _ key: String, isRecord: Bool, _ body: (UnsafeRawBufferPointer) -> Void) -> Bool {
+        key.withCString { text in
             sqlite3_bind_text(statement, 1, text, -1, nil)
             defer { sqlite3_reset(statement) }
             let status = sqlite3_step(statement)
@@ -332,7 +336,7 @@ final class Disk: @unchecked Sendable {
             }
             guard let bytes = sqlite3_column_blob(statement, 1) else { return false }
             if sqlite3_column_int64(statement, 0) != generation {
-                if statement == selectRecord { readRecords.append(key) } else { readRoot.append(key) }
+                if isRecord { readRecords.append(key) } else { readRoot.append(key) }
             }
             body(UnsafeRawBufferPointer(start: bytes, count: Int(sqlite3_column_bytes(statement, 1))))
             return true
@@ -368,34 +372,40 @@ final class Disk: @unchecked Sendable {
     /// Writes everything in one transaction. A failure rolls it back and the
     /// work is lost, which a cache can afford.
     func write(_ work: [Persistence.Work]) {
-        guard !work.isEmpty, db != nil, run(begin) else { return }
+        guard !work.isEmpty, let prepared else { return }
+        guard run(prepared.begin) else {
+            // A file too damaged to begin a transaction in is discarded now,
+            // not at the next read.
+            if damaged { discard() }
+            return
+        }
         var good = true
         for item in work {
             switch item {
             case .commit(let records, let root):
-                for snapshot in records { good = put(snapshot) && good }
-                for field in root { good = put(field) && good }
+                for snapshot in records { good = put(snapshot, prepared) && good }
+                for field in root { good = put(field, prepared) && good }
             case .fetched(let operation, let time):
-                good = put(operation, time) && good
+                good = put(operation, time, prepared) && good
             case .used(let records, let root):
-                for key in records { good = use(useRecord, key) && good }
-                for field in root { good = use(useRoot, field) && good }
+                for key in records { good = use(prepared.useRecord, key) && good }
+                for field in root { good = use(prepared.useRoot, field) && good }
             case .invalidate:
                 good = (try? exec("DELETE FROM fetches")) != nil && good
             case .removeAll:
                 good = (try? exec("DELETE FROM records; DELETE FROM root; DELETE FROM fetches")) != nil && good
             }
         }
-        for id in unwritten { good = put(name: id) && good }
-        if good, run(commit) {
+        for id in unwritten { good = put(name: id, prepared) && good }
+        if good, run(prepared.commit) {
             unwritten.removeAll()
         } else {
-            _ = run(rollback)
+            _ = run(prepared.rollback)
         }
         if damaged { discard() }
     }
 
-    private func put(_ snapshot: Persistence.Snapshot) -> Bool {
+    private func put(_ snapshot: Persistence.Snapshot, _ prepared: Prepared) -> Bool {
         let record = snapshot.record
         // What hangs off the mutation and subscription roots by path is a
         // payload, read once by its caller; entities inside it have keys of
@@ -411,20 +421,19 @@ final class Disk: @unchecked Sendable {
             append(varint: UInt64(name))
             append(snapshot.values[index], error: snapshot.errors?[Int32(index)])
         }
-        return upsert(upsertRecord, record.key)
+        return upsert(prepared.upsertRecord, record.key)
     }
 
-    private func put(_ field: Persistence.RootField) -> Bool {
+    private func put(_ field: Persistence.RootField, _ prepared: Prepared) -> Bool {
         if case .missing = field.value { return true }
         scratch.removeAll(keepingCapacity: true)
         append(field.value, error: field.error)
-        return upsert(upsertRoot, Registry.storageKey(field.slot))
+        return upsert(prepared.upsertRoot, Registry.storageKey(field.slot))
     }
 
     /// Binds the key, the generation and the scratch bytes, and steps.
-    private func upsert(_ statement: OpaquePointer?, _ key: String) -> Bool {
-        guard let statement else { return false }
-        return key.withCString { text in
+    private func upsert(_ statement: OpaquePointer, _ key: String) -> Bool {
+        key.withCString { text in
             scratch.withUnsafeBufferPointer { bytes in
                 sqlite3_bind_text(statement, 1, text, -1, nil)
                 sqlite3_bind_int64(statement, 2, generation)
@@ -434,28 +443,25 @@ final class Disk: @unchecked Sendable {
         }
     }
 
-    private func put(_ operation: String, _ time: Double) -> Bool {
-        guard let upsertFetch else { return false }
-        return operation.withCString { text in
-            sqlite3_bind_text(upsertFetch, 1, text, -1, nil)
-            sqlite3_bind_int64(upsertFetch, 2, generation)
-            sqlite3_bind_double(upsertFetch, 3, time)
-            return run(upsertFetch)
+    private func put(_ operation: String, _ time: Double, _ prepared: Prepared) -> Bool {
+        operation.withCString { text in
+            sqlite3_bind_text(prepared.upsertFetch, 1, text, -1, nil)
+            sqlite3_bind_int64(prepared.upsertFetch, 2, generation)
+            sqlite3_bind_double(prepared.upsertFetch, 3, time)
+            return run(prepared.upsertFetch)
         }
     }
 
-    private func put(name id: Int32) -> Bool {
-        guard let upsertName else { return false }
-        return names[Int(id)].withCString { text in
-            sqlite3_bind_int64(upsertName, 1, Int64(id))
-            sqlite3_bind_text(upsertName, 2, text, -1, nil)
-            return run(upsertName)
+    private func put(name id: Int32, _ prepared: Prepared) -> Bool {
+        names[Int(id)].withCString { text in
+            sqlite3_bind_int64(prepared.upsertName, 1, Int64(id))
+            sqlite3_bind_text(prepared.upsertName, 2, text, -1, nil)
+            return run(prepared.upsertName)
         }
     }
 
-    private func use(_ statement: OpaquePointer?, _ key: String) -> Bool {
-        guard let statement else { return false }
-        return key.withCString { text in
+    private func use(_ statement: OpaquePointer, _ key: String) -> Bool {
+        key.withCString { text in
             sqlite3_bind_text(statement, 1, text, -1, nil)
             sqlite3_bind_int64(statement, 2, generation)
             return run(statement)

@@ -342,4 +342,36 @@ struct PersistenceTests {
         #expect(sqlite3_exec(db, "SELECT text FROM notes", nil, nil, nil) == SQLITE_OK, "the table is still there")
         sqlite3_close(db)
     }
+
+    @Test("a file damaged between a commit and a check is a miss, not a crash")
+    func damagedUnderAnOpenConnection() async throws {
+        // Whether the check or the writer meets the damage first is a race;
+        // a few rounds give the check its turn.
+        for _ in 0..<12 {
+            let image = TemporaryImage()
+            let first = Store(persistence: Persistence(url: image.url))
+            first.reportMissing = nil
+            first.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables)))
+            await first.persistence?.flush()
+            // The image's connection stays open while another moves its rows
+            // into the main file and every page after the first is
+            // overwritten, so a transaction begins and its first write finds
+            // the damage.
+            var other: OpaquePointer?
+            #expect(sqlite3_open(image.url.path, &other) == SQLITE_OK)
+            #expect(sqlite3_exec(other, "PRAGMA wal_checkpoint(TRUNCATE)", nil, nil, nil) == SQLITE_OK)
+            sqlite3_close(other)
+            let handle = try FileHandle(forWritingTo: image.url)
+            try handle.seek(toOffset: 4096)
+            try handle.write(contentsOf: Data(repeating: 0x42, count: 1 << 18))
+            try handle.close()
+            let renamed = String(decoding: fixtureData, as: UTF8.self)
+                .replacingOccurrences(of: "\"name\":\"Morty Smith\"", with: "\"name\":\"Morty C-137\"")
+            first.commit(try Ingest.normalize(Data(renamed.utf8), plan: Fixture.plan.resolve(Fixture(page: 1).variables)))
+            let second = Store(persistence: first.persistence)
+            second.reportMissing = nil
+            #expect(!second.check(Fixture.plan.resolve(Fixture(page: 1).variables)))
+            await first.persistence?.flush()
+        }
+    }
 }
