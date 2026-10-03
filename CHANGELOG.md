@@ -18,6 +18,11 @@ are expected and listed without apology.
   U+FFFD; the first read past the string and the second trapped.
 - A handle outlives its environment: a view that releases its handle after
   the environment is gone no longer traps; the release does nothing.
+- A damaged image is a miss, never a crash. A file damaged under the open
+  connection could leave a read stepping a statement already finalized; a
+  row with a name id past any table, a link that names no type, or lists
+  nested in lists trapped or recursed without bound. Such a row is used as
+  far as it reads.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 
