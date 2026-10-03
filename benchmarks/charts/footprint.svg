@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="531.2" height="280" viewBox="0 0 531.2 280" font-family="ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace" font-size="13" fill="#e6edf3" shape-rendering="crispEdges">
+<rect width="531.2" height="280" rx="8" fill="#0d1117"/>
+<text x="179.8" y="24.5" textLength="171.6" lengthAdjust="spacingAndGlyphs" xml:space="preserve">Footprint since page 1</text>
+<rect x="172" y="36" width="7.8" height="8" fill="#e6edf3"/>
+<rect x="179.8" y="28" width="335.4" height="8" fill="#e6edf3"/>
+<text x="55" y="40.5" textLength="7.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">│</text>
+<rect x="164.2" y="52" width="3.9" height="8" fill="#e6edf3"/>
+<rect x="168.1" y="44" width="3.9" height="8" fill="#e6edf3"/>
+<text x="16" y="56.5" textLength="46.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">6 MB ┤</text>
+<rect x="156.4" y="68" width="3.9" height="8" fill="#e6edf3"/>
+<rect x="160.3" y="60" width="3.9" height="8" fill="#e6edf3"/>
+<text x="16" y="72.5" textLength="46.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">5 MB ┤</text>
+<rect x="148.6" y="84" width="3.9" height="8" fill="#e6edf3"/>
+<rect x="152.5" y="76" width="3.9" height="8" fill="#e6edf3"/>
+<text x="55" y="88.5" textLength="7.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">│</text>
+<rect x="136.9" y="100" width="3.9" height="8" fill="#e6edf3"/>
+<rect x="140.8" y="92" width="7.8" height="8" fill="#e6edf3"/>
+<text x="16" y="104.5" textLength="46.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">4 MB ┤</text>
+<rect x="129.1" y="116" width="3.9" height="8" fill="#e6edf3"/>
+<rect x="133" y="108" width="3.9" height="8" fill="#e6edf3"/>
+<text x="55" y="120.5" textLength="7.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">│</text>
+<rect x="121.3" y="132" width="3.9" height="8" fill="#e6edf3"/>
+<rect x="125.2" y="124" width="3.9" height="8" fill="#e6edf3"/>
+<text x="16" y="136.5" textLength="46.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">3 MB ┤</text>
+<rect x="113.5" y="148" width="3.9" height="8" fill="#e6edf3"/>
+<rect x="117.4" y="140" width="3.9" height="8" fill="#e6edf3"/>
+<text x="55" y="152.5" textLength="7.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">│</text>
+<rect x="101.8" y="164" width="3.9" height="8" fill="#e6edf3"/>
+<rect x="105.7" y="156" width="3.9" height="8" fill="#e6edf3"/>
+<rect x="109.6" y="156" width="3.9" height="8" fill="#e6edf3"/>
+<text x="16" y="168.5" textLength="46.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">2 MB ┤</text>
+<rect x="94" y="180" width="3.9" height="8" fill="#e6edf3"/>
+<rect x="97.9" y="172" width="3.9" height="8" fill="#e6edf3"/>
+<text x="16" y="184.5" textLength="46.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">1 MB ┤</text>
+<rect x="82.3" y="196" width="3.9" height="8" fill="#e6edf3"/>
+<rect x="86.2" y="196" width="3.9" height="8" fill="#e6edf3"/>
+<rect x="90.1" y="188" width="3.9" height="8" fill="#e6edf3"/>
+<text x="55" y="200.5" textLength="7.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">│</text>
+<rect x="74.5" y="212" width="3.9" height="8" fill="#e6edf3"/>
+<rect x="78.4" y="204" width="3.9" height="8" fill="#e6edf3"/>
+<text x="16" y="216.5" textLength="46.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">0 MB ┤</text>
+<text x="55" y="232.5" textLength="460.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">└┬────────────┬─────────────┬─────────────┬─────────────┬──</text>
+<text x="62.8" y="248.5" textLength="436.8" lengthAdjust="spacingAndGlyphs" xml:space="preserve">0           10            20            30            40</text>
+<text x="273.4" y="264.5" textLength="31.2" lengthAdjust="spacingAndGlyphs" xml:space="preserve">page</text>
+</svg>

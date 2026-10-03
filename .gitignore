@@ -7,8 +7,9 @@
 DerivedData/
 .index-build/
 
-# Rust (compiler/)
+# Rust
 /compiler/target/
+/benchmarks/charts/target/
 
 # Local
 .DS_Store

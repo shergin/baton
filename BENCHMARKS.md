@@ -5,6 +5,21 @@ machine. Every number comes from `swift run -c release BatonBenchmarks` (or
 the comparison package named in its section), recorded with the revision,
 machine, OS and date. Append; never edit a past entry.
 
+Figures are those tables drawn again, by [`benchmarks/charts`](benchmarks/charts),
+with malevich, the library behind `kaz`. `cargo run --manifest-path
+benchmarks/charts/Cargo.toml` rewrites the SVG files. A figure does not
+replace the table it sits under.
+
+## Across releases
+
+Best ingest and best commit of the fixture at each release below.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="benchmarks/charts/read-path.svg">
+  <source media="(prefers-color-scheme: light)" srcset="benchmarks/charts/read-path-light.svg">
+  <img alt="Ingest and commit, best, from 0.1.0 through 0.5.0" src="benchmarks/charts/read-path.svg">
+</picture>
+
 ## 0.5.0 — 2026-10-03
 
 Revision: the 0.5.0 tree. Machine: Apple M1 Pro (MacBook Pro), macOS 26.5.2,
@@ -136,6 +151,12 @@ each page's handle is retained, settled, released, and a collection runs.
 | 30 | 8,981 | 10 | +6.5 MB |
 | 42 | 8,981 | 10 | +6.5 MB |
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="benchmarks/charts/footprint.svg">
+  <source media="(prefers-color-scheme: light)" srcset="benchmarks/charts/footprint-light.svg">
+  <img alt="Footprint since page 1, plateauing after page 10" src="benchmarks/charts/footprint.svg">
+</picture>
+
 Collection pass over about 9,000 records (mark from 10 roots, sweep about
 900): best 0.30 ms, median 3.8 ms, worst 5.0 ms, on the main actor. The
 median is dominated by the sweep's dictionary removals and record clearing;
@@ -199,6 +220,16 @@ pass with `includeCacheRecords: true`.
 | From the store to readable data | 0 (lenses read slots) + 115 µs availability check | 228 ms (`store.load`, whole query re-executed into models) | — |
 | One field read, per field | 26 ns (lens, untracked) | 296 ns (`DataDict` access, after `load`) | 11× |
 | `JSONSerialization` alone, for scale | 4.47 ms (686 KB) | 5.73 ms (849 KB) | — |
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="benchmarks/charts/apollo.svg">
+  <source media="(prefers-color-scheme: light)" srcset="benchmarks/charts/apollo-light.svg">
+  <img alt="Baton and Apollo iOS 2.4, seconds, log axis" src="benchmarks/charts/apollo.svg">
+</picture>
+
+The figure is that table, in seconds, on a log axis. Baton's store-to-data
+mark is the availability check; the one-field mark is the untracked lens
+read.
 
 The ratios are not the point; the shape is. Apollo pays for materialization
 twice, once building models and records from the tree and once rebuilding

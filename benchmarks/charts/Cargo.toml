@@ -1,0 +1,11 @@
+[package]
+name = "benchmark-charts"
+version = "0.0.0"
+edition = "2024"
+publish = false
+description = "SVG charts for BENCHMARKS.md. malevich draws them; kaz is that library's CLI."
+
+# Sibling checkout of github.com/shergin/malevich. The published crate is the
+# same library; the path keeps the charts on the copy this repo was drawn with.
+[dependencies]
+malevich = { path = "../../../malevich" }
