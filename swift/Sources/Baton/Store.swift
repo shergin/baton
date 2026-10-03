@@ -383,7 +383,14 @@ public final class Store {
                     }
                     value = .list(list)
                 }
-                set(record, entry.slot, value, &transaction, &undo)
+                if created[index] {
+                    // Nobody can have read a record this batch created.
+                    if let previous = record.writeSilently(entry.slot, value) {
+                        undo.append(.slot(record, entry.slot, previous))
+                    }
+                } else {
+                    set(record, entry.slot, value, &transaction, &undo)
+                }
             }
         }
 
