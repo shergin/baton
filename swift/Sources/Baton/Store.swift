@@ -400,15 +400,6 @@ public final class Store {
             created[index] = found.created
         }
 
-        var offsets = [Int](repeating: 0, count: objects.count + 1)
-        for index in 0..<objects.count {
-            offsets[index + 1] = offsets[index] + Registry.slotCount(changes.recordTypes[index])
-        }
-        var winners = [Int32](repeating: -1, count: offsets[objects.count])
-        for (position, entry) in changes.entries.enumerated() {
-            winners[offsets[Int(entry.record)] + Int(entry.slot.index)] = Int32(position)
-        }
-
         // Slots this change set carries an error for keep it below rather
         // than clearing it here and setting it again.
         var erroring = Set<SlotKey>()
@@ -421,16 +412,17 @@ public final class Store {
             let record = objects[index]
             // A deleted record a payload names again comes back.
             if record.deleted { setDeleted(record, false, &transaction, &undo) }
-            if created[index] {
+            let range = Int(changes.starts[index])..<Int(changes.starts[index + 1])
+            if created[index], !range.isEmpty {
                 // A new record makes room once, for the highest slot it receives.
-                var highest = offsets[index + 1] - 1
-                while highest >= offsets[index], winners[highest] < 0 { highest -= 1 }
-                if highest >= offsets[index] { record.reserve(highest - offsets[index] + 1) }
+                var highest: Int32 = 0
+                for position in range where changes.entries[position].slot.index > highest {
+                    highest = changes.entries[position].slot.index
+                }
+                record.reserve(Int(highest) + 1)
             }
-            for position in offsets[index]..<offsets[index + 1] {
-                let winner = winners[position]
-                if winner < 0 { continue }
-                let entry = changes.entries[Int(winner)]
+            for position in range {
+                let entry = changes.entries[position]
                 // A field the payload answers without an error has none, whether
                 // or not its value changed.
                 if record.hasErrors, record.peekError(entry.slot) != nil,

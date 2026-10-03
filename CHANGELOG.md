@@ -162,6 +162,14 @@ are expected and listed without apology.
   two are equal when those are the same objects. Breaking for code that
   builds anchors: `Anchor(record:owner:parent:)` replaces the `parent:`
   form, and `binding` takes the spread's `ArgumentSite`.
+- The ingest keeps the last value per field. An entity the response names
+  at many paths was written once per appearance and the commit picked the
+  winners on the main actor, taking the registry's lock per record; the
+  ingest now groups the change set by record, one entry per slot, off the
+  main actor. On an M1 Pro, a commit of the fixture's unchanged payload
+  takes 152 µs against 182, a commit that changes one field 154 µs against
+  185, and the ingest 2.95 ms against 2.78. Placing field errors scans the
+  record's entries instead of indexing every entry.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

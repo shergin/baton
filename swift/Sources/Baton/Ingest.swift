@@ -49,7 +49,11 @@ public struct ChangeSet: Sendable {
     public internal(set) var recordTypes: ContiguousArray<TypeID> = []
     /// Whether the record is an entity keyed `Type:id`, for the store's id index.
     public internal(set) var recordIsEntity: ContiguousArray<Bool> = []
+    /// Entries grouped by record, one per slot: the last value the response
+    /// gave. In arrival order until the ingest groups them at its end.
     public internal(set) var entries: ContiguousArray<Entry> = []
+    /// The entries of record `i` are `entries[starts[i]..<starts[i + 1]]`.
+    public internal(set) var starts: ContiguousArray<Int32> = []
     public internal(set) var refs: ContiguousArray<Int32> = []
     public internal(set) var scalars: ContiguousArray<RawValue> = []
     public internal(set) var edits: ContiguousArray<Edit> = []
@@ -68,6 +72,77 @@ public struct ChangeSet: Sendable {
         recordIsEntity.reserveCapacity(1024)
         entries.reserveCapacity(32_768)
         refs.reserveCapacity(8_192)
+    }
+
+    /// Groups the entries by record and keeps the last one per slot, each at
+    /// the place of the slot's first entry: an entity that appears at many
+    /// paths is written once. A stable counting sort, then one pass per
+    /// record; it runs where the ingest does, off the main actor.
+    mutating func group() {
+        let recordCount = recordKeys.count
+        let total = entries.count
+        var grouped = ContiguousArray<Int32>(repeating: 0, count: recordCount + 1)
+        var sorted = ContiguousArray<Entry>()
+        var kept = 0
+        entries.withUnsafeBufferPointer { source in
+            var highest: Int32 = -1
+            var counts = ContiguousArray<Int32>(repeating: 0, count: recordCount + 1)
+            counts.withUnsafeMutableBufferPointer { counts in
+                for entry in source {
+                    counts[Int(entry.record) &+ 1] &+= 1
+                    if entry.slot.index > highest { highest = entry.slot.index }
+                }
+                for index in 0..<recordCount { counts[index &+ 1] &+= counts[index] }
+            }
+            var next = counts
+            sorted = ContiguousArray<Entry>(unsafeUninitializedCapacity: total) { buffer, initialized in
+                next.withUnsafeMutableBufferPointer { next in
+                    for entry in source {
+                        let record = Int(entry.record)
+                        (buffer.baseAddress! + Int(next[record])).initialize(to: entry)
+                        next[record] &+= 1
+                    }
+                }
+                initialized = total
+            }
+            // The record that last kept each slot index, and where it kept it.
+            var keeper = ContiguousArray<Int32>(repeating: -1, count: Int(highest) + 1)
+            var place = ContiguousArray<Int32>(repeating: 0, count: Int(highest) + 1)
+            sorted.withUnsafeMutableBufferPointer { sorted in
+                keeper.withUnsafeMutableBufferPointer { keeper in
+                    place.withUnsafeMutableBufferPointer { place in
+                        for record in 0..<recordCount {
+                            grouped[record] = Int32(kept)
+                            for position in Int(counts[record])..<Int(counts[record &+ 1]) {
+                                let entry = sorted[position]
+                                let index = Int(entry.slot.index)
+                                if keeper[index] == Int32(record) {
+                                    sorted[Int(place[index])] = entry
+                                } else {
+                                    keeper[index] = Int32(record)
+                                    place[index] = Int32(kept)
+                                    sorted[kept] = entry
+                                    kept &+= 1
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        grouped[recordCount] = Int32(kept)
+        sorted.removeLast(total - kept)
+        entries = sorted
+        starts = grouped
+    }
+
+    /// The entry of a record's slot, once grouped.
+    func entry(_ record: Int32, _ slot: Slot) -> Entry? {
+        for position in Int(starts[Int(record)])..<Int(starts[Int(record) + 1])
+        where entries[position].slot.index == slot.index {
+            return entries[position]
+        }
+        return nil
     }
 
     /// The field errors no `@catch` handles, placed or not; they fail a
@@ -175,6 +250,7 @@ public enum Ingest {
             cursor.skipWhitespace()
             let rootID = cursor.changes.record(for: key, type: type, entity: entity)
             _ = try cursor.object(plan: plan, parent: rootID, slot: nil, listIndex: nil, depth: 0, fixedRecord: rootID)
+            cursor.changes.group()
             changes = cursor.changes
         }
         return changes
@@ -302,6 +378,7 @@ public enum Ingest {
                 if !rawErrors.isEmpty { throw GraphQLErrors(messages: rawErrors.map(\.message)) }
                 throw IngestError(offset: position, message: "no data in response")
             }
+            changes.group()
             if !rawErrors.isEmpty {
                 resolveErrors(root: root, rootID: rootID)
             }
@@ -401,11 +478,6 @@ public enum Ingest {
         /// does not have, and the error lands on the last field it reached:
         /// with GraphQL's null propagation, that is the nullable ancestor.
         mutating func resolveErrors(root: ResolvedSelection, rootID: Int32) {
-            var positions: [UInt64: Int] = [:]
-            positions.reserveCapacity(changes.entries.count)
-            for (position, entry) in changes.entries.enumerated() {
-                positions[UInt64(UInt32(bitPattern: entry.record)) << 32 | UInt64(UInt32(bitPattern: entry.slot.index))] = position
-            }
             for (message, path) in rawErrors {
                 let rendered = (path ?? []).map { segment in
                     switch segment {
@@ -424,16 +496,14 @@ public enum Ingest {
                 var resolved: (Int32, Slot)?
                 var segments = path[...]
                 walk: while let segment = segments.popFirst() {
-                        let variant = selection.variant(for: changes.recordTypes[Int(record)])
+                    let variant = selection.variant(for: changes.recordTypes[Int(record)])
                     guard case .name(let name) = segment, let index = variant.field(named: name) else { break walk }
                     let field = variant.fields[index]
                     caught = caught || field.caught
                     let slot = field.slot
                     resolved = (record, slot)
-                    guard case .linked(let child, _, _, _) = field.kind,
-                          let position = positions[UInt64(UInt32(bitPattern: record)) << 32 | UInt64(UInt32(bitPattern: slot.index))]
-                    else { break walk }
-                    switch changes.entries[position].value {
+                    guard case .linked(let child, _, _, _) = field.kind, let entry = changes.entry(record, slot) else { break walk }
+                    switch entry.value {
                     case .ref(let target):
                         record = target
                         selection = child
