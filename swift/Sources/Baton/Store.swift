@@ -749,11 +749,17 @@ public final class Store {
     /// many records were removed.
     @discardableResult
     func sweep(keeping reachable: Set<ObjectIdentifier>) -> Int {
-        var swept = Set<ObjectIdentifier>()
+        // The keys first, then the removals: removing from the dictionary
+        // while iterating it copies the whole dictionary at the first one.
+        var unreachable: [String] = []
         for (key, record) in records
         where key != Store.rootKey && key != Store.mutationRootKey && key != Store.subscriptionRootKey && !reachable.contains(ObjectIdentifier(record)) {
+            unreachable.append(key)
+        }
+        var swept = Set<ObjectIdentifier>(minimumCapacity: unreachable.count)
+        for key in unreachable {
+            guard let record = records.removeValue(forKey: key) else { continue }
             swept.insert(ObjectIdentifier(record))
-            records.removeValue(forKey: key)
             if let id = record.entityID, byID[id] === record {
                 byID.removeValue(forKey: id)
             }
