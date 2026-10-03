@@ -160,6 +160,43 @@ struct LifetimeTests {
         #expect(transport.requestCount == 2)
     }
 
+    @Test("a refetch during a fetch supersedes it: one fetch stays in flight and the handle follows it", .timeLimit(.minutes(1)))
+    func refetchDuringAFetch() async throws {
+        let transport = GatedTransport()
+        let environment = Environment(transport: transport)
+        let store = environment.store
+        store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
+        let morty = TestRow_character(anchor: Anchor(record: try #require(store.existing("Character:2")), variables: .none, store: store))
+
+        // Ready from the store, with the attach's fetch in flight.
+        let handle = environment.handle(for: TestList(page: 1))
+        handle.retain()
+        while transport.pending < 1 { await Task.yield() }
+        #expect(handle.isRefreshing)
+
+        let refetch = Task { await handle.refetch() }
+        while transport.pending < 2 { await Task.yield() }
+
+        // The superseded fetch answers; this transport does not hear the
+        // cancellation. The handle keeps following the refetch.
+        let renamed = String(decoding: fixtureData, as: UTF8.self)
+            .replacingOccurrences(of: "\"name\":\"Morty Smith\"", with: "\"name\":\"Morty C-137\"")
+        transport.respond(Data(renamed.utf8))
+        while morty.name != "Morty C-137" { await Task.yield() }
+        #expect(handle.isRefreshing, "the refetch is still in flight")
+
+        // Another attach finds that fetch and starts none of its own.
+        _ = environment.handle(for: TestList(page: 1))
+        for _ in 0..<100 { await Task.yield() }
+        #expect(transport.pending == 1)
+
+        transport.respond(fixtureData)
+        await refetch.value
+        #expect(!handle.isRefreshing)
+        #expect(transport.pending == 0)
+        #expect(morty.name == "Morty Smith")
+    }
+
     @Test("a preloaded operation is waiting in the buffer when the view attaches")
     func preload() async {
         let transport = transport()

@@ -16,6 +16,14 @@ are expected and listed without apology.
   runs only for an object whose identity follows a link. Two recorded
   responses with the `id` last join `spec/rickandmorty`, and the tests read
   them through the detail's lenses over the list's records.
+- Fixed: a refetch or retry during a fetch no longer loses the handle's
+  fetch. The superseded fetch used to clear the handle's task and
+  `isRefreshing` as it ended, so `isRefreshing` read false with a request in
+  flight, `settle()` returned early, the next attach started a duplicate
+  request, and eviction could not cancel the live one. A fetch cancelled
+  with an error of its own (URLSession reports the cancellation as one)
+  could also put a loading handle in `.failed`. A cancelled fetch now leaves
+  the handle to whoever cancelled it.
 - The Rick and Morty sample's `baton.json` sits beside the sample, like every
   other target's. The package root has none, so a target without its own
   gets the plugin's warning instead of the sample's schema.

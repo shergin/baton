@@ -174,10 +174,7 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
         if case .ready = phase { isRefreshing = true }
         task = Task { [weak self] in
             guard let self else { return }
-            defer {
-                task = nil
-                isRefreshing = false
-            }
+            var failure: (any Error)?
             do {
                 try await environment.fetch(operation) { [weak self] in
                     // A deferred response renders its first part at once.
@@ -186,21 +183,28 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
                     fetchEpoch = environment.store.invalidationEpoch
                     phase = evaluate()
                 }
-                guard !Task.isCancelled else { return }
+            } catch {
+                failure = error
+            }
+            // A cancelled fetch was superseded or evicted. The handle's state
+            // belongs to whoever cancelled it, however the fetch ended.
+            guard !Task.isCancelled else { return }
+            task = nil
+            isRefreshing = false
+            switch failure {
+            case nil:
                 fetchTime = .now
                 fetchEpoch = environment.store.invalidationEpoch
                 phase = evaluate()
-            } catch is CancellationError {
+            case is CancellationError:
                 return
-            } catch let error as FieldErrors {
+            case let error as FieldErrors:
                 // `@throwOnFieldError`: the data is in the store, the phase says why it is not shown.
                 phase = .failed(error)
-            } catch {
-                if case .ready = phase {
-                    // Earlier data stays visible; the failure shows through the end of isRefreshing.
-                } else {
-                    phase = .failed(error)
-                }
+            case let error?:
+                // Earlier data stays visible; the failure shows through the end of isRefreshing.
+                if case .ready = phase { return }
+                phase = .failed(error)
             }
         }
     }
@@ -249,6 +253,7 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
     func cancel() {
         task?.cancel()
         task = nil
+        isRefreshing = false
     }
 }
 
