@@ -478,6 +478,8 @@ public final class ResolvedSelection: Sendable {
     /// resolved when a record of the type first comes.
     private let others = Mutex<[TypeID: ResolvedVariant]>([:])
     private let deferredParts = Mutex<[String: ResolvedSelection]>([:])
+    /// The selection's own type's name, taken once.
+    private let typeName: String
 
     init(type: TypeID, hasID: Bool, isAbstract: Bool, fields: [ResolvedField], listed: [TypeID: ResolvedVariant]) {
         self.type = type
@@ -485,12 +487,13 @@ public final class ResolvedSelection: Sendable {
         self.isAbstract = isAbstract
         self.fields = fields
         self.listed = listed
+        typeName = type.name
     }
 
     /// The fields a record of `type` reads, with their slots on it. Taken
     /// once per record; the fields are then walked without a condition.
     public func variant(for type: TypeID) -> ResolvedVariant {
-        if !isAbstract || type == self.type { return ResolvedVariant(type: self.type, fields: fields) }
+        if !isAbstract || type == self.type { return ResolvedVariant(type: self.type, fields: fields, typeName: typeName) }
         if let variant = listed[type] { return variant }
         return others.withLock { cache in
             if let variant = cache[type] { return variant }
@@ -506,7 +509,7 @@ public final class ResolvedSelection: Sendable {
         deferredParts.withLock { cache in
             if let part = cache[label] { return part }
             func part(_ variant: ResolvedVariant) -> ResolvedVariant {
-                ResolvedVariant(type: variant.type, fields: variant.fields.filter { $0.deferred == label }.map { $0.undeferred() })
+                ResolvedVariant(type: variant.type, fields: variant.fields.filter { $0.deferred == label }.map { $0.undeferred() }, typeName: variant.typeName)
             }
             let own = fields.filter { $0.deferred == label }.map { $0.undeferred() }
             let selection = ResolvedSelection(type: type, hasID: hasID, isAbstract: isAbstract, fields: own, listed: listed.mapValues(part))
@@ -521,6 +524,14 @@ public final class ResolvedSelection: Sendable {
 public struct ResolvedVariant: Sendable {
     public let type: TypeID
     public let fields: [ResolvedField]
+    /// The type's name, taken once, for the keys the ingest builds.
+    let typeName: String
+
+    init(type: TypeID, fields: [ResolvedField], typeName: String? = nil) {
+        self.type = type
+        self.fields = fields
+        self.typeName = typeName ?? type.name
+    }
 
     /// The field with a response key, for walking a response path.
     func field(named responseKey: String) -> Int? {

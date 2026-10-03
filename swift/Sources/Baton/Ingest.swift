@@ -251,7 +251,7 @@ public enum Ingest {
             var cursor = Cursor(base: buffer.baseAddress!, count: buffer.count, changes: ChangeSet(bytes: bytes))
             cursor.skipWhitespace()
             let rootID = cursor.changes.record(for: key, type: type, entity: entity)
-            _ = try cursor.object(plan: plan, parent: rootID, slot: nil, listIndex: nil, depth: 0, fixedRecord: rootID)
+            _ = try cursor.object(plan: plan, parent: rootID, storageKey: nil, listIndex: nil, depth: 0, fixedRecord: rootID)
             cursor.changes.group()
             return cursor.changes
         }
@@ -343,6 +343,9 @@ public enum Ingest {
         /// Client fields written beside the object's own, per depth: the
         /// connection links, by storage key and declared slot.
         var extra: [ContiguousArray<(String, Slot, ChangeSet.RawValue)>] = []
+        /// The records of a plural link being read, per depth, reused as the
+        /// scratch buffers are.
+        var linked: [ContiguousArray<Int32>] = []
         /// How deep a selection may nest.
         static let depthLimit = 24
         /// The response's `errors`, as read; resolved against the plan at the end.
@@ -381,7 +384,7 @@ public enum Ingest {
                         try cursor.literal("null")
                     } else {
                         rootID = cursor.changes.record(for: rootKey, type: root.type, entity: false)
-                        _ = try cursor.object(plan: root, parent: rootID, slot: nil, listIndex: nil, depth: 0, fixedRecord: rootID)
+                        _ = try cursor.object(plan: root, parent: rootID, storageKey: nil, listIndex: nil, depth: 0, fixedRecord: rootID)
                         sawData = true
                     }
                 case "errors":
@@ -498,7 +501,7 @@ public enum Ingest {
         /// first, so settling it reads one key. The `id` may arrive anywhere:
         /// Relay prints the `id` it adds last, and an optimistic response
         /// sorts its keys.
-        mutating func object(plan: ResolvedSelection, parent: Int32, slot: Slot?, listIndex: Int?, depth: Int, fixedRecord: Int32?) throws -> Int32 {
+        mutating func object(plan: ResolvedSelection, parent: Int32, storageKey: String?, listIndex: Int?, depth: Int, fixedRecord: Int32?) throws -> Int32 {
             try expect(0x7B)
             guard depth < Cursor.depthLimit else { throw IngestError(offset: position, message: "selection nested deeper than 24 levels") }
             if depth == scratch.count {
@@ -506,6 +509,7 @@ public enum Ingest {
                 buffer.reserveCapacity(16)
                 scratch.append(buffer)
                 extra.append([])
+                linked.append([])
             } else {
                 scratch[depth].removeAll(keepingCapacity: true)
                 extra[depth].removeAll(keepingCapacity: true)
@@ -517,7 +521,8 @@ public enum Ingest {
                 try identity(of: plan, afterValue: false, wantsID: false, concreteType: &concreteType, pendingID: &pendingID)
             }
             var expected = 0
-            let fields = plan.variant(for: concreteType).fields
+            let variant = plan.variant(for: concreteType)
+            let fields = variant.fields
             let fieldCount = fields.count
             while true {
                 skipWhitespace()
@@ -583,7 +588,7 @@ public enum Ingest {
                     let value = try scalarValue(scalar)
                     if plan.hasID && field.keyBytes.count == 2 && field.keyBytes[0] == 0x69 && field.keyBytes[1] == 0x64,
                        case .string(let start, let end, let escaped) = value, record < 0 {
-                        record = changes.record(for: concreteType.name + ":" + Ingest.materialize(base: base, Int(start), Int(end), escaped), type: concreteType, entity: true)
+                        record = changes.record(for: variant.typeName + ":" + Ingest.materialize(base: base, Int(start), Int(end), escaped), type: concreteType, entity: true)
                     }
                     scratch[depth].append((matched, value))
                     if let handle = field.handle { deletion(handle, value) }
@@ -597,29 +602,30 @@ public enum Ingest {
                         // A child's key may be a path through this object, so the
                         // object's own key is settled before the child is read.
                         try identity(of: plan, afterValue: true, wantsID: true, concreteType: &concreteType, pendingID: &pendingID)
-                        record = settle(plan: plan, concreteType: concreteType, pendingID: pendingID, parent: parent, slot: slot, listIndex: listIndex)
+                        record = settle(plan: plan, concreteType: concreteType, typeName: variant.typeName, pendingID: pendingID, parent: parent, storageKey: storageKey, listIndex: listIndex)
                     }
                     if plural {
                         try expect(0x5B)
-                        var collected: [Int32] = []
+                        linked[depth].removeAll(keepingCapacity: true)
                         var index = 0
                         while true {
                             skipWhitespace()
                             let next = peek()
                             if next == 0x5D { position += 1; break }
                             if next == 0x2C { position += 1; continue }
-                            if next == 0x6E { try literal("null"); collected.append(-1); index += 1; continue }
-                            collected.append(try object(plan: child, parent: record, slot: field.slot, listIndex: index, depth: depth + 1, fixedRecord: nil))
+                            if next == 0x6E { try literal("null"); linked[depth].append(-1); index += 1; continue }
+                            let target = try object(plan: child, parent: record, storageKey: field.storageKey, listIndex: index, depth: depth + 1, fixedRecord: nil)
+                            linked[depth].append(target)
                             index += 1
                         }
                         let start = Int32(changes.refs.count)
-                        changes.refs.append(contentsOf: collected)
-                        scratch[depth].append((matched, .refs(start: start, count: Int32(collected.count))))
+                        changes.refs.append(contentsOf: linked[depth])
+                        scratch[depth].append((matched, .refs(start: start, count: Int32(linked[depth].count))))
                         if let handle = field.handle {
-                            for target in collected where target >= 0 { insertion(handle, target) }
+                            for target in linked[depth] where target >= 0 { insertion(handle, target) }
                         }
                     } else {
-                        let childRecord = try object(plan: child, parent: record, slot: field.slot, listIndex: nil, depth: depth + 1, fixedRecord: nil)
+                        let childRecord = try object(plan: child, parent: record, storageKey: field.storageKey, listIndex: nil, depth: depth + 1, fixedRecord: nil)
                         scratch[depth].append((matched, .ref(childRecord)))
                         if let connection {
                             // The page is the server's field; the connection record it
@@ -633,7 +639,7 @@ public enum Ingest {
                 }
             }
             if record < 0 {
-                record = settle(plan: plan, concreteType: concreteType, pendingID: pendingID, parent: parent, slot: slot, listIndex: listIndex)
+                record = settle(plan: plan, concreteType: concreteType, typeName: variant.typeName, pendingID: pendingID, parent: parent, storageKey: storageKey, listIndex: listIndex)
             }
             for (index, value) in scratch[depth] {
                 changes.entries.append(ChangeSet.Entry(record: record, slot: fields[index].slot, value: value))
@@ -735,13 +741,13 @@ public enum Ingest {
         /// interface or union the path key ends in the concrete type, so a
         /// payload of another type at the same path is another record.
         @inline(__always)
-        mutating func settle(plan: ResolvedSelection, concreteType: TypeID, pendingID: (Int, Int, Bool)?, parent: Int32, slot: Slot?, listIndex: Int?) -> Int32 {
+        mutating func settle(plan: ResolvedSelection, concreteType: TypeID, typeName: String, pendingID: (Int, Int, Bool)?, parent: Int32, storageKey: String?, listIndex: Int?) -> Int32 {
             if let (start, end, escaped) = pendingID {
-                return changes.record(for: concreteType.name + ":" + Ingest.materialize(base: base, start, end, escaped), type: concreteType, entity: true)
+                return changes.record(for: typeName + ":" + Ingest.materialize(base: base, start, end, escaped), type: concreteType, entity: true)
             }
-            var key = changes.recordKeys[Int(parent)] + ":" + (slot.map(Registry.storageKey) ?? "")
+            var key = changes.recordKeys[Int(parent)] + ":" + (storageKey ?? "")
             if let listIndex { key += ":" + String(listIndex) }
-            if plan.isAbstract { key += ":" + concreteType.name }
+            if plan.isAbstract { key += ":" + typeName }
             return changes.record(for: key, type: concreteType, entity: false)
         }
 

@@ -192,6 +192,10 @@ are expected and listed without apology.
 - A floating-point number is read where it lies in the response; each one
   was copied into a new array first, and a number the plan skips was
   parsed.
+- The ingest takes a type's name once per selection rather than from the
+  registry, under its lock, for every entity and path key, and reads a
+  list of links into a buffer kept per depth rather than a new array per
+  list.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 
