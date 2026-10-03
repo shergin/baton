@@ -5,6 +5,7 @@ set -eu
 root="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$root/compiler"
 cargo build --release
+version="$(grep -m1 '^version = ' Cargo.toml | sed 's/version = "\(.*\)"/\1/')"
 bundle="$root/compiler/dist/batonc.artifactbundle"
 host="$(uname -m)"
 case "$host" in
@@ -19,7 +20,7 @@ cat > "$bundle/info.json" <<JSON
   "schemaVersion": "1.0",
   "artifacts": {
     "batonc": {
-      "version": "0.0.0",
+      "version": "$version",
       "type": "executable",
       "variants": [
         { "path": "batonc-macos-$host/bin/batonc", "supportedTriples": ["$triple"] }
