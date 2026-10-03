@@ -125,6 +125,37 @@ struct SpineTests {
         #expect(counter.fired == 1, "the name changed")
     }
 
+    @Test("a field whose slot is a multiple of sixteen from the one a body reads does not invalidate it")
+    func slotsSixteenApart() throws {
+        let store = Store()
+        let variables = TestList(page: 1).variables
+        store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(variables)))
+        let data = TestList.Data(anchor: Anchor(record: store.root, variables: variables, store: store))
+        let morty = try #require(data.characters?.results?[1].testRow)
+
+        // A key of Character numbered at the name's place modulo sixteen,
+        // where a pool of sixteen channels would put the two on one.
+        let query = Registry.type("Query")
+        let character = Registry.type("Character")
+        let name = Registry.slot(character, "name")
+        var probe = 0
+        while Registry.slot(character, "probe\(probe)").index & 15 != name.index & 15 { probe += 1 }
+        let sibling = Registry.slot(character, "probe\(probe)")
+        let plan = Plan(root: Selection(type: query, hasID: false, fields: [
+            .linked("probe", key: .fixed(Registry.slot(query, "probe")), plural: false, selection: Selection(type: character, hasID: true, fields: [
+                .scalar("id", key: .fixed(Registry.slot(character, "id")), kind: .string, list: false),
+                .scalar("probe\(probe)", key: .fixed(sibling), kind: .string, list: false),
+            ])),
+        ])).resolve(.none)
+
+        final class Counter: @unchecked Sendable { var fired = 0 }
+        let counter = Counter()
+        withObservationTracking { _ = morty.name } onChange: { counter.fired += 1 }
+        store.commit(try Ingest.normalize(Data(#"{"data":{"probe":{"id":"2","probe\#(probe)":"written"}}}"#.utf8), plan: plan))
+        #expect(store.existing("Character:2")?.read(sibling) == .string("written"))
+        #expect(counter.fired == 0, "slot \(sibling.index) and the name's slot \(name.index) are channels apart")
+    }
+
     @Test("a lens read never writes: a root field the store lacks reads nil until the check binds its lookup to the cached entity")
     func lookupBindsInTheCheck() throws {
         final class Misses: @unchecked Sendable { var reads: [String] = [] }
