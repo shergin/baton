@@ -179,6 +179,9 @@ func run() async throws {
     measure("response bytes -> change set", iterations: 30) {
         _ = try! Ingest.normalize(data, plan: plan)
     }
+    measure("resolve the fixture plan for a page, per resolution", iterations: 50, ops: 100) {
+        for page in 1...100 { _ = BenchFixture.plan.resolve(BenchFixture(page: page).variables) }
+    }
 
     print("commit")
     let changes = try Ingest.normalize(data, plan: plan)

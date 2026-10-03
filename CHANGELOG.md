@@ -173,6 +173,11 @@ are expected and listed without apology.
 - A commit compares a list where it is stored before building the new
   one, so a list that did not change allocates nothing: the fixture's
   unchanged payload commits in 133 µs against 152.
+- A plan resolves once where it can. A handle's fetch uses the resolution
+  the handle holds, a selection with no variable below it resolves once
+  and keeps the result, and each field's response key bytes and fixed key
+  are taken when the static plan is built. Resolving the fixture's plan for
+  another page takes 0.69 µs against 8.5 µs without the kept resolutions.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

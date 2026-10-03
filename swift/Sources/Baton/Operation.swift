@@ -244,7 +244,7 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
             guard let self, let environment else { return nil }
             var failure: (any Error)?
             do {
-                try await environment.fetch(operation) { [weak self] in
+                try await environment.fetch(operation, resolved: resolved) { [weak self] in
                     // A deferred response renders its first part at once.
                     guard let self, !Task.isCancelled else { return }
                     didFetch()

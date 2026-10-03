@@ -112,6 +112,14 @@ public struct ConnectionPlan: Sendable {
         self.after = after
         self.before = before
     }
+
+    /// Whether the connection's key or its merge mode reads a variable.
+    var readsVariables: Bool {
+        if case .dynamic = key { return true }
+        if case .variable? = after { return true }
+        if case .variable? = before { return true }
+        return false
+    }
 }
 
 /// How a page joins its connection, from the cursor arguments it was fetched
@@ -205,6 +213,36 @@ public struct PlanField: Sendable {
     /// Alternatives of conjunctions of `@include` and `@skip` conditions: the
     /// field is fetched when any alternative holds. Empty when it always is.
     public let guards: [[Guard]]
+    /// The response key's bytes and a fixed key's text, taken once when the
+    /// static plan is built rather than at every resolution.
+    let keyBytes: [UInt8]
+    let fixedStorageKey: String?
+    /// Whether resolving the field reads a variable: its key, its guards, its
+    /// lookup, its connection or its handle, or a field below it.
+    let readsVariables: Bool
+
+    init(responseKey: String, key: StorageKey, kind: Kind, handle: Handle?, deferred: String?, caught: Bool, guards: [[Guard]]) {
+        self.responseKey = responseKey
+        self.key = key
+        self.kind = kind
+        self.handle = handle
+        self.deferred = deferred
+        self.caught = caught
+        self.guards = guards
+        keyBytes = Array(responseKey.utf8)
+        var readsVariables = !guards.isEmpty
+        switch key {
+        case .fixed(let slot): fixedStorageKey = slot.storageKey
+        case .dynamic: fixedStorageKey = nil; readsVariables = true
+        }
+        if case .variable? = handle?.connections { readsVariables = true }
+        if case .linked(let selection, _, let lookup, let connection) = kind {
+            if selection.readsVariables { readsVariables = true }
+            if case .variable? = lookup?.key { readsVariables = true }
+            if let connection, connection.readsVariables { readsVariables = true }
+        }
+        self.readsVariables = readsVariables
+    }
 
     public static func scalar(_ responseKey: String, key: StorageKey, kind: ScalarKind, list: Bool, handle: Handle? = nil, deferred: String? = nil, caught: Bool = false, guards: [[Guard]] = []) -> PlanField {
         PlanField(responseKey: responseKey, key: key, kind: .scalar(kind, list: list), handle: handle, deferred: deferred, caught: caught, guards: guards)
@@ -240,6 +278,10 @@ public final class Selection: Sendable {
     public let hasID: Bool
     public let isAbstract: Bool
     public let variants: [Variant]
+    /// Whether any field below reads a variable; when none does, the
+    /// selection resolves once and keeps the resolution.
+    let readsVariables: Bool
+    private let resolution = Mutex<ResolvedSelection?>(nil)
 
     /// A selection every type reads alike.
     public convenience init(type: TypeID, hasID: Bool, abstract: Bool = false, fields: [PlanField]) {
@@ -251,6 +293,7 @@ public final class Selection: Sendable {
         self.hasID = hasID
         isAbstract = abstract
         self.variants = variants
+        readsVariables = variants.contains { $0.fields.contains(where: \.readsVariables) }
     }
 
     /// Binds the variables: fields whose guards fail are dropped, keys with
@@ -258,6 +301,14 @@ public final class Selection: Sendable {
     /// now; every other type's is resolved from the shared fields when a
     /// record of it first comes.
     func resolve(_ variables: Variables) -> ResolvedSelection {
+        if readsVariables { return resolving(variables) }
+        if let resolved = resolution.withLock({ $0 }) { return resolved }
+        let resolved = resolving(variables)
+        resolution.withLock { $0 = resolved }
+        return resolved
+    }
+
+    private func resolving(_ variables: Variables) -> ResolvedSelection {
         var listed: [TypeID: ResolvedVariant] = [:]
         var others: [ResolvedField] = []
         for variant in variants {
@@ -275,7 +326,7 @@ public final class Selection: Sendable {
 
     /// A field with its variables bound, its slot on the selection's own type.
     private func resolve(_ field: PlanField, _ variables: Variables) -> ResolvedField {
-        let storageKey = Selection.render(field.key, variables)
+        let storageKey = Selection.render(field, variables)
         let kind: ResolvedField.Kind = switch field.kind {
         case .scalar(let scalar, let list): .scalar(scalar, list: list)
         case .linked(let selection, let plural, let lookup, let connection):
@@ -302,6 +353,7 @@ public final class Selection: Sendable {
         }
         return ResolvedField(
             responseKey: field.responseKey,
+            keyBytes: field.keyBytes,
             storageKey: storageKey,
             slot: Selection.slot(field.key, storageKey, on: type),
             kind: kind,
@@ -322,6 +374,11 @@ public final class Selection: Sendable {
         case .fixed(let slot): slot.storageKey
         case .dynamic(let key): key.render(variables)
         }
+    }
+
+    private static func render(_ field: PlanField, _ variables: Variables) -> String {
+        if let fixed = field.fixedStorageKey { return fixed }
+        return render(field.key, variables)
     }
 
     private static func slot(_ key: StorageKey, _ storageKey: String, on type: TypeID) -> Slot {
@@ -490,9 +547,9 @@ public struct ResolvedField: Sendable {
     public let caught: Bool
     let isTypename: Bool
 
-    init(responseKey: String, storageKey: String, slot: Slot, kind: Kind, handle: ResolvedHandle?, deferred: String?, caught: Bool) {
+    init(responseKey: String, keyBytes: [UInt8], storageKey: String, slot: Slot, kind: Kind, handle: ResolvedHandle?, deferred: String?, caught: Bool) {
         self.responseKey = responseKey
-        keyBytes = Array(responseKey.utf8)
+        self.keyBytes = keyBytes
         self.storageKey = storageKey
         self.slot = slot
         self.kind = kind
@@ -504,7 +561,7 @@ public struct ResolvedField: Sendable {
 
     /// The same field as the incremental part delivers it: no longer deferred.
     func undeferred() -> ResolvedField {
-        ResolvedField(responseKey: responseKey, storageKey: storageKey, slot: slot, kind: kind, handle: handle, deferred: nil, caught: caught)
+        ResolvedField(responseKey: responseKey, keyBytes: keyBytes, storageKey: storageKey, slot: slot, kind: kind, handle: handle, deferred: nil, caught: caught)
     }
 
     /// The same field on another concrete type: its slot, and its
@@ -518,6 +575,6 @@ public struct ResolvedField: Sendable {
                 ResolvedConnection(storageKey: connection.storageKey, slot: Registry.slot(type, connection.storageKey), slots: connection.slots, mode: connection.mode)
             })
         }
-        return ResolvedField(responseKey: responseKey, storageKey: storageKey, slot: Registry.slot(type, storageKey), kind: kind, handle: handle, deferred: deferred, caught: caught)
+        return ResolvedField(responseKey: responseKey, keyBytes: keyBytes, storageKey: storageKey, slot: Registry.slot(type, storageKey), kind: kind, handle: handle, deferred: deferred, caught: caught)
     }
 }

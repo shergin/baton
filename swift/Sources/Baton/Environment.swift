@@ -115,7 +115,12 @@ public final class Environment {
     /// follows. `firstPart` runs after the first part of a deferred response
     /// commits, so a view renders before the rest arrives.
     public func fetch<Op: Operation>(_ operation: Op, firstPart: (() -> Void)? = nil) async throws {
-        let uncaught = try await fetch(Op.self, variables: operation.variables, firstPart: firstPart)
+        try await fetch(operation, resolved: Op.plan.resolve(operation.variables), firstPart: firstPart)
+    }
+
+    /// Fetches with a plan already resolved, as a handle holds it.
+    func fetch<Op: Operation>(_ operation: Op, resolved: ResolvedSelection, firstPart: (() -> Void)? = nil) async throws {
+        let uncaught = try await fetch(Op.self, variables: operation.variables, resolved: resolved, firstPart: firstPart)
         if Op.throwsOnFieldError, !uncaught.isEmpty { throw FieldErrors(uncaught) }
     }
 
@@ -125,8 +130,11 @@ public final class Environment {
     /// Returns the field errors no `@catch` handled.
     @discardableResult
     public func fetch<Op: Operation>(_ operation: Op.Type, variables: Variables, firstPart: (() -> Void)? = nil) async throws -> [FieldError] {
+        try await fetch(operation, variables: variables, resolved: Op.plan.resolve(variables), firstPart: firstPart)
+    }
+
+    private func fetch<Op: Operation>(_ operation: Op.Type, variables: Variables, resolved: ResolvedSelection, firstPart: (() -> Void)?) async throws -> [FieldError] {
         let request = request(Op.self, variables: variables)
-        let resolved = Op.plan.resolve(variables)
         if !Op.hasDeferred {
             let data = try await transport.execute(request)
             let changes = try await Ingest.normalized(data, plan: resolved)
