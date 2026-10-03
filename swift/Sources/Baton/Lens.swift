@@ -57,6 +57,8 @@ extension Lens {
 @MainActor
 extension Anchor {
     private func missing(_ slot: Slot) {
+        // A deleted record's fields are gone on purpose.
+        guard !record.deleted else { return }
         anchor.store?.reportMissing?(record, slot)
     }
 

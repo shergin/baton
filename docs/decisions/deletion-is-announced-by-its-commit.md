@@ -25,8 +25,7 @@ connection accessors check the flag without registering the check. The commit
 that changes a record's deleted flag, in either direction, notifies every
 slot that links to the record, after the batch, for the flags the batch
 changed on balance. The record's own values are cleared through the same
-batch, which is what tells the bodies that read its fields. *(Planned:
-0.6.0 does the second half only.)*
+batch, which is what tells the bodies that read its fields.
 
 ## Evidence
 
@@ -37,8 +36,11 @@ batch, which is what tells the bodies that read its fields. *(Planned:
   an access per link read and per list element to every body, for an event
   most sessions see a handful of times.
 - The commit-side pass is one scan of the store's values in a commit that
-  deletes or revives, and nothing in any other commit. It is not built or
-  measured yet; its measurement is the reopening condition.
+  deletes or revives, and nothing in any other commit. `BatonBenchmarks`,
+  2026-10-03 (M1 Pro, macOS 26.5.2): a commit whose only edit is one
+  `@deleteRecord`, in a store of 8,965 records, costs 2.2 ms best, against
+  7 µs before the pass. That is within a frame on that machine; a phone's
+  number at the same store size is the reopening condition.
 
 ## Not chosen
 

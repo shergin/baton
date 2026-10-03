@@ -41,10 +41,6 @@ public final class Store {
     public let persistence: Persistence?
     /// How many records have been filled from the image.
     public internal(set) var hydratedRecords = 0
-    /// Fields whose error a batch set or cleared. An error can change while
-    /// the value stays null, so the undo log does not show it and the image
-    /// needs to be told.
-    private var errorTouched: [(record: Record, slot: Slot)] = []
     /// The image's connection while a check is reading from it.
     private var reading: Disk?
     /// Whether the batch in progress changed a field error, a null, or
@@ -85,8 +81,7 @@ public final class Store {
     /// Every record the store holds, by key; for the store dumps under `spec/`.
     package var recordsByKey: [String: Record] { records }
 
-    /// The record for a key, created on first sight; a deleted record a
-    /// payload names again comes back.
+    /// The record for a key, created on first sight.
     func record(key: String, type: TypeID, entity: Bool) -> Record {
         record(key: key, type: type, entity: entity).record
     }
@@ -97,11 +92,6 @@ public final class Store {
             // A key names one type: an entity's starts with it, and a path
             // key under an interface or union ends with it.
             assert(record.type == type, "\(key) is a \(record.type.name), not a \(type.name)")
-            if record.deleted {
-                record.setDeleted(false)
-                record.notifyAll()
-                nullsOrErrorsChanged = true
-            }
             return (record, false)
         }
         let record = Record(type: type, key: key, idOffset: entity ? Int32(type.name.utf8.count + 1) : -1)
@@ -125,11 +115,12 @@ public final class Store {
         var undo: [Undo] = []
     }
 
-    /// One step of a batch, reversed when a layer lifts.
-    enum Undo: @unchecked Sendable {
+    /// One step of a batch, as it was before the batch: reversed when a
+    /// layer lifts, and read for what the image is told.
+    enum Undo: Sendable {
         case slot(Record, Slot, Value)
-        /// The batch deleted the record; lifting it revives the record.
-        case deleted(Record)
+        case error(Record, Slot, FieldError?)
+        case deletion(Record, was: Bool)
     }
 
     /// A slot of one record, for sets of slots.
@@ -138,8 +129,10 @@ public final class Store {
         let slot: Slot
     }
 
-    /// Tracks every slot a batch touched and its value before the batch, so
-    /// the batch can notify only the slots whose value differs at the end.
+    /// Tracks every slot a batch touched, with its value and its error
+    /// before the batch, and every record whose deleted flag it changed, with
+    /// the flag before the batch, so the batch notifies only what differs at
+    /// the end.
     @MainActor
     private struct Transaction {
         /// A plain commit with no layers notifies as it writes; nothing can
@@ -147,37 +140,67 @@ public final class Store {
         private let direct: Bool
         private var directCount = 0
         private var originals: [SlotKey: Original] = [:]
+        private var flags: [ObjectIdentifier: (record: Record, was: Bool)] = [:]
 
         private struct Original {
             let record: Record
             let slot: Slot
             let value: Value
+            let error: FieldError?
         }
 
         init(direct: Bool = false) {
             self.direct = direct
         }
 
-        mutating func touched(_ record: Record, _ slot: Slot, before: Value) {
+        /// Notes a slot about to change, with what it held before.
+        mutating func touched(_ record: Record, _ slot: Slot, value: Value, error: FieldError?) {
             if direct {
                 record.notify(slot)
                 directCount += 1
                 return
             }
             let key = SlotKey(record: ObjectIdentifier(record), slot: slot)
-            if originals[key] == nil { originals[key] = Original(record: record, slot: slot, value: before) }
+            if originals[key] == nil { originals[key] = Original(record: record, slot: slot, value: value, error: error) }
+        }
+
+        /// Notes a record whose deleted flag is about to change, with the flag
+        /// before.
+        mutating func flagged(_ record: Record, was: Bool) {
+            let key = ObjectIdentifier(record)
+            if flags[key] == nil { flags[key] = (record, was) }
+        }
+
+        /// The records whose deleted flag differs at the end.
+        var flipped: [Record] {
+            flags.values.filter { $0.record.deleted != $0.was }.map(\.record)
         }
 
         /// Notifies changed slots; returns how many changed.
         func finish() -> Int {
             if direct { return directCount }
             var changed = 0
-            for original in originals.values where original.record.peek(original.slot) != original.value {
+            for original in originals.values
+            where original.record.peek(original.slot) != original.value || original.record.peekError(original.slot) != original.error {
                 original.record.notify(original.slot)
                 changed += 1
             }
             return changed
         }
+    }
+
+    /// Ends a batch: notifies the slots that changed, and when the batch
+    /// changed whether records are deleted, every slot that links to one of
+    /// them, since a link to a deleted record reads as null and a list skips
+    /// it. Returns how many slots changed.
+    private func finish(_ transaction: Transaction) -> Int {
+        let changed = transaction.finish()
+        let flipped = transaction.flipped
+        if !flipped.isEmpty {
+            let targets = Set(flipped.map(ObjectIdentifier.init))
+            for record in records.values { record.notifyLinks(to: targets) }
+        }
+        return changed
     }
 
     /// Applies a change set from the server. Under optimistic layers, the
@@ -190,13 +213,13 @@ public final class Store {
         if optimisticLayers.isEmpty {
             var transaction = Transaction(direct: true)
             persist(apply(changes, into: &transaction))
-            return transaction.finish()
+            return finish(transaction)
         }
         var transaction = Transaction()
         revertLayers(from: 0, into: &transaction)
         persist(apply(changes, into: &transaction))
         reapplyLayers(from: 0, into: &transaction)
-        return transaction.finish()
+        return finish(transaction)
     }
 
     /// Lets the environment settle the phases that read errors and nulls,
@@ -211,9 +234,7 @@ public final class Store {
     /// changed record, and the changed fields of the root one by one. Called
     /// while the optimistic layers are lifted, so the values are the server's.
     private func persist(_ undo: [Undo]) {
-        guard let persistence else { return }
-        defer { errorTouched.removeAll(keepingCapacity: true) }
-        if undo.isEmpty, errorTouched.isEmpty { return }
+        guard let persistence, !undo.isEmpty else { return }
         var records: [Persistence.Snapshot] = []
         var fields: [Persistence.RootField] = []
         var seen = Set<ObjectIdentifier>()
@@ -227,20 +248,13 @@ public final class Store {
         }
         for step in undo {
             switch step {
-            case .slot(let record, let slot, _):
+            case .slot(let record, let slot, _), .error(let record, let slot, _):
                 if record === root {
                     fields.append(Persistence.RootField(slot: slot, value: root.peek(slot), error: root.peekError(slot)))
                 } else {
                     add(record)
                 }
-            case .deleted(let record):
-                add(record)
-            }
-        }
-        for (record, slot) in errorTouched {
-            if record === root {
-                fields.append(Persistence.RootField(slot: slot, value: root.peek(slot), error: root.peekError(slot)))
-            } else {
+            case .deletion(let record, _):
                 add(record)
             }
         }
@@ -254,9 +268,8 @@ public final class Store {
         var transaction = Transaction()
         var layer = OptimisticLayer(id: UUID(), changes: changes)
         layer.undo = apply(changes, into: &transaction)
-        errorTouched.removeAll(keepingCapacity: true)
         optimisticLayers.append(layer)
-        _ = transaction.finish()
+        _ = finish(transaction)
         return layer.id
     }
 
@@ -268,7 +281,7 @@ public final class Store {
         revertLayers(from: index, into: &transaction)
         optimisticLayers.remove(at: index)
         reapplyLayers(from: index, into: &transaction)
-        _ = transaction.finish()
+        _ = finish(transaction)
     }
 
     /// Commits the server's answer to an optimistic mutation: the layer is
@@ -281,7 +294,7 @@ public final class Store {
         optimisticLayers.removeAll { $0.id == id }
         persist(apply(changes, into: &transaction))
         reapplyLayers(from: 0, into: &transaction)
-        return transaction.finish()
+        return finish(transaction)
     }
 
     private func revertLayers(from index: Int, into transaction: inout Transaction) {
@@ -289,14 +302,17 @@ public final class Store {
             for undo in layer.undo.reversed() {
                 switch undo {
                 case .slot(let record, let slot, let value):
+                    let error = record.peekError(slot)
                     if let previous = record.writeSilently(slot, value) {
-                        transaction.touched(record, slot, before: previous)
+                        transaction.touched(record, slot, value: previous, error: error)
                         noteNulls(previous, value)
                     }
-                case .deleted(let record):
-                    record.setDeleted(false)
-                    record.notifyAll()
-                    nullsOrErrorsChanged = true
+                case .error(let record, let slot, let error):
+                    var ignored: [Undo] = []
+                    setError(record, slot, error, &transaction, &ignored)
+                case .deletion(let record, let was):
+                    var ignored: [Undo] = []
+                    setDeleted(record, was, &transaction, &ignored)
                 }
             }
         }
@@ -306,21 +322,42 @@ public final class Store {
     }
 
     private func reapplyLayers(from index: Int, into transaction: inout Transaction) {
+        // An optimistic response is never written to the image: its undo
+        // log stays with the layer.
         for position in index..<optimisticLayers.count {
             optimisticLayers[position].undo = apply(optimisticLayers[position].changes, into: &transaction)
         }
-        // An optimistic response is never written to the image.
-        errorTouched.removeAll(keepingCapacity: true)
     }
 
     /// Writes one slot inside a batch: silently, recorded for the net
     /// notification and for the undo log.
     private func set(_ record: Record, _ slot: Slot, _ value: Value, _ transaction: inout Transaction, _ undo: inout [Undo]) {
+        let error = record.peekError(slot)
         if let previous = record.writeSilently(slot, value) {
-            transaction.touched(record, slot, before: previous)
+            transaction.touched(record, slot, value: previous, error: error)
             undo.append(.slot(record, slot, previous))
             noteNulls(previous, value)
         }
+    }
+
+    /// Sets or clears a slot's field error inside a batch, recorded for the
+    /// net notification and for the undo log.
+    private func setError(_ record: Record, _ slot: Slot, _ error: FieldError?, _ transaction: inout Transaction, _ undo: inout [Undo]) {
+        let previous = record.peekError(slot)
+        guard record.setError(slot, error) else { return }
+        transaction.touched(record, slot, value: record.peek(slot), error: previous)
+        undo.append(.error(record, slot, previous))
+        nullsOrErrorsChanged = true
+    }
+
+    /// Marks a record deleted or revives it inside a batch, recorded for the
+    /// holders' notification and for the undo log.
+    private func setDeleted(_ record: Record, _ deleted: Bool, _ transaction: inout Transaction, _ undo: inout [Undo]) {
+        guard record.deleted != deleted else { return }
+        transaction.flagged(record, was: record.deleted)
+        undo.append(.deletion(record, was: record.deleted))
+        record.setDeleted(deleted)
+        nullsOrErrorsChanged = true
     }
 
     /// Notes a write to or from null for the batch.
@@ -362,6 +399,8 @@ public final class Store {
         var undo: [Undo] = []
         for index in 0..<objects.count {
             let record = objects[index]
+            // A deleted record a payload names again comes back.
+            if record.deleted { setDeleted(record, false, &transaction, &undo) }
             if created[index] {
                 // A new record makes room once, for the highest slot it receives.
                 var highest = offsets[index + 1] - 1
@@ -374,11 +413,9 @@ public final class Store {
                 let entry = changes.entries[Int(winner)]
                 // A field the payload answers without an error has none, whether
                 // or not its value changed.
-                if record.hasErrors, erroring.isEmpty || !erroring.contains(SlotKey(record: ObjectIdentifier(record), slot: entry.slot)),
-                   record.setError(entry.slot, nil) {
-                    record.notify(entry.slot)
-                    nullsOrErrorsChanged = true
-                    if persistence != nil { errorTouched.append((record, entry.slot)) }
+                if record.hasErrors, record.peekError(entry.slot) != nil,
+                   erroring.isEmpty || !erroring.contains(SlotKey(record: ObjectIdentifier(record), slot: entry.slot)) {
+                    setError(record, entry.slot, nil, &transaction, &undo)
                 }
                 let value: Value
                 switch entry.value {
@@ -452,15 +489,9 @@ public final class Store {
         }
 
         // Field errors land beside the field; an error arriving counts as a
-        // change of the slot. They are not part of the undo log: optimistic
-        // responses carry none.
+        // change of the slot.
         for entry in changes.fieldErrors {
-            let record = objects[Int(entry.record)]
-            if record.setError(entry.slot, entry.error) {
-                record.notify(entry.slot)
-                nullsOrErrorsChanged = true
-                if persistence != nil { errorTouched.append((record, entry.slot)) }
-            }
+            setError(objects[Int(entry.record)], entry.slot, entry.error, &transaction, &undo)
         }
         return undo
     }
@@ -605,19 +636,17 @@ public final class Store {
         set(connection, edgesSlot, .refs(ContiguousArray(kept)), &transaction, &undo)
     }
 
-    /// Deletes a record: its values are cleared through the undo log, it is
-    /// marked deleted so links to it read as null, and every observer of it
-    /// is notified.
+    /// Deletes a record: its values are cleared through the batch, which
+    /// tells the bodies that read them, and it is marked deleted, so links to
+    /// it read as null and lists skip it; the batch's end tells the bodies
+    /// that hold a link to it.
     private func delete(_ record: Record, _ transaction: inout Transaction, _ undo: inout [Undo]) {
         for index in 0..<record.slotCount {
             let value = record.peek(index: index)
             if case .missing = value { continue }
             set(record, Slot(type: record.type, index: Int32(index)), .missing, &transaction, &undo)
         }
-        record.setDeleted(true)
-        record.notifyAll()
-        nullsOrErrorsChanged = true
-        undo.append(.deleted(record))
+        setDeleted(record, true, &transaction, &undo)
     }
 
     // MARK: Availability, marking, sweeping

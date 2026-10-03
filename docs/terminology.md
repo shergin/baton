@@ -102,9 +102,9 @@ exposes `isInFlight`. `@Mutation("…") var star: StarMutation.Action`.
 object identified by typename plus key, holding interned slots, per-field
 errors and type-membership bits. Its values are sized by what was written,
 not by how many storage keys the type has. A record `@deleteRecord` removed
-is *deleted*: links to it read as null, lists skip it, its observers are
-told, and a payload that names it again revives it. Telling the bodies that
-hold a link to it is *(planned)*; see
+is *deleted*: links to it read as null, lists skip it, the bodies that read
+its fields and those that hold a link to it are told, and a payload that
+names it again revives it, told the same way; see
 [A deletion is announced by its commit](decisions/deletion-is-announced-by-its-commit.md).
 
 **Key.** The configured identity fields of a type (default `id`), combined

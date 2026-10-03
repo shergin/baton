@@ -756,6 +756,97 @@ fragment TestRow_character on Character {
     }
 }
 
+/// Operation value for `mutation TestDeleteNote`.
+nonisolated public struct TestDeleteNote: Baton.Operation {
+    public var id: String
+    public var resolution: Baton.OperationHandle<Self>? = nil
+
+    public init(id: String) {
+        self.id = id
+    }
+
+    public static let name = "TestDeleteNote"
+    public static let kind = Baton.OperationKind.mutation
+    public static let persistedID = "751968cd184efb0f3405d379e4ad4ffe"
+    public static let text = #"""
+mutation TestDeleteNote(
+  $id: ID!
+) {
+  removeNote(id: $id) {
+    removedNoteId
+  }
+}
+"""#
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["id": Baton.Variable(id)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+
+    public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
+            .linked("removeNote", key: .dynamic([.literal("removeNote(id:"), .variable("id"), .literal(")")]), plural: false, selection: Baton.Selection(type: Types.RemoveNotePayload, hasID: false, abstract: false, fields: [
+                .scalar("removedNoteId", key: .fixed(Slots.RemoveNotePayload_removedNoteId), kind: .string, list: false, handle: Baton.Handle(kind: .deleteRecord)),
+            ])),
+        ]))
+
+    nonisolated public struct Data: Baton.Lens {
+        public let anchor: Baton.Anchor
+        public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Mutation"
+        @MainActor public var removeNote: RemoveNote? { anchor.linked(Slots.Mutation_removeNote_d28b99(anchor.variables)).map(RemoveNote.init(anchor:)) }
+
+        nonisolated public struct RemoveNote: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "RemoveNotePayload"
+            @MainActor public var removedNoteId: String? { anchor.string(Slots.RemoveNotePayload_removedNoteId) }
+        }
+    }
+
+    public typealias Action = Baton.MutationAction<Self>
+
+    /// A partial response to show before the server answers; absent fields leave the store untouched.
+    nonisolated public struct OptimisticResponse: Sendable {
+        public var removeNote: RemoveNote?
+        public init(removeNote: RemoveNote? = nil) {
+            self.removeNote = removeNote
+        }
+        public var variable: Baton.Variable {
+            var fields: [String: Baton.Variable] = [:]
+            if let removeNote { fields["removeNote"] = removeNote.variable }
+            return .object(fields)
+        }
+
+        /// A partial response to show before the server answers; absent fields leave the store untouched.
+        nonisolated public struct RemoveNote: Sendable {
+            public var removedNoteId: String?
+            public init(removedNoteId: String? = nil) {
+                self.removedNoteId = removedNoteId
+            }
+            public var variable: Baton.Variable {
+                var fields: [String: Baton.Variable] = [:]
+                if let removedNoteId { fields["removedNoteId"] = Baton.Variable(removedNoteId) }
+                return .object(fields)
+            }
+        }
+    }
+}
+
+extension Baton.MutationAction where Op == TestDeleteNote {
+    /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
+    @MainActor @discardableResult
+    public func callAsFunction(id: String, optimistic: TestDeleteNote.OptimisticResponse? = nil) async throws -> TestDeleteNote.Data {
+        try await commit(TestDeleteNote(id: id), optimistic: optimistic?.variable)
+    }
+}
+
 /// Operation value for `query TestNotesPaginationQuery`.
 nonisolated public struct TestNotesPaginationQuery: Baton.Operation {
     public var count: Int?

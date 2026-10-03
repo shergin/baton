@@ -43,6 +43,20 @@ are expected and listed without apology.
   condition does not select; `totalCount @include(if: $x)` read 0 and
   reported missing data. A field selected twice, or a fragment spread
   twice, emits one accessor: the file did not compile.
+- One write path. Everything a batch does, field errors and deletion
+  included, is in its undo log and its net notification: a failed
+  optimistic write to a field no longer loses the server's error on it, an
+  optimistic response that revived a deleted record no longer leaves it
+  revived when it fails, and a server commit under a layer that deletes a
+  record no longer fires every channel of it twice.
+- A deletion is announced to the bodies that hold it. A body that read
+  only a list, or a connection's `nodes`, kept a row for a record
+  `@deleteRecord` removed, because the slot holding the link did not
+  change; the commit that changes whether a record is deleted now notifies
+  every slot that links to it, in one pass over the store (2.2 ms for a
+  commit that deletes one record from 8,965 on an M1 Pro, against 7 µs
+  without the pass). A read of a deleted record's field reports nothing
+  missing.
 - Identity is the key alone. The store indexed entities by bare id as well,
   last created wins across types, and `@deleteRecord`, `@deleteEdge` and
   lookups without a type resolved through it: in the Rick and Morty data

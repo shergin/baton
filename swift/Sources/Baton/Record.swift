@@ -135,11 +135,26 @@ public final class Record: Observable {
         return true
     }
 
-    /// Notifies every observer of the record; for deletion and revival, which
-    /// change what every field reads as.
-    func notifyAll() {
-        for channel in Record.channels {
-            registrar.withMutation(of: self, keyPath: channel) {}
+    /// Notifies each slot that links to one of `targets`: a link, or a list
+    /// with it among its elements. The deletion of a target changes what
+    /// such a slot reads as without changing the slot.
+    func notifyLinks(to targets: Set<ObjectIdentifier>) {
+        // One deleted record is the common case: identities compare without
+        // hashing.
+        let only = targets.count == 1 ? targets.first : nil
+        @inline(__always) func isTarget(_ record: Record) -> Bool {
+            if let only { return ObjectIdentifier(record) == only }
+            return targets.contains(ObjectIdentifier(record))
+        }
+        for index in values.indices {
+            switch values[index] {
+            case .ref(let target) where isTarget(target):
+                registrar.withMutation(of: self, keyPath: Record.channels[index & 15]) {}
+            case .refs(let list) where list.contains(where: { $0.map(isTarget) ?? false }):
+                registrar.withMutation(of: self, keyPath: Record.channels[index & 15]) {}
+            default:
+                continue
+            }
         }
     }
 

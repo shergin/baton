@@ -4,7 +4,7 @@ import Baton
 /// refetchable fragment paginating a connection of notes forward and one
 /// paginating it backward, the screens that spread them with and without
 /// arguments, the mutations that edit the connection declaratively by edge
-/// and by node, and an aliased spread.
+/// and by node, one that only deletes a record, and an aliased spread.
 @MainActor
 struct ListDocuments {
     @Fragment("""
@@ -97,6 +97,13 @@ struct ListDocuments {
         }
         """)
     var addNoteNodeFirst: TestAddNoteNodeFirst.Action
+
+    @Mutation("""
+        mutation TestDeleteNote($id: ID!) {
+          removeNote(id: $id) { removedNoteId @deleteRecord }
+        }
+        """)
+    var deleteNote: TestDeleteNote.Action
 
     @Query("""
         query TestAliasQuery($id: ID!) {
