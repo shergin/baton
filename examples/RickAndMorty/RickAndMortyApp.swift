@@ -4,9 +4,14 @@ import SwiftUI
 /// The sample: the public Rick and Morty API through Baton. Characters, their
 /// details, episodes and locations share one store, so a character seen in a
 /// list, in an episode's cast and among a location's residents is one record.
+/// The store keeps an image on disk: quit and launch again, and the screens
+/// seen before are drawn from it before the network answers.
 @main
 struct RickAndMortyApp: App {
-    @State private var environment = Baton.Environment(url: URL(string: "https://rickandmortyapi.com/graphql")!)
+    @State private var environment = Baton.Environment(
+        url: URL(string: "https://rickandmortyapi.com/graphql")!,
+        persistence: Persistence(name: "RickAndMorty")
+    )
 
     var body: some Scene {
         WindowGroup {
