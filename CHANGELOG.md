@@ -144,6 +144,9 @@ are expected and listed without apology.
   reported missing before its lens bubbles. A non-null link without a
   record reads one placeholder per type, so the fields below it report
   nothing a second time; a record was allocated per read.
+- A connection's `nodes` builds its lenses in one pass instead of an array
+  of anchors mapped into a second one: 110 µs for 2,100 nodes against 124
+  µs on an M1 Pro.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

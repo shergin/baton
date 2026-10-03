@@ -603,9 +603,9 @@ impl Emitter {
             connection.edge_type, connection.page_info_type
         );
         if let Some((edges, node, node_bubbles)) = edge_node_properties(selections) {
-            let filter = if node_bubbles {
+            let keep = if node_bubbles {
                 format!(
-                    ".filter({}.{}.satisfied)",
+                    ", keep: {}.{}.satisfied",
                     capitalize(&edges),
                     capitalize(&node)
                 )
@@ -618,7 +618,7 @@ impl Emitter {
             );
             let _ = writeln!(
                 output,
-                "{indent}@MainActor public var nodes: [{edges}.{node}] {{ anchor.nodes(Self.connection){filter}.map({edges}.{node}.init(anchor:)) }}",
+                "{indent}@MainActor public var nodes: [{edges}.{node}] {{ anchor.nodes(Self.connection{keep}) }}",
                 edges = capitalize(&edges),
                 node = capitalize(&node)
             );

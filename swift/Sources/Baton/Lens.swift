@@ -6,8 +6,8 @@ import SwiftUI
 public struct Anchor: @unchecked Sendable {
     public let record: Record
     public let variables: Variables
-    let store: Store?
-    let parent: Record?
+    @usableFromInline let store: Store?
+    @usableFromInline let parent: Record?
 
     public init(record: Record, variables: Variables, store: Store? = nil, parent: Record? = nil) {
         self.record = record
@@ -369,16 +369,20 @@ extension Anchor {
         return false
     }
 
-    /// The edges' nodes, in order, without null edges, null nodes or deleted
-    /// records.
-    public func nodes(_ slots: ConnectionSlots) -> [Anchor] {
+    /// The edges' nodes, in order, without null edges, null nodes, deleted
+    /// records or nodes that `keep` rejects.
+    /// Inlinable, so the generated module specializes it for its lens: an
+    /// unspecialized generic builds each element through the protocol.
+    @inlinable
+    public func nodes<Element: Lens>(_ slots: ConnectionSlots, keep: ((Anchor) -> Bool)? = nil) -> [Element] {
         guard case .refs(let edges) = record.read(slots.edges) else { return [] }
-        var nodes: [Anchor] = []
+        var nodes: [Element] = []
         nodes.reserveCapacity(edges.count)
         for case let edge? in edges where !edge.deleted {
-            if case .ref(let node) = edge.read(slots.node), !node.deleted {
-                nodes.append(Anchor(record: node, variables: variables, store: store, parent: edge))
-            }
+            guard case .ref(let node) = edge.read(slots.node), !node.deleted else { continue }
+            let anchor = Anchor(record: node, variables: variables, store: store, parent: edge)
+            if let keep, !keep(anchor) { continue }
+            nodes.append(Element(anchor: anchor))
         }
         return nodes
     }

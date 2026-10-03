@@ -24,7 +24,7 @@ nonisolated public struct TestNotes_character: Baton.Lens {
         /// The connection's slots: edges, nodes, cursors and the page info, for the store's merge and the state below.
         public static let connection = Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo)
         /// The edges' nodes, in order, without nulls.
-        @MainActor public var nodes: [Edges.Node] { anchor.nodes(Self.connection).map(Edges.Node.init(anchor:)) }
+        @MainActor public var nodes: [Edges.Node] { anchor.nodes(Self.connection) }
         /// Whether the server has edges after the last one, from the merged `pageInfo`.
         @MainActor public var hasNext: Bool { anchor.hasNext(Self.connection) }
         @MainActor public var hasPrevious: Bool { anchor.hasPrevious(Self.connection) }
@@ -82,7 +82,7 @@ nonisolated public struct TestRecentNotes_character: Baton.Lens {
         /// The connection's slots: edges, nodes, cursors and the page info, for the store's merge and the state below.
         public static let connection = Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo)
         /// The edges' nodes, in order, without nulls.
-        @MainActor public var nodes: [Edges.Node] { anchor.nodes(Self.connection).map(Edges.Node.init(anchor:)) }
+        @MainActor public var nodes: [Edges.Node] { anchor.nodes(Self.connection) }
         /// Whether the server has edges after the last one, from the merged `pageInfo`.
         @MainActor public var hasNext: Bool { anchor.hasNext(Self.connection) }
         @MainActor public var hasPrevious: Bool { anchor.hasPrevious(Self.connection) }
