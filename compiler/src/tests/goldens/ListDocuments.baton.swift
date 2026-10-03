@@ -2,7 +2,7 @@
 import Baton
 
 /// Lens for `fragment TestNotes_character on Character`.
-public struct TestNotes_character: Baton.Lens {
+nonisolated public struct TestNotes_character: Baton.Lens {
     public let anchor: Baton.Anchor
     public init(anchor: Baton.Anchor) { self.anchor = anchor }
     public static let typeName = "Character"
@@ -14,7 +14,7 @@ public struct TestNotes_character: Baton.Lens {
     /// Fetches the fragment again through `TestNotesPaginationQuery` with its current variables; the records update in place.
     @MainActor public func refetch() async throws { try await anchor.refetch(TestNotesPaginationQuery.self, TestNotes_character.refetchable) }
 
-    public struct Notes: Baton.Lens {
+    nonisolated public struct Notes: Baton.Lens {
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "NoteConnection"
@@ -35,14 +35,14 @@ public struct TestNotes_character: Baton.Lens {
         /// Fetches the next `count` edges through `TestNotesPaginationQuery` and appends them; a no-op while loading or at the end.
         @MainActor public func loadNext(_ count: Int = 2) async throws { try await anchor.loadNext(TestNotesPaginationQuery.self, Self.connection, TestNotes_character.refetchable, count: count) }
 
-        public struct Edges: Baton.Lens {
+        nonisolated public struct Edges: Baton.Lens {
             public let anchor: Baton.Anchor
             public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "NoteEdge"
             @MainActor public var node: Node? { anchor.linked(Slots.NoteEdge_node).map(Node.init(anchor:)) }
             @MainActor public var cursor: String { anchor.requiredString(Slots.NoteEdge_cursor) }
 
-            public struct Node: Baton.Lens {
+            nonisolated public struct Node: Baton.Lens {
                 public let anchor: Baton.Anchor
                 public init(anchor: Baton.Anchor) { self.anchor = anchor }
                 public static let typeName = "Note"
@@ -51,7 +51,7 @@ public struct TestNotes_character: Baton.Lens {
             }
         }
 
-        public struct PageInfo: Baton.Lens {
+        nonisolated public struct PageInfo: Baton.Lens {
             public let anchor: Baton.Anchor
             public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "PageInfo"
@@ -62,7 +62,7 @@ public struct TestNotes_character: Baton.Lens {
 }
 
 /// Lens for `fragment TestRecentNotes_character on Character`.
-public struct TestRecentNotes_character: Baton.Lens {
+nonisolated public struct TestRecentNotes_character: Baton.Lens {
     public let anchor: Baton.Anchor
     public init(anchor: Baton.Anchor) { self.anchor = anchor }
     public static let typeName = "Character"
@@ -73,7 +73,7 @@ public struct TestRecentNotes_character: Baton.Lens {
     /// Fetches the fragment again through `TestRecentNotesPaginationQuery` with its current variables; the records update in place.
     @MainActor public func refetch() async throws { try await anchor.refetch(TestRecentNotesPaginationQuery.self, TestRecentNotes_character.refetchable) }
 
-    public struct Notes: Baton.Lens {
+    nonisolated public struct Notes: Baton.Lens {
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "NoteConnection"
@@ -93,14 +93,14 @@ public struct TestRecentNotes_character: Baton.Lens {
         /// Fetches the previous `count` edges through `TestRecentNotesPaginationQuery` and prepends them; a no-op while loading or at the start.
         @MainActor public func loadPrevious(_ count: Int = 2) async throws { try await anchor.loadPrevious(TestRecentNotesPaginationQuery.self, Self.connection, TestRecentNotes_character.refetchable, count: count) }
 
-        public struct Edges: Baton.Lens {
+        nonisolated public struct Edges: Baton.Lens {
             public let anchor: Baton.Anchor
             public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "NoteEdge"
             @MainActor public var node: Node? { anchor.linked(Slots.NoteEdge_node).map(Node.init(anchor:)) }
             @MainActor public var cursor: String { anchor.requiredString(Slots.NoteEdge_cursor) }
 
-            public struct Node: Baton.Lens {
+            nonisolated public struct Node: Baton.Lens {
                 public let anchor: Baton.Anchor
                 public init(anchor: Baton.Anchor) { self.anchor = anchor }
                 public static let typeName = "Note"
@@ -109,7 +109,7 @@ public struct TestRecentNotes_character: Baton.Lens {
             }
         }
 
-        public struct PageInfo: Baton.Lens {
+        nonisolated public struct PageInfo: Baton.Lens {
             public let anchor: Baton.Anchor
             public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "PageInfo"
@@ -120,7 +120,7 @@ public struct TestRecentNotes_character: Baton.Lens {
 }
 
 /// Operation value for `mutation TestAddNote`.
-public struct TestAddNote: Baton.Operation {
+nonisolated public struct TestAddNote: Baton.Operation {
     public var characterId: String
     public var text: String
     public var connections: [String]
@@ -178,26 +178,26 @@ mutation TestAddNote(
             ])),
         ]))
 
-    public struct Data: Baton.Lens {
+    nonisolated public struct Data: Baton.Lens {
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Mutation"
         @MainActor public var addNote: AddNote? { anchor.linked(Slots.Mutation_addNote_14b07d(anchor.variables)).map(AddNote.init(anchor:)) }
 
-        public struct AddNote: Baton.Lens {
+        nonisolated public struct AddNote: Baton.Lens {
             public let anchor: Baton.Anchor
             public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "AddNotePayload"
             @MainActor public var noteEdge: NoteEdge? { anchor.linked(Slots.AddNotePayload_noteEdge).map(NoteEdge.init(anchor:)) }
 
-            public struct NoteEdge: Baton.Lens {
+            nonisolated public struct NoteEdge: Baton.Lens {
                 public let anchor: Baton.Anchor
                 public init(anchor: Baton.Anchor) { self.anchor = anchor }
                 public static let typeName = "NoteEdge"
                 @MainActor public var cursor: String { anchor.requiredString(Slots.NoteEdge_cursor) }
                 @MainActor public var node: Node? { anchor.linked(Slots.NoteEdge_node).map(Node.init(anchor:)) }
 
-                public struct Node: Baton.Lens {
+                nonisolated public struct Node: Baton.Lens {
                     public let anchor: Baton.Anchor
                     public init(anchor: Baton.Anchor) { self.anchor = anchor }
                     public static let typeName = "Note"
@@ -211,7 +211,7 @@ mutation TestAddNote(
     public typealias Action = Baton.MutationAction<Self>
 
     /// A partial response to show before the server answers; absent fields leave the store untouched.
-    public struct OptimisticResponse: Sendable {
+    nonisolated public struct OptimisticResponse: Sendable {
         public var addNote: AddNote?
         public init(addNote: AddNote? = nil) {
             self.addNote = addNote
@@ -223,7 +223,7 @@ mutation TestAddNote(
         }
 
         /// A partial response to show before the server answers; absent fields leave the store untouched.
-        public struct AddNote: Sendable {
+        nonisolated public struct AddNote: Sendable {
             public var noteEdge: NoteEdge?
             public init(noteEdge: NoteEdge? = nil) {
                 self.noteEdge = noteEdge
@@ -235,7 +235,7 @@ mutation TestAddNote(
             }
 
             /// A partial response to show before the server answers; absent fields leave the store untouched.
-            public struct NoteEdge: Sendable {
+            nonisolated public struct NoteEdge: Sendable {
                 public var cursor: String?
                 public var node: Node?
                 public init(cursor: String? = nil, node: Node? = nil) {
@@ -250,7 +250,7 @@ mutation TestAddNote(
                 }
 
                 /// A partial response to show before the server answers; absent fields leave the store untouched.
-                public struct Node: Sendable {
+                nonisolated public struct Node: Sendable {
                     public var id: String?
                     public var text: String?
                     public init(id: String? = nil, text: String? = nil) {
@@ -278,7 +278,7 @@ extension Baton.MutationAction where Op == TestAddNote {
 }
 
 /// Operation value for `mutation TestAddNoteFirst`.
-public struct TestAddNoteFirst: Baton.Operation {
+nonisolated public struct TestAddNoteFirst: Baton.Operation {
     public var characterId: String
     public var text: String
     public var connections: [String]
@@ -336,26 +336,26 @@ mutation TestAddNoteFirst(
             ])),
         ]))
 
-    public struct Data: Baton.Lens {
+    nonisolated public struct Data: Baton.Lens {
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Mutation"
         @MainActor public var addNote: AddNote? { anchor.linked(Slots.Mutation_addNote_14b07d(anchor.variables)).map(AddNote.init(anchor:)) }
 
-        public struct AddNote: Baton.Lens {
+        nonisolated public struct AddNote: Baton.Lens {
             public let anchor: Baton.Anchor
             public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "AddNotePayload"
             @MainActor public var noteEdge: NoteEdge? { anchor.linked(Slots.AddNotePayload_noteEdge).map(NoteEdge.init(anchor:)) }
 
-            public struct NoteEdge: Baton.Lens {
+            nonisolated public struct NoteEdge: Baton.Lens {
                 public let anchor: Baton.Anchor
                 public init(anchor: Baton.Anchor) { self.anchor = anchor }
                 public static let typeName = "NoteEdge"
                 @MainActor public var cursor: String { anchor.requiredString(Slots.NoteEdge_cursor) }
                 @MainActor public var node: Node? { anchor.linked(Slots.NoteEdge_node).map(Node.init(anchor:)) }
 
-                public struct Node: Baton.Lens {
+                nonisolated public struct Node: Baton.Lens {
                     public let anchor: Baton.Anchor
                     public init(anchor: Baton.Anchor) { self.anchor = anchor }
                     public static let typeName = "Note"
@@ -369,7 +369,7 @@ mutation TestAddNoteFirst(
     public typealias Action = Baton.MutationAction<Self>
 
     /// A partial response to show before the server answers; absent fields leave the store untouched.
-    public struct OptimisticResponse: Sendable {
+    nonisolated public struct OptimisticResponse: Sendable {
         public var addNote: AddNote?
         public init(addNote: AddNote? = nil) {
             self.addNote = addNote
@@ -381,7 +381,7 @@ mutation TestAddNoteFirst(
         }
 
         /// A partial response to show before the server answers; absent fields leave the store untouched.
-        public struct AddNote: Sendable {
+        nonisolated public struct AddNote: Sendable {
             public var noteEdge: NoteEdge?
             public init(noteEdge: NoteEdge? = nil) {
                 self.noteEdge = noteEdge
@@ -393,7 +393,7 @@ mutation TestAddNoteFirst(
             }
 
             /// A partial response to show before the server answers; absent fields leave the store untouched.
-            public struct NoteEdge: Sendable {
+            nonisolated public struct NoteEdge: Sendable {
                 public var cursor: String?
                 public var node: Node?
                 public init(cursor: String? = nil, node: Node? = nil) {
@@ -408,7 +408,7 @@ mutation TestAddNoteFirst(
                 }
 
                 /// A partial response to show before the server answers; absent fields leave the store untouched.
-                public struct Node: Sendable {
+                nonisolated public struct Node: Sendable {
                     public var id: String?
                     public var text: String?
                     public init(id: String? = nil, text: String? = nil) {
@@ -436,7 +436,7 @@ extension Baton.MutationAction where Op == TestAddNoteFirst {
 }
 
 /// Operation value for `mutation TestAddNoteNode`.
-public struct TestAddNoteNode: Baton.Operation {
+nonisolated public struct TestAddNoteNode: Baton.Operation {
     public var characterId: String
     public var text: String
     public var connections: [String]
@@ -488,19 +488,19 @@ mutation TestAddNoteNode(
             ])),
         ]))
 
-    public struct Data: Baton.Lens {
+    nonisolated public struct Data: Baton.Lens {
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Mutation"
         @MainActor public var addNote: AddNote? { anchor.linked(Slots.Mutation_addNote_14b07d(anchor.variables)).map(AddNote.init(anchor:)) }
 
-        public struct AddNote: Baton.Lens {
+        nonisolated public struct AddNote: Baton.Lens {
             public let anchor: Baton.Anchor
             public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "AddNotePayload"
             @MainActor public var note: Note? { anchor.linked(Slots.AddNotePayload_note).map(Note.init(anchor:)) }
 
-            public struct Note: Baton.Lens {
+            nonisolated public struct Note: Baton.Lens {
                 public let anchor: Baton.Anchor
                 public init(anchor: Baton.Anchor) { self.anchor = anchor }
                 public static let typeName = "Note"
@@ -513,7 +513,7 @@ mutation TestAddNoteNode(
     public typealias Action = Baton.MutationAction<Self>
 
     /// A partial response to show before the server answers; absent fields leave the store untouched.
-    public struct OptimisticResponse: Sendable {
+    nonisolated public struct OptimisticResponse: Sendable {
         public var addNote: AddNote?
         public init(addNote: AddNote? = nil) {
             self.addNote = addNote
@@ -525,7 +525,7 @@ mutation TestAddNoteNode(
         }
 
         /// A partial response to show before the server answers; absent fields leave the store untouched.
-        public struct AddNote: Sendable {
+        nonisolated public struct AddNote: Sendable {
             public var note: Note?
             public init(note: Note? = nil) {
                 self.note = note
@@ -537,7 +537,7 @@ mutation TestAddNoteNode(
             }
 
             /// A partial response to show before the server answers; absent fields leave the store untouched.
-            public struct Note: Sendable {
+            nonisolated public struct Note: Sendable {
                 public var id: String?
                 public var text: String?
                 public init(id: String? = nil, text: String? = nil) {
@@ -564,7 +564,7 @@ extension Baton.MutationAction where Op == TestAddNoteNode {
 }
 
 /// Operation value for `mutation TestAddNoteNodeFirst`.
-public struct TestAddNoteNodeFirst: Baton.Operation {
+nonisolated public struct TestAddNoteNodeFirst: Baton.Operation {
     public var characterId: String
     public var text: String
     public var connections: [String]
@@ -616,19 +616,19 @@ mutation TestAddNoteNodeFirst(
             ])),
         ]))
 
-    public struct Data: Baton.Lens {
+    nonisolated public struct Data: Baton.Lens {
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Mutation"
         @MainActor public var addNote: AddNote? { anchor.linked(Slots.Mutation_addNote_14b07d(anchor.variables)).map(AddNote.init(anchor:)) }
 
-        public struct AddNote: Baton.Lens {
+        nonisolated public struct AddNote: Baton.Lens {
             public let anchor: Baton.Anchor
             public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "AddNotePayload"
             @MainActor public var note: Note? { anchor.linked(Slots.AddNotePayload_note).map(Note.init(anchor:)) }
 
-            public struct Note: Baton.Lens {
+            nonisolated public struct Note: Baton.Lens {
                 public let anchor: Baton.Anchor
                 public init(anchor: Baton.Anchor) { self.anchor = anchor }
                 public static let typeName = "Note"
@@ -641,7 +641,7 @@ mutation TestAddNoteNodeFirst(
     public typealias Action = Baton.MutationAction<Self>
 
     /// A partial response to show before the server answers; absent fields leave the store untouched.
-    public struct OptimisticResponse: Sendable {
+    nonisolated public struct OptimisticResponse: Sendable {
         public var addNote: AddNote?
         public init(addNote: AddNote? = nil) {
             self.addNote = addNote
@@ -653,7 +653,7 @@ mutation TestAddNoteNodeFirst(
         }
 
         /// A partial response to show before the server answers; absent fields leave the store untouched.
-        public struct AddNote: Sendable {
+        nonisolated public struct AddNote: Sendable {
             public var note: Note?
             public init(note: Note? = nil) {
                 self.note = note
@@ -665,7 +665,7 @@ mutation TestAddNoteNodeFirst(
             }
 
             /// A partial response to show before the server answers; absent fields leave the store untouched.
-            public struct Note: Sendable {
+            nonisolated public struct Note: Sendable {
                 public var id: String?
                 public var text: String?
                 public init(id: String? = nil, text: String? = nil) {
@@ -692,7 +692,7 @@ extension Baton.MutationAction where Op == TestAddNoteNodeFirst {
 }
 
 /// Operation value for `query TestAliasQuery`.
-public struct TestAliasQuery: Baton.Operation {
+nonisolated public struct TestAliasQuery: Baton.Operation {
     public var id: String
     public var resolution: Baton.OperationHandle<Self>? = nil
 
@@ -741,13 +741,13 @@ fragment TestRow_character on Character {
             ])),
         ]))
 
-    public struct Data: Baton.Lens {
+    nonisolated public struct Data: Baton.Lens {
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Query"
         @MainActor public var character: Character? { anchor.linked(Slots.Query_character_bca4f9(anchor.variables), lookup: Baton.Lookup(type: Types.Character, key: .variable("id"))).map(Character.init(anchor:)) }
 
-        public struct Character: Baton.Lens {
+        nonisolated public struct Character: Baton.Lens {
             public let anchor: Baton.Anchor
             public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Character"
@@ -757,7 +757,7 @@ fragment TestRow_character on Character {
 }
 
 /// Operation value for `query TestNotesPaginationQuery`.
-public struct TestNotesPaginationQuery: Baton.Operation {
+nonisolated public struct TestNotesPaginationQuery: Baton.Operation {
     public var count: Int?
     public var cursor: String?
     public var id: String
@@ -843,13 +843,13 @@ fragment TestNotes_character_1G22uz on Character {
             ])),
         ]))
 
-    public struct Data: Baton.Lens {
+    nonisolated public struct Data: Baton.Lens {
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Query"
         @MainActor public var node: Node? { anchor.linked(Slots.Query_node_8f7d08(anchor.variables), lookup: Baton.Lookup(type: nil, key: .variable("id"))).map(Node.init(anchor:)) }
 
-        public struct Node: Baton.Lens {
+        nonisolated public struct Node: Baton.Lens {
             public let anchor: Baton.Anchor
             public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Node"
@@ -863,7 +863,7 @@ fragment TestNotes_character_1G22uz on Character {
 }
 
 /// Operation value for `query TestNotesQuery`.
-public struct TestNotesQuery: Baton.Operation {
+nonisolated public struct TestNotesQuery: Baton.Operation {
     public var id: String
     public var resolution: Baton.OperationHandle<Self>? = nil
 
@@ -939,13 +939,13 @@ fragment TestNotes_character on Character {
             ])),
         ]))
 
-    public struct Data: Baton.Lens {
+    nonisolated public struct Data: Baton.Lens {
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Query"
         @MainActor public var character: Character? { anchor.linked(Slots.Query_character_bca4f9(anchor.variables), lookup: Baton.Lookup(type: Types.Character, key: .variable("id"))).map(Character.init(anchor:)) }
 
-        public struct Character: Baton.Lens {
+        nonisolated public struct Character: Baton.Lens {
             public let anchor: Baton.Anchor
             public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Character"
@@ -958,7 +958,7 @@ fragment TestNotes_character on Character {
 }
 
 /// Operation value for `query TestNotesSizedQuery`.
-public struct TestNotesSizedQuery: Baton.Operation {
+nonisolated public struct TestNotesSizedQuery: Baton.Operation {
     public var id: String
     public var size: Int?
     public var resolution: Baton.OperationHandle<Self>? = nil
@@ -1038,13 +1038,13 @@ fragment TestNotes_character_2H9PL on Character {
             ])),
         ]))
 
-    public struct Data: Baton.Lens {
+    nonisolated public struct Data: Baton.Lens {
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Query"
         @MainActor public var character: Character? { anchor.linked(Slots.Query_character_bca4f9(anchor.variables), lookup: Baton.Lookup(type: Types.Character, key: .variable("id"))).map(Character.init(anchor:)) }
 
-        public struct Character: Baton.Lens {
+        nonisolated public struct Character: Baton.Lens {
             public let anchor: Baton.Anchor
             public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Character"
@@ -1057,7 +1057,7 @@ fragment TestNotes_character_2H9PL on Character {
 }
 
 /// Operation value for `query TestRecentNotesPaginationQuery`.
-public struct TestRecentNotesPaginationQuery: Baton.Operation {
+nonisolated public struct TestRecentNotesPaginationQuery: Baton.Operation {
     public var count: Int?
     public var cursor: String?
     public var id: String
@@ -1139,13 +1139,13 @@ fragment TestRecentNotes_character_1G22uz on Character {
             ])),
         ]))
 
-    public struct Data: Baton.Lens {
+    nonisolated public struct Data: Baton.Lens {
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Query"
         @MainActor public var node: Node? { anchor.linked(Slots.Query_node_8f7d08(anchor.variables), lookup: Baton.Lookup(type: nil, key: .variable("id"))).map(Node.init(anchor:)) }
 
-        public struct Node: Baton.Lens {
+        nonisolated public struct Node: Baton.Lens {
             public let anchor: Baton.Anchor
             public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Node"
@@ -1159,7 +1159,7 @@ fragment TestRecentNotes_character_1G22uz on Character {
 }
 
 /// Operation value for `query TestRecentNotesQuery`.
-public struct TestRecentNotesQuery: Baton.Operation {
+nonisolated public struct TestRecentNotesQuery: Baton.Operation {
     public var id: String
     public var resolution: Baton.OperationHandle<Self>? = nil
 
@@ -1231,13 +1231,13 @@ fragment TestRecentNotes_character on Character {
             ])),
         ]))
 
-    public struct Data: Baton.Lens {
+    nonisolated public struct Data: Baton.Lens {
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Query"
         @MainActor public var character: Character? { anchor.linked(Slots.Query_character_bca4f9(anchor.variables), lookup: Baton.Lookup(type: Types.Character, key: .variable("id"))).map(Character.init(anchor:)) }
 
-        public struct Character: Baton.Lens {
+        nonisolated public struct Character: Baton.Lens {
             public let anchor: Baton.Anchor
             public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Character"
@@ -1250,7 +1250,7 @@ fragment TestRecentNotes_character on Character {
 }
 
 /// Operation value for `mutation TestRemoveNote`.
-public struct TestRemoveNote: Baton.Operation {
+nonisolated public struct TestRemoveNote: Baton.Operation {
     public var id: String
     public var connections: [String]
     public var resolution: Baton.OperationHandle<Self>? = nil
@@ -1294,13 +1294,13 @@ mutation TestRemoveNote(
             ])),
         ]))
 
-    public struct Data: Baton.Lens {
+    nonisolated public struct Data: Baton.Lens {
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Mutation"
         @MainActor public var removeNote: RemoveNote? { anchor.linked(Slots.Mutation_removeNote_d28b99(anchor.variables)).map(RemoveNote.init(anchor:)) }
 
-        public struct RemoveNote: Baton.Lens {
+        nonisolated public struct RemoveNote: Baton.Lens {
             public let anchor: Baton.Anchor
             public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "RemoveNotePayload"
@@ -1312,7 +1312,7 @@ mutation TestRemoveNote(
     public typealias Action = Baton.MutationAction<Self>
 
     /// A partial response to show before the server answers; absent fields leave the store untouched.
-    public struct OptimisticResponse: Sendable {
+    nonisolated public struct OptimisticResponse: Sendable {
         public var removeNote: RemoveNote?
         public init(removeNote: RemoveNote? = nil) {
             self.removeNote = removeNote
@@ -1324,7 +1324,7 @@ mutation TestRemoveNote(
         }
 
         /// A partial response to show before the server answers; absent fields leave the store untouched.
-        public struct RemoveNote: Sendable {
+        nonisolated public struct RemoveNote: Sendable {
             public var removedNoteId: String?
             public var deleted: String?
             public init(removedNoteId: String? = nil, deleted: String? = nil) {

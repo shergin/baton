@@ -2,7 +2,7 @@
 import Baton
 
 /// Interned schema types used by this module's documents.
-enum Types {
+nonisolated enum Types {
     static let AddNotePayload = Baton.Registry.type("AddNotePayload")
     static let Character = Baton.Registry.type("Character")
     static let Characters = Baton.Registry.type("Characters")
@@ -25,7 +25,7 @@ enum Types {
 }
 
 /// Interned storage keys used by this module's documents.
-enum Slots {
+nonisolated enum Slots {
     static let AddNotePayload_note = Baton.Registry.slot(Types.AddNotePayload, "note")
     static let AddNotePayload_noteEdge = Baton.Registry.slot(Types.AddNotePayload, "noteEdge")
     static let Character___TestNotes_notes_connection = Baton.Registry.slot(Types.Character, "__TestNotes_notes_connection")

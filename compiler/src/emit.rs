@@ -202,7 +202,7 @@ impl Emitter {
         output.push_str(HEADER);
         output.push('\n');
         output
-            .push_str("/// Interned schema types used by this module's documents.\nenum Types {\n");
+            .push_str("/// Interned schema types used by this module's documents.\nnonisolated enum Types {\n");
         for type_name in &self.types {
             let _ = writeln!(
                 output,
@@ -210,7 +210,7 @@ impl Emitter {
             );
         }
         output.push_str(
-            "}\n\n/// Interned storage keys used by this module's documents.\nenum Slots {\n",
+            "}\n\n/// Interned storage keys used by this module's documents.\nnonisolated enum Slots {\n",
         );
         for slot in &self.slots {
             if slot.is_dynamic() {
@@ -274,7 +274,7 @@ impl Emitter {
         );
         let _ = writeln!(
             output,
-            "public struct {}: Baton.Operation {{",
+            "nonisolated public struct {}: Baton.Operation {{",
             operation.name
         );
         for variable in &operation.variables {
@@ -442,7 +442,10 @@ impl Emitter {
         bubbles: bool,
     ) {
         self.types.insert(type_name.to_string());
-        let _ = writeln!(output, "{indent}public struct {name}: Baton.Lens {{");
+        let _ = writeln!(
+            output,
+            "{indent}nonisolated public struct {name}: Baton.Lens {{"
+        );
         let _ = writeln!(output, "{indent}    public let anchor: Baton.Anchor");
         let _ = writeln!(
             output,
@@ -1724,7 +1727,10 @@ impl Emitter {
             output,
             "{indent}/// A partial response to show before the server answers; absent fields leave the store untouched."
         );
-        let _ = writeln!(output, "{indent}public struct {name}: Sendable {{");
+        let _ = writeln!(
+            output,
+            "{indent}nonisolated public struct {name}: Sendable {{"
+        );
         let inner = format!("{indent}    ");
         let flat = flatten(selections);
         let mut nested: Vec<(String, Vec<SelectionPlan>)> = Vec::new();

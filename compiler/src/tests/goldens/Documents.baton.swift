@@ -2,7 +2,7 @@
 import Baton
 
 /// Lens for `fragment TestHeader_character on Character`.
-public struct TestHeader_character: Baton.Lens {
+nonisolated public struct TestHeader_character: Baton.Lens {
     public let anchor: Baton.Anchor
     public init(anchor: Baton.Anchor) { self.anchor = anchor }
     public static let typeName = "Character"
@@ -12,7 +12,7 @@ public struct TestHeader_character: Baton.Lens {
     @MainActor public var image: String? { anchor.string(Slots.Character_image) }
     @MainActor public var origin: Origin? { anchor.linked(Slots.Character_origin).map(Origin.init(anchor:)) }
 
-    public struct Origin: Baton.Lens {
+    nonisolated public struct Origin: Baton.Lens {
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Location"
@@ -21,7 +21,7 @@ public struct TestHeader_character: Baton.Lens {
 }
 
 /// Lens for `fragment TestRow_character on Character`.
-public struct TestRow_character: Baton.Lens {
+nonisolated public struct TestRow_character: Baton.Lens {
     public let anchor: Baton.Anchor
     public init(anchor: Baton.Anchor) { self.anchor = anchor }
     public static let typeName = "Character"
@@ -31,7 +31,7 @@ public struct TestRow_character: Baton.Lens {
 }
 
 /// Operation value for `query Fixture`.
-public struct Fixture: Baton.Operation {
+nonisolated public struct Fixture: Baton.Operation {
     public var page: Int?
     public var resolution: Baton.OperationHandle<Self>? = nil
 
@@ -152,20 +152,20 @@ query Fixture(
             ])),
         ]))
 
-    public struct Data: Baton.Lens {
+    nonisolated public struct Data: Baton.Lens {
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Query"
         @MainActor public var characters: Characters? { anchor.linked(Slots.Query_characters_5517f9(anchor.variables)).map(Characters.init(anchor:)) }
 
-        public struct Characters: Baton.Lens {
+        nonisolated public struct Characters: Baton.Lens {
             public let anchor: Baton.Anchor
             public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Characters"
             @MainActor public var info: Info? { anchor.linked(Slots.Characters_info).map(Info.init(anchor:)) }
             @MainActor public var results: Baton.List<Results>? { anchor.list(Slots.Characters_results) }
 
-            public struct Info: Baton.Lens {
+            nonisolated public struct Info: Baton.Lens {
                 public let anchor: Baton.Anchor
                 public init(anchor: Baton.Anchor) { self.anchor = anchor }
                 public static let typeName = "Info"
@@ -175,7 +175,7 @@ query Fixture(
                 @MainActor public var prev: Int? { anchor.int(Slots.Info_prev) }
             }
 
-            public struct Results: Baton.Lens {
+            nonisolated public struct Results: Baton.Lens {
                 public let anchor: Baton.Anchor
                 public init(anchor: Baton.Anchor) { self.anchor = anchor }
                 public static let typeName = "Character"
@@ -191,7 +191,7 @@ query Fixture(
                 @MainActor public var location: Location? { anchor.linked(Slots.Character_location).map(Location.init(anchor:)) }
                 @MainActor public var episode: Baton.List<Episode> { anchor.requiredList(Slots.Character_episode) }
 
-                public struct Origin: Baton.Lens {
+                nonisolated public struct Origin: Baton.Lens {
                     public let anchor: Baton.Anchor
                     public init(anchor: Baton.Anchor) { self.anchor = anchor }
                     public static let typeName = "Location"
@@ -202,7 +202,7 @@ query Fixture(
                     @MainActor public var created: String? { anchor.string(Slots.Location_created) }
                 }
 
-                public struct Location: Baton.Lens {
+                nonisolated public struct Location: Baton.Lens {
                     public let anchor: Baton.Anchor
                     public init(anchor: Baton.Anchor) { self.anchor = anchor }
                     public static let typeName = "Location"
@@ -213,7 +213,7 @@ query Fixture(
                     @MainActor public var created: String? { anchor.string(Slots.Location_created) }
                 }
 
-                public struct Episode: Baton.Lens {
+                nonisolated public struct Episode: Baton.Lens {
                     public let anchor: Baton.Anchor
                     public init(anchor: Baton.Anchor) { self.anchor = anchor }
                     public static let typeName = "Episode"
@@ -224,7 +224,7 @@ query Fixture(
                     @MainActor public var created: String? { anchor.string(Slots.Episode_created) }
                     @MainActor public var characters: Baton.List<Characters> { anchor.requiredList(Slots.Episode_characters) }
 
-                    public struct Characters: Baton.Lens {
+                    nonisolated public struct Characters: Baton.Lens {
                         public let anchor: Baton.Anchor
                         public init(anchor: Baton.Anchor) { self.anchor = anchor }
                         public static let typeName = "Character"
@@ -239,7 +239,7 @@ query Fixture(
 }
 
 /// Operation value for `query TestEpisodesQuery`.
-public struct TestEpisodesQuery: Baton.Operation {
+nonisolated public struct TestEpisodesQuery: Baton.Operation {
     public var id: String
     public var resolution: Baton.OperationHandle<Self>? = nil
 
@@ -286,19 +286,19 @@ query TestEpisodesQuery(
             ])),
         ]))
 
-    public struct Data: Baton.Lens {
+    nonisolated public struct Data: Baton.Lens {
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Query"
         @MainActor public var character: Character? { anchor.linked(Slots.Query_character_bca4f9(anchor.variables), lookup: Baton.Lookup(type: Types.Character, key: .variable("id"))).map(Character.init(anchor:)) }
 
-        public struct Character: Baton.Lens {
+        nonisolated public struct Character: Baton.Lens {
             public let anchor: Baton.Anchor
             public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Character"
             @MainActor public var episode: Baton.List<Episode> { anchor.requiredList(Slots.Character_episode) }
 
-            public struct Episode: Baton.Lens {
+            nonisolated public struct Episode: Baton.Lens {
                 public let anchor: Baton.Anchor
                 public init(anchor: Baton.Anchor) { self.anchor = anchor }
                 public static let typeName = "Episode"
@@ -310,7 +310,7 @@ query TestEpisodesQuery(
 }
 
 /// Operation value for `query TestHeaderQuery`.
-public struct TestHeaderQuery: Baton.Operation {
+nonisolated public struct TestHeaderQuery: Baton.Operation {
     public var id: String
     public var resolution: Baton.OperationHandle<Self>? = nil
 
@@ -369,13 +369,13 @@ fragment TestHeader_character on Character {
             ])),
         ]))
 
-    public struct Data: Baton.Lens {
+    nonisolated public struct Data: Baton.Lens {
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Query"
         @MainActor public var character: Character? { anchor.linked(Slots.Query_character_bca4f9(anchor.variables), lookup: Baton.Lookup(type: Types.Character, key: .variable("id"))).map(Character.init(anchor:)) }
 
-        public struct Character: Baton.Lens {
+        nonisolated public struct Character: Baton.Lens {
             public let anchor: Baton.Anchor
             public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Character"
@@ -385,7 +385,7 @@ fragment TestHeader_character on Character {
 }
 
 /// Operation value for `query TestList`.
-public struct TestList: Baton.Operation {
+nonisolated public struct TestList: Baton.Operation {
     public var page: Int?
     public var resolution: Baton.OperationHandle<Self>? = nil
 
@@ -455,19 +455,19 @@ fragment TestRow_character on Character {
             ])),
         ]))
 
-    public struct Data: Baton.Lens {
+    nonisolated public struct Data: Baton.Lens {
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Query"
         @MainActor public var characters: Characters? { anchor.linked(Slots.Query_characters_5517f9(anchor.variables)).map(Characters.init(anchor:)) }
 
-        public struct Characters: Baton.Lens {
+        nonisolated public struct Characters: Baton.Lens {
             public let anchor: Baton.Anchor
             public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Characters"
             @MainActor public var results: Baton.List<Results>? { anchor.list(Slots.Characters_results) }
 
-            public struct Results: Baton.Lens {
+            nonisolated public struct Results: Baton.Lens {
                 public let anchor: Baton.Anchor
                 public init(anchor: Baton.Anchor) { self.anchor = anchor }
                 public static let typeName = "Character"

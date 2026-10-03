@@ -51,6 +51,15 @@ let package = Package(
             swiftSettings: [.swiftLanguageMode(.v6)],
             plugins: ["BatonPlugin"]
         ),
+        // The emitter's goldens, compiled as an app compiles them with the
+        // Xcode template's default of main-actor isolation: generated code
+        // states its isolation, so it builds under either default.
+        .testTarget(
+            name: "BatonGoldenTests",
+            dependencies: ["Baton"],
+            path: "compiler/src/tests/goldens",
+            swiftSettings: [.swiftLanguageMode(.v6), .defaultIsolation(MainActor.self)]
+        ),
         .testTarget(
             name: "BatonMacrosTests",
             dependencies: [

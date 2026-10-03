@@ -2,7 +2,7 @@
 import Baton
 
 /// Operation value for `query TestTokenizerQuery`.
-public struct TestTokenizerQuery: Baton.Operation {
+nonisolated public struct TestTokenizerQuery: Baton.Operation {
     public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init() {
@@ -56,13 +56,13 @@ query TestTokenizerQuery {
             ])),
         ]))
 
-    public struct Data: Baton.Lens {
+    nonisolated public struct Data: Baton.Lens {
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Query"
         @MainActor public var tokenizer: Tokenizer? { anchor.linked(Slots.Query_tokenizer).map(Tokenizer.init(anchor:)) }
 
-        public struct Tokenizer: Baton.Lens {
+        nonisolated public struct Tokenizer: Baton.Lens {
             public let anchor: Baton.Anchor
             public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Tokenizer"

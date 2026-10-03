@@ -2,7 +2,7 @@
 import Baton
 
 /// Lens for `fragment TestAppearances_character on Character`.
-public struct TestAppearances_character: Baton.Lens {
+nonisolated public struct TestAppearances_character: Baton.Lens {
     public let anchor: Baton.Anchor
     public init(anchor: Baton.Anchor) { self.anchor = anchor }
     public static let typeName = "Character"
@@ -10,7 +10,7 @@ public struct TestAppearances_character: Baton.Lens {
     /// Whether the deferred part that carries this fragment has arrived.
     @MainActor public static func isPresent(_ anchor: Baton.Anchor) -> Bool { anchor.present(Slots.Character_episode) }
 
-    public struct Episode: Baton.Lens {
+    nonisolated public struct Episode: Baton.Lens {
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Episode"
@@ -20,7 +20,7 @@ public struct TestAppearances_character: Baton.Lens {
 }
 
 /// Lens for `fragment TestProfile_character on Character`.
-public struct TestProfile_character: Baton.Lens {
+nonisolated public struct TestProfile_character: Baton.Lens {
     public let anchor: Baton.Anchor
     public init(anchor: Baton.Anchor) { self.anchor = anchor }
     public static let typeName = "Character"
@@ -37,14 +37,14 @@ public struct TestProfile_character: Baton.Lens {
         return true
     }
 
-    public struct Origin: Baton.Lens {
+    nonisolated public struct Origin: Baton.Lens {
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Location"
         @MainActor public var name: String? { anchor.string(Slots.Location_name) }
     }
 
-    public struct Location: Baton.Lens {
+    nonisolated public struct Location: Baton.Lens {
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Location"
@@ -72,7 +72,7 @@ public struct TestProfile_character: Baton.Lens {
 }
 
 /// Lens for `fragment TestStrict_character on Character`.
-public struct TestStrict_character: Baton.Lens {
+nonisolated public struct TestStrict_character: Baton.Lens {
     public let anchor: Baton.Anchor
     public init(anchor: Baton.Anchor) { self.anchor = anchor }
     public static let typeName = "Character"
@@ -100,7 +100,7 @@ public struct TestStrict_character: Baton.Lens {
 }
 
 /// Operation value for `subscription TestNoteAdded`.
-public struct TestNoteAdded: Baton.Operation {
+nonisolated public struct TestNoteAdded: Baton.Operation {
     public var characterId: String
     public var connections: [String]
     public var resolution: Baton.OperationHandle<Self>? = nil
@@ -154,26 +154,26 @@ subscription TestNoteAdded(
             ])),
         ]))
 
-    public struct Data: Baton.Lens {
+    nonisolated public struct Data: Baton.Lens {
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Subscription"
         @MainActor public var noteAdded: NoteAdded? { anchor.linked(Slots.Subscription_noteAdded_5f458b(anchor.variables)).map(NoteAdded.init(anchor:)) }
 
-        public struct NoteAdded: Baton.Lens {
+        nonisolated public struct NoteAdded: Baton.Lens {
             public let anchor: Baton.Anchor
             public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "NoteAddedPayload"
             @MainActor public var noteEdge: NoteEdge? { anchor.linked(Slots.NoteAddedPayload_noteEdge).map(NoteEdge.init(anchor:)) }
 
-            public struct NoteEdge: Baton.Lens {
+            nonisolated public struct NoteEdge: Baton.Lens {
                 public let anchor: Baton.Anchor
                 public init(anchor: Baton.Anchor) { self.anchor = anchor }
                 public static let typeName = "NoteEdge"
                 @MainActor public var cursor: String { anchor.requiredString(Slots.NoteEdge_cursor) }
                 @MainActor public var node: Node? { anchor.linked(Slots.NoteEdge_node).map(Node.init(anchor:)) }
 
-                public struct Node: Baton.Lens {
+                nonisolated public struct Node: Baton.Lens {
                     public let anchor: Baton.Anchor
                     public init(anchor: Baton.Anchor) { self.anchor = anchor }
                     public static let typeName = "Note"
@@ -186,7 +186,7 @@ subscription TestNoteAdded(
 }
 
 /// Operation value for `query TestProfileQuery`.
-public struct TestProfileQuery: Baton.Operation {
+nonisolated public struct TestProfileQuery: Baton.Operation {
     public var id: String
     public var resolution: Baton.OperationHandle<Self>? = nil
 
@@ -278,13 +278,13 @@ fragment TestStrict_character on Character {
             ])),
         ]))
 
-    public struct Data: Baton.Lens {
+    nonisolated public struct Data: Baton.Lens {
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Query"
         @MainActor public var character: Character? { anchor.linked(Slots.Query_character_bca4f9(anchor.variables), lookup: Baton.Lookup(type: Types.Character, key: .variable("id"))).map(Character.init(anchor:)) }
 
-        public struct Character: Baton.Lens {
+        nonisolated public struct Character: Baton.Lens {
             public let anchor: Baton.Anchor
             public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Character"
@@ -302,7 +302,7 @@ fragment TestStrict_character on Character {
 }
 
 /// Operation value for `query TestRosterQuery`.
-public struct TestRosterQuery: Baton.Operation {
+nonisolated public struct TestRosterQuery: Baton.Operation {
     public var page: Int?
     public var resolution: Baton.OperationHandle<Self>? = nil
 
@@ -349,19 +349,19 @@ query TestRosterQuery(
             ])),
         ]))
 
-    public struct Data: Baton.Lens {
+    nonisolated public struct Data: Baton.Lens {
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Query"
         @MainActor public var characters: Characters? { anchor.linked(Slots.Query_characters_5517f9(anchor.variables)).map(Characters.init(anchor:)) }
 
-        public struct Characters: Baton.Lens {
+        nonisolated public struct Characters: Baton.Lens {
             public let anchor: Baton.Anchor
             public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Characters"
             @MainActor public var results: Baton.List<Results>? { anchor.list(Slots.Characters_results, keep: Results.satisfied) }
 
-            public struct Results: Baton.Lens {
+            nonisolated public struct Results: Baton.Lens {
                 public let anchor: Baton.Anchor
                 public init(anchor: Baton.Anchor) { self.anchor = anchor }
                 public static let typeName = "Character"
@@ -379,7 +379,7 @@ query TestRosterQuery(
 }
 
 /// Operation value for `query TestStrictQuery`.
-public struct TestStrictQuery: Baton.Operation {
+nonisolated public struct TestStrictQuery: Baton.Operation {
     public var id: String
     public var resolution: Baton.OperationHandle<Self>? = nil
 
@@ -423,7 +423,7 @@ query TestStrictQuery(
             ])),
         ]))
 
-    public struct Data: Baton.Lens {
+    nonisolated public struct Data: Baton.Lens {
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Query"
@@ -446,7 +446,7 @@ query TestStrictQuery(
             return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(Baton.FieldErrors(errors))
         }
 
-        public struct Character: Baton.Lens {
+        nonisolated public struct Character: Baton.Lens {
             public let anchor: Baton.Anchor
             public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Character"
