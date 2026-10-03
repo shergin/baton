@@ -1,4 +1,4 @@
-# Baton
+# Baton 🥖
 
 **Status: 0.3.0.** Reads and writes run through every layer, with tests and
 benchmarks behind the claims: cached data in the first body, one changed
@@ -142,7 +142,8 @@ until artifact bundles are published.
 
 In a relay, the baton is the thing that is actually handed over. Here it is
 the data a screen hands each view: exactly what the view asked for, nothing
-else.
+else. In Russian the same word, батон, is a loaf of bread, which is why the
+symbol is 🥖; a proper logo will follow.
 
 ## License
 
