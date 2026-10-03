@@ -230,6 +230,104 @@ func run() async throws {
 
     print("lifetime: 42 pages scrolled, release buffer of 10")
     try await scrollBench(data: data)
+
+    print("persistence: the fixture's 898 records and the root, through the image")
+    await persistenceBench(changes: changes, edited: editedChanges, plan: plan)
+}
+
+/// Times an asynchronous step by hand: `body` returns the nanoseconds it
+/// wants counted, so setup and teardown stay off the clock.
+@MainActor
+func measureEach(_ label: String, iterations: Int = 20, ops: Int = 1, _ body: () async -> UInt64) async {
+    var samples: [Double] = []
+    for _ in 0..<iterations { samples.append(Double(await body())) }
+    samples.sort()
+    let unit: (Double) -> String = { nanoseconds in
+        nanoseconds >= 1_000_000 ? String(format: "%8.2f ms", nanoseconds / 1_000_000)
+            : nanoseconds >= 1_000 ? String(format: "%8.2f µs", nanoseconds / 1_000)
+            : String(format: "%8.1f ns", nanoseconds)
+    }
+    print("  \(label.padding(toLength: 56, withPad: " ", startingAt: 0)) best \(unit(samples[0] / Double(ops)))   median \(unit(samples[samples.count / 2] / Double(ops)))")
+}
+
+/// The image's costs: what a commit pays on the main actor to hand its
+/// records over, what the writer pays off it, and what the availability check
+/// pays to read a screen back.
+@MainActor
+func persistenceBench(changes: ChangeSet, edited: ChangeSet, plan: ResolvedSelection) async {
+    let url = FileManager.default.temporaryDirectory.appendingPathComponent("baton-bench-\(UUID().uuidString).sqlite")
+    defer {
+        for suffix in ["", "-wal", "-shm"] { try? FileManager.default.removeItem(atPath: url.path + suffix) }
+    }
+    func now() -> UInt64 { DispatchTime.now().uptimeNanoseconds }
+
+    // The process has not touched SQLite yet: this is what a launch pays once.
+    var start = now()
+    let persistence = Persistence(url: url)
+    let missed = Store(persistence: persistence).check(plan)
+    print("  first use in the process (open, create, a read that misses): \(String(format: "%.2f", Double(now() - start) / 1_000_000)) ms\(missed ? " (unexpected hit)" : "")")
+
+    measure("commit into an empty store, image on (899 records)", iterations: 20) {
+        Store(persistence: persistence).commit(changes)
+    }
+    await persistence.flush()
+
+    await measureEach("write-behind of that commit, off the main actor") {
+        let store = Store(persistence: persistence)
+        store.commit(changes)
+        let start = now()
+        await persistence.flush()
+        return now() - start
+    }
+    let size = ((try? FileManager.default.attributesOfItem(atPath: url.path))?[.size] as? Int) ?? 0
+    print("    file: \(size) bytes for 898 rows and one root field")
+
+    let persisted = Store(persistence: persistence)
+    persisted.commit(changes)
+    await persistence.flush()
+    await measureEach("write-behind of one changed record") {
+        persisted.commit(edited)
+        let start = now()
+        await persistence.flush()
+        let elapsed = now() - start
+        persisted.commit(changes)
+        await persistence.flush()
+        return elapsed
+    }
+
+    measure("hydration: the check reads 898 rows into an empty store", iterations: 20) {
+        precondition(Store(persistence: persistence).check(plan))
+    }
+    measure("the same, per record", iterations: 20, ops: 898) {
+        precondition(Store(persistence: persistence).check(plan))
+    }
+    let hydrated = Store(persistence: persistence)
+    precondition(hydrated.check(plan))
+    measure("the check once the records are in memory", iterations: 50) {
+        precondition(hydrated.check(plan))
+    }
+
+    await measureEach("hydration through a connection opened for it") {
+        let fresh = Persistence(url: url)
+        let store = Store(persistence: fresh)
+        let start = now()
+        precondition(store.check(plan))
+        let elapsed = now() - start
+        await fresh.flush()
+        return elapsed
+    }
+
+    await measureEach("hydration right behind a commit of 899 records") {
+        Store(persistence: persistence).commit(changes)
+        let store = Store(persistence: persistence)
+        let start = now()
+        precondition(store.check(plan))
+        let elapsed = now() - start
+        await persistence.flush()
+        return elapsed
+    }
+    start = now()
+    _ = start
 }
 
 /// A synthetic page of the notes connection: the first as the screen's query
