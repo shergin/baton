@@ -575,72 +575,96 @@ public final class Store {
     /// the last one's data.
     public func check(_ selection: ResolvedSelection, at record: Record? = nil) -> Bool {
         let record = record ?? root
-        if check(selection, at: record, nil) { return true }
+        if holds(selection, at: record) { return true }
         // A check an observer starts while the image is being read joins
         // the read that is open.
-        if let reading { return check(selection, at: record, reading) }
+        if let reading { return fill(selection, at: record, from: reading) }
         guard let persistence else { return false }
         return persistence.reading { disk in
             reading = disk
             defer { reading = nil }
-            return check(selection, at: record, disk)
+            return fill(selection, at: record, from: disk)
         }
     }
 
-    /// The walk behind `check`. With the image at hand, a record that lacks a
-    /// field reads its row first, a link to a record the collector swept is
-    /// pointed at the live record of that key, and a connection's client
-    /// record is walked while it is still empty.
-    private func check(_ selection: ResolvedSelection, at record: Record, _ disk: Disk?) -> Bool {
+    /// The walk in memory: whether the store holds every field as it stands.
+    private func holds(_ selection: ResolvedSelection, at record: Record) -> Bool {
         let fields = selection.fields
         for index in fields.indices {
             if fields[index].isTypename || fields[index].deferred != nil { continue }
             let slot = selection.slot(of: index, on: record.type)
-            var value = record.peek(slot)
-            if case .missing = value, let disk, hydrate(record, slot, from: disk) { value = record.peek(slot) }
             switch fields[index].kind {
             case .scalar:
-                if case .missing = value { return false }
+                if case .missing = record.peek(slot) { return false }
+            case .linked(let child, let plural, let lookupKey, _):
+                switch record.peek(slot) {
+                case .missing:
+                    guard !plural, let lookupKey, let target = resolve(lookupKey) else { return false }
+                    guard holds(child, at: target) else { return false }
+                    record.write(slot, .ref(target))
+                case .null:
+                    continue
+                case .ref(let target):
+                    if target.deleted { continue }
+                    if !holds(child, at: target) { return false }
+                case .refs(let targets):
+                    for case let target? in targets where !target.deleted && !holds(child, at: target) { return false }
+                default:
+                    return false
+                }
+            }
+        }
+        return true
+    }
+
+    /// The same walk with the image at hand. A record that lacks a field
+    /// reads its row first; a link to a record the collector swept is pointed
+    /// at the live record of that key; a connection's client record is walked
+    /// while it is still unread.
+    private func fill(_ selection: ResolvedSelection, at record: Record, from disk: Disk) -> Bool {
+        let fields = selection.fields
+        for index in fields.indices {
+            if fields[index].isTypename || fields[index].deferred != nil { continue }
+            let slot = selection.slot(of: index, on: record.type)
+            if case .missing = record.peek(slot) { hydrate(record, slot, from: disk) }
+            switch fields[index].kind {
+            case .scalar:
+                if case .missing = record.peek(slot) { return false }
             case .linked(let child, let plural, let lookupKey, let connection):
-                switch value {
+                switch record.peek(slot) {
                 case .missing:
                     guard !plural, let lookupKey, let target = resolve(lookupKey, disk) else { return false }
-                    guard check(child, at: target, disk) else { return false }
+                    guard fill(child, at: target, from: disk) else { return false }
                     record.write(slot, .ref(target))
                 case .null:
                     break
-                case .ref(var target):
-                    if let disk {
-                        let found = target
-                        target = live(found, disk)
-                        if target !== found { record.write(slot, .ref(target)) }
-                    }
-                    if !target.deleted, !check(child, at: target, disk) { return false }
+                case .ref(let found):
+                    let target = live(found, disk)
+                    if target !== found { record.write(slot, .ref(target)) }
+                    if !target.deleted, !fill(child, at: target, from: disk) { return false }
                 case .refs(var targets):
-                    if let disk {
-                        var moved = false
-                        for position in targets.indices {
-                            guard let found = targets[position] else { continue }
-                            let target = live(found, disk)
-                            if target !== found {
-                                targets[position] = target
-                                moved = true
-                            }
+                    var moved = false
+                    for position in targets.indices {
+                        guard let found = targets[position] else { continue }
+                        let target = live(found, disk)
+                        if target !== found {
+                            targets[position] = target
+                            moved = true
                         }
-                        if moved { record.write(slot, .refs(targets)) }
                     }
-                    for case let target? in targets where !target.deleted && !check(child, at: target, disk) { return false }
+                    if moved { record.write(slot, .refs(targets)) }
+                    for case let target? in targets where !target.deleted && !fill(child, at: target, from: disk) { return false }
                 default:
                     return false
                 }
                 // Lenses read a connection through its client record, which
                 // the walk above does not pass. One the image has yet to fill
                 // is walked here, so its merged pages come back with it.
-                if let connection, let disk, case .ref(let found) = record.peek(selection.slot(of: connection, on: record.type)) {
+                if let connection, case .ref(let found) = record.peek(selection.slot(of: connection, on: record.type)) {
                     let unread = found.swept || (!found.hydrated && found.slotCount == 0)
                     let merged = live(found, disk)
                     if merged !== found { record.write(selection.slot(of: connection, on: record.type), .ref(merged)) }
-                    if unread, !merged.deleted, !check(child, at: merged, disk) { return false }
+                    if unread, !merged.deleted, !fill(child, at: merged, from: disk) { return false }
                 }
             }
         }
@@ -660,11 +684,13 @@ public final class Store {
     }
 
     /// Reads from the image what a record lacks: the root's field, or the
-    /// record's row, once. Returns whether anything was read.
-    private func hydrate(_ record: Record, _ slot: Slot, from disk: Disk) -> Bool {
-        if record === root { return hydrateRoot(slot, from: disk) }
-        if record.hydrated || record === mutationRoot || record === subscriptionRoot { return false }
-        return hydrate(record, from: disk)
+    /// record's row, once.
+    private func hydrate(_ record: Record, _ slot: Slot, from disk: Disk) {
+        if record === root {
+            _ = hydrateRoot(slot, from: disk)
+        } else if !record.hydrated, record !== mutationRoot, record !== subscriptionRoot {
+            _ = hydrate(record, from: disk)
+        }
     }
 
     /// Collects every record the selection reaches from the root, for
