@@ -262,7 +262,7 @@ func persistenceBench(changes: ChangeSet, edited: ChangeSet, plan: ResolvedSelec
     func now() -> UInt64 { DispatchTime.now().uptimeNanoseconds }
 
     // The process has not touched SQLite yet: this is what a launch pays once.
-    var start = now()
+    let start = now()
     let persistence = Persistence(url: url)
     let missed = Store(persistence: persistence).check(plan)
     print("  first use in the process (open, create, a read that misses): \(String(format: "%.2f", Double(now() - start) / 1_000_000)) ms\(missed ? " (unexpected hit)" : "")")
@@ -307,16 +307,6 @@ func persistenceBench(changes: ChangeSet, edited: ChangeSet, plan: ResolvedSelec
         precondition(hydrated.check(plan))
     }
 
-    await measureEach("hydration through a connection opened for it") {
-        let fresh = Persistence(url: url)
-        let store = Store(persistence: fresh)
-        let start = now()
-        precondition(store.check(plan))
-        let elapsed = now() - start
-        await fresh.flush()
-        return elapsed
-    }
-
     await measureEach("hydration right behind a commit of 899 records") {
         Store(persistence: persistence).commit(changes)
         let store = Store(persistence: persistence)
@@ -326,8 +316,48 @@ func persistenceBench(changes: ChangeSet, edited: ChangeSet, plan: ResolvedSelec
         await persistence.flush()
         return elapsed
     }
-    start = now()
-    _ = start
+
+    // A launch: this program again, as a process that has never touched
+    // SQLite, answering the fixture from the image. Once asking the moment
+    // the image's handle exists, so the main actor pays for the open too;
+    // once asking after the open has finished off it, as an app does that
+    // makes its environment before its first view.
+    func launched(_ flag: String) -> UInt64 {
+        let child = Process()
+        let output = Pipe()
+        child.executableURL = URL(fileURLWithPath: CommandLine.arguments[0])
+        child.arguments = [flag, url.path]
+        child.standardOutput = output
+        try! child.run()
+        child.waitUntilExit()
+        let text = String(decoding: output.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
+        return UInt64(text.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0
+    }
+    await measureEach("a launch: open and hydrate at once, in a new process", iterations: 15) { launched("--launch") }
+    await measureEach("a launch: hydrate after the image has opened", iterations: 15) { launched("--launch-opened") }
+}
+
+/// What the child process of the launch bench does: from creating the image's
+/// handle to the availability check answering from it, or, with `opened`,
+/// the check alone once the file has opened off the main actor. Prints
+/// nanoseconds.
+@MainActor
+func launch(_ path: String, opened: Bool) async {
+    let plan = BenchFixture.plan.resolve(BenchFixture(page: 1).variables)
+    var start = DispatchTime.now().uptimeNanoseconds
+    let persistence = Persistence(url: URL(fileURLWithPath: path))
+    let store = Store(persistence: persistence)
+    if opened {
+        await persistence.flush()
+        start = DispatchTime.now().uptimeNanoseconds
+    }
+    let complete = store.check(plan)
+    let elapsed = DispatchTime.now().uptimeNanoseconds - start
+    precondition(complete && store.hydratedRecords == 898)
+    print(elapsed)
+    // The rows it read carry this launch's generation once this is written,
+    // so the next launch finds them.
+    await persistence.flush()
 }
 
 /// A synthetic page of the notes connection: the first as the screen's query
@@ -452,4 +482,8 @@ func scrollBench(data: Data) async throws {
     print("  collection pass: best \(String(format: "%.2f", collectionCost[0])) ms, median \(String(format: "%.2f", collectionCost[collectionCost.count / 2])) ms, worst \(String(format: "%.2f", collectionCost.last!)) ms")
 }
 
-try await run()
+if CommandLine.arguments.count == 3, CommandLine.arguments[1].hasPrefix("--launch") {
+    await launch(CommandLine.arguments[2], opened: CommandLine.arguments[1] == "--launch-opened")
+} else {
+    try await run()
+}
