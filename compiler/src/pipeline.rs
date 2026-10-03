@@ -9,12 +9,12 @@ use std::time::{Duration, Instant};
 
 use common::{Diagnostic, NoopPerfLogger, SourceLocationKey};
 use graphql_ir::{
-    ConditionValue, FragmentDefinition, FragmentDefinitionNameSet, OperationDefinition, Program,
-    Selection,
+    ConditionValue, FragmentDefinition, FragmentDefinitionNameSet, Program, Selection,
 };
 use graphql_syntax::OperationKind;
 use graphql_text_printer::{PrinterOptions, print_full_operation};
 use intern::Lookup;
+use intern::string_key::Intern;
 use relay_config::ProjectConfig;
 use relay_transforms::{
     Programs, apply_transforms, disallow_reserved_aliases, disallow_typename_on_root,
@@ -24,6 +24,7 @@ use relay_transforms::{
 };
 use schema::{SDLSchema, Schema, Type, TypeReference};
 
+use crate::config::Config;
 use crate::documents::Document;
 
 /// Where time went, for the gates in the roadmap.
@@ -44,7 +45,7 @@ impl Timings {
 }
 
 /// The plan IR for one compilation: every fragment's reader shape and every
-/// operation's normalization shape, text and id.
+/// operation's reader shape, normalization shape, text and id.
 #[derive(Debug, Default, Clone, serde::Serialize)]
 pub struct Plan {
     pub fragments: Vec<FragmentPlan>,
@@ -54,6 +55,8 @@ pub struct Plan {
 #[derive(Debug, Clone, serde::Serialize)]
 pub struct FragmentPlan {
     pub name: String,
+    /// The file the fragment was declared in.
+    pub source: String,
     pub type_condition: String,
     pub arguments: Vec<VariablePlan>,
     pub reader: Vec<SelectionPlan>,
@@ -62,7 +65,10 @@ pub struct FragmentPlan {
 #[derive(Debug, Clone, serde::Serialize)]
 pub struct OperationPlan {
     pub name: String,
+    /// The file the operation was declared in.
+    pub source: String,
     pub kind: String,
+    pub root_type: String,
     pub variables: Vec<VariablePlan>,
     pub text: String,
     pub id: String,
@@ -73,7 +79,38 @@ pub struct OperationPlan {
 #[derive(Debug, Clone, serde::Serialize)]
 pub struct VariablePlan {
     pub name: String,
+    /// The GraphQL type, e.g. `Int`, `ID!`, `[String!]`.
     pub type_name: String,
+    /// The innermost named type.
+    pub base_type: String,
+    pub base_kind: TypeKind,
+    pub non_null: bool,
+    pub list: bool,
+}
+
+/// What kind of named type a field or variable has.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum TypeKind {
+    String,
+    Id,
+    Int,
+    Float,
+    Boolean,
+    CustomScalar,
+    Enum,
+    Object,
+    Interface,
+    Union,
+    InputObject,
+}
+
+/// A root field that returns an entity addressable by one of its arguments,
+/// so a cached entity can satisfy the field before it was ever fetched.
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct LookupPlan {
+    pub type_name: String,
+    pub argument: String,
 }
 
 #[derive(Debug, Clone, serde::Serialize)]
@@ -83,14 +120,24 @@ pub enum SelectionPlan {
         name: String,
         alias: Option<String>,
         type_name: String,
+        base_type: String,
+        base_kind: TypeKind,
+        non_null: bool,
+        list: bool,
         storage_key: String,
     },
     Linked {
         name: String,
         alias: Option<String>,
         type_name: String,
-        storage_key: String,
+        base_type: String,
+        base_kind: TypeKind,
+        non_null: bool,
         plural: bool,
+        /// Whether the target type defines an `id` field (identity by typename and id).
+        has_id: bool,
+        storage_key: String,
+        lookup: Option<LookupPlan>,
         selections: Vec<SelectionPlan>,
     },
     Inline {
@@ -99,6 +146,7 @@ pub enum SelectionPlan {
     },
     Spread {
         fragment: String,
+        type_condition: String,
     },
     Condition {
         variable: Option<String>,
@@ -119,6 +167,7 @@ pub fn compile(
     schema_sdl: &str,
     schema_path: &str,
     documents: &[Document],
+    config: &Config,
 ) -> Result<Compiled, Vec<Diagnostic>> {
     let mut timings = Timings::default();
 
@@ -170,7 +219,7 @@ pub fn compile(
     timings.transform = started.elapsed();
 
     let started = Instant::now();
-    let plan = lower(&schema, &programs);
+    let plan = lower(&schema, &programs, config);
     timings.lower = started.elapsed();
 
     Ok(Compiled { plan, timings })
@@ -204,21 +253,35 @@ fn validate(program: &Program, project_config: &ProjectConfig) -> Result<(), Vec
     }
 }
 
+struct Lowering<'a> {
+    schema: &'a SDLSchema,
+    programs: &'a Programs,
+    config: &'a Config,
+}
+
 /// Lowers Relay's reader and normalization programs into the plan IR.
-fn lower(schema: &SDLSchema, programs: &Programs) -> Plan {
+fn lower(schema: &SDLSchema, programs: &Programs, config: &Config) -> Plan {
+    let lowering = Lowering {
+        schema,
+        programs,
+        config,
+    };
     let mut plan = Plan::default();
     for fragment in programs.reader.fragments() {
-        plan.fragments.push(lower_fragment(schema, fragment));
+        plan.fragments.push(lowering.fragment(fragment));
     }
     plan.fragments
         .sort_by(|left, right| left.name.cmp(&right.name));
 
     for operation in programs.normalization.operations() {
         let name = operation.name.item.0.lookup();
+        let root_type = schema.get_type_name(operation.type_).lookup().to_string();
         let reader = programs
             .reader
             .operation(operation.name.item)
-            .map(|reader_operation| lower_selections(schema, &reader_operation.selections))
+            .map(|reader_operation| {
+                lowering.selections(&reader_operation.selections, operation.type_)
+            })
             .unwrap_or_default();
         let text = programs
             .operation_text
@@ -233,17 +296,19 @@ fn lower(schema: &SDLSchema, programs: &Programs) -> Plan {
             .unwrap_or_default();
         plan.operations.push(OperationPlan {
             name: name.to_string(),
+            source: operation.name.location.source_location().path().to_string(),
             kind: match operation.kind {
                 OperationKind::Query => "query",
                 OperationKind::Mutation => "mutation",
                 OperationKind::Subscription => "subscription",
             }
             .to_string(),
-            variables: lower_variables(schema, operation),
+            root_type,
+            variables: lowering.variables(&operation.variable_definitions),
             id: format!("{:x}", md5::compute(text.as_bytes())),
             text,
             reader,
-            normalization: lower_selections(schema, &operation.selections),
+            normalization: lowering.selections(&operation.selections, operation.type_),
         });
     }
     plan.operations
@@ -251,81 +316,156 @@ fn lower(schema: &SDLSchema, programs: &Programs) -> Plan {
     plan
 }
 
-fn lower_fragment(schema: &SDLSchema, fragment: &FragmentDefinition) -> FragmentPlan {
-    FragmentPlan {
-        name: fragment.name.item.0.lookup().to_string(),
-        type_condition: schema
-            .get_type_name(fragment.type_condition)
-            .lookup()
-            .to_string(),
-        arguments: fragment
-            .variable_definitions
+impl Lowering<'_> {
+    fn fragment(&self, fragment: &FragmentDefinition) -> FragmentPlan {
+        FragmentPlan {
+            name: fragment.name.item.0.lookup().to_string(),
+            source: fragment.name.location.source_location().path().to_string(),
+            type_condition: self
+                .schema
+                .get_type_name(fragment.type_condition)
+                .lookup()
+                .to_string(),
+            arguments: self.variables(&fragment.variable_definitions),
+            reader: self.selections(&fragment.selections, fragment.type_condition),
+        }
+    }
+
+    fn variables(&self, definitions: &[graphql_ir::VariableDefinition]) -> Vec<VariablePlan> {
+        definitions
             .iter()
             .map(|variable| VariablePlan {
                 name: variable.name.item.0.lookup().to_string(),
-                type_name: type_reference_name(schema, &variable.type_),
+                type_name: self.type_reference_name(&variable.type_),
+                base_type: self
+                    .schema
+                    .get_type_name(variable.type_.inner())
+                    .lookup()
+                    .to_string(),
+                base_kind: self.type_kind(variable.type_.inner()),
+                non_null: variable.type_.is_non_null(),
+                list: variable.type_.is_list(),
             })
-            .collect(),
-        reader: lower_selections(schema, &fragment.selections),
+            .collect()
     }
-}
 
-fn lower_variables(schema: &SDLSchema, operation: &OperationDefinition) -> Vec<VariablePlan> {
-    operation
-        .variable_definitions
-        .iter()
-        .map(|variable| VariablePlan {
-            name: variable.name.item.0.lookup().to_string(),
-            type_name: type_reference_name(schema, &variable.type_),
-        })
-        .collect()
-}
-
-fn lower_selections(schema: &SDLSchema, selections: &[Selection]) -> Vec<SelectionPlan> {
-    selections
-        .iter()
-        .map(|selection| match selection {
-            Selection::ScalarField(field) => {
-                let definition = schema.field(field.definition.item);
-                SelectionPlan::Scalar {
-                    name: definition.name.item.lookup().to_string(),
-                    alias: field.alias.map(|alias| alias.item.lookup().to_string()),
-                    type_name: type_reference_name(schema, &definition.type_),
-                    storage_key: storage_key(definition.name.item.lookup(), &field.arguments),
-                }
-            }
-            Selection::LinkedField(field) => {
-                let definition = schema.field(field.definition.item);
-                SelectionPlan::Linked {
-                    name: definition.name.item.lookup().to_string(),
-                    alias: field.alias.map(|alias| alias.item.lookup().to_string()),
-                    type_name: type_reference_name(schema, &definition.type_),
-                    storage_key: storage_key(definition.name.item.lookup(), &field.arguments),
-                    plural: definition.type_.is_list(),
-                    selections: lower_selections(schema, &field.selections),
-                }
-            }
-            Selection::InlineFragment(inline) => SelectionPlan::Inline {
-                type_condition: inline
-                    .type_condition
-                    .map(|type_| schema.get_type_name(type_).lookup().to_string()),
-                selections: lower_selections(schema, &inline.selections),
-            },
-            Selection::FragmentSpread(spread) => SelectionPlan::Spread {
-                fragment: spread.fragment.item.0.lookup().to_string(),
-            },
-            Selection::Condition(condition) => SelectionPlan::Condition {
-                variable: match &condition.value {
-                    ConditionValue::Variable(variable) => {
-                        Some(variable.name.item.0.lookup().to_string())
+    fn selections(&self, selections: &[Selection], parent_type: Type) -> Vec<SelectionPlan> {
+        selections
+            .iter()
+            .map(|selection| match selection {
+                Selection::ScalarField(field) => {
+                    let definition = self.schema.field(field.definition.item);
+                    SelectionPlan::Scalar {
+                        name: definition.name.item.lookup().to_string(),
+                        alias: field.alias.map(|alias| alias.item.lookup().to_string()),
+                        type_name: self.type_reference_name(&definition.type_),
+                        base_type: self
+                            .schema
+                            .get_type_name(definition.type_.inner())
+                            .lookup()
+                            .to_string(),
+                        base_kind: self.type_kind(definition.type_.inner()),
+                        non_null: definition.type_.is_non_null(),
+                        list: definition.type_.is_list(),
+                        storage_key: storage_key(definition.name.item.lookup(), &field.arguments),
                     }
-                    ConditionValue::Constant(_) => None,
+                }
+                Selection::LinkedField(field) => {
+                    let definition = self.schema.field(field.definition.item);
+                    let target = definition.type_.inner();
+                    let name = definition.name.item.lookup();
+                    let parent_name = self.schema.get_type_name(parent_type).lookup();
+                    let lookup = self
+                        .config
+                        .lookups
+                        .iter()
+                        .find(|lookup| lookup.field == format!("{parent_name}.{name}"))
+                        .map(|lookup| LookupPlan {
+                            type_name: lookup.type_name.clone(),
+                            argument: lookup.argument.clone(),
+                        });
+                    SelectionPlan::Linked {
+                        name: name.to_string(),
+                        alias: field.alias.map(|alias| alias.item.lookup().to_string()),
+                        type_name: self.type_reference_name(&definition.type_),
+                        base_type: self.schema.get_type_name(target).lookup().to_string(),
+                        base_kind: self.type_kind(target),
+                        non_null: definition.type_.is_non_null(),
+                        plural: definition.type_.is_list(),
+                        has_id: self.schema.named_field(target, "id".intern()).is_some(),
+                        storage_key: storage_key(name, &field.arguments),
+                        lookup,
+                        selections: self.selections(&field.selections, target),
+                    }
+                }
+                Selection::InlineFragment(inline) => SelectionPlan::Inline {
+                    type_condition: inline
+                        .type_condition
+                        .map(|type_| self.schema.get_type_name(type_).lookup().to_string()),
+                    selections: self.selections(
+                        &inline.selections,
+                        inline.type_condition.unwrap_or(parent_type),
+                    ),
                 },
-                passing: condition.passing_value,
-                selections: lower_selections(schema, &condition.selections),
-            },
-        })
-        .collect()
+                Selection::FragmentSpread(spread) => SelectionPlan::Spread {
+                    fragment: spread.fragment.item.0.lookup().to_string(),
+                    type_condition: self
+                        .programs
+                        .reader
+                        .fragment(spread.fragment.item)
+                        .map(|fragment| {
+                            self.schema
+                                .get_type_name(fragment.type_condition)
+                                .lookup()
+                                .to_string()
+                        })
+                        .unwrap_or_default(),
+                },
+                Selection::Condition(condition) => SelectionPlan::Condition {
+                    variable: match &condition.value {
+                        ConditionValue::Variable(variable) => {
+                            Some(variable.name.item.0.lookup().to_string())
+                        }
+                        ConditionValue::Constant(_) => None,
+                    },
+                    passing: condition.passing_value,
+                    selections: self.selections(&condition.selections, parent_type),
+                },
+            })
+            .collect()
+    }
+
+    fn type_kind(&self, type_: Type) -> TypeKind {
+        match type_ {
+            Type::Scalar(_) => {
+                if self.schema.is_string(type_) {
+                    TypeKind::String
+                } else if self.schema.is_id(type_) {
+                    TypeKind::Id
+                } else {
+                    match self.schema.get_type_name(type_).lookup() {
+                        "Int" => TypeKind::Int,
+                        "Float" => TypeKind::Float,
+                        "Boolean" => TypeKind::Boolean,
+                        _ => TypeKind::CustomScalar,
+                    }
+                }
+            }
+            Type::Enum(_) => TypeKind::Enum,
+            Type::Object(_) => TypeKind::Object,
+            Type::Interface(_) => TypeKind::Interface,
+            Type::Union(_) => TypeKind::Union,
+            Type::InputObject(_) => TypeKind::InputObject,
+        }
+    }
+
+    fn type_reference_name(&self, type_: &TypeReference<Type>) -> String {
+        match type_ {
+            TypeReference::Named(named) => self.schema.get_type_name(*named).lookup().to_string(),
+            TypeReference::NonNull(inner) => format!("{}!", self.type_reference_name(inner)),
+            TypeReference::List(inner) => format!("[{}]", self.type_reference_name(inner)),
+        }
+    }
 }
 
 /// Relay's storage key: the field name, plus `(arg:value,...)` when the field
@@ -370,13 +510,5 @@ fn render_value(value: &graphql_ir::Value) -> String {
                 .collect();
             format!("{{{}}}", fields.join(","))
         }
-    }
-}
-
-fn type_reference_name(schema: &SDLSchema, type_: &TypeReference<Type>) -> String {
-    match type_ {
-        TypeReference::Named(named) => schema.get_type_name(*named).lookup().to_string(),
-        TypeReference::NonNull(inner) => format!("{}!", type_reference_name(schema, inner)),
-        TypeReference::List(inner) => format!("[{}]", type_reference_name(schema, inner)),
     }
 }
