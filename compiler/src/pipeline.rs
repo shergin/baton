@@ -64,6 +64,8 @@ pub struct FragmentPlan {
     pub type_condition: String,
     /// Whether the type condition is an interface or union.
     pub type_is_abstract: bool,
+    /// The concrete types the type condition admits, sorted.
+    pub possible_types: Vec<String>,
     /// `@argumentDefinitions`, with defaults.
     pub arguments: Vec<VariablePlan>,
     /// `@refetchable`: the generated query and how to bind it.
@@ -188,7 +190,7 @@ pub struct StorageKeyPlan {
 
 /// A root field that returns an entity addressable by one of its arguments,
 /// so a cached entity can satisfy the field before it was ever fetched.
-#[derive(Debug, Clone, serde::Serialize)]
+#[derive(Debug, Clone, PartialEq, serde::Serialize)]
 pub struct LookupPlan {
     /// `None` resolves by id across types.
     pub type_name: Option<String>,
@@ -199,7 +201,7 @@ pub struct LookupPlan {
 
 /// A `@connection` field: the client record pages merge into, and the cursor
 /// arguments that decide whether a page replaces, appends or prepends.
-#[derive(Debug, Clone, serde::Serialize)]
+#[derive(Debug, Clone, PartialEq, serde::Serialize)]
 pub struct ConnectionPlan {
     pub key: String,
     /// Relay's handle key with the filters: `__Key_connection(states:"OPEN")`.
@@ -211,7 +213,7 @@ pub struct ConnectionPlan {
 }
 
 /// An edge directive on a mutation payload field, as Relay's handle.
-#[derive(Debug, Clone, serde::Serialize)]
+#[derive(Debug, Clone, PartialEq, serde::Serialize)]
 pub struct HandlePlan {
     /// `appendEdge`, `prependEdge`, `appendNode`, `prependNode`, `deleteEdge`, `deleteRecord`.
     pub kind: String,
@@ -271,6 +273,9 @@ pub enum SelectionPlan {
         /// Whether the target type is an interface or union: records are then
         /// keyed and sloted by the payload's `__typename`.
         is_abstract: bool,
+        /// The concrete types the target type admits, sorted: itself for an
+        /// object type.
+        possible_types: Vec<String>,
         storage_key: StorageKeyPlan,
         lookup: Option<LookupPlan>,
         connection: Option<ConnectionPlan>,
@@ -284,6 +289,8 @@ pub enum SelectionPlan {
     },
     Inline {
         type_condition: Option<String>,
+        /// The concrete types the type condition admits, sorted.
+        condition_types: Option<Vec<String>>,
         /// An explicit `@alias(as:)` name.
         alias: Option<String>,
         /// `@defer`: the label the incremental part carries.
@@ -538,6 +545,7 @@ impl Lowering<'_> {
                 .lookup()
                 .to_string(),
             type_is_abstract: fragment.type_condition.is_abstract_type(),
+            possible_types: self.possible_types(fragment.type_condition),
             arguments: self.variables(&fragment.variable_definitions),
             refetch: self.refetch(fragment),
             throws_on_field_error: fragment
@@ -632,6 +640,29 @@ impl Lowering<'_> {
             }),
             _ => self.schema.named_field(type_, "id".intern()).is_some(),
         }
+    }
+
+    /// The concrete types a type admits, sorted by name: an object type is
+    /// itself, an interface every object that implements it, a union its
+    /// members.
+    fn possible_types(&self, type_: Type) -> Vec<String> {
+        let objects: Vec<schema::ObjectID> = match type_ {
+            Type::Object(id) => vec![id],
+            Type::Interface(id) => self
+                .schema
+                .interface(id)
+                .recursively_implementing_objects(self.schema)
+                .into_iter()
+                .collect(),
+            Type::Union(id) => self.schema.union(id).members.clone(),
+            _ => Vec::new(),
+        };
+        let mut names: Vec<String> = objects
+            .into_iter()
+            .map(|id| self.schema.object(id).name.item.0.lookup().to_string())
+            .collect();
+        names.sort();
+        names
     }
 
     /// The named type of a field on `parent`, for the connection's edge and
@@ -867,6 +898,7 @@ impl Lowering<'_> {
                         plural: definition.type_.is_list(),
                         has_id: self.type_has_id(target),
                         is_abstract: target.is_abstract_type(),
+                        possible_types: self.possible_types(target),
                         storage_key: field_storage_key,
                         lookup,
                         connection,
@@ -915,6 +947,9 @@ impl Lowering<'_> {
                         type_condition: inline
                             .type_condition
                             .map(|type_| self.schema.get_type_name(type_).lookup().to_string()),
+                        condition_types: inline
+                            .type_condition
+                            .map(|type_| self.possible_types(type_)),
                         alias,
                         deferred,
                         catch: self.catch(&inline.directives),

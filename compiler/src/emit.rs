@@ -10,6 +10,7 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt::Write as _;
 
+use crate::decide::{self, Guard, NormalizationField, NormalizationKind, NormalizationSelection};
 use crate::pipeline::{
     ArgumentValuePlan, CatchPlan, ConnectionPlan, ConstantPlan, FragmentPlan, HandlePlan,
     LookupPlan, OperationPlan, Plan, RefetchPlan, RequiredPlan, SelectionPlan, StorageKeyPlan,
@@ -374,16 +375,9 @@ impl Emitter {
         output.push_str("    }\n\n");
 
         // The normalization plan, as static data.
-        self.types.insert(operation.root_type.clone());
+        let normalization = decide::normalization(&operation.root_type, &operation.normalization);
         output.push_str("    public static let plan = Baton.Plan(root: ");
-        self.selection_plan(
-            &mut output,
-            &operation.root_type,
-            false,
-            false,
-            &operation.normalization,
-            2,
-        );
+        self.selection_plan(&mut output, &normalization, 2);
         output.push_str(")\n\n");
 
         // The root lens.
@@ -410,12 +404,7 @@ impl Emitter {
         if operation.kind == "mutation" {
             output.push('\n');
             output.push_str("    public typealias Action = Baton.MutationAction<Self>\n\n");
-            self.optimistic_builder(
-                &mut output,
-                "OptimisticResponse",
-                &operation.normalization,
-                "    ",
-            );
+            self.optimistic_builder(&mut output, "OptimisticResponse", &normalization, "    ");
         }
         output.push_str("}\n\n");
 
@@ -1068,6 +1057,7 @@ impl Emitter {
                     catch,
                     bubbles,
                     selections: child,
+                    ..
                 } => {
                     if let [
                         SelectionPlan::Spread {
@@ -1544,41 +1534,84 @@ impl Emitter {
         }
     }
 
-    /// Writes a `Baton.Selection(...)` expression for the normalization plan.
+    /// Writes a `Baton.Selection(...)` expression for the normalization plan:
+    /// its fields when every type reads the same, else its variants.
     fn selection_plan(
         &mut self,
         output: &mut String,
-        type_name: &str,
-        has_id: bool,
-        is_abstract: bool,
-        selections: &[SelectionPlan],
+        selection: &NormalizationSelection,
         depth: usize,
     ) {
-        self.types.insert(type_name.to_string());
+        let type_name = &selection.type_name;
+        self.types.insert(type_name.clone());
         let pad = "    ".repeat(depth);
         let _ = write!(
             output,
-            "Baton.Selection(type: Types.{type_name}, hasID: {has_id}, abstract: {is_abstract}, fields: ["
+            "Baton.Selection(type: Types.{type_name}, hasID: {}, abstract: {}",
+            selection.has_id, selection.is_abstract
         );
-        let mut any = false;
-        for (selection, deferred) in flatten(selections) {
-            any = true;
+        if let [only] = selection.variants.as_slice()
+            && only.types.is_none()
+        {
+            output.push_str(", fields: [");
+            self.plan_fields(output, type_name, &only.fields, depth);
+            output.push_str("])");
+            return;
+        }
+        output.push_str(", variants: [");
+        for variant in &selection.variants {
+            let types = match &variant.types {
+                Some(types) => {
+                    let names: Vec<String> = types
+                        .iter()
+                        .map(|name| {
+                            self.types.insert(name.clone());
+                            format!("Types.{name}")
+                        })
+                        .collect();
+                    format!("[{}]", names.join(", "))
+                }
+                None => "nil".to_string(),
+            };
+            // A variant of one type names that type's slots, which the
+            // runtime then takes as they are.
+            let slot_type = match variant.types.as_deref() {
+                Some([only]) => only.clone(),
+                _ => type_name.clone(),
+            };
+            let _ = write!(output, "\n{pad}    .init(types: {types}, fields: [");
+            self.plan_fields(output, &slot_type, &variant.fields, depth + 1);
+            output.push_str("]),");
+        }
+        let _ = write!(output, "\n{pad}])");
+    }
+
+    /// The fields of one variant, their slots on `type_name`.
+    fn plan_fields(
+        &mut self,
+        output: &mut String,
+        type_name: &str,
+        fields: &[NormalizationField],
+        depth: usize,
+    ) {
+        let pad = "    ".repeat(depth);
+        for field in fields {
             let _ = write!(output, "\n{pad}    ");
-            let deferred_argument = deferred
+            let slot = self.plan_key(type_name, &field.key);
+            let handle_argument = field
+                .handle
+                .as_ref()
+                .map(|handle| format!(", handle: {}", self.handle_expression(handle)))
+                .unwrap_or_default();
+            let deferred_argument = field
+                .deferred
+                .as_ref()
                 .map(|label| format!(", deferred: {}", swift_literal(label)))
                 .unwrap_or_default();
-            match selection {
-                SelectionPlan::Scalar {
-                    name,
-                    alias,
-                    base_kind,
-                    list,
-                    storage_key,
-                    handle,
-                    caught,
-                    ..
-                } => {
-                    let slot = self.plan_key(type_name, storage_key);
+            let caught_argument = if field.caught { ", caught: true" } else { "" };
+            let guards_argument = guards_expression(&field.guards);
+            match &field.kind {
+                NormalizationKind::Scalar { base_kind, list } => {
                     let kind = match base_kind {
                         TypeKind::Int => "int",
                         TypeKind::Float => "double",
@@ -1586,33 +1619,18 @@ impl Emitter {
                         TypeKind::String | TypeKind::Id | TypeKind::Enum => "string",
                         _ => "custom",
                     };
-                    let handle_argument = handle
-                        .as_ref()
-                        .map(|handle| format!(", handle: {}", self.handle_expression(handle)))
-                        .unwrap_or_default();
-                    let caught_argument = if *caught { ", caught: true" } else { "" };
                     let _ = write!(
                         output,
-                        ".scalar(\"{}\", key: {slot}, kind: .{kind}, list: {list}{handle_argument}{deferred_argument}{caught_argument}),",
-                        alias.as_deref().unwrap_or(name)
+                        ".scalar({}, key: {slot}, kind: .{kind}, list: {list}{handle_argument}{deferred_argument}{caught_argument}{guards_argument}),",
+                        swift_literal(&field.response_key)
                     );
                 }
-                SelectionPlan::Linked {
-                    name,
-                    alias,
-                    base_type,
+                NormalizationKind::Linked {
                     plural,
-                    has_id,
-                    is_abstract,
-                    storage_key,
                     lookup,
                     connection,
-                    handle,
-                    caught,
-                    selections: child,
-                    ..
+                    selection,
                 } => {
-                    let slot = self.plan_key(type_name, storage_key);
                     let lookup_argument = lookup
                         .as_ref()
                         .map(|lookup| format!(", lookup: {}", lookup_expression(lookup)))
@@ -1622,30 +1640,27 @@ impl Emitter {
                         .map(|connection| {
                             format!(
                                 ", connection: {}",
-                                self.connection_expression(type_name, base_type, connection)
+                                self.connection_expression(
+                                    type_name,
+                                    &selection.type_name,
+                                    connection
+                                )
                             )
                         })
                         .unwrap_or_default();
-                    let handle_argument = handle
-                        .as_ref()
-                        .map(|handle| format!(", handle: {}", self.handle_expression(handle)))
-                        .unwrap_or_default();
-                    let caught_argument = if *caught { ", caught: true" } else { "" };
                     let _ = write!(
                         output,
-                        ".linked(\"{}\", key: {slot}, plural: {plural}{lookup_argument}{connection_argument}{handle_argument}{deferred_argument}{caught_argument}, selection: ",
-                        alias.as_deref().unwrap_or(name)
+                        ".linked({}, key: {slot}, plural: {plural}{lookup_argument}{connection_argument}{handle_argument}{deferred_argument}{caught_argument}{guards_argument}, selection: ",
+                        swift_literal(&field.response_key)
                     );
-                    self.selection_plan(output, base_type, *has_id, *is_abstract, child, depth + 1);
+                    self.selection_plan(output, selection, depth + 1);
                     output.push_str("),");
                 }
-                _ => unreachable!("flatten removes nested kinds"),
             }
         }
-        if any {
+        if !fields.is_empty() {
             let _ = write!(output, "\n{pad}");
         }
-        output.push_str("])");
     }
 
     /// The plan's description of a connection: the client key on the parent
@@ -1723,7 +1738,7 @@ impl Emitter {
         &mut self,
         output: &mut String,
         name: &str,
-        selections: &[SelectionPlan],
+        selection: &NormalizationSelection,
         indent: &str,
     ) {
         let _ = writeln!(
@@ -1735,21 +1750,23 @@ impl Emitter {
             "{indent}nonisolated public struct {name}: Sendable {{"
         );
         let inner = format!("{indent}    ");
-        let flat = flatten(selections);
-        let mut nested: Vec<(String, Vec<SelectionPlan>)> = Vec::new();
+        // Every field any variant reads, once: the response is written for
+        // whichever type it names.
+        let mut seen = BTreeSet::new();
+        let fields: Vec<&NormalizationField> = selection
+            .variants
+            .iter()
+            .flat_map(|variant| &variant.fields)
+            .filter(|field| seen.insert(field.response_key.clone()))
+            .collect();
+        let mut nested: Vec<(String, NormalizationSelection)> = Vec::new();
         let mut parameters: Vec<String> = Vec::new();
         let mut assignments: Vec<String> = Vec::new();
         let mut renders: Vec<String> = Vec::new();
-        for (selection, _) in &flat {
-            match selection {
-                SelectionPlan::Scalar {
-                    name,
-                    alias,
-                    base_kind,
-                    list,
-                    ..
-                } => {
-                    let property = alias.clone().unwrap_or_else(|| name.clone());
+        for field in fields {
+            let property = field.response_key.clone();
+            match &field.kind {
+                NormalizationKind::Scalar { base_kind, list } => {
                     let (_, swift_type) = scalar_reader(*base_kind, *list);
                     let _ = writeln!(
                         output,
@@ -1764,14 +1781,11 @@ impl Emitter {
                         property
                     ));
                 }
-                SelectionPlan::Linked {
-                    name,
-                    alias,
+                NormalizationKind::Linked {
                     plural,
-                    selections: child,
+                    selection: child,
                     ..
                 } => {
-                    let property = alias.clone().unwrap_or_else(|| name.clone());
                     let mut nested_name = capitalize(&property);
                     let mut counter = 2;
                     while nested.iter().any(|(existing, _)| existing == &nested_name) {
@@ -1805,7 +1819,6 @@ impl Emitter {
                     }
                     nested.push((nested_name, child.clone()));
                 }
-                _ => unreachable!("flatten removes nested kinds"),
             }
         }
         let _ = writeln!(output, "{inner}public init({}) {{", parameters.join(", "));
@@ -1934,8 +1947,8 @@ fn own_fields<'a>(
 /// node's required children can null it, when the connection selects them
 /// and does not select a `nodes` field itself.
 fn edge_node_properties(selections: &[SelectionPlan]) -> Option<(String, String, bool)> {
-    let flat = flatten(selections);
-    let has_nodes_field = flat.iter().any(|(selection, _)| match selection {
+    let flat = fields_within(selections);
+    let has_nodes_field = flat.iter().any(|selection| match selection {
         SelectionPlan::Scalar { name, alias, .. } | SelectionPlan::Linked { name, alias, .. } => {
             alias.as_deref().unwrap_or(name) == "nodes"
         }
@@ -1944,7 +1957,7 @@ fn edge_node_properties(selections: &[SelectionPlan]) -> Option<(String, String,
     if has_nodes_field {
         return None;
     }
-    let edges = flat.iter().find_map(|(selection, _)| match selection {
+    let edges = flat.iter().find_map(|selection| match selection {
         SelectionPlan::Linked {
             name,
             alias,
@@ -1953,9 +1966,9 @@ fn edge_node_properties(selections: &[SelectionPlan]) -> Option<(String, String,
         } if name == "edges" && alias.is_none() => Some((name.clone(), selections)),
         _ => None,
     })?;
-    let node = flatten(edges.1)
+    let node = fields_within(edges.1)
         .iter()
-        .find_map(|(selection, _)| match selection {
+        .find_map(|selection| match selection {
             SelectionPlan::Linked {
                 name,
                 alias,
@@ -1978,32 +1991,46 @@ fn parameter_list(variables: &[VariablePlan]) -> String {
         .join(", ")
 }
 
-/// Normalization plans are flat: inline fragments and conditions are folded
-/// into their parent, each field remembering the `@defer` label of the
-/// nearest deferred inline fragment around it; spreads were inlined by the
-/// compiler already.
-fn flatten(selections: &[SelectionPlan]) -> Vec<(&SelectionPlan, Option<&str>)> {
-    fn walk<'a>(
-        selections: &'a [SelectionPlan],
-        label: Option<&'a str>,
-        result: &mut Vec<(&'a SelectionPlan, Option<&'a str>)>,
-    ) {
-        for selection in selections {
-            match selection {
-                SelectionPlan::Inline {
-                    selections,
-                    deferred,
-                    ..
-                } => walk(selections, deferred.as_deref().or(label), result),
-                SelectionPlan::Condition { selections, .. } => walk(selections, label, result),
-                SelectionPlan::Spread { .. } => {}
-                other => result.push((other, label)),
+/// The fields a reader selection reaches without entering another field:
+/// its own, and those inside its inline fragments and conditions.
+fn fields_within(selections: &[SelectionPlan]) -> Vec<&SelectionPlan> {
+    let mut result = Vec::new();
+    for selection in selections {
+        match selection {
+            SelectionPlan::Inline { selections, .. }
+            | SelectionPlan::Condition { selections, .. } => {
+                result.extend(fields_within(selections))
             }
+            SelectionPlan::Spread { .. } => {}
+            other => result.push(other),
         }
     }
-    let mut result = Vec::new();
-    walk(selections, None, &mut result);
     result
+}
+
+/// The `guards:` argument of a plan field: none when the field is always
+/// fetched.
+fn guards_expression(guards: &[Vec<Guard>]) -> String {
+    if guards.is_empty() {
+        return String::new();
+    }
+    let alternatives: Vec<String> = guards
+        .iter()
+        .map(|conjunction| {
+            let conditions: Vec<String> = conjunction
+                .iter()
+                .map(|guard| {
+                    format!(
+                        ".init({}, passing: {})",
+                        swift_literal(&guard.variable),
+                        guard.passing
+                    )
+                })
+                .collect();
+            format!("[{}]", conditions.join(", "))
+        })
+        .collect();
+    format!(", guards: [{}]", alternatives.join(", "))
 }
 
 /// A storage key as the parts the runtime joins: the name, then the

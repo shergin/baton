@@ -55,11 +55,16 @@ query TestNode(
     }
 
     public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("node", key: .dynamic([.literal("node(id:"), .variable("id"), .literal(")")]), plural: false, lookup: Baton.Lookup(type: nil, key: .variable("id")), selection: Baton.Selection(type: Types.Node, hasID: true, abstract: true, fields: [
-                .scalar("__typename", key: .fixed(Slots.Node___typename), kind: .string, list: false),
-                .scalar("id", key: .fixed(Slots.Node_id), kind: .string, list: false),
-                .scalar("name", key: .fixed(Slots.Node_name), kind: .string, list: false),
-                .scalar("name", key: .fixed(Slots.Node_name), kind: .string, list: false),
+            .linked("node", key: .dynamic([.literal("node(id:"), .variable("id"), .literal(")")]), plural: false, lookup: Baton.Lookup(type: nil, key: .variable("id")), selection: Baton.Selection(type: Types.Node, hasID: true, abstract: true, variants: [
+                .init(types: [Types.Character, Types.Episode], fields: [
+                    .scalar("__typename", key: .fixed(Slots.Node___typename), kind: .string, list: false),
+                    .scalar("id", key: .fixed(Slots.Node_id), kind: .string, list: false),
+                    .scalar("name", key: .fixed(Slots.Node_name), kind: .string, list: false),
+                ]),
+                .init(types: nil, fields: [
+                    .scalar("__typename", key: .fixed(Slots.Node___typename), kind: .string, list: false),
+                    .scalar("id", key: .fixed(Slots.Node_id), kind: .string, list: false),
+                ]),
             ])),
         ]))
 
@@ -268,15 +273,25 @@ query TestSearch(
     }
 
     public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("search", key: .dynamic([.literal("search(name:"), .variable("name"), .literal(")")]), plural: true, selection: Baton.Selection(type: Types.SearchResult, hasID: true, abstract: true, fields: [
-                .scalar("__typename", key: .fixed(Slots.SearchResult___typename), kind: .string, list: false),
-                .scalar("id", key: .fixed(Slots.SearchResult_id), kind: .string, list: false),
-                .scalar("name", key: .fixed(Slots.SearchResult_name), kind: .string, list: false),
-                .scalar("id", key: .fixed(Slots.SearchResult_id), kind: .string, list: false),
-                .scalar("name", key: .fixed(Slots.SearchResult_name), kind: .string, list: false),
-                .scalar("dimension", key: .fixed(Slots.SearchResult_dimension), kind: .string, list: false),
-                .scalar("__isNode", key: .fixed(Slots.SearchResult___typename), kind: .string, list: false),
-                .scalar("id", key: .fixed(Slots.SearchResult_id), kind: .string, list: false),
+            .linked("search", key: .dynamic([.literal("search(name:"), .variable("name"), .literal(")")]), plural: true, selection: Baton.Selection(type: Types.SearchResult, hasID: true, abstract: true, variants: [
+                .init(types: [Types.Character], fields: [
+                    .scalar("__typename", key: .fixed(Slots.Character___typename), kind: .string, list: false),
+                    .scalar("id", key: .fixed(Slots.Character_id), kind: .string, list: false),
+                    .scalar("name", key: .fixed(Slots.Character_name), kind: .string, list: false),
+                ]),
+                .init(types: [Types.Episode], fields: [
+                    .scalar("__typename", key: .fixed(Slots.Episode___typename), kind: .string, list: false),
+                    .scalar("id", key: .fixed(Slots.Episode_id), kind: .string, list: false),
+                ]),
+                .init(types: [Types.Location], fields: [
+                    .scalar("__typename", key: .fixed(Slots.Location___typename), kind: .string, list: false),
+                    .scalar("id", key: .fixed(Slots.Location_id), kind: .string, list: false),
+                    .scalar("name", key: .fixed(Slots.Location_name), kind: .string, list: false),
+                    .scalar("dimension", key: .fixed(Slots.Location_dimension), kind: .string, list: false),
+                ]),
+                .init(types: nil, fields: [
+                    .scalar("__typename", key: .fixed(Slots.SearchResult___typename), kind: .string, list: false),
+                ]),
             ])),
         ]))
 
@@ -358,14 +373,22 @@ query TestSearchOrigins(
     }
 
     public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("search", key: .dynamic([.literal("search(name:"), .variable("name"), .literal(")")]), plural: true, selection: Baton.Selection(type: Types.SearchResult, hasID: true, abstract: true, fields: [
-                .scalar("__typename", key: .fixed(Slots.SearchResult___typename), kind: .string, list: false),
-                .linked("origin", key: .fixed(Slots.SearchResult_origin), plural: false, selection: Baton.Selection(type: Types.Location, hasID: true, abstract: false, fields: [
-                    .scalar("name", key: .fixed(Slots.Location_name), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Location_id), kind: .string, list: false),
-                ])),
-                .scalar("__isNode", key: .fixed(Slots.SearchResult___typename), kind: .string, list: false),
-                .scalar("id", key: .fixed(Slots.SearchResult_id), kind: .string, list: false),
+            .linked("search", key: .dynamic([.literal("search(name:"), .variable("name"), .literal(")")]), plural: true, selection: Baton.Selection(type: Types.SearchResult, hasID: true, abstract: true, variants: [
+                .init(types: [Types.Character], fields: [
+                    .scalar("__typename", key: .fixed(Slots.Character___typename), kind: .string, list: false),
+                    .linked("origin", key: .fixed(Slots.Character_origin), plural: false, selection: Baton.Selection(type: Types.Location, hasID: true, abstract: false, fields: [
+                        .scalar("name", key: .fixed(Slots.Location_name), kind: .string, list: false),
+                        .scalar("id", key: .fixed(Slots.Location_id), kind: .string, list: false),
+                    ])),
+                    .scalar("id", key: .fixed(Slots.Character_id), kind: .string, list: false),
+                ]),
+                .init(types: [Types.Episode, Types.Location], fields: [
+                    .scalar("__typename", key: .fixed(Slots.SearchResult___typename), kind: .string, list: false),
+                    .scalar("id", key: .fixed(Slots.SearchResult_id), kind: .string, list: false),
+                ]),
+                .init(types: nil, fields: [
+                    .scalar("__typename", key: .fixed(Slots.SearchResult___typename), kind: .string, list: false),
+                ]),
             ])),
         ]))
 

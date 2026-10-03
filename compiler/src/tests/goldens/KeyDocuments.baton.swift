@@ -57,10 +57,14 @@ query TestKeys(
     }
 
     public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("search", key: .fixed(Slots.Query_search_6286a6), plural: true, selection: Baton.Selection(type: Types.SearchResult, hasID: true, abstract: true, fields: [
-                .scalar("__typename", key: .fixed(Slots.SearchResult___typename), kind: .string, list: false),
-                .scalar("__isNode", key: .fixed(Slots.SearchResult___typename), kind: .string, list: false),
-                .scalar("id", key: .fixed(Slots.SearchResult_id), kind: .string, list: false),
+            .linked("search", key: .fixed(Slots.Query_search_6286a6), plural: true, selection: Baton.Selection(type: Types.SearchResult, hasID: true, abstract: true, variants: [
+                .init(types: [Types.Character, Types.Episode, Types.Location], fields: [
+                    .scalar("__typename", key: .fixed(Slots.SearchResult___typename), kind: .string, list: false),
+                    .scalar("id", key: .fixed(Slots.SearchResult_id), kind: .string, list: false),
+                ]),
+                .init(types: nil, fields: [
+                    .scalar("__typename", key: .fixed(Slots.SearchResult___typename), kind: .string, list: false),
+                ]),
             ])),
             .linked("character", key: .fixed(Slots.Query_character_4a2dfc), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .literal("a,b")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
                 .scalar("name", key: .fixed(Slots.Character_name), kind: .string, list: false),

@@ -10,6 +10,7 @@
 //!   and prints the warm timings.
 
 mod config;
+mod decide;
 mod diagnostics;
 mod documents;
 mod emit;

@@ -24,6 +24,16 @@ are expected and listed without apology.
   input object's keys were written unquoted and unsorted. Floats in keys are
   written as the runtime renders a variable. A lookup in `baton.json` whose
   argument the selection does not pass is a compile error.
+- Plans know types and conditions. The normalization plan was flat: every
+  field of every type condition was expected on every record, so the
+  availability check failed right after an operation's own response for any
+  selection on an interface or union, and the ingest bound a response key to
+  the first field of that name, storing a Location's `label: dimension` in
+  its `name`. The compiler now decides, for each abstract selection, the
+  fields each group of concrete types reads, and turns `@include` and
+  `@skip` into guards the plan settles once per set of variables; the
+  ingest reads an object by its type's variant, and the check, collection
+  and deferred parts follow the same variants.
 - A superseded fetch does not commit. A response that arrived, or was still
   being read, after a refetch replaced its fetch landed after the newer one
   when the transport did not hear the cancellation. Ingest now runs in the
