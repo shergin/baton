@@ -23,11 +23,20 @@ variables type, a root lens, a [plan](#compiler) and a persisted id.
 **Spread.** GraphQL: `...Name` inside a selection. Here: compiles to a named
 accessor on the parent lens that returns the child fragment's lens, optional
 when the spread is conditional or deferred. The default accessor name is
-derived from the fragment name; `@alias` renames it.
+derived from the fragment name (`issue.issueRow`); `@alias(as:)` names it
+verbatim.
 
 **Fragment arguments.** Relay: `@argumentDefinitions` and `@arguments`. Here:
-the same directives; applied by the compiler per unique argument set for the
-plan and operation text, bound at run time for reading. *(planned)*
+the same directives. The compiler inlines them in the normalization plan and
+the operation text, as Relay does; the spread's accessor binds them into the
+child lens's scope over the parent's variables (the passed literal or
+variable, else the default, else null), and storage keys with fragment
+variables resolve against that scope.
+
+**Refetchable fragment.** Relay: `@refetchable(queryName:)`, a fragment the
+compiler generates a query for. Here: the same; the lens gets `refetch()`,
+which runs the generated query with the lens's variables and the owner's id
+and updates the records in place. New variables replace the lens.
 
 **Directive.** GraphQL: an annotation on a selection or definition. Here:
 the only way behaviour is attached to data; the set is Relay's
@@ -63,7 +72,10 @@ exposes `isInFlight`. `@Mutation("…") var star: StarMutation.Action`.
 
 **Record.** Relay: a normalized object in the store. Here: an observable
 object identified by typename plus key, holding interned slots, per-field
-errors and type-membership bits.
+errors and type-membership bits. Its values are sized by what was written,
+not by how many storage keys the type has. A record `@deleteRecord` removed
+is *deleted*: links to it read as null, lists skip it, its observers are
+told, and a payload that names it again revives it.
 
 **Key.** The configured identity fields of a type (default `id`), combined
 with the typename. Objects without a key get a path-based client id, as in
@@ -79,9 +91,10 @@ owned by the main actor; read synchronously; written by atomic commits. See
 [The store is the UI's state](principles/store-is-the-ui-state.md).
 
 **Commit, change set.** A change set is the output of ingesting one response
-or applying one optimistic update: records, slots, references, errors. A
-commit applies it on the main actor and notifies the observed fields that
-changed.
+or applying one optimistic update: records, slots, references, errors, and
+the edits the plan asked for (a connection page's merge, an edge directive's
+insert or delete). A commit applies it on the main actor, edits after
+entries, and notifies the observed fields that changed.
 
 **Root, retain, release buffer.** Relay's words. An operation whose handle is
 alive retains its records; a released root waits in a buffer (default ten)
@@ -157,9 +170,33 @@ field before it was fetched. See [the decision](decisions/lookups.md).
 ## Lists
 
 **Connection, edge, node.** The Relay cursor connections specification.
-Here: `@connection` merges pages into one stored list exposing `nodes`,
-`hasNext`, `loadNext`, `isLoadingNext`; the state lives in the store as
-client fields. *(planned)*
+Here: a field with `@connection(key:)` is read through Relay's handle key
+(`__<key>_connection(filters)`), a client record on the parent that every page
+merges into: a page without a cursor replaces, one after a cursor appends, one
+before a cursor prepends, edges deduplicate by node, `pageInfo` merges per
+direction. The lens exposes the selection plus `nodes` (Baton's one
+convenience, Relay leaves it to the product), `hasNext`, `hasPrevious`,
+`isLoadingNext`, `isLoadingPrevious` and `connectionID`. See
+[the decision](decisions/connections-own-their-edges.md).
+
+**Connection id.** Relay's `ConnectionHandler.getConnectionID`. Here: the
+connection record's key, read as `connectionID`, passed in the `connections`
+variable of the edge directives.
+
+**Pagination.** Relay: `usePaginationFragment` over a `@refetchable` fragment
+whose connection takes `first`/`after` (or `last`/`before`) from
+`@argumentDefinitions`. Here: `loadNext(_:)` and `loadPrevious(_:)` on the
+connection lens, running the fragment's refetch query with the lens's
+variables, the merged cursor and the owner's id; the fetch has no handle and
+no root, the connection owns the pages; the loading flags are client fields
+on the connection record (`__isLoadingNext`, `__isLoadingPrevious`).
+
+**Edge directives.** Relay's declarative mutation directives: `@appendEdge`,
+`@prependEdge`, `@appendNode`, `@prependNode` (with `edgeTypeName`),
+`@deleteEdge`, `@deleteRecord`. Here: the same, on mutation payload fields,
+applied as commit edits inside the transaction, so optimistic responses carry
+them and revert them. Inserted edges are copied into records the connection
+owns, numbered by Relay's `__connection_next_edge_index`.
 
 **Page.** A list fetched by page number or offset, as the sample API does. Not
 a connection; composed in the UI from plain operations until the watch list

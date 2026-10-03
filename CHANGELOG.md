@@ -5,6 +5,81 @@ are expected and listed without apology.
 
 ## Unreleased
 
+## 0.4.0 (Hand-off) — 2026-10-03
+
+Lists: Relay's connections with pagination, fragment arguments, `@alias(as:)`,
+and the declarative edge directives.
+
+- Connections. A field with `@connection(key:)` is read through Relay's
+  handle key. The page lands under its server storage key as always; the
+  commit then merges it into a connection record keyed by Relay's connection
+  id (`<parent>:__<key>_connection(filters)`), as `ConnectionHandler.update`
+  does: a page fetched without a cursor becomes the connection, one fetched
+  after a cursor appends, one fetched before a cursor prepends, edges
+  deduplicate by node, `pageInfo` merges per direction, and a page after a
+  cursor that is no longer the end is ignored. The lens over the field
+  exposes `nodes`, `hasNext`, `hasPrevious`, `isLoadingNext`,
+  `isLoadingPrevious` and `connectionID`; the loading flags are client fields
+  on the connection record. Roots mark through the connection as well as
+  through the page they fetched, so merged pages live as long as any root
+  reaches the connection, whatever fetched them.
+- Pagination. A fragment with `@refetchable(queryName:)` whose connection
+  takes `first`/`after` from `@argumentDefinitions` gets `loadNext(_:)` on the
+  connection lens (`loadPrevious(_:)` for `last`/`before`): the generated
+  query runs with the lens's variables, the merged end cursor and the owner's
+  id, as a fetch with no handle and no root; the count defaults to the
+  argument's default. Every `@refetchable` fragment lens has `refetch()`.
+- Fragment arguments. A spread binds the target's `@argumentDefinitions`
+  into the child lens's scope over the parent's variables: the passed literal
+  or variable, else the default, else null (Relay's fragment variables). A
+  storage key with a fragment variable resolves against that scope; the
+  normalization and the operation text have the arguments inlined, by Relay.
+- Edge directives. `@appendEdge`/`@prependEdge(connections:)`,
+  `@appendNode`/`@prependNode(connections:, edgeTypeName:)`,
+  `@deleteEdge(connections:)` and `@deleteRecord` become edits the ingest
+  records in the change set and the store applies after the entries, under
+  the same transaction and undo log, so an optimistic insert shows at once,
+  rebases under commits and reverts on failure. `connections` is a variable
+  of connection ids (`comments.connectionID`). Inserted edges are copied into
+  records the connection owns, numbered by Relay's
+  `__connection_next_edge_index`, because a payload's edge record is keyed by
+  its path and the next mutation would alias it. A deleted record reads as
+  null through links, is skipped by lists and `nodes`, and tells every
+  observer; a payload that names it again revives it.
+- `@alias(as:)` names the accessor verbatim, for spreads and inline fragments;
+  without `as:` the derived names stay.
+- Records size their values by what is written, not by the type's slot
+  count: a cursor-paginated field registers a storage key per page on its
+  parent type, and the other records of that type no longer pay for pages
+  they never saw. The scroll bench's footprint fell from +6.5 MB to +4.4 MB.
+- `Environment.fetch(_:variables:)` fetches an operation by type without a
+  handle. `Anchor` keeps the record it was reached from and binds scopes with
+  `binding(_:)`. `ForEach` takes an array of lenses, for `nodes`.
+- The GitHub sample: open issues as an infinite-scroll connection on the
+  repository screen; comments as a connection with "load more"; the comment
+  composer appends through `@appendEdge` instead of refetching the issue; the
+  issue screen's spread is aliased. All four read operations were checked
+  against the live API.
+- The compiler's property-type check takes the longest matching document
+  name, so `TestAddNoteFirst.Action` no longer warns about `TestAddNote`.
+
+Tests: two pages merge in order with the last page's info and a stale page is
+ignored; a refetch of the first page replaces the merged list and an equal
+page notifies nothing; `loadNext` fetches after the end cursor, appends,
+toggles `isLoadingNext`, is a no-op at the end and creates no root;
+`@appendEdge` and `@prependEdge` insert once per node; an optimistic edge
+shows at once, survives a page under it, is replaced by the server's edge and
+reverts on failure; `@deleteEdge` removes the edge and `@deleteRecord` makes
+the record read as null; `@arguments` binds the scope and defaults apply;
+`@alias(as:)` renames. The bench merges 42 pages of 50 notes into one
+connection.
+
+Deliberately not added: `@stream_connection` and `prefetchable_pagination`;
+refetch with new variables (replace the lens; watch list); null arguments in
+storage keys (Relay omits them, Baton renders `null`; both sides agree, and
+the format is internal until persistence); page-based lists (watch list);
+`@required`, `@catch` and `@defer` (0.5).
+
 ## 0.3.0 (Exchange Zone) — 2026-10-03
 
 The write side: mutations as action values, optimistic responses as layers

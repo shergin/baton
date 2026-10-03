@@ -5,6 +5,52 @@ machine. Every number comes from `swift run -c release BatonBenchmarks` (or
 the comparison package named in its section), recorded with the revision,
 machine, OS and date. Append; never edit a past entry.
 
+## 0.4.0 — 2026-10-03
+
+Revision: the 0.4.0 tree. Machine: Apple M1 Pro (MacBook Pro), macOS 26.5.2,
+Xcode 26.6, Swift 6.3.3, release build. Same fixture as 0.1.0; the connection
+bench uses the test schema's `notes` connection on a character, with 42
+synthetic pages of 50 notes.
+
+The earlier numbers, same code paths, same day: ingest 2.53 ms (2.16 in
+0.3.0), commit into an empty store 1.34 ms (1.44), same payload again 184 µs
+(164), one field changed 372 µs (331), untracked read 28.5 ns (26), tracked
+read 552 ns (542), availability check 127 µs (104), a layer applied and
+reverted 43 µs (41), the full optimistic cycle 414 µs (375). The untracked
+read moved on unchanged code, so part of the drift is the day; the rest is
+real and small: every field record now carries a handle reference and every
+linked field a connection reference, the ingest keeps a second scratch list
+per object for the connection links, and the check skips deleted records.
+Two larger regressions were found by this bench and fixed before the tag: an
+inline `ConnectionSlots` in the resolved field had the ingest copying 250
+bytes per matched key and the check at 231 µs; and records pre-sized to their
+type's slot count cost the scroll bench 1 KB per record once a paginated field
+had registered a key per page on `Character` (+15.8 MB).
+
+### Connections: 42 pages of 50 notes merged into one connection
+
+| Measurement | Best | Median | Notes |
+|---|---|---|---|
+| `loadNext`: recorded transport, ingest off the main actor, merge, per page of 50 edges and nodes | 281 µs | 734 µs | 41 pages, 2,100 nodes, 41 notifications: one per page, on the connection's `edges` slot |
+| `nodes` of the merged connection, 2,100 lenses, untracked | 124 µs | 125 µs | 59 ns per node |
+| `nodes` of the merged connection, inside an observation scope | 1.11 ms | 1.48 ms | one registrar access per edge and per node |
+| Collection after the 41 pagination fetches (no roots of their own) | — | — | 4,289 records before, 4,207 after: the 41 page records and their page infos go, every edge and node stays |
+| Refetch of the first page while 42 are merged | — | — | 50 nodes, one notification |
+
+What it means: a page costs the main actor a merge of two edge lists and one
+notification, whatever the number of pages already merged; reading two
+thousand nodes untracked is a tenth of a millisecond; and pagination fetches
+leave nothing behind but the data, because the connection, not the page, is
+what roots reach.
+
+### Lifetime: 42 pages scrolled through a release buffer of 10, again
+
+Same bench as 0.2.0. Records plateau at 8,982 with 10 roots from page 10 on,
+as before; the footprint since page 1 plateaus between +4.2 MB and +5.0 MB
+across three runs (0.2.0: +6.5 MB), because records now size their values by
+the slots they receive rather than by the type's slot count. Collection pass:
+best 0.24 ms, median 3.8 ms, worst 4.6 ms.
+
 ## 0.3.0 — 2026-10-03
 
 Revision: the 0.3.0 tree. Machine: Apple M1 Pro (MacBook Pro), macOS 26.5.2,

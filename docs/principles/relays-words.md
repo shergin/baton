@@ -62,8 +62,9 @@ See [Honest data](honest-data.md) for how Relay's error directives are used.
 
 ## Spelled today
 
-Nothing is spelled yet. Planned: the v1 directive set is
+Understood by the compiler and honored by the runtime as of 0.4.0:
 `@argumentDefinitions`, `@arguments`, `@connection`, `@refetchable`,
-`@required`, `@catch`, `@alias`, `@defer`, `@appendEdge`, `@prependEdge`,
-`@deleteEdge`, `@deleteRecord`, plus `@include` and `@skip`. This section
-may rot; the rest must not.
+`@alias`, `@appendEdge`, `@prependEdge`, `@appendNode`, `@prependNode`,
+`@deleteEdge`, `@deleteRecord`, `@include`, `@skip`. Parsed and validated by
+Relay's front end but not yet given meaning here: `@required`, `@catch`,
+`@defer`, `@stream` (0.5). This section may rot; the rest must not.
