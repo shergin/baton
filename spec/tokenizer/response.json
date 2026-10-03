@@ -1,0 +1,15 @@
+{"data":{"tokenizer":{
+  "id":"t1",
+  "unknownObject":{"a":[1,{"b":"}]"}],"c":"\"\\","d":{}},
+  "text":"quote \" backslash \\ slash \/ backspace \b formfeed \f newline \n return \r tab \t e-acute \u00e9 control \u0001 pair \ud83d\ude00 raw é end",
+  "strings":["plain",null,"\u00e9t\u00e9","",null],
+  "unknownArray":[[],{},"]",null,true,-1.5e3,"\""],
+  "count":-42,
+  "counts":[0,9007199254740993,-9223372036854775808,9223372036854775807,null],
+  "ratio":-2.5E-3,
+  "ratios":[1e3,0.25,-1.5,9007199254740993,null,-0.0,1E+2],
+  "flag":false,
+  "flags":[true,null,false],
+  "json":{"b":1,"a":[true,null]},
+  "jsons":["text",12345678901234567890,1.50,true,{"k":"v"},[1,2],null]
+}}}

@@ -66,6 +66,7 @@ struct OracleCase: Sendable, CustomTestStringConvertible {
         OracleCase("tests/add-note-n0", fixture("add-note-n0"), TestAddNoteFirst(characterId: "1", text: "First", connections: []), root: .mutation, override: (["addNote.noteEdge.cursor"], .string("c00"))),
         OracleCase("tests/remove-note-n2", fixture("remove-note-n2"), TestRemoveNote(id: "n2", connections: []), root: .mutation, override: (["removeNote.removedNoteId", "removeNote.deleted"], .string("n3"))),
         OracleCase("tests/note-added-1", fixture("note-added-1"), TestNoteAdded(characterId: "1", connections: []), root: .subscription, override: (["noteAdded.noteEdge.node.text"], .string("Edited"))),
+        OracleCase("tokenizer/response", Spec.data("tokenizer/response.json"), TestTokenizerQuery(), override: (["tokenizer.text"], .string("overridden"))),
         OracleCase("tests/note-added-2", fixture("note-added-2"), TestNoteAdded(characterId: "1", connections: []), root: .subscription, override: (["noteAdded.noteEdge.node.text"], .string("Edited"))),
     ]
 }

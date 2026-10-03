@@ -9,7 +9,5 @@
   {"response": "int-above-uint64.json", "error": "IngestError"},
   {"response": "int-fraction.json", "error": "IngestError"},
   {"response": "int-exponent.json", "error": "IngestError"},
-  {"response": "int-list-overflow.json", "error": "IngestError"},
-  {"response": "int-bounds.json", "leaves": {"tokenizer.counts": [-9223372036854775808, 9223372036854775807, 0]}},
-  {"response": "null-in-scalar-lists.json", "leaves": {"tokenizer.strings": ["a", null, "b"], "tokenizer.counts": [null], "tokenizer.ratios": [1.5, null], "tokenizer.flags": [null, true]}}
+  {"response": "int-list-overflow.json", "error": "IngestError"}
 ]
