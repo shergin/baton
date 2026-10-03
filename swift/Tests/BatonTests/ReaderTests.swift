@@ -138,6 +138,17 @@ struct ReaderTests {
         #expect(first.testNotes.anchor.owner !== second.testNotes.anchor.owner)
     }
 
+    @Test("a field error inside a type condition counts for an operation that throws when the record satisfies the condition")
+    func errorInsideATypeCondition() throws {
+        let store = Store()
+        let query = TestThrowingNode(id: "1")
+        let changes = try Ingest.normalize(fixture("throwing-node-1"), plan: TestThrowingNode.plan.resolve(query.variables))
+        store.commit(changes)
+        let anchor = Anchor(record: store.root, variables: query.variables, store: store)
+        #expect(TestThrowingNode.Data.fieldErrors(anchor).map(\.message) == ["name hidden"])
+        #expect(changes.uncaughtFieldErrors.map(\.message) == ["name hidden"], "the fetch fails on the same error")
+    }
+
     @Test("fields named like the module's shared enums get lenses of other names, so a spread with arguments inside them still binds")
     func reservedNames() throws {
         let store = Store()

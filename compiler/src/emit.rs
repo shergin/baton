@@ -840,7 +840,30 @@ impl Emitter {
             "{indent}@MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {{"
         );
         let _ = writeln!(output, "{indent}    var errors: [Baton.FieldError] = []");
-        for member in own_members(members) {
+        for member in members {
+            // A type condition's nested lens: its errors count when the
+            // record satisfies the condition.
+            if let SelectionPlan::Inline {
+                alias: None,
+                type_condition,
+                condition_class,
+                ..
+            } = &member.selection
+            {
+                if let Some((name, _, _, test)) =
+                    self.condition_lens(type_condition, condition_class, member)
+                {
+                    let test = match guard_condition(&member.guards) {
+                        Some(condition) => format!("{condition} && {test}"),
+                        None => test,
+                    };
+                    let _ = writeln!(
+                        output,
+                        "{indent}    if {test} {{ errors.append(contentsOf: As{name}.fieldErrors(anchor)) }}"
+                    );
+                }
+                continue;
+            }
             if !collects_errors(&member.selection) {
                 continue;
             }
@@ -1167,30 +1190,8 @@ impl Emitter {
                         );
                         continue;
                     }
-                    // A type condition some of the parent's types satisfy reads
-                    // as an optional nested lens: on the one type that can, or
-                    // through the abstract type's keys when several can.
-                    let condition_lens = match (type_condition, condition_class) {
-                        (Some(condition), Some(ConditionClass::Concrete(concrete))) => {
-                            self.types.insert(concrete.clone());
-                            Some((
-                                condition.clone(),
-                                concrete.clone(),
-                                false,
-                                format!("anchor.record.is(Types.{concrete})"),
-                            ))
-                        }
-                        (Some(condition), Some(ConditionClass::Set)) => {
-                            let set = self.possible_set(condition, member);
-                            Some((
-                                condition.clone(),
-                                condition.clone(),
-                                true,
-                                format!("Types.{set}.contains(anchor.record.type)"),
-                            ))
-                        }
-                        _ => None,
-                    };
+                    let condition_lens =
+                        self.condition_lens(type_condition, condition_class, member);
                     if let Some(alias) = alias {
                         // `@alias(as:)` on other selections: a nested lens.
                         let nested_name = unique_nested_name(alias, nested);
@@ -1278,6 +1279,39 @@ impl Emitter {
                     unreachable!("members turns conditions into guards")
                 }
             }
+        }
+    }
+
+    /// A type condition some of the parent's types satisfy reads as an
+    /// optional nested lens: on the one type that can, or through the
+    /// abstract type's keys when several can. The condition's name, the
+    /// lens's type and whether it is abstract, and the test of the record.
+    fn condition_lens(
+        &mut self,
+        type_condition: &Option<String>,
+        condition_class: &Option<ConditionClass>,
+        member: &Member,
+    ) -> Option<(String, String, bool, String)> {
+        match (type_condition, condition_class) {
+            (Some(condition), Some(ConditionClass::Concrete(concrete))) => {
+                self.types.insert(concrete.clone());
+                Some((
+                    condition.clone(),
+                    concrete.clone(),
+                    false,
+                    format!("anchor.record.is(Types.{concrete})"),
+                ))
+            }
+            (Some(condition), Some(ConditionClass::Set)) => {
+                let set = self.possible_set(condition, member);
+                Some((
+                    condition.clone(),
+                    condition.clone(),
+                    true,
+                    format!("Types.{set}.contains(anchor.record.type)"),
+                ))
+            }
+            _ => None,
         }
     }
 

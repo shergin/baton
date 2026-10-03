@@ -346,6 +346,134 @@ fragment TestNotes_character_35kO5h on Character {
     }
 }
 
+/// Operation value for `query TestThrowingNode`.
+nonisolated public struct TestThrowingNode: Baton.Operation {
+    public var id: String
+    public var resolution: Baton.OperationHandle<Self>? = nil
+
+    public init(id: String) {
+        self.id = id
+    }
+
+    public static let name = "TestThrowingNode"
+    public static let kind = Baton.OperationKind.query
+    public static let persistedID = "cb1c4a49d7e89fec44f00dc7f3355ad3"
+    public static let throwsOnFieldError = true
+    public static let text = #"""
+query TestThrowingNode(
+  $id: ID!
+) {
+  node(id: $id) {
+    __typename
+    id
+    ... on Character {
+      name
+    }
+  }
+}
+"""#
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["id": Baton.Variable(id)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+
+    public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
+            .linked("node", key: .dynamic(Slots.Query_node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, hasID: true, abstract: true, variants: [
+                .init(types: [Types.Character], fields: [
+                    .scalar("__typename", key: .fixed(Slots.Character___typename), kind: .string, list: false),
+                    .scalar("id", key: .fixed(Slots.Character_id), kind: .string, list: false),
+                    .scalar("name", key: .fixed(Slots.Character_name), kind: .string, list: false),
+                ]),
+                .init(types: nil, fields: [
+                    .scalar("__typename", key: .fixed(Slots.Node___typename), kind: .string, list: false),
+                    .scalar("id", key: .fixed(Slots.Node_id), kind: .string, list: false),
+                ]),
+            ])),
+        ]))
+
+    nonisolated public struct Data: Baton.Lens {
+        public let anchor: Baton.Anchor
+        public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Query"
+        @MainActor public var node: Node? { anchor.linked(anchor.owner.slot(Slots.Query_node_8f7d08)).map(Node.init(anchor:)) }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectErrors(anchor.owner.slot(Slots.Query_node_8f7d08), within: Node.fieldErrors, into: &errors)
+            return errors
+        }
+        /// The lens, or the field errors in it as a thrown `FieldErrors`.
+        @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self {
+            let errors = fieldErrors(anchor)
+            if !errors.isEmpty { throw Baton.FieldErrors(errors) }
+            return Self(anchor: anchor)
+        }
+        /// The lens, or the field errors in it as a `Result`.
+        @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(Baton.FieldErrors(errors))
+        }
+
+        nonisolated public struct Node: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Node"
+            @MainActor public var id: String? { anchor.string(AbstractSlots.Node_id.on(anchor.record.type)) }
+            @MainActor public var asCharacter: AsCharacter? { anchor.record.is(Types.Character) ? AsCharacter(anchor: anchor) : nil }
+            /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+            @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+                var errors: [Baton.FieldError] = []
+                anchor.collectError(AbstractSlots.Node_id.on(anchor.record.type), into: &errors)
+                if anchor.record.is(Types.Character) { errors.append(contentsOf: AsCharacter.fieldErrors(anchor)) }
+                return errors
+            }
+            /// The lens, or the field errors in it as a thrown `FieldErrors`.
+            @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self {
+                let errors = fieldErrors(anchor)
+                if !errors.isEmpty { throw Baton.FieldErrors(errors) }
+                return Self(anchor: anchor)
+            }
+            /// The lens, or the field errors in it as a `Result`.
+            @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+                let errors = fieldErrors(anchor)
+                return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(Baton.FieldErrors(errors))
+            }
+
+            nonisolated public struct AsCharacter: Baton.Lens {
+                public let anchor: Baton.Anchor
+                public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                public static let typeName = "Character"
+                @MainActor public var name: String? { anchor.string(Slots.Character_name) }
+                /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+                @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+                    var errors: [Baton.FieldError] = []
+                    anchor.collectError(Slots.Character_name, into: &errors)
+                    return errors
+                }
+                /// The lens, or the field errors in it as a thrown `FieldErrors`.
+                @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self {
+                    let errors = fieldErrors(anchor)
+                    if !errors.isEmpty { throw Baton.FieldErrors(errors) }
+                    return Self(anchor: anchor)
+                }
+                /// The lens, or the field errors in it as a `Result`.
+                @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+                    let errors = fieldErrors(anchor)
+                    return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(Baton.FieldErrors(errors))
+                }
+            }
+        }
+    }
+}
+
 /// Operation value for `query TestTwoScopes`.
 nonisolated public struct TestTwoScopes: Baton.Operation {
     public var a: String

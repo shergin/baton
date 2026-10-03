@@ -3,7 +3,8 @@ import Baton
 /// The documents behind the reader tests, against the test schema: a root
 /// field and a link `@required` all the way up, a non-null list under
 /// `@catch`, one scope holding two keys with variables and two spreads
-/// with arguments, and fields named like the module's shared enums.
+/// with arguments, fields named like the module's shared enums, and a type
+/// condition in an operation that throws on field errors.
 @MainActor
 struct ReaderDocuments {
     @Query("""
@@ -46,4 +47,11 @@ struct ReaderDocuments {
         }
         """)
     var reservedNames: TestReservedNames
+
+    @Query("""
+        query TestThrowingNode($id: ID!) @throwOnFieldError {
+          node(id: $id) { id ... on Character { name } }
+        }
+        """)
+    var throwingNode: TestThrowingNode
 }

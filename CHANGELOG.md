@@ -145,6 +145,9 @@ are expected and listed without apology.
   record reads one placeholder per type, so the fields below it report
   nothing a second time; a record was allocated per read. A `@catch` on a
   non-null list reports a null as the other readers do.
+- A field error inside a type condition, `... on Character { name }` under
+  an interface, counts for `@throwOnFieldError` and `@catch` when the
+  record is of the type; the lens's error scan skipped the condition.
 - A `@required` link to a record `@deleteRecord` removed is null, as every
   other read of the link is: the lens bubbles, a `THROW` collects the
   error, and an operation that bubbles to its root fails. The lens read a
