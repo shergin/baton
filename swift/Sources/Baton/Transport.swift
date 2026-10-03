@@ -236,7 +236,6 @@ public actor GraphQLTransportWebSocket: SubscriptionTransport {
     private var waitingForAck: [CheckedContinuation<Void, any Error>] = []
     private var receiving: Task<Void, Never>?
     private var subscribers: [String: AsyncThrowingStream<Data, any Error>.Continuation] = [:]
-    private var nextID = 0
 
     public init(url: URL, headers: [String: String] = [:], connectionParams: Variable? = nil, session: URLSession = .shared) {
         self.url = url
@@ -246,25 +245,24 @@ public actor GraphQLTransportWebSocket: SubscriptionTransport {
     }
 
     public nonisolated func subscribe(_ request: Request) -> AsyncThrowingStream<Data, any Error> {
-        AsyncThrowingStream { continuation in
-            let task = Task { await self.start(request, continuation) }
+        // Every stream is a subscription of its own, under its own id: equal
+        // requests must not stand in for one another when one of them ends.
+        let id = UUID().uuidString
+        return AsyncThrowingStream { continuation in
+            let task = Task { await self.start(id, request, continuation) }
             continuation.onTermination = { _ in
                 task.cancel()
-                Task { await self.stop(request) }
+                Task { await self.stop(id) }
             }
         }
     }
 
-    private var identifiers: [ObjectIdentifier: String] = [:]
-    private var requests: [String: Request] = [:]
-
-    private func start(_ request: Request, _ continuation: AsyncThrowingStream<Data, any Error>.Continuation) async {
+    private func start(_ id: String, _ request: Request, _ continuation: AsyncThrowingStream<Data, any Error>.Continuation) async {
         do {
             try await connect()
-            nextID += 1
-            let id = String(nextID)
+            // The stream may have ended while the connection opened.
+            guard !Task.isCancelled else { return }
             subscribers[id] = continuation
-            requests[id] = request
             let payload = "{\"query\":" + Variable.quote(request.text)
                 + ",\"operationName\":" + Variable.quote(request.operationName)
                 + ",\"variables\":" + request.variables.json + "}"
@@ -274,10 +272,11 @@ public actor GraphQLTransportWebSocket: SubscriptionTransport {
         }
     }
 
-    private func stop(_ request: Request) async {
-        guard let id = requests.first(where: { $0.value.operationName == request.operationName && $0.value.variables == request.variables })?.key else { return }
-        subscribers.removeValue(forKey: id)
-        requests.removeValue(forKey: id)
+    /// Completes a subscription whose stream the client stopped reading. One
+    /// the server ended, or that never started, is not listed and owes the
+    /// server nothing.
+    private func stop(_ id: String) async {
+        guard subscribers.removeValue(forKey: id) != nil else { return }
         try? await send("{\"id\":\"\(id)\",\"type\":\"complete\"}")
     }
 
@@ -335,15 +334,11 @@ public actor GraphQLTransportWebSocket: SubscriptionTransport {
         case "error":
             if let id = frame.id {
                 let message = frame.payload.map { String(decoding: $0, as: UTF8.self) } ?? "subscription error"
-                subscribers[id]?.finish(throwing: GraphQLErrors(messages: [message]))
-                subscribers.removeValue(forKey: id)
-                requests.removeValue(forKey: id)
+                subscribers.removeValue(forKey: id)?.finish(throwing: GraphQLErrors(messages: [message]))
             }
         case "complete":
             if let id = frame.id {
-                subscribers[id]?.finish()
-                subscribers.removeValue(forKey: id)
-                requests.removeValue(forKey: id)
+                subscribers.removeValue(forKey: id)?.finish()
             }
         default:
             return
@@ -356,7 +351,6 @@ public actor GraphQLTransportWebSocket: SubscriptionTransport {
         waitingForAck.removeAll()
         for subscriber in subscribers.values { subscriber.finish(throwing: error) }
         subscribers.removeAll()
-        requests.removeAll()
         socket?.cancel(with: .goingAway, reason: nil)
         socket = nil
         acknowledged = false

@@ -349,6 +349,61 @@ struct DeliveryTests {
         #expect(value.subscription == nil)
     }
 
+    @Test("equal subscriptions on one socket are separate: the end of one leaves the other open", .timeLimit(.minutes(1)))
+    func equalSubscriptionsOnOneSocket() async throws {
+        /// What each reader saw, by reader.
+        final class Log: @unchecked Sendable {
+            private let lock = NSLock()
+            private var payloads: [String: [String]] = [:]
+            private var ended: [String] = []
+
+            func add(_ payload: Data, to reader: String) { lock.withLock { payloads[reader, default: []].append(String(decoding: payload, as: UTF8.self)) } }
+            func end(_ reader: String) { lock.withLock { ended.append(reader) } }
+            func payloads(of reader: String) -> [String] { lock.withLock { payloads[reader] ?? [] } }
+            var finished: [String] { lock.withLock { ended } }
+        }
+        func wait(until condition: () -> Bool) async throws {
+            while !condition() { try await Task.sleep(for: .milliseconds(2)) }
+        }
+
+        let server = try SocketServer()
+        let socket = GraphQLTransportWebSocket(url: try await server.start())
+        defer { server.stop() }
+        let value = TestNoteAdded(characterId: "1", connections: [])
+        let request = Request(operationName: TestNoteAdded.name, text: TestNoteAdded.text, persistedID: TestNoteAdded.persistedID, variables: value.variables)
+        let log = Log()
+        let readers = Dictionary(uniqueKeysWithValues: ["first", "second"].map { reader in
+            (reader, Task {
+                for try await payload in socket.subscribe(request) { log.add(payload, to: reader) }
+                log.end(reader)
+            })
+        })
+
+        try await wait { server.count(of: "subscribe") == 2 }
+        #expect(server.offeredProtocols == ["graphql-transport-ws"])
+        let ids = server.ids(of: "subscribe")
+        #expect(Set(ids).count == 2, "each stream subscribes under its own id")
+
+        // The server completes one. The client has nothing to say about the
+        // other: a ping answered after the completion shows it sent no
+        // `complete` of its own.
+        server.send(#"{"id":"\#(ids[0])","type":"complete"}"#)
+        try await wait { log.finished.count == 1 }
+        server.send(#"{"type":"ping"}"#)
+        try await wait { server.count(of: "pong") == 1 }
+        #expect(server.count(of: "complete") == 0)
+
+        // The other still receives.
+        let survivor = try #require(readers.keys.first { !log.finished.contains($0) })
+        server.send(#"{"id":"\#(ids[1])","type":"next","payload":{"data":{"noteAdded":null}}}"#)
+        try await wait { log.payloads(of: survivor) == [#"{"data":{"noteAdded":null}}"#] }
+
+        // Its reader goes away: the client completes that subscription, by its id.
+        readers[survivor]?.cancel()
+        try await wait { server.count(of: "complete") == 1 }
+        #expect(server.ids(of: "complete") == [ids[1]])
+    }
+
     @Test("the multipart parser yields each part's body however the bytes are chunked")
     func multipart() {
         let body = "\r\n---\r\nContent-Type: application/json\r\n\r\n{\"data\":{\"a\":1},\"hasNext\":true}\r\n---\r\nContent-Type: application/json\r\n\r\n{\"incremental\":[],\"hasNext\":false}\r\n-----\r\n"

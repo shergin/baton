@@ -30,6 +30,12 @@ are expected and listed without apology.
   kept its handle for the life of the process. The handle now lists itself
   on `retain()` and leaves on the last `release()`, so `subscription` also
   answers for an owner that is not a view.
+- Fixed: `GraphQLTransportWebSocket` gives every stream a subscription id of
+  its own. It used to look up the subscription to end by operation name and
+  variables, so with two equal subscriptions on one socket the end of one
+  completed the other, which received nothing more and never finished. The
+  transport has its first test over a real socket: the test target runs a
+  `graphql-transport-ws` server on the loopback interface.
 - The Rick and Morty sample's `baton.json` sits beside the sample, like every
   other target's. The package root has none, so a target without its own
   gets the plugin's warning instead of the sample's schema.
