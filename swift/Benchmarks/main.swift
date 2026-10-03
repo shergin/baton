@@ -289,8 +289,8 @@ func run() async throws {
     print("    notifications per step: apply \(applied.fired / rounds(50)), revert \(reverted.fired / rounds(50)), rebase \(rebased.fired / rounds(20)), resolve \(resolved.fired / rounds(20))")
     baseline(Observer())
 
-    print("a mutation's payload: 66 bytes, one record")
     let small = Data(#"{"data":{"rename":{"character":{"id":"1","name":"Rick Prime"}}}}"#.utf8)
+    print("a mutation's payload: \(small.count) bytes, one record")
     let back = try Ingest.normalize(Data(#"{"data":{"rename":{"character":{"id":"1","name":"Rick Sanchez"}}}}"#.utf8), plan: renamePlan, rootKey: Store.mutationRootKey)
     measure("ingest", iterations: 200) {
         _ = try! Ingest.normalize(small, plan: renamePlan, rootKey: Store.mutationRootKey)
@@ -477,8 +477,11 @@ func persistenceBench(changes: ChangeSet, edited: ChangeSet, plan: ResolvedSelec
         await persistence.flush()
         return now() - start
     }
-    let size = ((try? FileManager.default.attributesOfItem(atPath: url.path))?[.size] as? Int) ?? 0
-    print("    file: \(size) bytes for 898 rows and one root field")
+    // The rows sit in the write-ahead log until a checkpoint moves them.
+    let size = ["", "-wal"].reduce(0) { total, suffix in
+        total + (((try? FileManager.default.attributesOfItem(atPath: url.path + suffix))?[.size] as? Int) ?? 0)
+    }
+    print("    file and its log: \(size) bytes for 898 rows and one root field")
 
     let persisted = Store(persistence: persistence)
     persisted.commit(changes)
