@@ -107,30 +107,37 @@ public struct URLSessionTransport: Transport {
     }
 
     public func stream(_ request: Request) -> AsyncThrowingStream<Data, any Error> {
-        AsyncThrowingStream { continuation in
+        let urlRequest = urlRequest(request)
+        let session = session
+        return AsyncThrowingStream { continuation in
             let task = Task {
                 do {
-                    let (bytes, response) = try await session.bytes(for: urlRequest(request))
-                    let http = response as? HTTPURLResponse
-                    if let http, !(200..<300).contains(http.statusCode) {
-                        var body = Data()
-                        for try await byte in bytes { body.append(byte) }
-                        throw TransportError(statusCode: http.statusCode, body: String(decoding: body, as: UTF8.self))
+                    var response: HTTPURLResponse?
+                    var parser: MultipartParser?
+                    var body = Data()
+                    for try await delivery in Deliveries.of(urlRequest, on: session) {
+                        switch delivery {
+                        case .response(let received):
+                            response = received as? HTTPURLResponse
+                            let contentType = response?.value(forHTTPHeaderField: "Content-Type") ?? ""
+                            parser = MultipartParser.boundary(in: contentType).map(MultipartParser.init(boundary:))
+                        case .chunk(let chunk):
+                            guard var reader = parser, let response, (200..<300).contains(response.statusCode) else {
+                                body.append(chunk)
+                                continue
+                            }
+                            for part in reader.push(chunk) { continuation.yield(part) }
+                            parser = reader
+                        }
                     }
-                    let contentType = http?.value(forHTTPHeaderField: "Content-Type") ?? ""
-                    guard let boundary = MultipartParser.boundary(in: contentType) else {
-                        var body = Data()
-                        for try await byte in bytes { body.append(byte) }
+                    if let response, !(200..<300).contains(response.statusCode) {
+                        throw TransportError(statusCode: response.statusCode, body: String(decoding: body, as: UTF8.self))
+                    }
+                    if var reader = parser {
+                        for part in reader.finish() { continuation.yield(part) }
+                    } else {
                         continuation.yield(body)
-                        continuation.finish()
-                        return
                     }
-                    var parser = MultipartParser(boundary: boundary)
-                    for try await byte in bytes {
-                        for part in parser.push(byte) { continuation.yield(part) }
-                        if parser.finished { break }
-                    }
-                    for part in parser.finish() { continuation.yield(part) }
                     continuation.finish()
                 } catch {
                     continuation.finish(throwing: error)
@@ -141,14 +148,63 @@ public struct URLSessionTransport: Transport {
     }
 }
 
-/// Splits a `multipart/mixed` body into the bodies of its parts, byte by
-/// byte, however the bytes are chunked. Each part's headers are dropped; the
-/// body between the header's blank line and the next delimiter is a part.
+/// A data task's response and its body in the chunks the loading system
+/// hands over, from a delegate of the task's own: an async sequence of bytes
+/// would be iterated a byte at a time.
+private final class Deliveries: NSObject, URLSessionDataDelegate, Sendable {
+    enum Delivery: Sendable {
+        case response(URLResponse)
+        case chunk(Data)
+    }
+
+    private let continuation: AsyncThrowingStream<Delivery, any Error>.Continuation
+
+    private init(_ continuation: AsyncThrowingStream<Delivery, any Error>.Continuation) {
+        self.continuation = continuation
+    }
+
+    /// Starts the request; ending the iteration cancels it.
+    static func of(_ request: URLRequest, on session: URLSession) -> AsyncThrowingStream<Delivery, any Error> {
+        let (deliveries, continuation) = AsyncThrowingStream<Delivery, any Error>.makeStream()
+        let task = session.dataTask(with: request)
+        task.delegate = Deliveries(continuation)
+        continuation.onTermination = { _ in task.cancel() }
+        task.resume()
+        return deliveries
+    }
+
+    func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse) async -> URLSession.ResponseDisposition {
+        continuation.yield(.response(response))
+        return .allow
+    }
+
+    func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
+        continuation.yield(.chunk(data))
+    }
+
+    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: (any Error)?) {
+        if let error {
+            continuation.finish(throwing: error)
+        } else {
+            continuation.finish()
+        }
+    }
+}
+
+/// Splits a `multipart/mixed` body into the bodies of its parts, however the
+/// bytes are chunked. Bytes before the first delimiter are a preamble and
+/// are dropped; each part's headers are dropped; the body between the
+/// headers' blank line and the next delimiter is a part. What a delimiter
+/// closes is let go, so the buffer holds one part at most.
 public struct MultipartParser: Sendable {
     private let delimiter: [UInt8]
     private var buffer: [UInt8] = []
+    /// Where the line being read starts.
     private var lineStart = 0
-    private var partStart = 0
+    /// How far the buffer has been searched for a line end.
+    private var scanned = 0
+    /// Whether a delimiter has been read, so the bytes after it are a part.
+    private var inPart = false
     public private(set) var finished = false
 
     public init(boundary: String) {

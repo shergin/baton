@@ -489,4 +489,50 @@ struct DeliveryTests {
         #expect(MultipartParser.boundary(in: "multipart/mixed") == "-")
         #expect(MultipartParser.boundary(in: "application/json") == nil)
     }
+
+    @Test("URLSessionTransport streams each part of a multipart response, answers once otherwise, and fails on an error status with its body", arguments: [
+        ("multipart/mixed; boundary=\"-\"", 200, "\r\n---\r\n\r\n{\"data\":{},\"hasNext\":true}\r\n---\r\n\r\n{\"hasNext\":false}\r\n-----\r\n", ["{\"data\":{},\"hasNext\":true}", "{\"hasNext\":false}"]),
+        ("application/json", 200, "{\"data\":{}}", ["{\"data\":{}}"]),
+        ("application/json", 500, "down for maintenance", []),
+    ])
+    func urlSessionStreams(_ contentType: String, _ status: Int, _ body: String, _ parts: [String]) async throws {
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [ChunkedStub.self]
+        configuration.httpAdditionalHeaders = ["X-Stub-Content-Type": contentType, "X-Stub-Status": String(status), "X-Stub-Body": Data(body.utf8).base64EncodedString()]
+        let transport = URLSessionTransport(url: URL(string: "https://stub.invalid/graphql")!, session: URLSession(configuration: configuration))
+        let request = Request(operationName: "Stub", text: "query Stub { a }", persistedID: "", variables: .none, incremental: true)
+        var received: [String] = []
+        do {
+            for try await part in transport.stream(request) { received.append(String(decoding: part, as: UTF8.self)) }
+            #expect(status == 200)
+        } catch let error as TransportError {
+            #expect(error.statusCode == status)
+            #expect(error.body == body)
+        }
+        #expect(received == parts)
+    }
+}
+
+/// A server that answers with the status, content type and body its request's
+/// headers name (the body in base64, as a header cannot hold a line break),
+/// handed over three bytes at a time.
+final class ChunkedStub: URLProtocol, @unchecked Sendable {
+    override class func canInit(with request: URLRequest) -> Bool { true }
+    override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
+    override func stopLoading() {}
+
+    override func startLoading() {
+        let status = Int(request.value(forHTTPHeaderField: "X-Stub-Status") ?? "") ?? 200
+        let contentType = request.value(forHTTPHeaderField: "X-Stub-Content-Type") ?? "application/json"
+        let body = Data(base64Encoded: request.value(forHTTPHeaderField: "X-Stub-Body") ?? "") ?? Data()
+        let response = HTTPURLResponse(url: request.url!, statusCode: status, httpVersion: "HTTP/1.1", headerFields: ["Content-Type": contentType])!
+        client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+        var offset = 0
+        while offset < body.count {
+            let end = min(offset + 3, body.count)
+            client?.urlProtocol(self, didLoad: body.subdata(in: offset..<end))
+            offset = end
+        }
+        client?.urlProtocolDidFinishLoading(self)
+    }
 }
