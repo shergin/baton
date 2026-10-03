@@ -4,25 +4,15 @@
 
 # Baton 🥖
 
-**Status: 0.6.0.** Reads, writes, lists, errors and persistence run through
-every layer, with tests and benchmarks behind the claims: cached data in the
-first body, one changed field re-rendering one row, memory bounded by a
-release buffer rather than by how far the user scrolls, optimistic responses
-that show at once, rebase under every commit and revert on failure,
-connections that merge their pages in the store and grow by one notification
-per page, field errors stored beside their fields and read through Relay's
-directives, deferred fragments that arrive after the first frame,
-subscriptions, and a store that outlives the process: a launch draws the
-screens it showed last time from disk, before the network answers. The API
-will break freely until 1.0.
+**Relay for SwiftUI and Compose.** A fragment beside every view, one request
+per screen, cached data in the first frame, and a re-render only where a
+field changed.
 
-Relay for SwiftUI and Compose. A view declares the GraphQL fragment it reads,
-beside its body. The compiler aggregates the fragments of a screen into one
-operation, validates everything against the schema at build time, and emits a
-small typed lens per fragment. The runtime normalizes responses into records
-that the UI framework itself observes, so a screen fetches once, renders
-cached data in the first frame, and re-renders only the views whose fields
-changed.
+A view declares the GraphQL fragment it reads, beside its body. The compiler
+aggregates the fragments of a screen into one operation, validates everything
+against the schema at build time, and emits a small typed lens per fragment.
+The runtime normalizes responses into records that the UI framework itself
+observes.
 
 Baton is aligned with Relay, not Apollo: the same directives, the same
 conventions, the same compiler lineage. A team running Relay on the web and
@@ -38,21 +28,6 @@ other native clients is at the end, and at length in
 [`docs/comparison.md`](docs/comparison.md).
 
 ## What it is, and will be
-
-Shipped so far: the compiler over Relay's front end, lens types, the
-observable store, the one-pass ingest, `@Fragment` and `@Query` for SwiftUI,
-lookups, the Rick and Morty sample (0.1.0); retained roots, the release
-buffer, collection, the four fetch policies, invalidation and expiration,
-preload (0.2.0); `@Mutation` as an action value, optimistic layers, abstract
-types, lookups by id across types, the GitHub sample (0.3.0); `@connection`
-with merged pages and `loadNext`, `@refetchable`, fragment arguments,
-`@alias(as:)`, the edge directives (0.4.0); field errors beside their fields,
-`@required`, `@catch`, `@throwOnFieldError` with `@semanticNonNull`,
-`onError`, `@defer` over the incremental formats, subscriptions over
-`graphql-transport-ws` (0.5.0); the store's image on disk through the
-system's SQLite, written behind every commit and read back by the
-availability check, with ages that survive a launch (0.6.0). Still to come:
-tooling and the road to 1.0. The promises:
 
 - **A fragment per view.** GraphQL lives in the Swift file, next to the view
   that reads it, as a full, valid document. A parent passes a child its
@@ -188,27 +163,65 @@ decides what the body may read; the directives decide how data moves
 (`@connection`, `@appendEdge`, `@required`, `@catch`). There is no cache
 policy to configure, no normalizer to teach and no updater function to write,
 so there is nothing a generator has to know that is not in the file in front
-of it. The vocabulary is closed and short ([`docs/terminology.md`](docs/terminology.md))
-and fits in a prompt; the compiler's diagnostics point at the character in
-the GraphQL text that is wrong, which is the feedback a model iterates on
-best. The result is code that is quick to generate, easy to review, and hard
-to get silently wrong.
+of it. The vocabulary is closed and short
+([`docs/terminology.md`](docs/terminology.md)) and fits in a prompt; the
+compiler's diagnostics point at the character in the GraphQL text that is
+wrong, which is the feedback a model iterates on best. The result is code
+that is quick to generate, easy to review, and hard to get silently wrong.
+
+## Status
+
+0.6.0 (Anchor Leg). Reads, writes, lists, errors and persistence run through
+every layer, with tests and benchmarks behind the claims: cached data in the
+first body, one changed field re-rendering one row, memory bounded by a
+release buffer rather than by how far the user scrolls, optimistic responses
+that show at once, rebase under every commit and revert on failure,
+connections that merge their pages in the store and grow by one notification
+per page, field errors stored beside their fields and read through Relay's
+directives, deferred fragments that arrive after the first frame,
+subscriptions, and a store that outlives the process. A launch draws the
+screens it showed last time from disk, before the network answers. The API
+will break freely until 1.0.
+
+- **0.1.0 (Starting Blocks).** The compiler over Relay's front end, lens
+  types, the observable store, the one-pass ingest, `@Fragment` and `@Query`
+  for SwiftUI, lookups, the Rick and Morty sample.
+- **0.2.0 (First Leg).** Retained roots, the release buffer, collection, the
+  four fetch policies, invalidation and expiration, preload.
+- **0.3.0 (Exchange Zone).** `@Mutation` as an action value, optimistic
+  layers, abstract types, lookups by id across types, the GitHub sample.
+- **0.4.0 (Hand-off).** `@connection` with merged pages and `loadNext`,
+  `@refetchable`, fragment arguments, `@alias(as:)`, the edge directives.
+- **0.5.0 (Baton Pass).** Field errors beside their fields, `@required`,
+  `@catch`, `@throwOnFieldError` with `@semanticNonNull`, `onError`, `@defer`
+  over the incremental formats, subscriptions over `graphql-transport-ws`.
+- **0.6.0 (Anchor Leg).** The store's image on disk through the system's
+  SQLite, written behind every commit and read back by the availability
+  check, with ages that survive a launch.
+
+Still to come: tooling and the road to 1.0. Each release is described in
+full in [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Using it
 
 Add the package and the plugin to a target, put `baton.json` with the schema
 path (and lookups) in the target's directory or at the package root, and
-build. The plugin runs `batonc`
-for every Swift file that declares GraphQL and reports schema errors at the
-GraphQL text. To keep the store across launches, give the environment an
-image: `Environment(url: endpoint, persistence: Persistence(name: "Main"))`;
-call `removeAll()` on it at sign-out. `swift run RickAndMorty` opens the
-read-only sample, which keeps its store on disk;
-`GITHUB_TOKEN=$(gh auth token) swift run GitHubTriage` opens the one with
-writes, connections, unions and a 1,800-definition schema; `swift test` runs
-the proofs;
-`swift run -c release BatonBenchmarks` prints the numbers behind
-[`BENCHMARKS.md`](BENCHMARKS.md).
+build. The plugin runs `batonc` for every Swift file that declares GraphQL
+and reports schema errors at the GraphQL text.
+
+To keep the store across launches, give the environment an image:
+`Environment(url: endpoint, persistence: Persistence(name: "Main"))`; call
+`removeAll()` on it at sign-out.
+
+In this repository:
+
+- `swift run RickAndMorty` opens the read-only sample, which keeps its store
+  on disk.
+- `GITHUB_TOKEN=$(gh auth token) swift run GitHubTriage` opens the one with
+  writes, connections, unions and a 1,800-definition schema.
+- `swift test` runs the proofs.
+- `swift run -c release BatonBenchmarks` prints the numbers behind
+  [`BENCHMARKS.md`](BENCHMARKS.md).
 
 Requires the 26 releases of Apple's platforms and Swift 6.2 tools. The
 compiler binary is built from `compiler/` with `scripts/build-compiler.sh`
