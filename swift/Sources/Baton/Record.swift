@@ -2,7 +2,7 @@ import Observation
 
 /// One normalized object in the store, and the observable the UI framework
 /// tracks. A view body that reads a slot is invalidated when that slot of this
-/// record changes, through one of sixteen invalidation channels.
+/// record changes, through that slot's own invalidation channel.
 @MainActor
 public final class Record: Observable {
     nonisolated public let type: TypeID
@@ -58,7 +58,7 @@ public final class Record: Observable {
     /// Reads a slot and registers the read with the current tracking scope.
     @inline(__always)
     public func read(_ slot: Slot) -> Value {
-        registrar.access(self, keyPath: Record.channels[Int(slot.index) & 15])
+        registrar.access(self, keyPath: Record.channel(slot.index))
         let index = Int(slot.index)
         return index < values.count ? values[index] : .missing
     }
@@ -86,7 +86,7 @@ public final class Record: Observable {
             values.append(contentsOf: repeatElement(.missing, count: index + 1 - values.count))
         }
         if values[index] == value { return false }
-        registrar.withMutation(of: self, keyPath: Record.channels[index & 15]) {
+        registrar.withMutation(of: self, keyPath: Record.channel(Int32(index))) {
             values[index] = value
         }
         return true
@@ -110,12 +110,12 @@ public final class Record: Observable {
 
     /// Notifies observers of a slot whose value a batch has already changed.
     func notify(_ slot: Slot) {
-        registrar.withMutation(of: self, keyPath: Record.channels[Int(slot.index) & 15]) {}
+        registrar.withMutation(of: self, keyPath: Record.channel(slot.index)) {}
     }
 
     /// The field error stored beside a slot, registering the read.
     public func error(_ slot: Slot) -> FieldError? {
-        registrar.access(self, keyPath: Record.channels[Int(slot.index) & 15])
+        registrar.access(self, keyPath: Record.channel(slot.index))
         return errors?[slot.index]
     }
 
@@ -149,9 +149,9 @@ public final class Record: Observable {
         for index in values.indices {
             switch values[index] {
             case .ref(let target) where isTarget(target):
-                registrar.withMutation(of: self, keyPath: Record.channels[index & 15]) {}
+                registrar.withMutation(of: self, keyPath: Record.channel(Int32(index))) {}
             case .refs(let list) where list.contains(where: { $0.map(isTarget) ?? false }):
-                registrar.withMutation(of: self, keyPath: Record.channels[index & 15]) {}
+                registrar.withMutation(of: self, keyPath: Record.channel(Int32(index))) {}
             default:
                 continue
             }
@@ -233,29 +233,33 @@ public final class Record: Observable {
         }
     }
 
-    // The channels. Each body is distinct on purpose: identical getters are
-    // merged by the optimizer and their key paths then collide in the registrar.
-    nonisolated var ch0: UInt8 { 0 }
-    nonisolated var ch1: UInt8 { 1 }
-    nonisolated var ch2: UInt8 { 2 }
-    nonisolated var ch3: UInt8 { 3 }
-    nonisolated var ch4: UInt8 { 4 }
-    nonisolated var ch5: UInt8 { 5 }
-    nonisolated var ch6: UInt8 { 6 }
-    nonisolated var ch7: UInt8 { 7 }
-    nonisolated var ch8: UInt8 { 8 }
-    nonisolated var ch9: UInt8 { 9 }
-    nonisolated var ch10: UInt8 { 10 }
-    nonisolated var ch11: UInt8 { 11 }
-    nonisolated var ch12: UInt8 { 12 }
-    nonisolated var ch13: UInt8 { 13 }
-    nonisolated var ch14: UInt8 { 14 }
-    nonisolated var ch15: UInt8 { 15 }
+    // The channels: one key path per slot index, through one subscript.
+    // Observation tells key paths apart by the getter they reach, and the
+    // optimizer merges getters with identical bodies, so no other getter of
+    // the type that a key path reaches may have this body.
+    nonisolated subscript(channel index: Int32) -> UInt8 { UInt8(truncatingIfNeeded: index) }
 
-    nonisolated(unsafe) static let channels: [KeyPath<Record, UInt8>] = [
-        \.ch0, \.ch1, \.ch2, \.ch3, \.ch4, \.ch5, \.ch6, \.ch7,
-        \.ch8, \.ch9, \.ch10, \.ch11, \.ch12, \.ch13, \.ch14, \.ch15,
-    ]
+    /// The channel of each slot index, made on first use. Isolated to the
+    /// main actor, so no two accesses overlap and the dynamic exclusivity
+    /// check every read would pay is left out.
+    @exclusivity(unchecked)
+    private static var channels: ContiguousArray<KeyPath<Record, UInt8>> = []
+
+    /// The invalidation channel of a slot: a read registers on it, and only
+    /// a change of that slot notifies it.
+    @inline(__always)
+    static func channel(_ index: Int32) -> KeyPath<Record, UInt8> {
+        let position = Int(index)
+        if position < channels.count { return channels[position] }
+        return makeChannels(through: position)
+    }
+
+    private static func makeChannels(through position: Int) -> KeyPath<Record, UInt8> {
+        while channels.count <= position {
+            channels.append(\Record.[channel: Int32(channels.count)])
+        }
+        return channels[position]
+    }
 }
 
 /// A record's identity, for list diffing. Stable for the record's lifetime.

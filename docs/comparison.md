@@ -185,9 +185,9 @@ to the first.
 
 The ingest writes those slots from the response bytes in one pass, off the
 main actor. A commit on the main actor swaps the records that changed and
-notifies the channels of the slots that changed. A record has sixteen
-channels, so two fields of a busy record can share one and a view can wake
-for a sibling field. The measured case is the one that matters for a list:
+notifies the channels of the slots that changed. Each slot of a record is
+its own channel, so a view wakes only for a field it read. The measured case
+is the one that matters for a list:
 twenty observed rows, one changed field, and that row is the one invalidated.
 An equal value is not a change, so a refetch of an unchanged payload notifies
 nothing: 187 µs at 0.5.0. The view's first body reads whatever the store

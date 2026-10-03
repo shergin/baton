@@ -67,7 +67,8 @@ what a commit must preserve.
 
 ## Spelled today
 
-Nothing is spelled yet. Planned: `Record` as the observable object, a fixed
-pool of static key-path channels per record, `Store.commit(_ changes:)` on the
-main actor, an `Ingest` actor, `Environment` holding both. This section may
+`Record` is the observable object, with one invalidation channel per slot:
+a key path through one subscript, made on first use and shared by every
+record. `Store.commit(_ changes:)` runs on the main actor; `Ingest` decodes
+off it, in the fetch's own task; `Environment` holds both. This section may
 rot; the rest must not.

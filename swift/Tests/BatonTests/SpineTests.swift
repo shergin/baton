@@ -117,16 +117,10 @@ struct SpineTests {
             store.commit(try Ingest.normalize(Data(edited.utf8), plan: TestList.plan.resolve(variables)))
         }
 
-        // Which slots share an invalidation channel depends on the order the
-        // process first touched their constants, so the first half runs only
-        // when the two fields are on different channels.
         track()
-        let character = Registry.type("Character")
-        if Registry.slot(character, "name").index & 15 != Registry.slot(character, "status").index & 15 {
-            try commit(#""name":"Morty Smith","status":"Alive""#, #""name":"Morty Smith","status":"Dead""#)
-            #expect(counter.fired == 0, "the status changed, which the body did not read")
-            #expect(morty.status == "Dead")
-        }
+        try commit(#""name":"Morty Smith","status":"Alive""#, #""name":"Morty Smith","status":"Dead""#)
+        #expect(counter.fired == 0, "the status changed, which the body did not read")
+        #expect(morty.status == "Dead")
         try commit(#""name":"Morty Smith""#, #""name":"Morty C-137""#)
         #expect(counter.fired == 1, "the name changed")
     }

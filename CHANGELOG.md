@@ -115,6 +115,12 @@ are expected and listed without apology.
   row with a name id past any table, a link that names no type, or lists
   nested in lists trapped or recursed without bound. Such a row is used as
   far as it reads.
+- Each slot is its own invalidation channel. A record had sixteen, so a
+  body woke for a change to a field sixteen slots from one it read; on the
+  query root, where each field with arguments is a slot, a screen woke for
+  root fields other screens fetched (four wakes of an unrelated root-field
+  reader in the bench, now none). A tracked read costs about 620 ns against
+  560 on an M1 Pro; an untracked read is unchanged at 29 ns.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

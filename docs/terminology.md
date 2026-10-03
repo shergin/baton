@@ -122,6 +122,12 @@ nothing. Resolving keys with variables, and fields read through an interface
 or union, once rather than on every read is *(planned)*. See
 [Slots are numbered by the process](decisions/slots-are-numbered-by-the-process.md).
 
+**Invalidation channel.** Baton's word; Relay tells a fragment's subscribers
+when a record it read changes. Here: the Observation key path a read of a
+slot registers on and only a change of that slot notifies, one per slot
+index and shared by every record, so a body is invalidated by a change to a
+field it read of a record it read, and by nothing else.
+
 **Store.** Relay's word. All records, retained roots and lifetime state;
 owned by the main actor; read synchronously; written by atomic commits. See
 [The store is the UI's state](principles/store-is-the-ui-state.md).
