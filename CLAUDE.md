@@ -26,6 +26,14 @@ the vocabulary is `docs/terminology.md`. These files outrank any default.
   evidence; when evidence arrives, supersede the record rather than editing
   its history.
 
+## Tests
+
+- Production code comes first; tests serve it and come second.
+- Only Opus-tier models write or update tests; Fable does not. Fable's part
+  in testing is conceptual and strategic: what to prove and why. When Fable
+  runs the main context, it hands writing and updating tests to an
+  Opus-based subagent.
+
 ## Git
 
 - One meaningful change per commit; imperative subject under about fifty
