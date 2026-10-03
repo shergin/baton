@@ -489,6 +489,24 @@ fn root_names(
             ));
             continue;
         }
+        // Under an interface or union a record's type is the payload's
+        // `__typename`, which would name the schema's type, not the store's.
+        let abstract_member = match root {
+            Type::Object(id) => {
+                !schema.object(id).interfaces.is_empty()
+                    || schema.unions().any(|union| union.members.contains(&id))
+            }
+            _ => false,
+        };
+        if abstract_member {
+            errors.push(Diagnostic::error(
+                format!(
+                    "the {kind} type `{name}` implements an interface or belongs to a union: the store types its {kind} root `{store_name}`, which a payload's `__typename` would not name"
+                ),
+                location,
+            ));
+            continue;
+        }
         names.insert(name, store_name.to_string());
     }
     if errors.is_empty() {

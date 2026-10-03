@@ -127,7 +127,8 @@ are expected and listed without apology.
   root record is a `__Root` in any schema. Before, the root fields' slots
   belonged to the schema's type and were written into a record of another.
   A schema that renames a root and also has a type of that root's store
-  name is an error. `Store(rootType:mutationType:subscriptionType:)` is
+  name, or whose renamed root implements an interface or belongs to a
+  union, is an error. `Store(rootType:mutationType:subscriptionType:)` is
   removed.
 - Reads never write. A lens read of a root field that was never fetched
   resolved its lookup and wrote the link, notifying, inside the body that

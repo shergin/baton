@@ -131,9 +131,10 @@ fn an_interface_whose_implementers_have_ids_is_keyed_by_id_though_it_declares_no
 }
 
 const RENAMED_ROOTS: &str = "
-schema { query: QueryRoot, mutation: mutation_root }
+schema { query: QueryRoot, mutation: mutation_root, subscription: subscription_root }
 type QueryRoot { character(id: ID!): Character }
 type mutation_root { rename(id: ID!, name: String!): Character }
+type subscription_root { renamed(id: ID!): Character }
 type Character { id: ID! name: String }
 ";
 
@@ -145,6 +146,7 @@ fn a_root_type_the_schema_names_otherwise_is_interned_by_the_store_root_name() {
         &[
             document("query Probe { character(id: \"1\") { name } }"),
             document("mutation Rename { rename(id: \"1\", name: \"a\") { name } }"),
+            document("subscription Renamed { renamed(id: \"1\") { name } }"),
         ],
         &Config::default(),
     )
@@ -152,6 +154,9 @@ fn a_root_type_the_schema_names_otherwise_is_interned_by_the_store_root_name() {
     let shared = crate::emit::emit(&compiled.plan).shared;
     assert!(shared.contains("static let QueryRoot = Baton.Registry.type(\"Query\")"));
     assert!(shared.contains("static let mutation_root = Baton.Registry.type(\"Mutation\")"));
+    assert!(
+        shared.contains("static let subscription_root = Baton.Registry.type(\"Subscription\")")
+    );
     assert!(shared.contains("static let Character = Baton.Registry.type(\"Character\")"));
 }
 
@@ -198,4 +203,31 @@ fn defer_in_a_mutation_or_a_subscription_is_an_error() {
             "`@defer` in the subscription `Probe`: its response arrives in one part, so nothing can be deferred"
         ]
     );
+}
+
+#[test]
+fn a_root_named_otherwise_that_an_interface_or_union_reaches_is_an_error() {
+    for extension in [
+        "interface Thing { id: ID }\nextend type QueryRoot implements Thing { id: ID }",
+        "union Anything = QueryRoot | Character",
+    ] {
+        let sdl = format!("{RENAMED_ROOTS}\n{extension}\n");
+        let Err(errors) = compile(
+            &sdl,
+            "schema.graphql",
+            &[document("query Probe { character(id: \"1\") { name } }")],
+            &Config::default(),
+        ) else {
+            panic!("the schema compiled with {extension}");
+        };
+        assert_eq!(
+            errors
+                .iter()
+                .map(|error| error.message().to_string())
+                .collect::<Vec<_>>(),
+            vec![
+                "the query type `QueryRoot` implements an interface or belongs to a union: the store types its query root `Query`, which a payload's `__typename` would not name"
+            ]
+        );
+    }
 }
