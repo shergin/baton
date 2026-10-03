@@ -8,9 +8,11 @@ use std::path::{Path, PathBuf};
 pub struct Lookup {
     /// `Type.field`, e.g. `Query.character`.
     pub field: String,
-    /// The entity type the field returns, e.g. `Character`.
-    #[serde(rename = "type")]
-    pub type_name: String,
+    /// The entity type the field returns, e.g. `Character`. Omitted for fields
+    /// that return an interface such as `Node`: the entity is then found by id
+    /// across types.
+    #[serde(rename = "type", default)]
+    pub type_name: Option<String>,
     /// The argument that carries the entity's key, e.g. `id`.
     pub argument: String,
 }

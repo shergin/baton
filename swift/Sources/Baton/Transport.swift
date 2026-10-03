@@ -30,6 +30,12 @@ public protocol Transport: Sendable {
 public struct TransportError: Error, CustomStringConvertible, Sendable {
     public let statusCode: Int
     public let body: String
+
+    public init(statusCode: Int, body: String) {
+        self.statusCode = statusCode
+        self.body = body
+    }
+
     public var description: String { "HTTP \(statusCode): \(body.prefix(200))" }
 }
 

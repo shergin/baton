@@ -134,6 +134,34 @@ extension Anchor {
     }
 }
 
+/// Readers by storage key, for selections on interfaces and unions: the slot is
+/// resolved against the record's concrete type.
+@MainActor
+extension Anchor {
+    @inline(__always) private func slot(_ key: String) -> Slot { Registry.slot(record.type, key) }
+
+    public func string(key: String) -> String? { string(slot(key)) }
+    public func requiredString(key: String) -> String { requiredString(slot(key)) }
+    public func int(key: String) -> Int? { int(slot(key)) }
+    public func requiredInt(key: String) -> Int { requiredInt(slot(key)) }
+    public func double(key: String) -> Double? { double(slot(key)) }
+    public func requiredDouble(key: String) -> Double { requiredDouble(slot(key)) }
+    public func bool(key: String) -> Bool? { bool(slot(key)) }
+    public func requiredBool(key: String) -> Bool { requiredBool(slot(key)) }
+    public func strings(key: String) -> [String]? { strings(slot(key)) }
+    public func requiredStrings(key: String) -> [String] { requiredStrings(slot(key)) }
+    public func ints(key: String) -> [Int]? { ints(slot(key)) }
+    public func requiredInts(key: String) -> [Int] { requiredInts(slot(key)) }
+    public func doubles(key: String) -> [Double]? { doubles(slot(key)) }
+    public func requiredDoubles(key: String) -> [Double] { requiredDoubles(slot(key)) }
+    public func bools(key: String) -> [Bool]? { bools(slot(key)) }
+    public func requiredBools(key: String) -> [Bool] { requiredBools(slot(key)) }
+    public func linked(key: String, lookup: Lookup? = nil) -> Anchor? { linked(slot(key), lookup: lookup) }
+    public func requiredLinked(key: String, type: TypeID, lookup: Lookup? = nil) -> Anchor { requiredLinked(slot(key), type: type, lookup: lookup) }
+    public func list<Element: Lens>(key: String) -> List<Element>? { list(slot(key)) }
+    public func requiredList<Element: Lens>(key: String) -> List<Element> { requiredList(slot(key)) }
+}
+
 /// A plural link: lenses over the linked records, in order. Null elements are
 /// dropped; `@required` semantics for list items arrive with 0.5.
 public struct List<Element: Lens>: RandomAccessCollection, @unchecked Sendable {

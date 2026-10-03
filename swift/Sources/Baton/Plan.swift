@@ -1,3 +1,5 @@
+import Synchronization
+
 /// An operation's normalization plan, emitted by the compiler as static data:
 /// what the response contains and where each value is stored.
 public struct Plan: Sendable {
@@ -29,17 +31,19 @@ public enum StorageKey: Sendable {
 }
 
 /// A root field that returns an entity by one of its arguments. When the link
-/// is missing from the store, the entity `Type:key` satisfies it.
+/// is missing from the store, the entity satisfies it: `Type:key` when the
+/// type is known, or the record with that id across types when it is not
+/// (`node(id:)`).
 public struct Lookup: Sendable {
     public enum Key: Sendable {
         case variable(String)
         case literal(String)
     }
 
-    public let type: TypeID
+    public let type: TypeID?
     public let key: Key
 
-    public init(type: TypeID, key: Key) {
+    public init(type: TypeID?, key: Key) {
         self.type = type
         self.key = key
     }
@@ -64,15 +68,19 @@ public struct PlanField: Sendable {
     }
 }
 
-/// A selection set on one type.
+/// A selection set on one type. When the type is an interface or union, the
+/// payload's `__typename` decides the record's concrete type, and slots are
+/// resolved against that type.
 public final class Selection: Sendable {
     public let type: TypeID
     public let hasID: Bool
+    public let isAbstract: Bool
     public let fields: [PlanField]
 
-    public init(type: TypeID, hasID: Bool, fields: [PlanField]) {
+    public init(type: TypeID, hasID: Bool, abstract: Bool = false, fields: [PlanField]) {
         self.type = type
         self.hasID = hasID
+        isAbstract = abstract
         self.fields = fields
     }
 
@@ -80,16 +88,21 @@ public final class Selection: Sendable {
         ResolvedSelection(
             type: type,
             hasID: hasID,
+            isAbstract: isAbstract,
             fields: fields.map { field in
-                let slot: Slot = switch field.key {
-                case .fixed(let slot): slot
+                let storageKey: String = switch field.key {
+                case .fixed(let slot): slot.storageKey
                 case .dynamic(let parts):
-                    Registry.slot(type, parts.map { part in
+                    parts.map { part in
                         switch part {
                         case .literal(let text): text
                         case .variable(let name): variables.render(name)
                         }
-                    }.joined())
+                    }.joined()
+                }
+                let slot: Slot = switch field.key {
+                case .fixed(let slot): slot
+                case .dynamic: Registry.slot(type, storageKey)
                 }
                 let kind: ResolvedField.Kind = switch field.kind {
                 case .scalar(let scalar, let list): .scalar(scalar, list: list)
@@ -102,44 +115,78 @@ public final class Selection: Sendable {
                             case .variable(let name): variables.keyText(name)
                             case .literal(let text): text
                             }
-                            return (lookup.type, lookup.type.name + ":" + value)
+                            return LookupKey(type: lookup.type, value: value)
                         }
                     )
                 }
-                return ResolvedField(responseKey: field.responseKey, slot: slot, kind: kind)
+                return ResolvedField(responseKey: field.responseKey, storageKey: storageKey, slot: slot, kind: kind)
             }
         )
     }
+}
+
+/// A bound lookup: the record key `Type:value`, or the id alone across types.
+public struct LookupKey: Sendable {
+    public let type: TypeID?
+    public let value: String
+
+    var recordKey: String? { type.map { $0.name + ":" + value } }
 }
 
 /// A plan with variables bound: slots instead of keys, byte keys for matching.
 public final class ResolvedSelection: Sendable {
     public let type: TypeID
     public let hasID: Bool
+    public let isAbstract: Bool
     public let fields: [ResolvedField]
+    private let concreteSlots = Mutex<[TypeID: [Slot]]>([:])
 
-    init(type: TypeID, hasID: Bool, fields: [ResolvedField]) {
+    init(type: TypeID, hasID: Bool, isAbstract: Bool, fields: [ResolvedField]) {
         self.type = type
         self.hasID = hasID
+        self.isAbstract = isAbstract
         self.fields = fields
+    }
+
+    /// The slots of this selection's fields on a concrete type, for selections
+    /// on interfaces and unions. Cached per type.
+    func slots(for concrete: TypeID) -> [Slot] {
+        concreteSlots.withLock { cache in
+            if let slots = cache[concrete] { return slots }
+            let slots = fields.map { Registry.slot(concrete, $0.storageKey) }
+            cache[concrete] = slots
+            return slots
+        }
+    }
+
+    /// The slot of a field on a record, honoring abstract selections.
+    @inline(__always)
+    func slot(of index: Int, on type: TypeID) -> Slot {
+        isAbstract ? slots(for: type)[index] : fields[index].slot
     }
 }
 
 public struct ResolvedField: Sendable {
     public enum Kind: Sendable {
         case scalar(ScalarKind, list: Bool)
-        case linked(ResolvedSelection, plural: Bool, lookupKey: (TypeID, String)?)
+        case linked(ResolvedSelection, plural: Bool, lookupKey: LookupKey?)
     }
 
     public let responseKey: String
     let keyBytes: [UInt8]
+    public let storageKey: String
+    /// The slot on the selection's declared type; abstract selections resolve
+    /// per concrete type instead.
     public let slot: Slot
     public let kind: Kind
+    let isTypename: Bool
 
-    init(responseKey: String, slot: Slot, kind: Kind) {
+    init(responseKey: String, storageKey: String, slot: Slot, kind: Kind) {
         self.responseKey = responseKey
         keyBytes = Array(responseKey.utf8)
+        self.storageKey = storageKey
         self.slot = slot
         self.kind = kind
+        isTypename = responseKey == "__typename"
     }
 }

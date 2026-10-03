@@ -249,16 +249,13 @@ fn check_property_types(documents: &[Document], plan: &pipeline::Plan) -> Vec<Re
                 .find(|name| document.text.contains(name)),
         };
         let Some(expected) = expected else { continue };
-        let written = property
-            .type_name
-            .trim_end_matches('?')
-            .rsplit('.')
-            .next()
-            .unwrap_or("");
+        // Module-qualified spellings are accepted: `App.Foo` names `Foo`.
+        let written = property.type_name.trim_end_matches('?');
+        let names = |name: &str| written == name || written.ends_with(&format!(".{name}"));
         let matches = match embedded.marker {
-            Marker::Fragment | Marker::Query => written == expected,
+            Marker::Fragment | Marker::Query => names(expected),
             Marker::Mutation | Marker::Subscription => {
-                written == expected || written == format!("{expected}.Action")
+                names(expected) || names(&format!("{expected}.Action"))
             }
         };
         if !matches {

@@ -94,8 +94,11 @@ public enum Ingest {
         let count: Int
         var position = 0
         var changes: ChangeSet
-        var scratch: [ContiguousArray<(Slot, ChangeSet.RawValue)>] = (0..<24).map { _ in
-            var array = ContiguousArray<(Slot, ChangeSet.RawValue)>()
+        /// One scratch buffer per nesting depth: (field index, value). Slots are
+        /// resolved when the object ends, because abstract selections resolve
+        /// them against the concrete type the payload names.
+        var scratch: [ContiguousArray<(Int, ChangeSet.RawValue)>] = (0..<24).map { _ in
+            var array = ContiguousArray<(Int, ChangeSet.RawValue)>()
             array.reserveCapacity(32)
             return array
         }
@@ -139,11 +142,17 @@ public enum Ingest {
         }
 
         /// Parses one object against a selection; appends its entries; returns its record.
+        ///
+        /// Entities are keyed `Type:id`. For a selection on an interface or union
+        /// the type is the payload's `__typename` (the compiler puts it first), and
+        /// the slots are resolved against that concrete type when the object ends.
         mutating func object(plan: ResolvedSelection, parent: Int32, slot: Slot?, listIndex: Int?, depth: Int, fixedRecord: Int32?) throws -> Int32 {
             try expect(0x7B)
             guard depth < scratch.count else { throw IngestError(offset: position, message: "selection nested deeper than 24 levels") }
             scratch[depth].removeAll(keepingCapacity: true)
             var record: Int32 = fixedRecord ?? -1
+            var concreteType = plan.type
+            var pendingID: (Int, Int, Bool)? = nil
             var expected = 0
             let fields = plan.fields
             let fieldCount = fields.count
@@ -172,11 +181,24 @@ public enum Ingest {
                 guard matched >= 0 else { try skipValue(); continue }
                 let field = fields[matched]
 
+                if field.isTypename {
+                    // Kept as the record's type, not as a field.
+                    if peek() == 0x6E { try literal("null"); continue }
+                    let (start, end, escaped) = try scanString()
+                    if plan.isAbstract {
+                        concreteType = Registry.type(Ingest.materialize(base: base, start, end, escaped))
+                        if record < 0, let (idStart, idEnd, idEscaped) = pendingID {
+                            record = changes.record(for: concreteType.name + ":" + Ingest.materialize(base: base, idStart, idEnd, idEscaped), type: concreteType)
+                        }
+                    }
+                    continue
+                }
+
                 switch field.kind {
                 case .scalar(let scalar, let list):
                     if peek() == 0x6E {
                         try literal("null")
-                        scratch[depth].append((field.slot, .null))
+                        scratch[depth].append((matched, .null))
                         continue
                     }
                     if list {
@@ -191,22 +213,29 @@ public enum Ingest {
                             changes.scalars.append(try scalarValue(scalar))
                             items += 1
                         }
-                        scratch[depth].append((field.slot, .list(start: start, count: Int32(items))))
+                        scratch[depth].append((matched, .list(start: start, count: Int32(items))))
                         continue
                     }
                     let value = try scalarValue(scalar)
                     if plan.hasID && field.keyBytes.count == 2 && field.keyBytes[0] == 0x69 && field.keyBytes[1] == 0x64,
                        case .string(let start, let end, let escaped) = value, record < 0 {
-                        record = changes.record(for: plan.type.name + ":" + Ingest.materialize(base: base, Int(start), Int(end), escaped), type: plan.type)
+                        if plan.isAbstract && concreteType == plan.type {
+                            // The typename has not arrived; settle when it does, or at the end.
+                            pendingID = (Int(start), Int(end), escaped)
+                        } else {
+                            record = changes.record(for: concreteType.name + ":" + Ingest.materialize(base: base, Int(start), Int(end), escaped), type: concreteType)
+                        }
                     }
-                    scratch[depth].append((field.slot, value))
+                    scratch[depth].append((matched, value))
                 case .linked(let child, let plural, _):
                     if peek() == 0x6E {
                         try literal("null")
-                        scratch[depth].append((field.slot, .null))
+                        scratch[depth].append((matched, .null))
                         continue
                     }
-                    if record < 0 { record = settle(plan: plan, parent: parent, slot: slot, listIndex: listIndex) }
+                    if record < 0 {
+                        record = settle(plan: plan, concreteType: concreteType, pendingID: pendingID, parent: parent, slot: slot, listIndex: listIndex)
+                    }
                     if plural {
                         try expect(0x5B)
                         var collected: [Int32] = []
@@ -222,16 +251,25 @@ public enum Ingest {
                         }
                         let start = Int32(changes.refs.count)
                         changes.refs.append(contentsOf: collected)
-                        scratch[depth].append((field.slot, .refs(start: start, count: Int32(collected.count))))
+                        scratch[depth].append((matched, .refs(start: start, count: Int32(collected.count))))
                     } else {
                         let childRecord = try object(plan: child, parent: record, slot: field.slot, listIndex: nil, depth: depth + 1, fixedRecord: nil)
-                        scratch[depth].append((field.slot, .ref(childRecord)))
+                        scratch[depth].append((matched, .ref(childRecord)))
                     }
                 }
             }
-            if record < 0 { record = settle(plan: plan, parent: parent, slot: slot, listIndex: listIndex) }
-            for (slot, value) in scratch[depth] {
-                changes.entries.append(ChangeSet.Entry(record: record, slot: slot, value: value))
+            if record < 0 {
+                record = settle(plan: plan, concreteType: concreteType, pendingID: pendingID, parent: parent, slot: slot, listIndex: listIndex)
+            }
+            if plan.isAbstract {
+                let slots = plan.slots(for: concreteType)
+                for (index, value) in scratch[depth] {
+                    changes.entries.append(ChangeSet.Entry(record: record, slot: slots[index], value: value))
+                }
+            } else {
+                for (index, value) in scratch[depth] {
+                    changes.entries.append(ChangeSet.Entry(record: record, slot: fields[index].slot, value: value))
+                }
             }
             return record
         }
@@ -243,13 +281,17 @@ public enum Ingest {
             }
         }
 
-        /// A client id from the path, for objects without a key (or a null one).
+        /// The record for an object whose key is not settled yet: an entity key
+        /// when an id was seen, else a client id from the path.
         @inline(__always)
-        mutating func settle(plan: ResolvedSelection, parent: Int32, slot: Slot?, listIndex: Int?) -> Int32 {
+        mutating func settle(plan: ResolvedSelection, concreteType: TypeID, pendingID: (Int, Int, Bool)?, parent: Int32, slot: Slot?, listIndex: Int?) -> Int32 {
+            if let (start, end, escaped) = pendingID {
+                return changes.record(for: concreteType.name + ":" + Ingest.materialize(base: base, start, end, escaped), type: concreteType)
+            }
             let parentKey = changes.recordKeys[Int(parent)]
             let storageKey = slot.map(Registry.storageKey) ?? ""
-            if let listIndex { return changes.record(for: parentKey + ":" + storageKey + ":" + String(listIndex), type: plan.type) }
-            return changes.record(for: parentKey + ":" + storageKey, type: plan.type)
+            if let listIndex { return changes.record(for: parentKey + ":" + storageKey + ":" + String(listIndex), type: concreteType) }
+            return changes.record(for: parentKey + ":" + storageKey, type: concreteType)
         }
 
         mutating func scalarValue(_ scalar: ScalarKind) throws -> ChangeSet.RawValue {

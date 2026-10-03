@@ -256,3 +256,47 @@ public struct OperationStorage<Op: Operation>: DynamicProperty {
         return resolved
     }
 }
+
+/// The in-flight state behind a mutation action, observable by the view.
+@MainActor
+@Observable
+public final class MutationState {
+    public internal(set) var inFlight = 0
+    public init() {}
+}
+
+/// A mutation as a callable value, after SwiftUI's `dismiss` and `openURL`.
+/// The compiler generates `callAsFunction` with one labelled parameter per
+/// variable plus `optimistic:`; this is what it calls.
+public struct MutationAction<Op: Operation>: Sendable {
+    let environment: Environment?
+    let state: MutationState
+
+    /// Whether a commit is running.
+    @MainActor public var isInFlight: Bool { state.inFlight > 0 }
+
+    /// Commits the mutation. An optimistic response shows at once as a layer
+    /// that rebases under every commit until the server answers; on failure
+    /// it is reverted and the error rethrown.
+    @MainActor
+    public func commit(_ operation: Op, optimistic: Variable? = nil) async throws -> Op.Data {
+        let environment = Environment.resolve(environment)
+        state.inFlight += 1
+        defer { state.inFlight -= 1 }
+        return try await environment.mutate(operation, optimistic: optimistic)
+    }
+}
+
+/// What a `@Mutation` property expands to: the environment and the in-flight
+/// state, handed out as an action.
+@MainActor
+public struct MutationStorage<Op: Operation>: DynamicProperty {
+    @SwiftUI.Environment(\.baton) private var environment
+    @State private var state = MutationState()
+
+    public init() {}
+
+    public var action: MutationAction<Op> {
+        MutationAction(environment: environment, state: state)
+    }
+}

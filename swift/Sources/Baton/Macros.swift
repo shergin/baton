@@ -11,9 +11,11 @@ public macro Fragment(_ document: StaticString) = #externalMacro(module: "BatonM
 @attached(peer, names: prefixed(_))
 public macro Query(_ document: StaticString, fetchPolicy: FetchPolicy = .storeAndNetwork) = #externalMacro(module: "BatonMacros", type: "QueryMacro")
 
-/// Marks a mutation. Spike stage: a marker only.
-@attached(peer)
-public macro Mutation(_ document: StaticString) = #externalMacro(module: "BatonMacros", type: "FragmentMacro")
+/// Marks a mutation and carries its GraphQL. The property's type is the
+/// operation's `Action`; calling it commits the mutation.
+@attached(accessor, names: named(get))
+@attached(peer, names: prefixed(_))
+public macro Mutation(_ document: StaticString) = #externalMacro(module: "BatonMacros", type: "MutationMacro")
 
 /// Marks a subscription. Spike stage: a marker only.
 @attached(peer)

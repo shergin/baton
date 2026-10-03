@@ -11,17 +11,26 @@ struct BatonPlugin: BuildToolPlugin {
         return try Self.commands(
             targetName: target.name,
             sources: target.sourceFiles.filter { ["swift", "graphql"].contains($0.url.pathExtension) }.map(\.url),
-            packageDirectory: context.package.directoryURL,
+            configurationDirectories: [target.directoryURL, context.package.directoryURL],
             workDirectory: context.pluginWorkDirectoryURL,
             tool: try context.tool(named: "batonc").url
         )
     }
 
     /// Builds the single `batonc generate` command for a set of sources.
-    static func commands(targetName: String, sources: [URL], packageDirectory: URL, workDirectory: URL, tool: URL) throws -> [Command] {
-        let configurationFile = packageDirectory.appending(path: "baton.json")
+    /// `baton.json` is read from the first directory that has one: the target's
+    /// own, then the package root, so one package can hold targets against
+    /// different schemas.
+    static func commands(targetName: String, sources: [URL], configurationDirectories: [URL], workDirectory: URL, tool: URL) throws -> [Command] {
+        guard let configurationFile = configurationDirectories
+            .map({ $0.appending(path: "baton.json") })
+            .first(where: { FileManager.default.fileExists(atPath: $0.path(percentEncoded: false)) })
+        else {
+            Diagnostics.warning("Baton: no baton.json for \(targetName); skipping")
+            return []
+        }
         let configuration = try Configuration.load(at: configurationFile)
-        let schema = packageDirectory.appending(path: configuration.schema)
+        let schema = configurationFile.deletingLastPathComponent().appending(path: configuration.schema)
         let outputDirectory = workDirectory.appending(path: "Generated")
         let shared = outputDirectory.appending(path: "Baton.baton.swift")
 
@@ -77,7 +86,7 @@ extension BatonPlugin: XcodeBuildToolPlugin {
         try Self.commands(
             targetName: target.displayName,
             sources: target.inputFiles.filter { ["swift", "graphql"].contains($0.url.pathExtension) }.map(\.url),
-            packageDirectory: context.xcodeProject.directoryURL,
+            configurationDirectories: [context.xcodeProject.directoryURL],
             workDirectory: context.pluginWorkDirectoryURL,
             tool: try context.tool(named: "batonc").url
         )

@@ -46,8 +46,26 @@ public final class Record: Observable {
         return true
     }
 
-    /// Whether the record is of the given type. Abstract types arrive with
-    /// type-membership bits in a later release.
+    /// Writes a slot without notifying. Returns the previous value when the
+    /// value changed, `nil` when it was equal. Batches notify at their end.
+    func writeSilently(_ slot: Slot, _ value: Value) -> Value? {
+        let index = Int(slot.index)
+        if index >= values.count {
+            values.append(contentsOf: repeatElement(.missing, count: index + 1 - values.count))
+        }
+        let previous = values[index]
+        if previous == value { return nil }
+        values[index] = value
+        return previous
+    }
+
+    /// Notifies observers of a slot whose value a batch has already changed.
+    func notify(_ slot: Slot) {
+        registrar.withMutation(of: self, keyPath: Record.channels[Int(slot.index) & 15]) {}
+    }
+
+    /// Whether the record is of the given type: its concrete type, from the
+    /// payload's `__typename` for interface- and union-typed fields.
     public func `is`(_ type: TypeID) -> Bool { self.type == type }
 
     /// Forgets every value, silently: the record is leaving the store, and

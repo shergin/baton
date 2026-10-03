@@ -58,6 +58,8 @@ pub struct FragmentPlan {
     /// The file the fragment was declared in.
     pub source: String,
     pub type_condition: String,
+    /// Whether the type condition is an interface or union.
+    pub type_is_abstract: bool,
     pub arguments: Vec<VariablePlan>,
     pub reader: Vec<SelectionPlan>,
 }
@@ -109,7 +111,8 @@ pub enum TypeKind {
 /// so a cached entity can satisfy the field before it was ever fetched.
 #[derive(Debug, Clone, serde::Serialize)]
 pub struct LookupPlan {
-    pub type_name: String,
+    /// `None` resolves by id across types.
+    pub type_name: Option<String>,
     pub argument: String,
 }
 
@@ -136,6 +139,9 @@ pub enum SelectionPlan {
         plural: bool,
         /// Whether the target type defines an `id` field (identity by typename and id).
         has_id: bool,
+        /// Whether the target type is an interface or union: records are then
+        /// keyed and sloted by the payload's `__typename`.
+        is_abstract: bool,
         storage_key: String,
         lookup: Option<LookupPlan>,
         selections: Vec<SelectionPlan>,
@@ -326,6 +332,7 @@ impl Lowering<'_> {
                 .get_type_name(fragment.type_condition)
                 .lookup()
                 .to_string(),
+            type_is_abstract: fragment.type_condition.is_abstract_type(),
             arguments: self.variables(&fragment.variable_definitions),
             reader: self.selections(&fragment.selections, fragment.type_condition),
         }
@@ -347,6 +354,20 @@ impl Lowering<'_> {
                 list: variable.type_.is_list(),
             })
             .collect()
+    }
+
+    /// Whether objects of this type are keyed by `id`: the type has an `id`
+    /// field, or it is abstract and a concrete type behind it has one; the
+    /// payload's `__typename` then names the type to key by.
+    fn type_has_id(&self, type_: Type) -> bool {
+        match type_ {
+            Type::Union(id) => self.schema.union(id).members.iter().any(|member| {
+                self.schema
+                    .named_field(Type::Object(*member), "id".intern())
+                    .is_some()
+            }),
+            _ => self.schema.named_field(type_, "id".intern()).is_some(),
+        }
     }
 
     fn selections(&self, selections: &[Selection], parent_type: Type) -> Vec<SelectionPlan> {
@@ -392,7 +413,8 @@ impl Lowering<'_> {
                         base_kind: self.type_kind(target),
                         non_null: definition.type_.is_non_null(),
                         plural: definition.type_.is_list(),
-                        has_id: self.schema.named_field(target, "id".intern()).is_some(),
+                        has_id: self.type_has_id(target),
+                        is_abstract: target.is_abstract_type(),
                         storage_key: storage_key(name, &field.arguments),
                         lookup,
                         selections: self.selections(&field.selections, target),
@@ -489,9 +511,60 @@ fn storage_key(name: &str, arguments: &[graphql_ir::Argument]) -> String {
     format!("{}({})", name, rendered.join(","))
 }
 
+/// A constant argument as JSON, the way Relay's `formatStorageKey` renders it:
+/// enums as strings, object keys in source order (the IR sorts them).
+fn render_constant(value: &graphql_ir::ConstantValue) -> String {
+    match value {
+        graphql_ir::ConstantValue::Int(int) => int.to_string(),
+        graphql_ir::ConstantValue::Float(float) => float.as_float().to_string(),
+        graphql_ir::ConstantValue::String(string) | graphql_ir::ConstantValue::Enum(string) => {
+            json_string(string.lookup())
+        }
+        graphql_ir::ConstantValue::Boolean(boolean) => boolean.to_string(),
+        graphql_ir::ConstantValue::Null() => "null".to_string(),
+        graphql_ir::ConstantValue::List(items) => {
+            let items: Vec<String> = items.iter().map(render_constant).collect();
+            format!("[{}]", items.join(","))
+        }
+        graphql_ir::ConstantValue::Object(fields) => {
+            let mut sorted: Vec<&graphql_ir::ConstantArgument> = fields.iter().collect();
+            sorted.sort_by_key(|field| field.name.item.0.lookup());
+            let fields: Vec<String> = sorted
+                .iter()
+                .map(|field| {
+                    format!(
+                        "{}:{}",
+                        json_string(field.name.item.0.lookup()),
+                        render_constant(&field.value.item)
+                    )
+                })
+                .collect();
+            format!("{{{}}}", fields.join(","))
+        }
+    }
+}
+
+fn json_string(text: &str) -> String {
+    let mut output = String::with_capacity(text.len() + 2);
+    output.push('"');
+    for character in text.chars() {
+        match character {
+            '"' => output.push_str("\\\""),
+            '\\' => output.push_str("\\\\"),
+            '\n' => output.push_str("\\n"),
+            '\r' => output.push_str("\\r"),
+            '\t' => output.push_str("\\t"),
+            other if (other as u32) < 0x20 => output.push_str(&format!("\\u{:04x}", other as u32)),
+            other => output.push(other),
+        }
+    }
+    output.push('"');
+    output
+}
+
 fn render_value(value: &graphql_ir::Value) -> String {
     match value {
-        graphql_ir::Value::Constant(constant) => format!("{constant:?}"),
+        graphql_ir::Value::Constant(constant) => render_constant(constant),
         graphql_ir::Value::Variable(variable) => format!("${}", variable.name.item.0.lookup()),
         graphql_ir::Value::List(items) => {
             let items: Vec<String> = items.iter().map(render_value).collect();

@@ -79,6 +79,35 @@ public final class Environment {
         store.commit(changes)
     }
 
+    /// Commits a mutation. The optimistic response, if any, is ingested with the
+    /// mutation's own plan and applied as a layer first; the server's payload
+    /// then replaces it in one batch, or the layer is reverted on failure.
+    public func mutate<Op: Operation>(_ operation: Op, optimistic: Variable? = nil) async throws -> Op.Data {
+        let resolved = Op.plan.resolve(operation.variables)
+        var layer: UUID?
+        if let optimistic {
+            let json = Data(("{\"data\":" + optimistic.json + "}").utf8)
+            let changes = try Ingest.normalize(json, plan: resolved, rootKey: Store.mutationRootKey)
+            layer = store.applyOptimistic(changes)
+        }
+        do {
+            let request = Request(operationName: Op.name, text: Op.text, persistedID: Op.persistedID, variables: operation.variables)
+            let data = try await transport.execute(request)
+            let changes = try await Task.detached(priority: .userInitiated) {
+                try Ingest.normalize(data, plan: resolved, rootKey: Store.mutationRootKey)
+            }.value
+            if let layer {
+                store.commit(changes, replacingOptimistic: layer)
+            } else {
+                store.commit(changes)
+            }
+        } catch {
+            if let layer { store.revertOptimistic(layer) }
+            throw error
+        }
+        return Op.Data(anchor: Anchor(record: store.mutationRoot, variables: operation.variables, store: store))
+    }
+
     // MARK: Lifetime
 
     func didRetain(_ handle: any AnyOperationHandle) {
@@ -121,6 +150,12 @@ public final class Environment {
         reachable.reserveCapacity(store.count)
         for handle in handles.values {
             handle.mark(into: &reachable)
+        }
+        // Records an optimistic layer wrote stay until the layer is resolved.
+        for layer in store.optimisticLayers {
+            for key in layer.changes.recordKeys {
+                if let record = store.existing(key) { reachable.insert(ObjectIdentifier(record)) }
+            }
         }
         collections += 1
         return store.sweep(keeping: reachable)

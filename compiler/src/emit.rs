@@ -1,5 +1,6 @@
-//! The Swift emitter: lens types, operation values, plan tables, and the shared
-//! file of interned types and slots. Everything here reads the plan IR only.
+//! The Swift emitter: lens types, operation values, plan tables, mutation
+//! actions with their optimistic builders, and the shared file of interned
+//! types and slots. Everything here reads the plan IR only.
 //!
 //! Output per host file `X.swift` is `X.baton.swift`; the per-target
 //! `Baton.baton.swift` carries `Types` and `Slots`.
@@ -57,6 +58,14 @@ impl SlotRef {
 struct Emitter {
     slots: BTreeSet<SlotRef>,
     types: BTreeSet<String>,
+}
+
+/// A nested lens type still to be written: name, GraphQL type, abstractness, selections.
+struct Nested {
+    name: String,
+    type_name: String,
+    is_abstract: bool,
+    selections: Vec<SelectionPlan>,
 }
 
 pub fn emit(plan: &Plan) -> Output {
@@ -118,10 +127,10 @@ impl Emitter {
             } else {
                 let _ = writeln!(
                     output,
-                    "    static let {} = Baton.Registry.slot(Types.{}, \"{}\")",
+                    "    static let {} = Baton.Registry.slot(Types.{}, {})",
                     slot.identifier(),
                     slot.type_name,
-                    slot.storage_key
+                    swift_literal(&slot.storage_key)
                 );
             }
         }
@@ -140,10 +149,9 @@ impl Emitter {
             &mut output,
             &fragment.name,
             &fragment.type_condition,
-            false,
+            fragment.type_is_abstract,
             &fragment.reader,
             "",
-            true,
         );
         output.push('\n');
         output
@@ -173,15 +181,8 @@ impl Emitter {
             output,
             "    public var resolution: Baton.OperationHandle<Self>? = nil\n"
         );
-        let parameters: Vec<String> = operation
-            .variables
-            .iter()
-            .map(|variable| {
-                let default = if variable.non_null { "" } else { " = nil" };
-                format!("{}: {}{}", variable.name, variable_type(variable), default)
-            })
-            .collect();
-        let _ = writeln!(output, "    public init({}) {{", parameters.join(", "));
+        let parameters = parameter_list(&operation.variables);
+        let _ = writeln!(output, "    public init({parameters}) {{");
         for variable in &operation.variables {
             let _ = writeln!(output, "        self.{0} = {0}", variable.name);
         }
@@ -242,6 +243,7 @@ impl Emitter {
             &mut output,
             &operation.root_type,
             false,
+            false,
             &operation.normalization,
             2,
         );
@@ -255,14 +257,43 @@ impl Emitter {
             false,
             &operation.reader,
             "    ",
-            true,
         );
+
+        if operation.kind == "mutation" {
+            output.push('\n');
+            output.push_str("    public typealias Action = Baton.MutationAction<Self>\n\n");
+            self.optimistic_builder(
+                &mut output,
+                "OptimisticResponse",
+                &operation.normalization,
+                "    ",
+            );
+        }
         output.push_str("}\n\n");
+
+        if operation.kind == "mutation" {
+            let parameters = parameter_list(&operation.variables);
+            let separator = if operation.variables.is_empty() {
+                ""
+            } else {
+                ", "
+            };
+            let arguments: Vec<String> = operation
+                .variables
+                .iter()
+                .map(|variable| format!("{0}: {0}", variable.name))
+                .collect();
+            let _ = writeln!(
+                output,
+                "extension Baton.MutationAction where Op == {name} {{\n    /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.\n    @MainActor @discardableResult\n    public func callAsFunction({parameters}{separator}optimistic: {name}.OptimisticResponse? = nil) async throws -> {name}.Data {{\n        try await commit({name}({args}), optimistic: optimistic?.variable)\n    }}\n}}\n",
+                name = operation.name,
+                args = arguments.join(", ")
+            );
+        }
         output
     }
 
     /// Writes a lens struct for a selection set on `type_name`.
-    #[allow(clippy::too_many_arguments)]
     fn lens_struct(
         &mut self,
         output: &mut String,
@@ -271,11 +302,9 @@ impl Emitter {
         type_is_abstract: bool,
         selections: &[SelectionPlan],
         indent: &str,
-        public: bool,
     ) {
         self.types.insert(type_name.to_string());
-        let visibility = if public { "public " } else { "" };
-        let _ = writeln!(output, "{indent}{visibility}struct {name}: Baton.Lens {{");
+        let _ = writeln!(output, "{indent}public struct {name}: Baton.Lens {{");
         let _ = writeln!(output, "{indent}    public let anchor: Baton.Anchor");
         let _ = writeln!(
             output,
@@ -286,8 +315,8 @@ impl Emitter {
             "{indent}    public static let typeName = \"{type_name}\""
         );
         let inner = format!("{indent}    ");
-        let mut nested: Vec<(String, String, bool, Vec<SelectionPlan>)> = Vec::new();
-        let mut spread_names = spread_accessor_names(selections);
+        let mut nested: Vec<Nested> = Vec::new();
+        let mut spread_names = spread_accessor_names(selections, type_name);
         self.accessors(
             output,
             type_name,
@@ -297,16 +326,15 @@ impl Emitter {
             &mut nested,
             &mut spread_names,
         );
-        for (nested_name, nested_type, nested_abstract, nested_selections) in nested {
+        for child in nested {
             output.push('\n');
             self.lens_struct(
                 output,
-                &nested_name,
-                &nested_type,
-                nested_abstract,
-                &nested_selections,
+                &child.name,
+                &child.type_name,
+                child.is_abstract,
+                &child.selections,
                 &inner,
-                true,
             );
         }
         let _ = writeln!(output, "{indent}}}");
@@ -320,7 +348,7 @@ impl Emitter {
         type_is_abstract: bool,
         selections: &[SelectionPlan],
         indent: &str,
-        nested: &mut Vec<(String, String, bool, Vec<SelectionPlan>)>,
+        nested: &mut Vec<Nested>,
         spread_names: &mut BTreeMap<String, String>,
     ) {
         for selection in selections {
@@ -334,26 +362,26 @@ impl Emitter {
                     storage_key,
                     ..
                 } => {
-                    let slot = self.slot(type_name, storage_key);
+                    if name == "__typename" {
+                        continue;
+                    }
+                    let argument = self.read_argument(type_name, type_is_abstract, storage_key);
                     let property = alias.clone().unwrap_or_else(|| name.clone());
                     let (reader, swift_type) = scalar_reader(*base_kind, *list);
                     if *non_null {
                         let _ = writeln!(
                             output,
-                            "{indent}@MainActor public var {}: {} {{ anchor.required{}({}) }}",
+                            "{indent}@MainActor public var {}: {} {{ anchor.required{}({argument}) }}",
                             escape(&property),
                             swift_type,
-                            capitalize(reader),
-                            slot
+                            capitalize(reader)
                         );
                     } else {
                         let _ = writeln!(
                             output,
-                            "{indent}@MainActor public var {}: {}? {{ anchor.{}({}) }}",
+                            "{indent}@MainActor public var {}: {}? {{ anchor.{reader}({argument}) }}",
                             escape(&property),
-                            swift_type,
-                            reader,
-                            slot
+                            swift_type
                         );
                     }
                 }
@@ -361,18 +389,17 @@ impl Emitter {
                     name,
                     alias,
                     base_type,
-                    base_kind,
                     non_null,
                     plural,
+                    is_abstract,
                     storage_key,
                     lookup,
                     selections: child,
                     ..
                 } => {
-                    let slot = self.slot(type_name, storage_key);
+                    let argument = self.read_argument(type_name, type_is_abstract, storage_key);
                     let property = alias.clone().unwrap_or_else(|| name.clone());
                     let nested_name = unique_nested_name(&property, nested);
-                    let child_abstract = matches!(base_kind, TypeKind::Interface | TypeKind::Union);
                     self.types.insert(base_type.clone());
                     let lookup_argument = lookup
                         .as_ref()
@@ -384,35 +411,35 @@ impl Emitter {
                         if *non_null {
                             let _ = writeln!(
                                 output,
-                                "{indent}@MainActor public var {}: Baton.List<{nested_name}> {{ anchor.requiredList({slot}) }}",
+                                "{indent}@MainActor public var {}: Baton.List<{nested_name}> {{ anchor.requiredList({argument}) }}",
                                 escape(&property)
                             );
                         } else {
                             let _ = writeln!(
                                 output,
-                                "{indent}@MainActor public var {}: Baton.List<{nested_name}>? {{ anchor.list({slot}) }}",
+                                "{indent}@MainActor public var {}: Baton.List<{nested_name}>? {{ anchor.list({argument}) }}",
                                 escape(&property)
                             );
                         }
                     } else if *non_null {
                         let _ = writeln!(
                             output,
-                            "{indent}@MainActor public var {}: {nested_name} {{ {nested_name}(anchor: anchor.requiredLinked({slot}, type: Types.{base_type}{lookup_argument})) }}",
+                            "{indent}@MainActor public var {}: {nested_name} {{ {nested_name}(anchor: anchor.requiredLinked({argument}, type: Types.{base_type}{lookup_argument})) }}",
                             escape(&property)
                         );
                     } else {
                         let _ = writeln!(
                             output,
-                            "{indent}@MainActor public var {}: {nested_name}? {{ anchor.linked({slot}{lookup_argument}).map({nested_name}.init(anchor:)) }}",
+                            "{indent}@MainActor public var {}: {nested_name}? {{ anchor.linked({argument}{lookup_argument}).map({nested_name}.init(anchor:)) }}",
                             escape(&property)
                         );
                     }
-                    nested.push((
-                        nested_name,
-                        base_type.clone(),
-                        child_abstract,
-                        child.clone(),
-                    ));
+                    nested.push(Nested {
+                        name: nested_name,
+                        type_name: base_type.clone(),
+                        is_abstract: *is_abstract,
+                        selections: child.clone(),
+                    });
                 }
                 SelectionPlan::Spread {
                     fragment,
@@ -446,7 +473,12 @@ impl Emitter {
                             output,
                             "{indent}@MainActor public var as{condition}: {nested_name}? {{ anchor.record.is(Types.{condition}) ? {nested_name}(anchor: anchor) : nil }}"
                         );
-                        nested.push((nested_name, condition.clone(), false, child.clone()));
+                        nested.push(Nested {
+                            name: nested_name,
+                            type_name: condition.clone(),
+                            is_abstract: false,
+                            selections: child.clone(),
+                        });
                     }
                     _ => self.accessors(
                         output,
@@ -476,12 +508,41 @@ impl Emitter {
         }
     }
 
+    /// The argument a lens accessor passes: a static slot on a concrete type, or
+    /// a storage key resolved against the record's own type when the selection
+    /// is on an interface or union.
+    fn read_argument(
+        &mut self,
+        type_name: &str,
+        type_is_abstract: bool,
+        storage_key: &str,
+    ) -> String {
+        if type_is_abstract {
+            self.types.insert(type_name.to_string());
+            let slot = SlotRef {
+                type_name: type_name.to_string(),
+                storage_key: storage_key.to_string(),
+            };
+            if slot.is_dynamic() {
+                format!(
+                    "key: {}",
+                    dynamic_key_expression(storage_key, "anchor.variables")
+                )
+            } else {
+                format!("key: {}", swift_literal(storage_key))
+            }
+        } else {
+            self.slot(type_name, storage_key)
+        }
+    }
+
     /// Writes a `Baton.Selection(...)` expression for the normalization plan.
     fn selection_plan(
         &mut self,
         output: &mut String,
         type_name: &str,
         has_id: bool,
+        is_abstract: bool,
         selections: &[SelectionPlan],
         depth: usize,
     ) {
@@ -489,7 +550,7 @@ impl Emitter {
         let pad = "    ".repeat(depth);
         let _ = write!(
             output,
-            "Baton.Selection(type: Types.{type_name}, hasID: {has_id}, fields: ["
+            "Baton.Selection(type: Types.{type_name}, hasID: {has_id}, abstract: {is_abstract}, fields: ["
         );
         let mut any = false;
         for selection in flatten(selections) {
@@ -524,6 +585,7 @@ impl Emitter {
                     base_type,
                     plural,
                     has_id,
+                    is_abstract,
                     storage_key,
                     lookup,
                     selections: child,
@@ -541,7 +603,7 @@ impl Emitter {
                         ".linked(\"{}\", key: {slot}, plural: {plural}{lookup_argument}, selection: ",
                         alias.as_deref().unwrap_or(name)
                     );
-                    self.selection_plan(output, base_type, *has_id, child, depth + 1);
+                    self.selection_plan(output, base_type, *has_id, *is_abstract, child, depth + 1);
                     output.push_str("),");
                 }
                 _ => unreachable!("flatten removes nested kinds"),
@@ -551,6 +613,116 @@ impl Emitter {
             let _ = write!(output, "\n{pad}");
         }
         output.push_str("])");
+    }
+
+    /// Writes the optimistic-response builder tree for a mutation: one struct
+    /// per selection set, every field optional, rendering to JSON.
+    fn optimistic_builder(
+        &mut self,
+        output: &mut String,
+        name: &str,
+        selections: &[SelectionPlan],
+        indent: &str,
+    ) {
+        let _ = writeln!(
+            output,
+            "{indent}/// A partial response to show before the server answers; absent fields leave the store untouched."
+        );
+        let _ = writeln!(output, "{indent}public struct {name}: Sendable {{");
+        let inner = format!("{indent}    ");
+        let flat = flatten(selections);
+        let mut nested: Vec<(String, Vec<SelectionPlan>)> = Vec::new();
+        let mut parameters: Vec<String> = Vec::new();
+        let mut assignments: Vec<String> = Vec::new();
+        let mut renders: Vec<String> = Vec::new();
+        for selection in &flat {
+            match selection {
+                SelectionPlan::Scalar {
+                    name,
+                    alias,
+                    base_kind,
+                    list,
+                    ..
+                } => {
+                    let property = alias.clone().unwrap_or_else(|| name.clone());
+                    let (_, swift_type) = scalar_reader(*base_kind, *list);
+                    let _ = writeln!(
+                        output,
+                        "{inner}public var {}: {swift_type}?",
+                        escape(&property)
+                    );
+                    parameters.push(format!("{}: {swift_type}? = nil", escape(&property)));
+                    assignments.push(format!("self.{0} = {0}", escape(&property)));
+                    renders.push(format!(
+                        "if let {0} {{ fields[\"{1}\"] = Baton.Variable({0}) }}",
+                        escape(&property),
+                        property
+                    ));
+                }
+                SelectionPlan::Linked {
+                    name,
+                    alias,
+                    plural,
+                    selections: child,
+                    ..
+                } => {
+                    let property = alias.clone().unwrap_or_else(|| name.clone());
+                    let mut nested_name = capitalize(&property);
+                    let mut counter = 2;
+                    while nested.iter().any(|(existing, _)| existing == &nested_name) {
+                        nested_name = format!("{}{counter}", capitalize(&property));
+                        counter += 1;
+                    }
+                    let swift_type = if *plural {
+                        format!("[{nested_name}]")
+                    } else {
+                        nested_name.clone()
+                    };
+                    let _ = writeln!(
+                        output,
+                        "{inner}public var {}: {swift_type}?",
+                        escape(&property)
+                    );
+                    parameters.push(format!("{}: {swift_type}? = nil", escape(&property)));
+                    assignments.push(format!("self.{0} = {0}", escape(&property)));
+                    if *plural {
+                        renders.push(format!(
+                            "if let {0} {{ fields[\"{1}\"] = .list({0}.map(\\.variable)) }}",
+                            escape(&property),
+                            property
+                        ));
+                    } else {
+                        renders.push(format!(
+                            "if let {0} {{ fields[\"{1}\"] = {0}.variable }}",
+                            escape(&property),
+                            property
+                        ));
+                    }
+                    nested.push((nested_name, child.clone()));
+                }
+                _ => unreachable!("flatten removes nested kinds"),
+            }
+        }
+        let _ = writeln!(output, "{inner}public init({}) {{", parameters.join(", "));
+        for assignment in &assignments {
+            let _ = writeln!(output, "{inner}    {assignment}");
+        }
+        let _ = writeln!(output, "{inner}}}");
+        let _ = writeln!(output, "{inner}public var variable: Baton.Variable {{");
+        let _ = writeln!(
+            output,
+            "{inner}    var fields: [String: Baton.Variable] = [:]"
+        );
+        for render in &renders {
+            let _ = writeln!(output, "{inner}    {render}");
+        }
+        let _ = writeln!(output, "{inner}    return .object(fields)");
+        let _ = writeln!(output, "{inner}}}");
+        for (nested_name, child) in nested {
+            output.push('\n');
+            self.optimistic_builder(output, &nested_name, &child, &inner);
+        }
+        let _ = writeln!(output, "{indent}}}");
     }
 
     fn slot(&mut self, type_name: &str, storage_key: &str) -> String {
@@ -589,10 +761,19 @@ impl Emitter {
     }
 }
 
-/// Normalization plans are flat: inline fragments on the same type and
-/// conditions are folded into their parent; other inline fragments are kept
-/// as a marker the runtime treats as "match by typename" (0.1.0 folds them too
-/// and notes the limitation).
+fn parameter_list(variables: &[VariablePlan]) -> String {
+    variables
+        .iter()
+        .map(|variable| {
+            let default = if variable.non_null { "" } else { " = nil" };
+            format!("{}: {}{}", variable.name, variable_type(variable), default)
+        })
+        .collect::<Vec<_>>()
+        .join(", ")
+}
+
+/// Normalization plans are flat: inline fragments and conditions are folded
+/// into their parent; spreads were inlined by the compiler already.
 fn flatten(selections: &[SelectionPlan]) -> Vec<&SelectionPlan> {
     let mut result = Vec::new();
     for selection in selections {
@@ -644,18 +825,36 @@ fn key_parts(storage_key: &str) -> Vec<KeyPart> {
 }
 
 /// A Swift expression building the storage key from `variables`.
+/// A Swift string literal for text that may contain quotes or backslashes
+/// (storage keys carry JSON-rendered arguments).
+fn swift_literal(text: &str) -> String {
+    let mut output = String::with_capacity(text.len() + 2);
+    output.push('"');
+    for character in text.chars() {
+        match character {
+            '"' => output.push_str("\\\""),
+            '\\' => output.push_str("\\\\"),
+            '\n' => output.push_str("\\n"),
+            other => output.push(other),
+        }
+    }
+    output.push('"');
+    output
+}
+
 fn dynamic_key_expression(storage_key: &str, variables: &str) -> String {
     key_parts(storage_key)
         .into_iter()
         .map(|part| match part {
-            KeyPart::Literal(text) => format!("\"{text}\""),
+            KeyPart::Literal(text) => swift_literal(&text),
             KeyPart::Variable(name) => format!("{variables}.render(\"{name}\")"),
         })
         .collect::<Vec<_>>()
         .join(" + ")
 }
 
-/// The lookup key: the argument's value, a variable or a literal in the storage key.
+/// The lookup: the entity type (or none, for an id across types) and the
+/// argument's value, a variable or a literal in the storage key.
 fn lookup_expression(lookup: &LookupPlan, storage_key: &str) -> String {
     let argument_prefix = format!("{}:", lookup.argument);
     let inside = storage_key
@@ -666,15 +865,15 @@ fn lookup_expression(lookup: &LookupPlan, storage_key: &str) -> String {
         .split(',')
         .find_map(|pair| pair.strip_prefix(&argument_prefix))
         .unwrap_or("");
+    let type_expression = match &lookup.type_name {
+        Some(type_name) => format!("Types.{type_name}"),
+        None => "nil".to_string(),
+    };
     if let Some(variable) = value.strip_prefix('$') {
-        format!(
-            "Baton.Lookup(type: Types.{}, key: .variable(\"{variable}\"))",
-            lookup.type_name
-        )
+        format!("Baton.Lookup(type: {type_expression}, key: .variable(\"{variable}\"))")
     } else {
         format!(
-            "Baton.Lookup(type: Types.{}, key: .literal(\"{}\"))",
-            lookup.type_name,
+            "Baton.Lookup(type: {type_expression}, key: .literal(\"{}\"))",
             value.trim_matches('"')
         )
     }
@@ -724,14 +923,35 @@ fn variable_type(variable: &VariablePlan) -> String {
 
 /// Default spread accessor names: the fragment's owner prefix in lower camel
 /// case, falling back to the whole name when two spreads would collide.
-fn spread_accessor_names(selections: &[SelectionPlan]) -> BTreeMap<String, String> {
-    let fragments: Vec<&str> = selections
-        .iter()
-        .filter_map(|selection| match selection {
-            SelectionPlan::Spread { fragment, .. } => Some(fragment.as_str()),
-            _ => None,
-        })
-        .collect();
+/// The spreads a lens exposes directly: its own, and those inside inline
+/// fragments and conditions that flatten into it (an inline fragment on the
+/// lens's own type, as `@alias` produces; one on another type is a nested
+/// lens with its own table).
+fn collect_spreads<'a>(selections: &'a [SelectionPlan], type_name: &str, into: &mut Vec<&'a str>) {
+    for selection in selections {
+        match selection {
+            SelectionPlan::Spread { fragment, .. } => into.push(fragment.as_str()),
+            SelectionPlan::Inline {
+                type_condition,
+                selections: child,
+            } => match type_condition {
+                Some(condition) if condition != type_name => {}
+                _ => collect_spreads(child, type_name, into),
+            },
+            SelectionPlan::Condition {
+                selections: child, ..
+            } => collect_spreads(child, type_name, into),
+            _ => {}
+        }
+    }
+}
+
+fn spread_accessor_names(
+    selections: &[SelectionPlan],
+    type_name: &str,
+) -> BTreeMap<String, String> {
+    let mut fragments: Vec<&str> = Vec::new();
+    collect_spreads(selections, type_name, &mut fragments);
     let mut by_prefix: BTreeMap<String, Vec<&str>> = BTreeMap::new();
     for fragment in &fragments {
         let prefix = fragment.split('_').next().unwrap_or(fragment);
@@ -753,14 +973,11 @@ fn spread_accessor_names(selections: &[SelectionPlan]) -> BTreeMap<String, Strin
     names
 }
 
-fn unique_nested_name(
-    property: &str,
-    nested: &[(String, String, bool, Vec<SelectionPlan>)],
-) -> String {
+fn unique_nested_name(property: &str, nested: &[Nested]) -> String {
     let base = capitalize(property);
     let mut candidate = base.clone();
     let mut counter = 2;
-    while nested.iter().any(|(name, ..)| name == &candidate) {
+    while nested.iter().any(|child| child.name == candidate) {
         candidate = format!("{base}{counter}");
         counter += 1;
     }

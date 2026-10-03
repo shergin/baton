@@ -56,6 +56,39 @@ public struct QueryMacro: AccessorMacro, PeerMacro {
     }
 }
 
+/// Turns `var star: StarMutation.Action` into a computed property over
+/// `_star: MutationStorage<StarMutation>`, so the view gets an action and the
+/// memberwise initializer does not mention it.
+public struct MutationMacro: AccessorMacro, PeerMacro {
+    public static func expansion(
+        of node: AttributeSyntax,
+        providingAccessorsOf declaration: some DeclSyntaxProtocol,
+        in context: some MacroExpansionContext
+    ) throws -> [AccessorDeclSyntax] {
+        let (name, _) = try requireTypedProperty(declaration, attribute: node)
+        return [
+            """
+            get {
+                _\(raw: name).action
+            }
+            """,
+        ]
+    }
+
+    public static func expansion(
+        of node: AttributeSyntax,
+        providingPeersOf declaration: some DeclSyntaxProtocol,
+        in context: some MacroExpansionContext
+    ) throws -> [DeclSyntax] {
+        let (name, type) = try requireTypedProperty(declaration, attribute: node)
+        guard let member = type.as(MemberTypeSyntax.self), member.name.text == "Action" else {
+            throw MacroError(description: "@Mutation expects a property typed `<Operation>.Action`")
+        }
+        // Not `private`: a private stored property would make the view's memberwise initializer private.
+        return ["var _\(raw: name) = Baton.MutationStorage<\(member.baseType.trimmed)>()"]
+    }
+}
+
 /// The source text of a labeled attribute argument, if present.
 private func labeledArgument(_ label: String, of attribute: AttributeSyntax) -> String? {
     guard case .argumentList(let arguments) = attribute.arguments else { return nil }
@@ -80,5 +113,5 @@ private func requireTypedProperty(_ declaration: some DeclSyntaxProtocol, attrib
 
 @main
 struct BatonMacrosPlugin: CompilerPlugin {
-    let providingMacros: [Macro.Type] = [FragmentMacro.self, QueryMacro.self]
+    let providingMacros: [Macro.Type] = [FragmentMacro.self, QueryMacro.self, MutationMacro.self]
 }
