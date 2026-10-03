@@ -223,9 +223,11 @@ In this repository:
 - `swift run -c release BatonBenchmarks` prints the numbers behind
   [`BENCHMARKS.md`](BENCHMARKS.md).
 
-Requires the 26 releases of Apple's platforms and Swift 6.2 tools. The
-compiler binary is built from `compiler/` with `scripts/build-compiler.sh`
-until artifact bundles are published.
+Requires the 26 releases of Apple's platforms and Swift 6.2 tools. In a
+checkout, `scripts/build-compiler.sh` builds the compiler from `compiler/`
+and the plugin runs that one. A package that depends on Baton downloads the
+compiler bundle its release published; releases before the first that
+publishes one need the checkout's.
 
 ## The name
 
