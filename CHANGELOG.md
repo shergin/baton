@@ -112,6 +112,13 @@ commit, that a launch renders from before the network answers.
   twice to hold the output deterministic. A change to the emitter or to a
   test document now arrives with its diff of generated code;
   `BATON_BLESS=1 cargo test` rewrites the goldens.
+- Continuous integration. A GitHub Actions workflow runs the gates on every
+  push to `main` and every pull request: the compiler's `cargo fmt --check`,
+  `cargo clippy -D warnings` and `cargo test` on Linux; the package on
+  macOS 26 with the current Xcode, every target with warnings as errors, the
+  tests in debug and in release, and the library built for iOS; and the
+  tests again on Xcode 26.0, the declared floor. The Swift jobs build the
+  compiler from the checkout first.
 
 ## 0.5.0 (Baton Pass) — 2026-10-03
 

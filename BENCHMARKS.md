@@ -6,7 +6,8 @@ the comparison package named in its section), recorded with the revision,
 machine, OS and date. Append; never edit a past entry.
 
 Figures are those tables drawn again, by [`benchmarks/charts`](benchmarks/charts),
-with malevich, the library behind `kaz`. `cargo run --manifest-path
+with malevich, the library behind `kaz`. The plot panel is that library's
+pixel raster; the axes stay text. `cargo run --manifest-path
 benchmarks/charts/Cargo.toml` rewrites the SVG files. A figure does not
 replace the table it sits under.
 
