@@ -70,5 +70,6 @@ what a commit must preserve.
 `Record` is the observable object, with one invalidation channel per slot:
 a key path through one subscript, made on first use and shared by every
 record. `Store.commit(_ changes:)` runs on the main actor; `Ingest` decodes
-off it, in the fetch's own task; `Environment` holds both. This section may
+off it, in the fetch's own task; `Environment` holds the store and runs
+the ingest for its fetches. This section may
 rot; the rest must not.

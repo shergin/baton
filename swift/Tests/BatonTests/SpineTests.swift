@@ -169,6 +169,10 @@ struct SpineTests {
         let data = TestHeaderQuery.Data(anchor: Anchor(record: store.root, variables: detail.variables, store: store))
         #expect(data.character == nil, "the read does not resolve the lookup")
         #expect(misses.reads == [#"client:root.character(id:"3")"#])
+        guard case .missing = store.root.read(Registry.slot(store.root.type, #"character(id:"3")"#)) else {
+            Issue.record("the read wrote the link")
+            return
+        }
         #expect(store.check(TestHeaderQuery.plan.resolve(detail.variables)))
         #expect(data.character?.testHeader.name == "Summer Smith", "the check wrote the link")
     }

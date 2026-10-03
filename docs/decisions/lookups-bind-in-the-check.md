@@ -14,7 +14,8 @@ lookup: the availability check, before a handle is ready, and the lens read
 of a missing root link, which resolved the entity and wrote the link. The
 second is a write inside a view body: the body that reads the field writes
 the slot it is reading and notifies the channel it has just registered on,
-while it renders. Every other write in the store is a commit.
+while it renders. The check writes the link too, outside any commit, but
+before the handle it serves is ready, so no body has read the slot yet.
 
 ## Decision
 
@@ -38,7 +39,7 @@ as the superseded record says.
   never fetched is `.ready` on creation, rendering the entity the list
   fetched, because the handle's check binds the link.
 - A new spine test reads the root field before any check: nil, with the
-  miss reported, and the store unchanged; after the check the same lens
+  miss reported, and the link still missing; after the check the same lens
   reads the entity.
 - The two other tests that relied on the read-side write, each a lens
   built over the root by hand, now run the check first, as a handle does.
