@@ -273,6 +273,52 @@ struct LifetimeTests {
         #expect(environment.rootCount == 0, "released with an empty buffer, the handle is no root")
     }
 
+    @Test("a handle whose environment is gone keeps its data and stops loading instead of hanging")
+    func handleAfterTheEnvironment() async throws {
+        var environment: Baton.Environment? = Baton.Environment(transport: SilentTransport())
+        environment!.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
+        let ready = environment!.handle(for: TestList(page: 1), fetchPolicy: .storeOnly)
+        let empty = environment!.handle(for: TestList(page: 2), fetchPolicy: .storeOnly)
+        let subscription = environment!.subscriptionHandle(for: TestNoteAdded(characterId: "1", connections: []))
+        ready.retain()
+        empty.retain()
+        environment = nil
+
+        await ready.refetch()
+        #expect(!ready.isRefreshing)
+        guard case .ready = ready.phase else { Issue.record("the data stays visible, got \(ready.phase)"); return }
+        await ready.refetch()
+        #expect(!ready.isRefreshing, "a second refetch does not hang either")
+
+        empty.retry()
+        guard case .failed = empty.phase else { Issue.record("a retry with nothing to fetch with fails, got \(empty.phase)"); return }
+
+        subscription.retain()
+        #expect(!subscription.isActive, "no stream opens without an environment")
+    }
+
+    @Test("a view whose environment is replaced resolves its operation again in the new one")
+    func storageFollowsTheEnvironment() async throws {
+        func environment() throws -> Baton.Environment {
+            let environment = Baton.Environment(transport: SilentTransport())
+            environment.releaseBufferSize = 0
+            environment.store.reportMissing = nil
+            environment.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
+            return environment
+        }
+        let first = try environment()
+        let second = try environment()
+        let probe = StorageProbe(storage: OperationStorage(TestHeaderQuery(id: "1"), fetchPolicy: .storeOnly))
+        autoreleasepool {
+            let renderer = ImageRenderer(content: AnyView(probe.environment(\.baton, first)))
+            #expect(renderer.cgImage != nil)
+            renderer.content = AnyView(probe.environment(\.baton, second))
+            #expect(renderer.cgImage != nil)
+            #expect(second.handle(for: TestHeaderQuery(id: "1"), fetchPolicy: .storeOnly).retainCount == 1, "the new environment's handle is retained")
+        }
+        #expect(first.handle(for: TestHeaderQuery(id: "1"), fetchPolicy: .storeOnly).retainCount == 0, "the old one's was released")
+    }
+
     @Test("a handle released after its environment is gone does nothing")
     func releaseAfterTheEnvironment() {
         var environment: Baton.Environment? = Baton.Environment(transport: SilentTransport())

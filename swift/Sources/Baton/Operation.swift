@@ -98,7 +98,7 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
     @ObservationIgnored private(set) var fetchEpoch = 0
     /// The environment that made the handle. A view may release its handle
     /// after the environment is gone, which then does nothing.
-    @ObservationIgnored private weak var environment: Environment?
+    @ObservationIgnored private(set) weak var environment: Environment?
     @ObservationIgnored private let store: Store
     @ObservationIgnored private var task: Task<Void, Never>?
     @ObservationIgnored let resolved: ResolvedSelection
@@ -201,6 +201,16 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
 
     private func start() {
         task?.cancel()
+        guard environment != nil else {
+            // Nothing can fetch for a handle whose environment is gone: it
+            // keeps the data it shows and says why it cannot load more.
+            task = nil
+            isRefreshing = false
+            if case .loading = phase {
+                phase = .failed(TransportError(statusCode: 0, body: "the handle's environment is gone, so it cannot fetch"))
+            }
+            return
+        }
         if case .ready = phase { isRefreshing = true }
         task = Task { [weak self] in
             guard let self, let environment else { return }
@@ -309,11 +319,14 @@ public struct OperationStorage<Op: Operation>: DynamicProperty {
         self.fetchPolicy = fetchPolicy
     }
 
+    /// Resolves the value to a handle when the value or the environment the
+    /// view sees changed: a handle belongs to the environment that made it.
     public nonisolated mutating func update() {
         MainActor.assumeIsolated {
-            if box.handle?.operation != value {
+            let current = Environment.resolve(environment)
+            if box.handle?.operation != value || box.handle?.environment !== current {
                 box.handle?.release()
-                let handle = Environment.resolve(environment).handle(for: value, fetchPolicy: fetchPolicy)
+                let handle = current.handle(for: value, fetchPolicy: fetchPolicy)
                 handle.retain()
                 box.handle = handle
             }
@@ -392,7 +405,7 @@ public final class SubscriptionHandle<Op: Operation>: AnyOperationHandle {
     public private(set) var isActive = false
     /// The environment that made the handle; releasing the handle after it
     /// is gone does nothing.
-    @ObservationIgnored private weak var environment: Environment?
+    @ObservationIgnored private(set) weak var environment: Environment?
     @ObservationIgnored private let store: Store
     @ObservationIgnored private var task: Task<Void, Never>?
     @ObservationIgnored let resolved: ResolvedSelection
@@ -407,9 +420,9 @@ public final class SubscriptionHandle<Op: Operation>: AnyOperationHandle {
 
     var key: AnyHashable { AnyHashable(operation) }
 
-    /// Opens the stream unless it is open.
+    /// Opens the stream unless it is open, or its environment is gone.
     func start() {
-        guard task == nil else { return }
+        guard task == nil, environment != nil else { return }
         isActive = true
         error = nil
         task = Task { [weak self] in
@@ -521,11 +534,14 @@ public struct SubscriptionStorage<Op: Operation>: DynamicProperty {
         self.value = value
     }
 
+    /// Resolves the value to a handle when the value or the environment the
+    /// view sees changed.
     public nonisolated mutating func update() {
         MainActor.assumeIsolated {
-            if box.handle?.operation != value {
+            let current = Environment.resolve(environment)
+            if box.handle?.operation != value || box.handle?.environment !== current {
                 box.handle?.release()
-                let handle = Environment.resolve(environment).subscriptionHandle(for: value)
+                let handle = current.subscriptionHandle(for: value)
                 handle.retain()
                 box.handle = handle
             }
