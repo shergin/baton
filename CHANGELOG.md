@@ -54,7 +54,13 @@ are expected and listed without apology.
   without a type probes the field's possible types with the same rule. A
   lookup the image cannot answer no longer leaves an empty record behind.
   `Store.existing(id:)` is removed. An interface is keyed by id when the
-  types that implement it have one, as a union is.
+  types that implement it have one, as a union is. An object under an
+  interface or union that is keyed by its path is a record per concrete
+  type; before, a payload of another type at the same path wrote its fields
+  into the first type's record. The image's format moved to 2, so an image
+  an earlier version wrote is discarded at the next launch.
+- `baton.json` is checked: each lookup's field, argument and `type` against
+  the schema, and an unknown key is an error.
 - A superseded fetch does not commit. A response that arrived, or was still
   being read, after a refetch replaced its fetch landed after the newer one
   when the transport did not hear the cancellation. Ingest now runs in the
