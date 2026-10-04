@@ -462,6 +462,11 @@ are expected and listed without apology.
   arguments in their keys while the mutation wrote them without, so a
   mutation that spread it read nil; they are keyed as the mutation's own
   root fields are.
+- Of two fields whose lenses would take one name, the second is checked
+  through its own lens. Its lens is numbered, `TypesLens2` beside a
+  `TypesLens`, but `fieldErrors` and `satisfied` named it again without the
+  number and checked the first field's lens, so a field error or a missing
+  `@required` field in the second went unseen.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

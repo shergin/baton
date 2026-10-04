@@ -609,12 +609,12 @@ impl Emitter {
         let inner = format!("{indent}    ");
         let mut nested: Vec<Nested> = Vec::new();
         let mut spread_names = spread_accessor_names(selections, type_name);
-        let members = members(selections);
+        let mut members = members(selections);
         self.accessors(
             output,
             type_name,
             type_is_abstract,
-            &members,
+            &mut members,
             &inner,
             &mut nested,
             &mut spread_names,
@@ -871,8 +871,6 @@ impl Emitter {
                     storage_key,
                     plural,
                     bubbles,
-                    alias,
-                    name,
                     ..
                 } if required.action != "THROW" => {
                     let slot = self.slot_expression(type_name, type_is_abstract, storage_key);
@@ -884,7 +882,7 @@ impl Emitter {
                             required.action == "LOG"
                         );
                     } else {
-                        let nested = nested_type_name(alias.as_deref().unwrap_or(name));
+                        let nested = member.lens_name();
                         let _ = writeln!(
                             output,
                             "{indent}    guard let child = anchor.linked({slot}), {nested}.satisfied(child) else {{ return anchor.requiredMissing(path: {}, log: {}) }}",
@@ -981,15 +979,13 @@ impl Emitter {
                     }
                 }
                 SelectionPlan::Linked {
-                    name,
-                    alias,
                     storage_key,
                     required,
                     plural,
                     ..
                 } => {
                     let slot = self.slot_expression(type_name, type_is_abstract, storage_key);
-                    let nested = nested_type_name(alias.as_deref().unwrap_or(name));
+                    let nested = member.lens_name();
                     if *plural {
                         let _ = writeln!(
                             output,
@@ -1011,13 +1007,11 @@ impl Emitter {
                         );
                     }
                 }
-                SelectionPlan::Inline {
-                    alias: Some(alias), ..
-                } => {
+                SelectionPlan::Inline { alias: Some(_), .. } => {
                     let _ = writeln!(
                         output,
                         "{indent}    errors.append(contentsOf: {}.fieldErrors(anchor))",
-                        nested_type_name(alias)
+                        member.lens_name()
                     );
                 }
                 _ => {}
@@ -1111,7 +1105,7 @@ impl Emitter {
         output: &mut String,
         type_name: &str,
         type_is_abstract: bool,
-        members: &[Member],
+        members: &mut [Member],
         indent: &str,
         nested: &mut Vec<Nested>,
         spread_names: &mut BTreeMap<String, String>,
@@ -1194,6 +1188,7 @@ impl Emitter {
                         indent,
                         condition,
                     );
+                    member.lens = Some(nested_name.clone());
                     nested.push(Nested {
                         name: nested_name,
                         type_name: base_type.clone(),
@@ -1323,6 +1318,7 @@ impl Emitter {
                                 );
                             }
                         }
+                        member.lens = Some(nested_name.clone());
                         nested.push(Nested {
                             name: nested_name,
                             type_name: lens_type,
@@ -2326,6 +2322,18 @@ struct Member {
     /// selections are those of every occurrence.
     selection: SelectionPlan,
     guards: Vec<Vec<Guard>>,
+    /// The nested lens a linked field or an aliased inline fragment reads
+    /// as, set by `accessors`: a name can take a counter there, so the
+    /// checks that follow take it rather than deriving it again.
+    lens: Option<String>,
+}
+
+impl Member {
+    fn lens_name(&self) -> &str {
+        self.lens
+            .as_deref()
+            .expect("the accessors name the nested lens of every member that has one")
+    }
 }
 
 /// A selection at a lens's own level and the conditions on the way to it.
@@ -2378,7 +2386,11 @@ fn members(selections: &[SelectionPlan]) -> Vec<Member> {
                     })
                     .collect();
             }
-            Member { selection, guards }
+            Member {
+                selection,
+                guards,
+                lens: None,
+            }
         })
         .collect()
 }

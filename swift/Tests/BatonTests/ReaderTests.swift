@@ -235,6 +235,21 @@ struct ReaderTests {
         #expect(data.slots?.id == "1")
     }
 
+    @Test("of two fields whose lenses would take one name, the second is checked through its own lens for field errors and required fields")
+    func collidingLensNames() throws {
+        let store = Store()
+        store.reportMissing = nil
+        let errors = TestCollidingErrors(id: "1")
+        store.commit(try Ingest.normalize(fixture("colliding-lenses-name-hidden"), plan: TestCollidingErrors.plan.resolve(errors.variables)))
+        let errorsData = TestCollidingErrors.Data(anchor: Anchor(record: store.root, variables: errors.variables, store: store))
+        let second: TestCollidingErrors.Data.TypesLens2? = errorsData.typesLens
+        #expect(second?.id == "1")
+        #expect(TestCollidingErrors.Data.fieldErrors(errorsData.anchor).map(\.message) == ["name hidden"])
+        let required = TestCollidingRequired(id: "1")
+        store.commit(try Ingest.normalize(fixture("colliding-lenses-name-hidden"), plan: TestCollidingRequired.plan.resolve(required.variables)))
+        #expect(!TestCollidingRequired.Data.satisfied(Anchor(record: store.root, variables: required.variables, store: store)))
+    }
+
     @Test("a @required field the store never received is reported missing before its lens bubbles")
     func missingRequiredField() throws {
         let reports = Reports()

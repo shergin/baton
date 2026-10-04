@@ -3,12 +3,13 @@ import Baton
 /// The documents behind the reader tests, against the test schema: a root
 /// field and a link `@required` all the way up, a non-null list under
 /// `@catch`, one scope holding two keys with variables and two spreads
-/// with arguments, fields named like the module's shared enums, and a type
-/// condition in an operation that throws on field errors, a link and a
-/// list of links an operation that throws reads through, variables named
-/// like Swift's keywords, a `@required(action: LOG)` field below a non-null
-/// link, and deferred spreads with and without `@catch` in operations that
-/// throw.
+/// with arguments, fields named like the module's shared enums, two
+/// fields whose lenses would take one name, with an error policy and with a
+/// required field, a type condition in an operation that throws on field
+/// errors, a link and a list of links an operation that throws reads
+/// through, variables named like Swift's keywords, a `@required(action:
+/// LOG)` field below a non-null link, and deferred spreads with and without
+/// `@catch` in operations that throw.
 @MainActor
 struct ReaderDocuments {
     @Query("""
@@ -51,6 +52,22 @@ struct ReaderDocuments {
         }
         """)
     var reservedNames: TestReservedNames
+
+    @Query("""
+        query TestCollidingErrors($id: ID!) @throwOnFieldError {
+          types: character(id: $id) { id }
+          typesLens: character(id: $id) { id name }
+        }
+        """)
+    var collidingErrors: TestCollidingErrors
+
+    @Query("""
+        query TestCollidingRequired($id: ID!) {
+          types: character(id: $id) { id }
+          typesLens: character(id: $id) @required(action: NONE) { id name @required(action: NONE) }
+        }
+        """)
+    var collidingRequired: TestCollidingRequired
 
     @Query("""
         query TestThrowingNode($id: ID!) @throwOnFieldError {
