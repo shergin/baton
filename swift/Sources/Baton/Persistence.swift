@@ -215,7 +215,11 @@ public final class Persistence: Sendable {
     private func drain() {
         disk.withLock { disk in
             let work = take()
-            guard opened(disk) else { return }
+            guard opened(disk) else {
+                // Work the file could not take is lost: the image is behind.
+                if !work.isEmpty { disk.markBehind() }
+                return
+            }
             disk.write(work)
         }
     }

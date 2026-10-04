@@ -240,6 +240,9 @@ are expected and listed without apology.
   schema is discarded. The version is the app's to pass, because generated
   constants are made on first use and nothing has made one when the file
   opens.
+- An image that lost a batch, written in vain or dropped while the file
+  could not open, is discarded at the next open; it served rows older
+  than memory had known, a deleted record among them.
 - An edit the store cannot make in memory makes the image forget what it
   would have changed. An edge directive on a connection the store held
   only in the image was dropped, and an insert into the empty record a

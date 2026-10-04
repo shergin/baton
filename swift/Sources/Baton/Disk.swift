@@ -114,6 +114,12 @@ final class Disk: @unchecked Sendable {
     func open() -> Opening {
         if db != nil { return .already }
         if foreign { return .unavailable }
+        // An image that missed a batch is behind memory and every launch
+        // after: it starts again.
+        if FileManager.default.fileExists(atPath: behind) {
+            discard()
+            try? FileManager.default.removeItem(atPath: behind)
+        }
         let now = DispatchTime.now().uptimeNanoseconds
         if now < retryAfter { return .unavailable }
         for attempt in 0..<2 {
@@ -251,6 +257,18 @@ final class Disk: @unchecked Sendable {
         typeNames.removeAll()
         slots.removeAll()
         types.removeAll()
+    }
+
+    /// The file whose presence says a batch was lost: the image is behind.
+    private var behind: String { path + "-behind" }
+
+    /// Notes that a batch was lost, written in vain or dropped while the
+    /// file could not be opened, and closes the connection: the next open
+    /// discards the image rather than serve rows older than memory knew.
+    func markBehind() {
+        guard !foreign else { return }
+        FileManager.default.createFile(atPath: behind, contents: nil)
+        close()
     }
 
     /// Deletes the file, for a sign-out; the next work opens a new one.
@@ -417,8 +435,9 @@ final class Disk: @unchecked Sendable {
         guard !work.isEmpty, let prepared else { return }
         guard run(prepared.begin) else {
             // A file too damaged to begin a transaction in is discarded now,
-            // not at the next read.
-            if damaged { discard() }
+            // not at the next read; one that could not begin for another
+            // reason has lost the batch.
+            if damaged { discard() } else { markBehind() }
             return
         }
         var good = true
@@ -454,6 +473,8 @@ final class Disk: @unchecked Sendable {
             unwritten.removeAll()
         } else {
             _ = run(prepared.rollback)
+            if damaged { discard() } else { markBehind() }
+            return
         }
         if damaged { discard() }
     }

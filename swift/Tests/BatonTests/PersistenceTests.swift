@@ -334,6 +334,21 @@ struct PersistenceTests {
         #expect(throws: NotStored.self) { try stored(TestNotesQuery(id: "1"), in: launch()) }
     }
 
+    @Test("an image that lost a batch it could not write is discarded at the next open")
+    func lostBatch() async throws {
+        try await seed(launch())
+        let attributes = [FileAttributeKey.posixPermissions: 0o444]
+        let paths = ["", "-wal", "-shm"].map { image.url.path + $0 }.filter { FileManager.default.fileExists(atPath: $0) }
+        for path in paths { try FileManager.default.setAttributes(attributes, ofItemAtPath: path) }
+        let second = launch()
+        second.store.commit(try Ingest.normalize(fixture("delete-record-1"), plan: TestDeleteNote.plan.resolve(TestDeleteNote(id: "1").variables), rootKey: Store.mutationRootKey))
+        await finish(second)
+        // The open after the lost batch discarded the file; what is left is
+        // made writable again for the test's own cleanup.
+        for path in paths { try? FileManager.default.setAttributes([.posixPermissions: 0o644], ofItemAtPath: path) }
+        #expect(throws: NotStored.self) { try stored(Fixture(page: 1), in: launch()) }
+    }
+
     @Test("records whose rows wait to be written survive a collection, so a check right behind a commit finds them")
     func unwrittenRecordsStay() async throws {
         let environment = launch()
