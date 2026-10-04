@@ -36,6 +36,25 @@ struct PhaseTests {
         handle.release()
     }
 
+    @Test("a bubbling failure is not assigned again when an unrelated commit evaluates it to the same @required path")
+    func bubblingFailureIsNotReassigned() async throws {
+        let environment = Environment(transport: RecordedTransport([TestRequiredOrigin.name: fixture("required-origin-1-null")]))
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestRequiredOrigin(id: "1"))
+        handle.retain()
+        await settled(handle)
+        guard case .failed(let error) = handle.phase, error is RequiredFieldError else {
+            Issue.record("expected the required origin to fail the operation, got \(handle.phase)")
+            return
+        }
+        final class Counter: @unchecked Sendable { var fired = 0 }
+        let counter = Counter()
+        withObservationTracking { _ = handle.phase } onChange: { counter.fired += 1 }
+        try unrelatedCommit(environment.store)
+        #expect(counter.fired == 0)
+        handle.release()
+    }
+
     @Test("an operation that failed on an error with no path fetches again when a view attaches it, and is ready once the error is gone")
     func unplacedErrorFetchesOnAttach() async throws {
         let attempts = Attempts()
