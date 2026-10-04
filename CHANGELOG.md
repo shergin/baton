@@ -495,6 +495,9 @@ are expected and listed without apology.
   and the README said collection and all normalization ran off it; a
   decision record now says why they do not, with the numbers that would
   move the check and collection.
+- A view's storage releases its handle as SwiftUI drops the view's state,
+  on the main actor. It released it from a task started for each
+  teardown, so the handle stayed retained, and a root, until the task ran.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

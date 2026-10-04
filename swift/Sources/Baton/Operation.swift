@@ -98,6 +98,7 @@ extension Query {
 protocol AnyOperationHandle: AnyObject {
     var retainCount: Int { get }
     var key: AnyHashable { get }
+    func release()
     func mark(into reachable: inout Set<ObjectIdentifier>)
     func refetchIfStale()
     /// Settles the phase again after a commit changed a field error or a
@@ -432,24 +433,28 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
     }
 }
 
+/// The handle a view's storage holds, kept in the view's state and released
+/// when SwiftUI drops that state. The deinit runs on the main actor, where
+/// the handle lives: in place when the last reference goes there, and
+/// enqueued on it otherwise.
+@MainActor
+final class RetainedHandle<Handle: AnyOperationHandle> {
+    var handle: Handle?
+
+    isolated deinit {
+        handle?.release()
+    }
+}
+
 /// What a `@Query` property expands to: owns the handle for the view's
 /// lifetime, retains it while the view lives, and hands out the operation
 /// value with the handle attached.
 @MainActor
 public struct OperationStorage<Op: Query>: DynamicProperty {
     @SwiftUI.Environment(\.baton) private var environment
-    @State private var box = Box()
+    @State private var retained = RetainedHandle<OperationHandle<Op>>()
     private let value: Op
     private let fetchPolicy: FetchPolicy
-
-    final class Box: @unchecked Sendable {
-        nonisolated(unsafe) var handle: OperationHandle<Op>?
-
-        deinit {
-            guard let handle else { return }
-            Task { @MainActor in handle.release() }
-        }
-    }
 
     public init(_ value: Op, fetchPolicy: FetchPolicy = .default) {
         self.value = value
@@ -461,11 +466,11 @@ public struct OperationStorage<Op: Query>: DynamicProperty {
     public nonisolated mutating func update() {
         MainActor.assumeIsolated {
             let current = Environment.resolve(environment)
-            if box.handle?.operation != value || box.handle?.environment !== current {
-                box.handle?.release()
+            if retained.handle?.operation != value || retained.handle?.environment !== current {
+                retained.handle?.release()
                 let handle = current.handle(for: value, fetchPolicy: fetchPolicy)
                 handle.retain()
-                box.handle = handle
+                retained.handle = handle
             }
         }
     }
@@ -473,7 +478,7 @@ public struct OperationStorage<Op: Query>: DynamicProperty {
     /// The value, resolved. Outside a view it is unresolved and reads as loading.
     public var resolved: Op {
         var resolved = value
-        resolved.resolution = box.handle
+        resolved.resolution = retained.handle
         return resolved
     }
 }
@@ -653,17 +658,8 @@ extension Subscription {
 @MainActor
 public struct SubscriptionStorage<Op: Subscription>: DynamicProperty {
     @SwiftUI.Environment(\.baton) private var environment
-    @State private var box = Box()
+    @State private var retained = RetainedHandle<SubscriptionHandle<Op>>()
     private let value: Op
-
-    final class Box: @unchecked Sendable {
-        nonisolated(unsafe) var handle: SubscriptionHandle<Op>?
-
-        deinit {
-            guard let handle else { return }
-            Task { @MainActor in handle.release() }
-        }
-    }
 
     public init(_ value: Op) {
         self.value = value
@@ -674,11 +670,11 @@ public struct SubscriptionStorage<Op: Subscription>: DynamicProperty {
     public nonisolated mutating func update() {
         MainActor.assumeIsolated {
             let current = Environment.resolve(environment)
-            if box.handle?.operation != value || box.handle?.environment !== current {
-                box.handle?.release()
+            if retained.handle?.operation != value || retained.handle?.environment !== current {
+                retained.handle?.release()
                 let handle = current.subscriptionHandle(for: value)
                 handle.retain()
-                box.handle = handle
+                retained.handle = handle
             }
         }
     }
@@ -687,7 +683,7 @@ public struct SubscriptionStorage<Op: Subscription>: DynamicProperty {
     /// side through it.
     public var resolved: Op {
         var resolved = value
-        resolved.resolution = box.handle
+        resolved.resolution = retained.handle
         return resolved
     }
 }

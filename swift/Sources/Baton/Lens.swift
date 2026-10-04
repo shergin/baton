@@ -435,7 +435,7 @@ extension Anchor {
 /// A plural link: lenses over the linked records, in order. Null elements,
 /// deleted records and elements the caller rejects (a `@required` field of
 /// theirs is null) are dropped.
-public struct List<Element: Lens>: RandomAccessCollection, @unchecked Sendable {
+public struct List<Element: Lens>: RandomAccessCollection, Sendable {
     let records: ContiguousArray<Record>
     let anchor: Anchor
 

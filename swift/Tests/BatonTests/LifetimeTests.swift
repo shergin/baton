@@ -379,21 +379,23 @@ struct LifetimeTests {
         environment.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
         // The renderer installs the view's state, runs the storage's update
         // and draws once; the pool lets its view graph go when it ends.
+        var held: OperationHandle<TestHeaderQuery>?
         autoreleasepool {
             let probe = StorageProbe(storage: OperationStorage(TestHeaderQuery(id: "1"), fetchPolicy: .storeOnly))
             let renderer = ImageRenderer(content: probe.environment(\.baton, environment))
             #expect(renderer.cgImage != nil)
-            #expect(environment.handle(for: TestHeaderQuery(id: "1"), fetchPolicy: .storeOnly).retainCount == 1, "the storage retained the handle it resolved")
+            held = environment.handle(for: TestHeaderQuery(id: "1"), fetchPolicy: .storeOnly)
+            #expect(held?.retainCount == 1, "the storage retained the handle it resolved")
         }
 
-        let handle = environment.handle(for: TestHeaderQuery(id: "1"), fetchPolicy: .storeOnly)
+        let handle = try #require(held)
         guard case .ready = handle.phase else { Issue.record("expected ready from the store, got \(handle.phase)"); return }
         await until { handle.retainCount == 0 }
         #expect(environment.rootCount == 0, "released with an empty buffer, the handle is no root")
     }
 
-    @Test("a subscription value reaches the handle the storage that resolved it holds, and a bare value reaches none")
-    func subscriptionResolution() {
+    @Test("a subscription value reaches the handle the storage that resolved it holds, a bare value reaches none, and the stream closes when the view goes away")
+    func subscriptionResolution() async throws {
         final class Seen: @unchecked Sendable { var handle: SubscriptionHandle<TestNoteAdded>? }
         struct Probe: View {
             let storage: SubscriptionStorage<TestNoteAdded>
@@ -410,9 +412,13 @@ struct LifetimeTests {
         autoreleasepool {
             let renderer = ImageRenderer(content: Probe(storage: SubscriptionStorage(value), seen: seen).environment(\.baton, environment))
             #expect(renderer.cgImage != nil)
+            #expect(seen.handle === environment.subscriptionHandle(for: value))
+            #expect(seen.handle?.isActive == true, "the storage opened the stream")
         }
-        #expect(seen.handle === environment.subscriptionHandle(for: value))
         #expect(value.subscription == nil, "the value itself holds nothing")
+        let handle = try #require(seen.handle)
+        await until { !handle.isActive }
+        #expect(handle.retainCount == 0, "the storage released the handle when the view went away")
     }
 
     @Test("a handle whose environment is gone keeps its data and stops loading instead of hanging")
