@@ -1,7 +1,9 @@
 //! Golden tests for the Swift emitter and the plan. The documents of the
 //! Swift test target go through the whole pipeline, as the build plugin runs
 //! it, and the generated files are compared byte for byte with `goldens/`,
-//! beside the plan `batonc plan` prints for each file's documents. Those
+//! and the plan `batonc plan` prints for each file's documents with
+//! `plans/`, beside them and out of the Swift target that compiles the
+//! goldens. Those
 //! documents exist to exercise every directive the runtime's tests prove, so
 //! they cover every shape the lowering and the emitter write, and a change to
 //! either shows up here as a diff to review.
@@ -22,8 +24,14 @@ fn repository() -> PathBuf {
         .to_path_buf()
 }
 
+/// The Swift goldens, which a Swift test target compiles.
 fn goldens() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("src/tests/goldens")
+}
+
+/// The plan goldens.
+fn plans() -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("src/tests/plans")
 }
 
 /// The plan of the Swift test target, its sources named from the
@@ -169,10 +177,9 @@ fn first_difference(golden: &str, emitted: &str) -> String {
     }
 }
 
-/// Compares the goldens that end with `extension` with what is written
-/// now, or under `BATON_BLESS` replaces them.
-fn check_goldens(emitted: &BTreeMap<String, String>, extension: &str) {
-    let directory = goldens();
+/// Compares the goldens in `directory` that end with `extension` with what
+/// is written now, or under `BATON_BLESS` replaces them.
+fn check_goldens(directory: PathBuf, emitted: &BTreeMap<String, String>, extension: &str) {
     if std::env::var_os("BATON_BLESS").is_some() {
         std::fs::create_dir_all(&directory).expect("the goldens directory can be created");
         for name in golden_names(&directory, extension) {
@@ -211,12 +218,12 @@ fn check_goldens(emitted: &BTreeMap<String, String>, extension: &str) {
 
 #[test]
 fn the_swift_emitter_reproduces_its_goldens_byte_for_byte() {
-    check_goldens(&emit_swift_tests(), ".baton.swift");
+    check_goldens(goldens(), &emit_swift_tests(), ".baton.swift");
 }
 
 #[test]
 fn the_plan_reproduces_its_goldens_byte_for_byte() {
-    check_goldens(&plan_swift_tests(), ".plan.json");
+    check_goldens(plans(), &plan_swift_tests(), ".plan.json");
 }
 
 #[test]
