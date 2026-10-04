@@ -250,13 +250,12 @@ documented to stay off the main thread. Baton generates a lens per fragment
 and the UI framework observes the record: the first body already has the
 cached data, and a changed field re-renders the view that read it.
 
-The response and read rows are the head-to-head in
-[`BENCHMARKS.md`](BENCHMARKS.md). Rick and Morty, page one: 686 KB, 899
-records, Apple M1 Pro, October 2026. Apollo's response for the same data is
-849 KB, because its normalizer asks for `__typename` on every object. The
-memory and optimistic rows are Baton's 0.5.0 benches on that machine. The
-disk row is 0.6.0. A launch with the file already open reads the fixture
-back in 1.78 ms.
+Baton's column is its 0.6.0 benches, and Apollo's the head-to-head in
+[`BENCHMARKS.md`](BENCHMARKS.md), on one fixture and one machine: Rick and
+Morty, page one, 686 KB and 899 records, on an Apple M1 Pro, October 2026.
+Apollo's response for the same data is 849 KB, because its normalizer asks
+for `__typename` on every object. A launch with the file already open reads
+the fixture back in 1.78 ms.
 
 | | Baton 0.6 | Apollo iOS 2.4 | Apollo Kotlin 5.2 |
 |---|---|---|---|
@@ -264,8 +263,8 @@ back in 1.78 ms.
 | A child view receives | A lens: the fields it declared | A snapshot of the parent's dictionary | A nested model the parent can also read |
 | Warm cache, first frame | The data | Loading. The read is `async` | Loading. The read stays off the main thread |
 | One field changes | The view that read it | The whole query, rebuilt into a new tree | The whole query, rebuilt into a new tree |
-| Bytes into the store | 3.4 ms | 318 ms | Rebuilds models into records. Their own bench is below |
-| Read it back | 26 ns a field | 228 ms to rebuild, then 296 ns a field | Rebuilds the operation into models |
+| Bytes into the store | 4.1 ms | 318 ms | Rebuilds models into records. Their own bench is below |
+| Read it back | 28 ns a field, 0.55 µs in a view body | 228 ms to rebuild, then 296 ns a field | Rebuilds the operation into models |
 | Memory while scrolling | Plateaus. 42 pages stay near +5 MB | Keeps every record. No eviction | You call GC. TTL and trimming exist |
 | A list | Pages merged in the store, one update per page | One watcher per page, concatenated in the pager | Pages merged in the store |
 | An optimistic write | A typed response, rebased, 0.4 ms for the cycle | A separate mutable model you write into the cache | Opt-in. Watchers then re-run the query |
