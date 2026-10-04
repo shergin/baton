@@ -96,11 +96,26 @@ key with variables is resolved once per owner, and a spread with arguments
 binds its scope once per owner, so later reads render, hash and allocate
 nothing.
 
+**Anchor.** Baton's word. Where a lens reads: its record, its
+[owner](#generated), and the record it was reached through, which a
+connection needs for its owner's id. Relay's fragment reference carries a
+record id and an owner; an anchor holds the record itself. Two anchors are
+equal when the three are the same objects. Generated accessors make every
+anchor a view reads.
+
 **Operation value.** A `Hashable` struct of an operation's variables, the
 thing a parent constructs and a navigation path carries. Inside a view a
 query value resolves to a handle exposing `phase`, `data`, `refetch`,
 `retry`, and a subscription value to one exposing its events; the handle
 travels with the value its storage hands out.
+
+**Operation handle.** Relay: the query reference a loader hands out, and
+the request the environment shares among equal fetches. Here:
+`OperationHandle`, the live side of a query value, made by the environment
+and shared by equal values: its phase, the fetch in flight,
+`isRefreshing`, `fetchTime`, and its place among the store's roots while
+retained or in the release buffer. `SubscriptionHandle` is the same for a
+subscription: the stream held open, its events, its last error.
 
 **Phase.** The state of a resolved operation: loading, ready (with
 `isRefreshing`), or failed. Always synchronously readable; previous data
@@ -246,6 +261,12 @@ over "client" (Apollo's word) by [Relay's words](principles/relays-words.md).
 delivery live: `execute` answers once, `stream` yields the parts of a
 deferred response. `URLSessionTransport` implements both; `MultipartParser`
 splits the parts.
+
+**Recorded transport.** Baton's word. `RecordedTransport` answers from
+recorded responses by operation name, or from a function of the whole
+request, and keeps the requests it was sent; for previews, tests and
+benchmarks. Not a mock: it is a transport like any other, and nothing
+behind it can tell.
 
 **Subscription.** GraphQL: an operation whose events arrive over time. Here:
 `@Subscription("…")` expands like `@Query`: the storage subscribes while the
