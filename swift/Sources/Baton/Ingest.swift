@@ -61,6 +61,10 @@ public struct ChangeSet: Sendable {
     /// Errors the response carried without a path, or with one that names
     /// no field it selected: nothing in the store holds them.
     public internal(set) var unplacedErrors: [FieldError] = []
+    /// The errors after the first of an announced part the server could not
+    /// deliver, when a field it would have filled is under no `@catch`. They
+    /// belong to the part's fields, which hold one error each, the first.
+    var failedPartErrors: [FieldError] = []
     /// The parts the first part of an incremental response announces, and
     /// whether more parts follow it.
     public internal(set) var pending: [Ingest.IncrementalPart.Pending] = []
@@ -155,7 +159,7 @@ public struct ChangeSet: Sendable {
     /// The field errors no `@catch` handles, placed or not; they fail a
     /// `@throwOnFieldError` operation.
     public var uncaughtFieldErrors: [FieldError] {
-        fieldErrors.filter { !$0.caught }.map(\.error) + unplacedErrors
+        fieldErrors.filter { !$0.caught }.map(\.error) + failedPartErrors + unplacedErrors
     }
 
     @inline(__always)
@@ -314,17 +318,31 @@ public enum Ingest {
 
     /// The field errors of an announced part the server could not deliver,
     /// on the fields the part would have filled, so a `@catch` there reads
-    /// them; the first error stands on each field, and every one counts.
+    /// them. A field holds one error, the first. The errors are caught when
+    /// every one of those fields is under `@catch`, whatever their number;
+    /// otherwise the first counts through the fields under none, and the
+    /// rest count beside them.
     nonisolated static func failed(_ plan: ResolvedSelection, key: String, type: TypeID, entity: Bool, at path: [PathSegment], errors: [ResponseError]) -> ChangeSet {
         var changes = ChangeSet(bytes: [])
         let record = changes.record(for: key, type: type, entity: entity)
         changes.group()
         let rendered = errors.map { FieldError(message: $0.message, path: Ingest.render($0.path ?? path)) }
         guard let first = rendered.first else { return changes }
-        for field in plan.variant(for: type).fields where !field.isTypename {
+        let fields = plan.variant(for: type).fields.filter { !$0.isTypename }
+        // A record of a type the part selects nothing on holds none of them.
+        guard !fields.isEmpty else {
+            changes.unplacedErrors = rendered
+            return changes
+        }
+        for field in fields {
             changes.fieldErrors.append(ChangeSet.FieldErrorEntry(record: record, slot: field.slot, error: first, caught: field.caught))
         }
-        changes.unplacedErrors.append(contentsOf: rendered.dropFirst())
+        // The rest are not unplaced, which would fail a handle whose
+        // operation spreads the part's fragment: an error inside a spread is
+        // the fragment's to weigh.
+        if !fields.allSatisfy(\.caught) {
+            changes.failedPartErrors = Array(rendered.dropFirst())
+        }
         return changes
     }
 

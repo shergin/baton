@@ -6,8 +6,9 @@ import Baton
 /// with arguments, fields named like the module's shared enums, and a type
 /// condition in an operation that throws on field errors, a link and a
 /// list of links an operation that throws reads through, variables named
-/// like Swift's keywords, and a `@required(action: LOG)` field below a
-/// non-null link.
+/// like Swift's keywords, a `@required(action: LOG)` field below a non-null
+/// link, and deferred spreads with and without `@catch` in operations that
+/// throw.
 @MainActor
 struct ReaderDocuments {
     @Query("""
@@ -93,4 +94,25 @@ struct ReaderDocuments {
         }
         """)
     var loggedNotes: TestLoggedNotes_character
+
+    @Fragment("""
+        fragment TestCaughtAppearances_character on Character {
+          episode @catch { name }
+        }
+        """)
+    var caughtAppearances: TestCaughtAppearances_character
+
+    @Query("""
+        query TestCaughtPartQuery($id: ID!) @throwOnFieldError {
+          character(id: $id) { id name ...TestCaughtAppearances_character @defer }
+        }
+        """)
+    var caughtPart: TestCaughtPartQuery
+
+    @Query("""
+        query TestUncaughtPartQuery($id: ID!) @throwOnFieldError {
+          character(id: $id) { id name ...TestAppearances_character @defer }
+        }
+        """)
+    var uncaughtPart: TestUncaughtPartQuery
 }

@@ -450,6 +450,14 @@ are expected and listed without apology.
   decimal comma `0.25` read as 0, `[1,5]` as `[1.5, 5]`, and a response cut
   off in digits was read past its end; they are read in the C locale now,
   and never past the number the scan found.
+- A deferred part the server could not deliver fails an operation the
+  same however many errors it sent. Each error after the first was
+  unplaced, so with two a part whose fields are all under `@catch` failed a
+  `@throwOnFieldError` fetch and handle, and a spread's part failed a
+  handle though the spread's fragment weighs its own errors. The errors
+  count as uncaught now only when a field the part would have filled is
+  under no `@catch`; a part with no field on its record's type leaves them
+  all unplaced, where it dropped the first.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 
