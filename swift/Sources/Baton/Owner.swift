@@ -3,6 +3,7 @@
 /// is resolved once per owner, and each spread with arguments binds its
 /// scope once, so a read after the first renders, hashes and allocates
 /// nothing. A handle keeps one owner for its lifetime.
+@_spi(Generated)
 @MainActor
 public final class Owner {
     nonisolated public let variables: Variables
@@ -72,6 +73,7 @@ public final class Owner {
 
 /// A storage key with variables, such as `characters(page:$page)`: its type
 /// and the parts it is built from. An owner renders it once.
+@_spi(Generated)
 public final class DynamicKey: Sendable {
     public let type: TypeID
     public let parts: [KeyPart]
@@ -96,6 +98,7 @@ public final class DynamicKey: Sendable {
 
 /// A fragment spread with `@arguments`: the place an owner binds the
 /// fragment's scope, so the binding is made once per owner.
+@_spi(Generated)
 public final class ArgumentSite: Sendable {
     public init() {}
 }

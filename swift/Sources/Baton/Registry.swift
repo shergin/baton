@@ -2,7 +2,8 @@ import Synchronization
 
 /// An interned schema type.
 public struct TypeID: Hashable, Sendable {
-    public let raw: Int32
+    /// The number the process gave the type.
+    @_spi(Generated) public let raw: Int32
 
     /// The type's name, for keys and diagnostics.
     public var name: String { Registry.typeName(self) }
@@ -14,10 +15,11 @@ public struct TypeID: Hashable, Sendable {
 /// which a cursor or an id makes of its own, has a negative index, numbered
 /// apart, and a record keeps it in a short list of the keys written to it,
 /// so the keys a session makes never widen the records of their type.
-/// Generated code holds slots as `static let`s.
+/// Generated code holds slots as `static let`s; an app meets one only in
+/// the store's reports, which name it by its key.
 public struct Slot: Hashable, Sendable {
-    public let type: TypeID
-    public let index: Int32
+    @_spi(Generated) public let type: TypeID
+    @_spi(Generated) public let index: Int32
 
     public var storageKey: String { Registry.storageKey(self) }
 }
@@ -25,6 +27,7 @@ public struct Slot: Hashable, Sendable {
 /// A storage key read on whatever concrete type a record has: a field
 /// selected on an interface or union. The slot of each type is resolved on
 /// its first read there, so every later read is two array loads.
+@_spi(Generated)
 @MainActor
 public final class AbstractSlot {
     nonisolated public let storageKey: String
@@ -58,6 +61,7 @@ public final class AbstractSlot {
 
 /// The process-wide table of types and storage keys. Independently compiled
 /// modules agree on slots because every slot is interned here on first use.
+@_spi(Generated)
 public enum Registry {
     private struct State {
         var typeIDs: [String: TypeID] = [:]

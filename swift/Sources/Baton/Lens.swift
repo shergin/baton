@@ -3,7 +3,9 @@ import SwiftUI
 /// Where a lens reads from: one record, the owner whose scope binds any
 /// argument-carrying storage key along its path, and the record it was
 /// reached from, which a connection needs for its owner's id. Two anchors
-/// are equal when the three are the same objects.
+/// are equal when the three are the same objects. Generated code's alone:
+/// an app reads through lenses and never holds an anchor.
+@_spi(Generated)
 public struct Anchor: Sendable, Equatable {
     public let record: Record
     public let owner: Owner
@@ -46,31 +48,34 @@ extension Anchor {
 /// A typed, read-only view over one record: a fragment's or an operation's
 /// data. The compiler generates one struct per selection; this protocol is
 /// what they share. The static checks are generated where a directive asks
-/// for them and default to the permissive answer elsewhere.
+/// for them and default to the permissive answer elsewhere. Every
+/// requirement but `typeName` is generated code's alone: outside the module
+/// a lens was generated in, it is made only by the accessor that reaches it
+/// and cannot be rebuilt as another.
 public protocol Lens: Sendable {
-    var anchor: Anchor { get }
-    init(anchor: Anchor)
+    @_spi(Generated) var anchor: Anchor { get }
+    @_spi(Generated) init(anchor: Anchor)
     static var typeName: String { get }
     /// Whether every `@required` field of the selection is present.
-    @MainActor static func satisfied(_ anchor: Anchor) -> Bool
+    @_spi(Generated) @MainActor static func satisfied(_ anchor: Anchor) -> Bool
     /// The path of the first `@required` field of the selection that is
     /// missing, for an operation's root that it bubbles to; nil when every
     /// one is present.
-    @MainActor static func missingRequiredField(_ anchor: Anchor) -> String?
+    @_spi(Generated) @MainActor static func missingRequiredField(_ anchor: Anchor) -> String?
     /// The field errors in the selection, for `@catch` and `@throwOnFieldError`.
-    @MainActor static func fieldErrors(_ anchor: Anchor) -> [FieldError]
+    @_spi(Generated) @MainActor static func fieldErrors(_ anchor: Anchor) -> [FieldError]
     /// Whether a deferred fragment's fields have arrived.
-    @MainActor static func isPresent(_ anchor: Anchor) -> Bool
+    @_spi(Generated) @MainActor static func isPresent(_ anchor: Anchor) -> Bool
 }
 
 extension Lens {
     /// The record's identity, for list diffing.
     @MainActor public var recordID: RecordID { RecordID(anchor.record) }
 
-    @MainActor public static func satisfied(_ anchor: Anchor) -> Bool { true }
-    @MainActor public static func missingRequiredField(_ anchor: Anchor) -> String? { nil }
-    @MainActor public static func fieldErrors(_ anchor: Anchor) -> [FieldError] { [] }
-    @MainActor public static func isPresent(_ anchor: Anchor) -> Bool { true }
+    @_spi(Generated) @MainActor public static func satisfied(_ anchor: Anchor) -> Bool { true }
+    @_spi(Generated) @MainActor public static func missingRequiredField(_ anchor: Anchor) -> String? { nil }
+    @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Anchor) -> [FieldError] { [] }
+    @_spi(Generated) @MainActor public static func isPresent(_ anchor: Anchor) -> Bool { true }
 }
 
 @MainActor

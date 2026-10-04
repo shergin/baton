@@ -209,7 +209,9 @@ full in [`CHANGELOG.md`](CHANGELOG.md).
 Add the package and the plugin to a target, put `baton.json` with the schema
 path (and lookups, and `onError` if the server takes it) in the target's
 directory or at the package root, and build. The plugin runs `batonc` for every Swift file that declares GraphQL
-and reports schema errors at the GraphQL text.
+and reports schema errors at the GraphQL text. The generated files import
+the runtime's interface for generated code, `@_spi(Generated) import
+Baton`; the app's own files import `Baton` and need nothing more.
 
 To keep the store across launches, give the environment an image:
 `Environment(url: endpoint, persistence: Persistence(name: "Main", version: Types.schemaDigest))`,

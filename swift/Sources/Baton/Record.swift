@@ -67,7 +67,7 @@ public final class Record: Observable {
 
     /// Reads a slot and registers the read with the current tracking scope.
     @inline(__always)
-    public func read(_ slot: Slot) -> Value {
+    @_spi(Generated) public func read(_ slot: Slot) -> Value {
         registrar.access(self, keyPath: Record.channel(slot.index))
         return peek(slot)
     }
@@ -196,7 +196,7 @@ public final class Record: Observable {
     }
 
     /// The field error stored beside a slot, registering the read.
-    public func error(_ slot: Slot) -> FieldError? {
+    @_spi(Generated) public func error(_ slot: Slot) -> FieldError? {
         registrar.access(self, keyPath: Record.channel(slot.index))
         return errors?[slot.index]
     }
@@ -245,7 +245,7 @@ public final class Record: Observable {
 
     /// Whether the record is of the given type: its concrete type, from the
     /// payload's `__typename` for interface- and union-typed fields.
-    public func `is`(_ type: TypeID) -> Bool { self.type == type }
+    @_spi(Generated) public func `is`(_ type: TypeID) -> Bool { self.type == type }
 
     /// Forgets every value, silently: the record is leaving the store, and
     /// anything still holding it reads missing data and reports it.

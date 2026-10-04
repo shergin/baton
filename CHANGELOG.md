@@ -622,6 +622,19 @@ are expected and listed without apology.
   renderings of `Variable` and `Variables` are `package`. The tests and
   benchmarks reach them; an app writes through operations and reads
   through lenses. Breaking for code that committed or ingested by hand.
+- The interface generated code calls is SPI, and generated files open with
+  `@_spi(Generated) import Baton`. `Anchor`, `Owner`, `Registry`,
+  `AbstractSlot`, `DynamicKey`, `ArgumentSite`, the plan types, the
+  numbers inside `TypeID` and `Slot`, `Record.read`, `error` and `is`, and
+  `Lens`'s `anchor`, `init(anchor:)` and static checks are
+  `@_spi(Generated)`, as are an operation's `plan` and its flags; a lens's
+  `anchor`, `init(anchor:)`, `connection` and `refetchable` are generated
+  as SPI too. An app reads through accessors and cannot rebuild one
+  fragment's lens as another's from another module. `Slot.storageKey` and
+  `TypeID.name` stay public: the store's reports hand an app a slot and a
+  record. Breaking for code that read a record, built an anchor or a lens,
+  or named a plan: it needs `@_spi(Generated) import Baton`, as the tests
+  and benchmarks have.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

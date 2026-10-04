@@ -2,6 +2,7 @@ import Synchronization
 
 /// An operation's normalization plan, emitted by the compiler as static data:
 /// what the response contains and where each value is stored.
+@_spi(Generated)
 public struct Plan: Sendable {
     public let root: Selection
 
@@ -15,16 +16,19 @@ public struct Plan: Sendable {
     }
 }
 
+@_spi(Generated)
 public enum ScalarKind: Sendable {
     case string, int, double, bool, custom
 }
 
+@_spi(Generated)
 public enum KeyPart: Sendable {
     case literal(String)
     case variable(String)
 }
 
 /// Where a field's value lives on its parent record.
+@_spi(Generated)
 public enum StorageKey: Sendable {
     case fixed(Slot)
     /// A key with variables, e.g. `characters(page:$page)`.
@@ -35,6 +39,7 @@ public enum StorageKey: Sendable {
 /// is missing from the store, the entity satisfies it: `Type:key` when the
 /// type is known, or the one live record `T:key` among the field's possible
 /// types when it is not (`node(id:)`).
+@_spi(Generated)
 public struct Lookup: Sendable {
     public enum Key: Sendable {
         case variable(String)
@@ -58,6 +63,7 @@ public struct Lookup: Sendable {
 /// the connection record. Resolved once per connection by the generated code,
 /// and kept by the registry under the connection type, where the commit of
 /// an edge directive, which names its connections by id, finds them.
+@_spi(Generated)
 public struct ConnectionSlots: Sendable {
     public let connection: TypeID
     public let edge: TypeID
@@ -95,6 +101,7 @@ public struct ConnectionSlots: Sendable {
 
 /// A cursor argument of a connection field: a variable, or a constant that is
 /// not null (the compiler drops null constants).
+@_spi(Generated)
 public enum ConnectionCursor: Sendable {
     case variable(String)
     case literal
@@ -103,6 +110,7 @@ public enum ConnectionCursor: Sendable {
 /// A `@connection` field: the client record its pages merge into, keyed on
 /// the parent by Relay's handle key, and the cursor arguments that decide
 /// whether a page replaces, appends or prepends.
+@_spi(Generated)
 public struct ConnectionPlan: Sendable {
     public let key: StorageKey
     public let slots: ConnectionSlots
@@ -139,6 +147,7 @@ package enum ConnectionMode: Sendable, Equatable {
 /// An edge directive on a mutation payload field: the edit to make with the
 /// field's records once the payload is in the store, which the change set
 /// carries as a `ChangeSet.Edit`.
+@_spi(Generated)
 public struct Edit: Sendable {
     public enum Kind: Sendable {
         case appendEdge, prependEdge, appendNode, prependNode, deleteEdge, deleteRecord
@@ -165,6 +174,7 @@ public struct Edit: Sendable {
 /// How a `@refetchable` fragment's query is bound from a lens: the query's
 /// variables (taken from the lens's scope), the one that carries the owner's
 /// id, and the connection's count and cursor variables for pagination.
+@_spi(Generated)
 public struct Refetch: Sendable {
     public let variables: [String]
     public let identifier: String?
@@ -185,6 +195,7 @@ public struct Refetch: Sendable {
 
 /// One condition of `@include` or `@skip`: the variable, and the value it
 /// must have for the field to be fetched.
+@_spi(Generated)
 public struct Guard: Sendable {
     public let variable: String
     public let passing: Bool
@@ -199,6 +210,7 @@ public struct Guard: Sendable {
     }
 }
 
+@_spi(Generated)
 public struct PlanField: Sendable {
     public enum Kind: Sendable {
         case scalar(ScalarKind, list: Bool)
@@ -265,6 +277,7 @@ public struct PlanField: Sendable {
 /// A selection set on one type. On an interface or union, the payload's
 /// `__typename` names each record's concrete type, and the type picks the
 /// variant: the fields that type reads.
+@_spi(Generated)
 public final class Selection: Sendable {
     /// The fields one group of concrete types reads.
     public struct Variant: Sendable {

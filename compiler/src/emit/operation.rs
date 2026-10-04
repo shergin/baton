@@ -71,17 +71,17 @@ pub(super) fn operation_text(operation: &OperationValue) -> String {
     if let Some(behavior) = &operation.error_behavior {
         let _ = writeln!(
             output,
-            "    public static let errorBehavior: Baton.ErrorBehavior? = .{behavior}"
+            "    @_spi(Generated) public static let errorBehavior: Baton.ErrorBehavior? = .{behavior}"
         );
     }
     if operation.throws_on_field_error {
-        output.push_str("    public static let throwsOnFieldError = true\n");
+        output.push_str("    @_spi(Generated) public static let throwsOnFieldError = true\n");
     }
     if operation.bubbles {
-        output.push_str("    public static let bubbles = true\n");
+        output.push_str("    @_spi(Generated) public static let bubbles = true\n");
     }
     if operation.has_deferred {
-        output.push_str("    public static let hasDeferred = true\n");
+        output.push_str("    @_spi(Generated) public static let hasDeferred = true\n");
     }
     let _ = writeln!(
         output,
@@ -124,7 +124,7 @@ pub(super) fn operation_text(operation: &OperationValue) -> String {
     output.push_str("    }\n\n");
 
     // The normalization plan, as static data.
-    output.push_str("    public static let plan = Baton.Plan(root: ");
+    output.push_str("    @_spi(Generated) public static let plan = Baton.Plan(root: ");
     selection_plan(&mut output, &operation.normalization, 2);
     output.push_str(")\n\n");
 

@@ -35,10 +35,13 @@ pub(super) fn lens(output: &mut String, lens: &ReaderPlan, indent: &str) {
         "{indent}nonisolated public struct {}: Baton.Lens {{",
         lens.name
     );
-    let _ = writeln!(output, "{indent}    public let anchor: Baton.Anchor");
     let _ = writeln!(
         output,
-        "{indent}    public init(anchor: Baton.Anchor) {{ self.anchor = anchor }}"
+        "{indent}    @_spi(Generated) public let anchor: Baton.Anchor"
+    );
+    let _ = writeln!(
+        output,
+        "{indent}    @_spi(Generated) public init(anchor: Baton.Anchor) {{ self.anchor = anchor }}"
     );
     let _ = writeln!(
         output,
@@ -481,7 +484,7 @@ fn refetch_members(output: &mut String, refetch: &RefetchMembers, indent: &str) 
     );
     let _ = writeln!(
         output,
-        "{indent}public static let refetchable = Baton.Refetch(variables: [{}], identifier: {}, first: {}, after: {}, last: {}, before: {})",
+        "{indent}@_spi(Generated) public static let refetchable = Baton.Refetch(variables: [{}], identifier: {}, first: {}, after: {}, last: {}, before: {})",
         refetch
             .variables
             .iter()
@@ -516,7 +519,7 @@ fn connection_members(output: &mut String, connection: &ConnectionMembers, inden
     );
     let _ = writeln!(
         output,
-        "{indent}public static let connection = Baton.ConnectionSlots(connection: {}, edge: {}, pageInfo: {})",
+        "{indent}@_spi(Generated) public static let connection = Baton.ConnectionSlots(connection: {}, edge: {}, pageInfo: {})",
         type_reference(&connection.connection_type),
         type_reference(&connection.edge_type),
         type_reference(&connection.page_info_type)
@@ -624,7 +627,7 @@ fn satisfied_function(
     );
     let _ = writeln!(
         output,
-        "{indent}@MainActor public static func satisfied(_ anchor: Baton.Anchor) -> Bool {{"
+        "{indent}@_spi(Generated) @MainActor public static func satisfied(_ anchor: Baton.Anchor) -> Bool {{"
     );
     for entry in entries {
         let (indent, close) = open_guard(output, &entry.guards, indent);
@@ -674,7 +677,7 @@ fn missing_required_function(
     );
     let _ = writeln!(
         output,
-        "{indent}@MainActor public static func missingRequiredField(_ anchor: Baton.Anchor) -> String? {{"
+        "{indent}@_spi(Generated) @MainActor public static func missingRequiredField(_ anchor: Baton.Anchor) -> String? {{"
     );
     for entry in entries {
         let (indent, close) = open_guard(output, &entry.guards, indent);
@@ -732,7 +735,7 @@ fn field_errors_function(output: &mut String, checks: &[ErrorCheck], indent: &st
     );
     let _ = writeln!(
         output,
-        "{indent}@MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {{"
+        "{indent}@_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {{"
     );
     let _ = writeln!(output, "{indent}    var errors: [Baton.FieldError] = []");
     for check in checks {
@@ -803,7 +806,7 @@ fn field_errors_function(output: &mut String, checks: &[ErrorCheck], indent: &st
     );
     let _ = writeln!(
         output,
-        "{indent}@MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self {{"
+        "{indent}@_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self {{"
     );
     let _ = writeln!(output, "{indent}    let errors = fieldErrors(anchor)");
     let _ = writeln!(
@@ -818,7 +821,7 @@ fn field_errors_function(output: &mut String, checks: &[ErrorCheck], indent: &st
     );
     let _ = writeln!(
         output,
-        "{indent}@MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {{"
+        "{indent}@_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {{"
     );
     let _ = writeln!(output, "{indent}    let errors = fieldErrors(anchor)");
     let _ = writeln!(
@@ -847,7 +850,7 @@ fn is_present_function(output: &mut String, checks: &[Guarded<SlotAccess>], inde
     );
     let _ = writeln!(
         output,
-        "{indent}@MainActor public static func isPresent(_ anchor: Baton.Anchor) -> Bool {{ {} }}",
+        "{indent}@_spi(Generated) @MainActor public static func isPresent(_ anchor: Baton.Anchor) -> Bool {{ {} }}",
         if checks.is_empty() {
             "true".to_string()
         } else {

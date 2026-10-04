@@ -27,15 +27,15 @@ public protocol Operation: Hashable, Sendable {
     static var name: String { get }
     static var text: String { get }
     static var persistedID: String { get }
-    static var plan: Plan { get }
+    @_spi(Generated) static var plan: Plan { get }
     /// `@throwOnFieldError`: an uncaught field error fails the operation.
-    static var throwsOnFieldError: Bool { get }
+    @_spi(Generated) static var throwsOnFieldError: Bool { get }
     /// Whether a `@required` field at the root can null the whole result.
-    static var bubbles: Bool { get }
+    @_spi(Generated) static var bubbles: Bool { get }
     /// Whether the response may arrive in parts (`@defer`).
-    static var hasDeferred: Bool { get }
+    @_spi(Generated) static var hasDeferred: Bool { get }
     /// The `onError` value `baton.json` names, sent with every request.
-    static var errorBehavior: ErrorBehavior? { get }
+    @_spi(Generated) static var errorBehavior: ErrorBehavior? { get }
     var variables: Variables { get }
 }
 
@@ -56,10 +56,10 @@ public protocol Subscription: Operation {
 }
 
 extension Operation {
-    public static var throwsOnFieldError: Bool { false }
-    public static var bubbles: Bool { false }
-    public static var hasDeferred: Bool { false }
-    public static var errorBehavior: ErrorBehavior? { nil }
+    @_spi(Generated) public static var throwsOnFieldError: Bool { false }
+    @_spi(Generated) public static var bubbles: Bool { false }
+    @_spi(Generated) public static var hasDeferred: Bool { false }
+    @_spi(Generated) public static var errorBehavior: ErrorBehavior? { nil }
 }
 
 /// The state of a resolved operation. Always synchronously readable.

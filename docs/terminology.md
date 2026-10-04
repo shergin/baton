@@ -129,6 +129,8 @@ fragment reference carries a record id and an owner; an anchor holds the
 record itself. Two anchors are equal when the three are the same objects. A
 handle makes the root anchor its data reads from, as `mutate` does for the
 data it returns, and generated accessors derive every anchor below it.
+Generated code's alone: an app's code never holds one (see
+[artifact](#compiler)).
 
 **Operation value.** *Concept: operation value.* A `Hashable` struct of an
 operation's variables, the thing a parent constructs and a navigation path
@@ -313,7 +315,12 @@ community's word for the hash a server accepts in place of operation text.
 Here: emitted for every operation by default.
 
 **Artifact.** *Composition: document, lens, plan.* Everything the compiler
-emits for one source file: lens types, plans, ids.
+emits for one source file: lens types, plans, ids. It opens with
+`@_spi(Generated) import Baton`, the runtime's interface for generated code:
+anchors and owners, the numbers of types and slots, the registry, the plan
+types, and the anchor and initializer of every lens. An app's own files
+import `Baton` and see lenses, handles, the environment, transports and
+persistence.
 
 ## Runtime
 

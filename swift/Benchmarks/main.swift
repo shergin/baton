@@ -2,7 +2,7 @@
 //
 //   swift run -c release BatonBenchmarks
 //   swift run -c release BatonBenchmarks --quick   (three samples each, for CI)
-import Baton
+@_spi(Generated) import Baton
 import BatonSpec
 import Foundation
 import Observation

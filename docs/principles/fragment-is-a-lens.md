@@ -71,5 +71,11 @@ one accessor per field it declares; an operation root compiles to
 `Data.Characters`. A spread is an accessor such as `characterRow` that
 returns the child's lens, and a plural link is a `Baton.List`, a
 `RandomAccessCollection` of lenses. A view declares
-`@Fragment("…") var character: CharacterRow_character`. This section may
+`@Fragment("…") var character: CharacterRow_character`. The anchor a lens
+holds, the initializer that takes one and every reader behind the accessors
+are `@_spi(Generated)`, which the generated files import and an app's files
+do not, so another module cannot make one fragment's lens from another's.
+Swift does not check SPI inside the module that declares it, so in the
+module the lenses were generated in, `Other(anchor: lens.anchor)` still
+compiles, while the anchor's readers stay out of reach. This section may
 rot; the rest must not.
