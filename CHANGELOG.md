@@ -435,6 +435,12 @@ are expected and listed without apology.
   starting on it, and the one that opens it no longer waits for an
   acknowledgement that came, or a socket that failed, while its
   `connection_init` was on the way.
+- A subscription whose reader goes away before the server acknowledges
+  the connection leaves nothing behind: it stops waiting for the
+  acknowledgement, and the socket closes when no other subscription is on
+  it or starting. The socket stayed open with no subscription on it until a
+  later one ended, and without an acknowledgement the subscription's start
+  waited for good.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

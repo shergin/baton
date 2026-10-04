@@ -3,8 +3,9 @@ import Foundation
 import Network
 
 /// A `graphql-transport-ws` server on the loopback interface, for the tests of
-/// the WebSocket transport: it acknowledges the connection, records the frames
-/// the client sends, and sends the frames a test hands it.
+/// the WebSocket transport: it acknowledges the connection, at once or when
+/// the test says, records the frames the client sends, and sends the frames a
+/// test hands it.
 final class SocketServer: @unchecked Sendable {
     private let listener: NWListener
     private let queue = DispatchQueue(label: "baton.tests.socket-server")
@@ -13,8 +14,11 @@ final class SocketServer: @unchecked Sendable {
     private var received: [(type: String, id: String?)] = []
     private var closes = 0
     private let handshake = Handshake()
+    /// Whether `connection_init` is acknowledged as it arrives.
+    private let acknowledges: Bool
 
-    init() throws {
+    init(acknowledges: Bool = true) throws {
+        self.acknowledges = acknowledges
         let options = NWProtocolWebSocket.Options()
         options.setClientRequestHandler(queue) { [handshake] subprotocols, _ in
             handshake.offer(subprotocols)
@@ -77,6 +81,11 @@ final class SocketServer: @unchecked Sendable {
         lock.withLock { received.filter { $0.type == type }.count }
     }
 
+    /// Acknowledges the connection, for a server made not to at once.
+    func acknowledge() {
+        send(#"{"type":"connection_ack"}"#)
+    }
+
     /// Sends one text frame to the client.
     func send(_ text: String) {
         let metadata = NWProtocolWebSocket.Metadata(opcode: .text)
@@ -101,7 +110,7 @@ final class SocketServer: @unchecked Sendable {
             guard let data else { return }
             if let frame = try? Ingest.frame(data), let type = frame.type {
                 lock.withLock { received.append((type, frame.id)) }
-                if type == "connection_init" { send(#"{"type":"connection_ack"}"#) }
+                if type == "connection_init", acknowledges { acknowledge() }
             }
             receive(on: connection)
         }

@@ -305,7 +305,8 @@ public actor GraphQLTransportWebSocket: SubscriptionTransport {
     private let session: URLSession
     private var socket: URLSessionWebSocketTask?
     private var acknowledged = false
-    private var waitingForAck: [CheckedContinuation<Void, any Error>] = []
+    /// The subscriptions waiting for `connection_ack`, by id.
+    private var waitingForAck: [String: CheckedContinuation<Void, any Error>] = [:]
     /// How many subscriptions have started and are not yet listed in
     /// `subscribers`: opening the connection, waiting for its
     /// acknowledgement, or resumed by it and not yet run.
@@ -338,15 +339,20 @@ public actor GraphQLTransportWebSocket: SubscriptionTransport {
         // or waits on is not closed under it.
         starting += 1
         do {
-            try await connect()
+            try await connect(id)
         } catch {
             starting -= 1
             continuation.finish(throwing: error)
+            closeIfUnused()
             return
         }
         starting -= 1
-        // The stream may have ended while the connection opened.
-        guard !Task.isCancelled else { return }
+        // The stream may have ended while the connection opened, and then
+        // nothing may be left on it.
+        guard !Task.isCancelled else {
+            closeIfUnused()
+            return
+        }
         subscribers[id] = continuation
         let payload = "{\"query\":" + Variable.quote(request.text)
             + ",\"operationName\":" + Variable.quote(request.operationName)
@@ -378,7 +384,7 @@ public actor GraphQLTransportWebSocket: SubscriptionTransport {
         receiving = nil
     }
 
-    private func connect() async throws {
+    private func connect(_ id: String) async throws {
         if acknowledged { return }
         if socket == nil {
             var urlRequest = URLRequest(url: url)
@@ -395,9 +401,24 @@ public actor GraphQLTransportWebSocket: SubscriptionTransport {
             guard self.socket === socket else { throw TransportError(statusCode: 0, body: "the socket is closed") }
             if acknowledged { return }
         }
-        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, any Error>) in
-            waitingForAck.append(continuation)
+        // A stream that ends while it waits stops waiting, for the
+        // acknowledgement may never come; one that ended before does not
+        // start.
+        try await withTaskCancellationHandler {
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, any Error>) in
+                guard !Task.isCancelled else {
+                    continuation.resume(throwing: CancellationError())
+                    return
+                }
+                waitingForAck[id] = continuation
+            }
+        } onCancel: {
+            Task { await self.stopWaiting(id) }
         }
+    }
+
+    private func stopWaiting(_ id: String) {
+        waitingForAck.removeValue(forKey: id)?.resume(throwing: CancellationError())
     }
 
     private func send(_ text: String) async throws {
@@ -432,7 +453,7 @@ public actor GraphQLTransportWebSocket: SubscriptionTransport {
         switch frame.type {
         case "connection_ack":
             acknowledged = true
-            for waiting in waitingForAck { waiting.resume() }
+            for waiting in waitingForAck.values { waiting.resume() }
             waitingForAck.removeAll()
         case "ping":
             Task { try? await send("{\"type\":\"pong\"}") }
@@ -458,7 +479,7 @@ public actor GraphQLTransportWebSocket: SubscriptionTransport {
 
     /// Ends every subscription and the connection; the next subscription reconnects.
     private func fail(_ error: any Error) {
-        for waiting in waitingForAck { waiting.resume(throwing: error) }
+        for waiting in waitingForAck.values { waiting.resume(throwing: error) }
         waitingForAck.removeAll()
         for subscriber in subscribers.values { subscriber.finish(throwing: error) }
         subscribers.removeAll()

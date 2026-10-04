@@ -724,6 +724,56 @@ struct DeliveryTests {
         }
     }
 
+    @Test("a subscription whose reader goes away before the connection is acknowledged closes the socket it opened, and leaves to another the socket they both wait on")
+    func subscriptionEndedBeforeTheAcknowledgement() async throws {
+        let value = TestNoteAdded(characterId: "1", connections: [])
+        let request = Request(operationName: TestNoteAdded.name, text: TestNoteAdded.text, persistedID: TestNoteAdded.persistedID, variables: value.variables)
+
+        // Alone, it closes the socket whether the acknowledgement never comes
+        // or comes as the reader goes.
+        for acknowledged in [false, true] {
+            let server = try SocketServer(acknowledges: false)
+            let socket = GraphQLTransportWebSocket(url: try await server.start())
+            defer { server.stop() }
+            let leaving = Task { for try await _ in socket.subscribe(request) {} }
+            await until { server.count(of: "connection_init") == 1 }
+            leaving.cancel()
+            if acknowledged { server.acknowledge() }
+            await until { server.closed == 1 }
+            #expect(server.count(of: "subscribe") == 0)
+        }
+
+        // Beside another that waits for the same acknowledgement, it leaves
+        // the socket to that one.
+        final class Reader: @unchecked Sendable {
+            private let lock = NSLock()
+            private var payloads = 0
+
+            func receive() { lock.withLock { payloads += 1 } }
+            var received: Int { lock.withLock { payloads } }
+        }
+        let server = try SocketServer(acknowledges: false)
+        let socket = GraphQLTransportWebSocket(url: try await server.start())
+        defer { server.stop() }
+        let reader = Reader()
+        let staying = Task { for try await _ in socket.subscribe(request) { reader.receive() } }
+        await until { server.count(of: "connection_init") == 1 }
+        let leaving = Task { for try await _ in socket.subscribe(request) {} }
+        // Time for it to wait beside the first, as it would in an app.
+        try await Task.sleep(for: .milliseconds(20))
+        leaving.cancel()
+        _ = await leaving.result
+        server.acknowledge()
+        await until { server.count(of: "subscribe") == 1 }
+        let id = try #require(server.ids(of: "subscribe").first)
+        server.send(#"{"id":"\#(id)","type":"next","payload":{"data":{"noteAdded":null}}}"#)
+        await until { reader.received == 1 }
+        #expect(server.count(of: "subscribe") == 1, "the one that went away subscribed nothing")
+        #expect(server.closed == 0)
+        staying.cancel()
+        await until { server.closed == 1 }
+    }
+
     @Test("equal subscriptions on one socket are separate: the end of one leaves the other open")
     func equalSubscriptionsOnOneSocket() async throws {
         /// What each reader saw, by reader.
