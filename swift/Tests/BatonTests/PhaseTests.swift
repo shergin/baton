@@ -315,6 +315,35 @@ struct PhaseTests {
         handle.release()
     }
 
+    @Test("a commit that swaps a list of links onto a record with a field error fails an operation that throws and reads through it")
+    func movedLinks() async throws {
+        let environment = Environment(transport: RecordedTransport([TestStrictEpisodes.name: fixture("strict-episodes-1")]))
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestStrictEpisodes(id: "1"))
+        handle.retain()
+        await settled(handle)
+        guard case .ready = handle.phase else {
+            Issue.record("expected ready, got \(handle.phase)")
+            return
+        }
+        let other = TestStrictEpisodes.plan.resolve(TestStrictEpisodes(id: "2").variables)
+        environment.store.commit(try Ingest.normalize(fixture("strict-episodes-2-hidden"), plan: other))
+        guard case .ready = handle.phase else {
+            Issue.record("another character's episodes are not in the selection, got \(handle.phase)")
+            return
+        }
+        // The list is all the commit changes: the episode it links to holds
+        // the error already.
+        let own = TestStrictEpisodes.plan.resolve(TestStrictEpisodes(id: "1").variables)
+        environment.store.commit(try Ingest.normalize(fixture("strict-episodes-1-moved"), plan: own))
+        guard case .failed(let error as FieldErrors) = handle.phase else {
+            Issue.record("expected the moved-in error, got \(handle.phase)")
+            return
+        }
+        #expect(error.errors.map(\.message) == ["name hidden"])
+        handle.release()
+    }
+
     @Test("a bubbling operation fails when another commit nulls a field it requires, with no error on it")
     func nullFailsABubblingOperation() async throws {
         let environment = Environment(transport: RecordedTransport([TestRequiredOrigin.name: fixture("required-origin-1")]))

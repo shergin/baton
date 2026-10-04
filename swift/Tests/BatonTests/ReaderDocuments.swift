@@ -4,9 +4,9 @@ import Baton
 /// field and a link `@required` all the way up, a non-null list under
 /// `@catch`, one scope holding two keys with variables and two spreads
 /// with arguments, fields named like the module's shared enums, and a type
-/// condition in an operation that throws on field errors, and a link an
-/// operation that throws reads through, and variables named like Swift's
-/// keywords.
+/// condition in an operation that throws on field errors, and a link and a
+/// list of links an operation that throws reads through, and variables
+/// named like Swift's keywords.
 @MainActor
 struct ReaderDocuments {
     @Query("""
@@ -63,6 +63,13 @@ struct ReaderDocuments {
         }
         """)
     var strictOrigin: TestStrictOrigin
+
+    @Query("""
+        query TestStrictEpisodes($id: ID!) @throwOnFieldError {
+          character(id: $id) { id episode { id name } }
+        }
+        """)
+    var strictEpisodes: TestStrictEpisodes
 
     @Query("""
         query TestKeywordVariables($where: ID!, $in: String!) {
