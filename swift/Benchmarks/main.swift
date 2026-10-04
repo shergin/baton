@@ -540,7 +540,7 @@ func persistenceBench(changes: ChangeSet, edited: ChangeSet, plan: ResolvedSelec
     // The process has not touched SQLite yet: this is what a launch pays once.
     let start = now()
     let persistence = Persistence(url: url)
-    let missed = Store(persistence: persistence).check(plan)
+    let missed = Store(persistence: persistence).check(plan) != .miss
     print("  first use in the process (open, create, a read that misses): \(String(format: "%.2f", Double(now() - start) / 1_000_000)) ms\(missed ? " (unexpected hit)" : "")")
 
     measure("commit into an empty store, image on (899 records)", iterations: 20) {
@@ -575,22 +575,22 @@ func persistenceBench(changes: ChangeSet, edited: ChangeSet, plan: ResolvedSelec
     }
 
     measure("hydration: the check reads 898 rows into an empty store", iterations: 20) {
-        precondition(Store(persistence: persistence).check(plan))
+        precondition(Store(persistence: persistence).check(plan) != .miss)
     }
     measure("the same, per record", iterations: 20, ops: 898) {
-        precondition(Store(persistence: persistence).check(plan))
+        precondition(Store(persistence: persistence).check(plan) != .miss)
     }
     let hydrated = Store(persistence: persistence)
-    precondition(hydrated.check(plan))
+    precondition(hydrated.check(plan) != .miss)
     measure("the check once the records are in memory", iterations: 50) {
-        precondition(hydrated.check(plan))
+        precondition(hydrated.check(plan) != .miss)
     }
 
     await measureEach("hydration right behind a commit of 899 records") {
         Store(persistence: persistence).commit(changes)
         let store = Store(persistence: persistence)
         let start = now()
-        precondition(store.check(plan))
+        precondition(store.check(plan) != .miss)
         let elapsed = now() - start
         await persistence.flush()
         return elapsed
@@ -633,7 +633,7 @@ func launch(_ path: String, opened: Bool) async {
         await persistence.flush()
         start = DispatchTime.now().uptimeNanoseconds
     }
-    let complete = store.check(plan)
+    let complete = store.check(plan) != .miss
     let elapsed = DispatchTime.now().uptimeNanoseconds - start
     precondition(complete && store.hydratedRecords == 898)
     print(elapsed)

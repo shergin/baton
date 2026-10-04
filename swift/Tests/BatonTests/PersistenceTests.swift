@@ -509,7 +509,7 @@ struct PersistenceTests {
             first.commit(try Ingest.normalize(Data(renamed.utf8), plan: Fixture.plan.resolve(Fixture(page: 1).variables)))
             let second = Store(persistence: first.persistence)
             second.reportMissing = nil
-            #expect(!second.check(Fixture.plan.resolve(Fixture(page: 1).variables)))
+            #expect(second.check(Fixture.plan.resolve(Fixture(page: 1).variables)) == .miss)
             await first.persistence?.flush()
         }
     }

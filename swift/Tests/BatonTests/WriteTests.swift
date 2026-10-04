@@ -262,10 +262,10 @@ struct WriteTests {
         store.commit(try Ingest.normalize(list, plan: TestList.plan.resolve(TestList(page: 1).variables)))
 
         let variables = TestNode(id: "8").variables
-        #expect(store.check(TestNode.plan.resolve(variables)), "the id index satisfies the lookup")
+        #expect(store.check(TestNode.plan.resolve(variables)) != .miss, "the id index satisfies the lookup")
         let data = TestNode.Data(anchor: Anchor(record: store.root, variables: variables, store: store))
         #expect(data.node?.asCharacter?.name == "Adjudicator Rick")
         #expect(data.node?.asEpisode == nil)
-        #expect(!store.check(TestNode.plan.resolve(TestNode(id: "999").variables)))
+        #expect(store.check(TestNode.plan.resolve(TestNode(id: "999").variables)) == .miss)
     }
 }

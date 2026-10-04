@@ -43,9 +43,9 @@ struct IdentityTests {
     func lookupWithoutAType() throws {
         let ambiguities = Ambiguities()
         let store = try store(ambiguities)
-        #expect(!store.check(TestNode.plan.resolve(TestNode(id: "1").variables)), "three types have the id 1")
+        #expect(store.check(TestNode.plan.resolve(TestNode(id: "1").variables)) == .miss, "three types have the id 1")
         #expect(ambiguities.ids == ["1"])
-        #expect(store.check(TestNode.plan.resolve(TestNode(id: "8").variables)))
+        #expect(store.check(TestNode.plan.resolve(TestNode(id: "8").variables)) != .miss)
         let data = TestNode.Data(anchor: Anchor(record: store.root, variables: TestNode(id: "8").variables, store: store))
         #expect(data.node?.asCharacter?.name == "Adjudicator Rick")
     }

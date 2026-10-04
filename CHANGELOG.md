@@ -240,6 +240,12 @@ are expected and listed without apology.
   schema is discarded. The version is the app's to pass, because generated
   constants are made on first use and nothing has made one when the file
   opens.
+- `Store.check` says where its answer came from: `.memory`, `.image` or
+  `.miss`. A handle took the image's part from a change in a global
+  counter, which missed the root's fields and records an earlier check had
+  filled, so data from the image without a fetch time could read as fresh.
+  `Store.hydratedRecords` is no longer public. Breaking: `check` returned a
+  `Bool`.
 - `removeAll()` deletes the image's file. It queued deletes that a failed
   open dropped and a failed batch rolled back, and it kept the interned
   names, which hold argument values; work queued before it is dropped

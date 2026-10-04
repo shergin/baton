@@ -53,8 +53,11 @@ public final class Store {
     /// The store's image on disk, when it has one: every commit is written
     /// behind, and the availability check reads from it what memory lacks.
     public let persistence: Persistence?
-    /// How many records have been filled from the image.
-    public internal(set) var hydratedRecords = 0
+    /// How many records have been filled from the image; for tests and
+    /// benchmarks.
+    package internal(set) var hydratedRecords = 0
+    /// Whether the walk in memory met a record the image filled.
+    private var metHydrated = false
     /// The image's connection while a check is reading from it.
     private var reading: Disk?
     /// Whether the batch in progress changed a field error, a null, a link,
@@ -740,18 +743,30 @@ public final class Store {
     /// same walk runs again with the image at hand, and what it reads becomes
     /// part of the store: this is how a launch renders its first body from
     /// the last one's data.
-    public func check(_ selection: ResolvedSelection, at record: Record? = nil) -> Bool {
+    public func check(_ selection: ResolvedSelection, at record: Record? = nil) -> Answer {
         let record = record ?? root
-        if holds(selection, at: record) { return true }
+        metHydrated = false
+        if holds(selection, at: record) { return metHydrated ? .image : .memory }
         // A check an observer starts while the image is being read joins
         // the read that is open.
-        if let reading { return fill(selection, at: record, from: reading) }
-        guard let persistence else { return false }
-        return persistence.reading { disk in
+        if let reading { return fill(selection, at: record, from: reading) ? .image : .miss }
+        guard let persistence else { return .miss }
+        let found = persistence.reading { disk in
             reading = disk
             defer { reading = nil }
             return fill(selection, at: record, from: disk)
         }
+        return found ? .image : .miss
+    }
+
+    /// Where the availability check found the selection's data.
+    public enum Answer: Sendable {
+        /// In memory, every record of it put there by a response.
+        case memory
+        /// With the image's help: read from it now, or by an earlier check.
+        case image
+        /// Not all of it, in memory or in the image.
+        case miss
     }
 
     /// The walk in memory: whether the store holds every field as it stands.
@@ -762,6 +777,7 @@ public final class Store {
     /// The walk over one record's fields. They are taken as a parameter and
     /// read in place, so neither the list nor a field is retained per record.
     private func holds(_ fields: [ResolvedField], at record: Record) -> Bool {
+        if record.hydrated { metHydrated = true }
         for index in fields.indices {
             if fields[index].isTypename || fields[index].deferred != nil { continue }
             let slot = fields[index].slot

@@ -173,7 +173,7 @@ struct SpineTests {
             Issue.record("the read wrote the link")
             return
         }
-        #expect(store.check(TestHeaderQuery.plan.resolve(detail.variables)))
+        #expect(store.check(TestHeaderQuery.plan.resolve(detail.variables)) != .miss)
         #expect(data.character?.testHeader.name == "Summer Smith", "the check wrote the link")
     }
 
@@ -188,7 +188,7 @@ struct SpineTests {
         // The detail's header renders from the store, through the lookup the
         // check binds.
         let header = TestHeaderQuery(id: "9")
-        #expect(store.check(TestHeaderQuery.plan.resolve(header.variables)))
+        #expect(store.check(TestHeaderQuery.plan.resolve(header.variables)) != .miss)
         let data = TestHeaderQuery.Data(anchor: Anchor(record: store.root, variables: header.variables, store: store))
         #expect(data.character?.testHeader.name == "Agency Director")
 

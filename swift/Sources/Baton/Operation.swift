@@ -215,7 +215,7 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
     }
 
     /// Whether the store holds every field the operation selects.
-    public var isComplete: Bool { store.check(resolved) }
+    public var isComplete: Bool { store.check(resolved) != .miss }
 
     /// Whether the data predates `Environment.invalidate()` or the expiration.
     public var isStale: Bool {
@@ -266,9 +266,9 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
             fetch()
             return
         }
-        let hydrated = store.hydratedRecords
-        let complete = isComplete
-        if complete { takeAge(hydrated: store.hydratedRecords != hydrated) }
+        let answer = store.check(resolved)
+        let complete = answer != .miss
+        if complete { takeAge(hydrated: answer == .image) }
         if complete {
             switch phase {
             case .loading:

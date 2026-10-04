@@ -122,7 +122,7 @@ struct OracleTests {
             second.reportMissing = nil
             let environment = Environment(transport: SilentTransport(), store: second)
             let answered = environment.store.check(oracle.plan)
-            if oracle.complete { #expect(answered, "the image answers the plan") }
+            if oracle.complete { #expect(answered == .image, "the image answers the plan") }
             expectSame(Oracle.leaves(of: second.root, in: second, plan: oracle.plan), expected, "from the image")
         }
 

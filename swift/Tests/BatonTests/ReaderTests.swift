@@ -125,7 +125,7 @@ struct ReaderTests {
         store.reportMissing = nil
         store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
         for id in ["1", "2"] {
-            #expect(store.check(TestHeaderQuery.plan.resolve(TestHeaderQuery(id: id).variables)), "the lookup binds character(id: \(id))")
+            #expect(store.check(TestHeaderQuery.plan.resolve(TestHeaderQuery(id: id).variables)) != .miss, "the lookup binds character(id: \(id))")
         }
         let scopes = TestTwoScopes(a: "1", b: "2")
         let data = TestTwoScopes.Data(anchor: Anchor(record: store.root, variables: scopes.variables, store: store))
@@ -154,7 +154,7 @@ struct ReaderTests {
         let store = Store()
         store.reportMissing = nil
         store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
-        #expect(store.check(TestHeaderQuery.plan.resolve(TestHeaderQuery(id: "1").variables)))
+        #expect(store.check(TestHeaderQuery.plan.resolve(TestHeaderQuery(id: "1").variables)) != .miss)
         let query = TestReservedNames(id: "1")
         let data = TestReservedNames.Data(anchor: Anchor(record: store.root, variables: query.variables, store: store))
         let sites: TestReservedNames.Data.SitesLens? = data.sites
