@@ -580,6 +580,18 @@ are expected and listed without apology.
   a `@required` null, with its data in the store, fetches again. It was set
   only behind ready data, so a view showing that data and the failure did
   not see the refetch.
+- A name the document chose that the generated code needs is an error at
+  that name, which says what it clashes with and asks for an alias or a
+  rename: a variable named `variables`, or `resolution` in a query or a
+  subscription; a mutation's payload field named `variable`, which its
+  optimistic builder declares; a field named or aliased `anchor` or
+  `recordID` in any lens, or `hasNext`, `hasPrevious`, `isLoadingNext`,
+  `isLoadingPrevious`, `connectionID` or `nodes` in a connection; and a
+  fragment or operation named `Types`, `Slots` or `Baton`, a refetch query
+  among them. Each was an internal error without a position that asked to
+  report it, and a fragment named `Baton` hid the runtime's module from the
+  generated code. A clash between two names the compiler chose stays an
+  internal error.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

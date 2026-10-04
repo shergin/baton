@@ -203,3 +203,62 @@ fn the_property_check_finds_each_document_by_where_it_came_from() {
         "{warnings:?}"
     );
 }
+
+#[test]
+fn a_name_the_document_chose_that_the_generated_code_needs_is_an_error_at_the_name() {
+    let directory = workspace("clashes");
+    write(
+        &directory,
+        "Probe.swift",
+        r##"@Query("query Probe($variables: ID!, $resolution: ID!) { character(id: $variables) { id } node(id: $resolution) { id } }")
+var probe: Probe
+@Mutation("mutation Rename($id: ID!) { variable: setFavorite(id: $id, favorite: true) { character { id } } }")
+var rename: Rename.Action
+@Fragment(#"fragment Probe_notes on Character { notes(first: 2) @connection(key: "Probe_notes") { hasNext: totalCount connectionID: totalCount edges { node { id } } } }"#)
+var notes: Probe_notes
+@Fragment("fragment Types on Character { name }")
+var types: Types
+@Fragment("fragment Slots on Character { name }")
+var slots: Slots
+@Fragment("fragment Baton on Character { name }")
+var baton: Baton
+"##,
+    );
+    let output = generate(&directory, &["--out", "out", "Probe.swift"]);
+    assert!(!output.status.success());
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    let mut lines: Vec<&str> = stderr.lines().collect();
+    lines.sort();
+    assert_eq!(
+        lines,
+        [
+            "Probe.swift:11:21: error: the fragment `Baton` clashes with the runtime's module `Baton` in the generated Swift; rename the fragment",
+            "Probe.swift:1:21: error: the variable `$variables` clashes with the operation's `variables` in the generated Swift; rename the variable",
+            "Probe.swift:1:38: error: the variable `$resolution` clashes with the operation's `resolution` in the generated Swift; rename the variable",
+            "Probe.swift:3:40: error: the field `variable` clashes with the optimistic response's `variable` in the generated Swift; choose another alias",
+            "Probe.swift:5:119: error: the field `connectionID` clashes with the connection's `connectionID` in the generated Swift; choose another alias",
+            "Probe.swift:5:99: error: the field `hasNext` clashes with the connection's `hasNext` in the generated Swift; choose another alias",
+            "Probe.swift:7:21: error: the fragment `Types` clashes with the shared enum `Types` in the generated Swift; rename the fragment",
+            "Probe.swift:9:21: error: the fragment `Slots` clashes with the shared enum `Slots` in the generated Swift; rename the fragment",
+        ]
+    );
+    assert!(!directory.join("out").exists(), "an output was written");
+}
+
+#[test]
+fn a_refetch_query_named_like_a_shared_enum_is_an_error_at_its_fragment() {
+    let directory = workspace("refetch-clash");
+    write(
+        &directory,
+        "Refetch.swift",
+        r##"@Fragment(#"fragment Refetch_character on Character @refetchable(queryName: "Slots") { name }"#)
+var refetch: Refetch_character
+"##,
+    );
+    let output = generate(&directory, &["--out", "out", "Refetch.swift"]);
+    assert!(!output.status.success());
+    assert_eq!(
+        String::from_utf8_lossy(&output.stderr).trim_end(),
+        "Refetch.swift:1:22: error: the refetch query `Slots` clashes with the shared enum `Slots` in the generated Swift; name it otherwise in `@refetchable(queryName:)`"
+    );
+}

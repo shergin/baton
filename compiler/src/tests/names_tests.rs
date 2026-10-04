@@ -128,19 +128,87 @@ fn a_type_condition_numbers_its_accessor_and_its_lens_together() {
 }
 
 #[test]
-fn a_name_declared_twice_is_reported_with_both_declarations() {
+fn a_name_the_compiler_chose_twice_is_an_internal_error_naming_both() {
     let none = Reserved::none();
     let mut scope = Scope::new("TestQuery", &none);
-    scope.declare("variables", Kind::Instance, "the variable `$variables`");
-    scope.declare("variables", Kind::Instance, "the operation's variables");
-    scope.declare("Data", Kind::Type, "the operation's root lens");
-    scope.declare("Data", Kind::Instance, "the variable `$Data`");
-    let duplicates: Vec<String> = scope.finish().iter().map(ToString::to_string).collect();
+    scope.declare("variables", Kind::Instance, "the operation's `variables`");
+    scope.declare("variables", Kind::Instance, "the builder's `variables`");
+    scope.declare("Data", Kind::Type, "the operation's root lens `Data`");
+    scope.declare("Data", Kind::Static, "the plan's `Data`");
+    let errors: Vec<String> = scope.finish().iter().map(ToString::to_string).collect();
     assert_eq!(
-        duplicates,
+        errors,
         [
-            "internal error: `TestQuery` would declare `variables` twice, as the variable `$variables` and as the operation's variables; please report it",
-            "internal error: `TestQuery` would declare `Data` twice, as the operation's root lens and as the variable `$Data`; please report it",
+            "internal error: `TestQuery` would declare `variables` twice, as the operation's `variables` and as the builder's `variables`; please report it",
+            "internal error: `TestQuery` would declare `Data` twice, as the operation's root lens `Data` and as the plan's `Data`; please report it",
+        ]
+    );
+}
+
+#[test]
+fn a_name_the_document_chose_that_another_declaration_takes_is_a_clash_at_the_name() {
+    let written = |offset, remedy| {
+        Some(Written {
+            origin: Origin {
+                path: "Probe.swift".to_string(),
+                document: 0,
+                offset,
+            },
+            remedy,
+        })
+    };
+    let none = Reserved::none();
+    let mut scope = Scope::new("TestQuery", &none);
+    scope.declare_written(
+        "variables",
+        Kind::Instance,
+        "the variable `$variables`",
+        written(12, "rename the variable"),
+    );
+    scope.declare("variables", Kind::Instance, "the operation's `variables`");
+    scope.declare("Data", Kind::Type, "the operation's root lens `Data`");
+    scope.declare_written(
+        "Data",
+        Kind::Instance,
+        "the variable `$Data`",
+        written(30, "rename the variable"),
+    );
+    // Two names the document chose: the clash is at the second.
+    scope.declare_written(
+        "name",
+        Kind::Instance,
+        "the field `name`",
+        written(40, "alias the field"),
+    );
+    scope.declare_written(
+        "name",
+        Kind::Instance,
+        "the selection aliased `name`",
+        written(50, "choose another alias"),
+    );
+    let clashes: Vec<(u32, String)> = scope
+        .finish()
+        .into_iter()
+        .map(|error| match error {
+            NameError::Clash(clash) => (clash.origin.offset, clash.to_string()),
+            NameError::Duplicate(duplicate) => panic!("{duplicate}"),
+        })
+        .collect();
+    assert_eq!(
+        clashes,
+        [
+            (
+                12,
+                "the variable `$variables` clashes with the operation's `variables` in the generated Swift; rename the variable".to_string()
+            ),
+            (
+                30,
+                "the variable `$Data` clashes with the operation's root lens `Data` in the generated Swift; rename the variable".to_string()
+            ),
+            (
+                50,
+                "the selection aliased `name` clashes with the field `name`; choose another alias".to_string()
+            ),
         ]
     );
 }

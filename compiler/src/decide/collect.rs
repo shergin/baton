@@ -11,8 +11,8 @@ use super::reader::{
     TypeTest,
 };
 use super::{NormalizationKind, NormalizationSelection, Program};
-use crate::names::{DuplicateName, Kind, Reserved, Scope};
-use crate::pipeline::Plan;
+use crate::names::{Kind, NameError, Reserved, Scope, Written};
+use crate::pipeline::{OperationKind, Plan};
 
 /// What the shared file declares.
 #[derive(Debug, Clone, Default, PartialEq)]
@@ -185,35 +185,63 @@ impl Shared {
     }
 
     /// The names the module's top level and the shared enums would declare
-    /// twice: the documents' types beside the shared enums, and in those the
-    /// types, sets, slots and sites the lenses use.
-    pub(super) fn duplicates(&self, plan: &Plan) -> Vec<DuplicateName> {
+    /// twice: the documents' types beside the shared enums and the runtime's
+    /// module, which the generated code names, and in the enums the types,
+    /// sets, slots and sites the lenses use.
+    pub(super) fn duplicates(&self, plan: &Plan) -> Vec<NameError> {
         let none = Reserved::none();
         let mut module = Scope::new("the module", &none);
-        module.declare("Types", Kind::Type, "the shared enum of types");
-        module.declare("Slots", Kind::Type, "the shared enum of slots");
+        module.declare("Baton", Kind::Type, "the runtime's module `Baton`");
+        module.declare("Types", Kind::Type, "the shared enum `Types`");
+        module.declare("Slots", Kind::Type, "the shared enum `Slots`");
         if !self.sites.is_empty() {
-            module.declare("Sites", Kind::Type, "the shared enum of argument sites");
+            module.declare("Sites", Kind::Type, "the shared enum `Sites`");
         }
         if !self.abstract_slots.is_empty() {
             module.declare(
                 "AbstractSlots",
                 Kind::Type,
-                "the shared enum of abstract slots",
+                "the shared enum `AbstractSlots`",
             );
         }
         for fragment in &plan.fragments {
-            module.declare(
+            module.declare_written(
                 &fragment.name,
                 Kind::Type,
                 format!("the fragment `{}`", fragment.name),
+                fragment.origin.clone().map(|origin| Written {
+                    origin,
+                    remedy: "rename the fragment",
+                }),
             );
         }
+        // A refetch query is named by its fragment's `@refetchable`, and
+        // its name's origin is the fragment's.
+        let refetch_queries: BTreeSet<&str> = plan
+            .fragments
+            .iter()
+            .filter_map(|fragment| Some(fragment.refetch.as_ref()?.operation.as_str()))
+            .collect();
         for operation in &plan.operations {
-            module.declare(
+            let (what, remedy) = if refetch_queries.contains(operation.name.as_str()) {
+                (
+                    format!("the refetch query `{}`", operation.name),
+                    "name it otherwise in `@refetchable(queryName:)`",
+                )
+            } else {
+                (
+                    format!("the {} `{}`", operation.kind, operation.name),
+                    rename(operation.kind),
+                )
+            };
+            module.declare_written(
                 &operation.name,
                 Kind::Type,
-                format!("the {} `{}`", operation.kind, operation.name),
+                what,
+                operation
+                    .origin
+                    .clone()
+                    .map(|origin| Written { origin, remedy }),
             );
         }
         let mut types = Scope::new("Types", &none);
@@ -260,5 +288,14 @@ impl Shared {
             duplicates.extend(enclosing.finish());
         }
         duplicates
+    }
+}
+
+/// What renaming an operation of `kind` takes.
+fn rename(kind: OperationKind) -> &'static str {
+    match kind {
+        OperationKind::Query => "rename the query",
+        OperationKind::Mutation => "rename the mutation",
+        OperationKind::Subscription => "rename the subscription",
     }
 }

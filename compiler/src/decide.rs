@@ -28,7 +28,7 @@ pub use reader::{
     ScalarForm, ScalarRead, SlotAccess, SpreadForm, SpreadGuard, SpreadRead, TypeTest,
 };
 
-use crate::names::{DuplicateName, Reserved};
+use crate::names::{NameError, Reserved, Written};
 use crate::pipeline::{
     ConnectionPlan, EditPlan, LookupPlan, Plan, SelectionPlan, StorageKeyPlan, TypeKind,
 };
@@ -55,7 +55,7 @@ pub struct FragmentLens {
 /// some scope would declare twice. The fragments are decided before the
 /// operations and each lens before the lenses nested in it, the order that
 /// numbers argument sites.
-pub fn program(plan: &Plan) -> Result<Program, Vec<DuplicateName>> {
+pub fn program(plan: &Plan) -> Result<Program, Vec<NameError>> {
     let mut readers = reader::Readers::new(plan);
     let builder_names = Reserved::builders();
     let mut duplicates = Vec::new();
@@ -85,14 +85,23 @@ pub fn program(plan: &Plan) -> Result<Program, Vec<DuplicateName>> {
     let mut all = std::mem::take(&mut readers.duplicates);
     all.extend(duplicates);
     all.extend(program.shared.duplicates(plan));
+    // A fragment's field is in the normalization of every operation that
+    // spreads the fragment, so its clash with a builder's names is found
+    // once per operation: once is told.
+    let mut errors: Vec<NameError> = Vec::new();
+    for error in all {
+        if !errors.contains(&error) {
+            errors.push(error);
+        }
+    }
     debug_assert_eq!(
         program.shared.sites, readers.sites,
         "the collected sites are the ones the lenses allocated"
     );
-    if all.is_empty() {
+    if errors.is_empty() {
         Ok(program)
     } else {
-        Err(all)
+        Err(errors)
     }
 }
 
@@ -128,9 +137,12 @@ impl NormalizationVariant {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone)]
 pub struct NormalizationField {
     pub response_key: String,
+    /// Where the document wrote the response key, for a builder whose own
+    /// names it clashes with.
+    pub written: Option<Written>,
     pub key: StorageKeyPlan,
     /// Alternatives of conjunctions: the field is selected when any
     /// alternative holds. Empty when it is always selected.
@@ -141,6 +153,30 @@ pub struct NormalizationField {
     pub caught: bool,
     pub edit: Option<EditPlan>,
     pub kind: NormalizationKind,
+}
+
+/// Two fields are one when the normalization reads them alike, wherever the
+/// document wrote them: two occurrences of a field are one field.
+impl PartialEq for NormalizationField {
+    fn eq(&self, other: &Self) -> bool {
+        let NormalizationField {
+            response_key,
+            written: _,
+            key,
+            guards,
+            deferred,
+            caught,
+            edit,
+            kind,
+        } = self;
+        *response_key == other.response_key
+            && *key == other.key
+            && *guards == other.guards
+            && *deferred == other.deferred
+            && *caught == other.caught
+            && *edit == other.edit
+            && *kind == other.kind
+    }
 }
 
 /// Built once per compilation and read by the emitter, so the size
@@ -376,6 +412,7 @@ fn field(
     members: &[&Occurrence],
 ) -> NormalizationField {
     let guards = any(members.iter().map(|member| member.guard.clone()).collect());
+    let written = written_key(members[0].selection);
     let caught = members.iter().all(|member| caught(member.selection));
     let edit = members.iter().find_map(|member| edit(member.selection));
     match members[0].selection {
@@ -386,6 +423,7 @@ fn field(
             ..
         } => NormalizationField {
             response_key,
+            written,
             key: storage_key.clone(),
             guards,
             deferred,
@@ -420,6 +458,7 @@ fn field(
             }
             NormalizationField {
                 response_key,
+                written,
                 key: storage_key.clone(),
                 guards,
                 deferred,
@@ -475,6 +514,27 @@ fn response_key(selection: &SelectionPlan) -> String {
         }
         _ => unreachable!("occurrences are fields"),
     }
+}
+
+/// Where the document wrote a field's response key or a selection's alias,
+/// and what changing it takes; none for a selection Relay generated.
+fn written_key(selection: &SelectionPlan) -> Option<Written> {
+    let (origin, remedy) = match selection {
+        SelectionPlan::Scalar { alias, origin, .. }
+        | SelectionPlan::Linked { alias, origin, .. } => {
+            let remedy = match alias {
+                Some(_) => "choose another alias",
+                None => "alias the field",
+            };
+            (origin, remedy)
+        }
+        SelectionPlan::Inline { origin, .. } => (origin, "choose another alias"),
+        _ => return None,
+    };
+    Some(Written {
+        origin: origin.clone()?,
+        remedy,
+    })
 }
 
 fn is_type_membership(selection: &SelectionPlan) -> bool {

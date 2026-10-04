@@ -13,8 +13,8 @@
 use std::collections::{BTreeMap, BTreeSet};
 
 use super::keys::SlotRef;
-use super::{Guard, any};
-use crate::names::{DuplicateName, Kind, Reserved, Scope, lower_camel};
+use super::{Guard, any, written_key};
+use crate::names::{Kind, NameError, Reserved, Scope, lower_camel};
 use crate::pipeline::{
     ArgumentPlan, ArgumentValuePlan, CatchTarget, ConditionClass, ConnectionPlan, ConstantPlan,
     FragmentPlan, Plan, RefetchPlan, RequiredAction, SelectionPlan, StorageKeyPlan, TypeKind,
@@ -330,7 +330,7 @@ pub(super) struct Readers {
     /// the lenses are decided.
     pub sites: BTreeSet<String>,
     /// Names some lens would have declared twice.
-    pub duplicates: Vec<DuplicateName>,
+    pub duplicates: Vec<NameError>,
 }
 
 /// What the lenses of one document share: the fragment's `@refetchable` data
@@ -678,14 +678,10 @@ impl Readers {
         selections: &[SelectionPlan],
         type_name: &str,
         members: &mut [Member],
-    ) -> Vec<DuplicateName> {
+    ) -> Vec<NameError> {
         let mut scope = Scope::new(path, &self.lens_names);
-        scope.declare("anchor", Kind::Instance, "the anchor every lens has");
-        scope.declare(
-            "recordID",
-            Kind::Instance,
-            "the record identity every lens has",
-        );
+        scope.declare("anchor", Kind::Instance, "the `anchor` every lens has");
+        scope.declare("recordID", Kind::Instance, "the `recordID` every lens has");
         scope.declare("typeName", Kind::Static, "the type name every lens has");
         if facts.refetchable {
             scope.declare(
@@ -697,7 +693,7 @@ impl Readers {
         if facts.connection {
             scope.declare("connection", Kind::Static, "the connection's slots");
             if facts.nodes {
-                scope.declare("nodes", Kind::Instance, "the connection's nodes");
+                scope.declare("nodes", Kind::Instance, "the connection's `nodes`");
             }
             for name in [
                 "hasNext",
@@ -711,7 +707,7 @@ impl Readers {
         }
         for member in members.iter_mut() {
             if let Some((name, what)) = written_accessor(&member.selection) {
-                scope.declare(&name, Kind::Instance, what);
+                scope.declare_written(&name, Kind::Instance, what, written_key(&member.selection));
                 member.accessor = Some(name);
             }
         }

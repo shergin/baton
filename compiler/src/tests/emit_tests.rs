@@ -237,33 +237,3 @@ fn compiling_the_same_sources_twice_emits_the_same_bytes() {
         "two compilations of the same sources planned different bytes"
     );
 }
-
-#[test]
-fn a_name_a_scope_would_declare_twice_is_an_internal_error_naming_both() {
-    let schema = repository().join("spec/tests/schema.graphql");
-    let sdl = std::fs::read_to_string(&schema).expect("the test schema is readable");
-    let document = crate::documents::Document {
-        path: PathBuf::from("Probe.swift"),
-        index: 0,
-        start: crate::swift::Position { line: 1, column: 1 },
-        text: "query Probe($variables: ID!) { character(id: $variables) { id } }".to_string(),
-        embedded: None,
-    };
-    let compiled = pipeline::compile(
-        &sdl,
-        &schema.to_string_lossy(),
-        &[document],
-        &Config::default(),
-    )
-    .unwrap_or_else(|_| panic!("the probe compiles"));
-    let Err(duplicates) = emit(&compiled.plan) else {
-        panic!("a variable named like the operation's own `variables` emits");
-    };
-    let messages: Vec<String> = duplicates.iter().map(ToString::to_string).collect();
-    assert_eq!(
-        messages,
-        [
-            "internal error: `Probe` would declare `variables` twice, as the variable `$variables` and as the operation's variables; please report it"
-        ]
-    );
-}
