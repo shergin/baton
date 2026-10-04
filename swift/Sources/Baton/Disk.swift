@@ -63,8 +63,9 @@ final class Disk: @unchecked Sendable {
     /// its creation, or from the open after a `release()`, until the next
     /// `release()` or its end.
     private(set) var holding = false
-    /// Whether this process has moved the generation already: a connection
-    /// opened again after a failure is the same launch.
+    /// Whether this image has moved the generation already: a connection
+    /// opened again after a failure or a `release()` is the same launch. A
+    /// new image on the file moves it again, as a launch does.
     private var launched = false
     /// Whether rows no launch has touched since the one before last have
     /// been deleted, which the writer's first batch does: three scans that
@@ -217,7 +218,7 @@ final class Disk: @unchecked Sendable {
         }
 
         // A new launch: the app's version decides whether the rows survive,
-        // and the generation moves once per process. Rows no launch has
+        // and the generation moves once per image. Rows no launch has
         // touched since the one before last go in the writer's first batch.
         try exec("BEGIN IMMEDIATE")
         if try text("SELECT value FROM meta WHERE key = 'version'") != version {
@@ -273,9 +274,8 @@ final class Disk: @unchecked Sendable {
     }
 
     /// Closes the connection and gives the file back, so another image may
-    /// take it: for a sign-out's new environment, and for tests that run one
-    /// launch after another. Work that comes later takes it again, unless
-    /// another image has.
+    /// take it, as the tests do to run one launch after another. Work that
+    /// comes later takes it again, unless another image has.
     func release() {
         close()
         letGo()

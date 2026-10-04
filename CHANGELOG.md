@@ -281,13 +281,16 @@ are expected and listed without apology.
   response that lands late for the user who signed out reaches neither
   the file nor the next user.
 - `Persistence.close()` writes what is queued and closes the file, so a new
-  environment can take the image over, as at a sign-out.
+  image can take it over. The new image counts as a launch, though the
+  process is the same: the rows the closed one wrote that it does not read
+  age out a launch sooner. A sign-out keeps one image: it removes it and
+  hands it to the next environment.
 - Opening the image scans nothing. The rows no launch has read since the
   one before last were deleted at open, three scans the first frame
   waited for; a read now treats them as gone and the writer's first batch
   deletes them. A database of another kind at the image's path turns the
   image off for the process instead of being opened again every second.
-  The generation moves once per process, not per connection, names are
+  The generation moves once per image, not per connection, names are
   written with a plain insert, so a second connection that took an id
   fails its batch instead of renaming every row written with it, and an
   image past 65,536 names starts again.

@@ -239,7 +239,10 @@ to `Store(persistence:)`. It is a cache: an image of another format or
 `version`, a corrupt one and one over its size limit are deleted and started
 again, and a record that goes a whole launch unread is dropped at the next.
 One image in a process holds a file; a second made on it runs without it,
-and `close()` hands it over.
+and `close()` hands it over. The image that takes it over counts as a
+launch, though the process is the same, so the rows the closed one wrote
+that it does not read age out a launch sooner; a sign-out keeps one image,
+`removeAll()` and then the same image for the next environment.
 
 **Hydration.** *Composition: store, plan.* The web's word for filling a
 client's state from stored data. Here: the availability check reading from

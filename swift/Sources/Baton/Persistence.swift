@@ -130,8 +130,12 @@ public final class Persistence: Sendable {
     }
 
     /// Writes what is queued, closes the file and gives it back, so a new
-    /// image may take it over, as at a sign-out. Work queued later opens it
-    /// again, unless another image has taken it.
+    /// image may take it over. Work queued later opens it again, unless
+    /// another image has taken it. The new image counts as a launch, though
+    /// the process is the same: the rows this launch wrote that the new
+    /// image does not read age out a launch sooner. A sign-out keeps one
+    /// image, removing it with `removeAll()` and handing it to the next
+    /// environment, and closes nothing.
     public func close() async {
         await Task.detached(priority: .userInitiated) {
             self.drain()
