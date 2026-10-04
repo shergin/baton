@@ -113,6 +113,47 @@ struct EmitterTests {
         #expect(try character.testCaughtStrict_character.species == "Human")
     }
 
+    @Test("fields named like the fragments their lens spreads keep their names, and each spread reads its fragment, plain, throwing, caught and nulled, one named Fragment among them")
+    func fieldsNamedLikeSpreadFragments() throws {
+        let store = Store()
+        let data = TestFragmentNamedFields.Data(anchor: try root(TestFragmentNamedFields(id: "1"), "fragment-named-fields-1", in: store))
+        let character = try #require(data.character)
+        #expect(character.TestCaughtProfile_character == "Rick Sanchez")
+        #expect(character.TestCaughtStrict_character == "Human")
+        let profile: TestCaughtProfile_character = character.testCaughtProfile
+        #expect(profile.origin?.name == "Earth (C-137)")
+        #expect(try character.testCaughtStrict.species == "Human")
+        #expect(try character.caughtProfile.get().name == "Rick Sanchez")
+        #expect(character.nulledProfile?.name == "Rick Sanchez")
+        #expect(character.Fragment == "Alive")
+        #expect(character.nulledFragment?.status == "Alive")
+
+        let failing = Store()
+        let failed = try #require(TestFragmentNamedFields.Data(anchor: try root(TestFragmentNamedFields(id: "1"), "fragment-named-fields-1-errors", in: failing)).character)
+        guard case .failure(let errors) = failed.caughtProfile else {
+            Issue.record("expected the error in the profile's origin, got \(failed.caughtProfile)")
+            return
+        }
+        #expect(errors.errors == [FieldError(message: "origin name redacted", path: "character.origin.name")])
+        #expect(failed.nulledProfile == nil)
+        #expect(failed.testCaughtProfile.name == "Rick Sanchez")
+    }
+
+    @Test("fragments named in lower case read through the spreads' accessors that take their names, and the one a required field nulls reads nil without it")
+    func fragmentsNamedInLowerCase() throws {
+        let store = Store()
+        let data = TestLowercaseSpreads.Data(anchor: try root(TestLowercaseSpreads(id: "1"), "lowercase-spreads-1", in: store))
+        let character = try #require(data.character)
+        let lowercase: testLowercase = character.testLowercase
+        #expect(lowercase.name == "Rick Sanchez")
+        #expect(character.testLowercaseRequired?.origin.name == "Earth (C-137)")
+
+        let bare = Store()
+        let orphan = try #require(TestLowercaseSpreads.Data(anchor: try root(TestLowercaseSpreads(id: "1"), "lowercase-spreads-1-no-origin", in: bare)).character)
+        #expect(orphan.testLowercase.name == "Rick Sanchez")
+        #expect(orphan.testLowercaseRequired == nil)
+    }
+
     @Test("a connection whose edges' lens takes another name reads its nodes through that lens")
     func edgesNames() throws {
         let store = Store()

@@ -685,6 +685,14 @@ are expected and listed without apology.
   the field's property hid in the builder and in every builder nested in
   it; a builder now names the runtime's module only in types and writes a
   scalar as `.init(value)`.
+- A spread's accessor compiles where a member is named like its fragment:
+  a field aliased like the fragment it is spread beside, as
+  `TestRow_character: name ...TestRow_character`, a variable of the
+  operation, or the accessor itself, which a fragment named in lower case,
+  as `fragment row`, gives its name. The accessor spelled the fragment in
+  expressions, as `row(anchor: anchor)` and `row.satisfied(anchor)`, which
+  the member hid; it now builds the lens as `.init(anchor:)` and calls the
+  fragment's checks through a local alias of its type.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

@@ -7,7 +7,11 @@ import Baton
 /// fragment's own type and under a type condition on an interface; a field
 /// and an aliased selection named like a type condition's accessor; fields
 /// named like the fragments and the refetch query a lens refers to; a field
-/// named like a spread's accessor; a connection whose edges' lens cannot be
+/// named like a spread's accessor; fields named like the fragments their
+/// lens spreads, plain, throwing, caught and nulled, one of them named
+/// `Fragment`; fragments named in
+/// lower case, whose spreads' accessors take their names, one of them
+/// nulled by a required field; a connection whose edges' lens cannot be
 /// named `Edges`; a mutation whose
 /// payload fields are named like the types an optimistic builder spells,
 /// with a variable named `self`; one whose payload field, and a field under
@@ -86,6 +90,50 @@ struct EmitterDocuments {
         }
         """)
     var spreadNames: TestSpreadNames
+
+    @Fragment("""
+        fragment Fragment on Character {
+          status
+        }
+        """)
+    var fragment: Fragment
+
+    @Query("""
+        query TestFragmentNamedFields($id: ID!) {
+          character(id: $id) {
+            TestCaughtProfile_character: name
+            TestCaughtStrict_character: species
+            ...TestCaughtProfile_character
+            ...TestCaughtStrict_character
+            ... @alias(as: "caughtProfile") @catch { ...TestCaughtProfile_character }
+            ... @alias(as: "nulledProfile") @catch(to: NULL) { ...TestCaughtProfile_character }
+            Fragment: status
+            ... @alias(as: "nulledFragment") @catch(to: NULL) { ...Fragment }
+          }
+        }
+        """)
+    var fragmentNamedFields: TestFragmentNamedFields
+
+    @Fragment("""
+        fragment testLowercase on Character {
+          name
+        }
+        """)
+    var lowercase: testLowercase
+
+    @Fragment("""
+        fragment testLowercaseRequired on Character {
+          origin @required(action: NONE) { name }
+        }
+        """)
+    var lowercaseRequired: testLowercaseRequired
+
+    @Query("""
+        query TestLowercaseSpreads($id: ID!) {
+          character(id: $id) { ...testLowercase ...testLowercaseRequired }
+        }
+        """)
+    var lowercaseSpreads: TestLowercaseSpreads
 
     @Fragment("""
         fragment TestEdgesNames_character on Character {

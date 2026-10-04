@@ -315,8 +315,9 @@ fragment TestAppearances_character on Character {
             @MainActor public var name: String? { anchor.string(Slots.Character.name) }
             @MainActor public var episode: Baton.List<Episode> { anchor.requiredList(Slots.Character.episode) }
             @MainActor public var testAppearances: TestAppearances_character? {
-                guard TestAppearances_character.isPresent(anchor) else { return nil }
-                return TestAppearances_character(anchor: anchor)
+                typealias Fragment = TestAppearances_character
+                guard Fragment.isPresent(anchor) else { return nil }
+                return .init(anchor: anchor)
             }
 
             nonisolated public struct Episode: Baton.Lens {
@@ -432,13 +433,15 @@ fragment TestStrict_character on Character {
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Character"
             @MainActor public var testProfile: TestProfile_character? {
-                guard TestProfile_character.satisfied(anchor) else { return nil }
-                return TestProfile_character(anchor: anchor)
+                typealias Fragment = TestProfile_character
+                guard Fragment.satisfied(anchor) else { return nil }
+                return .init(anchor: anchor)
             }
-            @MainActor public var strict: TestStrict_character { get throws { try TestStrict_character.throwing(anchor) } }
+            @MainActor public var strict: TestStrict_character { get throws { try .throwing(anchor) } }
             @MainActor public var testAppearances: TestAppearances_character? {
-                guard TestAppearances_character.isPresent(anchor) else { return nil }
-                return TestAppearances_character(anchor: anchor)
+                typealias Fragment = TestAppearances_character
+                guard Fragment.isPresent(anchor) else { return nil }
+                return .init(anchor: anchor)
             }
         }
     }
@@ -603,8 +606,9 @@ fragment TestAppearances_character on Character {
             @MainActor public var id: String? { anchor.string(Slots.Character.id) }
             @MainActor public var name: String? { anchor.string(Slots.Character.name) }
             @MainActor public var testAppearances: TestAppearances_character? {
-                guard TestAppearances_character.isPresent(anchor) else { return nil }
-                return TestAppearances_character(anchor: anchor)
+                typealias Fragment = TestAppearances_character
+                guard Fragment.isPresent(anchor) else { return nil }
+                return .init(anchor: anchor)
             }
             /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
             @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
@@ -783,7 +787,7 @@ fragment TestName_character on Character {
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Character"
             @MainActor public var species: String { anchor.requiredString(Slots.Character.species) }
-            @MainActor public var testName: TestName_character { TestName_character(anchor: anchor) }
+            @MainActor public var testName: TestName_character { .init(anchor: anchor) }
             /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
             @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
                 var errors: [Baton.FieldError] = []

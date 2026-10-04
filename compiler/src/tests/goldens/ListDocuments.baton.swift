@@ -46,8 +46,9 @@ nonisolated public struct TestDeferredNotes_character: Baton.Lens {
                 public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
                 @MainActor public var testNoteText: TestNoteText_note? {
-                    guard TestNoteText_note.isPresent(anchor) else { return nil }
-                    return TestNoteText_note(anchor: anchor)
+                    typealias Fragment = TestNoteText_note
+                    guard Fragment.isPresent(anchor) else { return nil }
+                    return .init(anchor: anchor)
                 }
             }
         }
@@ -939,7 +940,7 @@ fragment TestRow_character on Character {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Character"
-            @MainActor public var row: TestRow_character { TestRow_character(anchor: anchor) }
+            @MainActor public var row: TestRow_character { .init(anchor: anchor) }
         }
     }
 }
@@ -1050,7 +1051,7 @@ fragment TestNoteText_note on Note {
             @MainActor public var testDeferredNotes: TestDeferredNotes_character? {
                 let bound = anchor.binding(Sites.TestDeferredNotesPaginationQuery_testDeferredNotes) { ["count": anchor.variables["count"], "cursor": anchor.variables["cursor"]] }
                 guard anchor.record.is(Types.Character) else { return nil }
-                return TestDeferredNotes_character(anchor: bound)
+                return .init(anchor: bound)
             }
         }
     }
@@ -1250,7 +1251,7 @@ fragment TestNotes_character_1G22uz on Character {
             @MainActor public var testNotes: TestNotes_character? {
                 let bound = anchor.binding(Sites.TestNotesPaginationQuery_testNotes) { ["count": anchor.variables["count"], "cursor": anchor.variables["cursor"]] }
                 guard anchor.record.is(Types.Character) else { return nil }
-                return TestNotes_character(anchor: bound)
+                return .init(anchor: bound)
             }
         }
     }
@@ -1344,7 +1345,7 @@ fragment TestNotes_character on Character {
             public static let typeName = "Character"
             @MainActor public var testNotes: TestNotes_character {
                 let bound = anchor.binding(Sites.TestNotesQuery_testNotes) { ["count": .int(2), "cursor": .null] }
-                return TestNotes_character(anchor: bound)
+                return .init(anchor: bound)
             }
         }
     }
@@ -1442,7 +1443,7 @@ fragment TestNotes_character_2H9PL on Character {
             public static let typeName = "Character"
             @MainActor public var testNotes: TestNotes_character {
                 let bound = anchor.binding(Sites.TestNotesSizedQuery_testNotes) { ["count": anchor.variables["size"], "cursor": .null] }
-                return TestNotes_character(anchor: bound)
+                return .init(anchor: bound)
             }
         }
     }
@@ -1549,7 +1550,7 @@ fragment TestRecentNotes_character_1G22uz on Character {
             @MainActor public var testRecentNotes: TestRecentNotes_character? {
                 let bound = anchor.binding(Sites.TestRecentNotesPaginationQuery_testRecentNotes) { ["count": anchor.variables["count"], "cursor": anchor.variables["cursor"]] }
                 guard anchor.record.is(Types.Character) else { return nil }
-                return TestRecentNotes_character(anchor: bound)
+                return .init(anchor: bound)
             }
         }
     }
@@ -1639,7 +1640,7 @@ fragment TestRecentNotes_character on Character {
             public static let typeName = "Character"
             @MainActor public var testRecentNotes: TestRecentNotes_character {
                 let bound = anchor.binding(Sites.TestRecentNotesQuery_testRecentNotes) { ["count": .int(2), "cursor": .null] }
-                return TestRecentNotes_character(anchor: bound)
+                return .init(anchor: bound)
             }
         }
     }

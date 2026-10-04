@@ -301,7 +301,7 @@ fragment TestRenamePayload_mutation on Mutation {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Mutation"
-        @MainActor public var testRenamePayload: TestRenamePayload_mutation { TestRenamePayload_mutation(anchor: anchor) }
+        @MainActor public var testRenamePayload: TestRenamePayload_mutation { .init(anchor: anchor) }
     }
 
     public typealias Action = Baton.MutationAction<Self>

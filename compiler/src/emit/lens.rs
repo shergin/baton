@@ -6,7 +6,10 @@
 //! A lens names the runtime's module only in a type, where Swift looks up
 //! types alone, so an accessor named `Baton` hides it from nothing; an
 //! expression takes the runtime's type from its context, as
-//! `.failure(.init(errors))` does.
+//! `.failure(.init(errors))` does. A spread's accessor names its fragment
+//! the same way: a member named like the fragment, of the lens, of a lens
+//! or an operation it is nested in, or the accessor itself, would hide it
+//! from an expression.
 
 use std::fmt::Write as _;
 
@@ -244,9 +247,13 @@ fn linked_accessor(
 }
 
 /// A spread's accessor: the fragment's lens over the record, in the scope
-/// its arguments bind, optional when anything must hold first.
+/// its arguments bind, optional when anything must hold first. It builds
+/// the lens from its own type, as `.init(anchor:)`, and calls the
+/// fragment's checks through a local alias, which names the fragment in a
+/// type.
 fn spread_accessor(output: &mut String, name: &str, read: &SpreadRead, indent: &str) {
     let fragment = &read.fragment;
+    let alias = fragment_alias(fragment);
     let anchor = if read.binding.is_some() {
         "bound"
     } else {
@@ -260,11 +267,20 @@ fn spread_accessor(output: &mut String, name: &str, read: &SpreadRead, indent: &
                 guard_condition(guards).expect("a spread guard has conditions")
             }
             SpreadGuard::Test(test) => type_test(test),
-            SpreadGuard::Present => format!("{fragment}.isPresent({anchor})"),
-            SpreadGuard::Satisfied => format!("{fragment}.satisfied({anchor})"),
-            SpreadGuard::NoErrors => format!("{fragment}.fieldErrors({anchor}).isEmpty"),
+            SpreadGuard::Present => format!("{alias}.isPresent({anchor})"),
+            SpreadGuard::Satisfied => format!("{alias}.satisfied({anchor})"),
+            SpreadGuard::NoErrors => format!("{alias}.fieldErrors({anchor}).isEmpty"),
         })
         .collect();
+    // The body declares the alias only when it calls one of the fragment's
+    // checks, and a catch calls `fieldErrors`.
+    let checks = read.form == SpreadForm::Caught
+        || read.guards.iter().any(|guard| {
+            matches!(
+                guard,
+                SpreadGuard::Present | SpreadGuard::Satisfied | SpreadGuard::NoErrors
+            )
+        });
     let accessor = escape(name);
     let optional = !guards.is_empty();
     let (result_type, effect) = match read.form {
@@ -280,8 +296,8 @@ fn spread_accessor(output: &mut String, name: &str, read: &SpreadRead, indent: &
     // policy of its own has `caught`.
     let make = match read.form {
         SpreadForm::Caught => None,
-        SpreadForm::Throwing => Some(format!("try {fragment}.throwing({anchor})")),
-        SpreadForm::Plain => Some(format!("{fragment}(anchor: {anchor})")),
+        SpreadForm::Throwing => Some(format!("try .throwing({anchor})")),
+        SpreadForm::Plain => Some(format!(".init(anchor: {anchor})")),
     };
     let miss = if read.form == SpreadForm::Caught {
         ".success(nil)"
@@ -315,6 +331,9 @@ fn spread_accessor(output: &mut String, name: &str, read: &SpreadRead, indent: &
         let _ = writeln!(output, "{indent}    get throws {{");
         format!("{indent}        ")
     };
+    if checks {
+        let _ = writeln!(output, "{body_indent}typealias {alias} = {fragment}");
+    }
     if let Some(binding) = &read.binding {
         let bindings: Vec<String> = binding
             .arguments
@@ -349,11 +368,11 @@ fn spread_accessor(output: &mut String, name: &str, read: &SpreadRead, indent: &
         None => {
             let _ = writeln!(
                 output,
-                "{body_indent}let errors = {fragment}.fieldErrors({anchor})"
+                "{body_indent}let errors = {alias}.fieldErrors({anchor})"
             );
             let _ = writeln!(
                 output,
-                "{body_indent}return errors.isEmpty ? .success({fragment}(anchor: {anchor})) : .failure(.init(errors))"
+                "{body_indent}return errors.isEmpty ? .success(.init(anchor: {anchor})) : .failure(.init(errors))"
             );
         }
     }
@@ -361,6 +380,16 @@ fn spread_accessor(output: &mut String, name: &str, read: &SpreadRead, indent: &
         let _ = writeln!(output, "{indent}    }}");
     }
     let _ = writeln!(output, "{indent}}}");
+}
+
+/// The name a spread accessor's body gives its fragment's type: any name
+/// but the fragment's own, by which the alias would refer to itself.
+fn fragment_alias(fragment: &str) -> &'static str {
+    if fragment == "Fragment" {
+        "Spread"
+    } else {
+        "Fragment"
+    }
 }
 
 /// An aliased selection's accessor: its nested lens, optional under its
