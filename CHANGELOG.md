@@ -485,10 +485,11 @@ are expected and listed without apology.
   connection's edges, leaves it alone; it wrote edges into the record, or
   an edge the connection's readers read by another type's slots.
 - The docs say what runs on the main actor: reads, commits, the
-  availability check with its reads of the image, and collection. The
-  vision, the store principle and the README said collection ran off it;
-  a decision record now says why it does not, with the numbers that would
-  move it.
+  availability check with its reads of the image, collection, and the
+  normalization of an optimistic response. The vision, the store principle
+  and the README said collection and all normalization ran off it; a
+  decision record now says why they do not, with the numbers that would
+  move the check and collection.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

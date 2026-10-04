@@ -39,8 +39,8 @@ than porting it.
   GraphQL text inside the Swift file.
 - The transport can send a persisted id and variables, and streams bytes
   back.
-- The ingest decodes bytes straight into record slots, off the main actor,
-  with no intermediate model.
+- The ingest decodes a response's bytes straight into record slots, off the
+  main actor, with no intermediate model.
 - The store commits a change set on the main actor: writes for the slots
   that changed, notifications for the fields that observed views read.
 - A lens reads a record's slots synchronously and registers each read with
@@ -81,9 +81,10 @@ true, who decides, and what the words are.
    that read a field is invalidated when that field of that record changes
    and at no other time. Reads are synchronous on the main actor; commits are
    atomic batches on it, and the availability check, which reads the image
-   when memory lacks a record, and collection run there too; decoding,
-   normalization and the image's writes run off it. There is no
-   asynchronous read path for views.
+   when memory lacks a record, collection, and the normalization of an
+   optimistic response, whose layer shows in the turn of the call, run
+   there too; decoding and normalizing a response and the image's writes
+   run off it. There is no asynchronous read path for views.
 3. **The response is the oracle.** Whatever path a value takes through
    ingest, interned slots, optimistic overlays and persisted images, reading
    it through a lens equals reading the raw response at the same path.

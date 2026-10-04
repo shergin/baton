@@ -18,16 +18,18 @@ it, against snapshots. As built, the ingest and the image's writes run off
 the main actor, and three more things run on it: the availability check,
 which reads the image when memory lacks a record (hydration); collection,
 both the mark and the sweep; and, at a launch that asks the store before
-the image has opened, the wait for the open. The vision, the principle and
-the README still said that collection ran off it.
+the image has opened, the wait for the open. A mutation's optimistic
+response is normalized on it too, through the same ingest. The vision, the
+principle and the README still said that collection ran off it, and that
+all normalization did.
 
 ## Decision
 
 The main actor does slot reads, commits, the availability check with
-hydration, and collection. Decoding and normalization run in the fetch's
-own task, the image is written behind on its own queue, and the image opens
-off the main actor when the app makes its environment before its first
-view.
+hydration, collection, and the normalization of an optimistic response.
+Decoding and normalizing a response run in the fetch's own task, the image
+is written behind on its own queue, and the image opens off the main actor
+when the app makes its environment before its first view.
 
 Records are the main actor's state: observable objects whose slots bodies
 read synchronously. A check on another actor could neither bind a lookup
@@ -36,7 +38,9 @@ before the handle could be ready, and a ready that waits is the
 asynchronous read path rule 2 forbids. A mark from a snapshot would copy
 every reachable record's links for each pass, more work than the mark it
 moves, and the sweep must clear records on the main actor anyway, because
-bodies read them there.
+bodies read them there. An optimistic response is a value the call site
+passes, a payload's worth of fields; normalized on another actor, its layer
+would wait for the hop back, and a frame could render without it.
 
 ## Evidence
 

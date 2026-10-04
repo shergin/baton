@@ -39,9 +39,10 @@ other native clients is at the end, and at length in
 - **Cached data in the first frame.** Reads are synchronous on the main
   actor; a handle resolves against the store before the first body runs, and
   after a launch the store reads what that handle needs from its image on
-  disk. Decoding, normalization and the image's writes run off it; the
-  check and garbage collection stay on it, each under a third of a frame
-  on the benchmark machine.
+  disk. Decoding and normalizing a response and the image's writes run off
+  it; the check and garbage collection stay on it, each under a third of a
+  frame on the benchmark machine, and an optimistic response is normalized
+  on it, so its layer shows in the turn of the call.
 - **Only changed views re-render.** Records are observable objects; a body
   that read `user.name` is invalidated when that field of that record changes
   and at no other time. An unchanged refetch of the benchmark fixture costs
@@ -265,7 +266,7 @@ the fixture back in 1.78 ms.
 | Warm cache, first frame | The data | Loading. The read is `async` | Loading. The read stays off the main thread |
 | One field changes | The view that read it | The whole query, rebuilt into a new tree | The whole query, rebuilt into a new tree |
 | Bytes into the store | 4.1 ms | 318 ms | Rebuilds models into records. Their own bench is below |
-| Read it back | 28 ns a field, 0.55 µs in a view body | 228 ms to rebuild, then 296 ns a field | Rebuilds the operation into models |
+| Read it back | 28 ns a field, 0.54 µs a field in a view body | 228 ms to rebuild, then 296 ns a field | Rebuilds the operation into models |
 | Memory while scrolling | Plateaus. 42 pages stay near +5 MB | Keeps every record. No eviction | You call GC. TTL and trimming exist |
 | A list | Pages merged in the store, one update per page | One watcher per page, concatenated in the pager | Pages merged in the store |
 | An optimistic write | A typed response, rebased, 0.4 ms for the cycle | A separate mutable model you write into the cache | Opt-in. Watchers then re-run the query |

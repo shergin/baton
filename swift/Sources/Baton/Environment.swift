@@ -229,8 +229,10 @@ public final class Environment {
     }
 
     /// Commits a mutation. The optimistic response, if any, is ingested with the
-    /// mutation's own plan and applied as a layer first; the server's payload
-    /// then replaces it in one batch, or the layer is reverted on failure.
+    /// mutation's own plan and applied as a layer first, on the main actor, so
+    /// the layer shows in the turn of the call; the server's payload is
+    /// ingested off it and then replaces the layer in one batch, or the layer
+    /// is reverted on failure.
     /// The data returned reads the mutation root: its payload stays alive
     /// until `releaseBufferSize` completions of other operation values follow
     /// it, and then reads only the records other roots keep. A completion of

@@ -100,8 +100,9 @@ nothing.
 [owner](#generated), and the record it was reached through, which a
 connection needs for its owner's id. Relay's fragment reference carries a
 record id and an owner; an anchor holds the record itself. Two anchors are
-equal when the three are the same objects. Generated accessors make every
-anchor a view reads.
+equal when the three are the same objects. A handle makes the root anchor
+its data reads from, as `mutate` does for the data it returns, and
+generated accessors derive every anchor below it.
 
 **Operation value.** A `Hashable` struct of an operation's variables, the
 thing a parent constructs and a navigation path carries. Inside a view a
