@@ -101,11 +101,16 @@ struct EmitterTests {
         #expect(notes.hasNext == true)
     }
 
-    @Test("payload fields named like the types an optimistic builder spells get builders of other names, which render and apply")
+    @Test("payload fields named like the types an optimistic builder spells get builders of other names, which render and apply, and a variable named self is one")
     func builderNames() throws {
         let store = Store()
         store.reportMissing = nil
-        let mutation = TestBuilderNames(id: "1", favorite: true)
+        let mutation = TestBuilderNames(id: "1", favorite: true, self: "1")
+        #expect(mutation.`self` == "1")
+        #expect(mutation.variables == Variables(["id": .string("1"), "favorite": .bool(true), "self": .string("1")]))
+        #expect(mutation == TestBuilderNames(id: "1", favorite: true, self: "1"))
+        #expect(mutation != TestBuilderNames(id: "1", favorite: true, self: "2"))
+        #expect(Set([mutation, TestBuilderNames(id: "1", favorite: true, self: "2")]).count == 2)
         let optimistic = TestBuilderNames.OptimisticResponse(
             type: .init(character: .init(id: "1", favorite: true)),
             self: .init(character: .init(id: "1", favorite: true)),

@@ -605,7 +605,12 @@ impl Emitter {
         let parameters = parameter_list(&operation.variables);
         let _ = writeln!(output, "    public init({parameters}) {{");
         for variable in &operation.variables {
-            let _ = writeln!(output, "        self.{0} = {0}", escape(&variable.name));
+            let _ = writeln!(
+                output,
+                "        self.{} = {}",
+                escape(&variable.name),
+                local_name(&variable.name, &variable_names(&operation.variables))
+            );
         }
         output.push_str("    }\n\n");
         let _ = writeln!(
@@ -649,7 +654,7 @@ impl Emitter {
                     format!(
                         "\"{}\": Baton.Variable({})",
                         variable.name,
-                        escape(&variable.name)
+                        stored(&variable.name)
                     )
                 })
                 .collect();
@@ -669,7 +674,7 @@ impl Emitter {
         }
         output.push_str("    }\n\n    public func hash(into hasher: inout Hasher) {\n");
         for variable in &operation.variables {
-            let _ = writeln!(output, "        hasher.combine({})", escape(&variable.name));
+            let _ = writeln!(output, "        hasher.combine({})", stored(&variable.name));
         }
         output.push_str("    }\n\n");
 
@@ -728,7 +733,13 @@ impl Emitter {
             let arguments: Vec<String> = operation
                 .variables
                 .iter()
-                .map(|variable| format!("{0}: {0}", escape(&variable.name)))
+                .map(|variable| {
+                    format!(
+                        "{}: {}",
+                        escape(&variable.name),
+                        local_name(&variable.name, &variable_names(&operation.variables))
+                    )
+                })
                 .collect();
             let _ = writeln!(
                 output,
@@ -3043,19 +3054,37 @@ fn parameter(property: &str, local: &str) -> String {
 }
 
 fn parameter_list(variables: &[VariablePlan]) -> String {
+    let names = variable_names(variables);
     variables
         .iter()
         .map(|variable| {
             let default = if variable.non_null { "" } else { " = nil" };
             format!(
                 "{}: {}{}",
-                escape(&variable.name),
+                parameter(&variable.name, &local_name(&variable.name, &names)),
                 variable_type(variable),
                 default
             )
         })
         .collect::<Vec<_>>()
         .join(", ")
+}
+
+fn variable_names(variables: &[VariablePlan]) -> Vec<&str> {
+    variables
+        .iter()
+        .map(|variable| variable.name.as_str())
+        .collect()
+}
+
+/// A stored property read inside the value's own methods: by its name, or
+/// through `self` for `self`, which alone would name the instance.
+fn stored(property: &str) -> String {
+    if property == "self" {
+        "self.`self`".to_string()
+    } else {
+        escape(property)
+    }
 }
 
 /// The fields a reader selection reaches without entering another field:

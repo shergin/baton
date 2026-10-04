@@ -169,18 +169,21 @@ nonisolated public struct TestProgramNames_character: Baton.Lens {
 nonisolated public struct TestBuilderNames: Baton.Mutation {
     public var id: String
     public var favorite: Bool
+    public var `self`: String
 
-    public init(id: String, favorite: Bool) {
+    public init(id: String, favorite: Bool, `self` selfValue: String) {
         self.id = id
         self.favorite = favorite
+        self.`self` = selfValue
     }
 
     public static let name = "TestBuilderNames"
-    public static let persistedID = "75a924ddfee3a64dc484605075d03cda"
+    public static let persistedID = "257b27e016fc51dd507f48551b1bc353"
     public static let text = #"""
 mutation TestBuilderNames(
   $id: ID!
   $favorite: Boolean!
+  $self: ID!
 ) {
   type: setFavorite(id: $id, favorite: $favorite) {
     character {
@@ -188,7 +191,7 @@ mutation TestBuilderNames(
       favorite
     }
   }
-  self: setFavorite(id: $id, favorite: $favorite) {
+  self: setFavorite(id: $self, favorite: $favorite) {
     character {
       id
       favorite
@@ -210,16 +213,17 @@ mutation TestBuilderNames(
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["id": Baton.Variable(id), "favorite": Baton.Variable(favorite)])
+        Baton.Variables(["id": Baton.Variable(id), "favorite": Baton.Variable(favorite), "self": Baton.Variable(self.`self`)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.id == rhs.id && lhs.favorite == rhs.favorite
+        lhs.id == rhs.id && lhs.favorite == rhs.favorite && lhs.`self` == rhs.`self`
     }
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
         hasher.combine(favorite)
+        hasher.combine(self.`self`)
     }
 
     public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
@@ -463,8 +467,8 @@ mutation TestBuilderNames(
 extension Baton.MutationAction where Op == TestBuilderNames {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
-    public func callAsFunction(id: String, favorite: Bool, optimistic: TestBuilderNames.OptimisticResponse? = nil) async throws -> TestBuilderNames.Data {
-        try await commit(TestBuilderNames(id: id, favorite: favorite), optimistic: optimistic?.variable)
+    public func callAsFunction(id: String, favorite: Bool, `self` selfValue: String, optimistic: TestBuilderNames.OptimisticResponse? = nil) async throws -> TestBuilderNames.Data {
+        try await commit(TestBuilderNames(id: id, favorite: favorite, `self`: selfValue), optimistic: optimistic?.variable)
     }
 }
 

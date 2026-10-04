@@ -8,7 +8,8 @@ import Baton
 /// and an aliased selection named like a type condition's accessor; fields
 /// named like the fragments and the refetch query a lens refers to; a
 /// connection whose edges' lens cannot be named `Edges`; and a mutation whose
-/// payload fields are named like the types an optimistic builder spells.
+/// payload fields are named like the types an optimistic builder spells,
+/// with a variable named `self`.
 @MainActor
 struct EmitterDocuments {
     @Fragment("""
@@ -93,9 +94,9 @@ struct EmitterDocuments {
     var edgesNamesQuery: TestEdgesNamesQuery
 
     @Mutation("""
-        mutation TestBuilderNames($id: ID!, $favorite: Boolean!) {
+        mutation TestBuilderNames($id: ID!, $favorite: Boolean!, $self: ID!) {
           type: setFavorite(id: $id, favorite: $favorite) { character { id favorite } }
-          self: setFavorite(id: $id, favorite: $favorite) { character { id favorite } }
+          self: setFavorite(id: $self, favorite: $favorite) { character { id favorite } }
           string: setFavorite(id: $id, favorite: $favorite) { character { id name } }
           sendable: setFavorite(id: $id, favorite: $favorite) { character { id favorite } }
         }

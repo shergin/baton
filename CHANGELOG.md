@@ -537,6 +537,10 @@ are expected and listed without apology.
   conformed to itself; it takes `Response` after the name. A name a scope
   would still declare twice is an internal error naming both declarations,
   where the Swift did not compile.
+- A variable named `self` is a parameter, a property and a request
+  variable of that name. The value's initializer, `variables` and `hash`
+  read the instance itself in its place, and the generated code did not
+  compile.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 
