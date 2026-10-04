@@ -735,84 +735,77 @@ public final class Store {
         }
     }
 
+    /// The connection an edge directive names, with the slots the plans
+    /// resolved for its type, so the edit looks no key up by name. A record
+    /// of a type no connection field describes is not a connection, and the
+    /// edit leaves it alone.
+    private func editableConnection(_ key: String) -> (record: Record, slots: ConnectionSlots)? {
+        guard let connection = editable(key), let slots = Registry.connectionSlots(of: connection.type) else { return nil }
+        return (connection, slots)
+    }
+
     /// Inserts a copy of a payload's edge into a connection named by id, unless
     /// an edge for the same node is already there. The copy is the
     /// connection's own record, as in Relay: the payload's edge record is
     /// keyed by its path, so the next mutation of the same kind would alias it.
+    /// An edge of another type than the connection's, whose slots the
+    /// connection's readers do not read, is not inserted.
     private func insert(edge: Record, into connectionKey: String, prepend: Bool, _ transaction: inout Transaction, _ undo: inout [Undo]) {
-        guard let connection = editable(connectionKey) else { return }
-        if contains(connection, node: Store.node(of: edge, Registry.slot(edge.type, "node"))) { return }
-        let copy = ownEdge(of: connection, type: edge.type, &transaction, &undo)
+        guard case let (connection, slots)? = editableConnection(connectionKey), edge.type == slots.edge else { return }
+        if contains(connection, node: Store.node(of: edge, slots.node), slots) { return }
+        let copy = ownEdge(of: connection, slots, &transaction, &undo)
         for index in 0..<edge.slotCount {
             let value = edge.peek(index: index)
             if case .missing = value { continue }
-            set(copy, Slot(type: edge.type, index: Int32(index)), value, &transaction, &undo)
+            set(copy, Slot(type: slots.edge, index: Int32(index)), value, &transaction, &undo)
         }
-        append(copy, to: connection, prepend: prepend, &transaction, &undo)
+        append(copy, to: connection, slots, prepend: prepend, &transaction, &undo)
     }
 
-    /// Wraps a node in a new edge record of the connection and inserts it.
+    /// Wraps a node in a new edge record of the connection and inserts it,
+    /// when the edge type the directive names is the connection's.
     private func insert(node: Record, edgeType: TypeID, into connectionKey: String, prepend: Bool, _ transaction: inout Transaction, _ undo: inout [Undo]) {
-        guard let connection = editable(connectionKey) else { return }
-        if contains(connection, node: ObjectIdentifier(node)) { return }
-        let edge = ownEdge(of: connection, type: edgeType, &transaction, &undo)
-        set(edge, Registry.slot(edgeType, "node"), .ref(node), &transaction, &undo)
-        set(edge, Registry.slot(edgeType, "cursor"), .null, &transaction, &undo)
-        append(edge, to: connection, prepend: prepend, &transaction, &undo)
+        guard case let (connection, slots)? = editableConnection(connectionKey), edgeType == slots.edge else { return }
+        if contains(connection, node: ObjectIdentifier(node), slots) { return }
+        let edge = ownEdge(of: connection, slots, &transaction, &undo)
+        set(edge, slots.node, .ref(node), &transaction, &undo)
+        set(edge, slots.cursor, .null, &transaction, &undo)
+        append(edge, to: connection, slots, prepend: prepend, &transaction, &undo)
     }
 
     /// A new edge record owned by the connection, numbered by Relay's
     /// `__connection_next_edge_index` client field.
-    private func ownEdge(of connection: Record, type: TypeID, _ transaction: inout Transaction, _ undo: inout [Undo]) -> Record {
-        let indexSlot = Registry.slot(connection.type, "__connection_next_edge_index")
-        let index: Int = if case .int(let index) = connection.peek(indexSlot) { index } else { 0 }
-        set(connection, indexSlot, .int(index + 1), &transaction, &undo)
-        return record(key: connection.key + ":edges:" + String(index), type: type, entity: false)
+    private func ownEdge(of connection: Record, _ slots: ConnectionSlots, _ transaction: inout Transaction, _ undo: inout [Undo]) -> Record {
+        let index: Int = if case .int(let index) = connection.peek(slots.nextEdgeIndex) { index } else { 0 }
+        set(connection, slots.nextEdgeIndex, .int(index + 1), &transaction, &undo)
+        return record(key: connection.key + ":edges:" + String(index), type: slots.edge, entity: false)
     }
 
-    private func contains(_ connection: Record, node: ObjectIdentifier?) -> Bool {
+    private func contains(_ connection: Record, node: ObjectIdentifier?, _ slots: ConnectionSlots) -> Bool {
         guard let node else { return false }
-        var nodeSlot = NodeSlot()
-        for case let edge? in Store.edges(connection, Registry.slot(connection.type, "edges"))
-        where Store.node(of: edge, nodeSlot.on(edge.type)) == node {
+        for case let edge? in Store.edges(connection, slots.edges) where Store.node(of: edge, slots.node) == node {
             return true
         }
         return false
     }
 
-    /// The `node` slot of the edges a walk over a connection meets, taken
-    /// from the registry once per edge type rather than once per edge.
-    private struct NodeSlot {
-        private var slot: Slot?
-
-        mutating func on(_ type: TypeID) -> Slot {
-            if let slot, slot.type == type { return slot }
-            let found = Registry.slot(type, "node")
-            slot = found
-            return found
-        }
-    }
-
-    private func append(_ edge: Record, to connection: Record, prepend: Bool, _ transaction: inout Transaction, _ undo: inout [Undo]) {
-        let edgesSlot = Registry.slot(connection.type, "edges")
-        var edges = Store.edges(connection, edgesSlot)
+    private func append(_ edge: Record, to connection: Record, _ slots: ConnectionSlots, prepend: Bool, _ transaction: inout Transaction, _ undo: inout [Undo]) {
+        var edges = Store.edges(connection, slots.edges)
         if prepend { edges.insert(edge, at: 0) } else { edges.append(edge) }
-        set(connection, edgesSlot, .refs(edges), &transaction, &undo)
+        set(connection, slots.edges, .refs(edges), &transaction, &undo)
     }
 
     /// Removes every edge whose node is an entity with this id, of whatever
     /// type, from a connection named by id.
     private func deleteEdges(of id: String, from connectionKey: String, _ transaction: inout Transaction, _ undo: inout [Undo]) {
-        guard let connection = editable(connectionKey) else { return }
-        let edgesSlot = Registry.slot(connection.type, "edges")
-        let edges = Store.edges(connection, edgesSlot)
-        var nodeSlot = NodeSlot()
+        guard case let (connection, slots)? = editableConnection(connectionKey) else { return }
+        let edges = Store.edges(connection, slots.edges)
         let kept = edges.filter { edge in
-            guard let edge, case .ref(let node) = edge.peek(nodeSlot.on(edge.type)) else { return true }
+            guard let edge, case .ref(let node) = edge.peek(slots.node) else { return true }
             return !node.hasID(id)
         }
         if kept.count == edges.count { return }
-        set(connection, edgesSlot, .refs(ContiguousArray(kept)), &transaction, &undo)
+        set(connection, slots.edges, .refs(ContiguousArray(kept)), &transaction, &undo)
     }
 
     /// Deletes a record: its values are cleared through the batch, which

@@ -59,6 +59,8 @@ public enum Registry {
         var typeNames: [String] = []
         var slotIndices: [[String: Int32]] = []
         var slotKeys: [[String]] = []
+        /// The slots of each connection type a plan describes, by `TypeID.raw`.
+        var connections: [ConnectionSlots?] = []
     }
 
     private static let state = Mutex(State())
@@ -102,5 +104,24 @@ public enum Registry {
     /// How many storage keys the type has so far; records size their values to it.
     public static func slotCount(_ type: TypeID) -> Int {
         state.withLock { $0.slotKeys[Int(type.raw)].count }
+    }
+
+    /// Keeps the slots a plan resolved for a connection type, under the type.
+    static func register(_ slots: ConnectionSlots) {
+        state.withLock { state in
+            let position = Int(slots.connection.raw)
+            if position >= state.connections.count {
+                state.connections.append(contentsOf: repeatElement(nil, count: position + 1 - state.connections.count))
+            }
+            state.connections[position] = slots
+        }
+    }
+
+    /// The slots of a connection type, when a plan has described one of it.
+    static func connectionSlots(of type: TypeID) -> ConnectionSlots? {
+        state.withLock { state in
+            let position = Int(type.raw)
+            return position < state.connections.count ? state.connections[position] : nil
+        }
     }
 }

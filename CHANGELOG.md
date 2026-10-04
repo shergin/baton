@@ -476,6 +476,14 @@ are expected and listed without apology.
   or the `Optional` a caught spread is wrapped in, and the generated code
   did not compile. The names held back are every type and attribute a
   lens spells unqualified, and Swift's own.
+- An edge directive's commit looks no key up by name. Each edit took the
+  registry's lock and hashed `edges`, `node`, `cursor` and
+  `__connection_next_edge_index` several times; it now edits the
+  connection by the slots its plans resolved, which the registry keeps
+  under the connection's type. A directive that names a record no
+  connection field made, or inserts an edge of another type than the
+  connection's edges, leaves it alone; it wrote edges into the record, or
+  an edge the connection's readers read by another type's slots.
 - The docs say what runs on the main actor: reads, commits, the
   availability check with its reads of the image, and collection. The
   vision, the store principle and the README said collection ran off it;

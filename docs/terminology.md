@@ -331,7 +331,11 @@ on the connection record (`__isLoadingNext`, `__isLoadingPrevious`).
 `@deleteEdge`, `@deleteRecord`. Here: the same, on mutation payload fields,
 applied as commit edits inside the transaction, so optimistic responses carry
 them and revert them. Inserted edges are copied into records the connection
-owns, numbered by Relay's `__connection_next_edge_index`.
+owns, numbered by Relay's `__connection_next_edge_index`. A commit edits a
+connection by the slots its plans resolved, which the registry keeps under
+the connection's type, so it looks no key up by name; a record no
+connection field made, or an edge of another type than the connection's,
+is left alone.
 
 **Page.** A list fetched by page number or offset, as the sample API does. Not
 a connection; composed in the UI from plain operations until the watch list

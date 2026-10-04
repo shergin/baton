@@ -754,6 +754,132 @@ extension Baton.MutationAction where Op == TestAddNoteNodeFirst {
     }
 }
 
+/// Operation value for `mutation TestAddNoteNodeOfAnotherType`.
+nonisolated public struct TestAddNoteNodeOfAnotherType: Baton.Mutation {
+    public var characterId: String
+    public var text: String
+    public var connections: [String]
+
+    public init(characterId: String, text: String, connections: [String]) {
+        self.characterId = characterId
+        self.text = text
+        self.connections = connections
+    }
+
+    public static let name = "TestAddNoteNodeOfAnotherType"
+    public static let persistedID = "885c273dca4ff16d95895158300708f8"
+    public static let text = #"""
+mutation TestAddNoteNodeOfAnotherType(
+  $characterId: ID!
+  $text: String!
+) {
+  addNote(characterId: $characterId, text: $text) {
+    note {
+      id
+      text
+    }
+  }
+}
+"""#
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["characterId": Baton.Variable(characterId), "text": Baton.Variable(text), "connections": Baton.Variable(connections)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.characterId == rhs.characterId && lhs.text == rhs.text && lhs.connections == rhs.connections
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(characterId)
+        hasher.combine(text)
+        hasher.combine(connections)
+    }
+
+    public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
+            .linked("addNote", key: .fixed(Slots.Mutation.addNote), plural: false, selection: Baton.Selection(type: Types.AddNotePayload, hasID: false, abstract: false, fields: [
+                .linked("note", key: .fixed(Slots.AddNotePayload.note), plural: false, handle: Baton.Handle(kind: .appendNode, connections: .variable("connections"), edgeType: Types.PageInfo), selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
+                    .scalar("text", key: .fixed(Slots.Note.text), kind: .string, list: false),
+                ])),
+            ])),
+        ]))
+
+    nonisolated public struct Data: Baton.Lens {
+        public let anchor: Baton.Anchor
+        public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Mutation"
+        @MainActor public var addNote: AddNote? { anchor.linked(Slots.Mutation.addNote).map(AddNote.init(anchor:)) }
+
+        nonisolated public struct AddNote: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "AddNotePayload"
+            @MainActor public var note: Note? { anchor.linked(Slots.AddNotePayload.note).map(Note.init(anchor:)) }
+
+            nonisolated public struct Note: Baton.Lens {
+                public let anchor: Baton.Anchor
+                public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                public static let typeName = "Note"
+                @MainActor public var id: String? { anchor.string(Slots.Note.id) }
+                @MainActor public var text: String? { anchor.string(Slots.Note.text) }
+            }
+        }
+    }
+
+    public typealias Action = Baton.MutationAction<Self>
+
+    /// A partial response to show before the server answers; absent fields leave the store untouched.
+    nonisolated public struct OptimisticResponse: Sendable {
+        public var addNote: AddNote?
+        public init(addNote: AddNote? = nil) {
+            self.addNote = addNote
+        }
+        public var variable: Baton.Variable {
+            var fields: [String: Baton.Variable] = [:]
+            if let addNote { fields["addNote"] = addNote.variable }
+            return .object(fields)
+        }
+
+        /// A partial response to show before the server answers; absent fields leave the store untouched.
+        nonisolated public struct AddNote: Sendable {
+            public var note: Note?
+            public init(note: Note? = nil) {
+                self.note = note
+            }
+            public var variable: Baton.Variable {
+                var fields: [String: Baton.Variable] = [:]
+                if let note { fields["note"] = note.variable }
+                return .object(fields)
+            }
+
+            /// A partial response to show before the server answers; absent fields leave the store untouched.
+            nonisolated public struct Note: Sendable {
+                public var id: String?
+                public var text: String?
+                public init(id: String? = nil, text: String? = nil) {
+                    self.id = id
+                    self.text = text
+                }
+                public var variable: Baton.Variable {
+                    var fields: [String: Baton.Variable] = [:]
+                    if let id { fields["id"] = Baton.Variable(id) }
+                    if let text { fields["text"] = Baton.Variable(text) }
+                    return .object(fields)
+                }
+            }
+        }
+    }
+}
+
+extension Baton.MutationAction where Op == TestAddNoteNodeOfAnotherType {
+    /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
+    @MainActor @discardableResult
+    public func callAsFunction(characterId: String, text: String, connections: [String], optimistic: TestAddNoteNodeOfAnotherType.OptimisticResponse? = nil) async throws -> TestAddNoteNodeOfAnotherType.Data {
+        try await commit(TestAddNoteNodeOfAnotherType(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
+    }
+}
+
 /// Operation value for `query TestAliasQuery`.
 nonisolated public struct TestAliasQuery: Baton.Query {
     public var id: String

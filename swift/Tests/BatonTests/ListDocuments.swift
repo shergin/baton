@@ -101,6 +101,15 @@ struct ListDocuments {
     var addNoteNodeFirst: TestAddNoteNodeFirst.Action
 
     @Mutation("""
+        mutation TestAddNoteNodeOfAnotherType($characterId: ID!, $text: String!, $connections: [ID!]!) {
+          addNote(characterId: $characterId, text: $text) {
+            note @appendNode(connections: $connections, edgeTypeName: "PageInfo") { id text }
+          }
+        }
+        """)
+    var addNoteNodeOfAnotherType: TestAddNoteNodeOfAnotherType.Action
+
+    @Mutation("""
         mutation TestDeleteNote($id: ID!) {
           removeNote(id: $id) { removedNoteId @deleteRecord }
         }

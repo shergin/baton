@@ -271,6 +271,26 @@ struct ListTests {
         #expect(character.notes.nodes.count == 4)
     }
 
+    @Test("an edge directive that names a record no connection field made leaves the record alone")
+    func edgeDirectiveOnARecordThatIsNotAConnection() async throws {
+        let (environment, character) = try await seededEnvironment()
+        let entity = try #require(environment.store.existing("Character:1"))
+        let appended = TestAddNote(characterId: "1", text: "Appended", connections: ["Character:1"])
+        environment.store.commit(try Ingest.normalize(fixture("add-note-n9"), plan: TestAddNote.plan.resolve(appended.variables), rootKey: Store.mutationRootKey))
+        #expect(environment.store.existing("Character:1:edges:0") == nil, "no edge was made for it")
+        #expect(entity.read(Registry.slot(entity.type, "edges")) == .missing)
+        #expect(character.notes.nodes.map(\.text) == ["Wubba lubba dub dub", "Portal gun needs charging"])
+    }
+
+    @Test("@appendNode whose edge type is not the connection's inserts no edge")
+    func nodeDirectiveOfAnotherEdgeType() async throws {
+        let (environment, character) = try await seededEnvironment()
+        let appended = TestAddNoteNodeOfAnotherType(characterId: "1", text: "Node appended", connections: [character.notes.connectionID])
+        environment.store.commit(try Ingest.normalize(fixture("add-note-node-n7"), plan: TestAddNoteNodeOfAnotherType.plan.resolve(appended.variables), rootKey: Store.mutationRootKey))
+        #expect(character.notes.edges?.count == 2)
+        #expect(character.notes.nodes.map(\.text) == ["Wubba lubba dub dub", "Portal gun needs charging"])
+    }
+
     @Test("refetch fetches the fragment again with its variables and the owner's id, and the records update in place")
     func refetch() async throws {
         let transport = RecordedTransport { request in

@@ -55,7 +55,9 @@ public struct Lookup: Sendable {
 
 /// The slots a connection's merge and state use, on the connection type, its
 /// edge type and its page info type, plus the client fields Relay keeps on
-/// the connection record. Resolved once per connection by the generated code.
+/// the connection record. Resolved once per connection by the generated code,
+/// and kept by the registry under the connection type, where the commit of
+/// an edge directive, which names its connections by id, finds them.
 public struct ConnectionSlots: Sendable {
     public let connection: TypeID
     public let edge: TypeID
@@ -87,6 +89,7 @@ public struct ConnectionSlots: Sendable {
         isLoadingNext = Registry.slot(connection, "__isLoadingNext")
         isLoadingPrevious = Registry.slot(connection, "__isLoadingPrevious")
         nextEdgeIndex = Registry.slot(connection, "__connection_next_edge_index")
+        Registry.register(self)
     }
 }
 
