@@ -41,6 +41,7 @@ nonisolated enum Slots {
     }
     nonisolated enum Character {
         static let __TestDeferredNotes_notes_connection = Baton.Registry.slot(Types.Character, "__TestDeferredNotes_notes_connection")
+        static let __TestEdgesNames_notes_connection = Baton.Registry.slot(Types.Character, "__TestEdgesNames_notes_connection")
         static let __TestNotes_notes_connection = Baton.Registry.slot(Types.Character, "__TestNotes_notes_connection")
         static let __TestRecentNotes_notes_connection = Baton.Registry.slot(Types.Character, "__TestRecentNotes_notes_connection")
         static let __TestTwoPages_notes_connection = Baton.Registry.slot(Types.Character, "__TestTwoPages_notes_connection")
@@ -103,6 +104,14 @@ nonisolated enum Slots {
         static let removeNote = Baton.Registry.slot(Types.Mutation, "removeNote")
         static let rename = Baton.Registry.slot(Types.Mutation, "rename")
         static let setFavorite = Baton.Registry.slot(Types.Mutation, "setFavorite")
+        static let setFavorite_e62d42 = Baton.Registry.slot(Types.Mutation, "setFavorite(as:\"self\")")
+        static let setFavorite_a93f6b = Baton.Registry.slot(Types.Mutation, "setFavorite(as:\"sendable\")")
+        static let setFavorite_937be0 = Baton.Registry.slot(Types.Mutation, "setFavorite(as:\"string\")")
+        static let setFavorite_10eb38 = Baton.Registry.slot(Types.Mutation, "setFavorite(as:\"type\")")
+    }
+    nonisolated enum Named {
+        static let __typename = Baton.Registry.slot(Types.Named, "__typename")
+        static let name = Baton.Registry.slot(Types.Named, "name")
     }
     nonisolated enum Node {
         static let __typename = Baton.Registry.slot(Types.Node, "__typename")
@@ -141,6 +150,7 @@ nonisolated enum Slots {
         static let characters_498461 = Baton.DynamicKey(Types.Query, [.literal("characters(filter:{\"name\":"), .variable("name"), .literal(",\"status\":\"Alive\"})")])
         static let characters_5517f9 = Baton.DynamicKey(Types.Query, [.literal("characters(page:"), .variable("page"), .literal(")")])
         static let charactersByIds_0b7f7b = Baton.DynamicKey(Types.Query, [.literal("charactersByIds(ids:["), .variable("id"), .literal(",\"2\"])")])
+        static let namesake_9b6471 = Baton.DynamicKey(Types.Query, [.literal("namesake(name:"), .variable("name"), .literal(")")])
         static let node_8f7d08 = Baton.DynamicKey(Types.Query, [.literal("node(id:"), .variable("id"), .literal(")")])
         static let search_6286a6 = Baton.Registry.slot(Types.Query, "search(name:\"$0.00\")")
         static let search_823c67 = Baton.DynamicKey(Types.Query, [.literal("search(name:"), .variable("in"), .literal(")")])

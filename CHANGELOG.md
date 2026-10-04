@@ -522,6 +522,21 @@ are expected and listed without apology.
   so the generated code did not compile for any other fragment, and under
   `@catch(to: NULL)` such a fragment's accessor threw instead of reading
   nil.
+- Every name the generated code declares comes from one allocator per
+  scope, which knows the names the scope spells unqualified and the
+  program's fragments and operations, and a name the document spells never
+  moves. A field aliased `asCharacter` beside `... on Character` declared
+  `asCharacter` and `AsCharacter` twice; the condition's accessor and lens
+  take the next number, `asCharacter2` and `AsCharacter2`. A field named
+  like a fragment or an operation the lens names, such as
+  `testNotes_character`, got a lens that hid it; the lens takes `Lens` after
+  the name. A spread's accessor named like a field takes the fragment's
+  whole name. A connection's `nodes` read `Edges.Node` whatever names those
+  lenses took. An optimistic builder for a payload field named `type`,
+  `self`, `string` or `sendable` was `struct Type`, hid `String` or
+  conformed to itself; it takes `Response` after the name. A name a scope
+  would still declare twice is an internal error naming both declarations,
+  where the Swift did not compile.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

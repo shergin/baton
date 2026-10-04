@@ -16,6 +16,7 @@ mod diagnostics;
 mod directives;
 mod documents;
 mod emit;
+mod names;
 mod pipeline;
 mod swift;
 
@@ -234,7 +235,15 @@ fn generate(arguments: &[String]) -> Result<(), DriverError> {
         return Err(DriverError::Reported);
     }
     let rendered = check_property_types(&documents, &plan);
-    let output = emit::emit(&plan);
+    let output = match emit::emit(&plan) {
+        Ok(output) => output,
+        Err(duplicates) => {
+            for duplicate in &duplicates {
+                eprintln!("batonc: {duplicate}");
+            }
+            return Err(DriverError::Reported);
+        }
+    };
 
     let mut targets: Vec<(PathBuf, PathBuf)> = options.emits.clone();
     if let (true, Some(out_dir)) = (targets.is_empty(), &out_dir) {

@@ -1,10 +1,14 @@
 import Baton
 
 /// The documents behind the emitter tests, against the test schema: shapes
-/// whose generated code once did not compile or read wrong. Here, a spread
-/// alone under an aliased `@catch` and `@catch(to: NULL)`, of a fragment
-/// without an error policy and of one with `@throwOnFieldError`, on a link
-/// of the fragment's own type and under a type condition on an interface.
+/// whose generated code once did not compile or read wrong. A spread alone
+/// under an aliased `@catch` and `@catch(to: NULL)`, of a fragment without
+/// an error policy and of one with `@throwOnFieldError`, on a link of the
+/// fragment's own type and under a type condition on an interface; a field
+/// and an aliased selection named like a type condition's accessor; fields
+/// named like the fragments and the refetch query a lens refers to; a
+/// connection whose edges' lens cannot be named `Edges`; and a mutation whose
+/// payload fields are named like the types an optimistic builder spells.
 @MainActor
 struct EmitterDocuments {
     @Fragment("""
@@ -38,4 +42,63 @@ struct EmitterDocuments {
         }
         """)
     var caughtSpreads: TestCaughtSpreads
+
+    @Query("""
+        query TestConditionNames($id: ID!, $name: String!) {
+          namesake(name: $name) {
+            asCharacter: name
+            ... on Character { status }
+          }
+          node(id: $id) {
+            id
+            ... on Episode @alias(as: "asCharacter") { name }
+            ... on Character { name }
+          }
+        }
+        """)
+    var conditionNames: TestConditionNames
+
+    @Fragment("""
+        fragment TestProgramNames_character on Character
+        @refetchable(queryName: "TestProgramNamesRefetchQuery") {
+          testProgramNamesRefetchQuery: origin { name }
+          testCaughtProfile_character: location { name }
+          ...TestCaughtProfile_character
+        }
+        """)
+    var programNames: TestProgramNames_character
+
+    @Query("""
+        query TestProgramNamesQuery($id: ID!) {
+          character(id: $id) { ...TestProgramNames_character }
+        }
+        """)
+    var programNamesQuery: TestProgramNamesQuery
+
+    @Fragment("""
+        fragment TestEdgesNames_character on Character {
+          notes(first: 2) @connection(key: "TestEdgesNames_notes") {
+            Edges: pageInfo { hasNextPage }
+            edges { node { id text } }
+          }
+        }
+        """)
+    var edgesNames: TestEdgesNames_character
+
+    @Query("""
+        query TestEdgesNamesQuery($id: ID!) {
+          character(id: $id) { ...TestEdgesNames_character }
+        }
+        """)
+    var edgesNamesQuery: TestEdgesNamesQuery
+
+    @Mutation("""
+        mutation TestBuilderNames($id: ID!, $favorite: Boolean!) {
+          type: setFavorite(id: $id, favorite: $favorite) { character { id favorite } }
+          self: setFavorite(id: $id, favorite: $favorite) { character { id favorite } }
+          string: setFavorite(id: $id, favorite: $favorite) { character { id name } }
+          sendable: setFavorite(id: $id, favorite: $favorite) { character { id favorite } }
+        }
+        """)
+    var builderNames: TestBuilderNames.Action
 }
