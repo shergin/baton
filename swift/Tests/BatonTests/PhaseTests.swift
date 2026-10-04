@@ -36,6 +36,24 @@ struct PhaseTests {
         handle.release()
     }
 
+    @Test("a root a @required field bubbled to fails with an error that names the operation and says the root bubbled, with no field path")
+    func bubbledRootDescribesItself() async throws {
+        let environment = Environment(transport: RecordedTransport([TestRequiredOrigin.name: fixture("required-origin-1-null")]))
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestRequiredOrigin(id: "1"))
+        handle.retain()
+        await settled(handle)
+        guard case .failed(let error as RequiredFieldError) = handle.phase else {
+            Issue.record("expected the required origin to fail the operation, got \(handle.phase)")
+            return
+        }
+        #expect(error.operationName == TestRequiredOrigin.name)
+        #expect(error.path == "")
+        #expect(error.description == "TestRequiredOrigin: a @required field is null and bubbled to the root")
+        #expect(RequiredFieldError(path: "character.origin").description == "the @required field character.origin is null")
+        handle.release()
+    }
+
     @Test("a bubbling failure is not assigned again when an unrelated commit evaluates it to the same @required path")
     func bubblingFailureIsNotReassigned() async throws {
         let environment = Environment(transport: RecordedTransport([TestRequiredOrigin.name: fixture("required-origin-1-null")]))

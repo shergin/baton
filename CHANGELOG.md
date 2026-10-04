@@ -503,6 +503,10 @@ are expected and listed without apology.
   handle and is gone, or a subscription transport. It failed with a
   `TransportError` whose status code was 0 and whose description read as
   an HTTP status.
+- An operation whose root a `@required` field bubbled to fails with a
+  `RequiredFieldError` that names it in `operationName`, with an empty
+  path, and says the root bubbled. Its path was the operation's name, so
+  the error described a null field of that name.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

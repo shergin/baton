@@ -53,7 +53,8 @@ accessor that produces the lens produces nil when a required field in it is
 null (a generated `satisfied` checks), and LOG reports the path through
 `Environment.requiredFieldMissing`. THROW makes the field's accessor
 `get throws`, raising `RequiredFieldError`. A root that bubbles fails the
-operation.
+operation with a `RequiredFieldError` that names the operation and has an
+empty path.
 
 **Catch.** Relay: `@catch(to: RESULT | NULL)`, a field or aliased spread
 whose errors the view handles. Here: RESULT makes the accessor a

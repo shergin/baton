@@ -27,13 +27,29 @@ public struct FieldErrors: Error, Sendable, CustomStringConvertible {
     public var description: String { errors.map(\.description).joined(separator: "; ") }
 }
 
-/// A `@required(action: THROW)` field read while null.
+/// A `@required(action: THROW)` field read while null, or the root of an
+/// operation that a `@required` field bubbled to.
 public struct RequiredFieldError: Error, Sendable, CustomStringConvertible {
+    /// The field's path; empty for a root, whose generated check says only
+    /// that a field below it bubbled, not which.
     public let path: String
+    /// The operation whose root bubbled; nil for a field read while null.
+    public let operationName: String?
 
-    public init(path: String) { self.path = path }
+    public init(path: String) {
+        self.path = path
+        operationName = nil
+    }
 
-    public var description: String { "the @required field \(path) is null" }
+    init(bubbledToRootOf operationName: String) {
+        path = ""
+        self.operationName = operationName
+    }
+
+    public var description: String {
+        guard let operationName else { return "the @required field \(path) is null" }
+        return "\(operationName): a @required field is null and bubbled to the root"
+    }
 }
 
 /// A request with nothing to send it: no environment where one was needed,
