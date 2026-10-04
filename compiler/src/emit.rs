@@ -62,20 +62,28 @@ impl SlotRef {
     }
 
     /// `Character_name`, or `Query_characters_1a2b3c` when the key has arguments.
-    fn identifier(&self) -> String {
+    /// The slot's name among its type's: `name`, or `characters_1a2b3c` when
+    /// the key has arguments. Slots are nested per type, so a type's name
+    /// and a field's never run together into another pair's.
+    fn member(&self) -> String {
         if !self.has_arguments {
-            return format!("{}_{}", self.type_name, self.field);
+            return escape(&self.field);
         }
         let digest = format!("{:x}", md5::compute(self.template.as_bytes()));
-        format!("{}_{}_{}", self.type_name, self.field, &digest[..6])
+        format!("{}_{}", self.field, &digest[..6])
+    }
+
+    /// The constant's path in one of the shared enums: `Slots.Character.name`.
+    fn path(&self, family: &str) -> String {
+        format!("{family}.{}.{}", escape(&self.type_name), self.member())
     }
 
     /// The Swift expression that yields the slot.
     fn expression(&self) -> String {
         if self.has_variables() {
-            format!("anchor.owner.slot(Slots.{})", self.identifier())
+            format!("anchor.owner.slot({})", self.path("Slots"))
         } else {
-            format!("Slots.{}", self.identifier())
+            self.path("Slots")
         }
     }
 
@@ -298,24 +306,39 @@ impl Emitter {
         output.push_str(
             "}\n\n/// Interned storage keys used by this module's documents.\nnonisolated enum Slots {\n",
         );
+        let mut current: Option<&str> = None;
         for slot in &self.slots {
+            if current != Some(slot.type_name.as_str()) {
+                if current.is_some() {
+                    output.push_str("    }\n");
+                }
+                let _ = writeln!(
+                    output,
+                    "    nonisolated enum {} {{",
+                    escape(&slot.type_name)
+                );
+                current = Some(&slot.type_name);
+            }
             if slot.has_variables() {
                 let _ = writeln!(
                     output,
-                    "    static let {} = Baton.DynamicKey(Types.{}, {})",
-                    slot.identifier(),
+                    "        static let {} = Baton.DynamicKey(Types.{}, {})",
+                    slot.member(),
                     slot.type_name,
                     slot.parts_literal()
                 );
             } else {
                 let _ = writeln!(
                     output,
-                    "    static let {} = Baton.Registry.slot(Types.{}, {})",
-                    slot.identifier(),
+                    "        static let {} = Baton.Registry.slot(Types.{}, {})",
+                    slot.member(),
                     slot.type_name,
                     swift_literal(&slot.template)
                 );
             }
+        }
+        if current.is_some() {
+            output.push_str("    }\n");
         }
         output.push_str("}\n");
         if !self.sites.is_empty() {
@@ -331,15 +354,27 @@ impl Emitter {
             output.push_str(
                 "\n/// Storage keys read on interfaces and unions, each resolved once per concrete type.\nnonisolated enum AbstractSlots {\n",
             );
+            let mut current: Option<&str> = None;
             for slot in &self.abstract_slots {
+                if current != Some(slot.type_name.as_str()) {
+                    if current.is_some() {
+                        output.push_str("    }\n");
+                    }
+                    let _ = writeln!(
+                        output,
+                        "    nonisolated enum {} {{",
+                        escape(&slot.type_name)
+                    );
+                    current = Some(&slot.type_name);
+                }
                 let _ = writeln!(
                     output,
-                    "    static let {} = Baton.AbstractSlot({})",
-                    slot.identifier(),
+                    "        static let {} = Baton.AbstractSlot({})",
+                    slot.member(),
                     swift_literal(&slot.template)
                 );
             }
-            output.push_str("}\n");
+            output.push_str("    }\n}\n");
         }
         output
     }
@@ -1844,13 +1879,13 @@ impl Emitter {
         let slot = SlotRef::new(type_name, storage_key);
         if slot.has_variables() {
             let expression = format!(
-                "anchor.owner.slot(Slots.{}, on: anchor.record.type)",
-                slot.identifier()
+                "anchor.owner.slot({}, on: anchor.record.type)",
+                slot.path("Slots")
             );
             self.slots.insert(slot);
             return expression;
         }
-        let expression = format!("AbstractSlots.{}.on(anchor.record.type)", slot.identifier());
+        let expression = format!("{}.on(anchor.record.type)", slot.path("AbstractSlots"));
         self.abstract_slots.insert(slot);
         expression
     }
@@ -2194,9 +2229,9 @@ impl Emitter {
     fn plan_key(&mut self, type_name: &str, storage_key: &StorageKeyPlan) -> String {
         let slot = SlotRef::new(type_name, storage_key);
         let expression = if slot.has_variables() {
-            format!(".dynamic(Slots.{})", slot.identifier())
+            format!(".dynamic({})", slot.path("Slots"))
         } else {
-            format!(".fixed(Slots.{})", slot.identifier())
+            format!(".fixed({})", slot.path("Slots"))
         };
         self.slots.insert(slot);
         expression

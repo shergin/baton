@@ -298,3 +298,22 @@ fn a_persisted_id_is_the_hash_of_the_text_the_app_holds() {
         format!("{:x}", md5::compute(operation.text.as_bytes()))
     );
 }
+
+#[test]
+fn slots_are_nested_per_type_so_a_type_and_a_field_never_run_together() {
+    let sdl = "type Query { a: A, a_b: A_b } type A { b_c: String } type A_b { c: String }";
+    let compiled = compile(
+        sdl,
+        "schema.graphql",
+        &[document("query Probe { a { b_c } a_b { c } }")],
+        &Config::default(),
+    )
+    .unwrap_or_else(|errors| panic!("{errors:?}"));
+    let shared = crate::emit::emit(&compiled.plan).shared;
+    assert!(shared.contains(
+        "    nonisolated enum A {\n        static let b_c = Baton.Registry.slot(Types.A, \"b_c\")\n    }"
+    ));
+    assert!(shared.contains(
+        "    nonisolated enum A_b {\n        static let c = Baton.Registry.slot(Types.A_b, \"c\")\n    }"
+    ));
+}

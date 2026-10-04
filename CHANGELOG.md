@@ -294,6 +294,9 @@ are expected and listed without apology.
 - One `invalidate`: `Environment.invalidate()`. `Store.invalidate()`, which
   marked memory stale but left the image's fetch times, so data read back
   from the image counted as fresh, is internal and does both.
+- Generated slots are nested per type, `Slots.Character.name`; a type's
+  name and a field's ran together, so `A_b.c` and `A.b_c` were both
+  `Slots.A_b_c`.
 - A variable named like a Swift keyword, `$where` or `$in`, is escaped in
   the operation value; it emitted `public var where`.
 - A directive Baton gives no meaning to is a compile error at the

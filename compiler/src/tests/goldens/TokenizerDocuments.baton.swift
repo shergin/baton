@@ -40,18 +40,18 @@ query TestTokenizerQuery {
     }
 
     public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("tokenizer", key: .fixed(Slots.Query_tokenizer), plural: false, selection: Baton.Selection(type: Types.Tokenizer, hasID: true, abstract: false, fields: [
-                .scalar("id", key: .fixed(Slots.Tokenizer_id), kind: .string, list: false),
-                .scalar("text", key: .fixed(Slots.Tokenizer_text), kind: .string, list: false),
-                .scalar("strings", key: .fixed(Slots.Tokenizer_strings), kind: .string, list: true),
-                .scalar("count", key: .fixed(Slots.Tokenizer_count), kind: .int, list: false),
-                .scalar("counts", key: .fixed(Slots.Tokenizer_counts), kind: .int, list: true),
-                .scalar("ratio", key: .fixed(Slots.Tokenizer_ratio), kind: .double, list: false),
-                .scalar("ratios", key: .fixed(Slots.Tokenizer_ratios), kind: .double, list: true),
-                .scalar("flag", key: .fixed(Slots.Tokenizer_flag), kind: .bool, list: false),
-                .scalar("flags", key: .fixed(Slots.Tokenizer_flags), kind: .bool, list: true),
-                .scalar("json", key: .fixed(Slots.Tokenizer_json), kind: .custom, list: false),
-                .scalar("jsons", key: .fixed(Slots.Tokenizer_jsons), kind: .custom, list: true),
+            .linked("tokenizer", key: .fixed(Slots.Query.tokenizer), plural: false, selection: Baton.Selection(type: Types.Tokenizer, hasID: true, abstract: false, fields: [
+                .scalar("id", key: .fixed(Slots.Tokenizer.id), kind: .string, list: false),
+                .scalar("text", key: .fixed(Slots.Tokenizer.text), kind: .string, list: false),
+                .scalar("strings", key: .fixed(Slots.Tokenizer.strings), kind: .string, list: true),
+                .scalar("count", key: .fixed(Slots.Tokenizer.count), kind: .int, list: false),
+                .scalar("counts", key: .fixed(Slots.Tokenizer.counts), kind: .int, list: true),
+                .scalar("ratio", key: .fixed(Slots.Tokenizer.ratio), kind: .double, list: false),
+                .scalar("ratios", key: .fixed(Slots.Tokenizer.ratios), kind: .double, list: true),
+                .scalar("flag", key: .fixed(Slots.Tokenizer.flag), kind: .bool, list: false),
+                .scalar("flags", key: .fixed(Slots.Tokenizer.flags), kind: .bool, list: true),
+                .scalar("json", key: .fixed(Slots.Tokenizer.json), kind: .custom, list: false),
+                .scalar("jsons", key: .fixed(Slots.Tokenizer.jsons), kind: .custom, list: true),
             ])),
         ]))
 
@@ -59,23 +59,23 @@ query TestTokenizerQuery {
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Query"
-        @MainActor public var tokenizer: Tokenizer? { anchor.linked(Slots.Query_tokenizer).map(Tokenizer.init(anchor:)) }
+        @MainActor public var tokenizer: Tokenizer? { anchor.linked(Slots.Query.tokenizer).map(Tokenizer.init(anchor:)) }
 
         nonisolated public struct Tokenizer: Baton.Lens {
             public let anchor: Baton.Anchor
             public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Tokenizer"
-            @MainActor public var id: String? { anchor.string(Slots.Tokenizer_id) }
-            @MainActor public var text: String? { anchor.string(Slots.Tokenizer_text) }
-            @MainActor public var strings: [String]? { anchor.strings(Slots.Tokenizer_strings) }
-            @MainActor public var count: Int? { anchor.int(Slots.Tokenizer_count) }
-            @MainActor public var counts: [Int]? { anchor.ints(Slots.Tokenizer_counts) }
-            @MainActor public var ratio: Double? { anchor.double(Slots.Tokenizer_ratio) }
-            @MainActor public var ratios: [Double]? { anchor.doubles(Slots.Tokenizer_ratios) }
-            @MainActor public var flag: Bool? { anchor.bool(Slots.Tokenizer_flag) }
-            @MainActor public var flags: [Bool]? { anchor.bools(Slots.Tokenizer_flags) }
-            @MainActor public var json: String? { anchor.string(Slots.Tokenizer_json) }
-            @MainActor public var jsons: [String]? { anchor.strings(Slots.Tokenizer_jsons) }
+            @MainActor public var id: String? { anchor.string(Slots.Tokenizer.id) }
+            @MainActor public var text: String? { anchor.string(Slots.Tokenizer.text) }
+            @MainActor public var strings: [String]? { anchor.strings(Slots.Tokenizer.strings) }
+            @MainActor public var count: Int? { anchor.int(Slots.Tokenizer.count) }
+            @MainActor public var counts: [Int]? { anchor.ints(Slots.Tokenizer.counts) }
+            @MainActor public var ratio: Double? { anchor.double(Slots.Tokenizer.ratio) }
+            @MainActor public var ratios: [Double]? { anchor.doubles(Slots.Tokenizer.ratios) }
+            @MainActor public var flag: Bool? { anchor.bool(Slots.Tokenizer.flag) }
+            @MainActor public var flags: [Bool]? { anchor.bools(Slots.Tokenizer.flags) }
+            @MainActor public var json: String? { anchor.string(Slots.Tokenizer.json) }
+            @MainActor public var jsons: [String]? { anchor.strings(Slots.Tokenizer.jsons) }
         }
     }
 }
