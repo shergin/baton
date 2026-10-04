@@ -39,8 +39,9 @@ other native clients is at the end, and at length in
 - **Cached data in the first frame.** Reads are synchronous on the main
   actor; a handle resolves against the store before the first body runs, and
   after a launch the store reads what that handle needs from its image on
-  disk. Decoding, normalization, the image's writes and garbage collection
-  run off it.
+  disk. Decoding, normalization and the image's writes run off it; the
+  check and garbage collection stay on it, each under a third of a frame
+  on the benchmark machine.
 - **Only changed views re-render.** Records are observable objects; a body
   that read `user.name` is invalidated when that field of that record changes
   and at no other time. An unchanged refetch of the benchmark fixture costs

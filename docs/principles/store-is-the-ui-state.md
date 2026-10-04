@@ -2,8 +2,9 @@
 
 Records are observable objects. A view body that read a field is invalidated
 when that field of that record changes and at no other time. Reads are
-synchronous on the main actor and cost nanoseconds; everything that is not a
-read or a commit runs off it.
+synchronous on the main actor and cost nanoseconds. The main actor reads,
+commits, checks what the store holds and collects; decoding, normalization
+and the image's writes run off it.
 
 ## Why
 
@@ -32,11 +33,14 @@ runtime has no subscriptions of its own.
 
 Reads are synchronous because view bodies are synchronous, and because a
 cached screen must render in its first frame. The store therefore lives on
-the main actor, and nothing else does: bytes are decoded and normalized on an
-ingest actor, change sets are diffed against immutable slot arrays before they
-reach the main actor, collection marks from a snapshot, persistence writes
-behind. A commit is pointer swaps for the records that changed and
-notifications for the observed fields that changed.
+the main actor, with the work that has to touch its records: the commit, the
+availability check, which reads the image when memory lacks a record, and
+collection. Nothing else does: bytes are decoded and normalized off it, in
+the fetch's own task, and the image is written behind. A commit writes the
+slots that changed and notifies the observed fields that changed. Why the
+check and collection stay on the main actor, and the numbers that keep
+them there, is
+[a decision of its own](../decisions/the-check-and-collection-run-on-the-main-actor.md).
 
 ## Consequences
 
@@ -59,7 +63,8 @@ notifications for the observed fields that changed.
 - Query-level watchers that re-execute an operation and emit a tree.
 - A subscription per fragment instance with its own bookkeeping.
 - Notifying on every write without comparing values.
-- Any work on the main actor besides slot reads and commits.
+- Any work on the main actor besides reads, commits, the availability check
+  and collection, or any of those growing past a frame.
 
 See [A fragment is a lens](fragment-is-a-lens.md) for where a read is
 registered and [The response is the oracle](response-is-the-oracle.md) for

@@ -24,3 +24,4 @@ principle, the proof belongs here.
 - [Slots are numbered by the process, not by the compiler](slots-are-numbered-by-the-process.md)
 - [A deletion is announced by its commit, not tracked by readers](deletion-is-announced-by-its-commit.md)
 - [A lookup binds in the availability check, never in a read](lookups-bind-in-the-check.md)
+- [The availability check and collection run on the main actor](the-check-and-collection-run-on-the-main-actor.md)

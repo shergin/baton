@@ -41,8 +41,8 @@ than porting it.
   back.
 - The ingest decodes bytes straight into record slots, off the main actor,
   with no intermediate model.
-- The store commits a change set on the main actor: pointer swaps for the
-  records that changed, notifications for the fields that observed views read.
+- The store commits a change set on the main actor: writes for the slots
+  that changed, notifications for the fields that observed views read.
 - A lens reads a record's slots synchronously and registers each read with
   the framework; a view body is invalidated by the fields it read and by
   nothing else.
@@ -80,8 +80,10 @@ true, who decides, and what the words are.
 2. **The store is the UI's state.** Records are observable objects. A body
    that read a field is invalidated when that field of that record changes
    and at no other time. Reads are synchronous on the main actor; commits are
-   atomic batches on it; decoding, normalization, persistence and collection
-   run off it. There is no asynchronous read path for views.
+   atomic batches on it, and the availability check, which reads the image
+   when memory lacks a record, and collection run there too; decoding,
+   normalization and the image's writes run off it. There is no
+   asynchronous read path for views.
 3. **The response is the oracle.** Whatever path a value takes through
    ingest, interned slots, optimistic overlays and persisted images, reading
    it through a lens equals reading the raw response at the same path.

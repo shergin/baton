@@ -473,6 +473,11 @@ are expected and listed without apology.
   or the `Optional` a caught spread is wrapped in, and the generated code
   did not compile. The names held back are every type and attribute a
   lens spells unqualified, and Swift's own.
+- The docs say what runs on the main actor: reads, commits, the
+  availability check with its reads of the image, and collection. The
+  vision, the store principle and the README said collection ran off it;
+  a decision record now says why it does not, with the numbers that would
+  move it.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 
