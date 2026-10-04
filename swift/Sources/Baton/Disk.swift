@@ -71,7 +71,7 @@ final class Disk: @unchecked Sendable {
     private struct Prepared {
         let selectRecord, upsertRecord, useRecord: OpaquePointer
         let selectRoot, upsertRoot, useRoot: OpaquePointer
-        let upsertFetch, upsertName: OpaquePointer
+        let upsertFetch, useFetch, upsertName: OpaquePointer
         let begin, beginReading, commit, rollback: OpaquePointer
     }
 
@@ -215,6 +215,7 @@ final class Disk: @unchecked Sendable {
             upsertRoot: try prepare("INSERT OR REPLACE INTO root(field, used, cell) VALUES(?1, ?2, ?3)"),
             useRoot: try prepare("UPDATE root SET used = ?2 WHERE field = ?1"),
             upsertFetch: try prepare("INSERT OR REPLACE INTO fetches(operation, used, time) VALUES(?1, ?2, ?3)"),
+            useFetch: try prepare("UPDATE fetches SET used = ?2 WHERE operation = ?1"),
             // A plain insert: an id another connection took fails the batch
             // rather than renaming what every row written with it means.
             upsertName: try prepare("INSERT INTO names(id, name) VALUES(?1, ?2)"),
@@ -436,6 +437,8 @@ final class Disk: @unchecked Sendable {
             case .used(let records, let root):
                 for key in records { good = use(prepared.useRecord, key) && good }
                 for field in root { good = use(prepared.useRoot, field) && good }
+            case .dated(let operation):
+                good = use(prepared.useFetch, operation) && good
             case .invalidate:
                 good = (try? exec("DELETE FROM fetches")) != nil && good
             }

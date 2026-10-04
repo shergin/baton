@@ -240,6 +240,10 @@ are expected and listed without apology.
   schema is discarded. The version is the app's to pass, because generated
   constants are made on first use and nothing has made one when the file
   opens.
+- Data read every launch keeps its age. A fetch time was kept only by the
+  fetch that wrote it, so data an app read from the image at every launch
+  without fetching went stale at every second launch; a launch that reads
+  a fetch time now keeps it for the next.
 - `Store.check` says where its answer came from: `.memory`, `.image` or
   `.miss`. A handle took the image's part from a change in a global
   counter, which missed the root's fields and records an earlier check had

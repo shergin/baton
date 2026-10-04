@@ -42,6 +42,8 @@ public final class Persistence: Sendable {
         case fetched(operation: String, time: Double)
         /// Rows a read found carrying an older generation.
         case used(records: [String], root: [String])
+        /// A fetch time this launch read, which keeps it for the next.
+        case dated(operation: String)
         case invalidate
     }
 
@@ -53,6 +55,8 @@ public final class Persistence: Sendable {
     /// When each operation last committed a response, by the wall clock.
     private struct Ages: Sendable {
         var times: [String: Double] = [:]
+        /// The operations whose time this launch read and stamped.
+        var read: Set<String> = []
         /// Set by an invalidation or a removal that ran before the file's
         /// own times were loaded, so the load does not bring them back.
         var cleared = false
@@ -126,8 +130,15 @@ public final class Persistence: Sendable {
 
     /// How many seconds ago the operation's last response committed, in this
     /// launch or an earlier one.
+    /// A time read from the image is stamped as used, once per launch, so
+    /// data read every launch keeps its age and does not go stale at the
+    /// next but one.
     func age(of operation: String) -> Double? {
-        guard let time = ages.withLock({ $0.times[operation] }) else { return nil }
+        let (time, first) = ages.withLock { ages in
+            (ages.times[operation], ages.read.insert(operation).inserted)
+        }
+        guard let time else { return nil }
+        if first { enqueue(.dated(operation: operation)) }
         return max(0, Date().timeIntervalSince1970 - time)
     }
 

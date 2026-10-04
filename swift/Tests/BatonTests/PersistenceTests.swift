@@ -283,6 +283,33 @@ struct PersistenceTests {
         #expect(transport.requestCount == 4)
     }
 
+    @Test("data read every launch keeps its age: expired in the second launch, still dated and fresh in the third")
+    func ageReadEveryLaunch() async throws {
+        let transport = RecordedTransport { _ in fixtureData }
+        let first = launch(transport)
+        let fetched = first.handle(for: TestList(page: 1), fetchPolicy: .storeOrNetwork)
+        fetched.retain()
+        await fetched.settle()
+        await finish(first)
+
+        let second = launch(transport)
+        second.queryCacheExpiration = .zero
+        let expired = second.handle(for: TestList(page: 1), fetchPolicy: .storeOnly)
+        #expect(expired.fetchTime != nil)
+        #expect(expired.isStale, "the age came from the image, and it is past the expiration")
+        await finish(second)
+
+        let third = launch(transport)
+        let dated = third.handle(for: TestList(page: 1), fetchPolicy: .storeOnly)
+        guard case .ready = dated.phase else {
+            Issue.record("expected the image's data, got \(dated.phase)")
+            return
+        }
+        #expect(dated.fetchTime != nil, "the second launch's read kept the fetch time")
+        #expect(!dated.isStale)
+        #expect(transport.requestCount == 1)
+    }
+
     @Test("data read from the image without a fetch time is stale")
     func undatedDataIsStale() async throws {
         let transport = RecordedTransport { _ in fixtureData }
