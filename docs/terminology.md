@@ -61,7 +61,18 @@ place. New variables replace the lens.
 
 **Directive.** *Concept: directive.* GraphQL: an annotation on a selection
 or definition. Here: the only way behaviour is attached to data; the set is
-Relay's ([Relay's words](principles/relays-words.md)).
+Relay's ([Relay's words](principles/relays-words.md)), with one exception
+that is *(planned)*, [cache expiration](#documents).
+
+**Cache expiration.** *Concept: directive.* Baton's word. Relay has one
+expiration for a whole store, `queryCacheExpirationTime`, and no word for
+one query's; nor has the GraphQL specification. Here: *(planned)*.
+`@cacheExpiration(seconds:)` on a query states how old its data may be
+before it reads as stale. The compiler emits it as a constant of the
+operation, and the store reads it with the operation's age; an operation
+that states none takes the default given when the store is made. Nothing is
+passed at an attach, and no timer is armed. See
+[the decision](decisions/an-operation-states-its-expiration.md).
 
 **Required.** *Concept: directive.* Relay:
 `@required(action: NONE | LOG | THROW)`, a field the view cannot do without.

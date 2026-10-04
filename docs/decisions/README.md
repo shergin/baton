@@ -32,3 +32,4 @@ principle, the proof belongs here.
 - [A mapped scalar is a fallible read](a-mapped-scalar-is-a-fallible-read.md)
 - [An operation is sent as its text or its id, and the build decides](an-operation-is-sent-as-text-or-id.md)
 - [Client data is described by the schema and written by a payload](client-data-is-described-and-committed.md)
+- [An operation states its expiration in its document](an-operation-states-its-expiration.md)
