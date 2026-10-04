@@ -247,6 +247,16 @@ fn merge(occurrences: &[&Occurrence]) -> Vec<NormalizationField> {
             .find(|(key, deferred, _)| *key == response_key && *deferred == occurrence.deferred)
         {
             Some((_, _, members)) => members.push(occurrence),
+            // The ingest reads a response key by the first field that has
+            // it, and the initial payload carries the field that is not
+            // deferred, so that one goes before any deferred copy.
+            None if occurrence.deferred.is_none() => {
+                let position = groups
+                    .iter()
+                    .position(|(key, _, _)| *key == response_key)
+                    .unwrap_or(groups.len());
+                groups.insert(position, (response_key, None, vec![occurrence]));
+            }
             None => groups.push((response_key, occurrence.deferred.clone(), vec![occurrence])),
         }
     }
@@ -333,9 +343,12 @@ fn field(
 
 /// The disjunction of conjunctions, simplified: a conjunction that holds
 /// always makes the whole always (empty), a contradictory one is dropped,
-/// and repeats go.
+/// and repeats go. When every conjunction is contradictory the field is
+/// selected by no variables, and one contradiction stays, which none pass;
+/// dropping them all would read as always.
 pub fn any(conjunctions: Vec<Vec<Guard>>) -> Vec<Vec<Guard>> {
     let mut alternatives: Vec<Vec<Guard>> = Vec::new();
+    let mut contradiction: Option<Vec<Guard>> = None;
     for mut conjunction in conjunctions {
         conjunction.sort();
         conjunction.dedup();
@@ -343,6 +356,7 @@ pub fn any(conjunctions: Vec<Vec<Guard>>) -> Vec<Vec<Guard>> {
             .windows(2)
             .any(|pair| pair[0].variable == pair[1].variable);
         if contradictory {
+            contradiction.get_or_insert(conjunction);
             continue;
         }
         if conjunction.is_empty() {
@@ -352,7 +366,10 @@ pub fn any(conjunctions: Vec<Vec<Guard>>) -> Vec<Vec<Guard>> {
             alternatives.push(conjunction);
         }
     }
-    alternatives
+    match contradiction {
+        Some(contradiction) if alternatives.is_empty() => vec![contradiction],
+        _ => alternatives,
+    }
 }
 
 fn response_key(selection: &SelectionPlan) -> String {

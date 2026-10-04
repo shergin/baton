@@ -166,5 +166,75 @@ fn guards_that_hold_together_simplify_and_contradictions_drop() {
         any(vec![vec![x.clone(), not_x.clone()], vec![x.clone()]]),
         vec![vec![x.clone()]]
     );
-    assert_eq!(any(vec![vec![x.clone()], vec![x.clone()]]), vec![vec![x]]);
+    assert_eq!(
+        any(vec![vec![x.clone()], vec![x.clone()]]),
+        vec![vec![x.clone()]]
+    );
+    assert_eq!(
+        any(vec![vec![not_x.clone(), x.clone()]]),
+        vec![vec![not_x, x]],
+        "a field no variables select keeps a guard none pass, not none"
+    );
+}
+
+#[test]
+fn a_field_selected_twice_under_different_conditions_is_selected_when_either_holds() {
+    let root = decided(
+        "query Probe($x: Boolean!, $y: Boolean!, $id: ID!) { character(id: $id) { name @include(if: $x) name @include(if: $y) origin @include(if: $x) { name } origin @include(if: $y) { id } } }",
+    );
+    let fields = &child(&root, 0).variants[0].fields;
+    assert_eq!(keys(fields), vec!["name", "origin", "id"]);
+    let guard = |variable: &str| {
+        vec![Guard {
+            variable: variable.to_string(),
+            passing: true,
+        }]
+    };
+    assert_eq!(fields[0].guards, vec![guard("x"), guard("y")]);
+    assert_eq!(fields[1].guards, vec![guard("x"), guard("y")]);
+    let NormalizationKind::Linked {
+        selection: origin, ..
+    } = &fields[1].kind
+    else {
+        panic!("origin is a link");
+    };
+    let origin_fields = &origin.variants[0].fields;
+    assert_eq!(keys(origin_fields), vec!["name", "id"]);
+    assert_eq!(origin_fields[0].guards, vec![guard("x")]);
+    assert_eq!(
+        origin_fields[1].guards,
+        vec![guard("x"), guard("y")],
+        "Relay adds the id to both"
+    );
+}
+
+#[test]
+fn a_field_under_a_condition_and_its_negation_is_fetched_by_no_variables() {
+    let root = decided(
+        "query Probe($x: Boolean!, $id: ID!) { character(id: $id) { name species @include(if: $x) @skip(if: $x) } }",
+    );
+    let fields = &child(&root, 0).variants[0].fields;
+    let species = fields
+        .iter()
+        .find(|field| field.response_key == "species")
+        .expect("species is in the plan");
+    assert_eq!(species.guards.len(), 1);
+    assert!(
+        species.guards[0].len() == 2,
+        "one conjunction that no value of $x passes"
+    );
+}
+
+#[test]
+fn a_field_the_initial_part_selects_goes_before_its_deferred_copy() {
+    let root = decided(
+        "query Probe($id: ID!) { character(id: $id) { ...ProbeDeferOrigin_character @defer(label: \"later\") origin { id dimension } } } fragment ProbeDeferOrigin_character on Character { origin { name } }",
+    );
+    let fields = &child(&root, 0).variants[0].fields;
+    let origins: Vec<Option<&str>> = fields
+        .iter()
+        .filter(|field| field.response_key == "origin")
+        .map(|field| field.deferred.as_deref())
+        .collect();
+    assert_eq!(origins, vec![None, Some("Probe$defer$later")]);
 }
