@@ -357,9 +357,11 @@ are expected and listed without apology.
   normalized off the main actor, and the first part's announcements are
   read in the pass that ingests it rather than parsed a second time on
   the main actor.
-- A deferred response is fetched when its stream completes. Its fetch time
-  was stamped at the first part, so a stream that broke after it left the
-  handle fresh; the first part still renders at once.
+- A deferred response is fetched when its stream completes, and its fetch
+  time is stamped then; it was stamped at the first part, as if the whole
+  response had come. A stream that breaks after the first part leaves no
+  fetch time, and the deferred parts it lacks make the next store-or-network
+  attach fetch again; the first part still renders at once.
 - `URLSessionTransport` reads an incremental response from its data task's
   own delegate, in the chunks the loading system delivers; it iterated the
   body a byte at a time. The bench's 978 KB response reads in 1.2 ms

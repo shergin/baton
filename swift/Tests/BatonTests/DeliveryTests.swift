@@ -374,6 +374,35 @@ struct DeliveryTests {
         }
     }
 
+    @Test("a deferred fetch whose stream broke after the first part fetches again when a view attaches it under the default policy")
+    func brokenStreamFetchesAgain() async throws {
+        let transport = GatedParts(fixture("character-deferred-1"), fixture("character-deferred-2"))
+        let environment = Environment(transport: transport)
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestProfileQuery(id: "1"))
+        handle.retain()
+        await until { if case .loading = handle.phase { false } else { true } }
+        transport.fail()
+        await handle.settle()
+        #expect(handle.fetchTime == nil)
+        #expect(!handle.isStale, "an operation never fetched whole has no age")
+        handle.release()
+
+        let again = environment.handle(for: TestProfileQuery(id: "1"))
+        #expect(again === handle)
+        again.retain()
+        await until { transport.requests.count == 2 }
+        transport.release()
+        await again.settle()
+        guard case .ready(let data) = again.phase else {
+            Issue.record("expected ready, got \(again.phase)")
+            return
+        }
+        #expect(data.character?.testAppearances?.episode.map(\.name) == ["Pilot", "Lawnmower Dog"])
+        #expect(again.fetchTime != nil)
+        again.release()
+    }
+
     /// Fetches the profile through parts in the 2024 format and returns the
     /// store and the uncaught errors.
     func fetchProfile(_ parts: [String]) async throws -> (Store, [FieldError]) {
