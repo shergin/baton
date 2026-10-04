@@ -222,6 +222,10 @@ public final class Environment {
     /// Commits a mutation. The optimistic response, if any, is ingested with the
     /// mutation's own plan and applied as a layer first; the server's payload
     /// then replaces it in one batch, or the layer is reverted on failure.
+    /// The data returned reads the mutation root: its payload stays alive
+    /// while the completed mutation waits in the release buffer, until
+    /// `releaseBufferSize` later releases push it out, and then reads only
+    /// the records other roots keep.
     public func mutate<Op: Mutation>(_ operation: Op, optimistic: Variable? = nil) async throws -> Op.Data {
         let resolved = Op.plan.resolve(operation.variables)
         var layer: UUID?
@@ -250,6 +254,12 @@ public final class Environment {
             if let layer { store.revertOptimistic(layer) }
             throw error
         }
+        // The payload stays alive while the completed mutation waits in the
+        // release buffer, as a released query's data does.
+        // A root added makes nothing collectable, so no collection follows.
+        let completed = CompletedMutation(store: store, resolved: resolved)
+        handles[completed.key] = completed
+        park(completed.key, collect: false)
         if Op.throwsOnFieldError, !uncaught.isEmpty { throw FieldErrors(uncaught) }
         return Op.Data(anchor: Anchor(record: store.mutationRoot, variables: operation.variables, store: store))
     }
@@ -282,7 +292,7 @@ public final class Environment {
         scheduleCollection()
     }
 
-    private func park(_ key: AnyHashable) {
+    private func park(_ key: AnyHashable, collect: Bool = true) {
         releaseBuffer.removeAll { $0 == key }
         releaseBuffer.append(key)
         while releaseBuffer.count > releaseBufferSize {
@@ -290,7 +300,7 @@ public final class Environment {
             handles[evicted]?.cancel()
             handles.removeValue(forKey: evicted)
         }
-        scheduleCollection()
+        if collect { scheduleCollection() }
     }
 
     /// Handles that are roots for collection: retained or buffered.

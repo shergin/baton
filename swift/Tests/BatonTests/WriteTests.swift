@@ -116,6 +116,22 @@ struct WriteTests {
         #expect(environment.store.mutationRoot !== environment.store.root)
     }
 
+    @Test("the data a mutation returns stays readable through a collection while the mutation waits in the release buffer, and not after")
+    func mutationResultLives() async throws {
+        for bufferSize in [10, 0] {
+            let environment = Environment(transport: RecordedTransport([TestRename.name: fixture("rename-1")]))
+            environment.releaseBufferSize = bufferSize
+            let data = try await environment.mutate(TestRename(id: "1", name: "Rick Prime"))
+            #expect(data.rename?.character?.name == "Rick Prime")
+            environment.collect()
+            if bufferSize > 0 {
+                #expect(data.rename?.character?.name == "Rick Prime", "the parked mutation keeps its payload")
+            } else {
+                #expect(data.rename == nil, "pushed out of an empty buffer, the payload is collected")
+            }
+        }
+    }
+
     @Test("a mutation whose caller stops waiting still commits the payload the server sends")
     func mutationOutlivesItsCaller() async throws {
         let transport = CancellableGate()

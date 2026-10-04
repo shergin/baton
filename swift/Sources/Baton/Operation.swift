@@ -98,6 +98,31 @@ protocol AnyOperationHandle: AnyObject {
     func cancel()
 }
 
+/// A mutation that committed, parked in the release buffer as a root, so the
+/// data `mutate` returned stays readable until later releases push it out.
+/// A root field of the mutation root holds the latest payload of its field,
+/// and that is what it keeps.
+@MainActor
+final class CompletedMutation: AnyOperationHandle {
+    let key: AnyHashable = AnyHashable(UUID())
+    let retainCount = 0
+    private let store: Store
+    private let resolved: ResolvedSelection
+
+    init(store: Store, resolved: ResolvedSelection) {
+        self.store = store
+        self.resolved = resolved
+    }
+
+    func mark(into reachable: inout Set<ObjectIdentifier>) {
+        store.mark(resolved, from: store.mutationRoot, into: &reachable)
+    }
+
+    func refetchIfStale() {}
+    func reevaluate() {}
+    func cancel() {}
+}
+
 /// The live side of an operation value: its phase, its fetch, its data, and
 /// its place among the store's roots. Created by the environment, shared by
 /// equal operation values.

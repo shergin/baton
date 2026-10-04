@@ -235,6 +235,10 @@ are expected and listed without apology.
   the whole response, and reads a part without headers. It scans the
   chunks it is given rather than a byte at a time: 978 KB of 20 parts in
   16 KB chunks parse in 0.50 ms against 14.6 ms.
+- The data a mutation returns stays readable. Nothing kept its payload
+  alive, so after the next collection it read nil; the completed mutation
+  now waits in the release buffer as a released query does, and its data
+  lives until later releases push it out.
 - Kinds are types. An operation value conforms to `Query`, `Mutation` or
   `Subscription`, each refining `Operation`, and each API takes only its
   kind: `handle(for:)`, `preload`, `fetch` and `@Query` queries, `mutate`
