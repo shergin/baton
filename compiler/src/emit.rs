@@ -2970,23 +2970,32 @@ fn spread_accessor_names(
     names
 }
 
-/// The names generated code refers to unqualified from inside a lens: the
-/// module's shared enums, the runtime's module, and Swift types the
-/// accessors spell; and the names Swift keeps for itself. A nested lens of
-/// one of these names would shadow it or not compile.
-const RESERVED_TYPE_NAMES: [&str; 13] = [
+/// Every type and attribute name the emitter writes unqualified inside a
+/// lens, and the names Swift keeps for itself. A nested lens of one of
+/// these names would shadow it for the lens and everything nested in it, or
+/// not compile; an identifier a lens comes to spell unqualified joins the
+/// list in the same change.
+const RESERVED_TYPE_NAMES: [&str; 16] = [
+    // Swift lets no type member take these names.
     "Type",
     "Self",
     "Protocol",
     "Any",
+    // The attribute on every accessor and check.
+    "MainActor",
+    // The runtime's module and the module's shared enums.
     "Baton",
     "Types",
     "Slots",
     "AbstractSlots",
     "Sites",
+    // What the accessors return: a `@catch` field's `Result`, a caught
+    // spread's `Optional`, and the scalars.
     "Result",
+    "Optional",
     "String",
     "Int",
+    "Double",
     "Bool",
 ];
 

@@ -467,6 +467,12 @@ are expected and listed without apology.
   `TypesLens`, but `fieldErrors` and `satisfied` named it again without the
   number and checked the first field's lens, so a field error or a missing
   `@required` field in the second went unseen.
+- A linked field named `mainActor`, `double` or `optional` gets a nested
+  lens with `Lens` after its name, as `type` and `string` do. Its lens hid
+  the attribute on every accessor, the `Double` a `Float` field reads as,
+  or the `Optional` a caught spread is wrapped in, and the generated code
+  did not compile. The names held back are every type and attribute a
+  lens spells unqualified, and Swift's own.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

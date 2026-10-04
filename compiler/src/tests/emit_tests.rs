@@ -6,6 +6,8 @@
 //! as a diff to review.
 //!
 //! After an intended change, `BATON_BLESS=1 cargo test` rewrites the goldens.
+//! Beside them, the names the emitter keeps nested lenses off are tested
+//! one by one.
 
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
@@ -152,4 +154,34 @@ fn compiling_the_same_sources_twice_emits_the_same_bytes() {
         emit_swift_tests() == emit_swift_tests(),
         "two compilations of the same sources emitted different bytes"
     );
+}
+
+#[test]
+fn a_nested_lens_is_never_named_like_what_a_lens_spells_unqualified_or_a_swift_keyword() {
+    // Spelled out rather than read from the list, so that a name dropped
+    // from it fails here.
+    let reserved = [
+        "Type",
+        "Self",
+        "Protocol",
+        "Any",
+        "MainActor",
+        "Baton",
+        "Types",
+        "Slots",
+        "AbstractSlots",
+        "Sites",
+        "Result",
+        "Optional",
+        "String",
+        "Int",
+        "Double",
+        "Bool",
+    ];
+    for name in reserved {
+        assert_eq!(nested_type_name(&lower_camel(name)), format!("{name}Lens"));
+        assert_eq!(nested_type_name(name), format!("{name}Lens"));
+    }
+    assert_eq!(nested_type_name("owner"), "Owner");
+    assert_eq!(nested_type_name("typesLens"), "TypesLens");
 }

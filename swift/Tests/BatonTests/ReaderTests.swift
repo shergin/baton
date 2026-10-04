@@ -235,6 +235,38 @@ struct ReaderTests {
         #expect(data.slots?.id == "1")
     }
 
+    @Test("fields named like the Swift types, keywords and attribute a lens spells get lenses of other names, and every accessor reads")
+    func swiftNames() throws {
+        let store = Store()
+        store.reportMissing = nil
+        let query = TestSwiftNames(id: "1")
+        store.commit(try Ingest.normalize(fixture("swift-names-1"), plan: TestSwiftNames.plan.resolve(query.variables)))
+        let data = TestSwiftNames.Data(anchor: Anchor(record: store.root, variables: query.variables, store: store))
+        let type: TestSwiftNames.Data.TypeLens? = data.type
+        let mainActor: TestSwiftNames.Data.MainActorLens? = data.mainActor
+        let double: TestSwiftNames.Data.DoubleLens? = data.double
+        let owner: TestSwiftNames.Data.Owner? = data.owner
+        #expect(type?.id == "1")
+        #expect(data.`self`?.id == "1")
+        #expect(data.`protocol`?.id == "1")
+        #expect(data.`any`?.id == "1")
+        #expect(mainActor?.id == "1")
+        #expect(data.baton?.id == "1")
+        #expect(data.abstractSlots?.id == "1")
+        #expect(data.result?.id == "1")
+        #expect(data.optional?.id == "1")
+        #expect(data.string?.id == "1")
+        #expect(data.int?.id == "1")
+        #expect(double?.id == "1")
+        #expect(data.bool?.id == "1")
+        #expect(owner?.id == "1")
+        #expect(try data.caught.get()?.id == "1")
+        #expect(data.node?.id == "1")
+        #expect(data.tokenizer?.ratio == 0.5)
+        #expect(data.tokenizer?.count == 2)
+        #expect(data.tokenizer?.flag == true)
+    }
+
     @Test("of two fields whose lenses would take one name, the second is checked through its own lens for field errors and required fields")
     func collidingLensNames() throws {
         let store = Store()

@@ -1064,6 +1064,311 @@ query TestStrictOrigin(
     }
 }
 
+/// Operation value for `query TestSwiftNames`.
+nonisolated public struct TestSwiftNames: Baton.Query {
+    public var id: String
+    public var resolution: Baton.OperationHandle<Self>? = nil
+
+    public init(id: String) {
+        self.id = id
+    }
+
+    public static let name = "TestSwiftNames"
+    public static let persistedID = "fd6562c0ef382f9fa42f63f3cc301777"
+    public static let text = #"""
+query TestSwiftNames(
+  $id: ID!
+) {
+  type: character(id: $id) {
+    id
+  }
+  self: character(id: $id) {
+    id
+  }
+  protocol: character(id: $id) {
+    id
+  }
+  any: character(id: $id) {
+    id
+  }
+  mainActor: character(id: $id) {
+    id
+  }
+  baton: character(id: $id) {
+    id
+  }
+  abstractSlots: character(id: $id) {
+    id
+  }
+  result: character(id: $id) {
+    id
+  }
+  optional: character(id: $id) {
+    id
+  }
+  string: character(id: $id) {
+    id
+  }
+  int: character(id: $id) {
+    id
+  }
+  double: character(id: $id) {
+    id
+  }
+  bool: character(id: $id) {
+    id
+  }
+  owner: character(id: $id) {
+    id
+  }
+  caught: character(id: $id) {
+    id
+  }
+  node(id: $id) {
+    __typename
+    id
+  }
+  tokenizer {
+    ratio
+    count
+    flag
+    id
+  }
+}
+"""#
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["id": Baton.Variable(id)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+
+    public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
+            .linked("type", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            ])),
+            .linked("self", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            ])),
+            .linked("protocol", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            ])),
+            .linked("any", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            ])),
+            .linked("mainActor", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            ])),
+            .linked("baton", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            ])),
+            .linked("abstractSlots", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            ])),
+            .linked("result", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            ])),
+            .linked("optional", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            ])),
+            .linked("string", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            ])),
+            .linked("int", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            ])),
+            .linked("double", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            ])),
+            .linked("bool", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            ])),
+            .linked("owner", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            ])),
+            .linked("caught", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), caught: true, selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false, caught: true),
+            ])),
+            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, hasID: true, abstract: true, fields: [
+                .scalar("__typename", key: .fixed(Slots.Node.__typename), kind: .string, list: false),
+                .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            ])),
+            .linked("tokenizer", key: .fixed(Slots.Query.tokenizer), plural: false, selection: Baton.Selection(type: Types.Tokenizer, hasID: true, abstract: false, fields: [
+                .scalar("ratio", key: .fixed(Slots.Tokenizer.ratio), kind: .double, list: false),
+                .scalar("count", key: .fixed(Slots.Tokenizer.count), kind: .int, list: false),
+                .scalar("flag", key: .fixed(Slots.Tokenizer.flag), kind: .bool, list: false),
+                .scalar("id", key: .fixed(Slots.Tokenizer.id), kind: .string, list: false),
+            ])),
+        ]))
+
+    nonisolated public struct Data: Baton.Lens {
+        public let anchor: Baton.Anchor
+        public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Query"
+        @MainActor public var type: TypeLens? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(TypeLens.init(anchor:)) }
+        @MainActor public var `self`: SelfLens? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(SelfLens.init(anchor:)) }
+        @MainActor public var `protocol`: ProtocolLens? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(ProtocolLens.init(anchor:)) }
+        @MainActor public var `any`: AnyLens? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(AnyLens.init(anchor:)) }
+        @MainActor public var mainActor: MainActorLens? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(MainActorLens.init(anchor:)) }
+        @MainActor public var baton: BatonLens? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(BatonLens.init(anchor:)) }
+        @MainActor public var abstractSlots: AbstractSlotsLens? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(AbstractSlotsLens.init(anchor:)) }
+        @MainActor public var result: ResultLens? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(ResultLens.init(anchor:)) }
+        @MainActor public var optional: OptionalLens? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(OptionalLens.init(anchor:)) }
+        @MainActor public var string: StringLens? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(StringLens.init(anchor:)) }
+        @MainActor public var int: IntLens? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(IntLens.init(anchor:)) }
+        @MainActor public var double: DoubleLens? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(DoubleLens.init(anchor:)) }
+        @MainActor public var bool: BoolLens? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(BoolLens.init(anchor:)) }
+        @MainActor public var owner: Owner? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(Owner.init(anchor:)) }
+        @MainActor public var caught: Result<Caught?, Baton.FieldErrors> { anchor.caught(anchor.owner.slot(Slots.Query.character_bca4f9), within: Caught.fieldErrors) { $0.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(Caught.init(anchor:)) } }
+        @MainActor public var node: Node? { anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08)).map(Node.init(anchor:)) }
+        @MainActor public var tokenizer: Tokenizer? { anchor.linked(Slots.Query.tokenizer).map(Tokenizer.init(anchor:)) }
+
+        nonisolated public struct TypeLens: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Character"
+            @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+        }
+
+        nonisolated public struct SelfLens: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Character"
+            @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+        }
+
+        nonisolated public struct ProtocolLens: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Character"
+            @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+        }
+
+        nonisolated public struct AnyLens: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Character"
+            @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+        }
+
+        nonisolated public struct MainActorLens: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Character"
+            @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+        }
+
+        nonisolated public struct BatonLens: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Character"
+            @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+        }
+
+        nonisolated public struct AbstractSlotsLens: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Character"
+            @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+        }
+
+        nonisolated public struct ResultLens: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Character"
+            @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+        }
+
+        nonisolated public struct OptionalLens: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Character"
+            @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+        }
+
+        nonisolated public struct StringLens: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Character"
+            @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+        }
+
+        nonisolated public struct IntLens: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Character"
+            @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+        }
+
+        nonisolated public struct DoubleLens: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Character"
+            @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+        }
+
+        nonisolated public struct BoolLens: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Character"
+            @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+        }
+
+        nonisolated public struct Owner: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Character"
+            @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+        }
+
+        nonisolated public struct Caught: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Character"
+            @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+            /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+            @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+                var errors: [Baton.FieldError] = []
+                anchor.collectError(Slots.Character.id, into: &errors)
+                return errors
+            }
+            /// The lens, or the field errors in it as a thrown `FieldErrors`.
+            @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self {
+                let errors = fieldErrors(anchor)
+                if !errors.isEmpty { throw Baton.FieldErrors(errors) }
+                return Self(anchor: anchor)
+            }
+            /// The lens, or the field errors in it as a `Result`.
+            @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+                let errors = fieldErrors(anchor)
+                return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(Baton.FieldErrors(errors))
+            }
+        }
+
+        nonisolated public struct Node: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Node"
+            @MainActor public var id: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
+        }
+
+        nonisolated public struct Tokenizer: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Tokenizer"
+            @MainActor public var ratio: Double? { anchor.double(Slots.Tokenizer.ratio) }
+            @MainActor public var count: Int? { anchor.int(Slots.Tokenizer.count) }
+            @MainActor public var flag: Bool? { anchor.bool(Slots.Tokenizer.flag) }
+        }
+    }
+}
+
 /// Operation value for `query TestThrowingNode`.
 nonisolated public struct TestThrowingNode: Baton.Query {
     public var id: String
