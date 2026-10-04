@@ -414,6 +414,9 @@ are expected and listed without apology.
   field errors its handle fails on. It threw for every uncaught error the
   response placed, one inside a spread among them, so the fetch threw where
   the handle was ready.
+- A stream a retry replaced leaves the new one's `error` alone. A bad
+  event the old stream was still reading when `retry()` ran set its errors
+  on the handle, and the new stream showed them until its first good event.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

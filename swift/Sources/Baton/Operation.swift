@@ -576,7 +576,9 @@ public final class SubscriptionHandle<Op: Subscription>: AnyOperationHandle {
                         error = nil
                     } catch let failure as GraphQLErrors {
                         // An event with errors and no data is one bad event;
-                        // the stream goes on.
+                        // the stream goes on. The ingest runs to its end
+                        // whoever cancelled the task meanwhile.
+                        guard !Task.isCancelled else { return }
                         error = failure
                     }
                 }

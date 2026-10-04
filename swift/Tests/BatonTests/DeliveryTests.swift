@@ -606,6 +606,26 @@ struct DeliveryTests {
         live.release()
     }
 
+    @Test("a bad event the replaced stream was reading leaves no error on the stream that replaced it")
+    func badEventOfAReplacedStream() async throws {
+        let events = Events()
+        let environment = Environment(transport: RecordedTransport(), subscriptions: events)
+        environment.store.reportMissing = nil
+        let live = environment.subscriptionHandle(for: TestNoteAdded(characterId: "events-\(#line)", connections: []))
+        live.retain()
+        await until { events.continuation != nil }
+        events.send(fixture("not-authorized"))
+        // One turn of the main actor hands the event to the ingest, off the
+        // main actor; the retry lands before the handle hears back from it.
+        await Task.yield()
+        live.retry()
+        await until { events.requests.count == 2 }
+        try await Task.sleep(for: .milliseconds(50))
+        #expect(live.error == nil, "the replaced stream's bad event is not the new stream's")
+        #expect(live.isActive)
+        live.release()
+    }
+
     @Test("the socket closes when its last subscription ends, and an error frame's GraphQL errors are its messages")
     func socketLifetime() async throws {
         let server = try SocketServer()
