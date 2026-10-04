@@ -102,6 +102,16 @@ parts makes a `storeOrNetwork` attach fetch the parts the store holds only
 half or not at all: a part held half is cleared, so its fragment reads
 absent rather than empty, and the rest of the operation renders meanwhile.
 
+**Inline data fragment.** *Composition: document, directive.* Relay:
+`@inline`, a fragment whose data a function outside rendering reads as a
+plain value with `readInlineData`; the value is not live. Here:
+*(planned)*, and until then the compiler rejects the directive. A fragment
+so marked compiles to a `Sendable` value of its fields in place of a lens,
+read out by the spread's accessor on the parent's lens: for code off the
+main actor, and for rules tested with values. A fragment is a lens or
+inline, never both, and no API takes the value. See
+[the decision](decisions/a-fragment-has-one-reading.md).
+
 **Variables.** *Concept: operation value.* GraphQL: an operation's
 parameters. Here: the stored properties of an [operation value](#generated).
 

@@ -28,3 +28,4 @@ principle, the proof belongs here.
 - [The environment is the session](the-environment-is-the-session.md)
 - [An image belongs to one store](an-image-belongs-to-one-store.md)
 - [The store owns roots and ages](the-store-owns-roots-and-ages.md)
+- [A fragment has one reading: a lens, or an `@inline` value](a-fragment-has-one-reading.md)
