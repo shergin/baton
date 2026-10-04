@@ -67,6 +67,8 @@ measurements and the one condition under which this bends.
 
 ## Spelled today
 
-Nothing is spelled yet. Planned: `swift/` and `kotlin/` as separately
-versioned members, `compiler/` emitting into both, `spec/` holding the
-fixtures. This section may rot; the rest must not.
+`swift/` holds the Swift runtime, its macros, its build plugin, its
+benchmarks and its tests; `compiler/` holds `batonc`, which emits Swift;
+`spec/` holds the schemas, the responses and the store dumps a runtime is
+held to. There is no Kotlin runtime yet, and `batonc` has no Kotlin
+emitter. This section may rot; the rest must not.
