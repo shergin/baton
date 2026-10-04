@@ -16,15 +16,11 @@ nonisolated public struct TestCaughtProfile_character: Baton.Lens {
         return errors
     }
     /// The lens, or the field errors in it as a thrown `FieldErrors`.
-    @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self {
-        let errors = fieldErrors(anchor)
-        if !errors.isEmpty { throw Baton.FieldErrors(errors) }
-        return Self(anchor: anchor)
-    }
+    @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
     /// The lens, or the field errors in it as a `Result`.
     @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
         let errors = fieldErrors(anchor)
-        return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(Baton.FieldErrors(errors))
+        return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
     }
 
     nonisolated public struct Origin: Baton.Lens {
@@ -39,15 +35,11 @@ nonisolated public struct TestCaughtProfile_character: Baton.Lens {
             return errors
         }
         /// The lens, or the field errors in it as a thrown `FieldErrors`.
-        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self {
-            let errors = fieldErrors(anchor)
-            if !errors.isEmpty { throw Baton.FieldErrors(errors) }
-            return Self(anchor: anchor)
-        }
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
         /// The lens, or the field errors in it as a `Result`.
         @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
             let errors = fieldErrors(anchor)
-            return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(Baton.FieldErrors(errors))
+            return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
         }
     }
 }
@@ -65,15 +57,11 @@ nonisolated public struct TestCaughtStrict_character: Baton.Lens {
         return errors
     }
     /// The lens, or the field errors in it as a thrown `FieldErrors`.
-    @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self {
-        let errors = fieldErrors(anchor)
-        if !errors.isEmpty { throw Baton.FieldErrors(errors) }
-        return Self(anchor: anchor)
-    }
+    @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
     /// The lens, or the field errors in it as a `Result`.
     @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
         let errors = fieldErrors(anchor)
-        return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(Baton.FieldErrors(errors))
+        return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
     }
 }
 
@@ -92,7 +80,7 @@ nonisolated public struct TestEdgesNames_character: Baton.Lens {
         @MainActor public var edges: Baton.List<Edges3>? { anchor.list(Slots.NoteConnection.edges) }
         @MainActor public var pageInfo: PageInfo { PageInfo(anchor: anchor.requiredLinked(Slots.NoteConnection.pageInfo, type: Types.PageInfo)) }
         /// The connection's slots: edges, nodes, cursors and the page info, for the store's merge and the state below.
-        @_spi(Generated) public static let connection = Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo)
+        @_spi(Generated) public static let connection: Baton.ConnectionSlots = .init(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo)
         /// The edges' nodes, in order, without nulls.
         @MainActor public var nodes: [Edges3.Node] { anchor.nodes(Self.connection) }
         /// Whether the server has edges after the last one, from the merged `pageInfo`.
@@ -146,7 +134,7 @@ nonisolated public struct TestProgramNames_character: Baton.Lens {
     @MainActor public var testCaughtProfile: TestCaughtProfile_character { TestCaughtProfile_character(anchor: anchor) }
     @MainActor public var id: String? { anchor.string(Slots.Character.id) }
     /// How the fragment is fetched again: `TestProgramNamesRefetchQuery` with the lens's variables.
-    @_spi(Generated) public static let refetchable = Baton.Refetch(variables: ["id"], identifier: "id", first: nil, after: nil, last: nil, before: nil)
+    @_spi(Generated) public static let refetchable: Baton.Refetch = .init(variables: ["id"], identifier: "id", first: nil, after: nil, last: nil, before: nil)
     /// Fetches the fragment again through `TestProgramNamesRefetchQuery` with its current variables; the records update in place.
     @MainActor public func refetch() async throws { try await anchor.refetch(TestProgramNamesRefetchQuery.self, TestProgramNames_character.refetchable) }
 
@@ -567,7 +555,7 @@ fragment TestCaughtStrict_character on Character {
             @MainActor public var id: String? { anchor.string(Slots.Character.id) }
             @MainActor public var profile: Result<TestCaughtProfile_character, Baton.FieldErrors> {
                 let errors = TestCaughtProfile_character.fieldErrors(anchor)
-                return errors.isEmpty ? .success(TestCaughtProfile_character(anchor: anchor)) : .failure(Baton.FieldErrors(errors))
+                return errors.isEmpty ? .success(TestCaughtProfile_character(anchor: anchor)) : .failure(.init(errors))
             }
             @MainActor public var nulledProfile: TestCaughtProfile_character? {
                 guard TestCaughtProfile_character.fieldErrors(anchor).isEmpty else { return nil }
@@ -575,7 +563,7 @@ fragment TestCaughtStrict_character on Character {
             }
             @MainActor public var strict: Result<TestCaughtStrict_character, Baton.FieldErrors> {
                 let errors = TestCaughtStrict_character.fieldErrors(anchor)
-                return errors.isEmpty ? .success(TestCaughtStrict_character(anchor: anchor)) : .failure(Baton.FieldErrors(errors))
+                return errors.isEmpty ? .success(TestCaughtStrict_character(anchor: anchor)) : .failure(.init(errors))
             }
             @MainActor public var nulledStrict: TestCaughtStrict_character? {
                 guard TestCaughtStrict_character.fieldErrors(anchor).isEmpty else { return nil }
@@ -591,7 +579,7 @@ fragment TestCaughtStrict_character on Character {
             @MainActor public var profile: Result<TestCaughtProfile_character?, Baton.FieldErrors> {
                 guard anchor.record.is(Types.Character) else { return .success(nil) }
                 let errors = TestCaughtProfile_character.fieldErrors(anchor)
-                return errors.isEmpty ? .success(TestCaughtProfile_character(anchor: anchor)) : .failure(Baton.FieldErrors(errors))
+                return errors.isEmpty ? .success(TestCaughtProfile_character(anchor: anchor)) : .failure(.init(errors))
             }
         }
     }

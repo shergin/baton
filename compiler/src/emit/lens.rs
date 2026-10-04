@@ -2,6 +2,11 @@
 //! accessors, the connection and refetch surface, and the `satisfied`,
 //! `missingRequiredField`, `fieldErrors` and `isPresent` checks, printed
 //! from the `ReaderPlan`.
+//!
+//! A lens names the runtime's module only in a type, where Swift looks up
+//! types alone, so an accessor named `Baton` hides it from nothing; an
+//! expression takes the runtime's type from its context, as
+//! `.failure(.init(errors))` does.
 
 use std::fmt::Write as _;
 
@@ -348,7 +353,7 @@ fn spread_accessor(output: &mut String, name: &str, read: &SpreadRead, indent: &
             );
             let _ = writeln!(
                 output,
-                "{body_indent}return errors.isEmpty ? .success({fragment}(anchor: {anchor})) : .failure(Baton.FieldErrors(errors))"
+                "{body_indent}return errors.isEmpty ? .success({fragment}(anchor: {anchor})) : .failure(.init(errors))"
             );
         }
     }
@@ -484,7 +489,7 @@ fn refetch_members(output: &mut String, refetch: &RefetchMembers, indent: &str) 
     );
     let _ = writeln!(
         output,
-        "{indent}@_spi(Generated) public static let refetchable = Baton.Refetch(variables: [{}], identifier: {}, first: {}, after: {}, last: {}, before: {})",
+        "{indent}@_spi(Generated) public static let refetchable: Baton.Refetch = .init(variables: [{}], identifier: {}, first: {}, after: {}, last: {}, before: {})",
         refetch
             .variables
             .iter()
@@ -519,7 +524,7 @@ fn connection_members(output: &mut String, connection: &ConnectionMembers, inden
     );
     let _ = writeln!(
         output,
-        "{indent}@_spi(Generated) public static let connection = Baton.ConnectionSlots(connection: {}, edge: {}, pageInfo: {})",
+        "{indent}@_spi(Generated) public static let connection: Baton.ConnectionSlots = .init(connection: {}, edge: {}, pageInfo: {})",
         type_reference(&connection.connection_type),
         type_reference(&connection.edge_type),
         type_reference(&connection.page_info_type)
@@ -806,15 +811,8 @@ fn field_errors_function(output: &mut String, checks: &[ErrorCheck], indent: &st
     );
     let _ = writeln!(
         output,
-        "{indent}@_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self {{"
+        "{indent}@_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self {{ try caught(anchor).get() }}"
     );
-    let _ = writeln!(output, "{indent}    let errors = fieldErrors(anchor)");
-    let _ = writeln!(
-        output,
-        "{indent}    if !errors.isEmpty {{ throw Baton.FieldErrors(errors) }}"
-    );
-    let _ = writeln!(output, "{indent}    return Self(anchor: anchor)");
-    let _ = writeln!(output, "{indent}}}");
     let _ = writeln!(
         output,
         "{indent}/// The lens, or the field errors in it as a `Result`."
@@ -826,7 +824,7 @@ fn field_errors_function(output: &mut String, checks: &[ErrorCheck], indent: &st
     let _ = writeln!(output, "{indent}    let errors = fieldErrors(anchor)");
     let _ = writeln!(
         output,
-        "{indent}    return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(Baton.FieldErrors(errors))"
+        "{indent}    return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))"
     );
     let _ = writeln!(output, "{indent}}}");
 }

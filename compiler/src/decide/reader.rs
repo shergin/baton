@@ -49,6 +49,102 @@ pub struct ReaderPlan {
     pub nested: Vec<ReaderPlan>,
 }
 
+impl ReaderPlan {
+    /// The module's shared enums that the lens and every lens nested in it
+    /// spell in their bodies: `Slots` and `AbstractSlots` where they read a
+    /// slot, `Types` where they test a record's type or name one, and
+    /// `Sites` where they bind a spread's arguments. A member of the lens,
+    /// or of the type it is nested in, named like one of them hides it from
+    /// all of those bodies.
+    pub fn shared_enums(&self) -> BTreeSet<&'static str> {
+        let mut names = BTreeSet::new();
+        self.collect_shared_enums(&mut names);
+        names
+    }
+
+    fn collect_shared_enums(&self, names: &mut BTreeSet<&'static str>) {
+        for accessor in &self.accessors {
+            match &accessor.read {
+                Read::Scalar(read) => {
+                    names.insert(read.slot.shared_enum());
+                }
+                Read::Linked(read) => {
+                    names.insert(read.slot.shared_enum());
+                    // A non-null link reads its type's placeholder when it
+                    // has no record.
+                    if matches!(
+                        read.form,
+                        LinkedForm::Required | LinkedForm::Caught { optional: false }
+                    ) {
+                        names.insert("Types");
+                    }
+                }
+                Read::Spread(read) => {
+                    if read.binding.is_some() {
+                        names.insert("Sites");
+                    }
+                    if read
+                        .guards
+                        .iter()
+                        .any(|guard| matches!(guard, SpreadGuard::Test(_)))
+                    {
+                        names.insert("Types");
+                    }
+                }
+                Read::Aliased(read) => {
+                    if read
+                        .guards
+                        .iter()
+                        .any(|guard| matches!(guard, AliasGuard::Test(_)))
+                    {
+                        names.insert("Types");
+                    }
+                }
+                Read::Condition(_) => {
+                    names.insert("Types");
+                }
+            }
+        }
+        if self.connection.is_some() {
+            names.insert("Types");
+        }
+        for entry in self.satisfied.iter().flatten() {
+            if let Some(
+                SatisfiedCheck::HasValue { slot, .. } | SatisfiedCheck::Linked { slot, .. },
+            ) = &entry.item
+            {
+                names.insert(slot.shared_enum());
+            }
+        }
+        for check in self.field_errors.iter().flatten() {
+            match check {
+                ErrorCheck::Condition { .. } => {
+                    names.insert("Types");
+                }
+                ErrorCheck::Member(lines) => {
+                    for line in &lines.item {
+                        match line {
+                            ErrorLine::Field(slot)
+                            | ErrorLine::Linked { slot, .. }
+                            | ErrorLine::List { slot, .. }
+                            | ErrorLine::Required { slot, .. } => {
+                                names.insert(slot.shared_enum());
+                            }
+                            ErrorLine::Nested(_) => {}
+                        }
+                    }
+                }
+            }
+        }
+        for presence in self.is_present.iter().flatten() {
+            names.insert(presence.item.shared_enum());
+        }
+        for child in &self.nested {
+            child.collect_shared_enums(names);
+        }
+    }
+}
+
 /// Something done only when the conditions on the way to it select: the
 /// alternatives of conjunctions of `@include` and `@skip`, none for always.
 #[derive(Debug, Clone, PartialEq)]
@@ -64,6 +160,18 @@ pub struct Guarded<T> {
 pub struct SlotAccess {
     pub slot: SlotRef,
     pub on_record_type: bool,
+}
+
+impl SlotAccess {
+    /// The shared enum the slot is read through: `AbstractSlots` for a
+    /// constant key on an interface or union, `Slots` otherwise.
+    fn shared_enum(&self) -> &'static str {
+        if self.on_record_type && !self.slot.has_variables() {
+            "AbstractSlots"
+        } else {
+            "Slots"
+        }
+    }
 }
 
 /// One accessor: its name, unescaped, the conditions it reads under, and
@@ -569,7 +677,7 @@ impl Readers {
                 )
             })
             .collect();
-        ReaderPlan {
+        let lens = ReaderPlan {
             name: name.to_string(),
             type_name: type_name.to_string(),
             accessors,
@@ -580,7 +688,10 @@ impl Readers {
             field_errors,
             is_present,
             nested,
-        }
+        };
+        self.duplicates
+            .extend(hidden_enums(context.path, &lens, &members));
+        lens
     }
 
     /// The connection surface of a lens over a `@connection` field: Relay's
@@ -1450,6 +1561,27 @@ fn collect_caught(selections: &[SelectionPlan], into: &mut BTreeSet<String>) {
             _ => {}
         }
     }
+}
+
+/// The clashes of a lens's accessors with the shared enums its code spells:
+/// an accessor the document named `Slots`, say, would hide the enum from
+/// every body of the lens and of the lenses nested in it.
+fn hidden_enums(path: &str, lens: &ReaderPlan, members: &[Member]) -> Vec<NameError> {
+    let spelled = lens.shared_enums();
+    let none = Reserved::none();
+    let mut scope = Scope::new(path, &none);
+    for name in &spelled {
+        scope.declare(name, Kind::Type, format!("the shared enum `{name}`"));
+    }
+    for member in members {
+        let Some((name, what)) = written_accessor(&member.selection) else {
+            continue;
+        };
+        if spelled.contains(name.as_str()) {
+            scope.declare_written(&name, Kind::Instance, what, written_key(&member.selection));
+        }
+    }
+    scope.finish()
 }
 
 /// The accessor a member's document spells, and what it is, for messages: a

@@ -2,6 +2,122 @@
   "fragments": [],
   "operations": [
     {
+      "name": "TestCaughtNames",
+      "source": "swift/Tests/BatonTests/NameDocuments.swift",
+      "document": 1,
+      "kind": "query",
+      "root_type": "Query",
+      "variables": [],
+      "text": "query TestCaughtNames {\n  types {\n    Baton\n  }\n}",
+      "id": "4ee7fb2eb14761be7c4f9aa1191574b3",
+      "throws_on_field_error": false,
+      "bubbles": false,
+      "has_deferred": false,
+      "error_behavior": null,
+      "reader": [
+        {
+          "kind": "linked",
+          "name": "types",
+          "alias": null,
+          "type_name": "Types",
+          "base_type": "Types",
+          "base_kind": "object",
+          "non_null": false,
+          "semantic_non_null": false,
+          "plural": false,
+          "has_id": false,
+          "is_abstract": false,
+          "possible_types": [
+            "Types"
+          ],
+          "storage_key": {
+            "name": "types",
+            "arguments": []
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": {
+            "to": "RESULT"
+          },
+          "caught": true,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "Baton",
+              "alias": null,
+              "type_name": "String",
+              "base_type": "String",
+              "base_kind": "string",
+              "non_null": false,
+              "semantic_non_null": false,
+              "list": false,
+              "storage_key": {
+                "name": "Baton",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": true
+            }
+          ]
+        }
+      ],
+      "normalization": [
+        {
+          "kind": "linked",
+          "name": "types",
+          "alias": null,
+          "type_name": "Types",
+          "base_type": "Types",
+          "base_kind": "object",
+          "non_null": false,
+          "semantic_non_null": false,
+          "plural": false,
+          "has_id": false,
+          "is_abstract": false,
+          "possible_types": [
+            "Types"
+          ],
+          "storage_key": {
+            "name": "types",
+            "arguments": []
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": true,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "Baton",
+              "alias": null,
+              "type_name": "String",
+              "base_type": "String",
+              "base_kind": "string",
+              "non_null": false,
+              "semantic_non_null": false,
+              "list": false,
+              "storage_key": {
+                "name": "Baton",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": true
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "TestNames",
       "source": "swift/Tests/BatonTests/NameDocuments.swift",
       "document": 0,
@@ -232,7 +348,7 @@
     {
       "name": "TestSpellings",
       "source": "swift/Tests/BatonTests/NameDocuments.swift",
-      "document": 1,
+      "document": 2,
       "kind": "query",
       "root_type": "Query",
       "variables": [],

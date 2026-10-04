@@ -9,7 +9,7 @@ nonisolated public struct TestDeferredNotes_character: Baton.Lens {
     @MainActor public var notes: Notes { Notes(anchor: anchor.requiredLinked(Slots.Character.__TestDeferredNotes_notes_connection, type: Types.NoteConnection)) }
     @MainActor public var id: String? { anchor.string(Slots.Character.id) }
     /// How the fragment is fetched again: `TestDeferredNotesPaginationQuery` with the lens's variables.
-    @_spi(Generated) public static let refetchable = Baton.Refetch(variables: ["count", "cursor", "id"], identifier: "id", first: "count", after: "cursor", last: nil, before: nil)
+    @_spi(Generated) public static let refetchable: Baton.Refetch = .init(variables: ["count", "cursor", "id"], identifier: "id", first: "count", after: "cursor", last: nil, before: nil)
     /// Fetches the fragment again through `TestDeferredNotesPaginationQuery` with its current variables; the records update in place.
     @MainActor public func refetch() async throws { try await anchor.refetch(TestDeferredNotesPaginationQuery.self, TestDeferredNotes_character.refetchable) }
 
@@ -20,7 +20,7 @@ nonisolated public struct TestDeferredNotes_character: Baton.Lens {
         @MainActor public var edges: Baton.List<Edges>? { anchor.list(Slots.NoteConnection.edges) }
         @MainActor public var pageInfo: PageInfo { PageInfo(anchor: anchor.requiredLinked(Slots.NoteConnection.pageInfo, type: Types.PageInfo)) }
         /// The connection's slots: edges, nodes, cursors and the page info, for the store's merge and the state below.
-        @_spi(Generated) public static let connection = Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo)
+        @_spi(Generated) public static let connection: Baton.ConnectionSlots = .init(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo)
         /// The edges' nodes, in order, without nulls.
         @MainActor public var nodes: [Edges.Node] { anchor.nodes(Self.connection) }
         /// Whether the server has edges after the last one, from the merged `pageInfo`.
@@ -81,7 +81,7 @@ nonisolated public struct TestNotes_character: Baton.Lens {
     @MainActor public var notes: Notes { Notes(anchor: anchor.requiredLinked(Slots.Character.__TestNotes_notes_connection, type: Types.NoteConnection)) }
     @MainActor public var id: String? { anchor.string(Slots.Character.id) }
     /// How the fragment is fetched again: `TestNotesPaginationQuery` with the lens's variables.
-    @_spi(Generated) public static let refetchable = Baton.Refetch(variables: ["count", "cursor", "id"], identifier: "id", first: "count", after: "cursor", last: nil, before: nil)
+    @_spi(Generated) public static let refetchable: Baton.Refetch = .init(variables: ["count", "cursor", "id"], identifier: "id", first: "count", after: "cursor", last: nil, before: nil)
     /// Fetches the fragment again through `TestNotesPaginationQuery` with its current variables; the records update in place.
     @MainActor public func refetch() async throws { try await anchor.refetch(TestNotesPaginationQuery.self, TestNotes_character.refetchable) }
 
@@ -93,7 +93,7 @@ nonisolated public struct TestNotes_character: Baton.Lens {
         @MainActor public var edges: Baton.List<Edges>? { anchor.list(Slots.NoteConnection.edges) }
         @MainActor public var pageInfo: PageInfo { PageInfo(anchor: anchor.requiredLinked(Slots.NoteConnection.pageInfo, type: Types.PageInfo)) }
         /// The connection's slots: edges, nodes, cursors and the page info, for the store's merge and the state below.
-        @_spi(Generated) public static let connection = Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo)
+        @_spi(Generated) public static let connection: Baton.ConnectionSlots = .init(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo)
         /// The edges' nodes, in order, without nulls.
         @MainActor public var nodes: [Edges.Node] { anchor.nodes(Self.connection) }
         /// Whether the server has edges after the last one, from the merged `pageInfo`.
@@ -140,7 +140,7 @@ nonisolated public struct TestRecentNotes_character: Baton.Lens {
     @MainActor public var notes: Notes { Notes(anchor: anchor.requiredLinked(Slots.Character.__TestRecentNotes_notes_connection, type: Types.NoteConnection)) }
     @MainActor public var id: String? { anchor.string(Slots.Character.id) }
     /// How the fragment is fetched again: `TestRecentNotesPaginationQuery` with the lens's variables.
-    @_spi(Generated) public static let refetchable = Baton.Refetch(variables: ["count", "cursor", "id"], identifier: "id", first: nil, after: nil, last: "count", before: "cursor")
+    @_spi(Generated) public static let refetchable: Baton.Refetch = .init(variables: ["count", "cursor", "id"], identifier: "id", first: nil, after: nil, last: "count", before: "cursor")
     /// Fetches the fragment again through `TestRecentNotesPaginationQuery` with its current variables; the records update in place.
     @MainActor public func refetch() async throws { try await anchor.refetch(TestRecentNotesPaginationQuery.self, TestRecentNotes_character.refetchable) }
 
@@ -151,7 +151,7 @@ nonisolated public struct TestRecentNotes_character: Baton.Lens {
         @MainActor public var edges: Baton.List<Edges>? { anchor.list(Slots.NoteConnection.edges) }
         @MainActor public var pageInfo: PageInfo { PageInfo(anchor: anchor.requiredLinked(Slots.NoteConnection.pageInfo, type: Types.PageInfo)) }
         /// The connection's slots: edges, nodes, cursors and the page info, for the store's merge and the state below.
-        @_spi(Generated) public static let connection = Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo)
+        @_spi(Generated) public static let connection: Baton.ConnectionSlots = .init(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo)
         /// The edges' nodes, in order, without nulls.
         @MainActor public var nodes: [Edges.Node] { anchor.nodes(Self.connection) }
         /// Whether the server has edges after the last one, from the merged `pageInfo`.
@@ -1875,7 +1875,7 @@ query TestTwoPagesQuery(
                 @MainActor public var edges: Baton.List<Edges>? { anchor.list(Slots.NoteConnection.edges) }
                 @MainActor public var pageInfo: PageInfo { PageInfo(anchor: anchor.requiredLinked(Slots.NoteConnection.pageInfo, type: Types.PageInfo)) }
                 /// The connection's slots: edges, nodes, cursors and the page info, for the store's merge and the state below.
-                @_spi(Generated) public static let connection = Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo)
+                @_spi(Generated) public static let connection: Baton.ConnectionSlots = .init(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo)
                 /// The edges' nodes, in order, without nulls.
                 @MainActor public var nodes: [Edges.Node] { anchor.nodes(Self.connection) }
                 /// Whether the server has edges after the last one, from the merged `pageInfo`.
@@ -1931,7 +1931,7 @@ query TestTwoPagesQuery(
                     @MainActor public var edges: Baton.List<Edges>? { anchor.list(Slots.NoteConnection.edges) }
                     @MainActor public var pageInfo: PageInfo { PageInfo(anchor: anchor.requiredLinked(Slots.NoteConnection.pageInfo, type: Types.PageInfo)) }
                     /// The connection's slots: edges, nodes, cursors and the page info, for the store's merge and the state below.
-                    @_spi(Generated) public static let connection = Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo)
+                    @_spi(Generated) public static let connection: Baton.ConnectionSlots = .init(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo)
                     /// The edges' nodes, in order, without nulls.
                     @MainActor public var nodes: [Edges.Node] { anchor.nodes(Self.connection) }
                     /// Whether the server has edges after the last one, from the merged `pageInfo`.

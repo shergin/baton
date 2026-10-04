@@ -60,6 +60,24 @@ struct SpineTests {
         #expect(types.`Any` == "not any type")
     }
 
+    @Test("a field named Baton in a lens under @catch compiles, and reads its value or the field errors in the lens")
+    func caughtFieldNamedLikeTheModule() throws {
+        let query = TestCaughtNames()
+        let store = Store()
+        store.commit(try Ingest.normalize(fixture("caught-names-1"), plan: TestCaughtNames.plan.resolve(query.variables)))
+        let data = TestCaughtNames.Data(anchor: Anchor(record: store.root, variables: query.variables, store: store))
+        #expect(try data.types.get()?.Baton == "not the module")
+
+        let failing = Store()
+        failing.commit(try Ingest.normalize(fixture("caught-names-1-errors"), plan: TestCaughtNames.plan.resolve(query.variables)))
+        let failed = TestCaughtNames.Data(anchor: Anchor(record: failing.root, variables: query.variables, store: failing))
+        guard case .failure(let errors) = failed.types else {
+            Issue.record("expected the error on Baton, got \(failed.types)")
+            return
+        }
+        #expect(errors.errors == [FieldError(message: "the module is private", path: "types.Baton")])
+    }
+
     @Test("types named Baton, Type, Protocol, Set and Any compile, and each record reads through the conditions it satisfies")
     func typesNamedLikeSwiftAndTheModule() throws {
         let store = Store()

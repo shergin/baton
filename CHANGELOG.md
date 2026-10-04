@@ -614,8 +614,15 @@ are expected and listed without apology.
   or like a standard library name the generated code spells (`String`,
   `Int`, `Double`, `Bool`, `Optional`, `Result`, `MainActor`, `Hasher` or
   `Sendable`), is such an error too: it hid that name from the whole
-  module, and the generated code did not compile. A clash between two
-  names the compiler chose stays an internal error.
+  module, and the generated code did not compile. So is a field named
+  `Types`, `Slots`, `AbstractSlots` or `Sites` where its lens, or a lens
+  nested in it, reads through that shared enum, which the field's accessor
+  hid. A clash between two names the compiler chose stays an internal
+  error.
+- A field named `Baton` compiles in any lens. A lens under `@catch` or
+  `@throwOnFieldError`, a refetchable fragment's and a connection's named
+  the runtime's module in expressions, which the field's accessor hid; a
+  lens now names it only in types.
 - An operation's `text` is a raw literal delimited by one `#` more than the
   longest run of them in the text. A document in a raw literal of two or
   more hashes can hold `\#`, as in `search(name: "\\#1")`, which the

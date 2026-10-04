@@ -10,7 +10,7 @@
 //!
 //! After an intended change, `BATON_BLESS=1 cargo test` rewrites the goldens.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
 use super::*;
@@ -236,4 +236,48 @@ fn compiling_the_same_sources_twice_emits_the_same_bytes() {
         plan_swift_tests() == plan_swift_tests(),
         "two compilations of the same sources planned different bytes"
     );
+}
+
+/// The shared enums `text` names unqualified: each before a dot, with no
+/// identifier or dot before it.
+fn spelled_enums(text: &str) -> BTreeSet<&'static str> {
+    let mut names = BTreeSet::new();
+    for name in ["Types", "Slots", "AbstractSlots", "Sites"] {
+        for (index, _) in text.match_indices(&format!("{name}.")) {
+            let before = text[..index].chars().next_back();
+            if !before.is_some_and(|character| {
+                character.is_alphanumeric() || character == '_' || character == '.'
+            }) {
+                names.insert(name);
+            }
+        }
+    }
+    names
+}
+
+/// Checks `lens` and every lens nested in it against its printed text.
+fn check_shared_enums(lens: &crate::decide::ReaderPlan) {
+    let mut text = String::new();
+    super::lens::lens(&mut text, lens, "");
+    assert_eq!(
+        lens.shared_enums(),
+        spelled_enums(&text),
+        "the lens `{}` spells other shared enums than decided:\n{text}",
+        lens.name
+    );
+    for child in &lens.nested {
+        check_shared_enums(child);
+    }
+}
+
+#[test]
+fn the_shared_enums_a_lens_is_decided_to_spell_are_the_ones_its_text_spells() {
+    let program = crate::decide::program(&compile_swift_tests())
+        .unwrap_or_else(|errors| panic!("the test documents emit: {errors:?}"));
+    for fragment in &program.fragments {
+        check_shared_enums(&fragment.lens);
+    }
+    for operation in &program.operations {
+        check_shared_enums(&operation.data);
+    }
 }

@@ -301,3 +301,44 @@ var any: Any
     );
     assert!(!directory.join("out").exists(), "an output was written");
 }
+
+#[test]
+fn a_field_named_like_a_shared_enum_its_lens_spells_is_an_error_at_the_name() {
+    let directory = workspace("shared-enums");
+    // `Types` is spelled two lenses down, where a resident's required
+    // origin names its type, and the field hides it there too.
+    write(
+        &directory,
+        "Fields.swift",
+        r##"@Query("query Fields($id: ID!) { character(id: $id) { Slots: name Types: id origin { residents { origin @required(action: NONE) { name } } } } node(id: $id) { AbstractSlots: id } }")
+var fields: Fields
+"##,
+    );
+    let output = generate(&directory, &["--out", "out", "Fields.swift"]);
+    assert!(!output.status.success());
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    let mut lines: Vec<&str> = stderr.lines().collect();
+    lines.sort();
+    assert_eq!(
+        lines,
+        [
+            "Fields.swift:1:160: error: the field `AbstractSlots` clashes with the shared enum `AbstractSlots` in the generated Swift; choose another alias",
+            "Fields.swift:1:55: error: the field `Slots` clashes with the shared enum `Slots` in the generated Swift; choose another alias",
+            "Fields.swift:1:67: error: the field `Types` clashes with the shared enum `Types` in the generated Swift; choose another alias",
+        ]
+    );
+    assert!(!directory.join("out").exists(), "an output was written");
+
+    // A lens that spells neither enum leaves the names to the document.
+    write(
+        &directory,
+        "Fields.swift",
+        "@Query(\"query Fields { character(id: 1) { Sites: name Types: status } }\")\nvar fields: Fields\n",
+    );
+    let output = generate(&directory, &["--out", "out", "Fields.swift"]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+}

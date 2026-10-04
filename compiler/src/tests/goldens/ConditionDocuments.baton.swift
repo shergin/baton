@@ -485,15 +485,11 @@ query TestStrictConditions(
             return errors
         }
         /// The lens, or the field errors in it as a thrown `FieldErrors`.
-        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self {
-            let errors = fieldErrors(anchor)
-            if !errors.isEmpty { throw Baton.FieldErrors(errors) }
-            return Self(anchor: anchor)
-        }
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
         /// The lens, or the field errors in it as a `Result`.
         @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
             let errors = fieldErrors(anchor)
-            return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(Baton.FieldErrors(errors))
+            return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
         }
 
         nonisolated public struct Character: Baton.Lens {
@@ -514,15 +510,11 @@ query TestStrictConditions(
                 return errors
             }
             /// The lens, or the field errors in it as a thrown `FieldErrors`.
-            @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self {
-                let errors = fieldErrors(anchor)
-                if !errors.isEmpty { throw Baton.FieldErrors(errors) }
-                return Self(anchor: anchor)
-            }
+            @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
             /// The lens, or the field errors in it as a `Result`.
             @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
                 let errors = fieldErrors(anchor)
-                return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(Baton.FieldErrors(errors))
+                return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
             }
 
             nonisolated public struct Origin: Baton.Lens {
@@ -537,15 +529,11 @@ query TestStrictConditions(
                     return errors
                 }
                 /// The lens, or the field errors in it as a thrown `FieldErrors`.
-                @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self {
-                    let errors = fieldErrors(anchor)
-                    if !errors.isEmpty { throw Baton.FieldErrors(errors) }
-                    return Self(anchor: anchor)
-                }
+                @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
                 /// The lens, or the field errors in it as a `Result`.
                 @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
                     let errors = fieldErrors(anchor)
-                    return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(Baton.FieldErrors(errors))
+                    return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
                 }
             }
         }

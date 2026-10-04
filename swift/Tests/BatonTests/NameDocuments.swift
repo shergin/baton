@@ -15,6 +15,13 @@ struct NameDocuments {
     var names: TestNames
 
     @Query("""
+        query TestCaughtNames {
+          types @catch(to: RESULT) { Baton }
+        }
+        """)
+    var caughtNames: TestCaughtNames
+
+    @Query("""
         query TestSpellings {
           spellings {
             ... on Spelled { label }
