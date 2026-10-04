@@ -53,6 +53,21 @@ struct DeliveryTests {
         }
     }
 
+    /// Streams the parts it was given and never finishes, as a server that
+    /// leaves the connection open after its last part.
+    final class OpenParts: Transport, @unchecked Sendable {
+        let parts: [Data]
+        init(_ parts: [Data]) { self.parts = parts }
+
+        func execute(_ request: Request) async throws -> Data { parts[0] }
+
+        func stream(_ request: Request) -> AsyncThrowingStream<Data, any Error> {
+            AsyncThrowingStream { continuation in
+                for part in parts { continuation.yield(part) }
+            }
+        }
+    }
+
     /// Delivers subscription events when told.
     final class Events: SubscriptionTransport, @unchecked Sendable {
         var continuation: AsyncThrowingStream<Data, any Error>.Continuation?
@@ -356,6 +371,43 @@ struct DeliveryTests {
             #expect((handle.fetchTime != nil) == completes)
             handle.release()
         }
+    }
+
+    /// Fetches the profile through parts in the 2024 format and returns the
+    /// store and the uncaught errors.
+    func fetchProfile(_ parts: [String]) async throws -> (Store, [FieldError]) {
+        let environment = Environment(transport: OpenParts(parts.map { fixture($0) }))
+        environment.store.reportMissing = nil
+        final class Done: @unchecked Sendable { var uncaught: [FieldError]? }
+        let done = Done()
+        Task { done.uncaught = try await environment.fetch(TestProfileQuery.self, variables: TestProfileQuery(id: "1").variables) }
+        await until { done.uncaught != nil }
+        return (environment.store, done.uncaught ?? [])
+    }
+
+    @Test("a part's subPath places its data below the announced path, and the stream ends at hasNext false though the connection stays open")
+    func subPathAndHasNext() async throws {
+        let (store, uncaught) = try await fetchProfile(["character-deferred-1-pending", "character-deferred-2-subpath", "character-deferred-3-subpath"])
+        #expect(uncaught.isEmpty)
+        let episode = try #require(store.existing("Episode:2"))
+        #expect(episode.read(Registry.slot(episode.type, "name")) == .string("Lawnmower Dog"))
+        #expect(episode.read(Registry.slot(episode.type, "air_date")) == .string("December 9, 2013"), "the third part's subPath")
+    }
+
+    @Test("a part's own errors land on the fields they name, by the response's paths")
+    func partErrors() async throws {
+        let (store, uncaught) = try await fetchProfile(["character-deferred-1-pending", "character-deferred-2-errors"])
+        let episode = try #require(store.existing("Episode:1"))
+        #expect(episode.error(Registry.slot(episode.type, "name"))?.message == "name hidden")
+        #expect(uncaught.map(\.message) == ["name hidden"])
+    }
+
+    @Test("an announced part the server could not deliver puts its errors on the fields it would have filled")
+    func failedPart() async throws {
+        let (store, uncaught) = try await fetchProfile(["character-deferred-1-pending", "character-deferred-2-failed"])
+        let character = try #require(store.existing("Character:1"))
+        #expect(character.error(Registry.slot(character.type, "episode"))?.message == "appearances unavailable")
+        #expect(uncaught.map(\.message) == ["appearances unavailable"])
     }
 
     @Test("a deferred fragment is absent after the first part and present after the second, in both incremental formats")

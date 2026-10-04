@@ -235,6 +235,15 @@ are expected and listed without apology.
   the whole response, and reads a part without headers. It scans the
   chunks it is given rather than a byte at a time: 978 KB of 20 parts in
   16 KB chunks parse in 0.50 ms against 14.6 ms.
+- Incremental delivery reads all of the format. A part's `subPath` places
+  its data below the announced path, its own `errors` land on the fields
+  they name, and an announced part that `completed` with errors puts them
+  on the fields it would have filled, where `@catch` reads them; all were
+  skipped. A part with `hasNext: false` ends the stream, where the fetch
+  waited for the connection to close. Later parts are parsed and
+  normalized off the main actor, and the first part's announcements are
+  read in the pass that ingests it rather than parsed a second time on
+  the main actor.
 - A deferred response is fetched when its stream completes. Its fetch time
   was stamped at the first part, so a stream that broke after it left the
   handle fresh; the first part still renders at once.

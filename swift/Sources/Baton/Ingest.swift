@@ -61,6 +61,10 @@ public struct ChangeSet: Sendable {
     /// Errors the response carried without a path, or with one that names
     /// no field it selected: nothing in the store holds them.
     public internal(set) var unplacedErrors: [FieldError] = []
+    /// The parts the first part of an incremental response announces, and
+    /// whether more parts follow it.
+    public internal(set) var pending: [Ingest.IncrementalPart.Pending] = []
+    public internal(set) var hasNext = false
     var index: [String: Int32] = [:]
 
     /// Reserves by the response's size: the Rick and Morty fixture writes an
@@ -220,7 +224,12 @@ public enum Ingest {
             public var path: [PathSegment]?
             public var label: String?
             public var id: String?
+            /// Below the announced part's path, where the data is, in the
+            /// 2024 format.
+            public var subPath: [PathSegment]?
             public var data: Data
+            /// The field errors that came with the item, by absolute path.
+            public var errors: [ResponseError] = []
         }
 
         public struct Pending: Sendable {
@@ -229,9 +238,36 @@ public enum Ingest {
             public var label: String?
         }
 
+        /// An announced part the server has finished, with the errors that
+        /// kept it from being delivered, if any.
+        public struct Completed: Sendable {
+            public var id: String
+            public var errors: [ResponseError]
+        }
+
         public var items: [Item] = []
         public var pending: [Pending] = []
+        public var completed: [Completed] = []
         public var hasNext = false
+    }
+
+    /// An entry of a response's `errors`, as read: its message and path.
+    public struct ResponseError: Sendable {
+        public var message: String
+        public var path: [PathSegment]?
+    }
+
+    /// One object a later part delivers, at the record its path names.
+    struct ObjectPart: Sendable {
+        let data: Data
+        let plan: ResolvedSelection
+        let key: String
+        let type: TypeID
+        let entity: Bool
+        /// Where the object is in the response, which the errors' paths
+        /// start with.
+        let path: [PathSegment]
+        let errors: [ResponseError]
     }
 
     public static func normalize(_ data: Data, plan: ResolvedSelection, rootKey: String = Store.rootKey) throws -> ChangeSet {
@@ -256,6 +292,12 @@ public enum Ingest {
     /// the part fills, at the record its path named, read as that record's
     /// concrete type.
     public static func normalizeObject(_ data: Data, plan: ResolvedSelection, key: String, type: TypeID, entity: Bool) throws -> ChangeSet {
+        try normalizeObject(data, plan: plan, key: key, type: type, entity: entity, at: [], errors: [])
+    }
+
+    /// The same, with the field errors the part carried: an error under the
+    /// object's path lands on the field it names, any other is unplaced.
+    static func normalizeObject(_ data: Data, plan: ResolvedSelection, key: String, type: TypeID, entity: Bool, at path: [PathSegment], errors: [ResponseError]) throws -> ChangeSet {
         let bytes = [UInt8](data)
         return try bytes.withUnsafeBufferPointer { buffer in
             var cursor = Cursor(base: buffer.baseAddress!, count: buffer.count, changes: ChangeSet(bytes: bytes))
@@ -263,8 +305,53 @@ public enum Ingest {
             let rootID = cursor.changes.record(for: key, type: type, entity: entity)
             _ = try cursor.object(plan: plan, parent: rootID, storageKey: nil, listIndex: nil, depth: 0, fixedRecord: rootID)
             cursor.changes.group()
+            if !errors.isEmpty {
+                cursor.rawErrors = errors.map { ($0.message, $0.path) }
+                cursor.resolveErrors(root: plan, rootID: rootID, below: path)
+            }
             return cursor.changes
         }
+    }
+
+    /// The objects a later part delivers, normalized off the caller's actor
+    /// in one call.
+    @concurrent
+    nonisolated static func normalized(_ objects: [ObjectPart]) async throws -> [ChangeSet] {
+        try objects.map { object in
+            try normalizeObject(object.data, plan: object.plan, key: object.key, type: object.type, entity: object.entity, at: object.path, errors: object.errors)
+        }
+    }
+
+    /// The field errors of an announced part the server could not deliver,
+    /// on the fields the part would have filled, so a `@catch` there reads
+    /// them; the first error stands on each field, and every one counts.
+    nonisolated static func failed(_ plan: ResolvedSelection, key: String, type: TypeID, entity: Bool, at path: [PathSegment], errors: [ResponseError]) -> ChangeSet {
+        var changes = ChangeSet(bytes: [])
+        let record = changes.record(for: key, type: type, entity: entity)
+        changes.group()
+        let rendered = errors.map { FieldError(message: $0.message, path: Ingest.render($0.path ?? path)) }
+        guard let first = rendered.first else { return changes }
+        for field in plan.variant(for: type).fields where !field.isTypename {
+            changes.fieldErrors.append(ChangeSet.FieldErrorEntry(record: record, slot: field.slot, error: first, caught: field.caught))
+        }
+        changes.unplacedErrors.append(contentsOf: rendered.dropFirst())
+        return changes
+    }
+
+    /// A response path, dotted, as a field error shows it.
+    static func render(_ path: [PathSegment]) -> String {
+        path.map { segment in
+            switch segment {
+            case .name(let name): name
+            case .index(let offset): String(offset)
+            }
+        }.joined(separator: ".")
+    }
+
+    /// Reads a later part off the caller's actor.
+    @concurrent
+    nonisolated static func incrementalPart(_ data: Data) async throws -> IncrementalPart {
+        try incremental(data)
     }
 
     /// Reads a part of an incremental response after the first.
@@ -284,25 +371,27 @@ public enum Ingest {
                             switch key {
                             case "data": item.data = try scanner.rawValue(in: bytes)
                             case "path": item.path = try scanner.path()
+                            case "subPath": item.subPath = try scanner.path()
                             case "label": item.label = try scanner.stringValue()
                             case "id": item.id = try scanner.stringValue()
+                            case "errors": item.errors = try scanner.responseErrors()
                             default: try scanner.skipValue()
                             }
                         }
                         part.items.append(item)
                     }
-                case "pending":
+                case "pending": part.pending = try scanner.pending()
+                case "completed":
                     try scanner.elements { scanner in
-                        var pending = IncrementalPart.Pending(id: "", path: [], label: nil)
+                        var completed = IncrementalPart.Completed(id: "", errors: [])
                         try scanner.members { key, scanner in
                             switch key {
-                            case "id": pending.id = try scanner.stringValue() ?? ""
-                            case "path": pending.path = try scanner.path() ?? []
-                            case "label": pending.label = try scanner.stringValue()
+                            case "id": completed.id = try scanner.stringValue() ?? ""
+                            case "errors": completed.errors = try scanner.responseErrors()
                             default: try scanner.skipValue()
                             }
                         }
-                        part.pending.append(pending)
+                        part.completed.append(completed)
                     }
                 case "hasNext": part.hasNext = try scanner.parseBool()
                 case "data":
@@ -310,6 +399,7 @@ public enum Ingest {
                     topLevel.data = try scanner.rawValue(in: bytes)
                 case "path": topLevel.path = try scanner.path()
                 case "label": topLevel.label = try scanner.stringValue()
+                case "errors": topLevel.errors = try scanner.responseErrors()
                 default: try scanner.skipValue()
                 }
             }
@@ -399,6 +489,10 @@ public enum Ingest {
                     }
                 case "errors":
                     try cursor.errors()
+                case "pending":
+                    cursor.changes.pending = try cursor.scanner.pending()
+                case "hasNext":
+                    cursor.changes.hasNext = try cursor.parseBool()
                 default:
                     try cursor.skipValue()
                 }
@@ -430,22 +524,7 @@ public enum Ingest {
 
         /// The response's `errors` array: messages and paths.
         mutating func errors() throws {
-            scanner.skipWhitespace()
-            if scanner.peek() == 0x6E { try scanner.literal("null"); return }
-            var read: [(message: String, path: [PathSegment]?)] = []
-            try scanner.elements { scanner in
-                var message = ""
-                var path: [PathSegment]?
-                try scanner.members { key, scanner in
-                    switch key {
-                    case "message": message = try scanner.stringValue() ?? ""
-                    case "path": path = try scanner.path()
-                    default: try scanner.skipValue()
-                    }
-                }
-                read.append((message, path))
-            }
-            rawErrors.append(contentsOf: read)
+            rawErrors.append(contentsOf: try scanner.responseErrors().map { ($0.message, $0.path) })
         }
 
         /// Resolves each error's path through the plan and the entries to the
@@ -453,16 +532,12 @@ public enum Ingest {
         /// null, a link the response does not continue, or a list index it
         /// does not have, and the error lands on the last field it reached:
         /// with GraphQL's null propagation, that is the nullable ancestor.
-        mutating func resolveErrors(root: ResolvedSelection, rootID: Int32) {
+        mutating func resolveErrors(root: ResolvedSelection, rootID: Int32, below prefix: [PathSegment] = []) {
             for (message, path) in rawErrors {
-                let rendered = (path ?? []).map { segment in
-                    switch segment {
-                    case .name(let name): name
-                    case .index(let offset): String(offset)
-                    }
-                }.joined(separator: ".")
-                let error = FieldError(message: message, path: rendered)
-                guard let path, !path.isEmpty else {
+                let error = FieldError(message: message, path: Ingest.render(path ?? []))
+                // A part's errors are by the response's paths: the walk
+                // starts where the part's object is.
+                guard let path, path.count > prefix.count, Array(path.prefix(prefix.count)) == prefix else {
                     changes.unplacedErrors.append(error)
                     continue
                 }
@@ -470,7 +545,7 @@ public enum Ingest {
                 var selection = root
                 var caught = false
                 var resolved: (Int32, Slot)?
-                var segments = path[...]
+                var segments = path.dropFirst(prefix.count)
                 walk: while let segment = segments.popFirst() {
                     let variant = selection.variant(for: changes.recordTypes[Int(record)])
                     guard case .name(let name) = segment, let index = variant.field(named: name) else { break walk }
@@ -846,6 +921,43 @@ public enum Ingest {
             let start = position
             try skipValue()
             return Data(bytes[start..<position])
+        }
+
+        /// A response's or a part's `errors` array: messages and paths.
+        mutating func responseErrors() throws -> [ResponseError] {
+            skipWhitespace()
+            if peek() == 0x6E { try literal("null"); return [] }
+            var read: [ResponseError] = []
+            try elements { scanner in
+                var error = ResponseError(message: "", path: nil)
+                try scanner.members { key, scanner in
+                    switch key {
+                    case "message": error.message = try scanner.stringValue() ?? ""
+                    case "path": error.path = try scanner.path()
+                    default: try scanner.skipValue()
+                    }
+                }
+                read.append(error)
+            }
+            return read
+        }
+
+        /// A first part's `pending` array: the parts it announces.
+        mutating func pending() throws -> [IncrementalPart.Pending] {
+            var read: [IncrementalPart.Pending] = []
+            try elements { scanner in
+                var pending = IncrementalPart.Pending(id: "", path: [], label: nil)
+                try scanner.members { key, scanner in
+                    switch key {
+                    case "id": pending.id = try scanner.stringValue() ?? ""
+                    case "path": pending.path = try scanner.path() ?? []
+                    case "label": pending.label = try scanner.stringValue()
+                    default: try scanner.skipValue()
+                    }
+                }
+                read.append(pending)
+            }
+            return read
         }
 
         /// A response path: strings and integers. A path with an index that
