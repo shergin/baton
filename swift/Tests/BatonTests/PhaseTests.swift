@@ -157,6 +157,60 @@ struct PhaseTests {
         }
     }
 
+    @Test("the first part of a deferred response fails an operation that throws on the error with no path it carried, and the operation stays failed whether the stream completes or breaks")
+    func deferredFirstPartFails() async throws {
+        for completes in [true, false] {
+            let transport = DeliveryTests.GatedParts(fixture("strict-deferred-1-unplaced-error"), fixture("strict-deferred-2"))
+            let environment = Environment(transport: transport)
+            environment.store.reportMissing = nil
+            let handle = environment.handle(for: TestStrictDeferred(id: "1"))
+            handle.retain()
+            await settled(handle)
+            guard case .failed(let error as FieldErrors) = handle.phase else {
+                Issue.record("expected the first part's error, got \(handle.phase)")
+                return
+            }
+            #expect(error.errors.map(\.message) == ["rate limited"])
+            if completes { transport.release() } else { transport.fail() }
+            await handle.settle()
+            guard case .failed = handle.phase else {
+                Issue.record("expected the operation to stay failed, got \(handle.phase)")
+                return
+            }
+            handle.release()
+        }
+    }
+
+    @Test("a deferred refetch whose first part carries no error makes a failed operation that throws ready before the rest arrives")
+    func deferredFirstPartClears() async throws {
+        let transport = LifetimeTests.ManualStreams()
+        let environment = Environment(transport: transport)
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestStrictDeferred(id: "1"))
+        handle.retain()
+        await until { transport.count == 1 }
+        transport.deliver(fixture("strict-deferred-1-unplaced-error"), to: 0)
+        transport.deliver(fixture("strict-deferred-2"), to: 0)
+        await handle.settle()
+        guard case .failed(let error as FieldErrors) = handle.phase else {
+            Issue.record("expected the unplaced error, got \(handle.phase)")
+            return
+        }
+        #expect(error.errors.map(\.message) == ["rate limited"])
+
+        let refetch = Task { try await handle.refetch() }
+        await until { transport.count == 2 }
+        transport.deliver(fixture("strict-deferred-1"), to: 1)
+        await until { if case .ready = handle.phase { true } else { false } }
+        transport.deliver(fixture("strict-deferred-2"), to: 1)
+        try await refetch.value
+        guard case .ready = handle.phase else {
+            Issue.record("expected ready, got \(handle.phase)")
+            return
+        }
+        handle.release()
+    }
+
     @Test("a commit that moves a link onto a record with a field error fails an operation that throws and reads through it")
     func movedLink() async throws {
         let environment = Environment(transport: RecordedTransport([TestStrictOrigin.name: fixture("strict-origin-1")]))

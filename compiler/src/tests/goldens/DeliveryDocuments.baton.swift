@@ -431,6 +431,118 @@ query TestRosterQuery(
     }
 }
 
+/// Operation value for `query TestStrictDeferred`.
+nonisolated public struct TestStrictDeferred: Baton.Query {
+    public var id: String
+    public var resolution: Baton.OperationHandle<Self>? = nil
+
+    public init(id: String) {
+        self.id = id
+    }
+
+    public static let name = "TestStrictDeferred"
+    public static let persistedID = "ea3e24dc105cc1d95925812f6c36a8b9"
+    public static let throwsOnFieldError = true
+    public static let hasDeferred = true
+    public static let text = #"""
+query TestStrictDeferred(
+  $id: ID!
+) {
+  character(id: $id) {
+    id
+    name
+    ...TestAppearances_character @defer(label: "TestStrictDeferred$defer$TestAppearances_character")
+  }
+}
+
+fragment TestAppearances_character on Character {
+  episode {
+    name
+    air_date
+    id
+  }
+}
+"""#
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["id": Baton.Variable(id)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+
+    public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
+            .linked("character", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+                .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
+                .linked("episode", key: .fixed(Slots.Character.episode), plural: true, deferred: "TestStrictDeferred$defer$TestAppearances_character", selection: Baton.Selection(type: Types.Episode, hasID: true, abstract: false, fields: [
+                    .scalar("name", key: .fixed(Slots.Episode.name), kind: .string, list: false),
+                    .scalar("air_date", key: .fixed(Slots.Episode.air_date), kind: .string, list: false),
+                    .scalar("id", key: .fixed(Slots.Episode.id), kind: .string, list: false),
+                ])),
+            ])),
+        ]))
+
+    nonisolated public struct Data: Baton.Lens {
+        public let anchor: Baton.Anchor
+        public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Query"
+        @MainActor public var character: Character? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(Character.init(anchor:)) }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectErrors(anchor.owner.slot(Slots.Query.character_bca4f9), within: Character.fieldErrors, into: &errors)
+            return errors
+        }
+        /// The lens, or the field errors in it as a thrown `FieldErrors`.
+        @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self {
+            let errors = fieldErrors(anchor)
+            if !errors.isEmpty { throw Baton.FieldErrors(errors) }
+            return Self(anchor: anchor)
+        }
+        /// The lens, or the field errors in it as a `Result`.
+        @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(Baton.FieldErrors(errors))
+        }
+
+        nonisolated public struct Character: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Character"
+            @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+            @MainActor public var name: String? { anchor.string(Slots.Character.name) }
+            @MainActor public var testAppearances: TestAppearances_character? {
+                guard TestAppearances_character.isPresent(anchor) else { return nil }
+                return TestAppearances_character(anchor: anchor)
+            }
+            /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+            @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+                var errors: [Baton.FieldError] = []
+                anchor.collectError(Slots.Character.id, into: &errors)
+                anchor.collectError(Slots.Character.name, into: &errors)
+                return errors
+            }
+            /// The lens, or the field errors in it as a thrown `FieldErrors`.
+            @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self {
+                let errors = fieldErrors(anchor)
+                if !errors.isEmpty { throw Baton.FieldErrors(errors) }
+                return Self(anchor: anchor)
+            }
+            /// The lens, or the field errors in it as a `Result`.
+            @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+                let errors = fieldErrors(anchor)
+                return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(Baton.FieldErrors(errors))
+            }
+        }
+    }
+}
+
 /// Operation value for `query TestStrictQuery`.
 nonisolated public struct TestStrictQuery: Baton.Query {
     public var id: String

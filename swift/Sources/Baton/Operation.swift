@@ -319,10 +319,13 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
             guard let self, let environment else { return nil }
             var failure: (any Error)?
             do {
-                let fetched = try await environment.fetch(operation, resolved: resolved) { [weak self] in
-                    // A deferred response renders its first part at once; it
-                    // is fetched, and fresh, once the stream completes.
+                let fetched = try await environment.fetch(operation, resolved: resolved) { [weak self] firstPart in
+                    // A deferred response renders its first part at once, by
+                    // the errors that part carried with no field to hold
+                    // them; it is fetched, and fresh, once the stream
+                    // completes.
                     guard let self, !Task.isCancelled else { return }
+                    unplaced = firstPart.unplaced
                     settle(evaluate())
                 }
                 if !Task.isCancelled { unplaced = fetched.unplaced }

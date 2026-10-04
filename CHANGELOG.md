@@ -398,6 +398,12 @@ are expected and listed without apology.
   settled again when a view attaches it. A commit made while it was parked
   that put a field error or a null into its selection left it ready; only
   a failed one was settled.
+- The first part of a deferred response settles the phase by the errors
+  with no path that part carried. It read the last response's, so a
+  `@throwOnFieldError` operation whose first part carried one rendered
+  ready until the stream completed, and stayed ready when the stream broke
+  after it; one whose last response carried one stayed failed until a
+  clean response completed.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

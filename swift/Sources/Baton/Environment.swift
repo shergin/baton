@@ -114,7 +114,7 @@ public final class Environment {
     /// follows. `firstPart` runs after the first part of a deferred response
     /// commits, so a view renders before the rest arrives.
     public func fetch<Op: Query>(_ operation: Op, firstPart: (() -> Void)? = nil) async throws {
-        let fetched = try await fetch(Op.self, variables: operation.variables, resolved: Op.plan.resolve(operation.variables), firstPart: firstPart)
+        let fetched = try await fetch(Op.self, variables: operation.variables, resolved: Op.plan.resolve(operation.variables), firstPart: firstPart.map { firstPart in { _ in firstPart() } })
         if Op.throwsOnFieldError, !fetched.uncaught.isEmpty { throw FieldErrors(fetched.uncaught) }
     }
 
@@ -131,8 +131,9 @@ public final class Environment {
     }
 
     /// Fetches with a plan already resolved, as a handle holds it. The field
-    /// errors are the handle's to weigh, so none is thrown.
-    func fetch<Op: Query>(_ operation: Op, resolved: ResolvedSelection, firstPart: (() -> Void)? = nil) async throws -> Fetched {
+    /// errors are the handle's to weigh, so none is thrown; `firstPart` is
+    /// handed what the first part committed besides its records.
+    func fetch<Op: Query>(_ operation: Op, resolved: ResolvedSelection, firstPart: ((Fetched) -> Void)? = nil) async throws -> Fetched {
         try await fetch(Op.self, variables: operation.variables, resolved: resolved, firstPart: firstPart)
     }
 
@@ -142,10 +143,10 @@ public final class Environment {
     /// Returns the field errors no `@catch` handled.
     @discardableResult
     public func fetch<Op: Query>(_ operation: Op.Type, variables: Variables, firstPart: (() -> Void)? = nil) async throws -> [FieldError] {
-        try await fetch(operation, variables: variables, resolved: Op.plan.resolve(variables), firstPart: firstPart).uncaught
+        try await fetch(operation, variables: variables, resolved: Op.plan.resolve(variables), firstPart: firstPart.map { firstPart in { _ in firstPart() } }).uncaught
     }
 
-    private func fetch<Op: Query>(_ operation: Op.Type, variables: Variables, resolved: ResolvedSelection, firstPart: (() -> Void)?) async throws -> Fetched {
+    private func fetch<Op: Query>(_ operation: Op.Type, variables: Variables, resolved: ResolvedSelection, firstPart: ((Fetched) -> Void)?) async throws -> Fetched {
         let request = request(Op.self, variables: variables)
         if !Op.hasDeferred {
             let data = try await transport.execute(request)
@@ -170,7 +171,7 @@ public final class Environment {
                 fetched.add(changes)
                 // The 2024 format announces the parts to come in the first one.
                 for announced in changes.pending { pending[announced.id] = announced }
-                firstPart?()
+                firstPart?(fetched)
                 if !changes.hasNext { break }
                 continue
             }
