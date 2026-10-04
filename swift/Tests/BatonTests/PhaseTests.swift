@@ -212,11 +212,11 @@ struct PhaseTests {
         environment.store.reportMissing = nil
         let preloaded = environment.preload(TestList(page: 1))
         await settled(preloaded)
-        #expect(transport.requests.count == 1)
+        #expect(transport.requestCount == 1)
         environment.invalidate()
         let handle = environment.handle(for: TestList(page: 1), fetchPolicy: .storeOrNetwork)
-        await until { transport.requests.count == 2 }
-        #expect(transport.requests.count == 2, "the data went stale after the preload")
+        await until { transport.requestCount == 2 }
+        #expect(transport.requestCount == 2, "the data went stale after the preload")
         handle.retain()
         handle.release()
     }
@@ -230,12 +230,12 @@ struct PhaseTests {
         first.retain()
         await settled(first)
         first.release()
-        #expect(transport.requests.count == 1)
+        #expect(transport.requestCount == 1)
         _ = environment.preload(TestList(page: 1), fetchPolicy: .storeOrNetwork)
-        #expect(transport.requests.count == 1, "the store had the data, fresh")
+        #expect(transport.requestCount == 1, "the store had the data, fresh")
         _ = environment.handle(for: TestList(page: 1), fetchPolicy: .networkOnly)
-        await until { transport.requests.count == 2 }
-        #expect(transport.requests.count == 2)
+        await until { transport.requestCount == 2 }
+        #expect(transport.requestCount == 2)
     }
 
     @Test("a parked handle that failed on a field error is ready when attached again after the error cleared")
