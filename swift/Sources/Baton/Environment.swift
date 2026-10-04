@@ -47,7 +47,7 @@ public final class Environment {
 
     /// The handle for an operation value, shared by every view that holds an
     /// equal value. The policy is applied on every attach.
-    public func handle<Op: Operation>(for operation: Op, fetchPolicy: FetchPolicy = .storeAndNetwork) -> OperationHandle<Op> {
+    public func handle<Op: Query>(for operation: Op, fetchPolicy: FetchPolicy = .storeAndNetwork) -> OperationHandle<Op> {
         let key = AnyHashable(operation)
         let handle: OperationHandle<Op>
         if let existing = handles[key] as? OperationHandle<Op> {
@@ -63,7 +63,7 @@ public final class Environment {
 
     /// The handle for a subscription value, shared by equal values; a root
     /// while retained.
-    public func subscriptionHandle<Op: Operation>(for operation: Op) -> SubscriptionHandle<Op> {
+    public func subscriptionHandle<Op: Subscription>(for operation: Op) -> SubscriptionHandle<Op> {
         let key = AnyHashable(operation)
         if let existing = handles[key] as? SubscriptionHandle<Op> { return existing }
         let handle = SubscriptionHandle(operation: operation, environment: self)
@@ -75,7 +75,7 @@ public final class Environment {
     /// buffer for a view to attach, and that attach makes no request of its
     /// own.
     @discardableResult
-    public func preload<Op: Operation>(_ operation: Op, fetchPolicy: FetchPolicy = .storeAndNetwork) -> OperationHandle<Op> {
+    public func preload<Op: Query>(_ operation: Op, fetchPolicy: FetchPolicy = .storeAndNetwork) -> OperationHandle<Op> {
         let handle = handle(for: operation, fetchPolicy: fetchPolicy)
         // Only a fetch the preload made can serve the first attach.
         handle.preloaded = handle.isFetching
@@ -115,7 +115,7 @@ public final class Environment {
     /// Fetches an operation and commits the response; the handle, if any,
     /// follows. `firstPart` runs after the first part of a deferred response
     /// commits, so a view renders before the rest arrives.
-    public func fetch<Op: Operation>(_ operation: Op, firstPart: (() -> Void)? = nil) async throws {
+    public func fetch<Op: Query>(_ operation: Op, firstPart: (() -> Void)? = nil) async throws {
         let fetched = try await fetch(Op.self, variables: operation.variables, resolved: Op.plan.resolve(operation.variables), firstPart: firstPart)
         if Op.throwsOnFieldError, !fetched.uncaught.isEmpty { throw FieldErrors(fetched.uncaught) }
     }
@@ -134,7 +134,7 @@ public final class Environment {
 
     /// Fetches with a plan already resolved, as a handle holds it. The field
     /// errors are the handle's to weigh, so none is thrown.
-    func fetch<Op: Operation>(_ operation: Op, resolved: ResolvedSelection, firstPart: (() -> Void)? = nil) async throws -> Fetched {
+    func fetch<Op: Query>(_ operation: Op, resolved: ResolvedSelection, firstPart: (() -> Void)? = nil) async throws -> Fetched {
         try await fetch(Op.self, variables: operation.variables, resolved: resolved, firstPart: firstPart)
     }
 
@@ -143,11 +143,11 @@ public final class Environment {
     /// and the records they fill stay alive through whatever reaches them.
     /// Returns the field errors no `@catch` handled.
     @discardableResult
-    public func fetch<Op: Operation>(_ operation: Op.Type, variables: Variables, firstPart: (() -> Void)? = nil) async throws -> [FieldError] {
+    public func fetch<Op: Query>(_ operation: Op.Type, variables: Variables, firstPart: (() -> Void)? = nil) async throws -> [FieldError] {
         try await fetch(operation, variables: variables, resolved: Op.plan.resolve(variables), firstPart: firstPart).uncaught
     }
 
-    private func fetch<Op: Operation>(_ operation: Op.Type, variables: Variables, resolved: ResolvedSelection, firstPart: (() -> Void)?) async throws -> Fetched {
+    private func fetch<Op: Query>(_ operation: Op.Type, variables: Variables, resolved: ResolvedSelection, firstPart: (() -> Void)?) async throws -> Fetched {
         let request = request(Op.self, variables: variables)
         if !Op.hasDeferred {
             let data = try await transport.execute(request)
@@ -213,7 +213,7 @@ public final class Environment {
 
     /// Fetches a page of a connection: the loading flag on the connection
     /// record is set for the duration, and the commit merges the page.
-    func paginate<Op: Operation>(_ operation: Op.Type, variables: Variables, connection: Record, loading: Slot) async throws {
+    func paginate<Op: Query>(_ operation: Op.Type, variables: Variables, connection: Record, loading: Slot) async throws {
         connection.write(loading, .bool(true))
         defer { connection.write(loading, .bool(false)) }
         _ = try await fetch(operation, variables: variables)
@@ -222,7 +222,7 @@ public final class Environment {
     /// Commits a mutation. The optimistic response, if any, is ingested with the
     /// mutation's own plan and applied as a layer first; the server's payload
     /// then replaces it in one batch, or the layer is reverted on failure.
-    public func mutate<Op: Operation>(_ operation: Op, optimistic: Variable? = nil) async throws -> Op.Data {
+    public func mutate<Op: Mutation>(_ operation: Op, optimistic: Variable? = nil) async throws -> Op.Data {
         let resolved = Op.plan.resolve(operation.variables)
         var layer: UUID?
         if let optimistic {
@@ -255,7 +255,7 @@ public final class Environment {
     }
 
     /// The events of a subscription, as the transport delivers them.
-    func subscribe<Op: Operation>(_ operation: Op) -> AsyncThrowingStream<Data, any Error> {
+    func subscribe<Op: Subscription>(_ operation: Op) -> AsyncThrowingStream<Data, any Error> {
         guard let subscriptions else {
             return AsyncThrowingStream { continuation in
                 continuation.finish(throwing: TransportError(statusCode: 0, body: "no subscription transport: pass `subscriptions:` to the environment"))

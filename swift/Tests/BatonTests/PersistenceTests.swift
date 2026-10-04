@@ -44,7 +44,7 @@ struct PersistenceTests {
     }
 
     /// The data of a handle the store answers without the network.
-    func stored<Op: Baton.Operation>(_ operation: Op, in environment: Environment) throws -> Op.Data {
+    func stored<Op: Baton.Query>(_ operation: Op, in environment: Environment) throws -> Op.Data {
         let handle = environment.handle(for: operation, fetchPolicy: .storeOnly)
         guard case .ready(let data) = handle.phase else { throw NotStored() }
         return data

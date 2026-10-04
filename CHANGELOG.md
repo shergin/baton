@@ -235,6 +235,16 @@ are expected and listed without apology.
   the whole response, and reads a part without headers. It scans the
   chunks it is given rather than a byte at a time: 978 KB of 20 parts in
   16 KB chunks parse in 0.50 ms against 14.6 ms.
+- Kinds are types. An operation value conforms to `Query`, `Mutation` or
+  `Subscription`, each refining `Operation`, and each API takes only its
+  kind: `handle(for:)`, `preload`, `fetch` and `@Query` queries, `mutate`
+  and `@Mutation` mutations, `subscriptionHandle` and `@Subscription`
+  subscriptions. A `@Query` holding a mutation compiled, ran on attach and
+  wrote the mutation root's slots into the query root. A subscription
+  value carries its handle as a query value does; it found it in a table
+  of the whole process, keyed by the value, which equal values in two
+  environments shared. Breaking: `OperationKind` and `kind` are removed,
+  and code generic over operations names the kind it needs.
 - A subscription survives a bad event. An event with errors and no data
   ended the subscription for good; it now sets `error` and the stream goes
   on, and the next good event clears it. `retry()` opens a stream the

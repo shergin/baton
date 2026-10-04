@@ -12,7 +12,7 @@ struct PhaseTests {
         store.commit(try Ingest.normalize(fixture("characters-7-nulls"), plan: TestList.plan.resolve(TestList(page: 3).variables)))
     }
 
-    func settled<Op: Baton.Operation>(_ handle: OperationHandle<Op>) async {
+    func settled<Op: Baton.Query>(_ handle: OperationHandle<Op>) async {
         await until { if case .loading = handle.phase { false } else { true } }
     }
 

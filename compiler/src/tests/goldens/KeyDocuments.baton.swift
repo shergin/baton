@@ -2,7 +2,7 @@
 import Baton
 
 /// Operation value for `query TestKeys`.
-nonisolated public struct TestKeys: Baton.Operation {
+nonisolated public struct TestKeys: Baton.Query {
     public var id: String
     public var name: String?
     public var resolution: Baton.OperationHandle<Self>? = nil
@@ -13,7 +13,6 @@ nonisolated public struct TestKeys: Baton.Operation {
     }
 
     public static let name = "TestKeys"
-    public static let kind = Baton.OperationKind.query
     public static let persistedID = "261b318876bed479691b17cc2db55e21"
     public static let text = #"""
 query TestKeys(

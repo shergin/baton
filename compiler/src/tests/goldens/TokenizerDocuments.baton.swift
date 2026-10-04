@@ -2,14 +2,13 @@
 import Baton
 
 /// Operation value for `query TestTokenizerQuery`.
-nonisolated public struct TestTokenizerQuery: Baton.Operation {
+nonisolated public struct TestTokenizerQuery: Baton.Query {
     public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init() {
     }
 
     public static let name = "TestTokenizerQuery"
-    public static let kind = Baton.OperationKind.query
     public static let persistedID = "504409d6f5f972bacc91cd4b4546bf53"
     public static let text = #"""
 query TestTokenizerQuery {

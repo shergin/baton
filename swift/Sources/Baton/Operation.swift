@@ -1,10 +1,6 @@
 import Observation
 import SwiftUI
 
-public enum OperationKind: Sendable {
-    case query, mutation, subscription
-}
-
 /// What the store may answer and when the network is asked. Relay's four.
 public enum FetchPolicy: Sendable {
     /// Render from the store when it has everything and nothing is stale;
@@ -19,12 +15,11 @@ public enum FetchPolicy: Sendable {
 }
 
 /// An operation value: the variables of one operation, `Hashable` by them.
-/// The compiler generates one struct per operation; inside a view the value
-/// resolves to a handle through `@Query`.
+/// The compiler generates one struct per operation, conforming to the
+/// protocol of its kind: `Query`, `Mutation` or `Subscription`.
 public protocol Operation: Hashable, Sendable {
     associatedtype Data: Lens
     static var name: String { get }
-    static var kind: OperationKind { get }
     static var text: String { get }
     static var persistedID: String { get }
     static var plan: Plan { get }
@@ -35,7 +30,22 @@ public protocol Operation: Hashable, Sendable {
     /// Whether the response may arrive in parts (`@defer`).
     static var hasDeferred: Bool { get }
     var variables: Variables { get }
+}
+
+/// A query value: inside a view it resolves to a handle through `@Query`,
+/// and reads its phase and data through it.
+public protocol Query: Operation {
     var resolution: OperationHandle<Self>? { get set }
+}
+
+/// A mutation value: called as an action through `@Mutation`, or committed
+/// with `Environment.mutate`.
+public protocol Mutation: Operation {}
+
+/// A subscription value: inside a view it resolves to a handle through
+/// `@Subscription`, which holds the stream of events open.
+public protocol Subscription: Operation {
+    var resolution: SubscriptionHandle<Self>? { get set }
 }
 
 extension Operation {
@@ -57,7 +67,7 @@ public struct MissingDataError: Error, CustomStringConvertible, Sendable {
     public var description: String { "\(operationName): the store does not have this data and the policy forbids fetching" }
 }
 
-extension Operation {
+extension Query {
     /// Loading until resolved inside a view.
     @MainActor public var phase: Phase<Data> { resolution?.phase ?? .loading }
 
@@ -93,7 +103,7 @@ protocol AnyOperationHandle: AnyObject {
 /// equal operation values.
 @MainActor
 @Observable
-public final class OperationHandle<Op: Operation>: AnyOperationHandle {
+public final class OperationHandle<Op: Query>: AnyOperationHandle {
     public let operation: Op
     public private(set) var phase: Phase<Op.Data> = .loading
     public private(set) var isRefreshing = false
@@ -371,7 +381,7 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
 /// lifetime, retains it while the view lives, and hands out the operation
 /// value with the handle attached.
 @MainActor
-public struct OperationStorage<Op: Operation>: DynamicProperty {
+public struct OperationStorage<Op: Query>: DynamicProperty {
     @SwiftUI.Environment(\.baton) private var environment
     @State private var box = Box()
     private let value: Op
@@ -424,7 +434,7 @@ public final class MutationState {
 /// A mutation as a callable value, after SwiftUI's `dismiss` and `openURL`.
 /// The compiler generates `callAsFunction` with one labelled parameter per
 /// variable plus `optimistic:`; this is what it calls.
-public struct MutationAction<Op: Operation>: Sendable {
+public struct MutationAction<Op: Mutation>: Sendable {
     let environment: Environment?
     let state: MutationState
 
@@ -446,7 +456,7 @@ public struct MutationAction<Op: Operation>: Sendable {
 /// What a `@Mutation` property expands to: the environment and the in-flight
 /// state, handed out as an action.
 @MainActor
-public struct MutationStorage<Op: Operation>: DynamicProperty {
+public struct MutationStorage<Op: Mutation>: DynamicProperty {
     @SwiftUI.Environment(\.baton) private var environment
     @State private var state = MutationState()
 
@@ -465,7 +475,7 @@ public struct MutationStorage<Op: Operation>: DynamicProperty {
 /// and committed, so its entities merge and its edge directives apply.
 @MainActor
 @Observable
-public final class SubscriptionHandle<Op: Operation>: AnyOperationHandle {
+public final class SubscriptionHandle<Op: Subscription>: AnyOperationHandle {
     public let operation: Op
     /// How many events have been committed.
     public private(set) var events = 0
@@ -544,7 +554,6 @@ public final class SubscriptionHandle<Op: Operation>: AnyOperationHandle {
     public func retain() {
         retainCount += 1
         environment?.didRetain(self)
-        SubscriptionResolution.add(self)
         start()
     }
 
@@ -554,7 +563,6 @@ public final class SubscriptionHandle<Op: Operation>: AnyOperationHandle {
         if retainCount <= 0 {
             retainCount = 0
             cancel()
-            SubscriptionResolution.remove(self)
             environment?.didEnd(self)
         }
     }
@@ -575,41 +583,16 @@ public final class SubscriptionHandle<Op: Operation>: AnyOperationHandle {
 }
 
 /// A subscription value, resolved inside a view through `@Subscription`.
-extension Operation {
-    /// The live side, while a view or another owner retains its handle.
-    @MainActor public var subscription: SubscriptionHandle<Self>? { SubscriptionResolution.handle(for: self) }
-}
-
-/// Where a subscription value finds its handle, so the value's accessors can
-/// reach it without a second stored property. A handle is listed while it is
-/// retained and dropped when its last owner releases it. The list is keyed by
-/// the value alone: equal values in two environments share an entry, and the
-/// handle retained last answers.
-@MainActor
-enum SubscriptionResolution {
-    private static var handles: [AnyHashable: AnyObject] = [:]
-
-    static func add<Op: Operation>(_ handle: SubscriptionHandle<Op>) {
-        handles[AnyHashable(handle.operation)] = handle
-    }
-
-    /// Drops the handle's entry, unless another handle has taken it.
-    static func remove<Op: Operation>(_ handle: SubscriptionHandle<Op>) {
-        let key = AnyHashable(handle.operation)
-        guard handles[key] === handle else { return }
-        handles.removeValue(forKey: key)
-    }
-
-    static func handle<Op: Operation>(for operation: Op) -> SubscriptionHandle<Op>? {
-        handles[AnyHashable(operation)] as? SubscriptionHandle<Op>
-    }
+extension Subscription {
+    /// The live side, which the storage that resolved the value holds.
+    @MainActor public var subscription: SubscriptionHandle<Self>? { resolution }
 }
 
 /// What a `@Subscription` property expands to: subscribes while the view
 /// lives, closes the stream when SwiftUI drops the view's state, and hands out
 /// the operation value with the handle attached.
 @MainActor
-public struct SubscriptionStorage<Op: Operation>: DynamicProperty {
+public struct SubscriptionStorage<Op: Subscription>: DynamicProperty {
     @SwiftUI.Environment(\.baton) private var environment
     @State private var box = Box()
     private let value: Op
@@ -641,7 +624,11 @@ public struct SubscriptionStorage<Op: Operation>: DynamicProperty {
         }
     }
 
-    /// The value; `subscription` reaches its live side while the storage
-    /// retains the handle.
-    public var resolved: Op { value }
+    /// The value with its handle attached; `subscription` reaches the live
+    /// side through it.
+    public var resolved: Op {
+        var resolved = value
+        resolved.resolution = box.handle
+        return resolved
+    }
 }

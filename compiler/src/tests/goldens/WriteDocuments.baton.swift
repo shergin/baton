@@ -12,7 +12,7 @@ nonisolated public struct TestFavorite_character: Baton.Lens {
 }
 
 /// Operation value for `query TestNode`.
-nonisolated public struct TestNode: Baton.Operation {
+nonisolated public struct TestNode: Baton.Query {
     public var id: String
     public var resolution: Baton.OperationHandle<Self>? = nil
 
@@ -21,7 +21,6 @@ nonisolated public struct TestNode: Baton.Operation {
     }
 
     public static let name = "TestNode"
-    public static let kind = Baton.OperationKind.query
     public static let persistedID = "f4287aafacae3711c1424cdbcbfc508c"
     public static let text = #"""
 query TestNode(
@@ -101,10 +100,9 @@ query TestNode(
 }
 
 /// Operation value for `mutation TestRename`.
-nonisolated public struct TestRename: Baton.Operation {
+nonisolated public struct TestRename: Baton.Mutation {
     public var id: String
     public var name: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String, name: String) {
         self.id = id
@@ -112,7 +110,6 @@ nonisolated public struct TestRename: Baton.Operation {
     }
 
     public static let name = "TestRename"
-    public static let kind = Baton.OperationKind.mutation
     public static let persistedID = "a73fc2b7303f9449bedc2fffea97fb04"
     public static let text = #"""
 mutation TestRename(
@@ -226,7 +223,7 @@ extension Baton.MutationAction where Op == TestRename {
 }
 
 /// Operation value for `query TestSearch`.
-nonisolated public struct TestSearch: Baton.Operation {
+nonisolated public struct TestSearch: Baton.Query {
     public var name: String
     public var resolution: Baton.OperationHandle<Self>? = nil
 
@@ -235,7 +232,6 @@ nonisolated public struct TestSearch: Baton.Operation {
     }
 
     public static let name = "TestSearch"
-    public static let kind = Baton.OperationKind.query
     public static let persistedID = "529930501b89d258d63e782735ce5cf7"
     public static let text = #"""
 query TestSearch(
@@ -329,7 +325,7 @@ query TestSearch(
 }
 
 /// Operation value for `query TestSearchOrigins`.
-nonisolated public struct TestSearchOrigins: Baton.Operation {
+nonisolated public struct TestSearchOrigins: Baton.Query {
     public var name: String
     public var resolution: Baton.OperationHandle<Self>? = nil
 
@@ -338,7 +334,6 @@ nonisolated public struct TestSearchOrigins: Baton.Operation {
     }
 
     public static let name = "TestSearchOrigins"
-    public static let kind = Baton.OperationKind.query
     public static let persistedID = "b901518a8b1a3f0fb9032a3ac9060d04"
     public static let text = #"""
 query TestSearchOrigins(
@@ -422,10 +417,9 @@ query TestSearchOrigins(
 }
 
 /// Operation value for `mutation TestSetFavorite`.
-nonisolated public struct TestSetFavorite: Baton.Operation {
+nonisolated public struct TestSetFavorite: Baton.Mutation {
     public var id: String
     public var favorite: Bool
-    public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String, favorite: Bool) {
         self.id = id
@@ -433,7 +427,6 @@ nonisolated public struct TestSetFavorite: Baton.Operation {
     }
 
     public static let name = "TestSetFavorite"
-    public static let kind = Baton.OperationKind.mutation
     public static let persistedID = "e84c45c8e83cd8488e3e4923ba0e045b"
     public static let text = #"""
 mutation TestSetFavorite(

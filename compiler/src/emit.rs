@@ -374,9 +374,16 @@ impl Emitter {
             "/// Operation value for `{} {}`.",
             operation.kind, operation.name
         );
+        // Each kind is its own protocol: a query and a subscription value
+        // carry the handle a view resolves them to, a mutation's is called.
+        let (protocol, resolution) = match operation.kind.as_str() {
+            "mutation" => ("Mutation", None),
+            "subscription" => ("Subscription", Some("SubscriptionHandle")),
+            _ => ("Query", Some("OperationHandle")),
+        };
         let _ = writeln!(
             output,
-            "nonisolated public struct {}: Baton.Operation {{",
+            "nonisolated public struct {}: Baton.{protocol} {{",
             operation.name
         );
         for variable in &operation.variables {
@@ -387,10 +394,15 @@ impl Emitter {
                 variable_type(variable)
             );
         }
-        let _ = writeln!(
-            output,
-            "    public var resolution: Baton.OperationHandle<Self>? = nil\n"
-        );
+        match resolution {
+            Some(handle) => {
+                let _ = writeln!(
+                    output,
+                    "    public var resolution: Baton.{handle}<Self>? = nil\n"
+                );
+            }
+            None => output.push('\n'),
+        }
         let parameters = parameter_list(&operation.variables);
         let _ = writeln!(output, "    public init({parameters}) {{");
         for variable in &operation.variables {
@@ -401,11 +413,6 @@ impl Emitter {
             output,
             "    public static let name = \"{}\"",
             operation.name
-        );
-        let _ = writeln!(
-            output,
-            "    public static let kind = Baton.OperationKind.{}",
-            operation.kind
         );
         let _ = writeln!(
             output,

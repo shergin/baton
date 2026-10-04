@@ -387,7 +387,7 @@ extension Anchor {
     /// Fetches the next `count` edges with the fragment's refetch query, after
     /// the merged end cursor; the commit appends them. A no-op while a page is
     /// loading or when there is no next page.
-    public func loadNext<Op: Operation>(_ operation: Op.Type, _ slots: ConnectionSlots, _ refetch: Refetch, count: Int) async throws {
+    public func loadNext<Op: Query>(_ operation: Op.Type, _ slots: ConnectionSlots, _ refetch: Refetch, count: Int) async throws {
         guard let first = refetch.first, let after = refetch.after else { return }
         guard hasNext(slots), !isLoadingNext(slots), let pageInfo = pageInfo(slots), case .string(let cursor) = pageInfo.peek(slots.endCursor) else { return }
         var values = refetchVariables(refetch, owner: parent)
@@ -398,7 +398,7 @@ extension Anchor {
 
     /// Fetches the previous `count` edges before the merged start cursor; the
     /// commit prepends them.
-    public func loadPrevious<Op: Operation>(_ operation: Op.Type, _ slots: ConnectionSlots, _ refetch: Refetch, count: Int) async throws {
+    public func loadPrevious<Op: Query>(_ operation: Op.Type, _ slots: ConnectionSlots, _ refetch: Refetch, count: Int) async throws {
         guard let last = refetch.last, let before = refetch.before else { return }
         guard hasPrevious(slots), !isLoadingPrevious(slots), let pageInfo = pageInfo(slots), case .string(let cursor) = pageInfo.peek(slots.startCursor) else { return }
         var values = refetchVariables(refetch, owner: parent)
@@ -409,7 +409,7 @@ extension Anchor {
 
     /// Fetches the fragment again with the lens's variables; the records
     /// update in place.
-    public func refetch<Op: Operation>(_ operation: Op.Type, _ refetch: Refetch) async throws {
+    public func refetch<Op: Query>(_ operation: Op.Type, _ refetch: Refetch) async throws {
         _ = try await environment().fetch(operation, variables: Variables(refetchVariables(refetch, owner: record)))
     }
 

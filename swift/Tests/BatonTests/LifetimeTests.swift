@@ -395,6 +395,29 @@ struct LifetimeTests {
         #expect(environment.rootCount == 0, "released with an empty buffer, the handle is no root")
     }
 
+    @Test("a subscription value reaches the handle the storage that resolved it holds, and a bare value reaches none")
+    func subscriptionResolution() {
+        final class Seen: @unchecked Sendable { var handle: SubscriptionHandle<TestNoteAdded>? }
+        struct Probe: View {
+            let storage: SubscriptionStorage<TestNoteAdded>
+            let seen: Seen
+            var body: some View {
+                seen.handle = storage.resolved.subscription
+                return Text("probe")
+            }
+        }
+        let environment = Baton.Environment(transport: SilentTransport(), subscriptions: DeliveryTests.Events())
+        let value = TestNoteAdded(characterId: "resolution", connections: [])
+        #expect(value.subscription == nil)
+        let seen = Seen()
+        autoreleasepool {
+            let renderer = ImageRenderer(content: Probe(storage: SubscriptionStorage(value), seen: seen).environment(\.baton, environment))
+            #expect(renderer.cgImage != nil)
+        }
+        #expect(seen.handle === environment.subscriptionHandle(for: value))
+        #expect(value.subscription == nil, "the value itself holds nothing")
+    }
+
     @Test("a handle whose environment is gone keeps its data and stops loading instead of hanging")
     func handleAfterTheEnvironment() async throws {
         var environment: Baton.Environment? = Baton.Environment(transport: SilentTransport())

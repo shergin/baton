@@ -18,7 +18,11 @@ Swift source or a `.graphql` file; compiles to a [lens](#generated) type.
 
 **Operation.** GraphQL: a query, mutation or subscription. Here: assembled by
 the compiler from the fragments spread into it; one per screen; compiles to a
-variables type, a root lens, a [plan](#compiler) and a persisted id.
+variables type, a root lens, a [plan](#compiler) and a persisted id. The
+three kinds are three protocols refining `Operation`, in GraphQL's words:
+`Query`, read through a handle; `Mutation`, called as an
+[action](#generated); `Subscription`, a stream of events into the store.
+Each API takes only its kind.
 
 **Spread.** GraphQL: `...Name` inside a selection. Here: compiles to a named
 accessor on the parent lens that returns the child fragment's lens, optional
@@ -93,8 +97,10 @@ binds its scope once per owner, so later reads render, hash and allocate
 nothing.
 
 **Operation value.** A `Hashable` struct of an operation's variables, the
-thing a parent constructs and a navigation path carries. Inside a view it
-resolves to a handle exposing `phase`, `data`, `refetch`, `retry`.
+thing a parent constructs and a navigation path carries. Inside a view a
+query value resolves to a handle exposing `phase`, `data`, `refetch`,
+`retry`, and a subscription value to one exposing its events; the handle
+travels with the value its storage hands out.
 
 **Phase.** The state of a resolved operation: loading, ready (with
 `isRefreshing`), or failed. Always synchronously readable; previous data

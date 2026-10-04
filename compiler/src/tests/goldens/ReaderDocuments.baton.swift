@@ -52,7 +52,7 @@ nonisolated public struct TestThrowingOrigin_character: Baton.Lens {
 }
 
 /// Operation value for `query TestCaughtEpisodes`.
-nonisolated public struct TestCaughtEpisodes: Baton.Operation {
+nonisolated public struct TestCaughtEpisodes: Baton.Query {
     public var id: String
     public var resolution: Baton.OperationHandle<Self>? = nil
 
@@ -61,7 +61,6 @@ nonisolated public struct TestCaughtEpisodes: Baton.Operation {
     }
 
     public static let name = "TestCaughtEpisodes"
-    public static let kind = Baton.OperationKind.query
     public static let persistedID = "eae05d9532c2687c5a430800946c3121"
     public static let text = #"""
 query TestCaughtEpisodes(
@@ -140,7 +139,7 @@ query TestCaughtEpisodes(
 }
 
 /// Operation value for `query TestRequiredOrigin`.
-nonisolated public struct TestRequiredOrigin: Baton.Operation {
+nonisolated public struct TestRequiredOrigin: Baton.Query {
     public var id: String
     public var resolution: Baton.OperationHandle<Self>? = nil
 
@@ -149,7 +148,6 @@ nonisolated public struct TestRequiredOrigin: Baton.Operation {
     }
 
     public static let name = "TestRequiredOrigin"
-    public static let kind = Baton.OperationKind.query
     public static let persistedID = "539afa4ddc619552d2cd4652b757ead3"
     public static let bubbles = true
     public static let text = #"""
@@ -223,7 +221,7 @@ query TestRequiredOrigin(
 }
 
 /// Operation value for `query TestReservedNames`.
-nonisolated public struct TestReservedNames: Baton.Operation {
+nonisolated public struct TestReservedNames: Baton.Query {
     public var id: String
     public var resolution: Baton.OperationHandle<Self>? = nil
 
@@ -232,7 +230,6 @@ nonisolated public struct TestReservedNames: Baton.Operation {
     }
 
     public static let name = "TestReservedNames"
-    public static let kind = Baton.OperationKind.query
     public static let persistedID = "5ebef09abdd944666af9974ee50e9565"
     public static let text = #"""
 query TestReservedNames(
@@ -347,7 +344,7 @@ fragment TestNotes_character_35kO5h on Character {
 }
 
 /// Operation value for `query TestStrictOrigin`.
-nonisolated public struct TestStrictOrigin: Baton.Operation {
+nonisolated public struct TestStrictOrigin: Baton.Query {
     public var id: String
     public var resolution: Baton.OperationHandle<Self>? = nil
 
@@ -356,7 +353,6 @@ nonisolated public struct TestStrictOrigin: Baton.Operation {
     }
 
     public static let name = "TestStrictOrigin"
-    public static let kind = Baton.OperationKind.query
     public static let persistedID = "aa91b13d57478d24f1bce40a0580314b"
     public static let throwsOnFieldError = true
     public static let text = #"""
@@ -473,7 +469,7 @@ query TestStrictOrigin(
 }
 
 /// Operation value for `query TestThrowingNode`.
-nonisolated public struct TestThrowingNode: Baton.Operation {
+nonisolated public struct TestThrowingNode: Baton.Query {
     public var id: String
     public var resolution: Baton.OperationHandle<Self>? = nil
 
@@ -482,7 +478,6 @@ nonisolated public struct TestThrowingNode: Baton.Operation {
     }
 
     public static let name = "TestThrowingNode"
-    public static let kind = Baton.OperationKind.query
     public static let persistedID = "cb1c4a49d7e89fec44f00dc7f3355ad3"
     public static let throwsOnFieldError = true
     public static let text = #"""
@@ -601,7 +596,7 @@ query TestThrowingNode(
 }
 
 /// Operation value for `query TestTwoScopes`.
-nonisolated public struct TestTwoScopes: Baton.Operation {
+nonisolated public struct TestTwoScopes: Baton.Query {
     public var a: String
     public var b: String
     public var resolution: Baton.OperationHandle<Self>? = nil
@@ -612,7 +607,6 @@ nonisolated public struct TestTwoScopes: Baton.Operation {
     }
 
     public static let name = "TestTwoScopes"
-    public static let kind = Baton.OperationKind.query
     public static let persistedID = "be751e5f3cdc65dfdac3eecbbf7c14c1"
     public static let text = #"""
 query TestTwoScopes(

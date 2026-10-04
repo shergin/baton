@@ -31,7 +31,7 @@ nonisolated public struct TestRow_character: Baton.Lens {
 }
 
 /// Operation value for `query Fixture`.
-nonisolated public struct Fixture: Baton.Operation {
+nonisolated public struct Fixture: Baton.Query {
     public var page: Int?
     public var resolution: Baton.OperationHandle<Self>? = nil
 
@@ -40,7 +40,6 @@ nonisolated public struct Fixture: Baton.Operation {
     }
 
     public static let name = "Fixture"
-    public static let kind = Baton.OperationKind.query
     public static let persistedID = "8a0697b90ec687e4e75a8b8336cd6537"
     public static let text = #"""
 query Fixture(
@@ -239,7 +238,7 @@ query Fixture(
 }
 
 /// Operation value for `query TestEpisodesQuery`.
-nonisolated public struct TestEpisodesQuery: Baton.Operation {
+nonisolated public struct TestEpisodesQuery: Baton.Query {
     public var id: String
     public var resolution: Baton.OperationHandle<Self>? = nil
 
@@ -248,7 +247,6 @@ nonisolated public struct TestEpisodesQuery: Baton.Operation {
     }
 
     public static let name = "TestEpisodesQuery"
-    public static let kind = Baton.OperationKind.query
     public static let persistedID = "f2cffc3168234fe6702241f611873ada"
     public static let text = #"""
 query TestEpisodesQuery(
@@ -310,7 +308,7 @@ query TestEpisodesQuery(
 }
 
 /// Operation value for `query TestHeaderQuery`.
-nonisolated public struct TestHeaderQuery: Baton.Operation {
+nonisolated public struct TestHeaderQuery: Baton.Query {
     public var id: String
     public var resolution: Baton.OperationHandle<Self>? = nil
 
@@ -319,7 +317,6 @@ nonisolated public struct TestHeaderQuery: Baton.Operation {
     }
 
     public static let name = "TestHeaderQuery"
-    public static let kind = Baton.OperationKind.query
     public static let persistedID = "35a64d23c7810d837afdfc339ae668ee"
     public static let text = #"""
 query TestHeaderQuery(
@@ -385,7 +382,7 @@ fragment TestHeader_character on Character {
 }
 
 /// Operation value for `query TestList`.
-nonisolated public struct TestList: Baton.Operation {
+nonisolated public struct TestList: Baton.Query {
     public var page: Int?
     public var resolution: Baton.OperationHandle<Self>? = nil
 
@@ -394,7 +391,6 @@ nonisolated public struct TestList: Baton.Operation {
     }
 
     public static let name = "TestList"
-    public static let kind = Baton.OperationKind.query
     public static let persistedID = "e4489e6f29fe9b2f24109d857bc12bd4"
     public static let text = #"""
 query TestList(

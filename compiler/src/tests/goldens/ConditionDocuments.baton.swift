@@ -10,7 +10,7 @@ nonisolated public struct TestNamed_named: Baton.Lens {
 }
 
 /// Operation value for `query TestConditions`.
-nonisolated public struct TestConditions: Baton.Operation {
+nonisolated public struct TestConditions: Baton.Query {
     public var id: String
     public var withOrigin: Bool
     public var hideStatus: Bool
@@ -23,7 +23,6 @@ nonisolated public struct TestConditions: Baton.Operation {
     }
 
     public static let name = "TestConditions"
-    public static let kind = Baton.OperationKind.query
     public static let persistedID = "17cb1982c3f7707f80deebc838045694"
     public static let text = #"""
 query TestConditions(
@@ -104,7 +103,7 @@ query TestConditions(
 }
 
 /// Operation value for `query TestFoldedNode`.
-nonisolated public struct TestFoldedNode: Baton.Operation {
+nonisolated public struct TestFoldedNode: Baton.Query {
     public var name: String
     public var resolution: Baton.OperationHandle<Self>? = nil
 
@@ -113,7 +112,6 @@ nonisolated public struct TestFoldedNode: Baton.Operation {
     }
 
     public static let name = "TestFoldedNode"
-    public static let kind = Baton.OperationKind.query
     public static let persistedID = "92680cf5c9b1b4ee959a029fe9832a52"
     public static let text = #"""
 query TestFoldedNode(
@@ -169,7 +167,7 @@ query TestFoldedNode(
 }
 
 /// Operation value for `query TestNamedSpread`.
-nonisolated public struct TestNamedSpread: Baton.Operation {
+nonisolated public struct TestNamedSpread: Baton.Query {
     public var id: String
     public var resolution: Baton.OperationHandle<Self>? = nil
 
@@ -178,7 +176,6 @@ nonisolated public struct TestNamedSpread: Baton.Operation {
     }
 
     public static let name = "TestNamedSpread"
-    public static let kind = Baton.OperationKind.query
     public static let persistedID = "130828548fd922ad7bed7f2e3fa052ba"
     public static let text = #"""
 query TestNamedSpread(
@@ -243,7 +240,7 @@ fragment TestNamed_named on Named {
 }
 
 /// Operation value for `query TestNodeDeferred`.
-nonisolated public struct TestNodeDeferred: Baton.Operation {
+nonisolated public struct TestNodeDeferred: Baton.Query {
     public var id: String
     public var resolution: Baton.OperationHandle<Self>? = nil
 
@@ -252,7 +249,6 @@ nonisolated public struct TestNodeDeferred: Baton.Operation {
     }
 
     public static let name = "TestNodeDeferred"
-    public static let kind = Baton.OperationKind.query
     public static let persistedID = "1703a24c13ec9d8c30b8e12f802ab40f"
     public static let hasDeferred = true
     public static let text = #"""
@@ -344,7 +340,7 @@ fragment TestAppearances_character on Character {
 }
 
 /// Operation value for `query TestNodeFields`.
-nonisolated public struct TestNodeFields: Baton.Operation {
+nonisolated public struct TestNodeFields: Baton.Query {
     public var id: String
     public var resolution: Baton.OperationHandle<Self>? = nil
 
@@ -353,7 +349,6 @@ nonisolated public struct TestNodeFields: Baton.Operation {
     }
 
     public static let name = "TestNodeFields"
-    public static let kind = Baton.OperationKind.query
     public static let persistedID = "4e8e814e1b2e912f70ce9e2cedce623d"
     public static let text = #"""
 query TestNodeFields(
@@ -419,7 +414,7 @@ query TestNodeFields(
 }
 
 /// Operation value for `query TestStrictConditions`.
-nonisolated public struct TestStrictConditions: Baton.Operation {
+nonisolated public struct TestStrictConditions: Baton.Query {
     public var id: String
     public var withStatus: Bool
     public var resolution: Baton.OperationHandle<Self>? = nil
@@ -430,7 +425,6 @@ nonisolated public struct TestStrictConditions: Baton.Operation {
     }
 
     public static let name = "TestStrictConditions"
-    public static let kind = Baton.OperationKind.query
     public static let persistedID = "eeef5e0e488f7abba8c06d913f07d04a"
     public static let throwsOnFieldError = true
     public static let text = #"""
@@ -559,7 +553,7 @@ query TestStrictConditions(
 }
 
 /// Operation value for `query TestTwoSpreads`.
-nonisolated public struct TestTwoSpreads: Baton.Operation {
+nonisolated public struct TestTwoSpreads: Baton.Query {
     public var id: String
     public var again: Bool
     public var resolution: Baton.OperationHandle<Self>? = nil
@@ -570,7 +564,6 @@ nonisolated public struct TestTwoSpreads: Baton.Operation {
     }
 
     public static let name = "TestTwoSpreads"
-    public static let kind = Baton.OperationKind.query
     public static let persistedID = "e6a4443733e47d18ed4cc5c6a9bb5691"
     public static let text = #"""
 query TestTwoSpreads(
@@ -633,7 +626,7 @@ fragment TestRow_character on Character {
 }
 
 /// Operation value for `query TestUnion`.
-nonisolated public struct TestUnion: Baton.Operation {
+nonisolated public struct TestUnion: Baton.Query {
     public var name: String
     public var resolution: Baton.OperationHandle<Self>? = nil
 
@@ -642,7 +635,6 @@ nonisolated public struct TestUnion: Baton.Operation {
     }
 
     public static let name = "TestUnion"
-    public static let kind = Baton.OperationKind.query
     public static let persistedID = "81e9b23ea239c8d10c12c3f47571f219"
     public static let text = #"""
 query TestUnion(

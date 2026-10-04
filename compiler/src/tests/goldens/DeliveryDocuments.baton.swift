@@ -100,10 +100,10 @@ nonisolated public struct TestStrict_character: Baton.Lens {
 }
 
 /// Operation value for `subscription TestNoteAdded`.
-nonisolated public struct TestNoteAdded: Baton.Operation {
+nonisolated public struct TestNoteAdded: Baton.Subscription {
     public var characterId: String
     public var connections: [String]
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    public var resolution: Baton.SubscriptionHandle<Self>? = nil
 
     public init(characterId: String, connections: [String]) {
         self.characterId = characterId
@@ -111,7 +111,6 @@ nonisolated public struct TestNoteAdded: Baton.Operation {
     }
 
     public static let name = "TestNoteAdded"
-    public static let kind = Baton.OperationKind.subscription
     public static let persistedID = "2e61d862c0d0e5ffb8311c6c4b4f7124"
     public static let text = #"""
 subscription TestNoteAdded(
@@ -186,7 +185,7 @@ subscription TestNoteAdded(
 }
 
 /// Operation value for `query TestProfileQuery`.
-nonisolated public struct TestProfileQuery: Baton.Operation {
+nonisolated public struct TestProfileQuery: Baton.Query {
     public var id: String
     public var resolution: Baton.OperationHandle<Self>? = nil
 
@@ -195,7 +194,6 @@ nonisolated public struct TestProfileQuery: Baton.Operation {
     }
 
     public static let name = "TestProfileQuery"
-    public static let kind = Baton.OperationKind.query
     public static let persistedID = "eff75e89a7fd840fa7d5531ef07afcb8"
     public static let hasDeferred = true
     public static let text = #"""
@@ -302,7 +300,7 @@ fragment TestStrict_character on Character {
 }
 
 /// Operation value for `query TestRosterQuery`.
-nonisolated public struct TestRosterQuery: Baton.Operation {
+nonisolated public struct TestRosterQuery: Baton.Query {
     public var page: Int?
     public var resolution: Baton.OperationHandle<Self>? = nil
 
@@ -311,7 +309,6 @@ nonisolated public struct TestRosterQuery: Baton.Operation {
     }
 
     public static let name = "TestRosterQuery"
-    public static let kind = Baton.OperationKind.query
     public static let persistedID = "9515d2f7c1681c6beda1da8659de4ca3"
     public static let text = #"""
 query TestRosterQuery(
@@ -379,7 +376,7 @@ query TestRosterQuery(
 }
 
 /// Operation value for `query TestStrictQuery`.
-nonisolated public struct TestStrictQuery: Baton.Operation {
+nonisolated public struct TestStrictQuery: Baton.Query {
     public var id: String
     public var resolution: Baton.OperationHandle<Self>? = nil
 
@@ -388,7 +385,6 @@ nonisolated public struct TestStrictQuery: Baton.Operation {
     }
 
     public static let name = "TestStrictQuery"
-    public static let kind = Baton.OperationKind.query
     public static let persistedID = "b598ad0269e42e896ecc49549ed97149"
     public static let throwsOnFieldError = true
     public static let text = #"""

@@ -563,22 +563,6 @@ struct DeliveryTests {
         await until { server.closed == 2 }
     }
 
-    @Test("a subscription value reaches its handle while the handle is retained, and not after")
-    func subscriptionResolution() {
-        let environment = Environment(transport: SilentTransport(), subscriptions: Events())
-        let value = TestNoteAdded(characterId: "1", connections: [])
-        #expect(value.subscription == nil)
-
-        let live = environment.subscriptionHandle(for: value)
-        live.retain()
-        live.retain()
-        #expect(value.subscription === live)
-        live.release()
-        #expect(value.subscription === live, "one owner is left")
-        live.release()
-        #expect(value.subscription == nil)
-    }
-
     @Test("equal subscriptions on one socket are separate: the end of one leaves the other open")
     func equalSubscriptionsOnOneSocket() async throws {
         /// What each reader saw, by reader.

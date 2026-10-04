@@ -120,11 +120,10 @@ nonisolated public struct TestRecentNotes_character: Baton.Lens {
 }
 
 /// Operation value for `mutation TestAddNote`.
-nonisolated public struct TestAddNote: Baton.Operation {
+nonisolated public struct TestAddNote: Baton.Mutation {
     public var characterId: String
     public var text: String
     public var connections: [String]
-    public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(characterId: String, text: String, connections: [String]) {
         self.characterId = characterId
@@ -133,7 +132,6 @@ nonisolated public struct TestAddNote: Baton.Operation {
     }
 
     public static let name = "TestAddNote"
-    public static let kind = Baton.OperationKind.mutation
     public static let persistedID = "eb58474cb385661c71cbe13ccf987007"
     public static let text = #"""
 mutation TestAddNote(
@@ -278,11 +276,10 @@ extension Baton.MutationAction where Op == TestAddNote {
 }
 
 /// Operation value for `mutation TestAddNoteFirst`.
-nonisolated public struct TestAddNoteFirst: Baton.Operation {
+nonisolated public struct TestAddNoteFirst: Baton.Mutation {
     public var characterId: String
     public var text: String
     public var connections: [String]
-    public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(characterId: String, text: String, connections: [String]) {
         self.characterId = characterId
@@ -291,7 +288,6 @@ nonisolated public struct TestAddNoteFirst: Baton.Operation {
     }
 
     public static let name = "TestAddNoteFirst"
-    public static let kind = Baton.OperationKind.mutation
     public static let persistedID = "794a9e345a0cf0b310e0bdbbba6912af"
     public static let text = #"""
 mutation TestAddNoteFirst(
@@ -436,11 +432,10 @@ extension Baton.MutationAction where Op == TestAddNoteFirst {
 }
 
 /// Operation value for `mutation TestAddNoteNode`.
-nonisolated public struct TestAddNoteNode: Baton.Operation {
+nonisolated public struct TestAddNoteNode: Baton.Mutation {
     public var characterId: String
     public var text: String
     public var connections: [String]
-    public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(characterId: String, text: String, connections: [String]) {
         self.characterId = characterId
@@ -449,7 +444,6 @@ nonisolated public struct TestAddNoteNode: Baton.Operation {
     }
 
     public static let name = "TestAddNoteNode"
-    public static let kind = Baton.OperationKind.mutation
     public static let persistedID = "357de83e8eff33b95dfd7673a6ba3df9"
     public static let text = #"""
 mutation TestAddNoteNode(
@@ -564,11 +558,10 @@ extension Baton.MutationAction where Op == TestAddNoteNode {
 }
 
 /// Operation value for `mutation TestAddNoteNodeFirst`.
-nonisolated public struct TestAddNoteNodeFirst: Baton.Operation {
+nonisolated public struct TestAddNoteNodeFirst: Baton.Mutation {
     public var characterId: String
     public var text: String
     public var connections: [String]
-    public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(characterId: String, text: String, connections: [String]) {
         self.characterId = characterId
@@ -577,7 +570,6 @@ nonisolated public struct TestAddNoteNodeFirst: Baton.Operation {
     }
 
     public static let name = "TestAddNoteNodeFirst"
-    public static let kind = Baton.OperationKind.mutation
     public static let persistedID = "f305c5381cda7e9235357eef859387d9"
     public static let text = #"""
 mutation TestAddNoteNodeFirst(
@@ -692,7 +684,7 @@ extension Baton.MutationAction where Op == TestAddNoteNodeFirst {
 }
 
 /// Operation value for `query TestAliasQuery`.
-nonisolated public struct TestAliasQuery: Baton.Operation {
+nonisolated public struct TestAliasQuery: Baton.Query {
     public var id: String
     public var resolution: Baton.OperationHandle<Self>? = nil
 
@@ -701,7 +693,6 @@ nonisolated public struct TestAliasQuery: Baton.Operation {
     }
 
     public static let name = "TestAliasQuery"
-    public static let kind = Baton.OperationKind.query
     public static let persistedID = "a2fc86bdc15069e2ca4cf336fe033e80"
     public static let text = #"""
 query TestAliasQuery(
@@ -757,16 +748,14 @@ fragment TestRow_character on Character {
 }
 
 /// Operation value for `mutation TestDeleteNote`.
-nonisolated public struct TestDeleteNote: Baton.Operation {
+nonisolated public struct TestDeleteNote: Baton.Mutation {
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String) {
         self.id = id
     }
 
     public static let name = "TestDeleteNote"
-    public static let kind = Baton.OperationKind.mutation
     public static let persistedID = "751968cd184efb0f3405d379e4ad4ffe"
     public static let text = #"""
 mutation TestDeleteNote(
@@ -848,7 +837,7 @@ extension Baton.MutationAction where Op == TestDeleteNote {
 }
 
 /// Operation value for `query TestNotesPaginationQuery`.
-nonisolated public struct TestNotesPaginationQuery: Baton.Operation {
+nonisolated public struct TestNotesPaginationQuery: Baton.Query {
     public var count: Int?
     public var cursor: String?
     public var id: String
@@ -861,7 +850,6 @@ nonisolated public struct TestNotesPaginationQuery: Baton.Operation {
     }
 
     public static let name = "TestNotesPaginationQuery"
-    public static let kind = Baton.OperationKind.query
     public static let persistedID = "4d985ec250bd7a163e20562d233403ac"
     public static let text = #"""
 query TestNotesPaginationQuery(
@@ -960,7 +948,7 @@ fragment TestNotes_character_1G22uz on Character {
 }
 
 /// Operation value for `query TestNotesQuery`.
-nonisolated public struct TestNotesQuery: Baton.Operation {
+nonisolated public struct TestNotesQuery: Baton.Query {
     public var id: String
     public var resolution: Baton.OperationHandle<Self>? = nil
 
@@ -969,7 +957,6 @@ nonisolated public struct TestNotesQuery: Baton.Operation {
     }
 
     public static let name = "TestNotesQuery"
-    public static let kind = Baton.OperationKind.query
     public static let persistedID = "0d8066dc9d27de5fa13df8bd95a8fbbf"
     public static let text = #"""
 query TestNotesQuery(
@@ -1055,7 +1042,7 @@ fragment TestNotes_character on Character {
 }
 
 /// Operation value for `query TestNotesSizedQuery`.
-nonisolated public struct TestNotesSizedQuery: Baton.Operation {
+nonisolated public struct TestNotesSizedQuery: Baton.Query {
     public var id: String
     public var size: Int?
     public var resolution: Baton.OperationHandle<Self>? = nil
@@ -1066,7 +1053,6 @@ nonisolated public struct TestNotesSizedQuery: Baton.Operation {
     }
 
     public static let name = "TestNotesSizedQuery"
-    public static let kind = Baton.OperationKind.query
     public static let persistedID = "cbd1fc6f6bf922726866f5b557a1c550"
     public static let text = #"""
 query TestNotesSizedQuery(
@@ -1154,7 +1140,7 @@ fragment TestNotes_character_2H9PL on Character {
 }
 
 /// Operation value for `query TestRecentNotesPaginationQuery`.
-nonisolated public struct TestRecentNotesPaginationQuery: Baton.Operation {
+nonisolated public struct TestRecentNotesPaginationQuery: Baton.Query {
     public var count: Int?
     public var cursor: String?
     public var id: String
@@ -1167,7 +1153,6 @@ nonisolated public struct TestRecentNotesPaginationQuery: Baton.Operation {
     }
 
     public static let name = "TestRecentNotesPaginationQuery"
-    public static let kind = Baton.OperationKind.query
     public static let persistedID = "1968a7fa8350f2d0c78f7540977995a5"
     public static let text = #"""
 query TestRecentNotesPaginationQuery(
@@ -1262,7 +1247,7 @@ fragment TestRecentNotes_character_1G22uz on Character {
 }
 
 /// Operation value for `query TestRecentNotesQuery`.
-nonisolated public struct TestRecentNotesQuery: Baton.Operation {
+nonisolated public struct TestRecentNotesQuery: Baton.Query {
     public var id: String
     public var resolution: Baton.OperationHandle<Self>? = nil
 
@@ -1271,7 +1256,6 @@ nonisolated public struct TestRecentNotesQuery: Baton.Operation {
     }
 
     public static let name = "TestRecentNotesQuery"
-    public static let kind = Baton.OperationKind.query
     public static let persistedID = "e322c577573ae41444b924f8ee688008"
     public static let text = #"""
 query TestRecentNotesQuery(
@@ -1353,10 +1337,9 @@ fragment TestRecentNotes_character on Character {
 }
 
 /// Operation value for `mutation TestRemoveNote`.
-nonisolated public struct TestRemoveNote: Baton.Operation {
+nonisolated public struct TestRemoveNote: Baton.Mutation {
     public var id: String
     public var connections: [String]
-    public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String, connections: [String]) {
         self.id = id
@@ -1364,7 +1347,6 @@ nonisolated public struct TestRemoveNote: Baton.Operation {
     }
 
     public static let name = "TestRemoveNote"
-    public static let kind = Baton.OperationKind.mutation
     public static let persistedID = "bb72485abdd41be5d42f0686db83a211"
     public static let text = #"""
 mutation TestRemoveNote(
