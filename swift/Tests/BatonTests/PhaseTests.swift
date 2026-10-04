@@ -239,6 +239,41 @@ struct PhaseTests {
         handle.release()
     }
 
+    @Test("a preload's fresh data serves the first attach by the commits since: one that put a field error or a null into its selection fails it")
+    func preloadSettlesOnTheFirstAttach() async throws {
+        let transport = RecordedTransport([TestStrictQuery.name: fixture("character-name-shown"), TestRequiredOrigin.name: fixture("required-origin-1")])
+        let environment = Environment(transport: transport)
+        environment.store.reportMissing = nil
+        let strict = environment.preload(TestStrictQuery(id: "1"))
+        let bubbling = environment.preload(TestRequiredOrigin(id: "1"))
+        await strict.settle()
+        await bubbling.settle()
+        guard case .ready = strict.phase, case .ready = bubbling.phase else {
+            Issue.record("expected both preloads ready, got \(strict.phase) and \(bubbling.phase)")
+            return
+        }
+        // Parked, the preloaded handles are settled by no commit before
+        // their first attach.
+        environment.store.commit(try Ingest.normalize(fixture("character-name-hidden"), plan: TestStrictQuery.plan.resolve(TestStrictQuery(id: "1").variables)))
+        environment.store.commit(try Ingest.normalize(fixture("required-origin-1-null"), plan: TestRequiredOrigin.plan.resolve(TestRequiredOrigin(id: "1").variables)))
+
+        let attached = environment.handle(for: TestStrictQuery(id: "1"))
+        #expect(attached === strict)
+        if case .failed(let error as FieldErrors) = attached.phase {
+            #expect(error.errors.map(\.message) == ["name hidden"])
+        } else {
+            Issue.record("expected the committed error, got \(attached.phase)")
+        }
+        let bubbled = environment.handle(for: TestRequiredOrigin(id: "1"))
+        #expect(bubbled === bubbling)
+        if case .failed(let error) = bubbled.phase {
+            #expect(error is RequiredFieldError)
+        } else {
+            Issue.record("expected the required origin to fail the operation, got \(bubbled.phase)")
+        }
+        #expect(transport.requestCount == 2, "the preloads' fetches served the attaches")
+    }
+
     @Test("a preload that sent nothing serves no attach: a later networkOnly attach fetches")
     func preloadWithoutAFetch() async throws {
         let transport = RecordedTransport([TestList.name: fixtureData])

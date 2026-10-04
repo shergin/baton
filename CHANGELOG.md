@@ -507,6 +507,10 @@ are expected and listed without apology.
   `RequiredFieldError` that names it in `operationName`, with an empty
   path, and says the root bubbled. Its path was the operation's name, so
   the error described a null field of that name.
+- A preloaded operation is settled on its first attach. When the preload's
+  fetch had finished with fresh data, the attach returned before reading
+  the phase again, so a commit that put a field error or a null into the
+  selection while the handle waited for a view left it ready.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

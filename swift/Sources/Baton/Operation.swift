@@ -260,11 +260,15 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
     /// when the policy asks for it.
     func apply(_ policy: FetchPolicy) {
         // A preload's fetch is the first attach's: in flight, or done with
-        // data that is still fresh, it is not made again.
+        // data that is still fresh, it is not made again. A parked handle
+        // saw no commit since that fetch, so its phase is settled here.
         if preloaded {
             preloaded = false
             if task != nil { return }
-            if case .ready = phase, !isStale { return }
+            if case .ready = phase, !isStale {
+                reevaluate()
+                return
+            }
         }
         if policy == .networkOnly {
             // What the store holds is not asked; a handle no one shows yet
