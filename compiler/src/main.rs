@@ -392,7 +392,7 @@ fn check_property_types(documents: &[Document], plan: &pipeline::Plan) -> Vec<Re
                 .find(|operation| {
                     operation.source == path
                         && operation.document == document.index
-                        && operation.kind == kind_of(marker)
+                        && Some(operation.kind) == kind_of(marker)
                 })
                 .map(|operation| operation.name.as_str()),
         };
@@ -420,13 +420,13 @@ fn check_property_types(documents: &[Document], plan: &pipeline::Plan) -> Vec<Re
     rendered
 }
 
-/// The operation kind a marker declares, as the plan spells it.
-fn kind_of(marker: Marker) -> &'static str {
+/// The operation kind a marker declares; none for a fragment's.
+fn kind_of(marker: Marker) -> Option<pipeline::OperationKind> {
     match marker {
-        Marker::Query => "query",
-        Marker::Mutation => "mutation",
-        Marker::Subscription => "subscription",
-        Marker::Fragment => "fragment",
+        Marker::Query => Some(pipeline::OperationKind::Query),
+        Marker::Mutation => Some(pipeline::OperationKind::Mutation),
+        Marker::Subscription => Some(pipeline::OperationKind::Subscription),
+        Marker::Fragment => None,
     }
 }
 

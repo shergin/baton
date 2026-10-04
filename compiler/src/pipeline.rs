@@ -12,14 +12,14 @@ use common::{Diagnostic, DirectiveName, NamedItem, NoopPerfLogger, SourceLocatio
 use graphql_ir::{
     ConditionValue, Field, FragmentDefinition, FragmentDefinitionNameSet, Program, Selection,
 };
-use graphql_syntax::OperationKind;
+use graphql_syntax::OperationKind as SyntaxOperationKind;
 use graphql_text_printer::{PrinterOptions, print_full_operation};
 use intern::Lookup;
 use intern::string_key::Intern;
 use relay_config::ProjectConfig;
 use relay_transforms::{
     CATCH_DIRECTIVE_NAME, CHILDREN_CAN_BUBBLE_METADATA_KEY, CatchMetadataDirective, CatchTo,
-    FragmentAliasMetadata, Programs, RefetchableMetadata, RequiredAction,
+    FragmentAliasMetadata, Programs, RefetchableMetadata, RequiredAction as RelayRequiredAction,
     RequiredMetadataDirective, apply_transforms, disallow_reserved_aliases,
     disallow_typename_on_root, extract_connection_metadata_from_directive,
     extract_handle_field_directives, extract_values_from_handle_field_directive,
@@ -67,10 +67,10 @@ pub struct Plan {
 
 /// The names the store types its three root records by, whatever the schema
 /// calls its root types, as Relay's root record is a `__Root` in any schema.
-const ROOT_NAMES: [(OperationKind, &str); 3] = [
-    (OperationKind::Query, "Query"),
-    (OperationKind::Mutation, "Mutation"),
-    (OperationKind::Subscription, "Subscription"),
+const ROOT_NAMES: [(SyntaxOperationKind, &str); 3] = [
+    (SyntaxOperationKind::Query, "Query"),
+    (SyntaxOperationKind::Mutation, "Mutation"),
+    (SyntaxOperationKind::Subscription, "Subscription"),
 ];
 
 #[derive(Debug, Clone, serde::Serialize)]
@@ -127,7 +127,7 @@ pub struct OperationPlan {
     /// Which of the file's documents declared it, as the scanner numbered
     /// them; a refetch query is its fragment's.
     pub document: usize,
-    pub kind: String,
+    pub kind: OperationKind,
     pub root_type: String,
     pub variables: Vec<VariablePlan>,
     pub text: String,
@@ -142,6 +142,32 @@ pub struct OperationPlan {
     pub error_behavior: Option<String>,
     pub reader: Vec<SelectionPlan>,
     pub normalization: Vec<SelectionPlan>,
+}
+
+/// Relay's three kinds of operation.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum OperationKind {
+    Query,
+    Mutation,
+    Subscription,
+}
+
+impl OperationKind {
+    /// The keyword GraphQL writes the operation with.
+    pub fn keyword(self) -> &'static str {
+        match self {
+            OperationKind::Query => "query",
+            OperationKind::Mutation => "mutation",
+            OperationKind::Subscription => "subscription",
+        }
+    }
+}
+
+impl std::fmt::Display for OperationKind {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        formatter.write_str(self.keyword())
+    }
 }
 
 #[derive(Debug, Clone, serde::Serialize)]
@@ -242,24 +268,85 @@ pub struct ConnectionPlan {
 /// An edge directive on a mutation payload field, as Relay's handle.
 #[derive(Debug, Clone, PartialEq, serde::Serialize)]
 pub struct HandlePlan {
-    /// `appendEdge`, `prependEdge`, `appendNode`, `prependNode`, `deleteEdge`, `deleteRecord`.
-    pub kind: String,
+    pub kind: HandleKind,
     pub connections: Option<ArgumentValuePlan>,
     pub edge_type_name: Option<String>,
+}
+
+/// The edge directives, by the names of Relay's handles, which the
+/// runtime's cases share.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub enum HandleKind {
+    AppendEdge,
+    PrependEdge,
+    AppendNode,
+    PrependNode,
+    DeleteEdge,
+    DeleteRecord,
+}
+
+impl HandleKind {
+    /// The kind of Relay's handle `name`; `None` for a handle that is not an
+    /// edge directive.
+    fn of(name: &str) -> Option<HandleKind> {
+        Some(match name {
+            "appendEdge" => HandleKind::AppendEdge,
+            "prependEdge" => HandleKind::PrependEdge,
+            "appendNode" => HandleKind::AppendNode,
+            "prependNode" => HandleKind::PrependNode,
+            "deleteEdge" => HandleKind::DeleteEdge,
+            "deleteRecord" => HandleKind::DeleteRecord,
+            _ => return None,
+        })
+    }
+
+    /// Relay's name for the handle, which the runtime's case shares.
+    pub fn name(self) -> &'static str {
+        match self {
+            HandleKind::AppendEdge => "appendEdge",
+            HandleKind::PrependEdge => "prependEdge",
+            HandleKind::AppendNode => "appendNode",
+            HandleKind::PrependNode => "prependNode",
+            HandleKind::DeleteEdge => "deleteEdge",
+            HandleKind::DeleteRecord => "deleteRecord",
+        }
+    }
 }
 
 /// `@required(action:)`: the action and Relay's dotted path for messages.
 #[derive(Debug, Clone, serde::Serialize)]
 pub struct RequiredPlan {
-    /// `NONE`, `LOG` or `THROW`.
-    pub action: String,
+    pub action: RequiredAction,
     pub path: String,
 }
 
-/// `@catch(to:)`: `RESULT` or `NULL`.
+/// What a `@required` field does when it is null.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize)]
+#[serde(rename_all = "UPPERCASE")]
+pub enum RequiredAction {
+    /// Nulls the enclosing lens.
+    None,
+    /// Nulls the enclosing lens and reports the path.
+    Log,
+    /// Throws at the field's read.
+    Throw,
+}
+
+/// `@catch(to:)`.
 #[derive(Debug, Clone, serde::Serialize)]
 pub struct CatchPlan {
-    pub to: String,
+    pub to: CatchTarget,
+}
+
+/// What a `@catch` reads an error as.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize)]
+#[serde(rename_all = "UPPERCASE")]
+pub enum CatchTarget {
+    /// A `Result` whose failure holds the errors.
+    Result,
+    /// Null.
+    Null,
 }
 
 /// The plan IR is built once per compilation and read by the emitters, so the
@@ -488,9 +575,9 @@ fn root_names(
     let mut errors = Vec::new();
     for (kind, store_name) in ROOT_NAMES {
         let root = match kind {
-            OperationKind::Query => schema.query_type(),
-            OperationKind::Mutation => schema.mutation_type(),
-            OperationKind::Subscription => schema.subscription_type(),
+            SyntaxOperationKind::Query => schema.query_type(),
+            SyntaxOperationKind::Mutation => schema.mutation_type(),
+            SyntaxOperationKind::Subscription => schema.subscription_type(),
         };
         let Some(root) = root else { continue };
         let name = schema.get_type_name(root).lookup().to_string();
@@ -715,13 +802,13 @@ fn lower(
             false,
         );
         let mut reader = reader;
-        if operation.kind == OperationKind::Mutation {
+        if operation.kind == SyntaxOperationKind::Mutation {
             key_by_response(&mut normalization);
             key_by_response(&mut reader);
         }
         // A mutation's payload and a subscription's event each arrive whole:
         // neither is read as a stream of parts.
-        if operation.kind != OperationKind::Query && has_deferred(&normalization) {
+        if operation.kind != SyntaxOperationKind::Query && has_deferred(&normalization) {
             lowering.diagnostics.borrow_mut().push(Diagnostic::error(
                 format!(
                     "`@defer` in the {} `{name}`: its response arrives in one part, so nothing can be deferred",
@@ -735,11 +822,10 @@ fn lower(
             source: operation.name.location.source_location().path().to_string(),
             document: document_index(operation.name.location),
             kind: match operation.kind {
-                OperationKind::Query => "query",
-                OperationKind::Mutation => "mutation",
-                OperationKind::Subscription => "subscription",
-            }
-            .to_string(),
+                SyntaxOperationKind::Query => OperationKind::Query,
+                SyntaxOperationKind::Mutation => OperationKind::Mutation,
+                SyntaxOperationKind::Subscription => OperationKind::Subscription,
+            },
             root_type,
             variables: lowering.variables(&operation.variable_definitions),
             id: format!("{:x}", md5::compute(text.as_bytes())),
@@ -995,10 +1081,22 @@ impl Lowering<'_> {
             })
     }
 
-    /// The edge directive or connection handle Relay attached to a field.
+    /// The edge directive Relay attached to a field as its handle; none for
+    /// a connection's handle, which `connection` reads.
     fn handle(&self, directives: &[graphql_ir::Directive]) -> Option<HandlePlan> {
         let directive = extract_handle_field_directives(directives).next()?;
         let values = extract_values_from_handle_field_directive(directive);
+        let name = values.handle.lookup();
+        if name == "connection" {
+            return None;
+        }
+        let Some(kind) = HandleKind::of(name) else {
+            self.internal(
+                &format!("Relay attached the handle `{name}`, which is no edge directive"),
+                directive.name.location,
+            );
+            return None;
+        };
         let arguments = values.handle_args.unwrap_or_default();
         let connections = arguments
             .named(common::ArgumentName("connections".intern()))
@@ -1017,7 +1115,7 @@ impl Lowering<'_> {
                 Some(value)
             });
         Some(HandlePlan {
-            kind: values.handle.lookup().to_string(),
+            kind,
             connections,
             edge_type_name: arguments
                 .named(common::ArgumentName("edgeTypeName".intern()))
@@ -1035,12 +1133,13 @@ impl Lowering<'_> {
         let metadata = RequiredMetadataDirective::find(directives)?;
         Some(RequiredPlan {
             action: match metadata.action {
-                RequiredAction::None => "NONE",
-                RequiredAction::Log => "LOG",
-                RequiredAction::Throw
-                | RequiredAction::DangerouslyThrowOnSemanticallyNullableField => "THROW",
-            }
-            .to_string(),
+                RelayRequiredAction::None => RequiredAction::None,
+                RelayRequiredAction::Log => RequiredAction::Log,
+                RelayRequiredAction::Throw
+                | RelayRequiredAction::DangerouslyThrowOnSemanticallyNullableField => {
+                    RequiredAction::Throw
+                }
+            },
             path: metadata.path.lookup().to_string(),
         })
     }
@@ -1050,10 +1149,9 @@ impl Lowering<'_> {
         let metadata = CatchMetadataDirective::find(directives)?;
         Some(CatchPlan {
             to: match metadata.to {
-                CatchTo::Result => "RESULT",
-                CatchTo::Null => "NULL",
-            }
-            .to_string(),
+                CatchTo::Result => CatchTarget::Result,
+                CatchTo::Null => CatchTarget::Null,
+            },
         })
     }
 
@@ -1175,18 +1273,14 @@ impl Lowering<'_> {
                                 value,
                             })
                         });
-                    let mut handle = self.handle(&field.directives);
+                    let handle = self.handle(&field.directives);
                     let mut connection = None;
                     let mut field_storage_key = storage_key(name, &field.arguments);
-                    if handle
-                        .as_ref()
-                        .is_some_and(|handle| handle.kind == "connection")
-                    {
-                        handle = None;
-                        let directive = extract_handle_field_directives(&field.directives)
-                            .next()
-                            .expect("the connection handle was found above");
-                        let values = extract_values_from_handle_field_directive(directive);
+                    let connection_handle = extract_handle_field_directives(&field.directives)
+                        .next()
+                        .map(extract_values_from_handle_field_directive)
+                        .filter(|values| values.handle.lookup() == "connection");
+                    if let Some(values) = connection_handle {
                         let handle_name = format!("__{}_connection", values.key.lookup());
                         // Relay's reader keeps only the filter arguments; the
                         // normalization keeps them all, and the connection

@@ -15,9 +15,9 @@ use crate::names::{
     DuplicateName, Kind, Reserved, Scope, capitalize, escape, lower_camel, slot_name,
 };
 use crate::pipeline::{
-    ArgumentValuePlan, CatchPlan, ConditionClass, ConnectionPlan, ConstantPlan, FragmentPlan,
-    HandlePlan, LookupPlan, OperationPlan, Plan, RefetchPlan, RequiredPlan, SelectionPlan,
-    StorageKeyPlan, TypeKind, VariablePlan,
+    ArgumentValuePlan, CatchPlan, CatchTarget, ConditionClass, ConnectionPlan, ConstantPlan,
+    FragmentPlan, HandlePlan, LookupPlan, OperationKind, OperationPlan, Plan, RefetchPlan,
+    RequiredAction, RequiredPlan, SelectionPlan, StorageKeyPlan, TypeKind, VariablePlan,
 };
 
 /// Generated Swift, grouped by the source file that declared the documents.
@@ -574,10 +574,10 @@ impl Emitter {
         );
         // Each kind is its own protocol: a query and a subscription value
         // carry the handle a view resolves them to, a mutation's is called.
-        let (protocol, resolution) = match operation.kind.as_str() {
-            "mutation" => ("Mutation", None),
-            "subscription" => ("Subscription", Some("SubscriptionHandle")),
-            _ => ("Query", Some("OperationHandle")),
+        let (protocol, resolution) = match operation.kind {
+            OperationKind::Mutation => ("Mutation", None),
+            OperationKind::Subscription => ("Subscription", Some("SubscriptionHandle")),
+            OperationKind::Query => ("Query", Some("OperationHandle")),
         };
         let _ = writeln!(
             output,
@@ -708,7 +708,7 @@ impl Emitter {
             operation.bubbles,
         );
 
-        if operation.kind == "mutation" {
+        if operation.kind == OperationKind::Mutation {
             output.push('\n');
             output.push_str("    public typealias Action = Baton.MutationAction<Self>\n\n");
             let path = format!("{}.OptimisticResponse", operation.name);
@@ -723,7 +723,7 @@ impl Emitter {
         }
         output.push_str("}\n\n");
 
-        if operation.kind == "mutation" {
+        if operation.kind == OperationKind::Mutation {
             let parameters = parameter_list(&operation.variables);
             let separator = if operation.variables.is_empty() {
                 ""
@@ -782,7 +782,7 @@ impl Emitter {
             }
         }
         scope.declare("Data", Kind::Type, "the operation's root lens");
-        if operation.kind == "mutation" {
+        if operation.kind == OperationKind::Mutation {
             scope.declare("Action", Kind::Type, "the mutation's action");
             scope.declare(
                 "OptimisticResponse",
@@ -1237,13 +1237,13 @@ impl Emitter {
                     required: Some(required),
                     storage_key,
                     ..
-                } if required.action != "THROW" => {
+                } if required.action != RequiredAction::Throw => {
                     let slot = self.slot_expression(type_name, type_is_abstract, storage_key);
                     let _ = writeln!(
                         output,
                         "{indent}    guard anchor.hasValue({slot}, path: {}, log: {}) else {{ return false }}",
                         swift_literal(&required.path),
-                        required.action == "LOG"
+                        required.action == RequiredAction::Log
                     );
                 }
                 SelectionPlan::Linked {
@@ -1252,14 +1252,14 @@ impl Emitter {
                     plural,
                     bubbles,
                     ..
-                } if required.action != "THROW" => {
+                } if required.action != RequiredAction::Throw => {
                     let slot = self.slot_expression(type_name, type_is_abstract, storage_key);
                     if *plural || !*bubbles {
                         let _ = writeln!(
                             output,
                             "{indent}    guard anchor.hasValue({slot}, path: {}, log: {}) else {{ return false }}",
                             swift_literal(&required.path),
-                            required.action == "LOG"
+                            required.action == RequiredAction::Log
                         );
                     } else {
                         let nested = member.lens_name();
@@ -1267,7 +1267,7 @@ impl Emitter {
                             output,
                             "{indent}    guard let child = anchor.linked({slot}), {nested}.satisfied(child) else {{ return anchor.requiredMissing(path: {}, log: {}) }}",
                             swift_literal(&required.path),
-                            required.action == "LOG"
+                            required.action == RequiredAction::Log
                         );
                     }
                 }
@@ -1350,7 +1350,7 @@ impl Emitter {
                         "{indent}    anchor.collectError({slot}, into: &errors)"
                     );
                     if let Some(required) = required
-                        && required.action == "THROW"
+                        && required.action == RequiredAction::Throw
                     {
                         let _ = writeln!(
                             output,
@@ -1379,7 +1379,7 @@ impl Emitter {
                         );
                     }
                     if let Some(required) = required
-                        && required.action == "THROW"
+                        && required.action == RequiredAction::Throw
                     {
                         let _ = writeln!(
                             output,
@@ -1657,14 +1657,14 @@ impl Emitter {
                             guards.push(format!("{nested_name}.satisfied(anchor)"));
                         }
                         let property = escape(member.accessor_name());
-                        match catch.as_ref().map(|catch| catch.to.as_str()) {
-                            Some("RESULT") if guards.is_empty() => {
+                        match catch.as_ref().map(|catch| catch.to) {
+                            Some(CatchTarget::Result) if guards.is_empty() => {
                                 let _ = writeln!(
                                     output,
                                     "{indent}@MainActor public var {property}: Result<{nested_name}, Baton.FieldErrors> {{ {nested_name}.caught(anchor) }}"
                                 );
                             }
-                            Some("RESULT") => {
+                            Some(CatchTarget::Result) => {
                                 let _ = writeln!(
                                     output,
                                     "{indent}@MainActor public var {property}: Result<{nested_name}, Baton.FieldErrors>? {{ {} ? {nested_name}.caught(anchor) : nil }}",
@@ -1829,10 +1829,10 @@ impl Emitter {
         let (reader, swift_type) = scalar_reader(field.base_kind, field.list);
         let required_reader = format!("required{}", capitalize(reader));
         match (
-            field.catch.map(|catch| catch.to.as_str()),
-            field.required.map(|required| required.action.as_str()),
+            field.catch.map(|catch| catch.to),
+            field.required.map(|required| required.action),
         ) {
-            (Some("RESULT"), _) => {
+            (Some(CatchTarget::Result), _) => {
                 let slot = self.slot_expression(type_name, type_is_abstract, storage_key);
                 let (value_type, read) = if field.non_null {
                     (
@@ -1852,7 +1852,7 @@ impl Emitter {
                     condition,
                 );
             }
-            (Some("NULL"), _) => {
+            (Some(CatchTarget::Null), _) => {
                 write_accessor(
                     output,
                     indent,
@@ -1863,7 +1863,7 @@ impl Emitter {
                     condition,
                 );
             }
-            (_, Some("THROW")) => {
+            (_, Some(RequiredAction::Throw)) => {
                 let slot = self.slot_expression(type_name, type_is_abstract, storage_key);
                 let path =
                     swift_literal(&field.required.map(|r| r.path.clone()).unwrap_or_default());
@@ -1926,12 +1926,12 @@ impl Emitter {
         } else {
             String::new()
         };
-        let catch_to = field.catch.map(|catch| catch.to.as_str());
-        let required_action = field.required.map(|required| required.action.as_str());
+        let catch_to = field.catch.map(|catch| catch.to);
+        let required_action = field.required.map(|required| required.action);
         let path = swift_literal(&field.required.map(|r| r.path.clone()).unwrap_or_default());
         if field.plural {
             match (catch_to, required_action) {
-                (Some("RESULT"), _) => {
+                (Some(CatchTarget::Result), _) => {
                     let slot = self.slot_expression(type_name, type_is_abstract, storage_key);
                     if field.non_null {
                         write_accessor(
@@ -1959,7 +1959,7 @@ impl Emitter {
                         );
                     }
                 }
-                (_, Some("THROW")) => {
+                (_, Some(RequiredAction::Throw)) => {
                     let slot = self.slot_expression(type_name, type_is_abstract, storage_key);
                     write_accessor(
                         output,
@@ -1971,7 +1971,7 @@ impl Emitter {
                         condition,
                     );
                 }
-                _ if field.non_null && catch_to != Some("NULL") => {
+                _ if field.non_null && catch_to != Some(CatchTarget::Null) => {
                     write_accessor(
                         output,
                         indent,
@@ -2000,14 +2000,14 @@ impl Emitter {
         // itself required, when its parent has checked it.
         let optional = !field.non_null
             || (field.bubbles && field.required.is_none())
-            || catch_to == Some("NULL");
+            || catch_to == Some(CatchTarget::Null);
         let guarded = if field.bubbles {
             format!(".flatMap {{ {nested}.satisfied($0) ? {nested}(anchor: $0) : nil }}")
         } else {
             format!(".map({nested}.init(anchor:))")
         };
         match (catch_to, required_action) {
-            (Some("RESULT"), _) => {
+            (Some(CatchTarget::Result), _) => {
                 let slot = self.slot_expression(type_name, type_is_abstract, storage_key);
                 let (value_type, read) = if optional {
                     (
@@ -2032,7 +2032,7 @@ impl Emitter {
                     condition,
                 );
             }
-            (_, Some("THROW")) => {
+            (_, Some(RequiredAction::Throw)) => {
                 let slot = self.slot_expression(type_name, type_is_abstract, storage_key);
                 write_accessor(
                     output,
@@ -2162,11 +2162,11 @@ impl Emitter {
         if flags.bubbles {
             guards.push(format!("{fragment}.satisfied({anchor})"));
         }
-        let catch_to = spread.catch.map(|catch| catch.to.as_str());
-        let catches = catch_to == Some("RESULT");
+        let catch_to = spread.catch.map(|catch| catch.to);
+        let catches = catch_to == Some(CatchTarget::Result);
         // `to: NULL` reads a fragment with field errors as nil, and then
         // never throws them.
-        let nulls = catch_to == Some("NULL");
+        let nulls = catch_to == Some(CatchTarget::Null);
         if nulls {
             guards.push(format!("{fragment}.fieldErrors({anchor}).isEmpty"));
         }
@@ -2474,7 +2474,7 @@ impl Emitter {
         };
         format!(
             "Baton.Handle(kind: .{}{connections}{edge_type})",
-            handle.kind
+            handle.kind.name()
         )
     }
 
