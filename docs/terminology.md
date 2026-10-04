@@ -341,7 +341,12 @@ generically.
 
 **Persisted id.** *Composition: document, transport.* Relay and the GraphQL
 community's word for the hash a server accepts in place of operation text.
-Here: emitted for every operation by default.
+Here: emitted for every operation by default, an MD5 of its text, and sent
+by no built-in transport. Sending it is *(planned)*: under Relay's
+`persistConfig` an artifact carries the id and no text, without it the text
+and no id, so the build decides which a request carries and no transport
+has a mode. See
+[the decision](decisions/an-operation-is-sent-as-text-or-id.md).
 
 **Artifact.** *Composition: document, lens, plan.* Everything the compiler
 emits for one source file: lens types, plans, ids. It opens with

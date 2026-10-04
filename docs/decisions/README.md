@@ -30,3 +30,4 @@ principle, the proof belongs here.
 - [The store owns roots and ages](the-store-owns-roots-and-ages.md)
 - [A fragment has one reading: a lens, or an `@inline` value](a-fragment-has-one-reading.md)
 - [A mapped scalar is a fallible read](a-mapped-scalar-is-a-fallible-read.md)
+- [An operation is sent as its text or its id, and the build decides](an-operation-is-sent-as-text-or-id.md)
