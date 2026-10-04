@@ -172,10 +172,11 @@ labelled argument per variable and an optional `optimistic:` response,
 Here: an observable object identified by typename plus key, holding interned
 slots, per-field errors and type-membership bits. Its values are sized by
 what was written, not by how many storage keys the type has, and the keys
-with arguments written to it are kept in a short list apart. A record
-`@deleteRecord` removed is *deleted*: links to it read as null, lists skip
-it, the bodies that read its fields and those that hold a link to it are
-told, and a payload that names it again revives it, told the same way; see
+rendered from variables written to it are kept in a short list apart. A
+record `@deleteRecord` removed is *deleted*: links to it read as null, lists
+skip it, the bodies that read its fields and those that hold a link to it
+are told, and a payload that names it again revives it, told the same way;
+see
 [A deletion is announced by its commit](decisions/deletion-is-announced-by-its-commit.md).
 
 **Key.** *Composition: schema, record.* The configured identity fields of a
@@ -190,13 +191,14 @@ has the id.
 its serialized arguments, the key under which a value is stored. Here:
 computed by the compiler and emitted as a constant; the process numbers each
 key on first use, and a record stores the value at that number, so a read
-through a constant hashes nothing. Keys with arguments, of which a session
-makes one per cursor and per id, are numbered apart from the type's other
-keys, and a record keeps those written to it in a list sorted by number, so
-they never widen the records they are not written to. A field read through
-an interface or union reads an *abstract slot*: its key's slot on each
-concrete type, resolved on that type's first read. A key with variables is
-resolved once per [owner](#generated). See
+through a constant hashes nothing. A key with variables is rendered once
+per [owner](#generated); the keys a session renders, one per cursor and per
+id, are numbered apart from the constants, with arguments or without, and a
+record keeps those written to it in a list sorted by number, so they never
+widen the records they are not written to. A key keeps the kind it is first
+met as, and its text one slot. A field read through an interface or union
+reads an *abstract slot*: its key's slot on each concrete type, resolved on
+that type's first read. See
 [Slots are numbered by the process](decisions/slots-are-numbered-by-the-process.md).
 
 **Invalidation channel.** *Concept: record.* Baton's word; Relay tells a

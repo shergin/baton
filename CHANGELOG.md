@@ -550,17 +550,24 @@ are expected and listed without apology.
   as `$self`, by its bare label: Swift warns about an escaped label at a
   call site, and a build that treats warnings as errors refused the
   generated code.
-- A key with arguments no longer widens the records of its type. Each
-  cursor and each id makes a key the process keeps, and keys were numbered
-  in one sequence per type, so a field first used after a long session was
-  numbered past all of them and every record given it made room for each.
-  In the bench's session of 2,000 lookups and 500 pages, 2,000 characters
-  given such a field took 28.2 MB and 5.86 ms to commit; they take 1.1 MB
-  and 1.71 ms. A record keeps the keys with arguments written to it in a
-  list of its own sorted by key, which a read of one searches by halves:
-  a root field with a variable argument reads in 31.6 ns against 28.8 ns,
-  and the newest of the session's 2,000 keys in 50.7 ns. `Slot.index` is
-  negative for such a key, and `Registry.slotCount` counts both kinds.
+- A key rendered from variables no longer widens the records of its type.
+  Each cursor and each id renders a key the process keeps, and keys were
+  numbered in one sequence per type, so a field first used after a long
+  session was numbered past all of them and every record given it made
+  room for each. In the bench's session of 2,000 lookups and 500 pages,
+  2,000 characters given such a field took 28.2 MB and 5.86 ms to commit;
+  they take 1.1 MB and 1.71 ms. A key the compiler emits as a constant,
+  with arguments or without, keeps its place among the type's slots; a
+  record keeps the rendered keys written to it in a list of its own
+  sorted by key, which a read of one searches by halves: a root field
+  with a variable argument reads in 31.6 ns against 28.8 ns, and the
+  newest of the session's 2,000 keys in 50.7 ns. A list of 5,000 rows,
+  each holding three fields with a variable, commits in 5.37 ms against
+  4.18 ms for three constants, and each row holds 112 bytes more. A key
+  keeps the kind it is first met as: a constant whose text was rendered
+  first, or that the image named first, is read through the search.
+  `Slot.index` is negative for a rendered key, and `Registry.slotCount`
+  counts both kinds.
 - One image in a process holds its file. A second `Persistence` made on a
   file another holds runs without the image, as over a database of another
   kind, and stops a debug build where it is made; it opened a second

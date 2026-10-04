@@ -10,13 +10,15 @@ public struct TypeID: Hashable, Sendable {
 }
 
 /// An interned storage key of one type: where a record stores the field's
-/// value. A key without arguments has a dense index, from zero, into the
-/// values every record of the type has room for. A key with arguments,
-/// which a cursor or an id makes of its own, has a negative index, numbered
-/// apart, and a record keeps it in a short list of the keys written to it,
-/// so the keys a session makes never widen the records of their type.
-/// Generated code holds slots as `static let`s; an app meets one only in
-/// the store's reports, which name it by its key.
+/// value. A key the compiler emitted as a constant, with arguments or
+/// without, has a dense index, from zero, into the values a record of the
+/// type makes room for; a program holds a bounded number of constants. A
+/// key rendered from variables, of which a session makes one per cursor
+/// and per id, has a negative index, numbered apart, and a record keeps it
+/// in a short list of the keys written to it, so the keys a session makes
+/// never widen the records of their type. Generated code holds slots as
+/// `static let`s; an app meets one only in the store's reports, which name
+/// it by its key.
 public struct Slot: Hashable, Sendable {
     @_spi(Generated) public let type: TypeID
     @_spi(Generated) public let index: Int32
@@ -31,11 +33,19 @@ public struct Slot: Hashable, Sendable {
 @MainActor
 public final class AbstractSlot {
     nonisolated public let storageKey: String
+    /// Whether the key was rendered from variables, which numbers it apart
+    /// on a type that has not met it.
+    nonisolated let rendered: Bool
     /// Slot index by `TypeID.raw`; `Int32.min` until the type is first read.
     private var indices: ContiguousArray<Int32> = []
 
-    nonisolated public init(_ storageKey: String) {
+    nonisolated public convenience init(_ storageKey: String) {
+        self.init(storageKey, rendered: false)
+    }
+
+    nonisolated init(_ storageKey: String, rendered: Bool) {
         self.storageKey = storageKey
+        self.rendered = rendered
     }
 
     /// The key's slot on `type`.
@@ -49,7 +59,7 @@ public final class AbstractSlot {
     }
 
     private func resolve(_ type: TypeID) -> Slot {
-        let slot = Registry.slot(type, storageKey)
+        let slot = Registry.slot(type, storageKey, rendered: rendered)
         let position = Int(type.raw)
         if position >= indices.count {
             indices.append(contentsOf: repeatElement(.min, count: position + 1 - indices.count))
@@ -66,12 +76,12 @@ public enum Registry {
     private struct State {
         var typeIDs: [String: TypeID] = [:]
         var typeNames: [String] = []
-        /// By type, the index of every key interned on it.
+        /// By type, the index of every key interned on it, of either kind.
         var slotIndices: [[String: Int32]] = []
-        /// By type, the keys without arguments by index.
+        /// By type, the keys of the dense slots, by index.
         var slotKeys: [[String]] = []
-        /// By type, the keys with arguments: the one at `n` has index `~n`.
-        var argumentKeys: [[String]] = []
+        /// By type, the keys numbered apart: the one at `n` has index `~n`.
+        var renderedKeys: [[String]] = []
         /// The slots of each connection type a plan describes, by `TypeID.raw`.
         var connections: [ConnectionSlots?] = []
     }
@@ -86,21 +96,29 @@ public enum Registry {
             state.typeNames.append(name)
             state.slotIndices.append([:])
             state.slotKeys.append([])
-            state.argumentKeys.append([])
+            state.renderedKeys.append([])
             return id
         }
     }
 
+    /// The slot of a key the compiler emitted as a constant: a dense one,
+    /// unless the process met the key's text first rendered or in the image.
     public static func slot(_ type: TypeID, _ storageKey: String) -> Slot {
+        slot(type, storageKey, rendered: false)
+    }
+
+    /// The slot of a storage key on a type. A key the type has not met is
+    /// numbered apart when it was rendered from variables, and densely
+    /// otherwise. The kind is decided then, once: a key's text has one slot
+    /// in a process, whether a constant or a rendering meets it later.
+    static func slot(_ type: TypeID, _ storageKey: String, rendered: Bool) -> Slot {
         state.withLock { state in
             let table = Int(type.raw)
             if let index = state.slotIndices[table][storageKey] { return Slot(type: type, index: index) }
-            // Decided by the key's text, so that a constant, a key rendered
-            // from variables and a name read from the image agree.
             let index: Int32
-            if storageKey.utf8.contains(UInt8(ascii: "(")) {
-                index = ~Int32(state.argumentKeys[table].count)
-                state.argumentKeys[table].append(storageKey)
+            if rendered {
+                index = ~Int32(state.renderedKeys[table].count)
+                state.renderedKeys[table].append(storageKey)
             } else {
                 index = Int32(state.slotKeys[table].count)
                 state.slotKeys[table].append(storageKey)
@@ -122,14 +140,14 @@ public enum Registry {
     public static func storageKey(_ slot: Slot) -> String {
         state.withLock { state in
             let table = Int(slot.type.raw)
-            return slot.index >= 0 ? state.slotKeys[table][Int(slot.index)] : state.argumentKeys[table][Int(~slot.index)]
+            return slot.index >= 0 ? state.slotKeys[table][Int(slot.index)] : state.renderedKeys[table][Int(~slot.index)]
         }
     }
 
-    /// How many storage keys have been interned on the type so far, with
-    /// arguments or without.
+    /// How many storage keys have been interned on the type so far, of
+    /// either kind.
     public static func slotCount(_ type: TypeID) -> Int {
-        state.withLock { $0.slotKeys[Int(type.raw)].count + $0.argumentKeys[Int(type.raw)].count }
+        state.withLock { $0.slotKeys[Int(type.raw)].count + $0.renderedKeys[Int(type.raw)].count }
     }
 
     /// Keeps the slots a plan resolved for a connection type, under the type.

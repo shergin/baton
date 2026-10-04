@@ -740,6 +740,481 @@
           ]
         }
       ]
+    },
+    {
+      "name": "TestNoteCounts",
+      "source": "swift/Tests/BatonTests/KeyDocuments.swift",
+      "document": 1,
+      "kind": "query",
+      "root_type": "Query",
+      "variables": [
+        {
+          "name": "page",
+          "type_name": "Int",
+          "base_type": "Int",
+          "base_kind": "int",
+          "non_null": false,
+          "list": false,
+          "default_value": null
+        },
+        {
+          "name": "count",
+          "type_name": "Int",
+          "base_type": "Int",
+          "base_kind": "int",
+          "non_null": false,
+          "list": false,
+          "default_value": null
+        }
+      ],
+      "text": "query TestNoteCounts(\n  $page: Int\n  $count: Int\n) {\n  characters(page: $page) {\n    results {\n      id\n      name\n      pinned: notes(first: 97) {\n        totalCount\n      }\n      recent: notes(first: $count) {\n        totalCount\n      }\n    }\n  }\n}",
+      "id": "fd6f3ecc66f1ef8fe25827eed8595243",
+      "throws_on_field_error": false,
+      "bubbles": false,
+      "has_deferred": false,
+      "error_behavior": null,
+      "reader": [
+        {
+          "kind": "linked",
+          "name": "characters",
+          "alias": null,
+          "type_name": "Characters",
+          "base_type": "Characters",
+          "base_kind": "object",
+          "non_null": false,
+          "semantic_non_null": false,
+          "plural": false,
+          "has_id": false,
+          "is_abstract": false,
+          "possible_types": [
+            "Characters"
+          ],
+          "storage_key": {
+            "name": "characters",
+            "arguments": [
+              {
+                "name": "page",
+                "value": {
+                  "kind": "variable",
+                  "value": "page"
+                }
+              }
+            ]
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "linked",
+              "name": "results",
+              "alias": null,
+              "type_name": "[Character]",
+              "base_type": "Character",
+              "base_kind": "object",
+              "non_null": false,
+              "semantic_non_null": false,
+              "plural": true,
+              "has_id": true,
+              "is_abstract": false,
+              "possible_types": [
+                "Character"
+              ],
+              "storage_key": {
+                "name": "results",
+                "arguments": []
+              },
+              "lookup": null,
+              "connection": null,
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type_name": "ID",
+                  "base_type": "ID",
+                  "base_kind": "id",
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "list": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "name",
+                  "alias": null,
+                  "type_name": "String",
+                  "base_type": "String",
+                  "base_kind": "string",
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "list": false,
+                  "storage_key": {
+                    "name": "name",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "linked",
+                  "name": "notes",
+                  "alias": "pinned",
+                  "type_name": "NoteConnection!",
+                  "base_type": "NoteConnection",
+                  "base_kind": "object",
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "plural": false,
+                  "has_id": false,
+                  "is_abstract": false,
+                  "possible_types": [
+                    "NoteConnection"
+                  ],
+                  "storage_key": {
+                    "name": "notes",
+                    "arguments": [
+                      {
+                        "name": "first",
+                        "value": {
+                          "kind": "constant",
+                          "value": {
+                            "kind": "int",
+                            "value": 97
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "lookup": null,
+                  "connection": null,
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false,
+                  "bubbles": false,
+                  "selections": [
+                    {
+                      "kind": "scalar",
+                      "name": "totalCount",
+                      "alias": null,
+                      "type_name": "Int!",
+                      "base_type": "Int",
+                      "base_kind": "int",
+                      "non_null": true,
+                      "semantic_non_null": false,
+                      "list": false,
+                      "storage_key": {
+                        "name": "totalCount",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    }
+                  ]
+                },
+                {
+                  "kind": "linked",
+                  "name": "notes",
+                  "alias": "recent",
+                  "type_name": "NoteConnection!",
+                  "base_type": "NoteConnection",
+                  "base_kind": "object",
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "plural": false,
+                  "has_id": false,
+                  "is_abstract": false,
+                  "possible_types": [
+                    "NoteConnection"
+                  ],
+                  "storage_key": {
+                    "name": "notes",
+                    "arguments": [
+                      {
+                        "name": "first",
+                        "value": {
+                          "kind": "variable",
+                          "value": "count"
+                        }
+                      }
+                    ]
+                  },
+                  "lookup": null,
+                  "connection": null,
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false,
+                  "bubbles": false,
+                  "selections": [
+                    {
+                      "kind": "scalar",
+                      "name": "totalCount",
+                      "alias": null,
+                      "type_name": "Int!",
+                      "base_type": "Int",
+                      "base_kind": "int",
+                      "non_null": true,
+                      "semantic_non_null": false,
+                      "list": false,
+                      "storage_key": {
+                        "name": "totalCount",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "normalization": [
+        {
+          "kind": "linked",
+          "name": "characters",
+          "alias": null,
+          "type_name": "Characters",
+          "base_type": "Characters",
+          "base_kind": "object",
+          "non_null": false,
+          "semantic_non_null": false,
+          "plural": false,
+          "has_id": false,
+          "is_abstract": false,
+          "possible_types": [
+            "Characters"
+          ],
+          "storage_key": {
+            "name": "characters",
+            "arguments": [
+              {
+                "name": "page",
+                "value": {
+                  "kind": "variable",
+                  "value": "page"
+                }
+              }
+            ]
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "linked",
+              "name": "results",
+              "alias": null,
+              "type_name": "[Character]",
+              "base_type": "Character",
+              "base_kind": "object",
+              "non_null": false,
+              "semantic_non_null": false,
+              "plural": true,
+              "has_id": true,
+              "is_abstract": false,
+              "possible_types": [
+                "Character"
+              ],
+              "storage_key": {
+                "name": "results",
+                "arguments": []
+              },
+              "lookup": null,
+              "connection": null,
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type_name": "ID",
+                  "base_type": "ID",
+                  "base_kind": "id",
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "list": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "name",
+                  "alias": null,
+                  "type_name": "String",
+                  "base_type": "String",
+                  "base_kind": "string",
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "list": false,
+                  "storage_key": {
+                    "name": "name",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "linked",
+                  "name": "notes",
+                  "alias": "pinned",
+                  "type_name": "NoteConnection!",
+                  "base_type": "NoteConnection",
+                  "base_kind": "object",
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "plural": false,
+                  "has_id": false,
+                  "is_abstract": false,
+                  "possible_types": [
+                    "NoteConnection"
+                  ],
+                  "storage_key": {
+                    "name": "notes",
+                    "arguments": [
+                      {
+                        "name": "first",
+                        "value": {
+                          "kind": "constant",
+                          "value": {
+                            "kind": "int",
+                            "value": 97
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "lookup": null,
+                  "connection": null,
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false,
+                  "bubbles": false,
+                  "selections": [
+                    {
+                      "kind": "scalar",
+                      "name": "totalCount",
+                      "alias": null,
+                      "type_name": "Int!",
+                      "base_type": "Int",
+                      "base_kind": "int",
+                      "non_null": true,
+                      "semantic_non_null": false,
+                      "list": false,
+                      "storage_key": {
+                        "name": "totalCount",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    }
+                  ]
+                },
+                {
+                  "kind": "linked",
+                  "name": "notes",
+                  "alias": "recent",
+                  "type_name": "NoteConnection!",
+                  "base_type": "NoteConnection",
+                  "base_kind": "object",
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "plural": false,
+                  "has_id": false,
+                  "is_abstract": false,
+                  "possible_types": [
+                    "NoteConnection"
+                  ],
+                  "storage_key": {
+                    "name": "notes",
+                    "arguments": [
+                      {
+                        "name": "first",
+                        "value": {
+                          "kind": "variable",
+                          "value": "count"
+                        }
+                      }
+                    ]
+                  },
+                  "lookup": null,
+                  "connection": null,
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false,
+                  "bubbles": false,
+                  "selections": [
+                    {
+                      "kind": "scalar",
+                      "name": "totalCount",
+                      "alias": null,
+                      "type_name": "Int!",
+                      "base_type": "Int",
+                      "base_kind": "int",
+                      "non_null": true,
+                      "semantic_non_null": false,
+                      "list": false,
+                      "storage_key": {
+                        "name": "totalCount",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ]
 }

@@ -125,3 +125,103 @@ query TestKeys(
     }
 }
 
+/// Operation value for `query TestNoteCounts`.
+nonisolated public struct TestNoteCounts: Baton.Query {
+    public var page: Int?
+    public var count: Int?
+    public var resolution: Baton.OperationHandle<Self>? = nil
+
+    public init(page: Int? = nil, count: Int? = nil) {
+        self.page = page
+        self.count = count
+    }
+
+    public static let name = "TestNoteCounts"
+    public static let persistedID = "fd6f3ecc66f1ef8fe25827eed8595243"
+    public static let text = #"""
+query TestNoteCounts(
+  $page: Int
+  $count: Int
+) {
+  characters(page: $page) {
+    results {
+      id
+      name
+      pinned: notes(first: 97) {
+        totalCount
+      }
+      recent: notes(first: $count) {
+        totalCount
+      }
+    }
+  }
+}
+"""#
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["page": Baton.Variable(page), "count": Baton.Variable(count)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.page == rhs.page && lhs.count == rhs.count
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(page)
+        hasher.combine(count)
+    }
+
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
+            .linked("characters", key: .dynamic(Slots.Query.characters_5517f9), plural: false, selection: Baton.Selection(type: Types.Characters, hasID: false, abstract: false, fields: [
+                .linked("results", key: .fixed(Slots.Characters.results), plural: true, selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                    .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+                    .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
+                    .linked("pinned", key: .fixed(Slots.Character.notes_8f8f78), plural: false, selection: Baton.Selection(type: Types.NoteConnection, hasID: false, abstract: false, fields: [
+                        .scalar("totalCount", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+                    ])),
+                    .linked("recent", key: .dynamic(Slots.Character.notes_041c11), plural: false, selection: Baton.Selection(type: Types.NoteConnection, hasID: false, abstract: false, fields: [
+                        .scalar("totalCount", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+                    ])),
+                ])),
+            ])),
+        ]))
+
+    nonisolated public struct Data: Baton.Lens {
+        @_spi(Generated) public let anchor: Baton.Anchor
+        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Query"
+        @MainActor public var characters: Characters? { anchor.linked(anchor.owner.slot(Slots.Query.characters_5517f9)).map(Characters.init(anchor:)) }
+
+        nonisolated public struct Characters: Baton.Lens {
+            @_spi(Generated) public let anchor: Baton.Anchor
+            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Characters"
+            @MainActor public var results: Baton.List<Results>? { anchor.list(Slots.Characters.results) }
+
+            nonisolated public struct Results: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                public static let typeName = "Character"
+                @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+                @MainActor public var name: String? { anchor.string(Slots.Character.name) }
+                @MainActor public var pinned: Pinned { Pinned(anchor: anchor.requiredLinked(Slots.Character.notes_8f8f78, type: Types.NoteConnection)) }
+                @MainActor public var recent: Recent { Recent(anchor: anchor.requiredLinked(anchor.owner.slot(Slots.Character.notes_041c11), type: Types.NoteConnection)) }
+
+                nonisolated public struct Pinned: Baton.Lens {
+                    @_spi(Generated) public let anchor: Baton.Anchor
+                    @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                    public static let typeName = "NoteConnection"
+                    @MainActor public var totalCount: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
+                }
+
+                nonisolated public struct Recent: Baton.Lens {
+                    @_spi(Generated) public let anchor: Baton.Anchor
+                    @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                    public static let typeName = "NoteConnection"
+                    @MainActor public var totalCount: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
+                }
+            }
+        }
+    }
+}
+

@@ -191,13 +191,15 @@ struct SpineTests {
         #expect(counter.fired == 0, "slot \(sibling.index) and the name's slot \(name.index) are channels apart")
     }
 
-    @Test("keys with arguments, one per cursor, leave the dense numbering of their type alone, so a field first used after a hundred of them is stored beside the type's other fields")
-    func keysWithArgumentsAreNumberedApart() throws {
+    @Test("keys rendered from variables, one per cursor, leave the dense numbering of their type alone, so a field first used after a hundred of them is stored beside the type's other fields")
+    func renderedKeysAreNumberedApart() throws {
         // A type of its own, so that no other test numbers keys on it.
         let paged = Registry.type("Paged_" + UUID().uuidString.replacingOccurrences(of: "-", with: ""))
         let query = Registry.type("Query")
         let id = Registry.slot(paged, "id")
-        let pages = (0..<100).map { Registry.slot(paged, #"items(after:"c\#($0)")"#) }
+        let items = DynamicKey(paged, [.literal("items(after:"), .variable("cursor"), .literal(")")])
+        func cursor(_ number: Int) -> Variables { Variables(["cursor": .string("c\(number)")]) }
+        let pages = (0..<100).map { Owner(variables: cursor($0)).slot(items) }
         let late = Registry.slot(paged, "late")
         #expect(id.index == 0)
         #expect(late.index == 1, "the dense keys of the type are id and late, whatever the cursors made")
@@ -208,9 +210,9 @@ struct SpineTests {
             .linked("paged", key: .fixed(link), plural: false, selection: Selection(type: paged, hasID: true, fields: [
                 .scalar("id", key: .fixed(id), kind: .string, list: false),
                 .scalar("late", key: .fixed(late), kind: .string, list: false),
-                .scalar("items", key: .fixed(pages[57]), kind: .string, list: false),
+                .scalar("items", key: .dynamic(items), kind: .string, list: false),
             ])),
-        ])).resolve(.none)
+        ])).resolve(cursor(57))
         let store = Store()
         store.commit(try Ingest.normalize(Data(#"{"data":{"paged":{"id":"1","late":"read","items":"page 57"}}}"#.utf8), plan: plan))
         let record = try #require(store.existing(paged.name + ":1"))
@@ -219,20 +221,23 @@ struct SpineTests {
         #expect(record.read(pages[56]) == .missing)
     }
 
-    @Test("root fields with arguments read back their own values whatever order they arrive in, and a commit of one wakes no body that read another")
-    func rootFieldsWithArgumentsKeepTheirOwnValues() throws {
+    @Test("root fields rendered from variables read back their own values whatever order they arrive in, and a commit of one wakes no body that read another")
+    func renderedRootFieldsKeepTheirOwnValues() throws {
         let query = Registry.type("Query")
         let prefix = "spine_" + UUID().uuidString.replacingOccurrences(of: "-", with: "")
+        let key = DynamicKey(query, [.literal(prefix + "(n:"), .variable("n"), .literal(")")])
+        func variables(_ number: Int) -> Variables { Variables(["n": .int(number)]) }
         // Numbered in this order, written in the reverse one.
-        let keys = (0..<10).map { Registry.slot(query, "\(prefix)(n:\($0))") }
+        let keys = (0..<10).map { Owner(variables: variables($0)).slot(key) }
+        let plan = Plan(root: Selection(type: query, hasID: false, fields: [
+            .scalar("field", key: .dynamic(key), kind: .string, list: false),
+        ]))
         func commit(_ number: Int, _ value: String, into store: Store) throws {
-            let plan = Plan(root: Selection(type: query, hasID: false, fields: [
-                .scalar("field", key: .fixed(keys[number]), kind: .string, list: false),
-            ])).resolve(.none)
-            store.commit(try Ingest.normalize(Data(#"{"data":{"field":"\#(value)"}}"#.utf8), plan: plan))
+            store.commit(try Ingest.normalize(Data(#"{"data":{"field":"\#(value)"}}"#.utf8), plan: plan.resolve(variables(number))))
         }
         let store = Store()
         for number in (0..<10).reversed() { try commit(number, "value \(number)", into: store) }
+        #expect(keys.allSatisfy { $0.index < 0 }, "every rendering is numbered apart")
         #expect(keys.map { store.root.read($0) } == (0..<10).map { Value.string("value \($0)") })
 
         final class Counter: @unchecked Sendable { var fired = 0 }
@@ -244,6 +249,51 @@ struct SpineTests {
         #expect(counter.fired == 1)
         #expect(store.root.read(keys[3]) == .string("changed"))
         #expect(store.root.read(keys[4]) == .string("changed"))
+    }
+
+    @Test("a field with constant arguments is numbered beside its type's fields without arguments and one with a variable apart, so the rows of a list keep the first among their dense values")
+    func constantArgumentsAreNumberedDensely() throws {
+        let operation = TestNoteCounts(page: 1, count: 98)
+        let store = Store()
+        store.commit(try Ingest.normalize(fixture("note-counts-1"), plan: TestNoteCounts.plan.resolve(operation.variables)))
+        let character = Registry.type("Character")
+        // The slot the generated constant holds, and the one the commit's
+        // owner rendered, which a lookup by its text finds.
+        let pinned = Registry.slot(character, "notes(first:97)")
+        let recent = Registry.slot(character, "notes(first:98)")
+        #expect(pinned.index >= 0, "a constant is a dense slot, with arguments or without")
+        #expect(recent.index < 0, "a key rendered from a variable is numbered apart")
+
+        let data = TestNoteCounts.Data(anchor: Anchor(record: store.root, variables: operation.variables, store: store))
+        let rows = try #require(data.characters?.results)
+        #expect(rows.map(\.pinned.totalCount) == [3, 0])
+        #expect(rows.map(\.recent.totalCount) == [3, 0])
+    }
+
+    @Test("a key keeps one slot in a process whichever way it is met first: a rendering of a constant's key reads what the constant wrote, and a constant met after a rendering reads what the rendering wrote")
+    func aKeyHasOneSlotWhicheverWayItIsMet() throws {
+        let store = Store()
+        let written = TestNoteCounts(page: 1, count: 99)
+        store.commit(try Ingest.normalize(fixture("note-counts-1"), plan: TestNoteCounts.plan.resolve(written.variables)))
+
+        // The plan met `notes(first:97)` as its constant; a count of 97
+        // renders the same key.
+        let rendering = TestNoteCounts(page: 1, count: 97)
+        let data = TestNoteCounts.Data(anchor: Anchor(record: store.root, variables: rendering.variables, store: store))
+        let rick = try #require(data.characters?.results?.first)
+        #expect(rick.recent.totalCount == 3, "the rendering reads the constant's slot")
+
+        // The commit rendered `notes(first:99)`; a constant of that text met
+        // now is the same slot, numbered apart.
+        let character = Registry.type("Character")
+        let constant = Registry.slot(character, "notes(first:99)")
+        #expect(constant.index < 0)
+        let record = try #require(store.existing("Character:1"))
+        guard case .ref(let connection) = record.read(constant) else {
+            Issue.record("the constant reads no link: \(record.read(constant))")
+            return
+        }
+        #expect(connection.read(Registry.slot(connection.type, "totalCount")) == .int(3))
     }
 
     @Test("a lens read never writes: a root field the store lacks reads nil until the check binds its lookup to the cached entity")

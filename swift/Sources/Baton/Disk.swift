@@ -95,11 +95,12 @@ final class Disk: @unchecked Sendable {
     private var ids: [String: Int32] = [:]
     /// Names interned since the last transaction that committed.
     private var unwritten: [Int32] = []
-    /// By type, then by slot index: the name id, -1 when not asked yet, -2
-    /// for a slot that is never written.
+    /// By type, then by the index of a dense slot: the name id, -1 when not
+    /// asked yet, -2 for a slot that is never written. The file holds names
+    /// only, so which kind a slot is stays this process's own.
     private var slotNames: [[Int32]] = []
-    /// The same for keys with arguments, by `~index`.
-    private var argumentNames: [[Int32]] = []
+    /// The same for the slots numbered apart, by `~index`.
+    private var renderedNames: [[Int32]] = []
     /// By type: the name id of the type's name, or -1.
     private var typeNames: [Int32] = []
     /// By type, then by name id: the slot index, or `Int32.min`.
@@ -291,7 +292,7 @@ final class Disk: @unchecked Sendable {
         ids.removeAll()
         unwritten.removeAll()
         slotNames.removeAll()
-        argumentNames.removeAll()
+        renderedNames.removeAll()
         typeNames.removeAll()
         slots.removeAll()
         types.removeAll()
@@ -467,6 +468,11 @@ final class Disk: @unchecked Sendable {
     }
 
     /// The slot a stored name is on a type, interning it for this process.
+    /// A name the process has met keeps its slot, of either kind. One it has
+    /// not met is taken as rendered when it has arguments: the file cannot
+    /// tell a constant from a key rendered from variables, and a key
+    /// numbered apart widens no record. A constant met later shares the
+    /// slot and reads it through the record's search.
     func slot(_ name: Int, on type: TypeID) -> Slot? {
         guard name >= 0, name < names.count else { return nil }
         let table = Int(type.raw)
@@ -474,7 +480,8 @@ final class Disk: @unchecked Sendable {
         if name >= slots[table].count { slots[table].append(contentsOf: repeatElement(.min, count: names.count - slots[table].count)) }
         var index = slots[table][name]
         if index == .min {
-            index = Registry.slot(type, names[name]).index
+            let storageKey = names[name]
+            index = Registry.slot(type, storageKey, rendered: storageKey.utf8.contains(UInt8(ascii: "("))).index
             slots[table][name] = index
         }
         return Slot(type: type, index: index)
@@ -554,8 +561,8 @@ final class Disk: @unchecked Sendable {
         for index in snapshot.values.indices {
             appendCell(Slot(type: record.type, index: Int32(index)), snapshot.values[index], snapshot.errors)
         }
-        for position in snapshot.argumentIDs.indices {
-            appendCell(Slot(type: record.type, index: ~snapshot.argumentIDs[position]), snapshot.argumentValues[position], snapshot.errors)
+        for position in snapshot.renderedIDs.indices {
+            appendCell(Slot(type: record.type, index: ~snapshot.renderedIDs[position]), snapshot.renderedValues[position], snapshot.errors)
         }
         return upsert(prepared.upsertRecord, record.key)
     }
@@ -641,7 +648,7 @@ final class Disk: @unchecked Sendable {
     /// The name id of a slot's storage key; negative for a slot that is never
     /// written.
     private func name(of slot: Slot) -> Int32 {
-        if slot.index < 0 { return name(of: slot, at: Int(~slot.index), in: &argumentNames) }
+        if slot.index < 0 { return name(of: slot, at: Int(~slot.index), in: &renderedNames) }
         return name(of: slot, at: Int(slot.index), in: &slotNames)
     }
 

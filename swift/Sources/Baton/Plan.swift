@@ -33,6 +33,12 @@ public enum StorageKey: Sendable {
     case fixed(Slot)
     /// A key with variables, e.g. `characters(page:$page)`.
     case dynamic(DynamicKey)
+
+    /// Whether the key is rendered from variables, and so numbered apart.
+    var isRendered: Bool {
+        if case .dynamic = self { return true }
+        return false
+    }
 }
 
 /// A root field that returns an entity by one of its arguments. When the link
@@ -361,6 +367,7 @@ public final class Selection: Sendable {
                     let key = Selection.render(connection.key, variables)
                     return ResolvedConnection(
                         storageKey: key,
+                        rendered: connection.key.isRendered,
                         slot: Selection.slot(connection.key, key, on: type),
                         slots: connection.slots,
                         mode: Selection.mode(connection, variables)
@@ -372,6 +379,7 @@ public final class Selection: Sendable {
             responseKey: field.responseKey,
             keyBytes: field.keyBytes,
             storageKey: storageKey,
+            rendered: field.key.isRendered,
             slot: Selection.slot(field.key, storageKey, on: type),
             kind: kind,
             edit: field.edit.map { edit in
@@ -401,7 +409,8 @@ public final class Selection: Sendable {
     private static func slot(_ key: StorageKey, _ storageKey: String, on type: TypeID) -> Slot {
         switch key {
         case .fixed(let slot) where slot.type == type: slot
-        case .fixed, .dynamic: Registry.slot(type, storageKey)
+        case .fixed: Registry.slot(type, storageKey)
+        case .dynamic: Registry.slot(type, storageKey, rendered: true)
         }
     }
 
@@ -452,13 +461,16 @@ package struct LookupKey: Sendable {
 /// field's kind stays one word wide and the ingest copies nothing per key.
 package final class ResolvedConnection: Sendable {
     package let storageKey: String
+    /// Whether the client key was rendered from variables.
+    let rendered: Bool
     /// The client slot on the variant's concrete type.
     package let slot: Slot
     package let slots: ConnectionSlots
     package let mode: ConnectionMode
 
-    init(storageKey: String, slot: Slot, slots: ConnectionSlots, mode: ConnectionMode) {
+    init(storageKey: String, rendered: Bool, slot: Slot, slots: ConnectionSlots, mode: ConnectionMode) {
         self.storageKey = storageKey
+        self.rendered = rendered
         self.slot = slot
         self.slots = slots
         self.mode = mode
@@ -565,6 +577,9 @@ package struct ResolvedField: Sendable {
     package let responseKey: String
     let keyBytes: [UInt8]
     package let storageKey: String
+    /// Whether the key was rendered from variables, which numbers it apart
+    /// on a concrete type that has not met it.
+    let rendered: Bool
     /// The slot on the variant's concrete type.
     package let slot: Slot
     package let kind: Kind
@@ -575,10 +590,11 @@ package struct ResolvedField: Sendable {
     package let caught: Bool
     let isTypename: Bool
 
-    init(responseKey: String, keyBytes: [UInt8], storageKey: String, slot: Slot, kind: Kind, edit: ResolvedEdit?, deferred: String?, caught: Bool) {
+    init(responseKey: String, keyBytes: [UInt8], storageKey: String, rendered: Bool, slot: Slot, kind: Kind, edit: ResolvedEdit?, deferred: String?, caught: Bool) {
         self.responseKey = responseKey
         self.keyBytes = keyBytes
         self.storageKey = storageKey
+        self.rendered = rendered
         self.slot = slot
         self.kind = kind
         self.edit = edit
@@ -589,7 +605,7 @@ package struct ResolvedField: Sendable {
 
     /// The same field as the incremental part delivers it: no longer deferred.
     func undeferred() -> ResolvedField {
-        ResolvedField(responseKey: responseKey, keyBytes: keyBytes, storageKey: storageKey, slot: slot, kind: kind, edit: edit, deferred: nil, caught: caught)
+        ResolvedField(responseKey: responseKey, keyBytes: keyBytes, storageKey: storageKey, rendered: rendered, slot: slot, kind: kind, edit: edit, deferred: nil, caught: caught)
     }
 
     /// The same field on another concrete type: its slot, and its
@@ -600,9 +616,25 @@ package struct ResolvedField: Sendable {
         case .scalar: kind
         case .linked(let child, let plural, let lookupKey, let connection):
             .linked(child, plural: plural, lookupKey: lookupKey, connection: connection.map { connection in
-                ResolvedConnection(storageKey: connection.storageKey, slot: Registry.slot(type, connection.storageKey), slots: connection.slots, mode: connection.mode)
+                ResolvedConnection(
+                    storageKey: connection.storageKey,
+                    rendered: connection.rendered,
+                    slot: Registry.slot(type, connection.storageKey, rendered: connection.rendered),
+                    slots: connection.slots,
+                    mode: connection.mode
+                )
             })
         }
-        return ResolvedField(responseKey: responseKey, keyBytes: keyBytes, storageKey: storageKey, slot: Registry.slot(type, storageKey), kind: kind, edit: edit, deferred: deferred, caught: caught)
+        return ResolvedField(
+            responseKey: responseKey,
+            keyBytes: keyBytes,
+            storageKey: storageKey,
+            rendered: rendered,
+            slot: Registry.slot(type, storageKey, rendered: rendered),
+            kind: kind,
+            edit: edit,
+            deferred: deferred,
+            caught: caught
+        )
     }
 }

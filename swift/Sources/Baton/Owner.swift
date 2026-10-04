@@ -35,7 +35,7 @@ public final class Owner {
     @inline(__always)
     public func slot(_ key: DynamicKey) -> Slot {
         for entry in slots where entry.key === key { return entry.slot }
-        let slot = Registry.slot(key.type, key.render(variables))
+        let slot = Registry.slot(key.type, key.render(variables), rendered: true)
         slots.append((key, slot))
         return slot
     }
@@ -44,7 +44,7 @@ public final class Owner {
     /// interface or union.
     public func slot(_ key: DynamicKey, on type: TypeID) -> Slot {
         for entry in abstractSlots where entry.key === key { return entry.slot.on(type) }
-        let slot = AbstractSlot(key.render(variables))
+        let slot = AbstractSlot(key.render(variables), rendered: true)
         abstractSlots.append((key, slot))
         return slot.on(type)
     }

@@ -97,9 +97,9 @@ package struct ChangeSet: Sendable {
         var kept = 0
         entries.withUnsafeBufferPointer { source in
             // The highest dense index, and the highest `~index` of a key
-            // with arguments, which the tables below place after the dense.
+            // numbered apart, which the tables below place after the dense.
             var highest: Int32 = -1
-            var highestArgument: Int32 = -1
+            var highestRendered: Int32 = -1
             var counts = ContiguousArray<Int32>(repeating: 0, count: recordCount + 1)
             counts.withUnsafeMutableBufferPointer { counts in
                 for entry in source {
@@ -107,8 +107,8 @@ package struct ChangeSet: Sendable {
                     let index = entry.slot.index
                     if index > highest {
                         highest = index
-                    } else if index < 0, ~index > highestArgument {
-                        highestArgument = ~index
+                    } else if index < 0, ~index > highestRendered {
+                        highestRendered = ~index
                     }
                 }
                 for index in 0..<recordCount { counts[index &+ 1] &+= counts[index] }
@@ -125,7 +125,7 @@ package struct ChangeSet: Sendable {
                 initialized = total
             }
             // The record that last kept each slot, and where it kept it.
-            let width = Int(highest) + 1 + Int(highestArgument) + 1
+            let width = Int(highest) + 1 + Int(highestRendered) + 1
             var keeper = ContiguousArray<Int32>(repeating: -1, count: width)
             var place = ContiguousArray<Int32>(repeating: 0, count: width)
             sorted.withUnsafeMutableBufferPointer { sorted in

@@ -380,6 +380,9 @@ func run() async throws {
     print("incremental delivery: a multipart response of \(MultipartStub.parts) parts, \(MultipartStub.body.count / 1024) KB")
     try await multipartBench()
 
+    print("keys with arguments: 5,000 rows, each an id and three fields under keys of one kind")
+    try argumentBench()
+
     print("long session: 2,000 root lookups by id and 500 pages after cursors")
     try longSessionBench()
 }
@@ -823,6 +826,57 @@ func scrollBench(data: Data) async throws {
     report.forEach { print($0) }
     collectionCost.sort()
     print("  collection pass: best \(String(format: "%.2f", collectionCost[0])) ms, median \(String(format: "%.2f", collectionCost[collectionCost.count / 2])) ms, worst \(String(format: "%.2f", collectionCost.last!)) ms")
+}
+
+/// Bytes the default malloc zone has handed out and not had back: finer
+/// than the footprint, for a cost per record.
+func allocatedBytes() -> Int {
+    var statistics = malloc_statistics_t()
+    malloc_zone_statistics(nil, &statistics)
+    return Int(statistics.size_in_use)
+}
+
+/// What a key's kind costs the records of a list: the commit of 5,000 rows
+/// into an empty store, and the bytes each row holds, when every row holds
+/// three fields under keys without arguments, with constant arguments, or
+/// with a variable. The plans are built as the generated code builds them,
+/// each kind on a type of its own, so that the three are numbered alike.
+@MainActor
+func argumentBench() throws {
+    let rows = 5_000
+    let results = (0..<rows).map { #"{"id":"\#($0)","a":1,"b":2,"c":3}"# }.joined(separator: ",")
+    let data = Data(#"{"data":{"rows":[\#(results)]}}"#.utf8)
+    let query = Registry.type("Query")
+    let names = ["labels", "assignees", "comments"]
+    func changes(_ kind: String, _ variables: Variables = .none, _ key: (TypeID, String) -> StorageKey) throws -> ChangeSet {
+        let row = Registry.type("BenchRow" + kind)
+        let fields = zip(["a", "b", "c"], names).map { PlanField.scalar($0, key: key(row, $1), kind: .int, list: false) }
+        let plan = Plan(root: Selection(type: query, hasID: false, fields: [
+            .linked("rows", key: .fixed(Registry.slot(query, "benchRows" + kind)), plural: true, selection: Selection(type: row, hasID: true, fields: [
+                .scalar("id", key: .fixed(Registry.slot(row, "id")), kind: .string, list: false),
+            ] + fields)),
+        ]))
+        return try Ingest.normalize(data, plan: plan.resolve(variables))
+    }
+    let kinds = [
+        ("labels", try changes("Plain") { row, name in .fixed(Registry.slot(row, name)) }),
+        ("labels(first: 3)", try changes("Constant") { row, name in .fixed(Registry.slot(row, name + "(first:3)")) }),
+        ("labels(first: $count)", try changes("Variable", Variables(["count": .int(3)])) { row, name in
+            .dynamic(DynamicKey(row, [.literal(name + "(first:"), .variable("count"), .literal(")")]))
+        }),
+    ]
+    for (key, changes) in kinds {
+        measure("into an empty store, keys like \(key)", iterations: 30) {
+            Store().commit(changes)
+        }
+    }
+    for (key, changes) in kinds {
+        let stores = (0..<8).map { _ in Store() }
+        let before = allocatedBytes()
+        for store in stores { store.commit(changes) }
+        let bytes = withExtendedLifetime(stores) { allocatedBytes() - before }
+        print("    bytes a row holds, keys like \(key): \(bytes / (stores.count * rows))")
+    }
 }
 
 /// Two fields of `Character` without arguments: the long session's bench
