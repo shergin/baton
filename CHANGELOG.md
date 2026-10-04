@@ -305,8 +305,9 @@ are expected and listed without apology.
   plan.
 - A linked field named `type`, `self`, `protocol` or `any` gets a nested
   lens with `Lens` after its name; it emitted `struct Type` or `struct
-  Self`. A field named or aliased `anchor` or `recordID`, which every lens
-  has for itself, is a compile error that asks for an alias.
+  Self`. A selection named or aliased `anchor` or `recordID`, which every
+  lens has for itself, is a compile error at the name that asks to alias
+  the field or to choose another alias.
 - Generated slots are nested per type, `Slots.Character.name`; a type's
   name and a field's ran together, so `A_b.c` and `A.b_c` were both
   `Slots.A_b_c`.
@@ -606,24 +607,25 @@ are expected and listed without apology.
   that name, which says what it clashes with and asks for an alias or a
   rename: a variable named `variables`, or `resolution` in a query or a
   subscription; a mutation's payload field named `variable`, which its
-  optimistic builder declares; a field named or aliased `anchor` or
-  `recordID` in any lens, or `hasNext`, `hasPrevious`, `isLoadingNext`,
-  `isLoadingPrevious`, `connectionID` or `nodes` in a connection; and a
-  fragment or operation named `Types`, `Slots` or `Baton`, a refetch query
-  among them. Each was an internal error without a position that asked to
-  report it, and a fragment named `Baton` hid the runtime's module from the
-  generated code. A fragment or operation named `Swift`, `Self` or `Any`,
-  or like a standard library name the generated code spells (`String`,
-  `Int`, `Double`, `Bool`, `Optional`, `Result`, `MainActor`, `Hasher` or
-  `Sendable`), is such an error too: it hid that name from the whole
-  module, and the generated code did not compile. So is a field named
-  `Types`, `Slots`, `AbstractSlots` or `Sites` where its lens, or a lens
-  nested in it, reads through that shared enum, which the field's accessor
-  hid; a variable named `Baton`, `Types` or `Slots`, or `AbstractSlots` or
-  `Sites` where the operation's lenses read through them, which the
-  variable hid from the operation's code; and a mutation's variable named
-  `optimistic`, which its action takes as a parameter of its own. A clash
-  between two names the compiler chose stays an internal error.
+  optimistic builder declares; an inline fragment `@alias(as:)` names
+  `anchor` or `recordID`, which every lens has; a field named or aliased
+  `hasNext`, `hasPrevious`, `isLoadingNext`, `isLoadingPrevious`,
+  `connectionID` or `nodes` in a connection; and a fragment or operation
+  named `Types`, `Slots` or `Baton`, a refetch query among them. Each was an
+  internal error without a position that asked to report it, and a fragment
+  named `Baton` hid the runtime's module from the generated code. A fragment
+  or operation named `Swift`, `Self` or `Any`, or like a standard library
+  name the generated code spells (`String`, `Int`, `Double`, `Bool`,
+  `Optional`, `Result`, `MainActor`, `Hasher` or `Sendable`), is such an
+  error too: it hid that name from the whole module, and the generated code
+  did not compile. So is a field named `Types`, `Slots`, `AbstractSlots` or
+  `Sites` where its lens, or a lens nested in it, reads through that shared
+  enum, which the field's accessor hid; a variable named `Baton`, `Types` or
+  `Slots`, or `AbstractSlots` or `Sites` where the operation's lenses read
+  through them, which the variable hid from the operation's code; and a
+  mutation's variable named `optimistic`, which its action takes as a
+  parameter of its own. A clash between two names the compiler chose stays
+  an internal error.
 - A field named `Baton` compiles in any lens. A lens under `@catch` or
   `@throwOnFieldError`, a refetchable fragment's and a connection's named
   the runtime's module in expressions, which the field's accessor hid; a

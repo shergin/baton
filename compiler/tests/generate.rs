@@ -26,10 +26,15 @@ fn schema() -> String {
 }
 
 fn generate(directory: &Path, arguments: &[&str]) -> Output {
+    generate_against(directory, &schema(), arguments)
+}
+
+/// `batonc generate` against the schema at `schema`.
+fn generate_against(directory: &Path, schema: &str, arguments: &[&str]) -> Output {
     Command::new(env!("CARGO_BIN_EXE_batonc"))
         .current_dir(directory)
         .arg("generate")
-        .args(["--schema", &schema()])
+        .args(["--schema", schema])
         .args(arguments)
         .output()
         .expect("batonc runs")
@@ -369,6 +374,45 @@ var favorite: Favorite.Action
             "Variables.swift:1:47: error: the variable `$Slots` clashes with the shared enum `Slots` in the generated Swift; rename the variable",
             "Variables.swift:1:60: error: the variable `$AbstractSlots` clashes with the shared enum `AbstractSlots` in the generated Swift; rename the variable",
             "Variables.swift:3:40: error: the variable `$optimistic` clashes with the action's parameter `optimistic` in the generated Swift; rename the variable",
+        ]
+    );
+    assert!(!directory.join("out").exists(), "an output was written");
+}
+
+#[test]
+fn a_selection_named_like_a_member_every_lens_has_is_an_error_asking_for_what_its_spelling_takes() {
+    let directory = workspace("lens-members");
+    write(
+        &directory,
+        "schema.graphql",
+        "type Query { place(id: ID!): Place, node(id: ID!): Node }\ninterface Node { id: ID! }\ntype Place implements Node { id: ID! name: String anchor: Place recordID: ID }\n",
+    );
+    write(
+        &directory,
+        "Members.swift",
+        r##"@Query(#"query Members($id: ID!) { place(id: $id) { anchor { name } recordID } node(id: $id) { anchor: id ... on Place @alias(as: "recordID") { name } } }"#)
+var members: Members
+@Fragment("fragment Members_place on Place { name recordID: name }")
+var place: Members_place
+"##,
+    );
+    let output = generate_against(
+        &directory,
+        "schema.graphql",
+        &["--out", "out", "Members.swift"],
+    );
+    assert!(!output.status.success());
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    let mut lines: Vec<&str> = stderr.lines().collect();
+    lines.sort();
+    assert_eq!(
+        lines,
+        [
+            "Members.swift:1:131: error: the selection aliased `recordID` clashes with the `recordID` every lens has in the generated Swift; choose another alias",
+            "Members.swift:1:53: error: the field `anchor` clashes with the `anchor` every lens has in the generated Swift; alias the field",
+            "Members.swift:1:69: error: the field `recordID` clashes with the `recordID` every lens has in the generated Swift; alias the field",
+            "Members.swift:1:96: error: the field `anchor` clashes with the `anchor` every lens has in the generated Swift; choose another alias",
+            "Members.swift:3:51: error: the field `recordID` clashes with the `recordID` every lens has in the generated Swift; choose another alias",
         ]
     );
     assert!(!directory.join("out").exists(), "an output was written");
