@@ -61,8 +61,8 @@ public struct ChangeSet: Sendable {
     /// Errors the response carried without a path, or with one that names
     /// no field it selected: nothing in the store holds them.
     public internal(set) var unplacedErrors: [FieldError] = []
-    /// The errors after the first of an announced part the server could not
-    /// deliver, when a field it would have filled is under no `@catch`. They
+    /// The errors of an announced part the server could not deliver, when a
+    /// field it would have filled is under no `@catch`, each once. They
     /// belong to the part's fields, which hold one error each, the first.
     var failedPartErrors: [FieldError] = []
     /// The parts the first part of an incremental response announces, and
@@ -156,10 +156,14 @@ public struct ChangeSet: Sendable {
         return nil
     }
 
-    /// The field errors no `@catch` handles, placed or not; they fail a
-    /// `@throwOnFieldError` operation.
+    /// The field errors no `@catch` handles, placed or not, each once; they
+    /// fail a `@throwOnFieldError` operation.
     public var uncaughtFieldErrors: [FieldError] {
-        fieldErrors.filter { !$0.caught }.map(\.error) + failedPartErrors + unplacedErrors
+        // A failed part's change set holds that part alone, and its entries
+        // repeat the first error on every field the part would have filled;
+        // its errors are counted from `failedPartErrors` instead, once each.
+        guard failedPartErrors.isEmpty else { return failedPartErrors + unplacedErrors }
+        return fieldErrors.filter { !$0.caught }.map(\.error) + unplacedErrors
     }
 
     @inline(__always)
@@ -320,8 +324,7 @@ public enum Ingest {
     /// on the fields the part would have filled, so a `@catch` there reads
     /// them. A field holds one error, the first. The errors are caught when
     /// every one of those fields is under `@catch`, whatever their number;
-    /// otherwise the first counts through the fields under none, and the
-    /// rest count beside them.
+    /// otherwise each counts once, however many fields are under none.
     nonisolated static func failed(_ plan: ResolvedSelection, key: String, type: TypeID, entity: Bool, at path: [PathSegment], errors: [ResponseError]) -> ChangeSet {
         var changes = ChangeSet(bytes: [])
         let record = changes.record(for: key, type: type, entity: entity)
@@ -337,11 +340,11 @@ public enum Ingest {
         for field in fields {
             changes.fieldErrors.append(ChangeSet.FieldErrorEntry(record: record, slot: field.slot, error: first, caught: field.caught))
         }
-        // The rest are not unplaced, which would fail a handle whose
-        // operation spreads the part's fragment: an error inside a spread is
-        // the fragment's to weigh.
+        // They are not unplaced, which would fail a handle whose operation
+        // spreads the part's fragment: an error inside a spread is the
+        // fragment's to weigh.
         if !fields.allSatisfy(\.caught) {
-            changes.failedPartErrors = Array(rendered.dropFirst())
+            changes.failedPartErrors = rendered
         }
         return changes
     }

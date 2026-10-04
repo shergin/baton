@@ -511,6 +511,10 @@ are expected and listed without apology.
   fetch had finished with fresh data, the attach returned before reading
   the phase again, so a commit that put a field error or a null into the
   selection while the handle waited for a view left it ready.
+- A deferred part the server could not deliver lists each of its errors
+  once among the uncaught ones. Its first error is placed on every field
+  the part would have filled, and was counted once for each such field
+  under no `@catch`, so a part of two of them listed it twice.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 
