@@ -11,7 +11,10 @@ use super::reader::{
     TypeTest,
 };
 use super::{NormalizationKind, NormalizationSelection, Program};
-use crate::names::{Kind, NameError, Reserved, Scope, Written, possible_types, type_constant};
+use crate::names::{
+    Kind, NameError, Reserved, STANDARD_LIBRARY_NAMES, Scope, Written, possible_types,
+    type_constant,
+};
 use crate::pipeline::{OperationKind, Plan};
 
 /// What the shared file declares.
@@ -185,12 +188,21 @@ impl Shared {
     }
 
     /// The names the module's top level and the shared enums would declare
-    /// twice: the documents' types beside the shared enums and the runtime's
-    /// module, which the generated code names, and in the enums the types,
-    /// sets, slots and sites the lenses use.
+    /// twice: the documents' types beside the shared enums, the runtime's
+    /// module and what the generated code spells from the standard library,
+    /// and in the enums the types, sets, slots and sites the lenses use.
     pub(super) fn duplicates(&self, plan: &Plan) -> Vec<NameError> {
         let none = Reserved::none();
         let mut module = Scope::new("the module", &none);
+        // The shared file qualifies its sets of types by the standard
+        // library's module, and Swift lets no type be named `Self` or `Any`.
+        module.declare("Swift", Kind::Type, "the standard library's module `Swift`");
+        for name in STANDARD_LIBRARY_NAMES {
+            module.declare(name, Kind::Type, format!("the standard library's `{name}`"));
+        }
+        for name in ["Self", "Any"] {
+            module.declare(name, Kind::Type, format!("Swift's keyword `{name}`"));
+        }
         module.declare("Baton", Kind::Type, "the runtime's module `Baton`");
         module.declare("Types", Kind::Type, "the shared enum `Types`");
         module.declare("Slots", Kind::Type, "the shared enum `Slots`");

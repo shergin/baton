@@ -120,6 +120,25 @@ pub const BUILDER_RESERVED_NAMES: [&str; 10] = [
     "Type", "Self", "Protocol", "Any", "Sendable", "Baton", "String", "Int", "Double", "Bool",
 ];
 
+/// What the generated code spells unqualified from the standard library,
+/// in any file and at any depth: the attribute on every accessor, the types
+/// accessors return and variables take, the `Hasher` an operation value
+/// hashes with and the `Sendable` a builder conforms to. A fragment or an
+/// operation, which the module declares at its top level, of one of these
+/// names would hide it from all of the module's code; one that the
+/// generated code comes to spell joins the list in the same change.
+pub const STANDARD_LIBRARY_NAMES: [&str; 9] = [
+    "MainActor",
+    "Result",
+    "Optional",
+    "String",
+    "Int",
+    "Double",
+    "Bool",
+    "Hasher",
+    "Sendable",
+];
+
 /// The names a nested type of one kind of scope may not take, and what is
 /// written after a name that would be one of them.
 pub struct Reserved {

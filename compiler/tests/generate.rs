@@ -262,3 +262,42 @@ var refetch: Refetch_character
         "Refetch.swift:1:22: error: the refetch query `Slots` clashes with the shared enum `Slots` in the generated Swift; name it otherwise in `@refetchable(queryName:)`"
     );
 }
+
+#[test]
+fn a_fragment_or_operation_named_like_what_the_generated_code_spells_from_swift_is_an_error() {
+    let directory = workspace("standard-library");
+    write(
+        &directory,
+        "Names.swift",
+        r##"@Fragment("fragment Swift on Character { name }")
+var swift: Swift
+@Fragment("fragment String on Character { name }")
+var string: String
+@Query("query Hasher { character(id: 1) { id } }")
+var hasher: Hasher
+@Mutation("mutation Sendable($id: ID!) { setFavorite(id: $id, favorite: true) { character { id } } }")
+var sendable: Sendable.Action
+@Fragment("fragment Self on Character { name }")
+var this: Self
+@Fragment("fragment Any on Character { name }")
+var any: Any
+"##,
+    );
+    let output = generate(&directory, &["--out", "out", "Names.swift"]);
+    assert!(!output.status.success());
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    let mut lines: Vec<&str> = stderr.lines().collect();
+    lines.sort();
+    assert_eq!(
+        lines,
+        [
+            "Names.swift:11:21: error: the fragment `Any` clashes with Swift's keyword `Any` in the generated Swift; rename the fragment",
+            "Names.swift:1:21: error: the fragment `Swift` clashes with the standard library's module `Swift` in the generated Swift; rename the fragment",
+            "Names.swift:3:21: error: the fragment `String` clashes with the standard library's `String` in the generated Swift; rename the fragment",
+            "Names.swift:5:15: error: the query `Hasher` clashes with the standard library's `Hasher` in the generated Swift; rename the query",
+            "Names.swift:7:21: error: the mutation `Sendable` clashes with the standard library's `Sendable` in the generated Swift; rename the mutation",
+            "Names.swift:9:21: error: the fragment `Self` clashes with Swift's keyword `Self` in the generated Swift; rename the fragment",
+        ]
+    );
+    assert!(!directory.join("out").exists(), "an output was written");
+}

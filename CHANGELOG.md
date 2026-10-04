@@ -610,8 +610,12 @@ are expected and listed without apology.
   fragment or operation named `Types`, `Slots` or `Baton`, a refetch query
   among them. Each was an internal error without a position that asked to
   report it, and a fragment named `Baton` hid the runtime's module from the
-  generated code. A clash between two names the compiler chose stays an
-  internal error.
+  generated code. A fragment or operation named `Swift`, `Self` or `Any`,
+  or like a standard library name the generated code spells (`String`,
+  `Int`, `Double`, `Bool`, `Optional`, `Result`, `MainActor`, `Hasher` or
+  `Sendable`), is such an error too: it hid that name from the whole
+  module, and the generated code did not compile. A clash between two
+  names the compiler chose stays an internal error.
 - An operation's `text` is a raw literal delimited by one `#` more than the
   longest run of them in the text. A document in a raw literal of two or
   more hashes can hold `\#`, as in `search(name: "\\#1")`, which the
