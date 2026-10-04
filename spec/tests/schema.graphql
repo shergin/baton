@@ -4,8 +4,8 @@
 # implement, mutations with payloads, and a cursor connection
 # of notes on a character with the mutations that edit it, a subscription,
 # the `@defer` directive and a `@semanticNonNull` field, the scalars the
-# tokenizer fixture (`spec/tokenizer/`) reads, and a type and fields named as
-# the generated code names its own. Documents.swift compiles
+# tokenizer fixture (`spec/tokenizer/`) reads, and types and fields named as
+# Swift and the generated code name their own. Documents.swift compiles
 # against it unchanged; every document here would also be valid against the
 # public schema except those that use the additions.
 
@@ -35,6 +35,7 @@ type Query {
   namesake(name: String!): Named
   tokenizer: Tokenizer
   types: Types
+  spellings: [Spelling]
 }
 
 type Mutation {
@@ -86,12 +87,52 @@ type Tokenizer {
   jsons: [JSON]
 }
 
-"""A type and fields named as the generated code names its own."""
+"""A type and fields named as Swift and the generated code name their own."""
 type Types {
   Type: String
   Protocol: String
   Baton: String
+  Any: String
 }
+
+"""
+Types named as Swift and the generated code name their own: `Baton`, the
+runtime's module; `Type` and `Protocol`, which Swift reads after a dot as
+metatypes; `Set`, the type of the shared file's sets of types; and `Any`,
+which Swift lets no member take. The five are `Spelled`, which `Spelling`
+admits with `Episode` besides, so a condition on `Spelled` is tested as a
+set.
+"""
+interface Spelled {
+  label: String
+}
+
+type Baton implements Spelled {
+  id: ID
+  label: String
+}
+
+type Type implements Spelled {
+  id: ID
+  label: String
+}
+
+type Protocol implements Spelled {
+  id: ID
+  label: String
+}
+
+type Set implements Spelled {
+  id: ID
+  label: String
+}
+
+type Any implements Spelled {
+  id: ID
+  label: String
+}
+
+union Spelling = Baton | Type | Protocol | Set | Any | Episode
 
 type Character implements Node & Named {
   id: ID

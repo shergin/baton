@@ -26,7 +26,7 @@ public final class Environment {
     private var completedMutations: [CompletedMutation] = []
     private var collectionScheduled = false
     /// How many collections have run; for tests and benchmarks.
-    public private(set) var collections = 0
+    package private(set) var collections = 0
 
     public init(transport: any Transport, subscriptions: (any SubscriptionTransport)? = nil, store: Store = Store(), releaseBufferSize: Int = 10) {
         self.store = store
@@ -326,7 +326,7 @@ public final class Environment {
     }
 
     /// Handles that are roots for collection: retained or buffered.
-    public var rootCount: Int { handles.count }
+    package var rootCount: Int { handles.count }
 
     private func scheduleCollection() {
         guard !collectionScheduled else { return }
@@ -350,7 +350,7 @@ public final class Environment {
         }
         // Records whose rows wait to be written stay, so the image, which a
         // read does not write first, is never older than memory.
-        for record in store.persistence?.unwrittenRecords() ?? [] {
+        for record in store.persistence?.unwrittenRecords(removals: store.imageRemovals) ?? [] {
             reachable.insert(ObjectIdentifier(record))
         }
         // Records an optimistic layer wrote stay until the layer is resolved.
@@ -364,10 +364,10 @@ public final class Environment {
     }
 
     /// A placeholder for views outside any `.environment(\.baton, …)`.
-    public static let unconfigured = Environment(transport: UnconfiguredTransport())
+    package static let unconfigured = Environment(transport: UnconfiguredTransport())
 
     /// The environment a view sees: the injected one, or the placeholder.
-    public static func resolve(_ injected: Environment?) -> Environment { injected ?? unconfigured }
+    package static func resolve(_ injected: Environment?) -> Environment { injected ?? unconfigured }
 }
 
 struct UnconfiguredTransport: Transport {

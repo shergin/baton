@@ -344,6 +344,36 @@ fn a_linked_field_named_like_a_swift_type_gets_a_lens_of_another_name() {
 }
 
 #[test]
+fn a_type_constant_swift_would_misread_takes_an_underscore_and_meets_no_other() {
+    let sdl = "type Query { a: Type, b: Type_, c: Baton } type Type { id: ID } type Type_ { id: ID } type Baton { id: ID }";
+    let compiled = compile(
+        sdl,
+        "schema.graphql",
+        &[document("query Probe { a { id } b { id } c { id } }")],
+        &Config::default(),
+    )
+    .unwrap_or_else(|errors| panic!("{errors:?}"));
+    let output = crate::emit::emit(&compiled.plan).expect("the plan emits");
+    for declaration in [
+        "    static let Baton_ = Baton.Registry.type(\"Baton\")\n",
+        "    static let Type_ = Baton.Registry.type(\"Type\")\n",
+        "    static let Type__ = Baton.Registry.type(\"Type_\")\n",
+        "        static let id = Baton.Registry.slot(Types.Type__, \"id\")\n",
+    ] {
+        assert!(output.shared.contains(declaration), "{}", output.shared);
+    }
+    let file = output
+        .files
+        .values()
+        .next()
+        .expect("the operation has a file");
+    assert!(
+        file.contains("Baton.Selection(type: Types.Type__,"),
+        "{file}"
+    );
+}
+
+#[test]
 fn a_slot_name_swift_would_misread_takes_an_underscore_and_meets_no_other() {
     let sdl = "type Query { types: Types } type Types { Type: String, Type_: String, Baton: String, name: String }";
     let compiled = compile(

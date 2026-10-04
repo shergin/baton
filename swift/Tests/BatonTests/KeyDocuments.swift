@@ -14,4 +14,22 @@ struct KeyDocuments {
         }
         """)
     var keys: TestKeys
+
+    /// The rows of a list holding one field twice: under constant arguments,
+    /// a key the compiler emits, and under a variable, a key each owner
+    /// renders. Its counts are used by no other document, so this one meets
+    /// both keys first.
+    @Query("""
+        query TestNoteCounts($page: Int, $count: Int) {
+          characters(page: $page) {
+            results {
+              id
+              name
+              pinned: notes(first: 97) { totalCount }
+              recent: notes(first: $count) { totalCount }
+            }
+          }
+        }
+        """)
+    var noteCounts: TestNoteCounts
 }

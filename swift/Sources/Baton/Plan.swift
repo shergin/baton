@@ -2,6 +2,7 @@ import Synchronization
 
 /// An operation's normalization plan, emitted by the compiler as static data:
 /// what the response contains and where each value is stored.
+@_spi(Generated)
 public struct Plan: Sendable {
     public let root: Selection
 
@@ -10,31 +11,41 @@ public struct Plan: Sendable {
     /// Binds the variables: dynamic storage keys become slots, lookup keys
     /// become record keys, connections learn their merge mode and handles
     /// their connection ids. One resolution serves ingest, check and read.
-    public func resolve(_ variables: Variables) -> ResolvedSelection {
+    package func resolve(_ variables: Variables) -> ResolvedSelection {
         root.resolve(variables)
     }
 }
 
+@_spi(Generated)
 public enum ScalarKind: Sendable {
     case string, int, double, bool, custom
 }
 
+@_spi(Generated)
 public enum KeyPart: Sendable {
     case literal(String)
     case variable(String)
 }
 
 /// Where a field's value lives on its parent record.
+@_spi(Generated)
 public enum StorageKey: Sendable {
     case fixed(Slot)
     /// A key with variables, e.g. `characters(page:$page)`.
     case dynamic(DynamicKey)
+
+    /// Whether the key is rendered from variables, and so numbered apart.
+    var isRendered: Bool {
+        if case .dynamic = self { return true }
+        return false
+    }
 }
 
 /// A root field that returns an entity by one of its arguments. When the link
 /// is missing from the store, the entity satisfies it: `Type:key` when the
 /// type is known, or the one live record `T:key` among the field's possible
 /// types when it is not (`node(id:)`).
+@_spi(Generated)
 public struct Lookup: Sendable {
     public enum Key: Sendable {
         case variable(String)
@@ -58,6 +69,7 @@ public struct Lookup: Sendable {
 /// the connection record. Resolved once per connection by the generated code,
 /// and kept by the registry under the connection type, where the commit of
 /// an edge directive, which names its connections by id, finds them.
+@_spi(Generated)
 public struct ConnectionSlots: Sendable {
     public let connection: TypeID
     public let edge: TypeID
@@ -95,6 +107,7 @@ public struct ConnectionSlots: Sendable {
 
 /// A cursor argument of a connection field: a variable, or a constant that is
 /// not null (the compiler drops null constants).
+@_spi(Generated)
 public enum ConnectionCursor: Sendable {
     case variable(String)
     case literal
@@ -103,6 +116,7 @@ public enum ConnectionCursor: Sendable {
 /// A `@connection` field: the client record its pages merge into, keyed on
 /// the parent by Relay's handle key, and the cursor arguments that decide
 /// whether a page replaces, appends or prepends.
+@_spi(Generated)
 public struct ConnectionPlan: Sendable {
     public let key: StorageKey
     public let slots: ConnectionSlots
@@ -127,7 +141,7 @@ public struct ConnectionPlan: Sendable {
 
 /// How a page joins its connection, from the cursor arguments it was fetched
 /// with: as in Relay's connection handler.
-public enum ConnectionMode: Sendable, Equatable {
+package enum ConnectionMode: Sendable, Equatable {
     /// No cursor: the connection becomes this page.
     case replace
     /// Fetched after a cursor: appended, when the cursor is still the end.
@@ -139,6 +153,7 @@ public enum ConnectionMode: Sendable, Equatable {
 /// An edge directive on a mutation payload field: the edit to make with the
 /// field's records once the payload is in the store, which the change set
 /// carries as a `ChangeSet.Edit`.
+@_spi(Generated)
 public struct Edit: Sendable {
     public enum Kind: Sendable {
         case appendEdge, prependEdge, appendNode, prependNode, deleteEdge, deleteRecord
@@ -165,6 +180,7 @@ public struct Edit: Sendable {
 /// How a `@refetchable` fragment's query is bound from a lens: the query's
 /// variables (taken from the lens's scope), the one that carries the owner's
 /// id, and the connection's count and cursor variables for pagination.
+@_spi(Generated)
 public struct Refetch: Sendable {
     public let variables: [String]
     public let identifier: String?
@@ -185,6 +201,7 @@ public struct Refetch: Sendable {
 
 /// One condition of `@include` or `@skip`: the variable, and the value it
 /// must have for the field to be fetched.
+@_spi(Generated)
 public struct Guard: Sendable {
     public let variable: String
     public let passing: Bool
@@ -199,6 +216,7 @@ public struct Guard: Sendable {
     }
 }
 
+@_spi(Generated)
 public struct PlanField: Sendable {
     public enum Kind: Sendable {
         case scalar(ScalarKind, list: Bool)
@@ -265,6 +283,7 @@ public struct PlanField: Sendable {
 /// A selection set on one type. On an interface or union, the payload's
 /// `__typename` names each record's concrete type, and the type picks the
 /// variant: the fields that type reads.
+@_spi(Generated)
 public final class Selection: Sendable {
     /// The fields one group of concrete types reads.
     public struct Variant: Sendable {
@@ -348,6 +367,7 @@ public final class Selection: Sendable {
                     let key = Selection.render(connection.key, variables)
                     return ResolvedConnection(
                         storageKey: key,
+                        rendered: connection.key.isRendered,
                         slot: Selection.slot(connection.key, key, on: type),
                         slots: connection.slots,
                         mode: Selection.mode(connection, variables)
@@ -359,6 +379,7 @@ public final class Selection: Sendable {
             responseKey: field.responseKey,
             keyBytes: field.keyBytes,
             storageKey: storageKey,
+            rendered: field.key.isRendered,
             slot: Selection.slot(field.key, storageKey, on: type),
             kind: kind,
             edit: field.edit.map { edit in
@@ -388,7 +409,8 @@ public final class Selection: Sendable {
     private static func slot(_ key: StorageKey, _ storageKey: String, on type: TypeID) -> Slot {
         switch key {
         case .fixed(let slot) where slot.type == type: slot
-        case .fixed, .dynamic: Registry.slot(type, storageKey)
+        case .fixed: Registry.slot(type, storageKey)
+        case .dynamic: Registry.slot(type, storageKey, rendered: true)
         }
     }
 
@@ -428,24 +450,27 @@ public final class Selection: Sendable {
 
 /// A bound lookup: the record key `Type:value`, or the id among the
 /// possible types.
-public struct LookupKey: Sendable {
-    public let type: TypeID?
-    public let possibleTypes: Set<TypeID>
-    public let value: String
+package struct LookupKey: Sendable {
+    package let type: TypeID?
+    package let possibleTypes: Set<TypeID>
+    package let value: String
 }
 
 /// A connection with its variables bound: the client key on the parent, the
 /// slots, and how the page it describes joins the connection. A class, so a
 /// field's kind stays one word wide and the ingest copies nothing per key.
-public final class ResolvedConnection: Sendable {
-    public let storageKey: String
+package final class ResolvedConnection: Sendable {
+    package let storageKey: String
+    /// Whether the client key was rendered from variables.
+    let rendered: Bool
     /// The client slot on the variant's concrete type.
-    public let slot: Slot
-    public let slots: ConnectionSlots
-    public let mode: ConnectionMode
+    package let slot: Slot
+    package let slots: ConnectionSlots
+    package let mode: ConnectionMode
 
-    init(storageKey: String, slot: Slot, slots: ConnectionSlots, mode: ConnectionMode) {
+    init(storageKey: String, rendered: Bool, slot: Slot, slots: ConnectionSlots, mode: ConnectionMode) {
         self.storageKey = storageKey
+        self.rendered = rendered
         self.slot = slot
         self.slots = slots
         self.mode = mode
@@ -453,10 +478,10 @@ public final class ResolvedConnection: Sendable {
 }
 
 /// An edit with its connection ids bound.
-public final class ResolvedEdit: Sendable {
-    public let kind: Edit.Kind
-    public let connections: [String]
-    public let edgeType: TypeID?
+package final class ResolvedEdit: Sendable {
+    package let kind: Edit.Kind
+    package let connections: [String]
+    package let edgeType: TypeID?
 
     init(kind: Edit.Kind, connections: [String], edgeType: TypeID?) {
         self.kind = kind
@@ -467,11 +492,11 @@ public final class ResolvedEdit: Sendable {
 
 /// A plan with variables bound: per concrete type, the fields a record of
 /// that type reads, with their slots on it and their keys as bytes.
-public final class ResolvedSelection: Sendable {
-    public let type: TypeID
-    public let hasID: Bool
+package final class ResolvedSelection: Sendable {
+    package let type: TypeID
+    package let hasID: Bool
     /// Whether a record's type comes from the payload's `__typename`.
-    public let isAbstract: Bool
+    package let isAbstract: Bool
     /// The fields of a selection on an object type; on an abstract type,
     /// those every type reads, resolved on the abstract type itself for a
     /// record whose payload names no type. Stored apart from a variant so
@@ -496,7 +521,7 @@ public final class ResolvedSelection: Sendable {
 
     /// The fields a record of `type` reads, with their slots on it. Taken
     /// once per record; the fields are then walked without a condition.
-    public func variant(for type: TypeID) -> ResolvedVariant {
+    package func variant(for type: TypeID) -> ResolvedVariant {
         if !isAbstract || type == self.type { return ResolvedVariant(type: self.type, fields: fields, typeName: typeName) }
         if let variant = listed[type] { return variant }
         return others.withLock { cache in
@@ -525,9 +550,9 @@ public final class ResolvedSelection: Sendable {
 }
 
 /// The fields a record of one concrete type reads, with their slots on it.
-public struct ResolvedVariant: Sendable {
-    public let type: TypeID
-    public let fields: [ResolvedField]
+package struct ResolvedVariant: Sendable {
+    package let type: TypeID
+    package let fields: [ResolvedField]
     /// The type's name, taken once, for the keys the ingest builds.
     let typeName: String
 
@@ -543,29 +568,33 @@ public struct ResolvedVariant: Sendable {
     }
 }
 
-public struct ResolvedField: Sendable {
-    public enum Kind: Sendable {
+package struct ResolvedField: Sendable {
+    package enum Kind: Sendable {
         case scalar(ScalarKind, list: Bool)
         case linked(ResolvedSelection, plural: Bool, lookupKey: LookupKey?, connection: ResolvedConnection?)
     }
 
-    public let responseKey: String
+    package let responseKey: String
     let keyBytes: [UInt8]
-    public let storageKey: String
+    package let storageKey: String
+    /// Whether the key was rendered from variables, which numbers it apart
+    /// on a concrete type that has not met it.
+    let rendered: Bool
     /// The slot on the variant's concrete type.
-    public let slot: Slot
-    public let kind: Kind
-    public let edit: ResolvedEdit?
+    package let slot: Slot
+    package let kind: Kind
+    package let edit: ResolvedEdit?
     /// The `@defer` label of the part that carries the field; the availability
     /// check does not wait for it.
-    public let deferred: String?
-    public let caught: Bool
+    package let deferred: String?
+    package let caught: Bool
     let isTypename: Bool
 
-    init(responseKey: String, keyBytes: [UInt8], storageKey: String, slot: Slot, kind: Kind, edit: ResolvedEdit?, deferred: String?, caught: Bool) {
+    init(responseKey: String, keyBytes: [UInt8], storageKey: String, rendered: Bool, slot: Slot, kind: Kind, edit: ResolvedEdit?, deferred: String?, caught: Bool) {
         self.responseKey = responseKey
         self.keyBytes = keyBytes
         self.storageKey = storageKey
+        self.rendered = rendered
         self.slot = slot
         self.kind = kind
         self.edit = edit
@@ -576,7 +605,7 @@ public struct ResolvedField: Sendable {
 
     /// The same field as the incremental part delivers it: no longer deferred.
     func undeferred() -> ResolvedField {
-        ResolvedField(responseKey: responseKey, keyBytes: keyBytes, storageKey: storageKey, slot: slot, kind: kind, edit: edit, deferred: nil, caught: caught)
+        ResolvedField(responseKey: responseKey, keyBytes: keyBytes, storageKey: storageKey, rendered: rendered, slot: slot, kind: kind, edit: edit, deferred: nil, caught: caught)
     }
 
     /// The same field on another concrete type: its slot, and its
@@ -587,9 +616,25 @@ public struct ResolvedField: Sendable {
         case .scalar: kind
         case .linked(let child, let plural, let lookupKey, let connection):
             .linked(child, plural: plural, lookupKey: lookupKey, connection: connection.map { connection in
-                ResolvedConnection(storageKey: connection.storageKey, slot: Registry.slot(type, connection.storageKey), slots: connection.slots, mode: connection.mode)
+                ResolvedConnection(
+                    storageKey: connection.storageKey,
+                    rendered: connection.rendered,
+                    slot: Registry.slot(type, connection.storageKey, rendered: connection.rendered),
+                    slots: connection.slots,
+                    mode: connection.mode
+                )
             })
         }
-        return ResolvedField(responseKey: responseKey, keyBytes: keyBytes, storageKey: storageKey, slot: Registry.slot(type, storageKey), kind: kind, edit: edit, deferred: deferred, caught: caught)
+        return ResolvedField(
+            responseKey: responseKey,
+            keyBytes: keyBytes,
+            storageKey: storageKey,
+            rendered: rendered,
+            slot: Registry.slot(type, storageKey, rendered: rendered),
+            kind: kind,
+            edit: edit,
+            deferred: deferred,
+            caught: caught
+        )
     }
 }

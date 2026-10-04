@@ -6,18 +6,18 @@ import Observation
 /// Optimistic layers sit on top of the server's truth and rebase under it.
 @MainActor
 public final class Store {
-    nonisolated public static let rootKey = "client:root"
-    nonisolated public static let mutationRootKey = "client:root:mutation"
-    nonisolated public static let subscriptionRootKey = "client:root:subscription"
+    nonisolated package static let rootKey = "client:root"
+    nonisolated package static let mutationRootKey = "client:root:mutation"
+    nonisolated package static let subscriptionRootKey = "client:root:subscription"
 
     /// The record query root fields hang off. The three roots are typed
     /// `Query`, `Mutation` and `Subscription` whatever the schema calls its
     /// root types; the compiler interns those types by these names.
-    public let root: Record
+    package let root: Record
     /// The record mutation payloads hang off; their entities merge as usual.
-    public let mutationRoot: Record
+    package let mutationRoot: Record
     /// The record subscription payloads hang off.
-    public let subscriptionRoot: Record
+    package let subscriptionRoot: Record
     private var records: [String: Record] = [:]
     /// The environment that owns the store, for lenses that fetch.
     weak var environment: Environment?
@@ -45,14 +45,19 @@ public final class Store {
     public var reportAmbiguousIdentity: ((String, [Record]) -> Void)?
 
     /// Bumped by `invalidate()`; handles fetched before it are stale.
-    public private(set) var invalidationEpoch = 0
+    package private(set) var invalidationEpoch = 0
 
     /// Optimistic responses currently applied, oldest first.
-    public private(set) var optimisticLayers: [OptimisticLayer] = []
+    package private(set) var optimisticLayers: [OptimisticLayer] = []
 
     /// The store's image on disk, when it has one: every commit is written
     /// behind, and the availability check reads from it what memory lacks.
     public let persistence: Persistence?
+    /// How many times the image had been removed when this store was made.
+    /// The store hands it over with everything it asks of the image, so a
+    /// store from before a sign-out's `removeAll()` reads, writes and dates
+    /// nothing there after it.
+    let imageRemovals: Int
     /// How many records have been filled from the image; for tests and
     /// benchmarks.
     package internal(set) var hydratedRecords = 0
@@ -72,6 +77,7 @@ public final class Store {
 
     public init(persistence: Persistence? = nil) {
         self.persistence = persistence
+        imageRemovals = persistence?.removals ?? 0
         root = Record(type: Registry.type("Query"), key: Store.rootKey)
         mutationRoot = Record(type: Registry.type("Mutation"), key: Store.mutationRootKey)
         subscriptionRoot = Record(type: Registry.type("Subscription"), key: Store.subscriptionRootKey)
@@ -95,7 +101,7 @@ public final class Store {
     /// `Environment.invalidate()` is the public way, which also refetches.
     func invalidate() {
         invalidationEpoch += 1
-        persistence?.invalidate()
+        persistence?.invalidate(removals: imageRemovals)
     }
 
     /// The placeholder record of a type.
@@ -106,9 +112,9 @@ public final class Store {
         return record
     }
 
-    public var count: Int { records.count }
+    package var count: Int { records.count }
 
-    public func existing(_ key: String) -> Record? { records[key] }
+    package func existing(_ key: String) -> Record? { records[key] }
 
     /// Every record the store holds, by key; for the store dumps under `spec/`.
     package var recordsByKey: [String: Record] { records }
@@ -141,9 +147,9 @@ public final class Store {
     // MARK: Commits and optimistic layers
 
     /// A pending optimistic response: its change set, and what it overwrote.
-    public struct OptimisticLayer: Identifiable, Sendable {
-        public let id: UUID
-        public let changes: ChangeSet
+    package struct OptimisticLayer: Identifiable, Sendable {
+        package let id: UUID
+        package let changes: ChangeSet
         var undo: [Undo] = []
     }
 
@@ -240,7 +246,7 @@ public final class Store {
     /// only the net difference is notified. Returns the number of slots that
     /// changed.
     @discardableResult
-    public func commit(_ changes: ChangeSet) -> Int {
+    package func commit(_ changes: ChangeSet) -> Int {
         defer { reevaluateIfNeeded() }
         if optimisticLayers.isEmpty {
             var transaction = Transaction(direct: true)
@@ -269,7 +275,7 @@ public final class Store {
         forgets = persistence == nil ? nil : Forgets()
         let undo = apply(changes, into: &transaction)
         if let forgets, !forgets.keys.isEmpty || !forgets.ids.isEmpty {
-            persistence?.forget(keys: forgets.keys, ids: forgets.ids)
+            persistence?.forget(keys: forgets.keys, ids: forgets.ids, removals: imageRemovals)
             forgottenKeys.formUnion(forgets.keys)
             forgottenIDs.formUnion(forgets.ids)
             // A record with the id that an earlier payload wrote is forgotten
@@ -363,11 +369,11 @@ public final class Store {
             }
         }
         if records.isEmpty, fields.isEmpty { return }
-        persistence.committed(records, root: fields)
+        persistence.committed(records, root: fields, removals: imageRemovals)
     }
 
     /// Applies an optimistic response on top of everything else.
-    public func applyOptimistic(_ changes: ChangeSet) -> UUID {
+    package func applyOptimistic(_ changes: ChangeSet) -> UUID {
         defer { reevaluateIfNeeded() }
         var transaction = Transaction()
         var layer = OptimisticLayer(id: UUID(), changes: changes)
@@ -378,7 +384,7 @@ public final class Store {
     }
 
     /// Removes an optimistic layer; later layers are re-applied over the gap.
-    public func revertOptimistic(_ id: UUID) {
+    package func revertOptimistic(_ id: UUID) {
         guard let index = optimisticLayers.firstIndex(where: { $0.id == id }) else { return }
         defer { reevaluateIfNeeded() }
         var transaction = Transaction()
@@ -391,7 +397,7 @@ public final class Store {
     /// Commits the server's answer to an optimistic mutation: the layer is
     /// replaced by the payload in one batch.
     @discardableResult
-    public func commit(_ changes: ChangeSet, replacingOptimistic id: UUID) -> Int {
+    package func commit(_ changes: ChangeSet, replacingOptimistic id: UUID) -> Int {
         defer { reevaluateIfNeeded() }
         var transaction = Transaction()
         revertLayers(from: 0, into: &transaction)
@@ -541,12 +547,20 @@ public final class Store {
             if record.deleted { setDeleted(record, false, &transaction, &undo) }
             let range = Int(changes.starts[index])..<Int(changes.starts[index + 1])
             if created[index], !range.isEmpty {
-                // A new record makes room once, for the highest slot it receives.
-                var highest: Int32 = 0
-                for position in range where changes.entries[position].slot.index > highest {
-                    highest = changes.entries[position].slot.index
+                // A new record makes room once: for the highest dense slot it
+                // receives, and for each key numbered apart. The change set
+                // holds each slot of a record once.
+                var highest: Int32 = -1
+                var rendered = 0
+                for position in range {
+                    let slot = changes.entries[position].slot.index
+                    if slot > highest {
+                        highest = slot
+                    } else if slot < 0 {
+                        rendered &+= 1
+                    }
                 }
-                record.reserve(Int(highest) + 1)
+                record.reserve(dense: Int(highest) + 1, rendered: rendered)
             }
             for position in range {
                 let entry = changes.entries[position]
@@ -655,7 +669,7 @@ public final class Store {
     /// or keep its old edges in the image: the image forgets it instead, so
     /// the next read fetches it.
     private func editable(_ key: String) -> Record? {
-        if let connection = records[key], !connection.deleted, connection.hydrated || connection.slotCount > 0 {
+        if let connection = records[key], !connection.deleted, connection.hydrated || !connection.isEmpty {
             return connection
         }
         forgets?.keys.append(key)
@@ -695,10 +709,9 @@ public final class Store {
     /// by node; the page info merges per direction. A page fetched after a
     /// cursor that is no longer the end is ignored.
     private func merge(_ connection: Record, page: Record, slots: ConnectionSlots, mode: ConnectionMode, _ transaction: inout Transaction, _ undo: inout [Undo]) {
-        for index in 0..<page.slotCount where index != Int(slots.edges.index) && index != Int(slots.pageInfoLink.index) {
-            let value = page.peek(index: index)
-            if case .missing = value { continue }
-            set(connection, Slot(type: slots.connection, index: Int32(index)), value, &transaction, &undo)
+        page.forEachValue { slot, value in
+            if slot.index == slots.edges.index || slot.index == slots.pageInfoLink.index { return }
+            set(connection, Slot(type: slots.connection, index: slot.index), value, &transaction, &undo)
         }
 
         let pageInfo: Record
@@ -754,10 +767,8 @@ public final class Store {
         guard case let (connection, slots)? = editableConnection(connectionKey), edge.type == slots.edge else { return }
         if contains(connection, node: Store.node(of: edge, slots.node), slots) { return }
         let copy = ownEdge(of: connection, slots, &transaction, &undo)
-        for index in 0..<edge.slotCount {
-            let value = edge.peek(index: index)
-            if case .missing = value { continue }
-            set(copy, Slot(type: slots.edge, index: Int32(index)), value, &transaction, &undo)
+        edge.forEachValue { slot, value in
+            set(copy, Slot(type: slots.edge, index: slot.index), value, &transaction, &undo)
         }
         append(copy, to: connection, slots, prepend: prepend, &transaction, &undo)
     }
@@ -813,10 +824,8 @@ public final class Store {
     /// it read as null and lists skip it; the batch's end tells the bodies
     /// that hold a link to it.
     private func delete(_ record: Record, _ transaction: inout Transaction, _ undo: inout [Undo]) {
-        for index in 0..<record.slotCount {
-            let value = record.peek(index: index)
-            if case .missing = value { continue }
-            set(record, Slot(type: record.type, index: Int32(index)), .missing, &transaction, &undo)
+        record.forEachValue { slot, _ in
+            set(record, slot, .missing, &transaction, &undo)
         }
         setDeleted(record, true, &transaction, &undo)
     }
@@ -831,7 +840,7 @@ public final class Store {
     /// same walk runs again with the image at hand, and what it reads becomes
     /// part of the store: this is how a launch renders its first body from
     /// the last one's data.
-    public func check(_ selection: ResolvedSelection, at record: Record? = nil) -> Answer {
+    package func check(_ selection: ResolvedSelection, at record: Record? = nil) -> Answer {
         let record = record ?? root
         metHydrated = false
         if available(selection, at: record, from: nil) { return metHydrated ? .image : .memory }
@@ -839,7 +848,7 @@ public final class Store {
         // the read that is open.
         if let reading { return available(selection, at: record, from: reading) ? .image : .miss }
         guard let persistence else { return .miss }
-        let found = persistence.reading { disk in
+        let found = persistence.reading(removals: imageRemovals) { disk in
             reading = disk
             defer { reading = nil }
             return available(selection, at: record, from: disk)
@@ -892,7 +901,7 @@ public final class Store {
     }
 
     /// Where the availability check found the selection's data.
-    public enum Answer: Sendable {
+    package enum Answer: Sendable {
         /// In memory, every record of it put there by a response.
         case memory
         /// With the image's help: read from it now, or by an earlier check.
@@ -966,7 +975,7 @@ public final class Store {
                 // it. With the image at hand it is walked, so its merged
                 // pages come back with it, and one the image has no row for
                 // stays a miss.
-                if let connection, case .ref(let found) = record.peek(connection.slot), found.swept || found.slotCount == 0 {
+                if let connection, case .ref(let found) = record.peek(connection.slot), found.swept || found.isEmpty {
                     guard let disk else { return false }
                     let merged = live(found, disk)
                     if merged !== found { record.write(connection.slot, .ref(merged)) }
@@ -992,7 +1001,7 @@ public final class Store {
     /// was deleted is known before the walk decides to enter it.
     private func live(_ found: Record, _ disk: Disk) -> Record {
         let record = found.swept ? target(key: found.key, type: found.type, entity: found.isEntity) : found
-        if !record.hydrated, record.slotCount == 0, record !== root, record !== mutationRoot, record !== subscriptionRoot {
+        if !record.hydrated, record.isEmpty, record !== root, record !== mutationRoot, record !== subscriptionRoot {
             _ = hydrate(record, from: disk)
         }
         return record

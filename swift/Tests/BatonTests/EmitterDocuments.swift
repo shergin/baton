@@ -8,9 +8,10 @@ import Baton
 /// and an aliased selection named like a type condition's accessor; fields
 /// named like the fragments and the refetch query a lens refers to; a field
 /// named like a spread's accessor; a connection whose edges' lens cannot be
-/// named `Edges`; and a mutation whose
+/// named `Edges`; a mutation whose
 /// payload fields are named like the types an optimistic builder spells,
-/// with a variable named `self`.
+/// with a variable named `self`; and a query whose text holds a backslash
+/// before a hash, which a raw literal of one hash reads as an escape.
 @MainActor
 struct EmitterDocuments {
     @Fragment("""
@@ -110,4 +111,25 @@ struct EmitterDocuments {
         }
         """)
     var builderNames: TestBuilderNames.Action
+
+    @Query("""
+        query TestHasherVariable($hasher: ID!) {
+          character(id: $hasher) { id name }
+        }
+        """)
+    var hasherVariable: TestHasherVariable
+
+    @Mutation("""
+        mutation TestCommitVariable($commit: ID!) {
+          setFavorite(id: $commit, favorite: true) { character { id name favorite } }
+        }
+        """)
+    var commitVariable: TestCommitVariable.Action
+
+    @Query(##"""
+        query TestEscapedText {
+          search(name: "\\#1") { __typename }
+        }
+        """##)
+    var escapedText: TestEscapedText
 }

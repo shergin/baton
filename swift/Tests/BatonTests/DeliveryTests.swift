@@ -1,4 +1,4 @@
-import Baton
+@_spi(Generated) import Baton
 import Foundation
 import Observation
 import Testing
@@ -875,6 +875,47 @@ struct DeliveryTests {
             #expect(error.body == body)
         }
         #expect(received == parts)
+    }
+
+    @Test("a request with no response fails with an error that says what went wrong and names no HTTP status; one with an error status names it")
+    func aFailureWithoutAResponse() async throws {
+        let environment = Environment(transport: RecordedTransport())
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestList(page: 1))
+        handle.retain()
+        await handle.settle()
+        guard case .failed(let error as TransportError) = handle.phase else {
+            Issue.record("expected a transport error, got \(handle.phase)")
+            return
+        }
+        #expect(error.statusCode == 0)
+        #expect(error.description == "no recorded response for TestList")
+        #expect(TransportError(statusCode: 502, body: "bad gateway").description == "HTTP 502: bad gateway")
+        handle.release()
+    }
+
+    @Test("a recorded transport's requests, read while requests arrive off the main actor, are each time those sent so far, each read keeping the one before")
+    func recordedRequestsReadWhileSent() async throws {
+        let transport = RecordedTransport { _ in Data() }
+        let count = 4_000
+        let sending = Task.detached {
+            await withTaskGroup(of: Void.self) { group in
+                for index in 0..<count {
+                    group.addTask {
+                        _ = try? await transport.execute(Request(operationName: "Op\(index)", text: "", persistedID: "", variables: .none))
+                    }
+                }
+            }
+        }
+        var previous: [String] = []
+        while previous.count < count {
+            let names = transport.requests.map(\.operationName)
+            #expect(names.starts(with: previous))
+            previous = names
+            await Task.yield()
+        }
+        await sending.value
+        #expect(Set(previous) == Set((0..<count).map { "Op\($0)" }))
     }
 }
 

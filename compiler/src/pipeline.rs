@@ -73,9 +73,38 @@ const ROOT_NAMES: [(SyntaxOperationKind, &str); 3] = [
     (SyntaxOperationKind::Subscription, "Subscription"),
 ];
 
+/// Where a document wrote a name it chose: the file, which of the file's
+/// documents, and the byte offset of the name in that document's text. A
+/// name the generated code also needs is reported here.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Origin {
+    pub path: String,
+    pub document: usize,
+    pub offset: u32,
+}
+
+impl Origin {
+    /// The origin of a name at `location`; none for a name Relay generated.
+    fn of(location: common::Location) -> Option<Origin> {
+        let (path, document) = match location.source_location() {
+            SourceLocationKey::Embedded { path, index } => (path, usize::from(index)),
+            SourceLocationKey::Standalone { path } => (path, 0),
+            SourceLocationKey::Generated => return None,
+        };
+        Some(Origin {
+            path: path.lookup().to_string(),
+            document,
+            offset: location.span().start,
+        })
+    }
+}
+
 #[derive(Debug, Clone, serde::Serialize)]
 pub struct FragmentPlan {
     pub name: String,
+    /// Where the document wrote the fragment's name.
+    #[serde(skip)]
+    pub origin: Option<Origin>,
     /// The file the fragment was declared in.
     pub source: String,
     /// Which of the file's documents declared it, as the scanner numbered
@@ -122,6 +151,9 @@ pub struct PaginationPlan {
 #[derive(Debug, Clone, serde::Serialize)]
 pub struct OperationPlan {
     pub name: String,
+    /// Where the document wrote the operation's name.
+    #[serde(skip)]
+    pub origin: Option<Origin>,
     /// The file the operation was declared in.
     pub source: String,
     /// Which of the file's documents declared it, as the scanner numbered
@@ -173,6 +205,9 @@ impl std::fmt::Display for OperationKind {
 #[derive(Debug, Clone, serde::Serialize)]
 pub struct VariablePlan {
     pub name: String,
+    /// Where the document wrote the variable's name.
+    #[serde(skip)]
+    pub origin: Option<Origin>,
     /// The GraphQL type, e.g. `Int`, `ID!`, `[String!]`.
     pub type_name: String,
     /// The innermost named type.
@@ -359,6 +394,10 @@ pub enum SelectionPlan {
     Scalar {
         name: String,
         alias: Option<String>,
+        /// Where the document wrote the response key: the alias, or else
+        /// the name.
+        #[serde(skip)]
+        origin: Option<Origin>,
         type_name: String,
         base_type: String,
         base_kind: TypeKind,
@@ -377,6 +416,8 @@ pub enum SelectionPlan {
     Linked {
         name: String,
         alias: Option<String>,
+        #[serde(skip)]
+        origin: Option<Origin>,
         type_name: String,
         base_type: String,
         base_kind: TypeKind,
@@ -410,6 +451,9 @@ pub enum SelectionPlan {
         condition_class: Option<ConditionClass>,
         /// An explicit `@alias(as:)` name.
         alias: Option<String>,
+        /// Where the document wrote the alias.
+        #[serde(skip)]
+        origin: Option<Origin>,
         /// `@defer`: the label the incremental part carries.
         deferred: Option<String>,
         catch: Option<CatchPlan>,
@@ -820,6 +864,7 @@ fn lower(
         }
         plan.operations.push(OperationPlan {
             name: name.to_string(),
+            origin: Origin::of(operation.name.location),
             source: operation.name.location.source_location().path().to_string(),
             document: document_index(operation.name.location),
             kind: match operation.kind {
@@ -896,6 +941,7 @@ impl Lowering<'_> {
     fn fragment(&self, fragment: &FragmentDefinition) -> FragmentPlan {
         let mut plan = FragmentPlan {
             name: fragment.name.item.0.lookup().to_string(),
+            origin: Origin::of(fragment.name.location),
             source: fragment.name.location.source_location().path().to_string(),
             document: document_index(fragment.name.location),
             type_condition: self
@@ -983,6 +1029,7 @@ impl Lowering<'_> {
             .iter()
             .map(|variable| VariablePlan {
                 name: variable.name.item.0.lookup().to_string(),
+                origin: Origin::of(variable.name.location),
                 type_name: self.type_reference_name(&variable.type_),
                 base_type: self
                     .schema
@@ -1215,6 +1262,7 @@ impl Lowering<'_> {
                     SelectionPlan::Scalar {
                         name: definition.name.item.lookup().to_string(),
                         alias: field.alias.map(|alias| alias.item.lookup().to_string()),
+                        origin: Origin::of(field.alias_or_name_location()),
                         type_name: self.type_reference_name(&definition.type_),
                         base_type: self
                             .schema
@@ -1331,6 +1379,7 @@ impl Lowering<'_> {
                     SelectionPlan::Linked {
                         name: name.to_string(),
                         alias: field.alias.map(|alias| alias.item.lookup().to_string()),
+                        origin: Origin::of(field.alias_or_name_location()),
                         type_name: self.type_reference_name(&definition.type_),
                         base_type: self.schema.get_type_name(target).lookup().to_string(),
                         base_kind: self.type_kind(target),
@@ -1352,9 +1401,10 @@ impl Lowering<'_> {
                     }
                 }
                 Selection::InlineFragment(inline) => {
-                    let alias =
-                        FragmentAliasMetadata::find(&inline.directives).and_then(|metadata| {
-                            let alias = metadata.alias.item.lookup();
+                    // An alias that names what the selection is named by
+                    // anyway is no alias.
+                    let explicit =
+                        FragmentAliasMetadata::find(&inline.directives).filter(|metadata| {
                             let default: Option<String> = if metadata.wraps_spread {
                                 match inline.selections.first() {
                                     Some(Selection::FragmentSpread(spread)) => {
@@ -1367,8 +1417,9 @@ impl Lowering<'_> {
                                     self.schema.get_type_name(type_).lookup().to_string()
                                 })
                             };
-                            (default.as_deref() != Some(alias)).then(|| alias.to_string())
+                            default.as_deref() != Some(metadata.alias.item.lookup())
                         });
+                    let alias = explicit.map(|metadata| metadata.alias.item.lookup().to_string());
                     let deferred = inline
                         .directives
                         .named(directive_name("defer"))
@@ -1395,6 +1446,7 @@ impl Lowering<'_> {
                             .type_condition
                             .map(|type_| self.condition_class(parent_type, type_)),
                         alias,
+                        origin: explicit.and_then(|metadata| Origin::of(metadata.alias.location)),
                         deferred,
                         catch: self.catch(&inline.directives),
                         bubbles: self.bubbles(&inline.directives),

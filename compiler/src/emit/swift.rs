@@ -1,7 +1,18 @@
 //! Swift literals and parameters, as every printer writes them.
 
-use crate::names::escape;
+use crate::names::{escape, possible_types, type_constant};
 use crate::pipeline::{ArgumentValuePlan, ConstantPlan};
+
+/// A schema type's constant, `Types.Character`.
+pub(super) fn type_reference(type_name: &str) -> String {
+    format!("Types.{}", type_constant(type_name))
+}
+
+/// The constant of the types that satisfy `condition`,
+/// `Types.Node_possible`.
+pub(super) fn possible_types_reference(condition: &str) -> String {
+    format!("Types.{}", possible_types(condition))
+}
 
 /// A Swift string literal for text that may contain quotes or backslashes
 /// (storage keys carry JSON-rendered arguments).
@@ -18,6 +29,20 @@ pub(super) fn swift_literal(text: &str) -> String {
     }
     output.push('"');
     output
+}
+
+/// A raw multi-line Swift string literal holding `text` as it is. Its
+/// delimiter takes one `#` more than the longest run of them in the text,
+/// so no backslash in the text starts an escape and no `"""` ends the
+/// literal.
+pub(super) fn raw_multiline_literal(text: &str) -> String {
+    let longest = text
+        .split(|character| character != '#')
+        .map(str::len)
+        .max()
+        .unwrap_or(0);
+    let hashes = "#".repeat(longest + 1);
+    format!("{hashes}\"\"\"\n{text}\n\"\"\"{hashes}")
 }
 
 /// A `Baton.Variable` expression for a constant.

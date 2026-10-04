@@ -4,9 +4,9 @@
 use std::fmt::Write as _;
 
 use super::HEADER;
-use super::swift::swift_literal;
+use super::swift::{swift_literal, type_reference};
 use crate::decide::{KeyPart, Shared, SlotRef};
-use crate::names::slot_name;
+use crate::names::{possible_types, slot_name, type_constant};
 
 /// `Types`, `Slots` and, when the module has any, `Sites` and
 /// `AbstractSlots`.
@@ -28,16 +28,19 @@ pub(super) fn shared_text(shared: &Shared) -> String {
         let interned = shared.root_names.get(type_name).unwrap_or(type_name);
         let _ = writeln!(
             output,
-            "    static let {type_name} = Baton.Registry.type(\"{interned}\")"
+            "    static let {} = Baton.Registry.type(\"{interned}\")",
+            type_constant(type_name)
         );
     }
     // Inside `Types` the members are named bare: a schema type named
-    // `Types` is a member that hides the enum's own name.
+    // `Types` is a member that hides the enum's own name. `Set` is
+    // qualified, as a type of the module may take its name.
     for (condition, types) in &shared.possible_sets {
-        let members: Vec<&str> = types.iter().map(String::as_str).collect();
+        let members: Vec<String> = types.iter().map(|name| type_constant(name)).collect();
         let _ = writeln!(
             output,
-            "    /// The types that satisfy `... on {condition}`.\n    static let {condition}_possible: Set<Baton.TypeID> = [{}]",
+            "    /// The types that satisfy `... on {condition}`.\n    static let {}: Swift.Set<Baton.TypeID> = [{}]",
+            possible_types(condition),
             members.join(", ")
         );
     }
@@ -60,17 +63,17 @@ pub(super) fn shared_text(shared: &Shared) -> String {
         if slot.has_variables() {
             let _ = writeln!(
                 output,
-                "        static let {} = Baton.DynamicKey(Types.{}, {})",
+                "        static let {} = Baton.DynamicKey({}, {})",
                 slot.member(),
-                slot.type_name,
+                type_reference(&slot.type_name),
                 parts_literal(slot)
             );
         } else {
             let _ = writeln!(
                 output,
-                "        static let {} = Baton.Registry.slot(Types.{}, {})",
+                "        static let {} = Baton.Registry.slot({}, {})",
                 slot.member(),
-                slot.type_name,
+                type_reference(&slot.type_name),
                 swift_literal(&slot.template)
             );
         }

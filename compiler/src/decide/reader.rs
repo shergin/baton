@@ -13,8 +13,8 @@
 use std::collections::{BTreeMap, BTreeSet};
 
 use super::keys::SlotRef;
-use super::{Guard, any};
-use crate::names::{DuplicateName, Kind, Reserved, Scope, lower_camel};
+use super::{Guard, any, written_key};
+use crate::names::{Kind, NameError, Reserved, Scope, lower_camel};
 use crate::pipeline::{
     ArgumentPlan, ArgumentValuePlan, CatchTarget, ConditionClass, ConnectionPlan, ConstantPlan,
     FragmentPlan, Plan, RefetchPlan, RequiredAction, SelectionPlan, StorageKeyPlan, TypeKind,
@@ -36,12 +36,113 @@ pub struct ReaderPlan {
     /// `satisfied`, when a required child can null the lens: one entry per
     /// own member, a check when it has one.
     pub satisfied: Option<Vec<Guarded<Option<SatisfiedCheck>>>>,
+    /// `missingRequiredField`, the same checks naming the first field that
+    /// is missing: on an operation's root that a required field can bubble
+    /// to, whose handle's failure names the field, and on the lenses its
+    /// checks recurse into.
+    pub reports_missing: bool,
     /// `fieldErrors`, `throwing` and `caught`, under an error policy or for
     /// a catch.
     pub field_errors: Option<Vec<ErrorCheck>>,
     /// `isPresent`, for a fragment spread under `@defer`.
     pub is_present: Option<Vec<Guarded<SlotAccess>>>,
     pub nested: Vec<ReaderPlan>,
+}
+
+impl ReaderPlan {
+    /// The module's shared enums that the lens and every lens nested in it
+    /// spell in their bodies: `Slots` and `AbstractSlots` where they read a
+    /// slot, `Types` where they test a record's type or name one, and
+    /// `Sites` where they bind a spread's arguments. A member of the lens,
+    /// or of the type it is nested in, named like one of them hides it from
+    /// all of those bodies.
+    pub fn shared_enums(&self) -> BTreeSet<&'static str> {
+        let mut names = BTreeSet::new();
+        self.collect_shared_enums(&mut names);
+        names
+    }
+
+    fn collect_shared_enums(&self, names: &mut BTreeSet<&'static str>) {
+        for accessor in &self.accessors {
+            match &accessor.read {
+                Read::Scalar(read) => {
+                    names.insert(read.slot.shared_enum());
+                }
+                Read::Linked(read) => {
+                    names.insert(read.slot.shared_enum());
+                    // A non-null link reads its type's placeholder when it
+                    // has no record.
+                    if matches!(
+                        read.form,
+                        LinkedForm::Required | LinkedForm::Caught { optional: false }
+                    ) {
+                        names.insert("Types");
+                    }
+                }
+                Read::Spread(read) => {
+                    if read.binding.is_some() {
+                        names.insert("Sites");
+                    }
+                    if read
+                        .guards
+                        .iter()
+                        .any(|guard| matches!(guard, SpreadGuard::Test(_)))
+                    {
+                        names.insert("Types");
+                    }
+                }
+                Read::Aliased(read) => {
+                    if read
+                        .guards
+                        .iter()
+                        .any(|guard| matches!(guard, AliasGuard::Test(_)))
+                    {
+                        names.insert("Types");
+                    }
+                }
+                Read::Condition(_) => {
+                    names.insert("Types");
+                }
+            }
+        }
+        if self.connection.is_some() {
+            names.insert("Types");
+        }
+        for entry in self.satisfied.iter().flatten() {
+            if let Some(
+                SatisfiedCheck::HasValue { slot, .. } | SatisfiedCheck::Linked { slot, .. },
+            ) = &entry.item
+            {
+                names.insert(slot.shared_enum());
+            }
+        }
+        for check in self.field_errors.iter().flatten() {
+            match check {
+                ErrorCheck::Condition { .. } => {
+                    names.insert("Types");
+                }
+                ErrorCheck::Member(lines) => {
+                    for line in &lines.item {
+                        match line {
+                            ErrorLine::Field(slot)
+                            | ErrorLine::Linked { slot, .. }
+                            | ErrorLine::List { slot, .. }
+                            | ErrorLine::Required { slot, .. } => {
+                                names.insert(slot.shared_enum());
+                            }
+                            ErrorLine::Nested(_) => {}
+                        }
+                    }
+                }
+            }
+        }
+        for presence in self.is_present.iter().flatten() {
+            names.insert(presence.item.shared_enum());
+        }
+        for child in &self.nested {
+            child.collect_shared_enums(names);
+        }
+    }
 }
 
 /// Something done only when the conditions on the way to it select: the
@@ -59,6 +160,18 @@ pub struct Guarded<T> {
 pub struct SlotAccess {
     pub slot: SlotRef,
     pub on_record_type: bool,
+}
+
+impl SlotAccess {
+    /// The shared enum the slot is read through: `AbstractSlots` for a
+    /// constant key on an interface or union, `Slots` otherwise.
+    fn shared_enum(&self) -> &'static str {
+        if self.on_record_type && !self.slot.has_variables() {
+            "AbstractSlots"
+        } else {
+            "Slots"
+        }
+    }
 }
 
 /// One accessor: its name, unescaped, the conditions it reads under, and
@@ -330,7 +443,7 @@ pub(super) struct Readers {
     /// the lenses are decided.
     pub sites: BTreeSet<String>,
     /// Names some lens would have declared twice.
-    pub duplicates: Vec<DuplicateName>,
+    pub duplicates: Vec<NameError>,
 }
 
 /// What the lenses of one document share: the fragment's `@refetchable` data
@@ -485,7 +598,7 @@ impl Readers {
             within_catch: false,
             caught_spread: false,
         };
-        self.lens(
+        let mut data = self.lens(
             "Data",
             &operation.root_type,
             false,
@@ -494,7 +607,11 @@ impl Readers {
             None,
             false,
             operation.bubbles,
-        )
+        );
+        if operation.bubbles {
+            report_missing(&mut data);
+        }
+        data
     }
 
     /// A lens over a selection set on `type_name`. A fragment root with
@@ -560,17 +677,21 @@ impl Readers {
                 )
             })
             .collect();
-        ReaderPlan {
+        let lens = ReaderPlan {
             name: name.to_string(),
             type_name: type_name.to_string(),
             accessors,
             refetch,
             connection,
             satisfied,
+            reports_missing: false,
             field_errors,
             is_present,
             nested,
-        }
+        };
+        self.duplicates
+            .extend(hidden_enums(context.path, &lens, &members));
+        lens
     }
 
     /// The connection surface of a lens over a `@connection` field: Relay's
@@ -678,14 +799,10 @@ impl Readers {
         selections: &[SelectionPlan],
         type_name: &str,
         members: &mut [Member],
-    ) -> Vec<DuplicateName> {
+    ) -> Vec<NameError> {
         let mut scope = Scope::new(path, &self.lens_names);
-        scope.declare("anchor", Kind::Instance, "the anchor every lens has");
-        scope.declare(
-            "recordID",
-            Kind::Instance,
-            "the record identity every lens has",
-        );
+        scope.declare("anchor", Kind::Instance, "the `anchor` every lens has");
+        scope.declare("recordID", Kind::Instance, "the `recordID` every lens has");
         scope.declare("typeName", Kind::Static, "the type name every lens has");
         if facts.refetchable {
             scope.declare(
@@ -697,7 +814,7 @@ impl Readers {
         if facts.connection {
             scope.declare("connection", Kind::Static, "the connection's slots");
             if facts.nodes {
-                scope.declare("nodes", Kind::Instance, "the connection's nodes");
+                scope.declare("nodes", Kind::Instance, "the connection's `nodes`");
             }
             for name in [
                 "hasNext",
@@ -711,7 +828,7 @@ impl Readers {
         }
         for member in members.iter_mut() {
             if let Some((name, what)) = written_accessor(&member.selection) {
-                scope.declare(&name, Kind::Instance, what);
+                scope.declare_written(&name, Kind::Instance, what, written_key(&member.selection));
                 member.accessor = Some(name);
             }
         }
@@ -1126,6 +1243,27 @@ fn refetch_members(refetch: &RefetchPlan, context: Context<'_>) -> RefetchMember
     }
 }
 
+/// Marks `lens` to report the path of its first missing `@required` field,
+/// and the lenses its `satisfied` recurses into, which report the paths
+/// below it.
+fn report_missing(lens: &mut ReaderPlan) {
+    lens.reports_missing = true;
+    let targets: Vec<String> = lens
+        .satisfied
+        .iter()
+        .flatten()
+        .filter_map(|entry| match &entry.item {
+            Some(SatisfiedCheck::Linked { lens: target, .. }) => Some(target.clone()),
+            _ => None,
+        })
+        .collect();
+    for child in &mut lens.nested {
+        if targets.contains(&child.name) {
+            report_missing(child);
+        }
+    }
+}
+
 /// `satisfied`: whether every `@required` field (NONE or LOG) of the
 /// selection is present, recursing into required links. Relay nulls the
 /// enclosing object otherwise; here the parent's accessor returns nil. A
@@ -1423,6 +1561,27 @@ fn collect_caught(selections: &[SelectionPlan], into: &mut BTreeSet<String>) {
             _ => {}
         }
     }
+}
+
+/// The clashes of a lens's accessors with the shared enums its code spells:
+/// an accessor the document named `Slots`, say, would hide the enum from
+/// every body of the lens and of the lenses nested in it.
+fn hidden_enums(path: &str, lens: &ReaderPlan, members: &[Member]) -> Vec<NameError> {
+    let spelled = lens.shared_enums();
+    let none = Reserved::none();
+    let mut scope = Scope::new(path, &none);
+    for name in &spelled {
+        scope.declare(name, Kind::Type, format!("the shared enum `{name}`"));
+    }
+    for member in members {
+        let Some((name, what)) = written_accessor(&member.selection) else {
+            continue;
+        };
+        if spelled.contains(name.as_str()) {
+            scope.declare_written(&name, Kind::Instance, what, written_key(&member.selection));
+        }
+    }
+    scope.finish()
 }
 
 /// The accessor a member's document spells, and what it is, for messages: a

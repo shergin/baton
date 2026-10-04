@@ -30,8 +30,7 @@ public struct FieldErrors: Error, Sendable, CustomStringConvertible {
 /// A `@required(action: THROW)` field read while null, or the root of an
 /// operation that a `@required` field bubbled to.
 public struct RequiredFieldError: Error, Sendable, CustomStringConvertible {
-    /// The field's path; empty for a root, whose generated check says only
-    /// that a field below it bubbled, not which.
+    /// The field's path: the one read, or the one that bubbled to the root.
     public let path: String
     /// The operation whose root bubbled; nil for a field read while null.
     public let operationName: String?
@@ -41,14 +40,14 @@ public struct RequiredFieldError: Error, Sendable, CustomStringConvertible {
         operationName = nil
     }
 
-    init(bubbledToRootOf operationName: String) {
-        path = ""
+    init(bubbledToRootOf operationName: String, path: String) {
+        self.path = path
         self.operationName = operationName
     }
 
     public var description: String {
         guard let operationName else { return "the @required field \(path) is null" }
-        return "\(operationName): a @required field is null and bubbled to the root"
+        return "\(operationName): the @required field \(path) is null and bubbled to the root"
     }
 }
 

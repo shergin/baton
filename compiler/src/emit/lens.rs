@@ -1,10 +1,18 @@
 //! Lens types: a fragment's lens and every lens nested in a lens, their
 //! accessors, the connection and refetch surface, and the `satisfied`,
-//! `fieldErrors` and `isPresent` checks, printed from the `ReaderPlan`.
+//! `missingRequiredField`, `fieldErrors` and `isPresent` checks, printed
+//! from the `ReaderPlan`.
+//!
+//! A lens names the runtime's module only in a type, where Swift looks up
+//! types alone, so an accessor named `Baton` hides it from nothing; an
+//! expression takes the runtime's type from its context, as
+//! `.failure(.init(errors))` does.
 
 use std::fmt::Write as _;
 
-use super::swift::{argument_expression, swift_literal, variable_literal};
+use super::swift::{
+    argument_expression, possible_types_reference, swift_literal, type_reference, variable_literal,
+};
 use crate::decide::{
     Accessor, AliasGuard, AliasedRead, BoundArgument, ConditionRead, ConnectionMembers, ErrorCheck,
     ErrorLine, FragmentLens, Guard, Guarded, LinkedForm, LinkedRead, Read, ReaderPlan,
@@ -32,10 +40,13 @@ pub(super) fn lens(output: &mut String, lens: &ReaderPlan, indent: &str) {
         "{indent}nonisolated public struct {}: Baton.Lens {{",
         lens.name
     );
-    let _ = writeln!(output, "{indent}    public let anchor: Baton.Anchor");
     let _ = writeln!(
         output,
-        "{indent}    public init(anchor: Baton.Anchor) {{ self.anchor = anchor }}"
+        "{indent}    @_spi(Generated) public let anchor: Baton.Anchor"
+    );
+    let _ = writeln!(
+        output,
+        "{indent}    @_spi(Generated) public init(anchor: Baton.Anchor) {{ self.anchor = anchor }}"
     );
     let _ = writeln!(
         output,
@@ -54,6 +65,9 @@ pub(super) fn lens(output: &mut String, lens: &ReaderPlan, indent: &str) {
     }
     if let Some(entries) = &lens.satisfied {
         satisfied_function(output, entries, &inner);
+        if lens.reports_missing {
+            missing_required_function(output, entries, &inner);
+        }
     }
     if let Some(checks) = &lens.field_errors {
         field_errors_function(output, checks, &inner);
@@ -190,7 +204,10 @@ fn linked_accessor(
             } else {
                 (
                     nested.clone(),
-                    format!("{nested}(anchor: $0.requiredLinked({slot}, type: Types.{base_type}))"),
+                    format!(
+                        "{nested}(anchor: $0.requiredLinked({slot}, type: {}))",
+                        type_reference(base_type)
+                    ),
                 )
             };
             (
@@ -214,7 +231,10 @@ fn linked_accessor(
         ),
         LinkedForm::Required => (
             nested.clone(),
-            format!("{nested}(anchor: anchor.requiredLinked({slot}, type: Types.{base_type}))"),
+            format!(
+                "{nested}(anchor: anchor.requiredLinked({slot}, type: {}))",
+                type_reference(base_type)
+            ),
             false,
         ),
     };
@@ -333,7 +353,7 @@ fn spread_accessor(output: &mut String, name: &str, read: &SpreadRead, indent: &
             );
             let _ = writeln!(
                 output,
-                "{body_indent}return errors.isEmpty ? .success({fragment}(anchor: {anchor})) : .failure(Baton.FieldErrors(errors))"
+                "{body_indent}return errors.isEmpty ? .success({fragment}(anchor: {anchor})) : .failure(.init(errors))"
             );
         }
     }
@@ -469,7 +489,7 @@ fn refetch_members(output: &mut String, refetch: &RefetchMembers, indent: &str) 
     );
     let _ = writeln!(
         output,
-        "{indent}public static let refetchable = Baton.Refetch(variables: [{}], identifier: {}, first: {}, after: {}, last: {}, before: {})",
+        "{indent}@_spi(Generated) public static let refetchable: Baton.Refetch = .init(variables: [{}], identifier: {}, first: {}, after: {}, last: {}, before: {})",
         refetch
             .variables
             .iter()
@@ -504,8 +524,10 @@ fn connection_members(output: &mut String, connection: &ConnectionMembers, inden
     );
     let _ = writeln!(
         output,
-        "{indent}public static let connection = Baton.ConnectionSlots(connection: Types.{}, edge: Types.{}, pageInfo: Types.{})",
-        connection.connection_type, connection.edge_type, connection.page_info_type
+        "{indent}@_spi(Generated) public static let connection: Baton.ConnectionSlots = .init(connection: {}, edge: {}, pageInfo: {})",
+        type_reference(&connection.connection_type),
+        type_reference(&connection.edge_type),
+        type_reference(&connection.page_info_type)
     );
     if let Some(nodes) = &connection.nodes {
         let (edges, node) = (&nodes.edges, &nodes.node);
@@ -610,7 +632,7 @@ fn satisfied_function(
     );
     let _ = writeln!(
         output,
-        "{indent}@MainActor public static func satisfied(_ anchor: Baton.Anchor) -> Bool {{"
+        "{indent}@_spi(Generated) @MainActor public static func satisfied(_ anchor: Baton.Anchor) -> Bool {{"
     );
     for entry in entries {
         let (indent, close) = open_guard(output, &entry.guards, indent);
@@ -646,6 +668,68 @@ fn satisfied_function(
     let _ = writeln!(output, "{indent}}}");
 }
 
+/// `missingRequiredField`: the path of the first `@required` field (NONE or
+/// LOG) of the selection that is missing, recursing into required links;
+/// nil when `satisfied` holds. It reads and reports what `satisfied` does.
+fn missing_required_function(
+    output: &mut String,
+    entries: &[Guarded<Option<SatisfiedCheck>>],
+    indent: &str,
+) {
+    let _ = writeln!(
+        output,
+        "{indent}/// The path of the first `@required` field that is missing, which bubbles to the root."
+    );
+    let _ = writeln!(
+        output,
+        "{indent}@_spi(Generated) @MainActor public static func missingRequiredField(_ anchor: Baton.Anchor) -> String? {{"
+    );
+    for entry in entries {
+        let (indent, close) = open_guard(output, &entry.guards, indent);
+        match &entry.item {
+            Some(SatisfiedCheck::HasValue { slot, path, log }) => {
+                let path = swift_literal(path);
+                let _ = writeln!(
+                    output,
+                    "{indent}    guard anchor.hasValue({}, path: {path}, log: {log}) else {{ return {path} }}",
+                    slot_expression(slot)
+                );
+            }
+            Some(SatisfiedCheck::Linked {
+                slot,
+                lens,
+                path,
+                log,
+            }) => {
+                let path = swift_literal(path);
+                // A link that is null, or that a missing field below it
+                // nulls, is reported under its own path, as `satisfied`
+                // reports it.
+                let report = if *log {
+                    format!("_ = anchor.requiredMissing(path: {path}, log: true); ")
+                } else {
+                    String::new()
+                };
+                let _ = writeln!(
+                    output,
+                    "{indent}    guard let child = anchor.linked({}) else {{ {report}return {path} }}",
+                    slot_expression(slot)
+                );
+                let _ = writeln!(
+                    output,
+                    "{indent}    if let missing = {lens}.missingRequiredField(child) {{ {report}return missing }}"
+                );
+            }
+            None => {}
+        }
+        if !close.is_empty() {
+            let _ = writeln!(output, "{close}");
+        }
+    }
+    let _ = writeln!(output, "{indent}    return nil");
+    let _ = writeln!(output, "{indent}}}");
+}
+
 /// `fieldErrors`, `throwing` and `caught`: the field errors in this
 /// selection, excluding fields caught by their own `@catch`, plus the
 /// `@required(action: THROW)` fields that are null.
@@ -656,7 +740,7 @@ fn field_errors_function(output: &mut String, checks: &[ErrorCheck], indent: &st
     );
     let _ = writeln!(
         output,
-        "{indent}@MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {{"
+        "{indent}@_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {{"
     );
     let _ = writeln!(output, "{indent}    var errors: [Baton.FieldError] = []");
     for check in checks {
@@ -727,27 +811,20 @@ fn field_errors_function(output: &mut String, checks: &[ErrorCheck], indent: &st
     );
     let _ = writeln!(
         output,
-        "{indent}@MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self {{"
+        "{indent}@_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self {{ try caught(anchor).get() }}"
     );
-    let _ = writeln!(output, "{indent}    let errors = fieldErrors(anchor)");
-    let _ = writeln!(
-        output,
-        "{indent}    if !errors.isEmpty {{ throw Baton.FieldErrors(errors) }}"
-    );
-    let _ = writeln!(output, "{indent}    return Self(anchor: anchor)");
-    let _ = writeln!(output, "{indent}}}");
     let _ = writeln!(
         output,
         "{indent}/// The lens, or the field errors in it as a `Result`."
     );
     let _ = writeln!(
         output,
-        "{indent}@MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {{"
+        "{indent}@_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {{"
     );
     let _ = writeln!(output, "{indent}    let errors = fieldErrors(anchor)");
     let _ = writeln!(
         output,
-        "{indent}    return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(Baton.FieldErrors(errors))"
+        "{indent}    return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))"
     );
     let _ = writeln!(output, "{indent}}}");
 }
@@ -771,7 +848,7 @@ fn is_present_function(output: &mut String, checks: &[Guarded<SlotAccess>], inde
     );
     let _ = writeln!(
         output,
-        "{indent}@MainActor public static func isPresent(_ anchor: Baton.Anchor) -> Bool {{ {} }}",
+        "{indent}@_spi(Generated) @MainActor public static func isPresent(_ anchor: Baton.Anchor) -> Bool {{ {} }}",
         if checks.is_empty() {
             "true".to_string()
         } else {
@@ -799,10 +876,11 @@ fn slot_expression(access: &SlotAccess) -> String {
 /// The Swift test of a record against a type condition.
 fn type_test(test: &TypeTest) -> String {
     match test {
-        TypeTest::Is(type_name) => format!("anchor.record.is(Types.{type_name})"),
-        TypeTest::InSet { condition, .. } => {
-            format!("Types.{condition}_possible.contains(anchor.record.type)")
-        }
+        TypeTest::Is(type_name) => format!("anchor.record.is({})", type_reference(type_name)),
+        TypeTest::InSet { condition, .. } => format!(
+            "{}.contains(anchor.record.type)",
+            possible_types_reference(condition)
+        ),
     }
 }
 

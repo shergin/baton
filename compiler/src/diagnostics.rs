@@ -7,6 +7,7 @@ use common::{Diagnostic, SourceLocationKey};
 use intern::Lookup;
 
 use crate::documents::Document;
+use crate::pipeline::Origin;
 
 /// A rendered diagnostic, ready to print: one line, and a `note:` line for
 /// each place it relates to.
@@ -83,17 +84,7 @@ fn one_line(message: &str) -> String {
 fn resolve(key: SourceLocationKey, offset: usize, documents: &[Document]) -> (String, u32, u32) {
     match key {
         SourceLocationKey::Embedded { path, index } => {
-            let path = path.lookup();
-            let document = documents.iter().find(|document| {
-                document.path.to_string_lossy() == path && document.index == index as usize
-            });
-            match document {
-                Some(document) => {
-                    let position = document.position_of(offset);
-                    (path.to_string(), position.line, position.column)
-                }
-                None => (path.to_string(), 1, 1),
-            }
+            embedded(path.lookup(), index as usize, offset, documents)
         }
         SourceLocationKey::Standalone { path } => {
             let path = path.lookup();
@@ -109,6 +100,40 @@ fn resolve(key: SourceLocationKey, offset: usize, documents: &[Document]) -> (St
             }
         }
         SourceLocationKey::Generated => ("<generated>".to_string(), 1, 1),
+    }
+}
+
+/// The position of `offset` in the `index`th document of the file at
+/// `path`.
+fn embedded(path: &str, index: usize, offset: usize, documents: &[Document]) -> (String, u32, u32) {
+    let document = documents
+        .iter()
+        .find(|document| document.path.to_string_lossy() == path && document.index == index);
+    match document {
+        Some(document) => {
+            let position = document.position_of(offset);
+            (path.to_string(), position.line, position.column)
+        }
+        None => (path.to_string(), 1, 1),
+    }
+}
+
+/// An error at a name the document wrote, which the compiler found after
+/// the front end.
+pub fn at(origin: &Origin, documents: &[Document], message: impl Into<String>) -> Rendered {
+    let (path, line, column) = embedded(
+        &origin.path,
+        origin.document,
+        origin.offset as usize,
+        documents,
+    );
+    Rendered {
+        path,
+        line,
+        column,
+        severity: "error",
+        message: message.into(),
+        notes: Vec::new(),
     }
 }
 

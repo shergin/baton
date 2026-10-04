@@ -1,5 +1,6 @@
 import Foundation
 import SQLite3
+import Synchronization
 
 /// The connection to the image, its prepared statements and the names it
 /// interns. Not thread-safe: `Persistence` holds it behind its lock, and
@@ -24,6 +25,10 @@ final class Disk: @unchecked Sendable {
     static let nameLimit = 65_536
     /// Client fields that describe a request in flight, not data.
     static let requestState: Set<String> = ["__isLoadingNext", "__isLoadingPrevious"]
+    /// The files the process's images hold, by path. One image writes a file
+    /// at a time: a second would interleave its names and generations with
+    /// the first's.
+    private static let held = Mutex<Set<String>>([])
     /// The key prefixes of records that hang off the mutation and the
     /// subscription root by path.
     static let mutationPayloads = Store.mutationRootKey + ":"
@@ -50,11 +55,17 @@ final class Disk: @unchecked Sendable {
     private let sizeLimit: Int
     private var db: OpaquePointer?
     private var retryAfter: UInt64 = 0
-    /// Set when the file is another program's database: the image stays off
-    /// for the process instead of asking again every second.
-    private var foreign = false
-    /// Whether this process has moved the generation already: a connection
-    /// opened again after a failure is the same launch.
+    /// Set when the file is another program's database, or when another
+    /// image in the process holds it: this image stays off for the process,
+    /// leaves the file alone, and does not ask again every second.
+    private var off = false
+    /// Whether this image holds its file among the process's images: from
+    /// its creation, or from the open after a `release()`, until the next
+    /// `release()` or its end.
+    private(set) var holding = false
+    /// Whether this image has moved the generation already: a connection
+    /// opened again after a failure or a `release()` is the same launch. A
+    /// new image on the file moves it again, as a launch does.
     private var launched = false
     /// Whether rows no launch has touched since the one before last have
     /// been deleted, which the writer's first batch does: three scans that
@@ -85,12 +96,15 @@ final class Disk: @unchecked Sendable {
     private var ids: [String: Int32] = [:]
     /// Names interned since the last transaction that committed.
     private var unwritten: [Int32] = []
-    /// By type, then by slot index: the name id, -1 when not asked yet, -2
-    /// for a slot that is never written.
+    /// By type, then by the index of a dense slot: the name id, -1 when not
+    /// asked yet, -2 for a slot that is never written. The file holds names
+    /// only, so which kind a slot is stays this process's own.
     private var slotNames: [[Int32]] = []
+    /// The same for the slots numbered apart, by `~index`.
+    private var renderedNames: [[Int32]] = []
     /// By type: the name id of the type's name, or -1.
     private var typeNames: [Int32] = []
-    /// By type, then by name id: the slot index, or -1.
+    /// By type, then by name id: the slot index, or `Int32.min`.
     private var slots: [[Int32]] = []
     /// By name id: the type of that name.
     private var types: [TypeID?] = []
@@ -103,9 +117,29 @@ final class Disk: @unchecked Sendable {
         self.path = path
         self.version = version
         self.sizeLimit = sizeLimit
+        let claimed = claim()
+        assert(claimed, "another Persistence in this process holds \(path); close() it before making another")
     }
 
-    deinit { close() }
+    deinit {
+        close()
+        letGo()
+    }
+
+    /// Takes the file for this image unless another image holds it, in
+    /// which case this one stays off.
+    private func claim() -> Bool {
+        holding = Disk.held.withLock { $0.insert(path).inserted }
+        if !holding { off = true }
+        return holding
+    }
+
+    /// Gives the file back, for another image to take.
+    private func letGo() {
+        guard holding else { return }
+        holding = false
+        _ = Disk.held.withLock { $0.remove(path) }
+    }
 
     // MARK: Opening
 
@@ -113,7 +147,10 @@ final class Disk: @unchecked Sendable {
     /// started again; any other failure leaves the image off for a second.
     func open() -> Opening {
         if db != nil { return .already }
-        if foreign { return .unavailable }
+        if off { return .unavailable }
+        // A released image takes its file again, unless another took it
+        // over meanwhile.
+        if !holding, !claim() { return .unavailable }
         // An image that missed a batch is behind memory and every launch
         // after: it starts again.
         if FileManager.default.fileExists(atPath: behind) {
@@ -128,7 +165,7 @@ final class Disk: @unchecked Sendable {
             } catch .unreadable where attempt == 0 {
                 discard()
             } catch .foreign {
-                foreign = true
+                off = true
                 break
             } catch {
                 break
@@ -181,7 +218,7 @@ final class Disk: @unchecked Sendable {
         }
 
         // A new launch: the app's version decides whether the rows survive,
-        // and the generation moves once per process. Rows no launch has
+        // and the generation moves once per image. Rows no launch has
         // touched since the one before last go in the writer's first batch.
         try exec("BEGIN IMMEDIATE")
         if try text("SELECT value FROM meta WHERE key = 'version'") != version {
@@ -236,11 +273,12 @@ final class Disk: @unchecked Sendable {
         return times
     }
 
-    /// Closes the connection, so another image may open the file: for a
-    /// sign-out's new environment, and for tests that run one launch after
-    /// another. Work that comes later opens it again.
+    /// Closes the connection and gives the file back, so another image may
+    /// take it, as the tests do to run one launch after another. Work that
+    /// comes later takes it again, unless another image has.
     func release() {
         close()
+        letGo()
     }
 
     private func close() {
@@ -254,6 +292,7 @@ final class Disk: @unchecked Sendable {
         ids.removeAll()
         unwritten.removeAll()
         slotNames.removeAll()
+        renderedNames.removeAll()
         typeNames.removeAll()
         slots.removeAll()
         types.removeAll()
@@ -266,15 +305,21 @@ final class Disk: @unchecked Sendable {
     /// file could not be opened, and closes the connection: the next open
     /// discards the image rather than serve rows older than memory knew.
     func markBehind() {
-        guard !foreign else { return }
+        guard !off else { return }
         FileManager.default.createFile(atPath: behind, contents: nil)
         close()
     }
 
     /// Deletes the file for a sign-out when it is an image, and leaves a
-    /// database of another kind alone; the next work opens a new one.
+    /// database of another kind, or a file another image holds, alone; the
+    /// next work opens a new one.
     func erase() {
-        if foreign { return }
+        if off { return }
+        // A released image holds its file for the removal alone, so the
+        // next image may still take it.
+        let borrowed = !holding
+        if borrowed, !claim() { return }
+        defer { if borrowed { letGo() } }
         // A file the connection does not hold open is told by its
         // application id first: it may never have been opened.
         if db == nil, !holdsAnImage() { return }
@@ -423,14 +468,20 @@ final class Disk: @unchecked Sendable {
     }
 
     /// The slot a stored name is on a type, interning it for this process.
+    /// A name the process has met keeps its slot, of either kind. One it has
+    /// not met is taken as rendered when it has arguments: the file cannot
+    /// tell a constant from a key rendered from variables, and a key
+    /// numbered apart widens no record. A constant met later shares the
+    /// slot and reads it through the record's search.
     func slot(_ name: Int, on type: TypeID) -> Slot? {
         guard name >= 0, name < names.count else { return nil }
         let table = Int(type.raw)
         if table >= slots.count { slots.append(contentsOf: repeatElement([], count: table + 1 - slots.count)) }
-        if name >= slots[table].count { slots[table].append(contentsOf: repeatElement(-1, count: names.count - slots[table].count)) }
+        if name >= slots[table].count { slots[table].append(contentsOf: repeatElement(.min, count: names.count - slots[table].count)) }
         var index = slots[table][name]
-        if index < 0 {
-            index = Registry.slot(type, names[name]).index
+        if index == .min {
+            let storageKey = names[name]
+            index = Registry.slot(type, storageKey, rendered: storageKey.utf8.contains(UInt8(ascii: "("))).index
             slots[table][name] = index
         }
         return Slot(type: type, index: index)
@@ -508,13 +559,21 @@ final class Disk: @unchecked Sendable {
         scratch.append((snapshot.deleted ? 1 : 0) | (record.isEntity ? 2 : 0))
         append(varint: UInt64(name(of: record.type)))
         for index in snapshot.values.indices {
-            if case .missing = snapshot.values[index] { continue }
-            let name = name(of: Slot(type: record.type, index: Int32(index)))
-            if name < 0 { continue }
-            append(varint: UInt64(name))
-            append(snapshot.values[index], error: snapshot.errors?[Int32(index)])
+            appendCell(Slot(type: record.type, index: Int32(index)), snapshot.values[index], snapshot.errors)
+        }
+        for position in snapshot.renderedIDs.indices {
+            appendCell(Slot(type: record.type, index: ~snapshot.renderedIDs[position]), snapshot.renderedValues[position], snapshot.errors)
         }
         return upsert(prepared.upsertRecord, record.key)
+    }
+
+    /// Appends a record's cell: the key's name and the value with its error.
+    private func appendCell(_ slot: Slot, _ value: Value, _ errors: [Int32: FieldError]?) {
+        if case .missing = value { return }
+        let name = name(of: slot)
+        if name < 0 { return }
+        append(varint: UInt64(name))
+        append(value, error: errors?[slot.index])
     }
 
     private func put(_ field: Persistence.RootField, _ prepared: Prepared) -> Bool {
@@ -589,15 +648,19 @@ final class Disk: @unchecked Sendable {
     /// The name id of a slot's storage key; negative for a slot that is never
     /// written.
     private func name(of slot: Slot) -> Int32 {
-        let table = Int(slot.type.raw)
-        let index = Int(slot.index)
-        if table >= slotNames.count { slotNames.append(contentsOf: repeatElement([], count: table + 1 - slotNames.count)) }
-        if index >= slotNames[table].count { slotNames[table].append(contentsOf: repeatElement(-1, count: index + 1 - slotNames[table].count)) }
-        if slotNames[table][index] == -1 {
+        if slot.index < 0 { return name(of: slot, at: Int(~slot.index), in: &renderedNames) }
+        return name(of: slot, at: Int(slot.index), in: &slotNames)
+    }
+
+    private func name(of slot: Slot, at index: Int, in table: inout [[Int32]]) -> Int32 {
+        let type = Int(slot.type.raw)
+        if type >= table.count { table.append(contentsOf: repeatElement([], count: type + 1 - table.count)) }
+        if index >= table[type].count { table[type].append(contentsOf: repeatElement(-1, count: index + 1 - table[type].count)) }
+        if table[type][index] == -1 {
             let storageKey = Registry.storageKey(slot)
-            slotNames[table][index] = Disk.requestState.contains(storageKey) ? -2 : intern(storageKey)
+            table[type][index] = Disk.requestState.contains(storageKey) ? -2 : intern(storageKey)
         }
-        return slotNames[table][index]
+        return table[type][index]
     }
 
     // MARK: Encoding

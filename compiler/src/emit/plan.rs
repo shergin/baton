@@ -2,7 +2,7 @@
 
 use std::fmt::Write as _;
 
-use super::swift::{constant_text, swift_literal};
+use super::swift::{constant_text, possible_types_reference, swift_literal, type_reference};
 use crate::decide::{
     self, Guard, NormalizationField, NormalizationKind, NormalizationSelection, SlotRef,
 };
@@ -21,8 +21,10 @@ pub(super) fn selection_plan(
     let pad = "    ".repeat(depth);
     let _ = write!(
         output,
-        "Baton.Selection(type: Types.{type_name}, hasID: {}, abstract: {}",
-        selection.has_id, selection.is_abstract
+        "Baton.Selection(type: {}, hasID: {}, abstract: {}",
+        type_reference(type_name),
+        selection.has_id,
+        selection.is_abstract
     );
     if let [only] = selection.variants.as_slice()
         && only.types.is_none()
@@ -36,7 +38,7 @@ pub(super) fn selection_plan(
     for variant in &selection.variants {
         let types = match &variant.types {
             Some(types) => {
-                let names: Vec<String> = types.iter().map(|name| format!("Types.{name}")).collect();
+                let names: Vec<String> = types.iter().map(|name| type_reference(name)).collect();
                 format!("[{}]", names.join(", "))
             }
             None => "nil".to_string(),
@@ -140,8 +142,11 @@ fn plan_key(type_name: &str, storage_key: &StorageKeyPlan) -> String {
 /// itself, anything else as JSON.
 fn lookup_expression(lookup: &LookupPlan, base_type: &str) -> String {
     let types = match &lookup.type_name {
-        Some(type_name) => format!("type: Types.{type_name}"),
-        None => format!("type: nil, possibleTypes: Types.{base_type}_possible"),
+        Some(type_name) => format!("type: {}", type_reference(type_name)),
+        None => format!(
+            "type: nil, possibleTypes: {}",
+            possible_types_reference(base_type)
+        ),
     };
     let key = match &lookup.value {
         ArgumentValuePlan::Variable(name) => format!(".variable({})", swift_literal(name)),
@@ -178,9 +183,10 @@ fn connection_expression(
         None => String::new(),
     };
     format!(
-        "Baton.ConnectionPlan(key: {key}, slots: Baton.ConnectionSlots(connection: Types.{connection_type}, edge: Types.{}, pageInfo: Types.{}){}{})",
-        connection.edge_type,
-        connection.page_info_type,
+        "Baton.ConnectionPlan(key: {key}, slots: Baton.ConnectionSlots(connection: {}, edge: {}, pageInfo: {}){}{})",
+        type_reference(connection_type),
+        type_reference(&connection.edge_type),
+        type_reference(&connection.page_info_type),
         cursor(&connection.after, "after"),
         cursor(&connection.before, "before")
     )
@@ -215,7 +221,7 @@ fn edit_expression(edit: &EditPlan) -> String {
         None => String::new(),
     };
     let edge_type = match &edit.edge_type_name {
-        Some(name) => format!(", edgeType: Types.{name}"),
+        Some(name) => format!(", edgeType: {}", type_reference(name)),
         None => String::new(),
     };
     format!(

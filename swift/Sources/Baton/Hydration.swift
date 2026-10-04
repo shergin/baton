@@ -14,7 +14,7 @@ extension Store {
         // A record that held nothing has had no reader to notify. One that
         // held something is notified once the row is closed: an observer may
         // ask the store a question of its own.
-        let observed = record.slotCount > 0
+        let observed = !record.isEmpty
         var filled: [Slot] = []
         let found = disk.record(record.key) { bytes in
             var reader = RowReader(bytes)

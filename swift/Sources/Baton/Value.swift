@@ -68,7 +68,7 @@ public enum Variable: Hashable, Sendable {
     }
 
     /// The value as a record key segment: strings unquoted, everything else as JSON.
-    public var keyText: String {
+    package var keyText: String {
         if case .string(let string) = self { return string }
         return json
     }
@@ -101,10 +101,10 @@ public struct Variables: Hashable, Sendable {
     public subscript(name: String) -> Variable? { values[name] }
 
     /// The JSON rendering used inside storage keys, as Relay does: `characters(page:1)`.
-    public func render(_ name: String) -> String { (values[name] ?? .null).json }
+    package func render(_ name: String) -> String { (values[name] ?? .null).json }
 
     /// The rendering used inside record keys for lookups: `Character:1`.
-    public func keyText(_ name: String) -> String { (values[name] ?? .null).keyText }
+    package func keyText(_ name: String) -> String { (values[name] ?? .null).keyText }
 
     /// The `variables` object of a request body.
     public var json: String { Variable.object(values).json }

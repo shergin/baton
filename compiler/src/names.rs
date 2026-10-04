@@ -7,9 +7,12 @@
 //! scope do not compile. Every name an emitter declares is taken from its
 //! scope's allocator, which knows the reserved names and the names already
 //! declared, and reports a second declaration of a name rather than writing
-//! Swift that does not compile.
+//! Swift that does not compile: at the document's name when the document
+//! chose one of the two, as an internal error when the compiler chose both.
 
 use std::collections::BTreeSet;
+
+use crate::pipeline::Origin;
 
 /// How a declaration's name meets the others of its scope. Instance
 /// properties clash with instance properties and static ones with static
@@ -29,7 +32,29 @@ impl Kind {
     }
 }
 
-/// A name two declarations of one scope would take.
+/// Why a scope cannot declare a name.
+#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+pub enum NameError {
+    /// A name the document chose that another declaration takes.
+    #[error(transparent)]
+    Clash(#[from] Clash),
+    /// A name the compiler chose for two declarations: its own fault.
+    #[error(transparent)]
+    Duplicate(#[from] DuplicateName),
+}
+
+/// A name the document chose that its scope declares otherwise, said at
+/// the document's name with what the document can change.
+#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+#[error("{what} clashes with {other}; {remedy}")]
+pub struct Clash {
+    pub origin: Origin,
+    pub what: String,
+    pub other: String,
+    pub remedy: String,
+}
+
+/// A name two declarations the compiler chose would take.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 #[error(
     "internal error: `{scope}` would declare `{name}` twice, as {first} and as {second}; please report it"
@@ -39,6 +64,23 @@ pub struct DuplicateName {
     pub name: String,
     pub first: String,
     pub second: String,
+}
+
+/// A name the document chose: where it wrote the name, and what changing
+/// it takes, such as "alias the field".
+#[derive(Debug, Clone)]
+pub struct Written {
+    pub origin: Origin,
+    pub remedy: &'static str,
+}
+
+/// One declaration of a scope.
+struct Declaration {
+    name: String,
+    kind: Kind,
+    what: String,
+    /// None for a name the compiler chose.
+    written: Option<Written>,
 }
 
 /// Every type and attribute name the emitter writes unqualified inside a
@@ -76,6 +118,25 @@ pub const RESERVED_TYPE_NAMES: [&str; 16] = [
 /// shadow it, or conform to itself.
 pub const BUILDER_RESERVED_NAMES: [&str; 10] = [
     "Type", "Self", "Protocol", "Any", "Sendable", "Baton", "String", "Int", "Double", "Bool",
+];
+
+/// What the generated code spells unqualified from the standard library,
+/// in any file and at any depth: the attribute on every accessor, the types
+/// accessors return and variables take, the `Hasher` an operation value
+/// hashes with and the `Sendable` a builder conforms to. A fragment or an
+/// operation, which the module declares at its top level, of one of these
+/// names would hide it from all of the module's code; one that the
+/// generated code comes to spell joins the list in the same change.
+pub const STANDARD_LIBRARY_NAMES: [&str; 9] = [
+    "MainActor",
+    "Result",
+    "Optional",
+    "String",
+    "Int",
+    "Double",
+    "Bool",
+    "Hasher",
+    "Sendable",
 ];
 
 /// The names a nested type of one kind of scope may not take, and what is
@@ -138,8 +199,8 @@ pub struct Scope<'a> {
     /// The scope as Swift names it, for messages.
     path: String,
     reserved: &'a Reserved,
-    declared: Vec<(String, Kind, String)>,
-    duplicates: Vec<DuplicateName>,
+    declared: Vec<Declaration>,
+    errors: Vec<NameError>,
 }
 
 impl<'a> Scope<'a> {
@@ -148,27 +209,38 @@ impl<'a> Scope<'a> {
             path: path.into(),
             reserved,
             declared: Vec::new(),
-            duplicates: Vec::new(),
+            errors: Vec::new(),
         }
     }
 
-    /// Declares `name` as it is, for `what`; a name the scope declared
-    /// already is recorded as a duplicate.
+    /// Declares `name`, which the compiler chose, as it is, for `what`; a
+    /// name the scope declared already is an error.
     pub fn declare(&mut self, name: &str, kind: Kind, what: impl Into<String>) {
-        let what = what.into();
-        if let Some((_, _, first)) = self
-            .declared
-            .iter()
-            .find(|(existing, existing_kind, _)| existing == name && existing_kind.clashes(kind))
-        {
-            self.duplicates.push(DuplicateName {
-                scope: self.path.clone(),
-                name: name.to_string(),
-                first: first.clone(),
-                second: what.clone(),
-            });
+        self.declare_written(name, kind, what, None);
+    }
+
+    /// Declares `name` as it is, for `what`; the document chose it when it
+    /// is `written`. A name the scope declared already is a clash at the
+    /// document's name when the document chose either, else a duplicate.
+    pub fn declare_written(
+        &mut self,
+        name: &str,
+        kind: Kind,
+        what: impl Into<String>,
+        written: Option<Written>,
+    ) {
+        let declaration = Declaration {
+            name: name.to_string(),
+            kind,
+            what: what.into(),
+            written,
+        };
+        if let Some(first) = self.declared.iter().find(|existing| {
+            existing.name == declaration.name && existing.kind.clashes(declaration.kind)
+        }) {
+            self.errors.push(error(&self.path, first, &declaration));
         }
-        self.declared.push((name.to_string(), kind, what));
+        self.declared.push(declaration);
     }
 
     /// Whether a declaration of `kind` can take `name`.
@@ -179,7 +251,7 @@ impl<'a> Scope<'a> {
         !self
             .declared
             .iter()
-            .any(|(existing, existing_kind, _)| existing == name && existing_kind.clashes(kind))
+            .any(|existing| existing.name == name && existing.kind.clashes(kind))
     }
 
     /// A member: the first of `candidates` the scope has free, else the last
@@ -256,9 +328,39 @@ impl<'a> Scope<'a> {
     }
 
     /// The names declared twice.
-    pub fn finish(self) -> Vec<DuplicateName> {
-        self.duplicates
+    pub fn finish(self) -> Vec<NameError> {
+        self.errors
     }
+}
+
+/// The error for `second`, a declaration of a name `first` took already: a
+/// clash at the name the document chose, the second's when it chose both,
+/// or a duplicate when the compiler chose both.
+fn error(scope: &str, first: &Declaration, second: &Declaration) -> NameError {
+    let (written, at, other) = match (&second.written, &first.written) {
+        (Some(written), _) => (written, second, first),
+        (None, Some(written)) => (written, first, second),
+        (None, None) => {
+            return DuplicateName {
+                scope: scope.to_string(),
+                name: second.name.clone(),
+                first: first.what.clone(),
+                second: second.what.clone(),
+            }
+            .into();
+        }
+    };
+    let other = match other.written {
+        Some(_) => other.what.clone(),
+        None => format!("{} in the generated Swift", other.what),
+    };
+    Clash {
+        origin: written.origin.clone(),
+        what: at.what.clone(),
+        other,
+        remedy: written.remedy.to_string(),
+    }
+    .into()
 }
 
 pub fn capitalize(text: &str) -> String {
@@ -278,13 +380,34 @@ pub fn lower_camel(text: &str) -> String {
 }
 
 /// A type's or a field's name in `Slots` and `AbstractSlots`. Swift reads
-/// `Type` and `Protocol` after a dot as metatypes, and a scope or a member
-/// named `Types` or `Baton` hides the enum or the module the slots are built
-/// from, so these names take an underscore. One of them followed by
-/// underscores takes one more, so no two names meet.
+/// `Type` and `Protocol` after a dot as metatypes, takes `Any` as no
+/// member's name, and a scope or a member named `Types` or `Baton` hides the
+/// enum or the module the slots are built from, so these names take an
+/// underscore.
 pub fn slot_name(name: &str) -> String {
-    const HIDDEN: [&str; 4] = ["Type", "Protocol", "Types", "Baton"];
-    if HIDDEN.contains(&name.trim_end_matches('_')) {
+    underscored(name, &["Type", "Protocol", "Any", "Types", "Baton"])
+}
+
+/// A schema type's constant in `Types`, as every reference spells it.
+/// Swift reads `Types.Type` and `Types.Protocol` as metatypes and takes
+/// `Any` as no member's name, and a member named `Baton` refers to itself
+/// in its own initializer and hides the module from every other, so these
+/// names take an underscore, as in `slot_name`. A member named `Types`
+/// hides nothing: inside the enum the members are named bare.
+pub fn type_constant(name: &str) -> String {
+    underscored(name, &["Type", "Protocol", "Any", "Baton"])
+}
+
+/// The constant in `Types` of the types that satisfy `condition`.
+pub fn possible_types(condition: &str) -> String {
+    format!("{condition}_possible")
+}
+
+/// `name` with an underscore after it when it is one of `hidden`, escaped
+/// otherwise. One of them followed by underscores takes one more, so no two
+/// names meet.
+fn underscored(name: &str, hidden: &[&str]) -> String {
+    if hidden.contains(&name.trim_end_matches('_')) {
         return format!("{name}_");
     }
     escape(name)
@@ -306,6 +429,7 @@ pub fn escape(name: &str) -> String {
     const KEYWORDS: &[&str] = &[
         "Type",
         "Protocol",
+        "Any",
         "self",
         "Self",
         "init",

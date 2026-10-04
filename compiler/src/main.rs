@@ -27,6 +27,7 @@ use std::process::ExitCode;
 use crate::config::Config;
 use crate::diagnostics::Rendered;
 use crate::documents::Document;
+use crate::names::NameError;
 use crate::swift::Marker;
 
 fn main() -> ExitCode {
@@ -237,9 +238,15 @@ fn generate(arguments: &[String]) -> Result<(), DriverError> {
     let rendered = check_property_types(&documents, &plan);
     let output = match emit::emit(&plan) {
         Ok(output) => output,
-        Err(duplicates) => {
-            for duplicate in &duplicates {
-                eprintln!("batonc: {duplicate}");
+        Err(errors) => {
+            for error in &errors {
+                match error {
+                    NameError::Clash(clash) => eprintln!(
+                        "{}",
+                        diagnostics::at(&clash.origin, &documents, clash.to_string())
+                    ),
+                    NameError::Duplicate(duplicate) => eprintln!("batonc: {duplicate}"),
+                }
             }
             return Err(DriverError::Reported);
         }

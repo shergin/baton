@@ -1,4 +1,4 @@
-import Baton
+@_spi(Generated) import Baton
 import Foundation
 import Observation
 import Testing
@@ -36,8 +36,8 @@ struct PhaseTests {
         handle.release()
     }
 
-    @Test("a root a @required field bubbled to fails with an error that names the operation and says the root bubbled, with no field path")
-    func bubbledRootDescribesItself() async throws {
+    @Test("a root a @required field bubbled to fails with an error that names the operation and the path of the field that bubbled")
+    func bubbledRootNamesTheField() async throws {
         let environment = Environment(transport: RecordedTransport([TestRequiredOrigin.name: fixture("required-origin-1-null")]))
         environment.store.reportMissing = nil
         let handle = environment.handle(for: TestRequiredOrigin(id: "1"))
@@ -48,9 +48,39 @@ struct PhaseTests {
             return
         }
         #expect(error.operationName == TestRequiredOrigin.name)
-        #expect(error.path == "")
-        #expect(error.description == "TestRequiredOrigin: a @required field is null and bubbled to the root")
+        #expect(error.path == "character.origin")
+        #expect(error.description == "TestRequiredOrigin: the @required field character.origin is null and bubbled to the root")
         #expect(RequiredFieldError(path: "character.origin").description == "the @required field character.origin is null")
+        handle.release()
+
+        let absent = Environment(transport: RecordedTransport([TestRequiredOrigin.name: fixture("character-null")]))
+        absent.store.reportMissing = nil
+        let root = absent.handle(for: TestRequiredOrigin(id: "1"))
+        root.retain()
+        await settled(root)
+        guard case .failed(let rootError as RequiredFieldError) = root.phase else {
+            Issue.record("expected the required character to fail the operation, got \(root.phase)")
+            return
+        }
+        #expect(rootError.path == "character", "a null field at the root bubbles itself")
+        root.release()
+    }
+
+    @Test("a root a @required(action: LOG) field bubbled to fails with the path of that field, and the environment is told of it and of the link it nulled")
+    func loggedBubbledRootNamesTheField() async throws {
+        let environment = Environment(transport: RecordedTransport([TestLoggedOrigin.name: fixture("required-origin-1-null")]))
+        environment.store.reportMissing = nil
+        var logged: [String] = []
+        environment.requiredFieldMissing = { _, path in logged.append(path) }
+        let handle = environment.handle(for: TestLoggedOrigin(id: "1"))
+        handle.retain()
+        await settled(handle)
+        guard case .failed(let error as RequiredFieldError) = handle.phase else {
+            Issue.record("expected the required origin to fail the operation, got \(handle.phase)")
+            return
+        }
+        #expect(error.path == "character.origin")
+        #expect(Array(logged.prefix(2)) == ["character.origin", "character"])
         handle.release()
     }
 
@@ -126,6 +156,136 @@ struct PhaseTests {
         }
         #expect(!handle.isStale)
         handle.release()
+    }
+
+    /// Fails `handle` on its first response, fetches it again with
+    /// `refetch()`, or with `retry()` when `retrying`, and returns whether it
+    /// was refreshing behind its failure while the fetch waited for the
+    /// transport.
+    func refreshingWhileItRefetches<Op: Baton.Query>(_ handle: OperationHandle<Op>, failingOn failure: Data, answeredBy answer: Data, through gate: GatedTransport, retrying: Bool = false) async -> Bool {
+        handle.retain()
+        defer { handle.release() }
+        await until { gate.pending == 1 }
+        gate.respond(failure)
+        await settled(handle)
+        guard case .failed = handle.phase else {
+            Issue.record("expected a failure with its data in the store, got \(handle.phase)")
+            return false
+        }
+        #expect(!handle.isRefreshing)
+        let again: Task<Void, Never>
+        if retrying {
+            handle.retry()
+            again = Task { await handle.settle() }
+        } else {
+            again = Task { try? await handle.refetch() }
+        }
+        await until { gate.pending == 1 }
+        guard case .failed = handle.phase else {
+            Issue.record("the failure and its data gave way to \(handle.phase)")
+            return false
+        }
+        let refreshing = handle.isRefreshing
+        gate.respond(answer)
+        await again.value
+        guard case .ready = handle.phase else {
+            Issue.record("expected ready once the field is answered, got \(handle.phase)")
+            return false
+        }
+        #expect(!handle.isRefreshing)
+        return refreshing
+    }
+
+    @Test("a refetch of an operation failed with its data in the store, on a field error or on a @required null, is refreshing until its response lands")
+    func aFailureWithDataRefreshes() async throws {
+        let strict = GatedTransport()
+        let environment = Environment(transport: strict)
+        environment.store.reportMissing = nil
+        #expect(await refreshingWhileItRefetches(environment.handle(for: TestStrictQuery(id: "1")), failingOn: fixture("character-name-hidden"), answeredBy: fixture("character-name-shown"), through: strict))
+
+        let required = GatedTransport()
+        let bubbling = Environment(transport: required)
+        bubbling.store.reportMissing = nil
+        #expect(await refreshingWhileItRefetches(bubbling.handle(for: TestRequiredOrigin(id: "1")), failingOn: fixture("required-origin-1-null"), answeredBy: fixture("required-origin-1"), through: required))
+    }
+
+    @Test("a retry of an operation failed with its data in the store, on a field error or on a @required null, keeps the failure in place and is refreshing until its response lands")
+    func aRetryOfAFailureWithDataRefreshes() async throws {
+        let strict = GatedTransport()
+        let environment = Environment(transport: strict)
+        environment.store.reportMissing = nil
+        #expect(await refreshingWhileItRefetches(environment.handle(for: TestStrictQuery(id: "1")), failingOn: fixture("character-name-hidden"), answeredBy: fixture("character-name-shown"), through: strict, retrying: true))
+
+        let required = GatedTransport()
+        let bubbling = Environment(transport: required)
+        bubbling.store.reportMissing = nil
+        #expect(await refreshingWhileItRefetches(bubbling.handle(for: TestRequiredOrigin(id: "1")), failingOn: fixture("required-origin-1-null"), answeredBy: fixture("required-origin-1"), through: required, retrying: true))
+    }
+
+    @Test("a field error failure whose retry fails at the transport keeps its failure, and a commit that answers the field makes it ready")
+    func failedRetryKeepsAFieldErrorFailure() async throws {
+        let attempts = Attempts()
+        let transport = RecordedTransport { _ in attempts.next() == 1 ? fixture("character-name-hidden") : nil }
+        let environment = Environment(transport: transport)
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestStrictQuery(id: "1"))
+        handle.retain()
+        defer { handle.release() }
+        await settled(handle)
+        handle.retry()
+        await handle.settle()
+        #expect(transport.requestCount == 2)
+        guard case .failed(let error as FieldErrors) = handle.phase else {
+            Issue.record("expected the field error the store still holds, got \(handle.phase)")
+            return
+        }
+        #expect(error.errors.map(\.message) == ["name hidden"])
+        let plan = TestStrictQuery.plan.resolve(TestStrictQuery(id: "1").variables)
+        environment.store.commit(try Ingest.normalize(fixture("character-name-shown"), plan: plan))
+        guard case .ready = handle.phase else {
+            Issue.record("expected ready once a commit answers the field, got \(handle.phase)")
+            return
+        }
+    }
+
+    @Test("a handle that shows loading is not refreshing, though a refetch behind its ready data is in flight: not when a networkOnly view attaches over the refetch, nor when a fetch starts behind it")
+    func loadingIsNotRefreshing() async throws {
+        let gate = GatedTransport()
+        let environment = Environment(transport: gate)
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestList(page: 1))
+        handle.retain()
+        await until { gate.pending == 1 }
+        gate.respond(fixtureData)
+        await settled(handle)
+        let first = Task { try? await handle.refetch() }
+        await until { gate.pending == 1 }
+        #expect(handle.isRefreshing)
+
+        // A view that waits for its own response attaches while no one
+        // shows the handle, which then shows loading, and refetches.
+        handle.release()
+        let waiting = environment.handle(for: TestList(page: 1), fetchPolicy: .networkOnly)
+        #expect(waiting === handle)
+        waiting.retain()
+        defer { waiting.release() }
+        guard case .loading = handle.phase else {
+            Issue.record("expected loading until its own response, got \(handle.phase)")
+            return
+        }
+        #expect(!handle.isRefreshing, "the refetch in flight is the view's own response")
+        let second = Task { try? await handle.refetch() }
+        await until { gate.pending == 2 }
+        #expect(!handle.isRefreshing, "nothing shows behind loading")
+        gate.respond(fixtureData)
+        gate.respond(fixtureData)
+        await first.value
+        await second.value
+        guard case .ready = handle.phase else {
+            Issue.record("expected ready, got \(handle.phase)")
+            return
+        }
+        #expect(!handle.isRefreshing)
     }
 
     @Test("a field error failure whose refetch fails at the transport keeps its failure, and a commit that answers the field makes it ready")

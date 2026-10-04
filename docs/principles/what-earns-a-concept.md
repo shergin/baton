@@ -63,6 +63,9 @@ See [Relay's words](relays-words.md) for where the names come from.
 
 ## Spelled today
 
-Nothing is spelled yet. The inventory and the watch list are in the project's
-planning notes until the first release; the terminology carries *(planned)*
-markers until then. This section may rot; the rest must not.
+The inventory is closed as listed above, twelve concepts.
+[The terminology](../terminology.md) marks each of its entries with its
+place: the concept it is or is a form of, or the concepts it is a
+composition of. The watch list, each item with the trigger that would
+promote it, lives in the project's planning notes, which are not published.
+This section may rot; the rest must not.

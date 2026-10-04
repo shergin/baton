@@ -276,15 +276,21 @@ are expected and listed without apology.
   open dropped and a failed batch rolled back, and it kept the interned
   names, which hold argument values; work queued before it is dropped
   too. A sign-out releases the old environment's handles, removes the
-  image and makes a new environment.
+  image and makes a new environment over it. A store made before the
+  removal reads, writes and dates nothing in the image after it, so a
+  response that lands late for the user who signed out reaches neither
+  the file nor the next user.
 - `Persistence.close()` writes what is queued and closes the file, so a new
-  environment can take the image over, as at a sign-out.
+  image can take it over. The new image counts as a launch, though the
+  process is the same: the rows the closed one wrote that it does not read
+  age out a launch sooner. A sign-out keeps one image: it removes it and
+  hands it to the next environment.
 - Opening the image scans nothing. The rows no launch has read since the
   one before last were deleted at open, three scans the first frame
   waited for; a read now treats them as gone and the writer's first batch
   deletes them. A database of another kind at the image's path turns the
   image off for the process instead of being opened again every second.
-  The generation moves once per process, not per connection, names are
+  The generation moves once per image, not per connection, names are
   written with a plain insert, so a second connection that took an id
   fails its batch instead of renaming every row written with it, and an
   image past 65,536 names starts again.
@@ -299,8 +305,9 @@ are expected and listed without apology.
   plan.
 - A linked field named `type`, `self`, `protocol` or `any` gets a nested
   lens with `Lens` after its name; it emitted `struct Type` or `struct
-  Self`. A field named or aliased `anchor` or `recordID`, which every lens
-  has for itself, is a compile error that asks for an alias.
+  Self`. A selection named or aliased `anchor` or `recordID`, which every
+  lens has for itself, is a compile error at the name that asks to alias
+  the field or to choose another alias.
 - Generated slots are nested per type, `Slots.Character.name`; a type's
   name and a field's ran together, so `A_b.c` and `A.b_c` were both
   `Slots.A_b_c`.
@@ -504,9 +511,9 @@ are expected and listed without apology.
   `TransportError` whose status code was 0 and whose description read as
   an HTTP status.
 - An operation whose root a `@required` field bubbled to fails with a
-  `RequiredFieldError` that names it in `operationName`, with an empty
-  path, and says the root bubbled. Its path was the operation's name, so
-  the error described a null field of that name.
+  `RequiredFieldError` that names it in `operationName` and says the root
+  bubbled. Its path was the operation's name, so the error described a
+  null field of that name.
 - A preloaded operation is settled on its first attach. When the preload's
   fetch had finished with fresh data, the attach returned before reading
   the phase again, so a commit that put a field error or a null into the
@@ -540,7 +547,9 @@ are expected and listed without apology.
 - A variable named `self` is a parameter, a property and a request
   variable of that name. The value's initializer, `variables` and `hash`
   read the instance itself in its place, and the generated code did not
-  compile.
+  compile. A variable named `hasher`, or `commit` in a mutation, compiles
+  too: `hash(into:)` combined its own parameter in its place, and the
+  action called the parameter for its `commit`.
 - A plan's edge directive is an `Edit`, as the change set's
   `ChangeSet.Edit` it becomes, so "handle" means only the operation handle.
   Breaking for a plan built by hand: `Handle` is `Edit`, `ResolvedHandle`
@@ -550,6 +559,127 @@ are expected and listed without apology.
   as `$self`, by its bare label: Swift warns about an escaped label at a
   call site, and a build that treats warnings as errors refused the
   generated code.
+- A key rendered from variables no longer widens the records of its type.
+  Each cursor and each id renders a key the process keeps, and keys were
+  numbered in one sequence per type, so a field first used after a long
+  session was numbered past all of them and every record given it made
+  room for each. In the bench's session of 2,000 lookups and 500 pages,
+  2,000 characters given such a field took 28.2 MB and 5.86 ms to commit;
+  they take 1.1 MB and 1.71 ms. A key the compiler emits as a constant,
+  with arguments or without, keeps its place among the type's slots; a
+  record keeps the rendered keys written to it in a list of its own
+  sorted by key, which a read of one searches by halves: a root field
+  with a variable argument reads in 31.6 ns against 28.8 ns, and the
+  newest of the session's 2,000 keys in 50.7 ns. A list of 5,000 rows,
+  each holding three fields with a variable, commits in 4.76 ms against
+  4.08 ms for three constants, and each row holds 96 bytes more. A key
+  keeps the kind it is first met as: a constant whose text was rendered
+  first, or that the image named first, is read through the search.
+  `Slot.index` is negative for a rendered key, and `Registry.slotCount`
+  counts both kinds.
+- One image in a process holds its file. A second `Persistence` made on a
+  file another holds, under any spelling of its path (`/tmp` and
+  `/private/tmp`, before the file exists and after), runs without the image,
+  as over a database of another kind, and stops a debug build where it is
+  made; it opened a second connection, which moved the generation again and
+  could fail the first's batches on a name both interned. `close()` and the
+  image's end hand the file over; a closed image whose file another has
+  taken reads, writes and removes nothing there.
+- `RecordedTransport.requests` is read under the lock `execute` appends
+  under. It was read without it, so reading it while a request arrived
+  off the main actor was a data race.
+- A `TransportError` with no response behind it, from a WebSocket that
+  closed under a subscription or a `RecordedTransport` with nothing
+  recorded for the operation, describes itself by what went wrong; it
+  read `HTTP 0: ...`. Its `statusCode` is still 0, now documented as no
+  response.
+- `isRefreshing` is true while an operation that failed on field errors or a
+  `@required` null, with its data in the store, fetches again, and `retry()`
+  leaves such a failure in place, its data visible, as `refetch()` does.
+  `isRefreshing` was set only behind ready data, so a view showing that data
+  and the failure did not see the refetch; `retry()` showed loading over the
+  data, and when its fetch failed at the transport the failure became the
+  transport's, which no later commit could clear. A handle that shows
+  loading is not refreshing: a `networkOnly` view that attached while a
+  refetch behind ready data was in flight, and a fetch started behind it,
+  kept `isRefreshing` true over a screen that showed nothing.
+- A name the document chose that the generated code needs is an error at
+  that name, which says what it clashes with and asks for an alias or a
+  rename: a variable named `variables`, or `resolution` in a query or a
+  subscription; a mutation's payload field named `variable`, which its
+  optimistic builder declares; an inline fragment `@alias(as:)` names
+  `anchor` or `recordID`, which every lens has; a field named or aliased
+  `hasNext`, `hasPrevious`, `isLoadingNext`, `isLoadingPrevious`,
+  `connectionID` or `nodes` in a connection; and a fragment or operation
+  named `Types`, `Slots` or `Baton`, a refetch query among them. Each was an
+  internal error without a position that asked to report it, and a fragment
+  named `Baton` hid the runtime's module from the generated code. A fragment
+  or operation named `Swift`, `Self` or `Any`, or like a standard library
+  name the generated code spells (`String`, `Int`, `Double`, `Bool`,
+  `Optional`, `Result`, `MainActor`, `Hasher` or `Sendable`), is such an
+  error too: it hid that name from the whole module, and the generated code
+  did not compile. So is a field named `Types`, `Slots`, `AbstractSlots` or
+  `Sites` where its lens, or a lens nested in it, reads through that shared
+  enum, which the field's accessor hid; a variable named `Baton`, `Types` or
+  `Slots`, or `AbstractSlots` or `Sites` where the operation's lenses read
+  through them, which the variable hid from the operation's code; and a
+  mutation's variable named `optimistic`, which its action takes as a
+  parameter of its own. A clash between two names the compiler chose stays
+  an internal error.
+- A field named `Baton` compiles in any lens. A lens under `@catch` or
+  `@throwOnFieldError`, a refetchable fragment's and a connection's named
+  the runtime's module in expressions, which the field's accessor hid; a
+  lens now names it only in types.
+- An operation's `text` is a raw literal delimited by one `#` more than the
+  longest run of them in the text. A document in a raw literal of two or
+  more hashes can hold `\#`, as in `search(name: "\\#1")`, which the
+  literal of one hash read as an escape, and the generated code did not
+  compile.
+- A schema type named `Baton`, `Type`, `Protocol` or `Any` is `Baton_`,
+  `Type_`, `Protocol_` or `Any_` in `Types`, at its constant and at every
+  reference, as in `Slots`, where a field named `Any` is `Any_` too.
+  `Baton` referred to itself in its own initializer and hid the runtime's
+  module from the other constants, Swift read `Types.Type` and
+  `Types.Protocol` as metatypes, and Swift lets no member be named `Any`,
+  so the shared file did not compile. A field or a variable named `Any` is
+  escaped where the generated code declares it, as `Type` is. The shared
+  file's sets of types are `Swift.Set`, which a type of the module named
+  `Set` no longer hides.
+- The `RequiredFieldError` of a root that a `@required` field bubbled to
+  has the path of that field, the first required field that is null, as
+  `character.origin`, and says it: "TestRequiredOrigin: the @required field
+  character.origin is null and bubbled to the root". The generated root
+  lens, and each lens its check recurses into, has `missingRequiredField`,
+  which `Lens` declares and which reads and reports what `satisfied` does;
+  `satisfied` is unchanged.
+- The store's writes, the ingest and the store's counters belong to the
+  package, not to an app: `Store.commit`, `commit(_:replacingOptimistic:)`,
+  `applyOptimistic`, `revertOptimistic`, the availability check `check`,
+  `optimisticLayers`, `existing`, `invalidationEpoch`, the root records
+  and their keys, `ChangeSet`, `Ingest`, the resolved plan
+  (`Plan.resolve`, `ResolvedSelection` and its parts), `Store.count`,
+  `Environment.collections`, `rootCount`, `unconfigured` and `resolve`,
+  the handles' `retainCount`, `MutationState` and the storage-key
+  renderings of `Variable` and `Variables` are `package`. The tests and
+  benchmarks reach them; an app writes through operations and reads
+  through lenses. Breaking for code that committed or ingested by hand.
+- The interface generated code calls is SPI, and generated files open with
+  `@_spi(Generated) import Baton`. `Anchor`, `Owner`, `Registry`,
+  `AbstractSlot`, `DynamicKey`, `ArgumentSite`, the plan types, the
+  numbers inside `TypeID` and `Slot`, `Record.read`, `error` and `is`, and
+  `Lens`'s `anchor`, `init(anchor:)` and static checks are
+  `@_spi(Generated)`, as are an operation's `plan` and its flags; a lens's
+  `anchor`, `init(anchor:)`, `connection` and `refetchable` are generated
+  as SPI too. An app reads through accessors and cannot rebuild one
+  fragment's lens as another's from another module. The `anchor`,
+  `init(anchor:)` and `plan` that batonc generates for every lens and
+  operation default to a trap, so Baton builds with library evolution, as
+  a framework built for distribution builds it; a lens or an operation
+  written by hand that leaves them out compiles and traps where it is
+  read. `Slot.storageKey` and `TypeID.name` stay public: the store's
+  reports hand an app a slot and a record. Breaking for code that read a
+  record, built an anchor or a lens, or named a plan: it needs
+  `@_spi(Generated) import Baton`, as the tests and benchmarks have.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

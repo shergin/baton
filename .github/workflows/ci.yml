@@ -67,6 +67,13 @@ jobs:
           xcodebuild build -quiet -scheme Baton
           -destination 'generic/platform=iOS Simulator'
           -skipMacroValidation -skipPackagePluginValidation
+      # A framework built for distribution builds its packages with library
+      # evolution, which takes no SPI protocol requirement without a default.
+      # Not with warnings as errors: the macros import swift-syntax, which is
+      # not built for evolution, and Swift warns about it.
+      - run: >
+          swift build --target Baton
+          -Xswiftc -enable-library-evolution -Xswiftc -emit-module-interface
 
   # The declared floor is a contract, so it is tested as one: the package
   # builds and its tests pass on Xcode 26.0, the first with Swift 6.2 tools.

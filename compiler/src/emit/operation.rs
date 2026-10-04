@@ -6,7 +6,7 @@ use std::fmt::Write as _;
 use super::builder::builder;
 use super::lens::lens;
 use super::plan::selection_plan;
-use super::swift::parameter;
+use super::swift::{parameter, raw_multiline_literal};
 use crate::decide::{OperationValue, VariableValue};
 use crate::names::{call_label, escape};
 use crate::pipeline::OperationKind;
@@ -71,22 +71,22 @@ pub(super) fn operation_text(operation: &OperationValue) -> String {
     if let Some(behavior) = &operation.error_behavior {
         let _ = writeln!(
             output,
-            "    public static let errorBehavior: Baton.ErrorBehavior? = .{behavior}"
+            "    @_spi(Generated) public static let errorBehavior: Baton.ErrorBehavior? = .{behavior}"
         );
     }
     if operation.throws_on_field_error {
-        output.push_str("    public static let throwsOnFieldError = true\n");
+        output.push_str("    @_spi(Generated) public static let throwsOnFieldError = true\n");
     }
     if operation.bubbles {
-        output.push_str("    public static let bubbles = true\n");
+        output.push_str("    @_spi(Generated) public static let bubbles = true\n");
     }
     if operation.has_deferred {
-        output.push_str("    public static let hasDeferred = true\n");
+        output.push_str("    @_spi(Generated) public static let hasDeferred = true\n");
     }
     let _ = writeln!(
         output,
-        "    public static let text = #\"\"\"\n{}\n\"\"\"#\n",
-        operation.text
+        "    public static let text = {}\n",
+        raw_multiline_literal(&operation.text)
     );
     output.push_str("    public var variables: Baton.Variables {\n        Baton.Variables([");
     if operation.variables.is_empty() {
@@ -124,7 +124,7 @@ pub(super) fn operation_text(operation: &OperationValue) -> String {
     output.push_str("    }\n\n");
 
     // The normalization plan, as static data.
-    output.push_str("    public static let plan = Baton.Plan(root: ");
+    output.push_str("    @_spi(Generated) public static let plan = Baton.Plan(root: ");
     selection_plan(&mut output, &operation.normalization, 2);
     output.push_str(")\n\n");
 
@@ -150,9 +150,11 @@ pub(super) fn operation_text(operation: &OperationValue) -> String {
             .iter()
             .map(|variable| format!("{}: {}", call_label(&variable.name), variable.local))
             .collect();
+        // The action calls its `commit` through `self`, as a parameter for
+        // a variable named `$commit` would take its place.
         let _ = writeln!(
             output,
-            "extension Baton.MutationAction where Op == {name} {{\n    /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.\n    @MainActor @discardableResult\n    public func callAsFunction({parameters}{separator}optimistic: {name}.OptimisticResponse? = nil) async throws -> {name}.Data {{\n        try await commit({name}({args}), optimistic: optimistic?.variable)\n    }}\n}}\n",
+            "extension Baton.MutationAction where Op == {name} {{\n    /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.\n    @MainActor @discardableResult\n    public func callAsFunction({parameters}{separator}optimistic: {name}.OptimisticResponse? = nil) async throws -> {name}.Data {{\n        try await self.commit({name}({args}), optimistic: optimistic?.variable)\n    }}\n}}\n",
             name = operation.name,
             args = arguments.join(", ")
         );
@@ -176,12 +178,9 @@ fn parameter_list(variables: &[VariableValue]) -> String {
         .join(", ")
 }
 
-/// A stored property read inside the value's own methods: by its name, or
-/// through `self` for `self`, which alone would name the instance.
+/// A stored property read inside the value's own methods, through `self`,
+/// so neither a parameter such as `hash(into:)`'s `hasher` nor the instance
+/// itself, for a property named `self`, takes its place.
 fn stored(property: &str) -> String {
-    if property == "self" {
-        "self.`self`".to_string()
-    } else {
-        escape(property)
-    }
+    format!("self.{}", escape(property))
 }

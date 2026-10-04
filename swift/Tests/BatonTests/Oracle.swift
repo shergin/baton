@@ -1,4 +1,4 @@
-import Baton
+@_spi(Generated) import Baton
 import Foundation
 
 /// One leaf of a response or of the store, at its response path.

@@ -3,6 +3,7 @@
 /// is resolved once per owner, and each spread with arguments binds its
 /// scope once, so a read after the first renders, hashes and allocates
 /// nothing. A handle keeps one owner for its lifetime.
+@_spi(Generated)
 @MainActor
 public final class Owner {
     nonisolated public let variables: Variables
@@ -34,7 +35,7 @@ public final class Owner {
     @inline(__always)
     public func slot(_ key: DynamicKey) -> Slot {
         for entry in slots where entry.key === key { return entry.slot }
-        let slot = Registry.slot(key.type, key.render(variables))
+        let slot = Registry.slot(key.type, key.render(variables), rendered: true)
         slots.append((key, slot))
         return slot
     }
@@ -43,7 +44,7 @@ public final class Owner {
     /// interface or union.
     public func slot(_ key: DynamicKey, on type: TypeID) -> Slot {
         for entry in abstractSlots where entry.key === key { return entry.slot.on(type) }
-        let slot = AbstractSlot(key.render(variables))
+        let slot = AbstractSlot(key.render(variables), rendered: true)
         abstractSlots.append((key, slot))
         return slot.on(type)
     }
@@ -72,6 +73,7 @@ public final class Owner {
 
 /// A storage key with variables, such as `characters(page:$page)`: its type
 /// and the parts it is built from. An owner renders it once.
+@_spi(Generated)
 public final class DynamicKey: Sendable {
     public let type: TypeID
     public let parts: [KeyPart]
@@ -96,6 +98,7 @@ public final class DynamicKey: Sendable {
 
 /// A fragment spread with `@arguments`: the place an owner binds the
 /// fragment's scope, so the binding is made once per owner.
+@_spi(Generated)
 public final class ArgumentSite: Sendable {
     public init() {}
 }

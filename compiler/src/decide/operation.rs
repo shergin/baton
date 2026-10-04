@@ -5,7 +5,7 @@ use std::collections::BTreeSet;
 
 use super::reader::{ReaderPlan, Readers, scalar_reader};
 use super::{NormalizationField, NormalizationKind, NormalizationSelection};
-use crate::names::{DuplicateName, Kind, Reserved, Scope, escape};
+use crate::names::{Kind, NameError, Reserved, Scope, Written, escape};
 use crate::pipeline::{OperationKind, OperationPlan, TypeKind, VariablePlan};
 
 /// An operation's value type: its variables, its static data, its plan, its
@@ -71,10 +71,9 @@ pub(super) fn operation(
     operation: &OperationPlan,
     readers: &mut Readers,
     builder_names: &Reserved,
-    duplicates: &mut Vec<DuplicateName>,
+    duplicates: &mut Vec<NameError>,
 ) -> OperationValue {
     let resolves = operation.kind != OperationKind::Mutation;
-    duplicates.extend(operation_scope(operation, resolves));
     let names: Vec<&str> = operation
         .variables
         .iter()
@@ -92,6 +91,7 @@ pub(super) fn operation(
         .collect();
     let normalization = super::normalization(&operation.root_type, &operation.normalization);
     let data = readers.operation(operation);
+    duplicates.extend(operation_scope(operation, resolves, &data));
     let optimistic = (operation.kind == OperationKind::Mutation).then(|| {
         let path = format!("{}.OptimisticResponse", operation.name);
         builder(
@@ -120,20 +120,40 @@ pub(super) fn operation(
 }
 
 /// The names an operation's value would declare twice: its variables beside
-/// what every operation value has.
-fn operation_scope(operation: &OperationPlan, resolves: bool) -> Vec<DuplicateName> {
+/// what every operation value has, and beside the names its code spells,
+/// which a variable would hide: the runtime's module, the shared enums its
+/// plan and its root lens read through, and a mutation's action's own
+/// parameter.
+fn operation_scope(operation: &OperationPlan, resolves: bool, data: &ReaderPlan) -> Vec<NameError> {
     let none = Reserved::none();
     let mut scope = Scope::new(operation.name.as_str(), &none);
-    for variable in &operation.variables {
+    scope.declare("Baton", Kind::Type, "the runtime's module `Baton`");
+    let mut spelled = data.shared_enums();
+    spelled.extend(["Types", "Slots"]);
+    for name in spelled {
+        scope.declare(name, Kind::Type, format!("the shared enum `{name}`"));
+    }
+    if operation.kind == OperationKind::Mutation {
         scope.declare(
+            "optimistic",
+            Kind::Instance,
+            "the action's parameter `optimistic`",
+        );
+    }
+    for variable in &operation.variables {
+        scope.declare_written(
             &variable.name,
             Kind::Instance,
             format!("the variable `${}`", variable.name),
+            variable.origin.clone().map(|origin| Written {
+                origin,
+                remedy: "rename the variable",
+            }),
         );
     }
-    scope.declare("variables", Kind::Instance, "the operation's variables");
+    scope.declare("variables", Kind::Instance, "the operation's `variables`");
     if resolves {
-        scope.declare("resolution", Kind::Instance, "the operation's resolution");
+        scope.declare("resolution", Kind::Instance, "the operation's `resolution`");
     }
     for name in ["name", "persistedID", "text", "plan"] {
         scope.declare(name, Kind::Static, format!("the operation's `{name}`"));
@@ -149,13 +169,13 @@ fn operation_scope(operation: &OperationPlan, resolves: bool) -> Vec<DuplicateNa
             scope.declare(name, Kind::Static, format!("the operation's `{name}`"));
         }
     }
-    scope.declare("Data", Kind::Type, "the operation's root lens");
+    scope.declare("Data", Kind::Type, "the operation's root lens `Data`");
     if operation.kind == OperationKind::Mutation {
-        scope.declare("Action", Kind::Type, "the mutation's action");
+        scope.declare("Action", Kind::Type, "the mutation's `Action`");
         scope.declare(
             "OptimisticResponse",
             Kind::Type,
-            "the mutation's optimistic response",
+            "the mutation's `OptimisticResponse`",
         );
     }
     scope.finish()
@@ -167,7 +187,7 @@ fn builder(
     name: &str,
     selection: &NormalizationSelection,
     builder_names: &Reserved,
-    duplicates: &mut Vec<DuplicateName>,
+    duplicates: &mut Vec<NameError>,
 ) -> BuilderPlan {
     // Every field any variant reads, once: the response is written for
     // whichever type it names.
@@ -179,12 +199,17 @@ fn builder(
         .filter(|field| seen.insert(field.response_key.clone()))
         .collect();
     let mut scope = Scope::new(path, builder_names);
-    scope.declare("variable", Kind::Instance, "the builder's rendering");
+    scope.declare(
+        "variable",
+        Kind::Instance,
+        "the optimistic response's `variable`",
+    );
     for field in &fields {
-        scope.declare(
+        scope.declare_written(
             &field.response_key,
             Kind::Instance,
             format!("the field `{}`", field.response_key),
+            field.written.clone(),
         );
     }
     let keys: Vec<&str> = fields
