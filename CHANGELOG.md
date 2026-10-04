@@ -383,6 +383,9 @@ are expected and listed without apology.
   `batonc generate --out` names them the same way. A document with an error
   writes nothing, where every output was overwritten with a stub, and a
   file holding GraphQL that no output is named for is an error.
+- Each `batonc` command takes only its own options, and any other is an
+  error naming the ones it takes: `--schem x` was ignored, and the schema
+  then came from wherever else it could.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

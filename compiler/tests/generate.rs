@@ -122,3 +122,25 @@ fn two_sources_that_would_write_one_output_are_an_error() {
     assert!(!output.status.success());
     assert!(String::from_utf8_lossy(&output.stderr).contains("would both write"));
 }
+
+#[test]
+fn an_option_the_command_does_not_take_is_an_error() {
+    let directory = workspace("options");
+    write(&directory, "Home.swift", QUERY);
+    let output = generate(&directory, &["--schem", "x", "--out", "out", "Home.swift"]);
+    assert!(!output.status.success());
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        stderr.contains("`--schem` is not an option of `generate`, which takes `--schema`"),
+        "{stderr}"
+    );
+    assert!(!directory.join("out").exists());
+
+    let scan = Command::new(env!("CARGO_BIN_EXE_batonc"))
+        .current_dir(&directory)
+        .args(["scan", "--out", "out", "Home.swift"])
+        .output()
+        .expect("batonc runs");
+    assert!(!scan.status.success());
+    assert!(String::from_utf8_lossy(&scan.stderr).contains("which takes no options"));
+}

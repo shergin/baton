@@ -90,7 +90,13 @@ struct Options {
     paths: Vec<PathBuf>,
 }
 
-fn parse_options(arguments: &[String]) -> Result<Options, DriverError> {
+/// Reads a command's arguments; `allowed` names the options the command
+/// takes, and any other is an error rather than a silent default.
+fn parse_options(
+    command: &str,
+    arguments: &[String],
+    allowed: &[&str],
+) -> Result<Options, DriverError> {
     let mut options = Options {
         values: BTreeMap::new(),
         emits: Vec::new(),
@@ -99,6 +105,18 @@ fn parse_options(arguments: &[String]) -> Result<Options, DriverError> {
     let mut iterator = arguments.iter();
     while let Some(argument) = iterator.next() {
         if let Some(name) = argument.strip_prefix("--") {
+            if !allowed.contains(&name) {
+                let takes = if allowed.is_empty() {
+                    "takes no options".to_string()
+                } else {
+                    let listed: Vec<String> =
+                        allowed.iter().map(|name| format!("`--{name}`")).collect();
+                    format!("takes {}", listed.join(", "))
+                };
+                return Err(DriverError::Usage(format!(
+                    "`--{name}` is not an option of `{command}`, which {takes}"
+                )));
+            }
             let value = iterator
                 .next()
                 .ok_or_else(|| DriverError::Usage(format!("`--{name}` needs a value")))?;
@@ -145,7 +163,7 @@ fn read_schema(options: &Options) -> Result<(String, String, Config), DriverErro
 }
 
 fn scan(arguments: &[String]) -> Result<(), DriverError> {
-    let options = parse_options(arguments)?;
+    let options = parse_options("scan", arguments, &[])?;
     let (documents, errors) = documents::collect(&options.paths);
     for error in &errors {
         eprintln!("{error}");
@@ -159,7 +177,7 @@ fn scan(arguments: &[String]) -> Result<(), DriverError> {
 }
 
 fn plan(arguments: &[String]) -> Result<(), DriverError> {
-    let options = parse_options(arguments)?;
+    let options = parse_options("plan", arguments, &["schema", "config"])?;
     let (sdl, schema_path, config) = read_schema(&options)?;
     let (documents, errors) = documents::collect(&options.paths);
     for error in &errors {
@@ -185,7 +203,11 @@ fn plan(arguments: &[String]) -> Result<(), DriverError> {
 }
 
 fn generate(arguments: &[String]) -> Result<(), DriverError> {
-    let options = parse_options(arguments)?;
+    let options = parse_options(
+        "generate",
+        arguments,
+        &["schema", "config", "out", "shared", "emit"],
+    )?;
     let (sdl, schema_path, config) = read_schema(&options)?;
     let out_dir = options.values.get("out").map(PathBuf::from);
     let shared_path = options.values.get("shared").map(PathBuf::from);
@@ -390,7 +412,7 @@ fn write_if_changed(path: &Path, text: &str) -> Result<(), DriverError> {
 }
 
 fn bench(arguments: &[String]) -> Result<(), DriverError> {
-    let options = parse_options(arguments)?;
+    let options = parse_options("bench", arguments, &["schema", "config", "fragments"])?;
     let (sdl, schema_path, config) = read_schema(&options)?;
     let count: usize = options
         .values
