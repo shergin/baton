@@ -650,11 +650,15 @@ are expected and listed without apology.
   `@_spi(Generated)`, as are an operation's `plan` and its flags; a lens's
   `anchor`, `init(anchor:)`, `connection` and `refetchable` are generated
   as SPI too. An app reads through accessors and cannot rebuild one
-  fragment's lens as another's from another module. `Slot.storageKey` and
-  `TypeID.name` stay public: the store's reports hand an app a slot and a
-  record. Breaking for code that read a record, built an anchor or a lens,
-  or named a plan: it needs `@_spi(Generated) import Baton`, as the tests
-  and benchmarks have.
+  fragment's lens as another's from another module. The `anchor`,
+  `init(anchor:)` and `plan` that batonc generates for every lens and
+  operation default to a trap, so Baton builds with library evolution, as
+  a framework built for distribution builds it; a lens or an operation
+  written by hand that leaves them out compiles and traps where it is
+  read. `Slot.storageKey` and `TypeID.name` stay public: the store's
+  reports hand an app a slot and a record. Breaking for code that read a
+  record, built an anchor or a lens, or named a plan: it needs
+  `@_spi(Generated) import Baton`, as the tests and benchmarks have.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 
