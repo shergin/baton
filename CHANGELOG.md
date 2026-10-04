@@ -294,6 +294,13 @@ are expected and listed without apology.
 - One `invalidate`: `Environment.invalidate()`. `Store.invalidate()`, which
   marked memory stale but left the image's fetch times, so data read back
   from the image counted as fresh, is internal and does both.
+- A directive Baton gives no meaning to is a compile error at the
+  directive, by place: `@inline`, `@relay(plural:)`, `@relay(mask: false)`,
+  `@raw_response_type`, `@preloadable` and `@stream` compiled through
+  Relay's transforms and did nothing, or, for `mask: false`, read unmasked
+  data that Baton has no word for. A marker holds exactly one definition
+  of its own kind: `@Fragment("query …")` and two fragments under one
+  `@Query` compiled.
 - A persisted id is the MD5 of the operation's text as the app holds it.
   The hash took the printed text with its trailing line break, which the
   emitted `text` drops, so no text the app held matched its id. The ids

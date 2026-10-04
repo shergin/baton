@@ -12,6 +12,7 @@
 mod config;
 mod decide;
 mod diagnostics;
+mod directives;
 mod documents;
 mod emit;
 mod pipeline;

@@ -383,7 +383,11 @@ pub fn compile(
     for document in documents {
         let key = SourceLocationKey::embedded(&document.path.to_string_lossy(), document.index);
         match graphql_syntax::parse_executable(&document.text, key) {
-            Ok(parsed) => definitions.extend(parsed.definitions),
+            Ok(parsed) => {
+                let marker = document.embedded.as_ref().map(|embedded| embedded.marker);
+                diagnostics.extend(crate::directives::check(&parsed.definitions, key, marker));
+                definitions.extend(parsed.definitions);
+            }
             Err(errors) => diagnostics.extend(errors),
         }
     }
