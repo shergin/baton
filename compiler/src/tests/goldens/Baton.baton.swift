@@ -39,8 +39,10 @@ nonisolated enum Slots {
         static let noteEdge = Baton.Registry.slot(Types.AddNotePayload, "noteEdge")
     }
     nonisolated enum Character {
+        static let __TestDeferredNotes_notes_connection = Baton.Registry.slot(Types.Character, "__TestDeferredNotes_notes_connection")
         static let __TestNotes_notes_connection = Baton.Registry.slot(Types.Character, "__TestNotes_notes_connection")
         static let __TestRecentNotes_notes_connection = Baton.Registry.slot(Types.Character, "__TestRecentNotes_notes_connection")
+        static let __TestTwoPages_notes_connection = Baton.Registry.slot(Types.Character, "__TestTwoPages_notes_connection")
         static let __typename = Baton.Registry.slot(Types.Character, "__typename")
         static let created = Baton.Registry.slot(Types.Character, "created")
         static let episode = Baton.Registry.slot(Types.Character, "episode")
@@ -50,6 +52,7 @@ nonisolated enum Slots {
         static let image = Baton.Registry.slot(Types.Character, "image")
         static let location = Baton.Registry.slot(Types.Character, "location")
         static let name = Baton.Registry.slot(Types.Character, "name")
+        static let notes_8d6d15 = Baton.Registry.slot(Types.Character, "notes(after:\"c2\",first:2)")
         static let notes_a9400e = Baton.DynamicKey(Types.Character, [.literal("notes(after:"), .variable("cursor"), .literal(",first:"), .variable("count"), .literal(")")])
         static let notes_a7d47e = Baton.DynamicKey(Types.Character, [.literal("notes(after:null,first:"), .variable("size"), .literal(")")])
         static let notes_969630 = Baton.Registry.slot(Types.Character, "notes(after:null,first:1)")
@@ -57,6 +60,7 @@ nonisolated enum Slots {
         static let notes_7ca442 = Baton.Registry.slot(Types.Character, "notes(after:null,first:3)")
         static let notes_d859b7 = Baton.DynamicKey(Types.Character, [.literal("notes(before:"), .variable("cursor"), .literal(",last:"), .variable("count"), .literal(")")])
         static let notes_94703e = Baton.Registry.slot(Types.Character, "notes(before:null,last:2)")
+        static let notes_29a6d8 = Baton.Registry.slot(Types.Character, "notes(first:2)")
         static let origin = Baton.Registry.slot(Types.Character, "origin")
         static let species = Baton.Registry.slot(Types.Character, "species")
         static let status = Baton.Registry.slot(Types.Character, "status")
@@ -168,6 +172,7 @@ nonisolated enum Slots {
 
 /// The spreads with `@arguments`, where an owner binds a fragment's scope once.
 nonisolated enum Sites {
+    static let TestDeferredNotesPaginationQuery_testDeferredNotes = Baton.ArgumentSite()
     static let TestNotesPaginationQuery_testNotes = Baton.ArgumentSite()
     static let TestNotesQuery_testNotes = Baton.ArgumentSite()
     static let TestNotesSizedQuery_testNotes = Baton.ArgumentSite()
