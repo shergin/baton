@@ -877,6 +877,23 @@ struct DeliveryTests {
         #expect(received == parts)
     }
 
+    @Test("a request with no response fails with an error that says what went wrong and names no HTTP status; one with an error status names it")
+    func aFailureWithoutAResponse() async throws {
+        let environment = Environment(transport: RecordedTransport())
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestList(page: 1))
+        handle.retain()
+        await handle.settle()
+        guard case .failed(let error as TransportError) = handle.phase else {
+            Issue.record("expected a transport error, got \(handle.phase)")
+            return
+        }
+        #expect(error.statusCode == 0)
+        #expect(error.description == "no recorded response for TestList")
+        #expect(TransportError(statusCode: 502, body: "bad gateway").description == "HTTP 502: bad gateway")
+        handle.release()
+    }
+
     @Test("a recorded transport's requests, read while requests arrive off the main actor, are each time those sent so far, each read keeping the one before")
     func recordedRequestsReadWhileSent() async throws {
         let transport = RecordedTransport { _ in Data() }

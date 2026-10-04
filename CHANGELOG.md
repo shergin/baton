@@ -571,6 +571,11 @@ are expected and listed without apology.
 - `RecordedTransport.requests` is read under the lock `execute` appends
   under. It was read without it, so reading it while a request arrived
   off the main actor was a data race.
+- A `TransportError` with no response behind it, from a WebSocket that
+  closed under a subscription or a `RecordedTransport` with nothing
+  recorded for the operation, describes itself by what went wrong; it
+  read `HTTP 0: ...`. Its `statusCode` is still 0, now documented as no
+  response.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

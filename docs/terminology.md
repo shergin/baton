@@ -322,6 +322,13 @@ subscription transport.
 multipart incremental delivery live: `execute` answers once, `stream` yields
 the parts of a deferred response. `URLSessionTransport` implements both;
 `MultipartParser` splits the parts.
+**Transport.** The protocol behind which HTTP and multipart incremental
+delivery live: `execute` answers once, `stream` yields the parts of a
+deferred response. `URLSessionTransport` implements both; `MultipartParser`
+splits the parts. A response outside 2xx fails with `TransportError`, its
+HTTP status and body; a socket that closed under a subscription and a
+recorded transport with nothing recorded fail with one of status 0, which
+says what went wrong.
 
 **Recorded transport.** *Concept: transport.* Baton's word.
 `RecordedTransport` answers from recorded responses by operation name, or

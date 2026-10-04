@@ -60,8 +60,15 @@ public protocol SubscriptionTransport: Sendable {
     func subscribe(_ request: Request) -> AsyncThrowingStream<Data, any Error>
 }
 
+/// A response with an HTTP status outside 200 to 299, or, with status 0, a
+/// request that got no response: a socket that closed under it, or a
+/// recorded transport with nothing recorded for it. A connection that fails
+/// under `URLSession` throws the system's `URLError` instead.
 public struct TransportError: Error, CustomStringConvertible, Sendable {
+    /// The response's HTTP status, or 0 when there was none, as the web's
+    /// `XMLHttpRequest` reports it.
     public let statusCode: Int
+    /// The response's body, or, without a response, what went wrong.
     public let body: String
 
     public init(statusCode: Int, body: String) {
@@ -69,7 +76,10 @@ public struct TransportError: Error, CustomStringConvertible, Sendable {
         self.body = body
     }
 
-    public var description: String { "HTTP \(statusCode): \(body.prefix(200))" }
+    public var description: String {
+        let body = body.prefix(200)
+        return statusCode == 0 ? String(body) : "HTTP \(statusCode): \(body)"
+    }
 }
 
 /// POSTs operations as JSON to one endpoint. An operation with `@defer` asks
