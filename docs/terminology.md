@@ -243,7 +243,12 @@ One image in a process holds a file; a second made on it runs without it,
 and `close()` hands it over. The image that takes it over counts as a
 launch, though the process is the same, so the rows the closed one wrote
 that it does not read age out a launch sooner; a sign-out keeps one image,
-`removeAll()` and then the same image for the next environment.
+`removeAll()` and then the same image for the next environment. That
+sign-out stands until an environment has an end: an image made for one
+store and closed at that end is *(planned)*. What keeps one account's rows
+from the next is the account in the image's path or in its `version`,
+which works today. See
+[the decision](decisions/an-image-belongs-to-one-store.md).
 
 **Hydration.** *Composition: store, plan.* The web's word for filling a
 client's state from stored data. Here: the availability check reading from
@@ -326,6 +331,18 @@ plus configuration. Here the same, injected through SwiftUI's environment as
 it fails with `EnvironmentError`, which says what is missing: the view's
 environment, the lens's, the one that made a handle and is gone, or the
 subscription transport.
+
+**Session, end.** *Concept: environment.* The web's word for one identity's
+stretch of use; Relay has no word for an environment's end, because
+JavaScript collects one nobody holds. Here a session is the life of one
+environment, not a type: an environment pairs a store with the transport
+that fills it and replaces neither, a sign-in makes one and a sign-out ends
+it, and which one is current is the app's state. `Environment.end()`
+*(planned)* cancels what the environment started, clears its records and
+closes its image; an ended store commits nothing, and a handle still held
+fails with `EnvironmentError.gone`. Until it exists, a sign-out drops the
+environment and removes the image, as the [image](#store)'s entry says. See
+[the decision](decisions/the-environment-is-the-session.md).
 
 **Transport.** *Concept: transport.* The protocol behind which HTTP and
 multipart incremental delivery live: `execute` answers once, `stream` yields
