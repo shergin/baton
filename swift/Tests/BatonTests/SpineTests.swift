@@ -59,6 +59,19 @@ struct SpineTests {
         #expect(types.Baton == "not the module")
     }
 
+    @Test("types named Baton, Type, Protocol and Set compile, and each record reads through the conditions it satisfies")
+    func typesNamedLikeSwiftAndTheModule() throws {
+        let store = Store()
+        let query = TestSpellings()
+        store.commit(try Ingest.normalize(fixture("spellings-1"), plan: TestSpellings.plan.resolve(query.variables)))
+        let spellings = try #require(TestSpellings.Data(anchor: Anchor(record: store.root, variables: query.variables, store: store)).spellings)
+        #expect(spellings.map { $0.asSpelled?.label } == ["the module", "not a metatype", "not a protocol", "not a set", nil])
+        #expect(spellings.map { $0.asBaton?.id } == ["1", nil, nil, nil, nil])
+        #expect(spellings.map { $0.asType?.id } == [nil, "2", nil, nil, nil])
+        #expect(spellings.map { $0.asProtocol?.id } == [nil, nil, "3", nil, nil])
+        #expect(spellings.map { $0.asSet?.id } == [nil, nil, nil, "4", nil])
+    }
+
     @Test("a character already in the store renders in the first body of its detail")
     func firstBodyFromCache() throws {
         let environment = Environment(transport: SilentTransport())

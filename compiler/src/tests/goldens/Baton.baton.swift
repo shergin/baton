@@ -5,8 +5,9 @@ import Baton
 nonisolated enum Types {
     /// The schema's digest: pass it as the image's `version`, so an image
     /// written under another schema starts again.
-    static let schemaDigest = "1cef5b187d5b5986eb734a1b6f00c1b8"
+    static let schemaDigest = "830e6936e77bf78f5e4f642f56846b1a"
     static let AddNotePayload = Baton.Registry.type("AddNotePayload")
+    static let Baton_ = Baton.Registry.type("Baton")
     static let Character = Baton.Registry.type("Character")
     static let Characters = Baton.Registry.type("Characters")
     static let Episode = Baton.Registry.type("Episode")
@@ -21,16 +22,23 @@ nonisolated enum Types {
     static let NoteConnection = Baton.Registry.type("NoteConnection")
     static let NoteEdge = Baton.Registry.type("NoteEdge")
     static let PageInfo = Baton.Registry.type("PageInfo")
+    static let Protocol_ = Baton.Registry.type("Protocol")
     static let Query = Baton.Registry.type("Query")
     static let RemoveNotePayload = Baton.Registry.type("RemoveNotePayload")
     static let SearchResult = Baton.Registry.type("SearchResult")
+    static let Set = Baton.Registry.type("Set")
+    static let Spelled = Baton.Registry.type("Spelled")
+    static let Spelling = Baton.Registry.type("Spelling")
     static let Subscription = Baton.Registry.type("Subscription")
     static let Tokenizer = Baton.Registry.type("Tokenizer")
+    static let Type_ = Baton.Registry.type("Type")
     static let Types = Baton.Registry.type("Types")
     /// The types that satisfy `... on Named`.
-    static let Named_possible: Set<Baton.TypeID> = [Character, Location]
+    static let Named_possible: Swift.Set<Baton.TypeID> = [Character, Location]
     /// The types that satisfy `... on Node`.
-    static let Node_possible: Set<Baton.TypeID> = [Character, Episode, Location, Note]
+    static let Node_possible: Swift.Set<Baton.TypeID> = [Character, Episode, Location, Note]
+    /// The types that satisfy `... on Spelled`.
+    static let Spelled_possible: Swift.Set<Baton.TypeID> = [Baton_, Protocol_, Set, Type_]
 }
 
 /// Interned storage keys used by this module's documents.
@@ -38,6 +46,9 @@ nonisolated enum Slots {
     nonisolated enum AddNotePayload {
         static let note = Baton.Registry.slot(Types.AddNotePayload, "note")
         static let noteEdge = Baton.Registry.slot(Types.AddNotePayload, "noteEdge")
+    }
+    nonisolated enum Baton_ {
+        static let id = Baton.Registry.slot(Types.Baton_, "id")
     }
     nonisolated enum Character {
         static let __TestDeferredNotes_notes_connection = Baton.Registry.slot(Types.Character, "__TestDeferredNotes_notes_connection")
@@ -141,6 +152,9 @@ nonisolated enum Slots {
         static let hasPreviousPage = Baton.Registry.slot(Types.PageInfo, "hasPreviousPage")
         static let startCursor = Baton.Registry.slot(Types.PageInfo, "startCursor")
     }
+    nonisolated enum Protocol_ {
+        static let id = Baton.Registry.slot(Types.Protocol_, "id")
+    }
     nonisolated enum Query {
         static let character_4a2dfc = Baton.Registry.slot(Types.Query, "character(id:\"a,b\")")
         static let character_800bca = Baton.DynamicKey(Types.Query, [.literal("character(id:"), .variable("a"), .literal(")")])
@@ -156,6 +170,7 @@ nonisolated enum Slots {
         static let search_b80531 = Baton.Registry.slot(Types.Query, "search(name:\"\\\\\\\\#1\")")
         static let search_823c67 = Baton.DynamicKey(Types.Query, [.literal("search(name:"), .variable("in"), .literal(")")])
         static let search_954c44 = Baton.DynamicKey(Types.Query, [.literal("search(name:"), .variable("name"), .literal(")")])
+        static let spellings = Baton.Registry.slot(Types.Query, "spellings")
         static let tokenizer = Baton.Registry.slot(Types.Query, "tokenizer")
         static let types = Baton.Registry.slot(Types.Query, "types")
     }
@@ -165,6 +180,14 @@ nonisolated enum Slots {
     nonisolated enum SearchResult {
         static let __typename = Baton.Registry.slot(Types.SearchResult, "__typename")
         static let id = Baton.Registry.slot(Types.SearchResult, "id")
+    }
+    nonisolated enum Set {
+        static let id = Baton.Registry.slot(Types.Set, "id")
+    }
+    nonisolated enum Spelling {
+        static let __typename = Baton.Registry.slot(Types.Spelling, "__typename")
+        static let id = Baton.Registry.slot(Types.Spelling, "id")
+        static let label = Baton.Registry.slot(Types.Spelling, "label")
     }
     nonisolated enum Subscription {
         static let noteAdded_5f458b = Baton.DynamicKey(Types.Subscription, [.literal("noteAdded(characterId:"), .variable("characterId"), .literal(")")])
@@ -181,6 +204,9 @@ nonisolated enum Slots {
         static let ratios = Baton.Registry.slot(Types.Tokenizer, "ratios")
         static let strings = Baton.Registry.slot(Types.Tokenizer, "strings")
         static let text = Baton.Registry.slot(Types.Tokenizer, "text")
+    }
+    nonisolated enum Type_ {
+        static let id = Baton.Registry.slot(Types.Type_, "id")
     }
     nonisolated enum Types_ {
         static let Baton_ = Baton.Registry.slot(Types.Types, "Baton")
@@ -212,5 +238,8 @@ nonisolated enum AbstractSlots {
     }
     nonisolated enum SearchResult {
         static let id = Baton.AbstractSlot("id")
+    }
+    nonisolated enum Spelled {
+        static let label = Baton.AbstractSlot("label")
     }
 }

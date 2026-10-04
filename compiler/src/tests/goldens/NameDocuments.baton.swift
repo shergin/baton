@@ -56,3 +56,122 @@ query TestNames {
     }
 }
 
+/// Operation value for `query TestSpellings`.
+nonisolated public struct TestSpellings: Baton.Query {
+    public var resolution: Baton.OperationHandle<Self>? = nil
+
+    public init() {
+    }
+
+    public static let name = "TestSpellings"
+    public static let persistedID = "246054e0116191cab2fc8661a703b68a"
+    public static let text = #"""
+query TestSpellings {
+  spellings {
+    __typename
+    ... on Spelled {
+      __isSpelled: __typename
+      label
+    }
+    ... on Baton {
+      id
+    }
+    ... on Type {
+      id
+    }
+    ... on Protocol {
+      id
+    }
+    ... on Set {
+      id
+    }
+    ... on Node {
+      __isNode: __typename
+      id
+    }
+  }
+}
+"""#
+
+    public var variables: Baton.Variables {
+        Baton.Variables([:])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        true
+    }
+
+    public func hash(into hasher: inout Hasher) {
+    }
+
+    public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
+            .linked("spellings", key: .fixed(Slots.Query.spellings), plural: true, selection: Baton.Selection(type: Types.Spelling, hasID: true, abstract: true, variants: [
+                .init(types: [Types.Baton_, Types.Protocol_, Types.Set, Types.Type_], fields: [
+                    .scalar("__typename", key: .fixed(Slots.Spelling.__typename), kind: .string, list: false),
+                    .scalar("label", key: .fixed(Slots.Spelling.label), kind: .string, list: false),
+                    .scalar("id", key: .fixed(Slots.Spelling.id), kind: .string, list: false),
+                ]),
+                .init(types: [Types.Episode], fields: [
+                    .scalar("__typename", key: .fixed(Slots.Episode.__typename), kind: .string, list: false),
+                    .scalar("id", key: .fixed(Slots.Episode.id), kind: .string, list: false),
+                ]),
+                .init(types: nil, fields: [
+                    .scalar("__typename", key: .fixed(Slots.Spelling.__typename), kind: .string, list: false),
+                ]),
+            ])),
+        ]))
+
+    nonisolated public struct Data: Baton.Lens {
+        public let anchor: Baton.Anchor
+        public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Query"
+        @MainActor public var spellings: Baton.List<Spellings>? { anchor.list(Slots.Query.spellings) }
+
+        nonisolated public struct Spellings: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Spelling"
+            @MainActor public var asSpelled: AsSpelled? { Types.Spelled_possible.contains(anchor.record.type) ? AsSpelled(anchor: anchor) : nil }
+            @MainActor public var asBaton: AsBaton? { anchor.record.is(Types.Baton_) ? AsBaton(anchor: anchor) : nil }
+            @MainActor public var asType: AsType? { anchor.record.is(Types.Type_) ? AsType(anchor: anchor) : nil }
+            @MainActor public var asProtocol: AsProtocol? { anchor.record.is(Types.Protocol_) ? AsProtocol(anchor: anchor) : nil }
+            @MainActor public var asSet: AsSet? { anchor.record.is(Types.Set) ? AsSet(anchor: anchor) : nil }
+
+            nonisolated public struct AsSpelled: Baton.Lens {
+                public let anchor: Baton.Anchor
+                public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                public static let typeName = "Spelled"
+                @MainActor public var label: String? { anchor.string(AbstractSlots.Spelled.label.on(anchor.record.type)) }
+            }
+
+            nonisolated public struct AsBaton: Baton.Lens {
+                public let anchor: Baton.Anchor
+                public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                public static let typeName = "Baton"
+                @MainActor public var id: String? { anchor.string(Slots.Baton_.id) }
+            }
+
+            nonisolated public struct AsType: Baton.Lens {
+                public let anchor: Baton.Anchor
+                public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                public static let typeName = "Type"
+                @MainActor public var id: String? { anchor.string(Slots.Type_.id) }
+            }
+
+            nonisolated public struct AsProtocol: Baton.Lens {
+                public let anchor: Baton.Anchor
+                public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                public static let typeName = "Protocol"
+                @MainActor public var id: String? { anchor.string(Slots.Protocol_.id) }
+            }
+
+            nonisolated public struct AsSet: Baton.Lens {
+                public let anchor: Baton.Anchor
+                public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                public static let typeName = "Set"
+                @MainActor public var id: String? { anchor.string(Slots.Set.id) }
+            }
+        }
+    }
+}
+

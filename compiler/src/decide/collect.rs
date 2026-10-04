@@ -11,7 +11,7 @@ use super::reader::{
     TypeTest,
 };
 use super::{NormalizationKind, NormalizationSelection, Program};
-use crate::names::{Kind, NameError, Reserved, Scope, Written};
+use crate::names::{Kind, NameError, Reserved, Scope, Written, possible_types, type_constant};
 use crate::pipeline::{OperationKind, Plan};
 
 /// What the shared file declares.
@@ -247,11 +247,15 @@ impl Shared {
         let mut types = Scope::new("Types", &none);
         types.declare("schemaDigest", Kind::Static, "the schema's digest");
         for type_name in &self.types {
-            types.declare(type_name, Kind::Static, format!("the type `{type_name}`"));
+            types.declare(
+                type_constant(type_name).trim_matches('`'),
+                Kind::Static,
+                format!("the type `{type_name}`"),
+            );
         }
         for condition in self.possible_sets.keys() {
             types.declare(
-                &format!("{condition}_possible"),
+                &possible_types(condition),
                 Kind::Static,
                 format!("the types that satisfy `{condition}`"),
             );

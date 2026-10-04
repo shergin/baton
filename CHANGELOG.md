@@ -597,6 +597,13 @@ are expected and listed without apology.
   more hashes can hold `\#`, as in `search(name: "\\#1")`, which the
   literal of one hash read as an escape, and the generated code did not
   compile.
+- A schema type named `Baton`, `Type` or `Protocol` is `Baton_`, `Type_`
+  or `Protocol_` in `Types`, at its constant and at every reference, as in
+  `Slots`. `Baton` referred to itself in its own initializer and hid the
+  runtime's module from the other constants, and Swift read `Types.Type`
+  and `Types.Protocol` as metatypes, so the shared file did not compile.
+  The shared file's sets of types are `Swift.Set`, which a type of the
+  module named `Set` no longer hides.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

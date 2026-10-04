@@ -4,7 +4,9 @@
 
 use std::fmt::Write as _;
 
-use super::swift::{argument_expression, swift_literal, variable_literal};
+use super::swift::{
+    argument_expression, possible_types_reference, swift_literal, type_reference, variable_literal,
+};
 use crate::decide::{
     Accessor, AliasGuard, AliasedRead, BoundArgument, ConditionRead, ConnectionMembers, ErrorCheck,
     ErrorLine, FragmentLens, Guard, Guarded, LinkedForm, LinkedRead, Read, ReaderPlan,
@@ -190,7 +192,10 @@ fn linked_accessor(
             } else {
                 (
                     nested.clone(),
-                    format!("{nested}(anchor: $0.requiredLinked({slot}, type: Types.{base_type}))"),
+                    format!(
+                        "{nested}(anchor: $0.requiredLinked({slot}, type: {}))",
+                        type_reference(base_type)
+                    ),
                 )
             };
             (
@@ -214,7 +219,10 @@ fn linked_accessor(
         ),
         LinkedForm::Required => (
             nested.clone(),
-            format!("{nested}(anchor: anchor.requiredLinked({slot}, type: Types.{base_type}))"),
+            format!(
+                "{nested}(anchor: anchor.requiredLinked({slot}, type: {}))",
+                type_reference(base_type)
+            ),
             false,
         ),
     };
@@ -504,8 +512,10 @@ fn connection_members(output: &mut String, connection: &ConnectionMembers, inden
     );
     let _ = writeln!(
         output,
-        "{indent}public static let connection = Baton.ConnectionSlots(connection: Types.{}, edge: Types.{}, pageInfo: Types.{})",
-        connection.connection_type, connection.edge_type, connection.page_info_type
+        "{indent}public static let connection = Baton.ConnectionSlots(connection: {}, edge: {}, pageInfo: {})",
+        type_reference(&connection.connection_type),
+        type_reference(&connection.edge_type),
+        type_reference(&connection.page_info_type)
     );
     if let Some(nodes) = &connection.nodes {
         let (edges, node) = (&nodes.edges, &nodes.node);
@@ -799,10 +809,11 @@ fn slot_expression(access: &SlotAccess) -> String {
 /// The Swift test of a record against a type condition.
 fn type_test(test: &TypeTest) -> String {
     match test {
-        TypeTest::Is(type_name) => format!("anchor.record.is(Types.{type_name})"),
-        TypeTest::InSet { condition, .. } => {
-            format!("Types.{condition}_possible.contains(anchor.record.type)")
-        }
+        TypeTest::Is(type_name) => format!("anchor.record.is({})", type_reference(type_name)),
+        TypeTest::InSet { condition, .. } => format!(
+            "{}.contains(anchor.record.type)",
+            possible_types_reference(condition)
+        ),
     }
 }
 
