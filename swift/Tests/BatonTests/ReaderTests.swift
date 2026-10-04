@@ -318,4 +318,13 @@ struct ReaderTests {
         #expect(query.variables["in"] == .string("Rick"))
         #expect(query != TestKeywordVariables(where: "2", in: "Rick"))
     }
+
+    @Test("a variable that is a list of input objects is a property, a parameter and a request variable of a list of objects")
+    func listOfInputObjects() {
+        let rick: Variable = .object(["name": .string("Rick"), "status": .string("Alive")])
+        let query = TestFilteredCharacters(filters: [rick])
+        #expect(query.variables["filters"] == .list([rick]))
+        #expect(query.variables.json.contains(#""filters":[{"name":"Rick","status":"Alive"}]"#), "\(query.variables.json)")
+        #expect(query != TestFilteredCharacters(filters: []))
+    }
 }

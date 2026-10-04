@@ -133,6 +133,13 @@ struct ReaderDocuments {
         """)
     var keywordVariables: TestKeywordVariables
 
+    @Query("""
+        query TestFilteredCharacters($filters: [FilterCharacter!]!) {
+          charactersMatching(filters: $filters) { id name }
+        }
+        """)
+    var filteredCharacters: TestFilteredCharacters
+
     @Fragment("""
         fragment TestLogEdges_connection on NoteConnection {
           edges @required(action: LOG) { cursor }

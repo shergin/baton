@@ -5,7 +5,7 @@
 nonisolated enum Types {
     /// The schema's digest: pass it as the image's `version`, so an image
     /// written under another schema starts again.
-    static let schemaDigest = "8af55576d263ca48fd23aa2a53a47a0e"
+    static let schemaDigest = "b170ac848059eae3fac3ca0b9c8de535"
     static let AddNotePayload = Baton.Registry.type("AddNotePayload")
     static let Any_ = Baton.Registry.type("Any")
     static let Baton_ = Baton.Registry.type("Baton")
@@ -184,6 +184,7 @@ nonisolated enum Slots {
         static let characters_498461 = Baton.DynamicKey(Types.Query, [.literal("characters(filter:{\"name\":"), .variable("name"), .literal(",\"status\":\"Alive\"})")])
         static let characters_5517f9 = Baton.DynamicKey(Types.Query, [.literal("characters(page:"), .variable("page"), .literal(")")])
         static let charactersByIds_0b7f7b = Baton.DynamicKey(Types.Query, [.literal("charactersByIds(ids:["), .variable("id"), .literal(",\"2\"])")])
+        static let charactersMatching_ca82bd = Baton.DynamicKey(Types.Query, [.literal("charactersMatching(filters:"), .variable("filters"), .literal(")")])
         static let namesake_9b6471 = Baton.DynamicKey(Types.Query, [.literal("namesake(name:"), .variable("name"), .literal(")")])
         static let node_8f7d08 = Baton.DynamicKey(Types.Query, [.literal("node(id:"), .variable("id"), .literal(")")])
         static let search_6286a6 = Baton.Registry.slot(Types.Query, "search(name:\"$0.00\")")

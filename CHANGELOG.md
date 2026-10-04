@@ -707,6 +707,9 @@ are expected and listed without apology.
   With those from `[String]?`, which lists of strings, IDs, enums and
   custom scalars take, and from `[Int]?`, every list of scalars a builder
   or a variable writes has one.
+- A variable that is a list of input objects, such as
+  `$filters: [FilterCharacter!]!`, compiles: `Variable` has an initializer
+  from a list of variables, which the operation value's `variables` calls.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

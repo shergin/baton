@@ -530,6 +530,63 @@ query TestCollidingRequired(
     }
 }
 
+/// Operation value for `query TestFilteredCharacters`.
+nonisolated public struct TestFilteredCharacters: Baton.Query {
+    public var filters: [Baton.Variable]
+    public var resolution: Baton.OperationHandle<Self>? = nil
+
+    public init(filters: [Baton.Variable]) {
+        self.filters = filters
+    }
+
+    public static let name = "TestFilteredCharacters"
+    public static let persistedID = "dedd00157463c6921fd1dd45d90622a4"
+    public static let text = #"""
+query TestFilteredCharacters(
+  $filters: [FilterCharacter!]!
+) {
+  charactersMatching(filters: $filters) {
+    id
+    name
+  }
+}
+"""#
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["filters": Baton.Variable(self.filters)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.filters == rhs.filters
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.filters)
+    }
+
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
+            .linked("charactersMatching", key: .dynamic(Slots.Query.charactersMatching_ca82bd), plural: true, selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+                .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            ])),
+        ]))
+
+    nonisolated public struct Data: Baton.Lens {
+        @_spi(Generated) public let anchor: Baton.Anchor
+        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Query"
+        @MainActor public var charactersMatching: Baton.List<CharactersMatching>? { anchor.list(anchor.owner.slot(Slots.Query.charactersMatching_ca82bd)) }
+
+        nonisolated public struct CharactersMatching: Baton.Lens {
+            @_spi(Generated) public let anchor: Baton.Anchor
+            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Character"
+            @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+            @MainActor public var name: String? { anchor.string(Slots.Character.name) }
+        }
+    }
+}
+
 /// Operation value for `query TestKeywordVariables`.
 nonisolated public struct TestKeywordVariables: Baton.Query {
     public var `where`: String

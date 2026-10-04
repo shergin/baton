@@ -2,7 +2,7 @@
 # list-side tests need and the public API lacks: a Node interface, a union, a
 # lookup by id across types, an interface only some of the union's members
 # implement, mutations with payloads, one of them of every kind of scalar
-# list, and a cursor connection of notes on a character with the mutations
+# list, a field that takes a list of input objects, and a cursor connection of notes on a character with the mutations
 # that edit it, a subscription, the `@defer` directive and a
 # `@semanticNonNull` field, the scalars the tokenizer fixture
 # (`spec/tokenizer/`) reads, and types and fields named as Swift and the
@@ -37,6 +37,7 @@ type Query {
   tokenizer: Tokenizer
   types: Types
   spellings: [Spelling]
+  charactersMatching(filters: [FilterCharacter!]!): [Character]
 }
 
 type Mutation {
