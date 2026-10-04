@@ -376,6 +376,13 @@ are expected and listed without apology.
   argument is labelled, such as SwiftData's `@Query(sort:)`, is another
   macro of the same name and is left alone; it was an error. The plugin
   hands the compiler every file that names a marker.
+- A `.graphql` or `.gql` file in a target writes its own output; its
+  documents compiled and their lenses were never written. Outputs are named
+  by the source's path in the target, so `Thing.swift` and `Thing.graphql`,
+  or two files of one name in two directories, no longer write one file;
+  `batonc generate --out` names them the same way. A document with an error
+  writes nothing, where every output was overwritten with a stub, and a
+  file holding GraphQL that no output is named for is an error.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

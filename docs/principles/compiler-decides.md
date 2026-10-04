@@ -62,7 +62,10 @@ See [Relay's words](relays-words.md) for why the front end is Relay's, and
 
 ## Spelled today
 
-Nothing is spelled yet. Planned: `batonc`, a SwiftPM build-tool plugin over a
-binary artifact bundle, a CLI mode, `baton.json`, and `<File>.baton.swift`
-outputs beside each source that declares GraphQL. This section may rot; the
-rest must not.
+`batonc`, run by a SwiftPM and Xcode build-tool plugin over a binary
+artifact bundle, with `baton.json` beside the target or the package. Each
+source that declares GraphQL, a Swift file or a `.graphql` or `.gql` file,
+writes one output named by its path in the target (`Screens/Home.swift`
+writes `Screens_Home.baton.swift`), and the module's types, slots and sites
+go to one shared `Baton.baton.swift`. A document with an error writes
+nothing. This section may rot; the rest must not.

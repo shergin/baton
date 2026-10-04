@@ -4,8 +4,9 @@
 //! Spike-stage command set:
 //! - `scan <files…>` prints the embedded documents as JSON.
 //! - `plan --schema <sdl> <files…>` prints the plan IR as JSON, timings on stderr.
-//! - `generate --schema <sdl> --out <dir> [--emit <src>=<out>]… <files…>` writes
-//!   stub Swift per host file and prints diagnostics in `path:line:col:` form.
+//! - `generate --schema <sdl> (--out <dir> | --emit <src>=<out>…) <files…>`
+//!   writes the Swift of each host file and the shared file, or nothing when a
+//!   document has an error, and prints diagnostics in `path:line:col:` form.
 //! - `bench --schema <sdl> --fragments <n>` compiles a synthetic corpus twice
 //!   and prints the warm timings.
 
@@ -189,43 +190,45 @@ fn generate(arguments: &[String]) -> Result<(), DriverError> {
     let out_dir = options.values.get("out").map(PathBuf::from);
     let shared_path = options.values.get("shared").map(PathBuf::from);
     let (documents, errors) = documents::collect(&options.paths);
-    let mut rendered: Vec<Rendered> = Vec::new();
-    let mut failed = !errors.is_empty();
     for error in &errors {
         eprintln!("{error}");
     }
 
+    // Relay's program is all or nothing: after an error nothing is written,
+    // so the build stops on the first wave of diagnostics instead of a second
+    // one from a module half written.
     let compiled = pipeline::compile(&sdl, &schema_path, &documents, &config);
-    let plan = match &compiled {
-        Ok(compiled) => compiled.plan.clone(),
+    let plan = match compiled {
+        Ok(compiled) => compiled.plan,
         Err(diagnostics) => {
-            failed = true;
             let known = with_schema(&documents, &schema_path, &sdl);
-            for diagnostic in diagnostics {
-                rendered.push(diagnostics::render(diagnostic, &known));
+            for diagnostic in &diagnostics {
+                eprintln!("{}", diagnostics::render(diagnostic, &known));
             }
-            pipeline::Plan::default()
+            return Err(DriverError::Reported);
         }
     };
-    rendered.extend(check_property_types(&documents, &plan));
+    if !errors.is_empty() {
+        return Err(DriverError::Reported);
+    }
+    let rendered = check_property_types(&documents, &plan);
     let output = emit::emit(&plan);
 
-    // Every declared output is written, so the build system never sees a
-    // missing file; a host file without documents gets a header only.
     let mut targets: Vec<(PathBuf, PathBuf)> = options.emits.clone();
     if let (true, Some(out_dir)) = (targets.is_empty(), &out_dir) {
+        let root = std::env::current_dir().unwrap_or_default();
         for path in documents
             .iter()
             .map(|document| &document.path)
             .collect::<std::collections::BTreeSet<_>>()
         {
-            let stem = path
-                .file_stem()
-                .and_then(|stem| stem.to_str())
-                .unwrap_or("Baton");
-            targets.push((path.clone(), out_dir.join(format!("{stem}.baton.swift"))));
+            targets.push((path.clone(), out_dir.join(output_name(path, &root))));
         }
     }
+    check_targets(&targets, &output)?;
+
+    // Every declared output is written, so the build system never sees a
+    // missing file; a host file without documents gets a header only.
     for (source, destination) in &targets {
         let text = output
             .files
@@ -243,11 +246,64 @@ fn generate(arguments: &[String]) -> Result<(), DriverError> {
     for line in &rendered {
         eprintln!("{line}");
     }
-    if failed || rendered.iter().any(|line| line.severity == "error") {
+    if rendered.iter().any(|line| line.severity == "error") {
         Err(DriverError::Reported)
     } else {
         Ok(())
     }
+}
+
+/// The output a source writes: its path relative to `root`, each directory
+/// separator an underscore, with `.baton.swift` in place of a `.swift`
+/// extension and after any other, so `Thing.swift` and `Thing.graphql`, or
+/// two files of one name in two directories, write two outputs. The build
+/// plugin names its outputs by the same rule.
+fn output_name(source: &Path, root: &Path) -> String {
+    let relative = source.strip_prefix(root).unwrap_or(source);
+    let parts: Vec<String> = relative
+        .components()
+        .filter_map(|component| match component {
+            std::path::Component::Normal(part) => Some(part.to_string_lossy().into_owned()),
+            std::path::Component::ParentDir => Some("..".to_string()),
+            _ => None,
+        })
+        .collect();
+    let joined = parts.join("_");
+    let stem = joined.strip_suffix(".swift").unwrap_or(&joined);
+    format!("{stem}.baton.swift")
+}
+
+/// Fails when a file holding GraphQL has no output, whose lenses would be
+/// compiled and dropped, or when two sources would write one output.
+fn check_targets(targets: &[(PathBuf, PathBuf)], output: &emit::Output) -> Result<(), DriverError> {
+    let sources: std::collections::BTreeSet<String> = targets
+        .iter()
+        .map(|(source, _)| source.to_string_lossy().into_owned())
+        .collect();
+    if let Some(untargeted) = output
+        .files
+        .keys()
+        .find(|source| !sources.contains(*source))
+    {
+        return Err(DriverError::Usage(format!(
+            "`{untargeted}` holds GraphQL but no `--emit` names an output for it"
+        )));
+    }
+    let mut writers: BTreeMap<&Path, &Path> = BTreeMap::new();
+    for (source, destination) in targets {
+        if let Some(other) = writers
+            .insert(destination, source)
+            .filter(|other| *other != source.as_path())
+        {
+            return Err(DriverError::Usage(format!(
+                "`{}` and `{}` would both write `{}`; rename one",
+                other.display(),
+                source.display(),
+                destination.display()
+            )));
+        }
+    }
+    Ok(())
 }
 
 /// The documents a diagnostic may point into: the sources and the schema.
