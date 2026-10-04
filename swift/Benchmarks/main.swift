@@ -35,6 +35,15 @@ struct BenchmarkDocuments {
     var rename: BenchRename.Action
 
     @Mutation("""
+        mutation BenchAddNote($characterId: ID!, $text: String!, $connections: [ID!]!) {
+          addNote(characterId: $characterId, text: $text) {
+            noteEdge @appendEdge(connections: $connections) { cursor node { id text created } }
+          }
+        }
+        """)
+    var addNote: BenchAddNote.Action
+
+    @Mutation("""
         mutation BenchDelete($id: ID!) {
           removeNote(id: $id) { removedNoteId @deleteRecord }
         }
@@ -358,6 +367,9 @@ func run() async throws {
 
     print("connections: 42 pages of 50 notes merged into one connection")
     try await connectionBench()
+
+    print("edge directives: an optimistic @appendEdge on a connection of 50 edges")
+    try await edgeBench()
 
     print("lifetime: 42 pages scrolled, release buffer of 10")
     try await scrollBench(data: data)
@@ -718,6 +730,40 @@ func connectionBench() async throws {
     try await handle.refetch()
     refetched.settle()
     print("    refetch of the first page: nodes \(character.notes.nodes.count), notifications \(refetched.fired)")
+}
+
+/// The optimistic half of a mutation that appends an edge: the layer's commit
+/// inserts a copy of the payload's edge into the connection the screen reads,
+/// and the revert takes it out again.
+@MainActor
+func edgeBench() async throws {
+    let environment = Environment(transport: RecordedTransport { _ in notesPage(1, of: 2, size: 50) })
+    environment.store.reportMissing = nil
+    let handle = environment.handle(for: BenchNotesQuery(id: "1"))
+    handle.retain()
+    await handle.settle()
+    guard case .ready(let data) = handle.phase, let character = data.character?.benchNotes else { return }
+    let store = environment.store
+    let add = BenchAddNote(characterId: "1", text: "Appended", connections: [character.notes.connectionID])
+    let optimistic = Data(#"{"data":{"addNote":{"noteEdge":{"cursor":"optimistic","node":{"id":"optimistic","text":"Appended","created":"2026-10-03"}}}}}"#.utf8)
+    let changes = try Ingest.normalize(optimistic, plan: BenchAddNote.plan.resolve(add.variables), rootKey: Store.mutationRootKey)
+    /// Back to the page alone.
+    func baseline() {
+        for layer in store.optimisticLayers { store.revertOptimistic(layer.id) }
+    }
+    var layer = UUID()
+    measure("apply a layer that appends an edge", iterations: 200, setup: baseline) {
+        layer = store.applyOptimistic(changes)
+    }
+    precondition(character.notes.nodes.count == 51)
+    measure("revert it", iterations: 200, setup: {
+        baseline()
+        layer = store.applyOptimistic(changes)
+    }) {
+        store.revertOptimistic(layer)
+    }
+    precondition(character.notes.nodes.count == 50)
+    handle.release()
 }
 
 func footprint() -> Int {
