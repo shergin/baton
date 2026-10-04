@@ -526,6 +526,25 @@ struct DeliveryTests {
         handle.release()
     }
 
+    @Test("an attach that fetches a deferred fragment memory lacks keeps the field the initial part selects outside the fragment")
+    func deferredPartSharingAField() async throws {
+        let environment = Environment(transport: SilentTransport())
+        environment.store.reportMissing = nil
+        // The initial part: `episode { id }` arrived, the fragment's
+        // `episode { name air_date }` is on its way.
+        let plan = TestOverlapQuery.plan.resolve(TestOverlapQuery(id: "1").variables)
+        environment.store.commit(try Ingest.normalize(fixture("character-overlap-1"), plan: plan))
+        let handle = environment.handle(for: TestOverlapQuery(id: "1"))
+        handle.retain()
+        guard case .ready(let data) = handle.phase else {
+            Issue.record("the initial part renders from memory, got \(handle.phase)")
+            return
+        }
+        #expect(data.character?.episode.map(\.id) == ["1", "2"])
+        #expect(handle.isRefreshing, "the fragment is fetched")
+        handle.release()
+    }
+
     @Test("a subscription's events commit at the subscription root and append through @appendEdge")
     func subscription() async throws {
         let events = Events()

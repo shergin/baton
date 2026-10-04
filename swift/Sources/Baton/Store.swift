@@ -859,7 +859,9 @@ public final class Store {
     /// deferred fields, while a record read from the image holds every cell
     /// of its row, a deferred fragment's link among them, with nothing
     /// behind it: such a field is cleared, so its fragment reads absent
-    /// rather than empty, and the answer is false, so the operation fetches.
+    /// rather than empty, unless the initial part reads the same field and
+    /// its data is there. Either way the answer is false, so the operation
+    /// fetches.
     func deferredPartsHold(_ selection: ResolvedSelection, at record: Record? = nil) -> Bool {
         var whole = true
         deferredParts(selection, at: record ?? root, &whole)
@@ -886,7 +888,11 @@ public final class Store {
                 continue
             }
             if targets.contains(where: { check(child, at: $0) == .miss }) {
-                record.write(field.slot, .missing)
+                // A slot that a field outside the deferred part reads as
+                // well keeps its value: it is that field's data.
+                if !fields.contains(where: { $0.deferred == nil && $0.slot == field.slot }) {
+                    record.write(field.slot, .missing)
+                }
                 whole = false
             }
         }

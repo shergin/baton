@@ -3,8 +3,9 @@ import Baton
 /// The documents behind the delivery tests, against the test schema: field
 /// errors read plainly and through `@catch`, `@required` in its three actions,
 /// `@throwOnFieldError` with the schema's `@semanticNonNull`, a deferred
-/// fragment, in an operation that throws too, an operation that throws with
-/// a spread that does not, and a subscription that appends to a connection.
+/// fragment, in an operation that throws too and in one that selects the
+/// fragment's field outside it as well, an operation that throws with a
+/// spread that does not, and a subscription that appends to a connection.
 @MainActor
 struct DeliveryDocuments {
     @Fragment("""
@@ -58,6 +59,13 @@ struct DeliveryDocuments {
         }
         """)
     var strictDeferred: TestStrictDeferred
+
+    @Query("""
+        query TestOverlapQuery($id: ID!) {
+          character(id: $id) { name episode { id } ...TestAppearances_character @defer }
+        }
+        """)
+    var overlapQuery: TestOverlapQuery
 
     @Fragment("""
         fragment TestName_character on Character { name }

@@ -241,7 +241,8 @@ are expected and listed without apology.
   may be gone, and the check passes over deferred fields: the fragment
   read present and empty. The deferred fields are now checked apart, in
   memory and then in the image; one whose records are not whole is
-  cleared, and a store-or-network attach fetches while the initial part
+  cleared, unless the initial part selects the same field, whose data
+  stays, and a store-or-network attach fetches while the initial part
   renders.
 - An image that lost a batch, written in vain or dropped while the file
   could not open, is discarded at the next open; it served rows older
