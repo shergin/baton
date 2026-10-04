@@ -111,6 +111,52 @@ struct PhaseTests {
         }
     }
 
+    @Test("a parked handle that was ready fails when attached again after a commit put a field error in its selection")
+    func parkedReadyHandleFails() async throws {
+        let environment = Environment(transport: RecordedTransport([TestStrictQuery.name: fixture("character-name-shown")]))
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestStrictQuery(id: "1"))
+        handle.retain()
+        await settled(handle)
+        handle.release()
+        guard case .ready = handle.phase else {
+            Issue.record("expected ready, got \(handle.phase)")
+            return
+        }
+        // A parked handle is settled by no commit until a view attaches it.
+        let plan = TestStrictQuery.plan.resolve(TestStrictQuery(id: "1").variables)
+        environment.store.commit(try Ingest.normalize(fixture("character-name-hidden"), plan: plan))
+        let again = environment.handle(for: TestStrictQuery(id: "1"), fetchPolicy: .storeOnly)
+        #expect(again === handle)
+        guard case .failed(let error as FieldErrors) = again.phase else {
+            Issue.record("expected the committed error, got \(again.phase)")
+            return
+        }
+        #expect(error.errors.map(\.message) == ["name hidden"])
+    }
+
+    @Test("a parked bubbling handle that was ready fails when attached again after a commit nulled a field it requires")
+    func parkedReadyHandleBubbles() async throws {
+        let environment = Environment(transport: RecordedTransport([TestRequiredOrigin.name: fixture("required-origin-1")]))
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestRequiredOrigin(id: "1"))
+        handle.retain()
+        await settled(handle)
+        handle.release()
+        guard case .ready = handle.phase else {
+            Issue.record("expected ready, got \(handle.phase)")
+            return
+        }
+        let plan = TestRequiredOrigin.plan.resolve(TestRequiredOrigin(id: "1").variables)
+        environment.store.commit(try Ingest.normalize(fixture("required-origin-1-null"), plan: plan))
+        let again = environment.handle(for: TestRequiredOrigin(id: "1"), fetchPolicy: .storeOnly)
+        #expect(again === handle)
+        guard case .failed(let error) = again.phase, error is RequiredFieldError else {
+            Issue.record("expected the required origin to fail the operation, got \(again.phase)")
+            return
+        }
+    }
+
     @Test("a commit that moves a link onto a record with a field error fails an operation that throws and reads through it")
     func movedLink() async throws {
         let environment = Environment(transport: RecordedTransport([TestStrictOrigin.name: fixture("strict-origin-1")]))

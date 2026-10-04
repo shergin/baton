@@ -276,8 +276,9 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
             switch phase {
             case .loading:
                 phase = evaluate()
-            // A parked handle saw no commit: what it failed on may be gone.
-            case .failed(let error) where error is FieldErrors || error is RequiredFieldError:
+            // A parked handle saw no commit: what it failed on may be gone,
+            // and a field error or a null may have come.
+            case .ready, .failed(is FieldErrors), .failed(is RequiredFieldError):
                 settle(evaluate())
             default:
                 break

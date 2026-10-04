@@ -394,6 +394,10 @@ are expected and listed without apology.
   a query that spread `HomeDetail_character` was taken for the operation
   `HomeDetail`. A subscription's property typed `.Action` is now warned
   about; only a mutation's may be.
+- A parked `@throwOnFieldError` or bubbling handle that was ready is
+  settled again when a view attaches it. A commit made while it was parked
+  that put a field error or a null into its selection left it ready; only
+  a failed one was settled.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 
