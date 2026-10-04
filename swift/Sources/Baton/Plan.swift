@@ -10,7 +10,7 @@ public struct Plan: Sendable {
     /// Binds the variables: dynamic storage keys become slots, lookup keys
     /// become record keys, connections learn their merge mode and handles
     /// their connection ids. One resolution serves ingest, check and read.
-    public func resolve(_ variables: Variables) -> ResolvedSelection {
+    package func resolve(_ variables: Variables) -> ResolvedSelection {
         root.resolve(variables)
     }
 }
@@ -127,7 +127,7 @@ public struct ConnectionPlan: Sendable {
 
 /// How a page joins its connection, from the cursor arguments it was fetched
 /// with: as in Relay's connection handler.
-public enum ConnectionMode: Sendable, Equatable {
+package enum ConnectionMode: Sendable, Equatable {
     /// No cursor: the connection becomes this page.
     case replace
     /// Fetched after a cursor: appended, when the cursor is still the end.
@@ -428,21 +428,21 @@ public final class Selection: Sendable {
 
 /// A bound lookup: the record key `Type:value`, or the id among the
 /// possible types.
-public struct LookupKey: Sendable {
-    public let type: TypeID?
-    public let possibleTypes: Set<TypeID>
-    public let value: String
+package struct LookupKey: Sendable {
+    package let type: TypeID?
+    package let possibleTypes: Set<TypeID>
+    package let value: String
 }
 
 /// A connection with its variables bound: the client key on the parent, the
 /// slots, and how the page it describes joins the connection. A class, so a
 /// field's kind stays one word wide and the ingest copies nothing per key.
-public final class ResolvedConnection: Sendable {
-    public let storageKey: String
+package final class ResolvedConnection: Sendable {
+    package let storageKey: String
     /// The client slot on the variant's concrete type.
-    public let slot: Slot
-    public let slots: ConnectionSlots
-    public let mode: ConnectionMode
+    package let slot: Slot
+    package let slots: ConnectionSlots
+    package let mode: ConnectionMode
 
     init(storageKey: String, slot: Slot, slots: ConnectionSlots, mode: ConnectionMode) {
         self.storageKey = storageKey
@@ -453,10 +453,10 @@ public final class ResolvedConnection: Sendable {
 }
 
 /// An edit with its connection ids bound.
-public final class ResolvedEdit: Sendable {
-    public let kind: Edit.Kind
-    public let connections: [String]
-    public let edgeType: TypeID?
+package final class ResolvedEdit: Sendable {
+    package let kind: Edit.Kind
+    package let connections: [String]
+    package let edgeType: TypeID?
 
     init(kind: Edit.Kind, connections: [String], edgeType: TypeID?) {
         self.kind = kind
@@ -467,11 +467,11 @@ public final class ResolvedEdit: Sendable {
 
 /// A plan with variables bound: per concrete type, the fields a record of
 /// that type reads, with their slots on it and their keys as bytes.
-public final class ResolvedSelection: Sendable {
-    public let type: TypeID
-    public let hasID: Bool
+package final class ResolvedSelection: Sendable {
+    package let type: TypeID
+    package let hasID: Bool
     /// Whether a record's type comes from the payload's `__typename`.
-    public let isAbstract: Bool
+    package let isAbstract: Bool
     /// The fields of a selection on an object type; on an abstract type,
     /// those every type reads, resolved on the abstract type itself for a
     /// record whose payload names no type. Stored apart from a variant so
@@ -496,7 +496,7 @@ public final class ResolvedSelection: Sendable {
 
     /// The fields a record of `type` reads, with their slots on it. Taken
     /// once per record; the fields are then walked without a condition.
-    public func variant(for type: TypeID) -> ResolvedVariant {
+    package func variant(for type: TypeID) -> ResolvedVariant {
         if !isAbstract || type == self.type { return ResolvedVariant(type: self.type, fields: fields, typeName: typeName) }
         if let variant = listed[type] { return variant }
         return others.withLock { cache in
@@ -525,9 +525,9 @@ public final class ResolvedSelection: Sendable {
 }
 
 /// The fields a record of one concrete type reads, with their slots on it.
-public struct ResolvedVariant: Sendable {
-    public let type: TypeID
-    public let fields: [ResolvedField]
+package struct ResolvedVariant: Sendable {
+    package let type: TypeID
+    package let fields: [ResolvedField]
     /// The type's name, taken once, for the keys the ingest builds.
     let typeName: String
 
@@ -543,23 +543,23 @@ public struct ResolvedVariant: Sendable {
     }
 }
 
-public struct ResolvedField: Sendable {
-    public enum Kind: Sendable {
+package struct ResolvedField: Sendable {
+    package enum Kind: Sendable {
         case scalar(ScalarKind, list: Bool)
         case linked(ResolvedSelection, plural: Bool, lookupKey: LookupKey?, connection: ResolvedConnection?)
     }
 
-    public let responseKey: String
+    package let responseKey: String
     let keyBytes: [UInt8]
-    public let storageKey: String
+    package let storageKey: String
     /// The slot on the variant's concrete type.
-    public let slot: Slot
-    public let kind: Kind
-    public let edit: ResolvedEdit?
+    package let slot: Slot
+    package let kind: Kind
+    package let edit: ResolvedEdit?
     /// The `@defer` label of the part that carries the field; the availability
     /// check does not wait for it.
-    public let deferred: String?
-    public let caught: Bool
+    package let deferred: String?
+    package let caught: Bool
     let isTypename: Bool
 
     init(responseKey: String, keyBytes: [UInt8], storageKey: String, slot: Slot, kind: Kind, edit: ResolvedEdit?, deferred: String?, caught: Bool) {

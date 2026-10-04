@@ -611,6 +611,17 @@ are expected and listed without apology.
   lens, and each lens its check recurses into, has `missingRequiredField`,
   which `Lens` declares and which reads and reports what `satisfied` does;
   `satisfied` is unchanged.
+- The store's writes, the ingest and the store's counters belong to the
+  package, not to an app: `Store.commit`, `commit(_:replacingOptimistic:)`,
+  `applyOptimistic`, `revertOptimistic`, the availability check `check`,
+  `optimisticLayers`, `existing`, `invalidationEpoch`, the root records
+  and their keys, `ChangeSet`, `Ingest`, the resolved plan
+  (`Plan.resolve`, `ResolvedSelection` and its parts), `Store.count`,
+  `Environment.collections`, `rootCount`, `unconfigured` and `resolve`,
+  the handles' `retainCount`, `MutationState` and the storage-key
+  renderings of `Variable` and `Variables` are `package`. The tests and
+  benchmarks reach them; an app writes through operations and reads
+  through lenses. Breaking for code that committed or ingested by hand.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

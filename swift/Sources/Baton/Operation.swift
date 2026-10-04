@@ -151,7 +151,7 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
     @ObservationIgnored let resolved: ResolvedSelection
     /// The scope every lens of the handle reads in.
     @ObservationIgnored private let owner: Owner
-    @ObservationIgnored public internal(set) var retainCount = 0
+    @ObservationIgnored package internal(set) var retainCount = 0
     /// Set by a `preload` that fetched: the first attach finds the fetch
     /// made, or on the way.
     @ObservationIgnored var preloaded = false
@@ -497,9 +497,9 @@ public struct OperationStorage<Op: Query>: DynamicProperty {
 /// The in-flight state behind a mutation action, observable by the view.
 @MainActor
 @Observable
-public final class MutationState {
-    public internal(set) var inFlight = 0
-    public init() {}
+package final class MutationState {
+    package internal(set) var inFlight = 0
+    package init() {}
 }
 
 /// A mutation as a callable value, after SwiftUI's `dismiss` and `openURL`.
@@ -565,7 +565,7 @@ public final class SubscriptionHandle<Op: Subscription>: AnyOperationHandle {
     @ObservationIgnored let resolved: ResolvedSelection
     /// The scope every event's lens reads in.
     @ObservationIgnored private let owner: Owner
-    @ObservationIgnored public internal(set) var retainCount = 0
+    @ObservationIgnored package internal(set) var retainCount = 0
 
     init(operation: Op, environment: Environment) {
         self.operation = operation

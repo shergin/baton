@@ -6,18 +6,18 @@ import Observation
 /// Optimistic layers sit on top of the server's truth and rebase under it.
 @MainActor
 public final class Store {
-    nonisolated public static let rootKey = "client:root"
-    nonisolated public static let mutationRootKey = "client:root:mutation"
-    nonisolated public static let subscriptionRootKey = "client:root:subscription"
+    nonisolated package static let rootKey = "client:root"
+    nonisolated package static let mutationRootKey = "client:root:mutation"
+    nonisolated package static let subscriptionRootKey = "client:root:subscription"
 
     /// The record query root fields hang off. The three roots are typed
     /// `Query`, `Mutation` and `Subscription` whatever the schema calls its
     /// root types; the compiler interns those types by these names.
-    public let root: Record
+    package let root: Record
     /// The record mutation payloads hang off; their entities merge as usual.
-    public let mutationRoot: Record
+    package let mutationRoot: Record
     /// The record subscription payloads hang off.
-    public let subscriptionRoot: Record
+    package let subscriptionRoot: Record
     private var records: [String: Record] = [:]
     /// The environment that owns the store, for lenses that fetch.
     weak var environment: Environment?
@@ -45,10 +45,10 @@ public final class Store {
     public var reportAmbiguousIdentity: ((String, [Record]) -> Void)?
 
     /// Bumped by `invalidate()`; handles fetched before it are stale.
-    public private(set) var invalidationEpoch = 0
+    package private(set) var invalidationEpoch = 0
 
     /// Optimistic responses currently applied, oldest first.
-    public private(set) var optimisticLayers: [OptimisticLayer] = []
+    package private(set) var optimisticLayers: [OptimisticLayer] = []
 
     /// The store's image on disk, when it has one: every commit is written
     /// behind, and the availability check reads from it what memory lacks.
@@ -106,9 +106,9 @@ public final class Store {
         return record
     }
 
-    public var count: Int { records.count }
+    package var count: Int { records.count }
 
-    public func existing(_ key: String) -> Record? { records[key] }
+    package func existing(_ key: String) -> Record? { records[key] }
 
     /// Every record the store holds, by key; for the store dumps under `spec/`.
     package var recordsByKey: [String: Record] { records }
@@ -141,9 +141,9 @@ public final class Store {
     // MARK: Commits and optimistic layers
 
     /// A pending optimistic response: its change set, and what it overwrote.
-    public struct OptimisticLayer: Identifiable, Sendable {
-        public let id: UUID
-        public let changes: ChangeSet
+    package struct OptimisticLayer: Identifiable, Sendable {
+        package let id: UUID
+        package let changes: ChangeSet
         var undo: [Undo] = []
     }
 
@@ -240,7 +240,7 @@ public final class Store {
     /// only the net difference is notified. Returns the number of slots that
     /// changed.
     @discardableResult
-    public func commit(_ changes: ChangeSet) -> Int {
+    package func commit(_ changes: ChangeSet) -> Int {
         defer { reevaluateIfNeeded() }
         if optimisticLayers.isEmpty {
             var transaction = Transaction(direct: true)
@@ -367,7 +367,7 @@ public final class Store {
     }
 
     /// Applies an optimistic response on top of everything else.
-    public func applyOptimistic(_ changes: ChangeSet) -> UUID {
+    package func applyOptimistic(_ changes: ChangeSet) -> UUID {
         defer { reevaluateIfNeeded() }
         var transaction = Transaction()
         var layer = OptimisticLayer(id: UUID(), changes: changes)
@@ -378,7 +378,7 @@ public final class Store {
     }
 
     /// Removes an optimistic layer; later layers are re-applied over the gap.
-    public func revertOptimistic(_ id: UUID) {
+    package func revertOptimistic(_ id: UUID) {
         guard let index = optimisticLayers.firstIndex(where: { $0.id == id }) else { return }
         defer { reevaluateIfNeeded() }
         var transaction = Transaction()
@@ -391,7 +391,7 @@ public final class Store {
     /// Commits the server's answer to an optimistic mutation: the layer is
     /// replaced by the payload in one batch.
     @discardableResult
-    public func commit(_ changes: ChangeSet, replacingOptimistic id: UUID) -> Int {
+    package func commit(_ changes: ChangeSet, replacingOptimistic id: UUID) -> Int {
         defer { reevaluateIfNeeded() }
         var transaction = Transaction()
         revertLayers(from: 0, into: &transaction)
@@ -827,7 +827,7 @@ public final class Store {
     /// same walk runs again with the image at hand, and what it reads becomes
     /// part of the store: this is how a launch renders its first body from
     /// the last one's data.
-    public func check(_ selection: ResolvedSelection, at record: Record? = nil) -> Answer {
+    package func check(_ selection: ResolvedSelection, at record: Record? = nil) -> Answer {
         let record = record ?? root
         metHydrated = false
         if available(selection, at: record, from: nil) { return metHydrated ? .image : .memory }
@@ -888,7 +888,7 @@ public final class Store {
     }
 
     /// Where the availability check found the selection's data.
-    public enum Answer: Sendable {
+    package enum Answer: Sendable {
         /// In memory, every record of it put there by a response.
         case memory
         /// With the image's help: read from it now, or by an earlier check.

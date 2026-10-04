@@ -6,8 +6,8 @@ import Foundation
 /// plan's connections and edge directives ask for, and the field errors the
 /// response carried, resolved to the records and slots they name. Nothing is
 /// materialized until the commit decides which values won and which changed.
-public struct ChangeSet: Sendable {
-    public enum RawValue: Sendable {
+package struct ChangeSet: Sendable {
+    package enum RawValue: Sendable {
         case null
         case bool(Bool)
         case int(Int)
@@ -18,16 +18,16 @@ public struct ChangeSet: Sendable {
         case list(start: Int32, count: Int32)
     }
 
-    public struct Entry: Sendable {
-        public let record: Int32
-        public let slot: Slot
-        public let value: RawValue
+    package struct Entry: Sendable {
+        package let record: Int32
+        package let slot: Slot
+        package let value: RawValue
     }
 
     /// What the store does after writing the entries: a connection page's
     /// merge, or an edge directive of a mutation payload. Records are indices
     /// into this change set; connections are named by their record keys.
-    public enum Edit: Sendable {
+    package enum Edit: Sendable {
         case merge(connection: Int32, page: Int32, slots: ConnectionSlots, mode: ConnectionMode)
         case insertEdge(edge: Int32, connections: [String], prepend: Bool)
         case insertNode(node: Int32, edgeType: TypeID, connections: [String], prepend: Bool)
@@ -37,38 +37,38 @@ public struct ChangeSet: Sendable {
 
     /// A field error resolved to the record and slot its path names, and
     /// whether a `@catch` on the way there handles it.
-    public struct FieldErrorEntry: Sendable {
-        public let record: Int32
-        public let slot: Slot
-        public let error: FieldError
-        public let caught: Bool
+    package struct FieldErrorEntry: Sendable {
+        package let record: Int32
+        package let slot: Slot
+        package let error: FieldError
+        package let caught: Bool
     }
 
-    public let bytes: [UInt8]
-    public internal(set) var recordKeys: ContiguousArray<String> = []
-    public internal(set) var recordTypes: ContiguousArray<TypeID> = []
+    package let bytes: [UInt8]
+    package internal(set) var recordKeys: ContiguousArray<String> = []
+    package internal(set) var recordTypes: ContiguousArray<TypeID> = []
     /// Whether the record is an entity keyed `Type:id`, for the store's id index.
-    public internal(set) var recordIsEntity: ContiguousArray<Bool> = []
+    package internal(set) var recordIsEntity: ContiguousArray<Bool> = []
     /// Entries grouped by record, one per slot: the last value the response
     /// gave. In arrival order until the ingest groups them at its end.
-    public internal(set) var entries: ContiguousArray<Entry> = []
+    package internal(set) var entries: ContiguousArray<Entry> = []
     /// The entries of record `i` are `entries[starts[i]..<starts[i + 1]]`.
-    public internal(set) var starts: ContiguousArray<Int32> = []
-    public internal(set) var refs: ContiguousArray<Int32> = []
-    public internal(set) var scalars: ContiguousArray<RawValue> = []
-    public internal(set) var edits: ContiguousArray<Edit> = []
-    public internal(set) var fieldErrors: ContiguousArray<FieldErrorEntry> = []
+    package internal(set) var starts: ContiguousArray<Int32> = []
+    package internal(set) var refs: ContiguousArray<Int32> = []
+    package internal(set) var scalars: ContiguousArray<RawValue> = []
+    package internal(set) var edits: ContiguousArray<Edit> = []
+    package internal(set) var fieldErrors: ContiguousArray<FieldErrorEntry> = []
     /// Errors the response carried without a path, or with one that names
     /// no field it selected: nothing in the store holds them.
-    public internal(set) var unplacedErrors: [FieldError] = []
+    package internal(set) var unplacedErrors: [FieldError] = []
     /// The errors of an announced part the server could not deliver, when a
     /// field it would have filled is under no `@catch`, each once. They
     /// belong to the part's fields, which hold one error each, the first.
     var failedPartErrors: [FieldError] = []
     /// The parts the first part of an incremental response announces, and
     /// whether more parts follow it.
-    public internal(set) var pending: [Ingest.IncrementalPart.Pending] = []
-    public internal(set) var hasNext = false
+    package internal(set) var pending: [Ingest.IncrementalPart.Pending] = []
+    package internal(set) var hasNext = false
     var index: [String: Int32] = [:]
 
     /// Reserves by the response's size: the Rick and Morty fixture writes an
@@ -168,7 +168,7 @@ public struct ChangeSet: Sendable {
 
     /// The field errors no `@catch` handles, placed or not, each once; they
     /// fail a `@throwOnFieldError` operation.
-    public var uncaughtFieldErrors: [FieldError] {
+    package var uncaughtFieldErrors: [FieldError] {
         // A failed part's change set holds that part alone, and its entries
         // repeat the first error on every field the part would have filled;
         // its errors are counted from `failedPartErrors` instead, once each.
@@ -188,14 +188,14 @@ public struct ChangeSet: Sendable {
     }
 
     /// Decodes a string value from the response bytes.
-    public func string(_ start: Int32, _ end: Int32, escaped: Bool) -> String {
+    package func string(_ start: Int32, _ end: Int32, escaped: Bool) -> String {
         bytes.withUnsafeBufferPointer { buffer in
             Ingest.materialize(base: buffer.baseAddress!, Int(start), Int(end), escaped)
         }
     }
 
     /// Whether the string at the range equals `other`, without allocating.
-    public func stringEquals(_ start: Int32, _ end: Int32, escaped: Bool, _ other: String) -> Bool {
+    package func stringEquals(_ start: Int32, _ end: Int32, escaped: Bool, _ other: String) -> Bool {
         if escaped { return string(start, end, escaped: escaped) == other }
         let length = Int(end - start)
         var other = other
@@ -215,9 +215,9 @@ public struct IngestError: Error, CustomStringConvertible, Sendable {
 
 /// Decodes a GraphQL response straight into a change set, following a resolved
 /// plan. One pass, no intermediate tree, no model.
-public enum Ingest {
+package enum Ingest {
     /// One step of a response path: a field by response key, or a list index.
-    public enum PathSegment: Sendable, Hashable {
+    package enum PathSegment: Sendable, Hashable {
         case name(String)
         case index(Int)
     }
@@ -227,42 +227,42 @@ public enum Ingest {
     /// format (`incremental[{data, path, label}]`), the 2024 one
     /// (`pending[{id, path, label}]`, `incremental[{id, data}]`), and Relay's
     /// (`{data, path, label}` per part).
-    public struct IncrementalPart: Sendable {
-        public struct Item: Sendable {
-            public var path: [PathSegment]?
-            public var label: String?
-            public var id: String?
+    package struct IncrementalPart: Sendable {
+        package struct Item: Sendable {
+            package var path: [PathSegment]?
+            package var label: String?
+            package var id: String?
             /// Below the announced part's path, where the data is, in the
             /// 2024 format.
-            public var subPath: [PathSegment]?
-            public var data: Data
+            package var subPath: [PathSegment]?
+            package var data: Data
             /// The field errors that came with the item, by absolute path.
-            public var errors: [ResponseError] = []
+            package var errors: [ResponseError] = []
         }
 
-        public struct Pending: Sendable {
-            public var id: String
-            public var path: [PathSegment]
-            public var label: String?
+        package struct Pending: Sendable {
+            package var id: String
+            package var path: [PathSegment]
+            package var label: String?
         }
 
         /// An announced part the server has finished, with the errors that
         /// kept it from being delivered, if any.
-        public struct Completed: Sendable {
-            public var id: String
-            public var errors: [ResponseError]
+        package struct Completed: Sendable {
+            package var id: String
+            package var errors: [ResponseError]
         }
 
-        public var items: [Item] = []
-        public var pending: [Pending] = []
-        public var completed: [Completed] = []
-        public var hasNext = false
+        package var items: [Item] = []
+        package var pending: [Pending] = []
+        package var completed: [Completed] = []
+        package var hasNext = false
     }
 
     /// An entry of a response's `errors`, as read: its message and path.
-    public struct ResponseError: Sendable {
-        public var message: String
-        public var path: [PathSegment]?
+    package struct ResponseError: Sendable {
+        package var message: String
+        package var path: [PathSegment]?
     }
 
     /// One object a later part delivers, at the record its path names.
@@ -278,7 +278,7 @@ public enum Ingest {
         let errors: [ResponseError]
     }
 
-    public static func normalize(_ data: Data, plan: ResolvedSelection, rootKey: String = Store.rootKey) throws -> ChangeSet {
+    package static func normalize(_ data: Data, plan: ResolvedSelection, rootKey: String = Store.rootKey) throws -> ChangeSet {
         let bytes = [UInt8](data)
         // The change set is made inside the cursor and moved out, so no copy
         // is held while the cursor appends and nothing is copied on write.
@@ -299,7 +299,7 @@ public enum Ingest {
     /// Normalizes one object, as a deferred part delivers it: the selection
     /// the part fills, at the record its path named, read as that record's
     /// concrete type.
-    public static func normalizeObject(_ data: Data, plan: ResolvedSelection, key: String, type: TypeID, entity: Bool) throws -> ChangeSet {
+    package static func normalizeObject(_ data: Data, plan: ResolvedSelection, key: String, type: TypeID, entity: Bool) throws -> ChangeSet {
         try normalizeObject(data, plan: plan, key: key, type: type, entity: entity, at: [], errors: [])
     }
 
@@ -376,7 +376,7 @@ public enum Ingest {
     }
 
     /// Reads a part of an incremental response after the first.
-    public static func incremental(_ data: Data) throws -> IncrementalPart {
+    package static func incremental(_ data: Data) throws -> IncrementalPart {
         let bytes = [UInt8](data)
         var part = IncrementalPart()
         try bytes.withUnsafeBufferPointer { buffer in
@@ -433,7 +433,7 @@ public enum Ingest {
 
     /// Reads an array of GraphQL errors, such as a subscription's `error` frame
     /// carries: messages and paths.
-    public static func responseErrors(_ data: Data) throws -> [ResponseError] {
+    package static func responseErrors(_ data: Data) throws -> [ResponseError] {
         let bytes = [UInt8](data)
         return try bytes.withUnsafeBufferPointer { buffer in
             var scanner = Scanner(base: buffer.baseAddress!, count: buffer.count)
@@ -442,7 +442,7 @@ public enum Ingest {
     }
 
     /// Reads a `graphql-transport-ws` frame: its type, id and payload bytes.
-    public static func frame(_ data: Data) throws -> (type: String?, id: String?, payload: Data?) {
+    package static func frame(_ data: Data) throws -> (type: String?, id: String?, payload: Data?) {
         let bytes = [UInt8](data)
         var type: String?
         var id: String?
