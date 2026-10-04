@@ -209,9 +209,13 @@ public final class Environment {
         }
         let uncaught: [FieldError]
         do {
-            let data = try await transport.execute(request(Op.self, variables: operation.variables))
-            // No cancellation check: the server has applied the mutation, and
-            // its payload commits whoever stopped waiting for it.
+            // The request runs in a task of its own, which the caller's
+            // cancellation does not reach: a server that received the
+            // mutation applies it, so its payload commits whoever stopped
+            // waiting, and no cancellation check stands before the commit.
+            let request = request(Op.self, variables: operation.variables)
+            let transport = transport
+            let data = try await Task { try await transport.execute(request) }.value
             let changes = try await Ingest.normalized(data, plan: resolved, rootKey: Store.mutationRootKey)
             if let layer {
                 store.commit(changes, replacingOptimistic: layer)

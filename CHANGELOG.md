@@ -78,8 +78,11 @@ are expected and listed without apology.
 - A superseded fetch does not commit. A response that arrived, or was still
   being read, after a refetch replaced its fetch landed after the newer one
   when the transport did not hear the cancellation. Ingest now runs in the
-  fetch's own task, so cancellation and priority reach it; a mutation's
-  payload commits whoever stopped waiting, because the server applied it.
+  fetch's own task, so cancellation and priority reach it. A mutation's
+  request runs apart from its caller's task, and its payload commits
+  whoever stopped waiting, because the server applied it; with
+  `URLSessionTransport` a cancelled caller cancelled the request, and the
+  payload, and an optimistic layer with it, was lost.
 - `refetch()` on an operation value and on its handle is `async throws`:
   a refetch that fails throws its error, and the data on screen stays. It
   was dropped before. Breaking: a call site needs `try`.

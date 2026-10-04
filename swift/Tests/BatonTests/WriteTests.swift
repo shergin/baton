@@ -26,6 +26,35 @@ final class GatedTransport: Transport, @unchecked Sendable {
     }
 }
 
+/// A transport that answers when told and, as `URLSession` does, fails the
+/// request with a cancellation when the task that made it is cancelled.
+final class CancellableGate: Transport, @unchecked Sendable {
+    private let lock = NSLock()
+    private var waiting: CheckedContinuation<Data, any Error>?
+
+    var pending: Bool { lock.withLock { waiting != nil } }
+
+    func execute(_ request: Request) async throws -> Data {
+        try await withTaskCancellationHandler {
+            try await withCheckedThrowingContinuation { continuation in
+                lock.withLock { waiting = continuation }
+            }
+        } onCancel: {
+            lock.withLock { () -> CheckedContinuation<Data, any Error>? in
+                defer { waiting = nil }
+                return waiting
+            }?.resume(throwing: CancellationError())
+        }
+    }
+
+    func respond(_ data: Data) {
+        lock.withLock { () -> CheckedContinuation<Data, any Error>? in
+            defer { waiting = nil }
+            return waiting
+        }?.resume(returning: data)
+    }
+}
+
 @MainActor
 @Suite("Writes", .timeLimit(.minutes(1)))
 struct WriteTests {
@@ -85,6 +114,21 @@ struct WriteTests {
         #expect(rick.favorite == true)
         #expect(environment.store.optimisticLayers.isEmpty)
         #expect(environment.store.mutationRoot !== environment.store.root)
+    }
+
+    @Test("a mutation whose caller stops waiting still commits the payload the server sends")
+    func mutationOutlivesItsCaller() async throws {
+        let transport = CancellableGate()
+        let environment = Environment(transport: transport, store: try seededStore())
+        let caller = Task { try await environment.mutate(TestRename(id: "1", name: "Rick Prime")) }
+        await until { transport.pending }
+        caller.cancel()
+        try await Task.sleep(for: .milliseconds(50))
+        #expect(transport.pending, "the request was not cancelled with its caller")
+        transport.respond(fixture("rename-1"))
+        _ = try? await caller.value
+        let rick = try #require(environment.store.existing("Character:1"))
+        #expect(rick.read(Registry.slot(rick.type, "name")) == .string("Rick Prime"))
     }
 
     @Test("a mutation's root field is keyed without its input, so a call with a new input numbers no new slot")
