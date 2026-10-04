@@ -356,8 +356,8 @@ mutation TestBuilderNames(
                 }
                 public var variable: Baton.Variable {
                     var fields: [String: Baton.Variable] = [:]
-                    if let id { fields["id"] = Baton.Variable(id) }
-                    if let favorite { fields["favorite"] = Baton.Variable(favorite) }
+                    if let id { fields["id"] = .init(id) }
+                    if let favorite { fields["favorite"] = .init(favorite) }
                     return .object(fields)
                 }
             }
@@ -385,8 +385,8 @@ mutation TestBuilderNames(
                 }
                 public var variable: Baton.Variable {
                     var fields: [String: Baton.Variable] = [:]
-                    if let id { fields["id"] = Baton.Variable(id) }
-                    if let favorite { fields["favorite"] = Baton.Variable(favorite) }
+                    if let id { fields["id"] = .init(id) }
+                    if let favorite { fields["favorite"] = .init(favorite) }
                     return .object(fields)
                 }
             }
@@ -414,8 +414,8 @@ mutation TestBuilderNames(
                 }
                 public var variable: Baton.Variable {
                     var fields: [String: Baton.Variable] = [:]
-                    if let id { fields["id"] = Baton.Variable(id) }
-                    if let name { fields["name"] = Baton.Variable(name) }
+                    if let id { fields["id"] = .init(id) }
+                    if let name { fields["name"] = .init(name) }
                     return .object(fields)
                 }
             }
@@ -443,8 +443,8 @@ mutation TestBuilderNames(
                 }
                 public var variable: Baton.Variable {
                     var fields: [String: Baton.Variable] = [:]
-                    if let id { fields["id"] = Baton.Variable(id) }
-                    if let favorite { fields["favorite"] = Baton.Variable(favorite) }
+                    if let id { fields["id"] = .init(id) }
+                    if let favorite { fields["favorite"] = .init(favorite) }
                     return .object(fields)
                 }
             }
@@ -692,9 +692,9 @@ mutation TestCommitVariable(
                 }
                 public var variable: Baton.Variable {
                     var fields: [String: Baton.Variable] = [:]
-                    if let id { fields["id"] = Baton.Variable(id) }
-                    if let name { fields["name"] = Baton.Variable(name) }
-                    if let favorite { fields["favorite"] = Baton.Variable(favorite) }
+                    if let id { fields["id"] = .init(id) }
+                    if let name { fields["name"] = .init(name) }
+                    if let favorite { fields["favorite"] = .init(favorite) }
                     return .object(fields)
                 }
             }
@@ -1047,6 +1047,125 @@ query TestHasherVariable(
             @MainActor public var id: String? { anchor.string(Slots.Character.id) }
             @MainActor public var name: String? { anchor.string(Slots.Character.name) }
         }
+    }
+}
+
+/// Operation value for `mutation TestModuleNamedPayload`.
+nonisolated public struct TestModuleNamedPayload: Baton.Mutation {
+    public var id: String
+
+    public init(id: String) {
+        self.id = id
+    }
+
+    public static let name = "TestModuleNamedPayload"
+    public static let persistedID = "d0ecd0de4ae40d2122dbcbeeab23d20b"
+    public static let text = #"""
+mutation TestModuleNamedPayload(
+  $id: ID!
+) {
+  setFavorite(id: $id, favorite: true) {
+    Baton: character {
+      id
+      Baton: name
+    }
+  }
+}
+"""#
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["id": Baton.Variable(self.id)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.id)
+    }
+
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
+            .linked("setFavorite", key: .fixed(Slots.Mutation.setFavorite), plural: false, selection: Baton.Selection(type: Types.FavoritePayload, hasID: false, abstract: false, fields: [
+                .linked("Baton", key: .fixed(Slots.FavoritePayload.character), plural: false, selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                    .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+                    .scalar("Baton", key: .fixed(Slots.Character.name), kind: .string, list: false),
+                ])),
+            ])),
+        ]))
+
+    nonisolated public struct Data: Baton.Lens {
+        @_spi(Generated) public let anchor: Baton.Anchor
+        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Mutation"
+        @MainActor public var setFavorite: SetFavorite? { anchor.linked(Slots.Mutation.setFavorite).map(SetFavorite.init(anchor:)) }
+
+        nonisolated public struct SetFavorite: Baton.Lens {
+            @_spi(Generated) public let anchor: Baton.Anchor
+            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "FavoritePayload"
+            @MainActor public var Baton: BatonLens? { anchor.linked(Slots.FavoritePayload.character).map(BatonLens.init(anchor:)) }
+
+            nonisolated public struct BatonLens: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                public static let typeName = "Character"
+                @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+                @MainActor public var Baton: String? { anchor.string(Slots.Character.name) }
+            }
+        }
+    }
+
+    public typealias Action = Baton.MutationAction<Self>
+
+    /// A partial response to show before the server answers; absent fields leave the store untouched.
+    nonisolated public struct OptimisticResponse: Sendable {
+        public var setFavorite: SetFavorite?
+        public init(setFavorite: SetFavorite? = nil) {
+            self.setFavorite = setFavorite
+        }
+        public var variable: Baton.Variable {
+            var fields: [String: Baton.Variable] = [:]
+            if let setFavorite { fields["setFavorite"] = setFavorite.variable }
+            return .object(fields)
+        }
+
+        /// A partial response to show before the server answers; absent fields leave the store untouched.
+        nonisolated public struct SetFavorite: Sendable {
+            public var Baton: BatonResponse?
+            public init(Baton: BatonResponse? = nil) {
+                self.Baton = Baton
+            }
+            public var variable: Baton.Variable {
+                var fields: [String: Baton.Variable] = [:]
+                if let Baton { fields["Baton"] = Baton.variable }
+                return .object(fields)
+            }
+
+            /// A partial response to show before the server answers; absent fields leave the store untouched.
+            nonisolated public struct BatonResponse: Sendable {
+                public var id: String?
+                public var Baton: String?
+                public init(id: String? = nil, Baton: String? = nil) {
+                    self.id = id
+                    self.Baton = Baton
+                }
+                public var variable: Baton.Variable {
+                    var fields: [String: Baton.Variable] = [:]
+                    if let id { fields["id"] = .init(id) }
+                    if let Baton { fields["Baton"] = .init(Baton) }
+                    return .object(fields)
+                }
+            }
+        }
+    }
+}
+
+extension Baton.MutationAction where Op == TestModuleNamedPayload {
+    /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
+    @MainActor @discardableResult
+    public func callAsFunction(id: String, optimistic: TestModuleNamedPayload.OptimisticResponse? = nil) async throws -> TestModuleNamedPayload.Data {
+        try await self.commit(TestModuleNamedPayload(id: id), optimistic: optimistic?.variable)
     }
 }
 

@@ -313,7 +313,7 @@ mutation TestAddNote(
                 }
                 public var variable: Baton.Variable {
                     var fields: [String: Baton.Variable] = [:]
-                    if let cursor { fields["cursor"] = Baton.Variable(cursor) }
+                    if let cursor { fields["cursor"] = .init(cursor) }
                     if let node { fields["node"] = node.variable }
                     return .object(fields)
                 }
@@ -328,8 +328,8 @@ mutation TestAddNote(
                     }
                     public var variable: Baton.Variable {
                         var fields: [String: Baton.Variable] = [:]
-                        if let id { fields["id"] = Baton.Variable(id) }
-                        if let text { fields["text"] = Baton.Variable(text) }
+                        if let id { fields["id"] = .init(id) }
+                        if let text { fields["text"] = .init(text) }
                         return .object(fields)
                     }
                 }
@@ -469,7 +469,7 @@ mutation TestAddNoteFirst(
                 }
                 public var variable: Baton.Variable {
                     var fields: [String: Baton.Variable] = [:]
-                    if let cursor { fields["cursor"] = Baton.Variable(cursor) }
+                    if let cursor { fields["cursor"] = .init(cursor) }
                     if let node { fields["node"] = node.variable }
                     return .object(fields)
                 }
@@ -484,8 +484,8 @@ mutation TestAddNoteFirst(
                     }
                     public var variable: Baton.Variable {
                         var fields: [String: Baton.Variable] = [:]
-                        if let id { fields["id"] = Baton.Variable(id) }
-                        if let text { fields["text"] = Baton.Variable(text) }
+                        if let id { fields["id"] = .init(id) }
+                        if let text { fields["text"] = .init(text) }
                         return .object(fields)
                     }
                 }
@@ -611,8 +611,8 @@ mutation TestAddNoteNode(
                 }
                 public var variable: Baton.Variable {
                     var fields: [String: Baton.Variable] = [:]
-                    if let id { fields["id"] = Baton.Variable(id) }
-                    if let text { fields["text"] = Baton.Variable(text) }
+                    if let id { fields["id"] = .init(id) }
+                    if let text { fields["text"] = .init(text) }
                     return .object(fields)
                 }
             }
@@ -737,8 +737,8 @@ mutation TestAddNoteNodeFirst(
                 }
                 public var variable: Baton.Variable {
                     var fields: [String: Baton.Variable] = [:]
-                    if let id { fields["id"] = Baton.Variable(id) }
-                    if let text { fields["text"] = Baton.Variable(text) }
+                    if let id { fields["id"] = .init(id) }
+                    if let text { fields["text"] = .init(text) }
                     return .object(fields)
                 }
             }
@@ -863,8 +863,8 @@ mutation TestAddNoteNodeOfAnotherType(
                 }
                 public var variable: Baton.Variable {
                     var fields: [String: Baton.Variable] = [:]
-                    if let id { fields["id"] = Baton.Variable(id) }
-                    if let text { fields["text"] = Baton.Variable(text) }
+                    if let id { fields["id"] = .init(id) }
+                    if let text { fields["text"] = .init(text) }
                     return .object(fields)
                 }
             }
@@ -1130,7 +1130,7 @@ mutation TestDeleteNote(
             }
             public var variable: Baton.Variable {
                 var fields: [String: Baton.Variable] = [:]
-                if let removedNoteId { fields["removedNoteId"] = Baton.Variable(removedNoteId) }
+                if let removedNoteId { fields["removedNoteId"] = .init(removedNoteId) }
                 return .object(fields)
             }
         }
@@ -1727,8 +1727,8 @@ mutation TestRemoveNote(
             }
             public var variable: Baton.Variable {
                 var fields: [String: Baton.Variable] = [:]
-                if let removedNoteId { fields["removedNoteId"] = Baton.Variable(removedNoteId) }
-                if let deleted { fields["deleted"] = Baton.Variable(deleted) }
+                if let removedNoteId { fields["removedNoteId"] = .init(removedNoteId) }
+                if let deleted { fields["deleted"] = .init(deleted) }
                 return .object(fields)
             }
         }

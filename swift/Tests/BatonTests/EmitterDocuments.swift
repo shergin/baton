@@ -10,8 +10,10 @@ import Baton
 /// named like a spread's accessor; a connection whose edges' lens cannot be
 /// named `Edges`; a mutation whose
 /// payload fields are named like the types an optimistic builder spells,
-/// with a variable named `self`; and a query whose text holds a backslash
-/// before a hash, which a raw literal of one hash reads as an escape.
+/// with a variable named `self`; one whose payload field, and a field under
+/// it, are named like the runtime's module; and a query whose text holds a
+/// backslash before a hash, which a raw literal of one hash reads as an
+/// escape.
 @MainActor
 struct EmitterDocuments {
     @Fragment("""
@@ -125,6 +127,13 @@ struct EmitterDocuments {
         }
         """)
     var commitVariable: TestCommitVariable.Action
+
+    @Mutation("""
+        mutation TestModuleNamedPayload($id: ID!) {
+          setFavorite(id: $id, favorite: true) { Baton: character { id Baton: name } }
+        }
+        """)
+    var moduleNamedPayload: TestModuleNamedPayload.Action
 
     @Query(##"""
         query TestEscapedText {

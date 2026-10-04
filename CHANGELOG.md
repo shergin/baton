@@ -680,6 +680,11 @@ are expected and listed without apology.
   reports hand an app a slot and a record. Breaking for code that read a
   record, built an anchor or a lens, or named a plan: it needs
   `@_spi(Generated) import Baton`, as the tests and benchmarks have.
+- A mutation's payload field named or aliased `Baton` compiles. Its
+  optimistic builder wrote each scalar as `Baton.Variable(value)`, which
+  the field's property hid in the builder and in every builder nested in
+  it; a builder now names the runtime's module only in types and writes a
+  scalar as `.init(value)`.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

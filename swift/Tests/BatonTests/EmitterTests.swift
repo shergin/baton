@@ -158,6 +158,23 @@ struct EmitterTests {
         #expect(data.sendable?.character?.favorite == true)
     }
 
+    @Test("a payload field named Baton, and one named Baton under it, render through their builders and apply")
+    func builderFieldsNamedLikeTheModule() throws {
+        let store = Store()
+        store.reportMissing = nil
+        let mutation = TestModuleNamedPayload(id: "1")
+        let optimistic = TestModuleNamedPayload.OptimisticResponse(setFavorite: .init(Baton: .init(id: "1", Baton: "Rick Prime")))
+        #expect(optimistic.variable == .object([
+            "setFavorite": .object(["Baton": .object(["id": .string("1"), "Baton": .string("Rick Prime")])]),
+        ]))
+        let json = Data(("{\"data\":" + optimistic.variable.json + "}").utf8)
+        _ = store.applyOptimistic(try Ingest.normalize(json, plan: TestModuleNamedPayload.plan.resolve(mutation.variables), rootKey: Store.mutationRootKey))
+        let root = try #require(store.existing(Store.mutationRootKey))
+        let data = TestModuleNamedPayload.Data(anchor: Anchor(record: root, variables: mutation.variables, store: store))
+        #expect(data.setFavorite?.Baton?.id == "1")
+        #expect(data.setFavorite?.Baton?.Baton == "Rick Prime")
+    }
+
     @Test("an operation whose text holds a backslash before a hash compiles, and its text holds both as the document wrote them")
     func textWithBackslashBeforeHash() {
         #expect(TestEscapedText.text.contains(##"search(name: "\\#1")"##))
