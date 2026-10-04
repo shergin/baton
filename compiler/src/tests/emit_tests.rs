@@ -1,9 +1,10 @@
-//! Golden tests for the Swift emitter. The documents of the Swift test target
-//! go through the whole pipeline, as the build plugin runs it, and the
-//! generated files are compared byte for byte with `goldens/`. Those documents
-//! exist to exercise every directive the runtime's tests prove, so they cover
-//! every shape the emitter writes, and a change to the emitter shows up here
-//! as a diff to review.
+//! Golden tests for the Swift emitter and the plan. The documents of the
+//! Swift test target go through the whole pipeline, as the build plugin runs
+//! it, and the generated files are compared byte for byte with `goldens/`,
+//! beside the plan `batonc plan` prints for each file's documents. Those
+//! documents exist to exercise every directive the runtime's tests prove, so
+//! they cover every shape the lowering and the emitter write, and a change to
+//! either shows up here as a diff to review.
 //!
 //! After an intended change, `BATON_BLESS=1 cargo test` rewrites the goldens.
 
@@ -14,17 +15,21 @@ use super::*;
 use crate::config::Config;
 use crate::{diagnostics, documents, pipeline};
 
+fn repository() -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .expect("the compiler sits one level below the repository root")
+        .to_path_buf()
+}
+
 fn goldens() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("src/tests/goldens")
 }
 
-/// Compiles the Swift test target and returns the generated files by output
-/// name, the shared file among them.
-fn emit_swift_tests() -> BTreeMap<String, String> {
-    let target = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .parent()
-        .expect("the compiler sits one level below the repository root")
-        .join("swift/Tests/BatonTests");
+/// The plan of the Swift test target, its sources named from the
+/// repository's root as `batonc plan` run there names them.
+fn compile_swift_tests() -> Plan {
+    let target = repository().join("swift/Tests/BatonTests");
     let config_path = target.join("baton.json");
     let config = Config::load(&config_path).expect("the test target has a baton.json");
     let schema_path = config.schema_path(&config_path);
@@ -52,8 +57,36 @@ fn emit_swift_tests() -> BTreeMap<String, String> {
                 rendered.join("\n")
             )
         });
+    let mut plan = compiled.plan;
+    let root = repository();
+    let relative = |source: &mut String| {
+        if let Ok(path) = Path::new(source.as_str()).strip_prefix(&root) {
+            *source = path.to_string_lossy().into_owned();
+        }
+    };
+    for fragment in &mut plan.fragments {
+        relative(&mut fragment.source);
+    }
+    for operation in &mut plan.operations {
+        relative(&mut operation.source);
+    }
+    plan
+}
 
-    let output = emit(&compiled.plan).unwrap_or_else(|duplicates| {
+/// The output name for `source` with `extension` after its stem.
+fn golden_name(source: &str, extension: &str) -> String {
+    let stem = Path::new(source)
+        .file_stem()
+        .and_then(|stem| stem.to_str())
+        .expect("a source file has a name");
+    format!("{stem}{extension}")
+}
+
+/// Compiles the Swift test target and returns the generated files by output
+/// name, the shared file among them.
+fn emit_swift_tests() -> BTreeMap<String, String> {
+    let plan = compile_swift_tests();
+    let output = emit(&plan).unwrap_or_else(|duplicates| {
         let messages: Vec<String> = duplicates.iter().map(ToString::to_string).collect();
         panic!(
             "the test documents emit names twice:\n{}",
@@ -63,26 +96,55 @@ fn emit_swift_tests() -> BTreeMap<String, String> {
     let mut files: BTreeMap<String, String> = output
         .files
         .into_iter()
-        .map(|(source, text)| {
-            let stem = Path::new(&source)
-                .file_stem()
-                .and_then(|stem| stem.to_str())
-                .expect("a source file has a name");
-            (format!("{stem}.baton.swift"), text)
-        })
+        .map(|(source, text)| (golden_name(&source, ".baton.swift"), text))
         .collect();
     files.insert("Baton.baton.swift".to_string(), output.shared);
     files
 }
 
-/// The names of the goldens on disk.
-fn golden_names(directory: &Path) -> Vec<String> {
+/// The plan of the Swift test target as `batonc plan` prints it, one file's
+/// documents to a golden.
+fn plan_swift_tests() -> BTreeMap<String, String> {
+    let plan = compile_swift_tests();
+    let mut by_source: BTreeMap<String, Plan> = BTreeMap::new();
+    for fragment in &plan.fragments {
+        by_source
+            .entry(golden_name(&fragment.source, ".plan.json"))
+            .or_insert_with(|| Plan {
+                root_names: plan.root_names.clone(),
+                ..Plan::default()
+            })
+            .fragments
+            .push(fragment.clone());
+    }
+    for operation in &plan.operations {
+        by_source
+            .entry(golden_name(&operation.source, ".plan.json"))
+            .or_insert_with(|| Plan {
+                root_names: plan.root_names.clone(),
+                ..Plan::default()
+            })
+            .operations
+            .push(operation.clone());
+    }
+    by_source
+        .into_iter()
+        .map(|(name, plan)| {
+            let json = serde_json::to_string_pretty(&plan).expect("a plan serializes");
+            (name, format!("{json}\n"))
+        })
+        .collect()
+}
+
+/// The names of the goldens on disk that end with `extension`.
+fn golden_names(directory: &Path, extension: &str) -> Vec<String> {
     let Ok(entries) = std::fs::read_dir(directory) else {
         return Vec::new();
     };
     let mut names: Vec<String> = entries
         .filter_map(|entry| entry.ok())
         .filter_map(|entry| entry.file_name().into_string().ok())
+        .filter(|name| name.ends_with(extension))
         .collect();
     names.sort();
     names
@@ -107,30 +169,25 @@ fn first_difference(golden: &str, emitted: &str) -> String {
     }
 }
 
-/// Replaces the goldens with what the emitter writes now.
-fn bless(directory: &Path, emitted: &BTreeMap<String, String>) {
-    std::fs::create_dir_all(directory).expect("the goldens directory can be created");
-    for name in golden_names(directory) {
-        if !emitted.contains_key(&name) {
-            std::fs::remove_file(directory.join(&name)).expect("a stale golden can be removed");
-        }
-    }
-    for (name, text) in emitted {
-        std::fs::write(directory.join(name), text).expect("a golden can be written");
-    }
-}
-
-#[test]
-fn the_swift_emitter_reproduces_its_goldens_byte_for_byte() {
-    let emitted = emit_swift_tests();
+/// Compares the goldens that end with `extension` with what is written
+/// now, or under `BATON_BLESS` replaces them.
+fn check_goldens(emitted: &BTreeMap<String, String>, extension: &str) {
     let directory = goldens();
     if std::env::var_os("BATON_BLESS").is_some() {
-        bless(&directory, &emitted);
+        std::fs::create_dir_all(&directory).expect("the goldens directory can be created");
+        for name in golden_names(&directory, extension) {
+            if !emitted.contains_key(&name) {
+                std::fs::remove_file(directory.join(&name)).expect("a stale golden can be removed");
+            }
+        }
+        for (name, text) in emitted {
+            std::fs::write(directory.join(name), text).expect("a golden can be written");
+        }
         return;
     }
 
     let mut problems: Vec<String> = Vec::new();
-    for (name, text) in &emitted {
+    for (name, text) in emitted {
         match std::fs::read_to_string(directory.join(name)) {
             Ok(golden) if &golden == text => {}
             Ok(golden) => problems.push(format!(
@@ -140,9 +197,9 @@ fn the_swift_emitter_reproduces_its_goldens_byte_for_byte() {
             Err(_) => problems.push(format!("{name} has no golden")),
         }
     }
-    for name in golden_names(&directory) {
+    for name in golden_names(&directory, extension) {
         if !emitted.contains_key(&name) {
-            problems.push(format!("{name} is a golden nothing emits any more"));
+            problems.push(format!("{name} is a golden nothing writes any more"));
         }
     }
     assert!(
@@ -153,9 +210,23 @@ fn the_swift_emitter_reproduces_its_goldens_byte_for_byte() {
 }
 
 #[test]
+fn the_swift_emitter_reproduces_its_goldens_byte_for_byte() {
+    check_goldens(&emit_swift_tests(), ".baton.swift");
+}
+
+#[test]
+fn the_plan_reproduces_its_goldens_byte_for_byte() {
+    check_goldens(&plan_swift_tests(), ".plan.json");
+}
+
+#[test]
 fn compiling_the_same_sources_twice_emits_the_same_bytes() {
     assert!(
         emit_swift_tests() == emit_swift_tests(),
         "two compilations of the same sources emitted different bytes"
+    );
+    assert!(
+        plan_swift_tests() == plan_swift_tests(),
+        "two compilations of the same sources planned different bytes"
     );
 }
