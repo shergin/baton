@@ -75,7 +75,11 @@ non-null fields read non-optional under either, and inside `@catch`.
 may deliver in a later part. Here: the spread's accessor is optional and nil
 until the fragment's fields are present (a generated `isPresent`); the plan
 marks the deferred fields with the label, the availability check does not
-wait for them, and each part is normalized at the record its path names.
+wait for them, and each part is normalized at the record its path names. A
+separate check of the deferred parts makes a `storeOrNetwork` attach fetch
+the parts the store holds only half or not at all: a part held half is
+cleared, so its fragment reads absent rather than empty, and the rest of
+the operation renders meanwhile.
 
 **Variables.** GraphQL: an operation's parameters. Here: the stored
 properties of an [operation value](#generated).
