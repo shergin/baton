@@ -4,7 +4,9 @@ import Baton
 /// refetchable fragment paginating a connection of notes forward and one
 /// paginating it backward, the screens that spread them with and without
 /// arguments, the mutations that edit the connection declaratively by edge
-/// and by node, one that only deletes a record, and an aliased spread.
+/// and by node, one that only deletes a record, an aliased spread, a
+/// connection whose nodes defer a fragment, and a query that fetches two
+/// pages of one connection.
 @MainActor
 struct ListDocuments {
     @Fragment("""
@@ -111,4 +113,35 @@ struct ListDocuments {
         }
         """)
     var aliasQuery: TestAliasQuery
+
+    @Fragment("""
+        fragment TestDeferredNotes_character on Character
+        @refetchable(queryName: "TestDeferredNotesPaginationQuery")
+        @argumentDefinitions(count: {type: "Int", defaultValue: 2}, cursor: {type: "String"}) {
+          notes(first: $count, after: $cursor) @connection(key: "TestDeferredNotes_notes") {
+            edges { node { id ...TestNoteText_note @defer(label: "noteText") } }
+          }
+        }
+        """)
+    var deferredNotes: TestDeferredNotes_character
+
+    @Fragment("""
+        fragment TestNoteText_note on Note { text }
+        """)
+    var noteText: TestNoteText_note
+
+    @Query("""
+        query TestTwoPagesQuery($id: ID!) {
+          character(id: $id) {
+            id
+            notes(first: 2) @connection(key: "TestTwoPages_notes") { edges { node { id text } } }
+          }
+          node(id: $id) {
+            ... on Character {
+              notes(first: 2, after: "c2") @connection(key: "TestTwoPages_notes") { edges { node { id text } } }
+            }
+          }
+        }
+        """)
+    var twoPages: TestTwoPagesQuery
 }

@@ -311,23 +311,41 @@ struct ListTests {
         #expect(store.existing("Character:1:notes(after:null,first:7)") != nil, "the page is stored under the inlined arguments")
     }
 
-    @Test("a page after a cursor keeps no link on its parent, and a field error inside it lands on the field it names")
+    @Test("a query whose page was fetched after a cursor is whole once its response is in, and a field error inside the page lands on the field it names")
     func pageAfterACursor() throws {
         let store = Store()
         store.reportMissing = nil
         store.commit(try Ingest.normalize(notesPage(1), plan: TestNotesQuery.plan.resolve(TestNotesQuery(id: "1").variables)))
-        let next = TestNotesPaginationQuery(count: 2, cursor: "c2", id: "1")
-        let changes = try Ingest.normalize(fixture("notes-page-2-errors"), plan: TestNotesPaginationQuery.plan.resolve(next.variables))
+        let plan = TestNotesPaginationQuery.plan.resolve(TestNotesPaginationQuery(count: 2, cursor: "c2", id: "1").variables)
+        #expect(store.check(plan) == .miss, "the first page does not answer the second")
+        let changes = try Ingest.normalize(fixture("notes-page-2-errors"), plan: plan)
         let placed = try #require(changes.fieldErrors.first)
         #expect(changes.recordKeys[Int(placed.record)] == "Note:n3")
         #expect(placed.slot.storageKey == "text")
         store.commit(changes)
-        let character = try #require(store.existing("Character:1"))
-        guard case .missing = character.read(Registry.slot(character.type, #"notes(after:"c2",first:2)"#)) else {
-            Issue.record("the page's link was written")
-            return
-        }
+        #expect(store.check(plan) == .memory)
         #expect(store.existing("Note:n3")?.error(Registry.slot(Registry.type("Note"), "text"))?.message == "text hidden")
+    }
+
+    @Test("a deferred part under a page fetched after a cursor lands on the page's node, and a failed one leaves its error there")
+    func deferredUnderAppendedPage() async throws {
+        let environment = Environment(transport: Parts([fixture("deferred-notes-page-2-1"), fixture("deferred-notes-page-2-2")]))
+        environment.store.reportMissing = nil
+        _ = try await environment.fetch(TestDeferredNotesPaginationQuery.self, variables: TestDeferredNotesPaginationQuery(count: 2, cursor: "c2", id: "1").variables)
+        let text = Registry.slot(Registry.type("Note"), "text")
+        #expect(environment.store.existing("Note:n3")?.read(text) == .string("Get Schwifty"))
+        #expect(environment.store.existing("Note:n4")?.error(text)?.message == "text hidden")
+    }
+
+    @Test("an error inside the second page a response merges into one connection lands on that page's record")
+    func errorInTheSecondPage() throws {
+        let changes = try Ingest.normalize(fixture("two-notes-pages"), plan: TestTwoPagesQuery.plan.resolve(TestTwoPagesQuery(id: "1").variables))
+        let store = Store()
+        store.reportMissing = nil
+        store.commit(changes)
+        let text = Registry.slot(Registry.type("Note"), "text")
+        #expect(store.existing("Note:n3")?.error(text)?.message == "text hidden")
+        #expect(store.existing("Note:n1")?.error(text) == nil)
     }
 
     @Test("@alias(as:) names the spread's accessor")

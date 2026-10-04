@@ -1,5 +1,5 @@
 {
-  "Character:1": {"__TestRecentNotes_notes_connection": {"__ref": "Character:1:__TestRecentNotes_notes_connection"}, "__typename": "Character", "id": "1"},
+  "Character:1": {"__TestRecentNotes_notes_connection": {"__ref": "Character:1:__TestRecentNotes_notes_connection"}, "__typename": "Character", "id": "1", "notes(before:\"c2\",last:1)": {"__ref": "Character:1:notes(before:\"c2\",last:1)"}},
   "Character:1:__TestRecentNotes_notes_connection": {"__typename": "NoteConnection", "edges": {"__refs": ["Character:1:notes(before:\"c2\",last:1):edges:0"]}, "pageInfo": {"__ref": "Character:1:__TestRecentNotes_notes_connection:pageInfo"}},
   "Character:1:__TestRecentNotes_notes_connection:pageInfo": {"__typename": "PageInfo", "hasPreviousPage": false, "startCursor": "c1"},
   "Character:1:notes(before:\"c2\",last:1)": {"__typename": "NoteConnection", "edges": {"__refs": ["Character:1:notes(before:\"c2\",last:1):edges:0"]}, "pageInfo": {"__ref": "Character:1:notes(before:\"c2\",last:1):pageInfo"}},

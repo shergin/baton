@@ -225,11 +225,6 @@ are expected and listed without apology.
   input's text; now a field is keyed by its name, or by its alias when it
   has one. The store dumps under `spec/` changed accordingly. The data a
   `mutate` returns is the latest payload of its field.
-- A page fetched after a cursor keeps no link on its parent. Each one
-  wrote a field such as `notes(after:"c2",first:2)` to the character, a
-  slot per cursor that the record then made room for and the image kept;
-  the connection record holds the page's edges, and a field error inside
-  the page still lands on the field it names.
 - The multipart reader drops a preamble, which it returned as a first
   part, lets go of each part once its delimiter is read instead of keeping
   the whole response, and reads a part without headers. It scans the

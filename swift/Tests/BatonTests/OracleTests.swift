@@ -33,8 +33,7 @@ struct OracleCase: Sendable, CustomTestStringConvertible {
     /// one leaf, or several aliases of one storage key.
     let override: (paths: [String], value: LeafValue)
     /// Whether the image is read back: it keeps what hangs off the query
-    /// root only, and a page after a cursor hangs off nothing; its edges are
-    /// read back through the connection, by the first page's case.
+    /// root only.
     let persisted: Bool
     /// Whether the response answers every field the plan selects, so that
     /// the availability check passes on it.
@@ -42,13 +41,13 @@ struct OracleCase: Sendable, CustomTestStringConvertible {
 
     var testDescription: String { name }
 
-    init<Op: Baton.Operation>(_ name: String, _ response: Data, _ operation: Op, root: Root = .query, override: ([String], LeafValue), complete: Bool = true, afterCursor: Bool = false) {
+    init<Op: Baton.Operation>(_ name: String, _ response: Data, _ operation: Op, root: Root = .query, override: ([String], LeafValue), complete: Bool = true) {
         self.name = name
         self.response = response
         plan = Op.plan.resolve(operation.variables)
         self.root = root
         self.override = override
-        persisted = root == .query && !afterCursor
+        persisted = root == .query
         self.complete = complete
     }
 
@@ -63,11 +62,11 @@ struct OracleCase: Sendable, CustomTestStringConvertible {
         OracleCase("tests/characters-7-8", fixture("characters-7-8"), TestList(page: 1), override: (["characters.results.1.name"], .string("Rick Prime")), complete: false),
         OracleCase("tests/characters-with-gaps", fixture("characters-with-gaps"), TestList(page: 1), override: (["characters.results.2.name"], .string("Rick Prime")), complete: false),
         OracleCase("tests/notes-page-1", notesPage(1), TestNotesQuery(id: "1"), override: (["character.name"], .string("Rick Prime"))),
-        OracleCase("tests/notes-page-2", notesPage(2), TestNotesPaginationQuery(count: 2, cursor: "c2", id: "1"), override: (["node.notes.edges.0.node.text"], .string("Get Schwiftier")), afterCursor: true),
-        OracleCase("tests/notes-page-3", notesPage(3), TestNotesPaginationQuery(count: 2, cursor: "c4", id: "1"), override: (["node.notes.edges.0.node.text"], .string("Get Schwiftier")), afterCursor: true),
+        OracleCase("tests/notes-page-2", notesPage(2), TestNotesPaginationQuery(count: 2, cursor: "c2", id: "1"), override: (["node.notes.edges.0.node.text"], .string("Get Schwiftier"))),
+        OracleCase("tests/notes-page-3", notesPage(3), TestNotesPaginationQuery(count: 2, cursor: "c4", id: "1"), override: (["node.notes.edges.0.node.text"], .string("Get Schwiftier"))),
         OracleCase("tests/recent-notes-page-1", fixture("recent-notes-page-1"), TestRecentNotesQuery(id: "1"), override: (["character.notes.edges.1.node.text"], .string("Pickle Morty"))),
-        OracleCase("tests/recent-notes-page-2", fixture("recent-notes-page-2"), TestRecentNotesPaginationQuery(count: 2, cursor: "c4", id: "1"), override: (["node.notes.pageInfo.startCursor"], .string("c0")), afterCursor: true),
-        OracleCase("tests/recent-notes-page-3", fixture("recent-notes-page-3"), TestRecentNotesPaginationQuery(count: 1, cursor: "c2", id: "1"), override: (["node.notes.edges.0.cursor"], .string("c0")), afterCursor: true),
+        OracleCase("tests/recent-notes-page-2", fixture("recent-notes-page-2"), TestRecentNotesPaginationQuery(count: 2, cursor: "c4", id: "1"), override: (["node.notes.pageInfo.startCursor"], .string("c0"))),
+        OracleCase("tests/recent-notes-page-3", fixture("recent-notes-page-3"), TestRecentNotesPaginationQuery(count: 1, cursor: "c2", id: "1"), override: (["node.notes.edges.0.cursor"], .string("c0"))),
         OracleCase("tests/notes-refetch", fixture("notes-refetch"), TestNotesPaginationQuery(count: 2, id: "1"), override: (["node.name"], .string("Rick Prime"))),
         OracleCase("tests/add-note-node-n7", fixture("add-note-node-n7"), TestAddNoteNode(characterId: "1", text: "Node appended", connections: []), root: .mutation, override: (["addNote.note.text"], .string("Edited"))),
         OracleCase("tests/add-note-node-n0", fixture("add-note-node-n0"), TestAddNoteNodeFirst(characterId: "1", text: "Node first", connections: []), root: .mutation, override: (["addNote.note.text"], .string("Edited"))),
@@ -113,7 +112,7 @@ struct OracleTests {
         let store = Store(persistence: oracle.persisted ? persistence : nil)
         store.reportMissing = nil
         store.commit(try Ingest.normalize(oracle.response, plan: oracle.plan, rootKey: oracle.root.key))
-        expectSame(Oracle.leaves(of: oracle.root.record(in: store), in: store, plan: oracle.plan), expected, "after the commit")
+        expectSame(Oracle.leaves(of: oracle.root.record(in: store), plan: oracle.plan), expected, "after the commit")
         StoreDump.expectMatches(store, oracle.name)
 
         if oracle.persisted {
@@ -123,7 +122,7 @@ struct OracleTests {
             let environment = Environment(transport: SilentTransport(), store: second)
             let answered = environment.store.check(oracle.plan)
             if oracle.complete { #expect(answered == .image, "the image answers the plan") }
-            expectSame(Oracle.leaves(of: second.root, in: second, plan: oracle.plan), expected, "from the image")
+            expectSame(Oracle.leaves(of: second.root, plan: oracle.plan), expected, "from the image")
         }
 
         let (paths, value) = oracle.override
@@ -134,9 +133,9 @@ struct OracleTests {
             overridden = overridden.replacing(path, with: value)
         }
         let layer = store.applyOptimistic(try Ingest.normalize(edited, plan: oracle.plan, rootKey: oracle.root.key))
-        expectSame(Oracle.leaves(of: oracle.root.record(in: store), in: store, plan: oracle.plan), overridden, "under the layer")
+        expectSame(Oracle.leaves(of: oracle.root.record(in: store), plan: oracle.plan), overridden, "under the layer")
         store.revertOptimistic(layer)
-        expectSame(Oracle.leaves(of: oracle.root.record(in: store), in: store, plan: oracle.plan), expected, "after the layer is reverted")
+        expectSame(Oracle.leaves(of: oracle.root.record(in: store), plan: oracle.plan), expected, "after the layer is reverted")
     }
 
     @Test("a deferred response reads back as the first part with every later part merged in at its path", arguments: [
@@ -155,7 +154,7 @@ struct OracleTests {
         let merged = try Oracle.merging([second], into: first)
         let expected = try Oracle.leaves(of: merged, plan: plan)
         #expect(expected.contains { $0.path == "character.episode.1.name" }, "the deferred part's leaves are expected")
-        expectSame(Oracle.leaves(of: environment.store.root, in: environment.store, plan: plan), expected, "after both parts")
+        expectSame(Oracle.leaves(of: environment.store.root, plan: plan), expected, "after both parts")
     }
 
     @Test("a deferred part under an abstract selection reads back as its record's own type")
@@ -170,7 +169,7 @@ struct OracleTests {
         let plan = TestNodeDeferred.plan.resolve(operation.variables)
         let expected = try Oracle.leaves(of: try Oracle.merging([second], into: first), plan: plan)
         #expect(expected.contains { $0.path == "node.episode.1.air_date" })
-        expectSame(Oracle.leaves(of: environment.store.root, in: environment.store, plan: plan), expected, "after both parts")
+        expectSame(Oracle.leaves(of: environment.store.root, plan: plan), expected, "after both parts")
         let data = try #require(TestNodeDeferred.Data(anchor: Anchor(record: environment.store.root, variables: operation.variables, store: environment.store)).node)
         #expect(data.appearances?.testAppearances?.episode.map(\.name) == ["Pilot", "Lawnmower Dog"])
     }
