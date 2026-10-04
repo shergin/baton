@@ -583,7 +583,9 @@ public final class SubscriptionHandle<Op: Subscription>: AnyOperationHandle {
                     }
                 }
             } catch is CancellationError {
-                return
+                // A transport that cancelled its own work ended the stream,
+                // with nothing to show; a cancellation of this task returns
+                // below.
             } catch {
                 guard !Task.isCancelled else { return }
                 self.error = error

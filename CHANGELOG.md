@@ -417,6 +417,10 @@ are expected and listed without apology.
 - A stream a retry replaced leaves the new one's `error` alone. A bad
   event the old stream was still reading when `retry()` ran set its errors
   on the handle, and the new stream showed them until its first good event.
+- A subscription whose transport ends its stream with a `CancellationError`
+  of its own ends: `isActive` is false and the next `retain()` opens it
+  again. The handle stayed active over a stream that had ended, and no
+  retain could reopen it short of `retry()` or a full release.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

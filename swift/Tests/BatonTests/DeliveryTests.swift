@@ -626,6 +626,24 @@ struct DeliveryTests {
         live.release()
     }
 
+    @Test("a stream the transport ends with a cancellation of its own ends the subscription, and a later retain opens it again")
+    func streamEndedByTheTransportsCancellation() async throws {
+        let events = Events()
+        let environment = Environment(transport: RecordedTransport(), subscriptions: events)
+        environment.store.reportMissing = nil
+        let live = environment.subscriptionHandle(for: TestNoteAdded(characterId: "events-\(#line)", connections: []))
+        live.retain()
+        await until { events.requests.count == 1 }
+        events.continuation?.finish(throwing: CancellationError())
+        await until { !live.isActive }
+        #expect(live.error == nil, "a cancellation is no error to show")
+        live.retain()
+        await until { events.requests.count == 2 }
+        #expect(live.isActive)
+        live.release()
+        live.release()
+    }
+
     @Test("the socket closes when its last subscription ends, and an error frame's GraphQL errors are its messages")
     func socketLifetime() async throws {
         let server = try SocketServer()
