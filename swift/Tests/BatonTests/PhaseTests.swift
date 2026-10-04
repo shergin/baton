@@ -110,6 +110,28 @@ struct PhaseTests {
         handle.release()
     }
 
+    @Test("a refetch of an operation that throws throws the field error its response put in the operation's own selection")
+    func refetchThrowsFieldErrors() async throws {
+        let attempts = Attempts()
+        let transport = RecordedTransport { _ in fixture(attempts.next() == 1 ? "character-name-shown" : "character-name-hidden") }
+        let environment = Environment(transport: transport)
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestStrictQuery(id: "1"))
+        handle.retain()
+        await settled(handle)
+        guard case .ready = handle.phase else {
+            Issue.record("expected ready, got \(handle.phase)")
+            return
+        }
+        let thrown = await #expect(throws: FieldErrors.self) { try await handle.refetch() }
+        #expect(thrown?.errors.map(\.message) == ["name hidden"])
+        guard case .failed(let error) = handle.phase, error is FieldErrors else {
+            Issue.record("expected the field error, got \(handle.phase)")
+            return
+        }
+        handle.release()
+    }
+
     @Test("a preload's fetch serves the first attach only while its data is fresh")
     func preloadThenInvalidate() async throws {
         let transport = RecordedTransport([TestList.name: fixtureData])
