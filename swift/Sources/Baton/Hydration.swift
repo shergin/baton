@@ -46,8 +46,11 @@ extension Store {
             guard let (value, error) = value(&reader, disk) else { return }
             filled = root.fill(slot, value, error: error)
         }
-        if filled { root.notify(slot) }
-        return filled
+        guard filled else { return false }
+        // Marked before an observer can ask the store about it.
+        hydratedRootSlots.insert(slot.index)
+        root.notify(slot)
+        return true
     }
 
     private func value(_ reader: inout RowReader, _ disk: Disk) -> (Value, FieldError?)? {

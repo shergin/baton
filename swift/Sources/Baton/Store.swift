@@ -56,8 +56,13 @@ public final class Store {
     /// How many records have been filled from the image; for tests and
     /// benchmarks.
     package internal(set) var hydratedRecords = 0
-    /// Whether the walk in memory met a record the image filled.
+    /// Whether the walk in memory met a record or a root field the image
+    /// filled.
     private var metHydrated = false
+    /// The root's fields the image filled, by slot index. The image stores
+    /// the root a row per field and the root is never marked hydrated, so
+    /// these tell the walk in memory which of its fields came from there.
+    var hydratedRootSlots: Set<Int32> = []
     /// The image's connection while a check is reading from it.
     private var reading: Disk?
     /// Whether the batch in progress changed a field error, a null, a link,
@@ -883,7 +888,13 @@ public final class Store {
     /// The walk over one record's fields. They are taken as a parameter and
     /// read in place, so neither the list nor a field is retained per record.
     private func available(_ fields: [ResolvedField], at record: Record, from disk: Disk?) -> Bool {
-        if disk == nil, record.hydrated { metHydrated = true }
+        if disk == nil {
+            if record.hydrated {
+                metHydrated = true
+            } else if record === root, !hydratedRootSlots.isEmpty, readsHydratedRootSlot(fields) {
+                metHydrated = true
+            }
+        }
         for index in fields.indices {
             if fields[index].isTypename || fields[index].deferred != nil { continue }
             let slot = fields[index].slot
@@ -939,6 +950,15 @@ public final class Store {
             }
         }
         return true
+    }
+
+    /// Whether the walk reads one of the root's fields the image filled:
+    /// taken once, before the walk, so the records below pay nothing for it.
+    private func readsHydratedRootSlot(_ fields: [ResolvedField]) -> Bool {
+        for index in fields.indices where !fields[index].isTypename && fields[index].deferred == nil {
+            if hydratedRootSlots.contains(fields[index].slot.index) { return true }
+        }
+        return false
     }
 
     /// A link's target as the store and the image know it together: the live

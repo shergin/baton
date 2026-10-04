@@ -496,6 +496,24 @@ struct PersistenceTests {
         #expect(!undated.isStale)
     }
 
+    @Test("a root field an earlier check read from the image is image data for the next operation that reads it, stale without a fetch time of its own")
+    func aRootFieldFromTheImageIsImageData() async throws {
+        let first = launch()
+        first.store.commit(try Ingest.normalize(fixture("character-null"), plan: header("999")))
+        await finish(first)
+
+        let transport = RecordedTransport { _ in fixture("character-null") }
+        let second = launch(transport)
+        _ = try stored(TestHeaderQuery(id: "999"), in: second)
+        // Another operation on the same root field, which no launch fetched.
+        let qualified = TestQualifiedQuery(id: "999")
+        #expect(second.store.check(TestQualifiedQuery.plan.resolve(qualified.variables)) == .image)
+        let handle = second.handle(for: qualified, fetchPolicy: .storeOrNetwork)
+        #expect(handle.isStale)
+        await until { transport.requestCount == 1 }
+        await finish(second)
+    }
+
     @Test("records the collector swept are read again from the image when a screen comes back")
     func sweptRecordsComeBack() async throws {
         let environment = launch(releaseBufferSize: 0)
