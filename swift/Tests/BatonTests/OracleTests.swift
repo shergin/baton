@@ -76,7 +76,7 @@ struct OracleCase: Sendable, CustomTestStringConvertible {
         OracleCase("tests/conditions-excluded", fixture("conditions-excluded"), TestConditions(id: "1", withOrigin: false, hideStatus: true), override: (["character.name"], .string("Rick Prime"))),
         OracleCase("tests/union-1", fixture("union-1"), TestUnion(name: "a"), override: (["search.1.label"], .string("Dimension C-138"))),
         OracleCase("tests/node-fields-character", fixture("node-fields-character"), TestNodeFields(id: "1"), override: (["node.name"], .string("Rick Prime"))),
-        OracleCase("tests/node-fields-episode", fixture("node-fields-episode"), TestNodeFields(id: "1"), override: (["node.id"], .string("1"))),
+        OracleCase("tests/node-fields-episode", fixture("node-fields-episode"), TestNodeFields(id: "1"), override: (["node.id"], .string("2"))),
         OracleCase("tests/two-spreads-1", fixture("two-spreads-1"), TestTwoSpreads(id: "1", again: true), override: (["character.status"], .string("Dead"))),
         OracleCase("tests/union-path-character", fixture("union-path-character"), TestUnion(name: "a"), override: (["search.0.label", "search.0.name"], .string("Rick Prime")), complete: false),
         OracleCase("tests/union-path-location", fixture("union-path-location"), TestUnion(name: "a"), override: (["search.0.label"], .string("Dimension C-138")), complete: false),
