@@ -227,6 +227,16 @@ page's merge, an edge directive's insert or delete). A commit applies it on
 the main actor, edits after entries, and notifies the observed fields that
 changed.
 
+**Commit payload.** *Composition: store, plan, operation value,
+environment.* Relay: `commitPayload`, writing a response for an operation
+that some other road delivered. Here: *(planned)*. An app writes to the
+store today only through a fetch, a mutation and a subscription event.
+`commitPayload(operation, payload)` will run the operation's plan over a
+payload in a response's shape, with the ingest, the commit and the image a
+fetch has: the one door for data from outside the transport, a REST
+response or a socket's tick. See
+[the decision](decisions/client-data-is-described-and-committed.md).
+
 **Root, retain, release buffer.** *Composition: store, operation value,
 environment.* Relay's words. An operation whose handle is alive retains its
 records; a released root waits in a buffer (default ten) before its records
@@ -322,6 +332,16 @@ miss, so nothing heals it.
 
 **Schema.** *Concept: schema.* GraphQL: the SDL. Here: a checked-in file
 plus identity configuration; introspection download is a CLI command.
+
+**Client schema extension, client field.** *Concept: schema.* Relay:
+`schemaExtensions`, files that give server types client fields or declare
+types the server does not have. Here: *(planned)*; the compiler passes
+Relay's front end no extensions today, and the only client data is the
+runtime's own, a connection's record and the three roots. A client field
+will be written by a [commit payload](#store) for an operation that selects
+it and by nothing else, read by a lens like any field, and left out of the
+text a server receives. Baton computes none: no resolvers. See
+[the decision](decisions/client-data-is-described-and-committed.md).
 
 **Custom scalar.** *Composition: schema, lens.* GraphQL: a scalar the
 schema declares beside the built-in five. Here: stored as its text, exactly
