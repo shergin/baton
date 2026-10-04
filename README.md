@@ -210,8 +210,9 @@ directory or at the package root, and build. The plugin runs `batonc` for every 
 and reports schema errors at the GraphQL text.
 
 To keep the store across launches, give the environment an image:
-`Environment(url: endpoint, persistence: Persistence(name: "Main"))`; call
-`removeAll()` on it at sign-out.
+`Environment(url: endpoint, persistence: Persistence(name: "Main", version: Types.schemaDigest))`,
+where `Types.schemaDigest` is the generated digest of the schema, so a new
+schema starts the image again; call `removeAll()` on it at sign-out.
 
 In this repository:
 

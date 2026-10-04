@@ -235,6 +235,11 @@ are expected and listed without apology.
   the whole response, and reads a part without headers. It scans the
   chunks it is given rather than a byte at a time: 978 KB of 20 parts in
   16 KB chunks parse in 0.50 ms against 14.6 ms.
+- The compiler emits `Types.schemaDigest`, the MD5 of the schema's text, for
+  an app to pass as its image's `version`: an image written under another
+  schema is discarded. The version is the app's to pass, because generated
+  constants are made on first use and nothing has made one when the file
+  opens.
 - `Persistence.close()` writes what is queued and closes the file, so a new
   environment can take the image over, as at a sign-out.
 - Opening the image scans nothing. The rows no launch has read since the

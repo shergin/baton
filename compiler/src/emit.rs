@@ -125,6 +125,7 @@ struct Emitter {
     possible_sets: BTreeMap<String, Vec<String>>,
     /// The schema's root types the store knows by another name.
     root_names: BTreeMap<String, String>,
+    schema_digest: String,
 }
 
 /// What the lenses of one document share: the fragment's `@refetchable` data
@@ -208,6 +209,7 @@ pub fn emit(plan: &Plan) -> Output {
         deferred_fragments,
         possible_sets: BTreeMap::new(),
         root_names: plan.root_names.clone(),
+        schema_digest: plan.schema_digest.clone(),
     };
     let mut files: BTreeMap<String, String> = BTreeMap::new();
     for fragment in &plan.fragments {
@@ -271,6 +273,11 @@ impl Emitter {
         output.push('\n');
         output
             .push_str("/// Interned schema types used by this module's documents.\nnonisolated enum Types {\n");
+        let _ = writeln!(
+            output,
+            "    /// The schema's digest: pass it as the image's `version`, so an image\n    /// written under another schema starts again.\n    static let schemaDigest = \"{}\"",
+            self.schema_digest
+        );
         for type_name in &self.types {
             // A root type is interned by the name the store's root record
             // has, so its slots are numbered where the root's values are.

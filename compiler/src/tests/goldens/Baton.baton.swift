@@ -3,6 +3,9 @@ import Baton
 
 /// Interned schema types used by this module's documents.
 nonisolated enum Types {
+    /// The schema's digest: pass it as the image's `version`, so an image
+    /// written under another schema starts again.
+    static let schemaDigest = "3d28e0d538de4574d97ee123235c9233"
     static let AddNotePayload = Baton.Registry.type("AddNotePayload")
     static let Character = Baton.Registry.type("Character")
     static let Characters = Baton.Registry.type("Characters")

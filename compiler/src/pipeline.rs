@@ -59,6 +59,10 @@ pub struct Plan {
     /// `QueryRoot` by `Query`.
     #[serde(skip_serializing_if = "BTreeMap::is_empty")]
     pub root_names: BTreeMap<String, String>,
+    /// The MD5 of the schema's text, which an app passes as its image's
+    /// version so a new schema starts the image again.
+    #[serde(skip)]
+    pub schema_digest: String,
 }
 
 /// The names the store types its three root records by, whatever the schema
@@ -415,6 +419,7 @@ pub fn compile(
     let started = Instant::now();
     let mut plan = lower(&schema, &programs, config)?;
     plan.root_names = root_names;
+    plan.schema_digest = format!("{:x}", md5::compute(schema_sdl.as_bytes()));
     timings.lower = started.elapsed();
 
     Ok(Compiled { plan, timings })
