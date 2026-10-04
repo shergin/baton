@@ -47,6 +47,17 @@ the vocabulary is `docs/terminology.md`. These files outrank any default.
   requests.
 - Release commits are `Release <version> (<Name>)` and touch only the
   manifests and the changelog.
+- While the project is in rapid building, a pull request merges once the
+  local checks pass; do not wait for GitHub CI. Run what CI runs:
+  `scripts/build-compiler.sh`, then
+  `BATON_COMPILER=local swift build --build-tests -Xswiftc -warnings-as-errors`,
+  `BATON_COMPILER=local swift test -Xswiftc -warnings-as-errors`,
+  `BATON_COMPILER=local swift test -c release`,
+  `swift build --target Baton -Xswiftc -enable-library-evolution -Xswiftc -emit-module-interface`,
+  and in `compiler/` `cargo fmt --check`,
+  `cargo clippy --all-targets -- -D warnings` and `cargo test`. CI's
+  `floor` job (the oldest supported Xcode) cannot run locally; when it
+  fails after a merge, fix it in the next change.
 
 ## Swift
 
