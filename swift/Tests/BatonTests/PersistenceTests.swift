@@ -311,7 +311,7 @@ struct PersistenceTests {
         #expect(throws: NotStored.self) { try stored(Fixture(page: 1), in: launch()) }
     }
 
-    @Test("an edge appended to a connection the store holds only as a link's empty record makes it a miss, not a connection of one edge")
+    @Test("an edge appended to a connection the store holds only as a link's empty record makes it a miss at every check, in that launch and the next, not a connection of one edge or of none")
     func edgeIntoAConnectionOnlyTheImageHolds() async throws {
         let first = launch()
         first.store.commit(try Ingest.normalize(notesPage(1), plan: TestNotesQuery.plan.resolve(TestNotesQuery(id: "1").variables)))
@@ -328,10 +328,18 @@ struct PersistenceTests {
         #expect(second.store.existing(connection) != nil)
         let append = TestAddNote(characterId: "1", text: "Appended", connections: [connection])
         second.store.commit(try Ingest.normalize(fixture("add-note-n9"), plan: TestAddNote.plan.resolve(append.variables), rootKey: Store.mutationRootKey))
-        #expect(second.store.check(TestNotesQuery.plan.resolve(TestNotesQuery(id: "1").variables)) == .miss, "this launch reads no row of it either")
+        let plan = TestNotesQuery.plan.resolve(TestNotesQuery(id: "1").variables)
+        #expect(second.store.check(plan) == .miss, "this launch reads no row of it either")
+        // The first check read the page from the image, which leaves the
+        // connection's own record, empty, as all memory holds of it.
+        #expect(second.store.check(plan) == .miss)
+        #expect(throws: NotStored.self) { try stored(TestNotesQuery(id: "1"), in: second) }
         await finish(second)
 
-        #expect(throws: NotStored.self) { try stored(TestNotesQuery(id: "1"), in: launch()) }
+        // The next launch finds the page's row and none of the connection.
+        let third = launch()
+        #expect(throws: NotStored.self) { try stored(TestNotesQuery(id: "1"), in: third) }
+        #expect(third.store.check(plan) == .miss)
     }
 
     @Test("an image that lost a batch it could not write is discarded at the next open")

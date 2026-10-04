@@ -875,7 +875,7 @@ public final class Store {
     /// present at `record`. Without a disk it reads memory as it stands; with
     /// one, a record that lacks a field reads its row first, a link to a
     /// record the collector swept is pointed at the live record of that key,
-    /// and a connection's client record is walked while it is still unread.
+    /// and a connection's client record is walked while it holds nothing.
     private func available(_ selection: ResolvedSelection, at record: Record, from disk: Disk?) -> Bool {
         selection.isAbstract ? available(selection.variant(for: record.type).fields, at: record, from: disk) : available(selection.fields, at: record, from: disk)
     }
@@ -924,13 +924,17 @@ public final class Store {
                     return false
                 }
                 // Lenses read a connection through its client record, which
-                // the walk above does not pass. One the image has yet to fill
-                // is walked here, so its merged pages come back with it.
-                if let disk, let connection, case .ref(let found) = record.peek(connection.slot) {
-                    let unread = found.swept || (!found.hydrated && found.slotCount == 0)
+                // the walk above does not pass. A merge always fills it, so
+                // one that holds nothing, swept or never filled, is not in
+                // memory: the image may hold it, or have been told to forget
+                // it. With the image at hand it is walked, so its merged
+                // pages come back with it, and one the image has no row for
+                // stays a miss.
+                if let connection, case .ref(let found) = record.peek(connection.slot), found.swept || found.slotCount == 0 {
+                    guard let disk else { return false }
                     let merged = live(found, disk)
                     if merged !== found { record.write(connection.slot, .ref(merged)) }
-                    if unread, !merged.deleted, !available(child, at: merged, from: disk) { return false }
+                    if !merged.deleted, !available(child, at: merged, from: disk) { return false }
                 }
             }
         }
