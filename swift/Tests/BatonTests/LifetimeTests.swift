@@ -264,6 +264,19 @@ struct LifetimeTests {
         #expect(transport.requestCount == 2)
     }
 
+    @Test("collection keeps what a retained handle reads under a type condition")
+    func collectionFollowsTheVariant() async throws {
+        let environment = Environment(transport: RecordedTransport([TestSearchOrigins.name: fixture("search-origins-1")]))
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestSearchOrigins(name: "a"))
+        handle.retain()
+        await handle.settle()
+        #expect(environment.store.existing("Location:1") != nil)
+        environment.collect()
+        #expect(environment.store.existing("Location:1") != nil, "Rick's origin is read through `... on Character`")
+        handle.release()
+    }
+
     @Test("a preload's fetch serves the first attach, in flight or done")
     func preloadServesTheFirstAttach() async {
         let transport = transport()

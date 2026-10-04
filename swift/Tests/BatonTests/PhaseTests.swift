@@ -137,4 +137,23 @@ struct PhaseTests {
         #expect(error.errors.map(\.message) == ["name hidden"])
         handle.release()
     }
+
+    @Test("a bubbling operation fails when another commit nulls a field it requires, with no error on it")
+    func nullFailsABubblingOperation() async throws {
+        let environment = Environment(transport: RecordedTransport([TestRequiredOrigin.name: fixture("required-origin-1")]))
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestRequiredOrigin(id: "1"))
+        handle.retain()
+        await settled(handle)
+        guard case .ready = handle.phase else {
+            Issue.record("expected ready, got \(handle.phase)")
+            return
+        }
+        environment.store.commit(try Ingest.normalize(fixture("required-origin-1-null"), plan: TestRequiredOrigin.plan.resolve(TestRequiredOrigin(id: "1").variables)))
+        guard case .failed(let error) = handle.phase, error is RequiredFieldError else {
+            Issue.record("expected the required origin to fail the operation, got \(handle.phase)")
+            return
+        }
+        handle.release()
+    }
 }

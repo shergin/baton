@@ -174,6 +174,16 @@ struct DeliveryTests {
         #expect(changes.uncaughtFieldErrors.contains(FieldError(message: "the service is degraded", path: "")))
     }
 
+    @Test("an error whose path goes through a null element, past a list's end or below a scalar lands on the last field the path reached")
+    func errorsWherePathsStop() throws {
+        let changes = try Ingest.normalize(fixture("characters-with-gaps-errors"), plan: TestList.plan.resolve(TestList(page: 1).variables))
+        let placed = changes.fieldErrors.map { (changes.recordKeys[Int($0.record)], $0.slot.storageKey, $0.error.message) }
+        #expect(placed.count == 3)
+        #expect(placed.contains { $0 == ("client:root:characters(page:1)", "results", "row hidden") }, "\(placed)")
+        #expect(placed.contains { $0 == ("client:root:characters(page:1)", "results", "past the end") }, "\(placed)")
+        #expect(placed.contains { $0 == ("Character:7", "name", "below a scalar") }, "\(placed)")
+    }
+
     @Test("an error whose path names a negative list index does not trap and lands on no row")
     func negativeErrorIndex() throws {
         let changes = try Ingest.normalize(fixture("negative-error-index"), plan: TestList.plan.resolve(TestList(page: 1).variables))

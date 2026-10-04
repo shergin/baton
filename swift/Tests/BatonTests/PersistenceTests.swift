@@ -50,6 +50,26 @@ struct PersistenceTests {
         return data
     }
 
+    @Test("a networkOnly attach reads nothing from the image to decide")
+    func networkOnlyReadsNoImage() async throws {
+        let first = launch()
+        first.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
+        await finish(first)
+
+        let gate = GatedTransport()
+        let second = launch(gate)
+        let handle = second.handle(for: TestList(page: 1), fetchPolicy: .networkOnly)
+        #expect(second.store.hydratedRecords == 0, "the store was not asked")
+        guard case .loading = handle.phase else {
+            Issue.record("expected loading until its own response, got \(handle.phase)")
+            return
+        }
+        await until { gate.pending == 1 }
+        gate.respond(fixtureData)
+        await handle.settle()
+        await finish(second)
+    }
+
     @Test("a second launch renders the fixture from the image when its handle is made, with no network, and agrees with the response")
     func theFirstBodyReadsTheImage() async throws {
         try await seed(launch())
