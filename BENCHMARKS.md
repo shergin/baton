@@ -21,6 +21,62 @@ Best ingest and best commit of the fixture at each release below.
   <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
 
+## Unreleased at 2ba3d18 — 2026-10-04
+
+Revision: 2ba3d18, the review plan's last changes (#28, #29), before a
+release. Machine: Apple M1 Pro (MacBook Pro), macOS 26.5.2, Xcode 26.6,
+Swift 6.3.3, release build. Same fixture and image setup as the entry
+below. Three runs on a quiet machine; best of the three, median of the
+three medians.
+
+### Keys with arguments, and a long session
+
+| Measurement | Best | Median | Notes |
+|---|---|---|---|
+| 5,000 rows into an empty store, three fields under keys like `labels` | 4.03 ms | 4.10 ms | 356 bytes a row |
+| The same, keys like `labels(first: 3)` | 4.02 ms | 4.07 ms | 356 bytes a row: a key the compiler emits as a constant is numbered among its type's dense values |
+| The same, keys like `labels(first: $count)` | 4.65 ms | 4.74 ms | 452 bytes a row: a key rendered from a variable is kept in the record's sorted list |
+| Root field with a variable argument, untracked read | 30.6 ns | 31.6 ns | 28.1 ns in the entry below, when every key was dense |
+| A session's newest root field with an argument, untracked, at its start | 36.3 ns | 37.0 ns | |
+| The same after 2,000 lookups and 500 pages | 45.4 ns | 55.7 ns | a search among the root's 2,000-odd keys with arguments |
+| A commit of one lookup of a new id, at the session's start and end | 1.75 µs, 1.88 µs | 1.92 µs, 2.04 µs | |
+| A commit of a page of 10, the session's first 50 and last 50 | 19.6 µs, 196 µs | 29.8 µs, 211 µs | the merge builds a set and an array of every edge already merged |
+| 2,000 new characters given a field numbered before the session | 1.54 ms | 1.55 ms | +0.2 MB |
+| 2,000 new characters given a field numbered after it | 1.61 ms | 1.62 ms | +1.0 MB; before keys with variables were kept apart, 5.86 ms and +28.2 MB, measured at that commit |
+
+The session interns keys on `Query` from 169 to 2,372 and on `Character`
+from 55 to 556, for the life of the process, and the footprint grows by
+20.2 MB over its 13,308 records.
+
+### The paths the entry below measured
+
+| Measurement | Best | Median | The entry below |
+|---|---|---|---|
+| Response bytes into a change set | 2.88 ms | 3.06 ms | 2.87 ms (2.88) |
+| Commit into an empty store, 899 records | 638 µs | 662 µs | 632 µs (653) |
+| Commit of the same payload again | 126 µs | 126 µs | 124 µs (125) |
+| Untracked read, per field | 25.0 ns | 25.9 ns | 25.0 ns (30.4) |
+| Tracked read, a row body of 8 fields, per field | 603 ns | 638 ns | 574 ns (608) |
+| Field selected on an interface, untracked | 22.2 ns | 22.3 ns | 22.2 ns (22.3) |
+| Spread with `@arguments`, the fragment's lens | 10.2 ns | 10.4 ns | 10.2 ns (10.4) |
+| The check of the fixture plan | 109 µs | 110 µs | 107 µs (110) |
+| An optimistic `@appendEdge` on 50 edges: apply, revert | 5.79 µs, 4.67 µs | 5.96 µs, 4.79 µs | 5.79 µs, 4.62 µs |
+| A commit that deletes one record from 8,965 | 2.13 ms | 2.15 ms | 2.10 ms (2.21) |
+| Hydration: the check reads 898 rows | 1.56 ms | 1.68 ms | 1.57 ms (1.59) |
+| A launch, open and hydrate at once | 4.01 ms | 4.76 ms | 3.84 ms (4.06) |
+| A launch, hydrate after the image opened | 1.78 ms | 1.90 ms | 1.76 ms (1.92) |
+| A multipart response of 978 KB, in 16 KB chunks | 482 µs | 491 µs | 483 µs (489) |
+| Collection pass over about 9,000 records | 0.18 ms | 2.58 ms | 0.17 ms (2.4) |
+| Scroll footprint at page 42 | +4.4 MB | — | +4.3 MB |
+
+What it means: the plan's last changes move the paths a screen takes by no
+more than the spread between runs, a few percent, except a read through a
+key with a variable, which pays a search: 31.6 ns against 28.1 ns. In
+exchange a long session no longer widens every record of a type by the keys
+its cursors and ids made. A field first used after 2,000 lookups and 500
+pages costs 2,000 records 1.0 MB, where it cost 28.2 MB, and a key with
+constant arguments costs what a key without them costs.
+
 ## Unreleased at 418ceff — 2026-10-03
 
 Revision: 418ceff, the improvements after 0.6.0, before a release. Machine:
