@@ -174,4 +174,13 @@ struct ReaderTests {
         #expect(!TestProfile_character.satisfied(anchor))
         #expect(reports.missing == ["Character:1.origin"])
     }
+
+    @Test("variables named like Swift's keywords are properties, parameters and request variables of those names")
+    func keywordVariables() {
+        let query = TestKeywordVariables(where: "1", in: "Rick")
+        #expect(query.where == "1")
+        #expect(query.variables["where"] == .string("1"))
+        #expect(query.variables["in"] == .string("Rick"))
+        #expect(query != TestKeywordVariables(where: "2", in: "Rick"))
+    }
 }

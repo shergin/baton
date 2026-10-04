@@ -5,7 +5,8 @@ import Baton
 /// `@catch`, one scope holding two keys with variables and two spreads
 /// with arguments, fields named like the module's shared enums, and a type
 /// condition in an operation that throws on field errors, and a link an
-/// operation that throws reads through.
+/// operation that throws reads through, and variables named like Swift's
+/// keywords.
 @MainActor
 struct ReaderDocuments {
     @Query("""
@@ -62,4 +63,12 @@ struct ReaderDocuments {
         }
         """)
     var strictOrigin: TestStrictOrigin
+
+    @Query("""
+        query TestKeywordVariables($where: ID!, $in: String!) {
+          character(id: $where) { id }
+          search(name: $in) { __typename }
+        }
+        """)
+    var keywordVariables: TestKeywordVariables
 }

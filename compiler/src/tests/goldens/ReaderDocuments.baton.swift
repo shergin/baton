@@ -138,6 +138,87 @@ query TestCaughtEpisodes(
     }
 }
 
+/// Operation value for `query TestKeywordVariables`.
+nonisolated public struct TestKeywordVariables: Baton.Query {
+    public var `where`: String
+    public var `in`: String
+    public var resolution: Baton.OperationHandle<Self>? = nil
+
+    public init(`where`: String, `in`: String) {
+        self.`where` = `where`
+        self.`in` = `in`
+    }
+
+    public static let name = "TestKeywordVariables"
+    public static let persistedID = "2a7fc66a9e145b5ac34591fc662c22e5"
+    public static let text = #"""
+query TestKeywordVariables(
+  $where: ID!
+  $in: String!
+) {
+  character(id: $where) {
+    id
+  }
+  search(name: $in) {
+    __typename
+    ... on Node {
+      __isNode: __typename
+      id
+    }
+  }
+}
+"""#
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["where": Baton.Variable(`where`), "in": Baton.Variable(`in`)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.`where` == rhs.`where` && lhs.`in` == rhs.`in`
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(`where`)
+        hasher.combine(`in`)
+    }
+
+    public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
+            .linked("character", key: .dynamic(Slots.Query_character_8fc9fb), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("where")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                .scalar("id", key: .fixed(Slots.Character_id), kind: .string, list: false),
+            ])),
+            .linked("search", key: .dynamic(Slots.Query_search_823c67), plural: true, selection: Baton.Selection(type: Types.SearchResult, hasID: true, abstract: true, variants: [
+                .init(types: [Types.Character, Types.Episode, Types.Location], fields: [
+                    .scalar("__typename", key: .fixed(Slots.SearchResult___typename), kind: .string, list: false),
+                    .scalar("id", key: .fixed(Slots.SearchResult_id), kind: .string, list: false),
+                ]),
+                .init(types: nil, fields: [
+                    .scalar("__typename", key: .fixed(Slots.SearchResult___typename), kind: .string, list: false),
+                ]),
+            ])),
+        ]))
+
+    nonisolated public struct Data: Baton.Lens {
+        public let anchor: Baton.Anchor
+        public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Query"
+        @MainActor public var character: Character? { anchor.linked(anchor.owner.slot(Slots.Query_character_8fc9fb)).map(Character.init(anchor:)) }
+        @MainActor public var search: Baton.List<Search>? { anchor.list(anchor.owner.slot(Slots.Query_search_823c67)) }
+
+        nonisolated public struct Character: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Character"
+            @MainActor public var id: String? { anchor.string(Slots.Character_id) }
+        }
+
+        nonisolated public struct Search: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "SearchResult"
+        }
+    }
+}
+
 /// Operation value for `query TestRequiredOrigin`.
 nonisolated public struct TestRequiredOrigin: Baton.Query {
     public var id: String

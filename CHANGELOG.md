@@ -294,6 +294,8 @@ are expected and listed without apology.
 - One `invalidate`: `Environment.invalidate()`. `Store.invalidate()`, which
   marked memory stale but left the image's fetch times, so data read back
   from the image counted as fresh, is internal and does both.
+- A variable named like a Swift keyword, `$where` or `$in`, is escaped in
+  the operation value; it emitted `public var where`.
 - A directive Baton gives no meaning to is a compile error at the
   directive, by place: `@inline`, `@relay(plural:)`, `@relay(mask: false)`,
   `@raw_response_type`, `@preloadable` and `@stream` compiled through

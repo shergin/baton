@@ -397,7 +397,7 @@ impl Emitter {
             let _ = writeln!(
                 output,
                 "    public var {}: {}",
-                variable.name,
+                escape(&variable.name),
                 variable_type(variable)
             );
         }
@@ -413,7 +413,7 @@ impl Emitter {
         let parameters = parameter_list(&operation.variables);
         let _ = writeln!(output, "    public init({parameters}) {{");
         for variable in &operation.variables {
-            let _ = writeln!(output, "        self.{0} = {0}", variable.name);
+            let _ = writeln!(output, "        self.{0} = {0}", escape(&variable.name));
         }
         output.push_str("    }\n\n");
         let _ = writeln!(
@@ -453,7 +453,13 @@ impl Emitter {
             let entries: Vec<String> = operation
                 .variables
                 .iter()
-                .map(|variable| format!("\"{0}\": Baton.Variable({0})", variable.name))
+                .map(|variable| {
+                    format!(
+                        "\"{}\": Baton.Variable({})",
+                        variable.name,
+                        escape(&variable.name)
+                    )
+                })
                 .collect();
             output.push_str(&entries.join(", "));
         }
@@ -465,13 +471,13 @@ impl Emitter {
             let comparisons: Vec<String> = operation
                 .variables
                 .iter()
-                .map(|variable| format!("lhs.{0} == rhs.{0}", variable.name))
+                .map(|variable| format!("lhs.{0} == rhs.{0}", escape(&variable.name)))
                 .collect();
             let _ = writeln!(output, "        {}", comparisons.join(" && "));
         }
         output.push_str("    }\n\n    public func hash(into hasher: inout Hasher) {\n");
         for variable in &operation.variables {
-            let _ = writeln!(output, "        hasher.combine({})", variable.name);
+            let _ = writeln!(output, "        hasher.combine({})", escape(&variable.name));
         }
         output.push_str("    }\n\n");
 
@@ -519,7 +525,7 @@ impl Emitter {
             let arguments: Vec<String> = operation
                 .variables
                 .iter()
-                .map(|variable| format!("{0}: {0}", variable.name))
+                .map(|variable| format!("{0}: {0}", escape(&variable.name)))
                 .collect();
             let _ = writeln!(
                 output,
@@ -2513,7 +2519,12 @@ fn parameter_list(variables: &[VariablePlan]) -> String {
         .iter()
         .map(|variable| {
             let default = if variable.non_null { "" } else { " = nil" };
-            format!("{}: {}{}", variable.name, variable_type(variable), default)
+            format!(
+                "{}: {}{}",
+                escape(&variable.name),
+                variable_type(variable),
+                default
+            )
         })
         .collect::<Vec<_>>()
         .join(", ")
