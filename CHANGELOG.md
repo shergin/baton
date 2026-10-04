@@ -42,7 +42,16 @@ are expected and listed without apology.
   `@skip` is optional and reads nil, reporting nothing missing, when its
   condition does not select; `totalCount @include(if: $x)` read 0 and
   reported missing data. A field selected twice, or a fragment spread
-  twice, emits one accessor: the file did not compile.
+  twice, emits one accessor: the file did not compile. An aliased spread
+  of a fragment on an interface or union is tested against the types that
+  satisfy it; it was always nil.
+- A field no variables can select, such as one under `@include(if: $x)`
+  and `@skip(if: $x)` at once, is fetched and read under no variables; it
+  was planned as always selected, so the check waited for a field the
+  server never sends. A field the initial part and a deferred one both
+  select is read from the initial payload by its own selection; the
+  deferred copy could come first, and the initial fields under it were
+  dropped.
 - One write path. Everything a batch does, field errors and deletion
   included, is in its undo log and its net notification: a failed
   optimistic write to a field no longer loses the server's error on it, an
