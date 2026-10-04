@@ -379,6 +379,9 @@ func run() async throws {
 
     print("incremental delivery: a multipart response of \(MultipartStub.parts) parts, \(MultipartStub.body.count / 1024) KB")
     try await multipartBench()
+
+    print("long session: 2,000 root lookups by id and 500 pages after cursors")
+    try longSessionBench()
 }
 
 /// A server that answers every request with one `multipart/mixed` body,
@@ -820,6 +823,180 @@ func scrollBench(data: Data) async throws {
     report.forEach { print($0) }
     collectionCost.sort()
     print("  collection pass: best \(String(format: "%.2f", collectionCost[0])) ms, median \(String(format: "%.2f", collectionCost[collectionCost.count / 2])) ms, worst \(String(format: "%.2f", collectionCost.last!)) ms")
+}
+
+/// Two fields of `Character` without arguments: the long session's bench
+/// writes the first, whose slot is interned before the session, and the
+/// second, whose slot is interned after it, to as many characters.
+@MainActor
+struct LongSessionDocuments {
+    @Query("""
+        query BenchCharacterNames($page: Int) {
+          characters(page: $page) { results { id name } }
+        }
+        """)
+    var names: BenchCharacterNames
+
+    @Query("""
+        query BenchCharacterFavorites($page: Int) {
+          characters(page: $page) { results { id favorite } }
+        }
+        """)
+    var favorites: BenchCharacterFavorites
+}
+
+/// A long session: 2,000 characters looked up by id and 500 pages of one
+/// character's notes fetched after cursors. Every lookup interns a storage
+/// key on `Query` and every page one on `Character`, for the life of the
+/// process. Prints what that growth costs: the slots, the values the root
+/// and the paginated record allocate, the footprint, a commit and a read at
+/// the end against the start, and what a field first used after the session
+/// costs the characters it is written to. Runs last, since the slots it
+/// interns stay.
+@MainActor
+func longSessionBench() throws {
+    let lookups = 2_000
+    let pages = 500
+    let size = 10
+    let fresh = 100
+    let store = Store()
+    store.reportMissing = nil
+    let query = Registry.type("Query")
+    let character = Registry.type("Character")
+    let slotsBefore = (query: Registry.slotCount(query), character: Registry.slotCount(character))
+
+    func lookup(_ id: String, name: String = "Character") throws -> ChangeSet {
+        let payload = #"{"data":{"character":{"id":"\#(id)","name":"\#(name)"}}}"#
+        return try Ingest.normalize(Data(payload.utf8), plan: BenchCharacterQuery.plan.resolve(BenchCharacterQuery(id: id).variables))
+    }
+    /// The page of `long0`'s notes that starts at note `start`: the first
+    /// through the screen's query, every other through the pagination query
+    /// after the cursor of the note before it.
+    func page(from start: Int, count: Int) throws -> ChangeSet {
+        let edges = (start..<start + count).map { number in
+            #"{"cursor":"long-c\#(number)","node":{"__typename":"Note","id":"long-n\#(number)","text":"Note","created":"2026-10-03"}}"#
+        }.joined(separator: ",")
+        let notes = #"{"totalCount":100000,"edges":[\#(edges)],"pageInfo":{"endCursor":"long-c\#(start + count - 1)","hasNextPage":true}}"#
+        if start == 0 {
+            let payload = #"{"data":{"character":{"id":"long0","notes":\#(notes)}}}"#
+            return try Ingest.normalize(Data(payload.utf8), plan: BenchNotesQuery.plan.resolve(BenchNotesQuery(id: "long0").variables))
+        }
+        let operation = BenchNotesPaginationQuery(count: count, cursor: "long-c\(start - 1)", id: "long0")
+        let payload = #"{"data":{"node":{"__typename":"Character","id":"long0","notes":\#(notes)}}}"#
+        return try Ingest.normalize(Data(payload.utf8), plan: BenchNotesPaginationQuery.plan.resolve(operation.variables))
+    }
+    /// The session's characters, each with one field.
+    func characters(_ field: String, _ value: String, plan: ResolvedSelection) throws -> ChangeSet {
+        let results = (0..<lookups).map { #"{"id":"long\#($0)","\#(field)":\#(value)}"# }.joined(separator: ",")
+        return try Ingest.normalize(Data(#"{"data":{"characters":{"results":[\#(results)]}}}"#.utf8), plan: plan)
+    }
+    func megabytes(_ bytes: Int) -> String { String(format: "%+.1f MB", Double(bytes) / 1_048_576) }
+    /// How many values a record has room for and how many of them hold one.
+    /// A slot with a negative index is kept apart from the dense ones.
+    func values(_ record: Record) -> (allocated: Int, held: Int) {
+        let stored = record.storedSlots
+        let dense = stored.last { $0.slot.index >= 0 }.map { Int($0.slot.index) + 1 } ?? 0
+        return (dense + stored.count { $0.slot.index < 0 }, stored.count)
+    }
+
+    let rename = (try lookup("long0", name: "Before"), try lookup("long0", name: "After"))
+    var next = 0
+    /// What a commit and a read cost now, at the start or the end of the
+    /// session; `newest` is the last character looked up, whose root field
+    /// was interned last.
+    func costs(_ moment: String, newest: String) throws {
+        let additions = try (0..<rounds(fresh)).map { try lookup("long-\(moment)-\($0)") }
+        next = 0
+        measure("\(moment): commit, one root lookup of a new id", iterations: fresh, setup: { next += 1 }) {
+            store.commit(additions[next - 1])
+        }
+        measure("\(moment): commit, the paginated character's name changing", iterations: 200, setup: { store.commit(rename.0) }) {
+            store.commit(rename.1)
+        }
+        let root = BenchCharacterQuery.Data(anchor: Anchor(record: store.root, variables: BenchCharacterQuery(id: newest).variables, store: store))
+        let paginated = try requireValue(BenchCharacterQuery.Data(anchor: Anchor(record: store.root, variables: BenchCharacterQuery(id: "long0").variables, store: store)).character)
+        let count = 1_000
+        measure("\(moment): read, the newest root field with an argument, untracked", iterations: 50, ops: count) {
+            var sink = 0
+            for _ in 0..<count where root.character != nil { sink &+= 1 }
+            if sink == 42 { print("") }
+        }
+        measure("\(moment): read, the same, tracked, one body per read", iterations: 50, ops: count) {
+            var sink = 0
+            for _ in 0..<count {
+                withObservationTracking { if root.character != nil { sink &+= 1 } } onChange: {}
+            }
+            if sink == 42 { print("") }
+        }
+        measure("\(moment): read, the paginated character's name, untracked", iterations: 50, ops: count) {
+            var sink = 0
+            for _ in 0..<count { sink &+= paginated.name?.utf8.count ?? 0 }
+            if sink == 42 { print("") }
+        }
+    }
+
+    let start = footprint()
+    store.commit(try lookup("long0"))
+    store.commit(try page(from: 0, count: 50))
+    try costs("start", newest: "long0")
+
+    // The session: a page after a cursor for every fourth lookup.
+    var lookupTimes: [Double] = []
+    var pageTimes: [Double] = []
+    var noted = 50
+    func nextPage() throws {
+        let changes = try page(from: noted, count: size)
+        noted += size
+        let begin = DispatchTime.now().uptimeNanoseconds
+        store.commit(changes)
+        pageTimes.append(Double(DispatchTime.now().uptimeNanoseconds - begin))
+    }
+    for number in 1..<lookups {
+        let changes = try lookup("long\(number)")
+        let begin = DispatchTime.now().uptimeNanoseconds
+        store.commit(changes)
+        lookupTimes.append(Double(DispatchTime.now().uptimeNanoseconds - begin))
+        if number % 4 == 0, pageTimes.count < pages { try nextPage() }
+    }
+    while pageTimes.count < pages { try nextPage() }
+    let end = footprint()
+    report("session: commit of a lookup, the first 100", Array(lookupTimes.prefix(100)), ops: 1)
+    report("session: commit of a lookup, the last 100", Array(lookupTimes.suffix(100)), ops: 1)
+    report("session: commit of a page of \(size), the first 50", Array(pageTimes.prefix(50)), ops: 1)
+    report("session: commit of a page of \(size), the last 50", Array(pageTimes.suffix(50)), ops: 1)
+    try costs("end", newest: "long\(lookups - 1)")
+
+    // `name` was interned before the session; `favorite` is interned here.
+    let named = try characters("name", #""Character""#, plan: BenchCharacterNames.plan.resolve(BenchCharacterNames(page: 1_001).variables))
+    let favored = try characters("favorite", "true", plan: BenchCharacterFavorites.plan.resolve(BenchCharacterFavorites(page: 1_002).variables))
+    let namedStore = Store()
+    var before = footprint()
+    namedStore.commit(named)
+    let namedGrowth = footprint() - before
+    let favoredStore = Store()
+    before = footprint()
+    favoredStore.commit(favored)
+    let favoredGrowth = footprint() - before
+    before = footprint()
+    store.commit(favored)
+    let sessionGrowth = footprint() - before
+    measure("\(lookups) new characters given a field interned before the session", iterations: 10) {
+        Store().commit(named)
+    }
+    measure("\(lookups) new characters given a field interned after it", iterations: 10) {
+        Store().commit(favored)
+    }
+
+    let root = values(store.root)
+    let paginated = values(try requireValue(store.existing("Character:long0")))
+    let namedCharacter = values(try requireValue(namedStore.existing("Character:long1")))
+    let favoredCharacter = values(try requireValue(favoredStore.existing("Character:long1")))
+    print("    keys interned on Query \(slotsBefore.query) -> \(Registry.slotCount(query)), on Character \(slotsBefore.character) -> \(Registry.slotCount(character)), for the life of the process")
+    print("    values with room, holding one: the root \(root.allocated), \(root.held); the paginated character \(paginated.allocated), \(paginated.held); \(MemoryLayout<Value>.stride) bytes a value")
+    print("    footprint \(megabytes(end - start)) over the session, \(store.count) records")
+    print("    a new character given name (slot \(Registry.slot(character, "name").index)): room for \(namedCharacter.allocated) values, \(megabytes(namedGrowth)) for \(lookups)")
+    print("    a new character given favorite (slot \(Registry.slot(character, "favorite").index)): room for \(favoredCharacter.allocated) values, \(megabytes(favoredGrowth)) for \(lookups)")
+    print("    the session's \(lookups) characters given favorite: \(megabytes(sessionGrowth))")
 }
 
 if CommandLine.arguments.count == 3, CommandLine.arguments[1].hasPrefix("--launch") {
