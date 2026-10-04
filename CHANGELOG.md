@@ -235,6 +235,9 @@ are expected and listed without apology.
   the whole response, and reads a part without headers. It scans the
   chunks it is given rather than a byte at a time: 978 KB of 20 parts in
   16 KB chunks parse in 0.50 ms against 14.6 ms.
+- A deferred response is fetched when its stream completes. Its fetch time
+  was stamped at the first part, so a stream that broke after it left the
+  handle fresh; the first part still renders at once.
 - `URLSessionTransport` reads an incremental response from its data task's
   own delegate, in the chunks the loading system delivers; it iterated the
   body a byte at a time. The bench's 978 KB response reads in 1.2 ms

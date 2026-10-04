@@ -47,6 +47,10 @@ struct DeliveryTests {
             continuation?.yield(second)
             continuation?.finish()
         }
+
+        func fail() {
+            continuation?.finish(throwing: TransportError(statusCode: 502, body: "the stream broke"))
+        }
     }
 
     /// Delivers subscription events when told.
@@ -331,6 +335,27 @@ struct DeliveryTests {
         let identified = try Ingest.incremental(fixture("character-deferred-2-pending"))
         #expect(identified.items.first?.id == "0")
         #expect(identified.items.first?.path == nil)
+    }
+
+    @Test("a deferred response is fetched when its stream completes: one that fails after the first part keeps its data and stamps no fetch time")
+    func fetchTimeAtCompletion() async throws {
+        for completes in [true, false] {
+            let transport = GatedParts(fixture("character-deferred-1"), fixture("character-deferred-2"))
+            let environment = Environment(transport: transport)
+            environment.store.reportMissing = nil
+            let handle = environment.handle(for: TestProfileQuery(id: "1"))
+            handle.retain()
+            await until { if case .loading = handle.phase { false } else { true } }
+            #expect(handle.fetchTime == nil, "the first part is not the whole response")
+            if completes { transport.release() } else { transport.fail() }
+            await handle.settle()
+            guard case .ready = handle.phase else {
+                Issue.record("the data stays, got \(handle.phase)")
+                return
+            }
+            #expect((handle.fetchTime != nil) == completes)
+            handle.release()
+        }
     }
 
     @Test("a deferred fragment is absent after the first part and present after the second, in both incremental formats")
