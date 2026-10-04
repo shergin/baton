@@ -44,6 +44,9 @@ public final class Persistence: Sendable {
         case used(records: [String], root: [String])
         /// A fetch time this launch read, which keeps it for the next.
         case dated(operation: String)
+        /// Records a server's payload changed in a way memory could not
+        /// apply, by key, and by bare id under every type the image names.
+        case forget(keys: [String], ids: [String])
         case invalidate
     }
 
@@ -119,6 +122,12 @@ public final class Persistence: Sendable {
     /// Queues what a commit changed.
     func committed(_ records: [Snapshot], root: [RootField]) {
         enqueue(.commit(records: records, root: root))
+    }
+
+    /// Queues the records a payload could not edit in memory, for the image
+    /// to drop: the next read misses them and fetches.
+    func forget(keys: [String], ids: [String]) {
+        enqueue(.forget(keys: keys, ids: ids))
     }
 
     /// Notes that an operation's response just committed.

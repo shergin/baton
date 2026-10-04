@@ -240,6 +240,14 @@ are expected and listed without apology.
   schema is discarded. The version is the app's to pass, because generated
   constants are made on first use and nothing has made one when the file
   opens.
+- An edit the store cannot make in memory makes the image forget what it
+  would have changed. An edge directive on a connection the store held
+  only in the image was dropped, and an insert into the empty record a
+  link had made wrote a connection of one edge over the image's; a
+  `@deleteRecord` of a record only the image held left it there, to come
+  back at the next launch. The connection, or every record with the id,
+  is dropped from the image and read as missing until a response gives
+  it again, so the screen fetches.
 - A read of the image writes nothing first. The availability check wrote
   the writer's whole queue on the main actor before reading, and every
   launch's first reads queued stamps that the next check then wrote there.

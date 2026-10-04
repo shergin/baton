@@ -7,6 +7,9 @@ extension Store {
     /// Reads the record's row and fills the slots the record lacks. Returns
     /// whether the image had the row.
     func hydrate(_ record: Record, from disk: Disk) -> Bool {
+        // A row the image is told to forget reads as missing until a
+        // response writes the record again.
+        if forgotten(record) { return false }
         record.setHydrated()
         // A record that held nothing has had no reader to notify. One that
         // held something is notified once the row is closed: an observer may

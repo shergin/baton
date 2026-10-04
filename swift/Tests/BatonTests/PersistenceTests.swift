@@ -283,6 +283,57 @@ struct PersistenceTests {
         #expect(transport.requestCount == 4)
     }
 
+    /// Reads an operation from the image, which keeps its rows for the next
+    /// launch, and collects it out of memory again: the image alone holds
+    /// its records, as after a sweep.
+    func readAndSweep<Op: Baton.Query>(_ operation: Op, in environment: Environment) {
+        let handle = environment.handle(for: operation, fetchPolicy: .storeOnly)
+        guard case .ready = handle.phase else {
+            Issue.record("expected the image's data, got \(handle.phase)")
+            return
+        }
+        handle.retain()
+        handle.release()
+        environment.collect()
+    }
+
+    @Test("a record @deleteRecord names that only the image holds does not come back at the next launch")
+    func deletionOfARecordInTheImage() async throws {
+        try await seed(launch())
+        let second = launch(releaseBufferSize: 0)
+        readAndSweep(Fixture(page: 1), in: second)
+        #expect(second.store.existing("Character:1") == nil, "memory does not hold it")
+        let deletion = TestDeleteNote(id: "1")
+        second.store.commit(try Ingest.normalize(fixture("delete-record-1"), plan: TestDeleteNote.plan.resolve(deletion.variables), rootKey: Store.mutationRootKey))
+        await finish(second)
+        // The list held Character:1: without it the list is a miss, and the
+        // screen fetches rather than show the deleted character.
+        #expect(throws: NotStored.self) { try stored(Fixture(page: 1), in: launch()) }
+    }
+
+    @Test("an edge appended to a connection the store holds only as a link's empty record makes it a miss, not a connection of one edge")
+    func edgeIntoAConnectionOnlyTheImageHolds() async throws {
+        let first = launch()
+        first.store.commit(try Ingest.normalize(notesPage(1), plan: TestNotesQuery.plan.resolve(TestNotesQuery(id: "1").variables)))
+        first.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
+        await finish(first)
+
+        let second = launch(releaseBufferSize: 0)
+        readAndSweep(TestNotesQuery(id: "1"), in: second)
+        // Reading the character from the image again makes an empty record
+        // for the connection its link names.
+        let character = try #require(try stored(TestHeaderQuery(id: "1"), in: second).character)
+        #expect(character.testHeader.name == "Rick Sanchez")
+        let connection = "Character:1:__TestNotes_notes_connection"
+        #expect(second.store.existing(connection) != nil)
+        let append = TestAddNote(characterId: "1", text: "Appended", connections: [connection])
+        second.store.commit(try Ingest.normalize(fixture("add-note-n9"), plan: TestAddNote.plan.resolve(append.variables), rootKey: Store.mutationRootKey))
+        #expect(second.store.check(TestNotesQuery.plan.resolve(TestNotesQuery(id: "1").variables)) == .miss, "this launch reads no row of it either")
+        await finish(second)
+
+        #expect(throws: NotStored.self) { try stored(TestNotesQuery(id: "1"), in: launch()) }
+    }
+
     @Test("records whose rows wait to be written survive a collection, so a check right behind a commit finds them")
     func unwrittenRecordsStay() async throws {
         let environment = launch()

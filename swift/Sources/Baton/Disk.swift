@@ -72,6 +72,7 @@ final class Disk: @unchecked Sendable {
         let selectRecord, upsertRecord, useRecord: OpaquePointer
         let selectRoot, upsertRoot, useRoot: OpaquePointer
         let upsertFetch, useFetch, upsertName: OpaquePointer
+        let forgetRecord, forgetID: OpaquePointer
         let begin, beginReading, commit, rollback: OpaquePointer
     }
 
@@ -219,6 +220,8 @@ final class Disk: @unchecked Sendable {
             // A plain insert: an id another connection took fails the batch
             // rather than renaming what every row written with it means.
             upsertName: try prepare("INSERT INTO names(id, name) VALUES(?1, ?2)"),
+            forgetRecord: try prepare("DELETE FROM records WHERE key = ?1"),
+            forgetID: try prepare("DELETE FROM records WHERE key IN (SELECT name || ':' || ?1 FROM names)"),
             begin: try prepare("BEGIN IMMEDIATE"),
             beginReading: try prepare("BEGIN"),
             commit: try prepare("COMMIT"),
@@ -439,6 +442,9 @@ final class Disk: @unchecked Sendable {
                 for field in root { good = use(prepared.useRoot, field) && good }
             case .dated(let operation):
                 good = use(prepared.useFetch, operation) && good
+            case .forget(let keys, let ids):
+                for key in keys { good = forget(prepared.forgetRecord, key) && good }
+                for id in ids { good = forget(prepared.forgetID, id) && good }
             case .invalidate:
                 good = (try? exec("DELETE FROM fetches")) != nil && good
             }
@@ -504,6 +510,13 @@ final class Disk: @unchecked Sendable {
             sqlite3_bind_int64(prepared.upsertName, 1, Int64(id))
             sqlite3_bind_text(prepared.upsertName, 2, text, -1, nil)
             return run(prepared.upsertName)
+        }
+    }
+
+    private func forget(_ statement: OpaquePointer, _ key: String) -> Bool {
+        key.withCString { text in
+            sqlite3_bind_text(statement, 1, text, -1, nil)
+            return run(statement)
         }
     }
 

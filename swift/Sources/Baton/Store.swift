@@ -239,12 +239,12 @@ public final class Store {
         defer { reevaluateIfNeeded() }
         if optimisticLayers.isEmpty {
             var transaction = Transaction(direct: true)
-            persist(apply(changes, into: &transaction))
+            applyServer(changes, into: &transaction)
             return finish(transaction)
         }
         var transaction = Transaction()
         revertLayers(from: 0, into: &transaction)
-        persist(apply(changes, into: &transaction))
+        applyServer(changes, into: &transaction)
         reapplyLayers(from: 0, into: &transaction)
         return finish(transaction)
     }
@@ -255,6 +255,52 @@ public final class Store {
         guard nullsOrErrorsChanged else { return }
         nullsOrErrorsChanged = false
         environment?.reevaluate()
+    }
+
+    /// Applies a server's payload and hands the image what it changed, and
+    /// what it could not change in memory, for the image to forget.
+    private func applyServer(_ changes: ChangeSet, into transaction: inout Transaction) {
+        // Without an image an edit memory cannot make is simply not made.
+        forgets = persistence == nil ? nil : Forgets()
+        let undo = apply(changes, into: &transaction)
+        if let forgets, !forgets.keys.isEmpty || !forgets.ids.isEmpty {
+            persistence?.forget(keys: forgets.keys, ids: forgets.ids)
+            forgottenKeys.formUnion(forgets.keys)
+            forgottenIDs.formUnion(forgets.ids)
+        }
+        forgets = nil
+        // A record the payload wrote is the store's again: its new row is
+        // the one to read.
+        if !forgottenKeys.isEmpty || !forgottenIDs.isEmpty {
+            for key in changes.recordKeys {
+                forgottenKeys.remove(key)
+                if let separator = key.firstIndex(of: ":") { forgottenIDs.remove(String(key[key.index(after: separator)...])) }
+            }
+        }
+        persist(undo)
+    }
+
+    /// What a server batch could not edit in memory: connection keys, and
+    /// the bare ids of records `@deleteRecord` named that memory does not
+    /// hold. Recorded only while a server's payload applies.
+    private struct Forgets {
+        var keys: [String] = []
+        var ids: [String] = []
+    }
+
+    private var forgets: Forgets?
+
+    /// What the image was told to forget, until the writer has, and until a
+    /// response gives the store the record again: by key, and by bare id.
+    private var forgottenKeys: Set<String> = []
+    private var forgottenIDs: Set<String> = []
+
+    /// Whether the image's row of a record is not to be read.
+    func forgotten(_ record: Record) -> Bool {
+        if forgottenKeys.isEmpty, forgottenIDs.isEmpty { return false }
+        if forgottenKeys.contains(record.key) { return true }
+        if let id = record.entityID, forgottenIDs.contains(id) { return true }
+        return false
     }
 
     /// Hands the image what a server's payload changed: a snapshot of every
@@ -319,7 +365,7 @@ public final class Store {
         var transaction = Transaction()
         revertLayers(from: 0, into: &transaction)
         optimisticLayers.removeAll { $0.id == id }
-        persist(apply(changes, into: &transaction))
+        applyServer(changes, into: &transaction)
         reapplyLayers(from: 0, into: &transaction)
         return finish(transaction)
     }
@@ -551,9 +597,14 @@ public final class Store {
                 }
             case .deleteRecord(let id):
                 // The directive names a bare id; the record is the one live
-                // entity of any type with it.
-                guard let record = entity(id: id, among: Registry.typeNames()) else { continue }
-                delete(record, &transaction, &undo)
+                // entity of any type with it. One memory does not hold may
+                // be in the image, which forgets every record with the id.
+                let found = live(id: id, among: Registry.typeNames())
+                switch found.count {
+                case 0: forgets?.ids.append(id)
+                case 1: delete(found[0], &transaction, &undo)
+                default: reportAmbiguousIdentity?(id, found)
+                }
             }
         }
 
@@ -566,6 +617,19 @@ public final class Store {
     }
 
     // MARK: Connections
+
+    /// The connection an edit may change: in memory, live, and holding what
+    /// the image has or more. One the store holds only as an empty record a
+    /// link made, or not at all, would be written back with the edit alone
+    /// or keep its old edges in the image: the image forgets it instead, so
+    /// the next read fetches it.
+    private func editable(_ key: String) -> Record? {
+        if let connection = records[key], !connection.deleted, connection.hydrated || connection.slotCount > 0 {
+            return connection
+        }
+        forgets?.keys.append(key)
+        return nil
+    }
 
     private static func edges(_ record: Record, _ slot: Slot) -> ContiguousArray<Record?> {
         if case .refs(let edges) = record.peek(slot) { return edges }
@@ -645,7 +709,7 @@ public final class Store {
     /// connection's own record, as in Relay: the payload's edge record is
     /// keyed by its path, so the next mutation of the same kind would alias it.
     private func insert(edge: Record, into connectionKey: String, prepend: Bool, _ transaction: inout Transaction, _ undo: inout [Undo]) {
-        guard let connection = records[connectionKey], !connection.deleted else { return }
+        guard let connection = editable(connectionKey) else { return }
         if contains(connection, node: Store.node(of: edge, Registry.slot(edge.type, "node"))) { return }
         let copy = ownEdge(of: connection, type: edge.type, &transaction, &undo)
         for index in 0..<edge.slotCount {
@@ -658,7 +722,7 @@ public final class Store {
 
     /// Wraps a node in a new edge record of the connection and inserts it.
     private func insert(node: Record, edgeType: TypeID, into connectionKey: String, prepend: Bool, _ transaction: inout Transaction, _ undo: inout [Undo]) {
-        guard let connection = records[connectionKey], !connection.deleted else { return }
+        guard let connection = editable(connectionKey) else { return }
         if contains(connection, node: ObjectIdentifier(node)) { return }
         let edge = ownEdge(of: connection, type: edgeType, &transaction, &undo)
         set(edge, Registry.slot(edgeType, "node"), .ref(node), &transaction, &undo)
@@ -708,7 +772,7 @@ public final class Store {
     /// Removes every edge whose node is an entity with this id, of whatever
     /// type, from a connection named by id.
     private func deleteEdges(of id: String, from connectionKey: String, _ transaction: inout Transaction, _ undo: inout [Undo]) {
-        guard let connection = records[connectionKey], !connection.deleted else { return }
+        guard let connection = editable(connectionKey) else { return }
         let edgesSlot = Registry.slot(connection.type, "edges")
         let edges = Store.edges(connection, edgesSlot)
         var nodeSlot = NodeSlot()
@@ -973,6 +1037,15 @@ public final class Store {
         return (record, selection)
     }
 
+    /// The live entities with this id among the named types.
+    private func live(id: String, among typeNames: [String]) -> [Record] {
+        var found: [Record] = []
+        for name in typeNames {
+            if let record = records[name + ":" + id], !record.deleted { found.append(record) }
+        }
+        return found
+    }
+
     /// The entity a lookup names, if cached and not deleted. With the image
     /// at hand, an entity only the image holds counts when its type is known.
     func resolve(_ lookup: LookupKey, _ disk: Disk? = nil) -> Record? {
@@ -1007,10 +1080,7 @@ public final class Store {
     /// The one live entity with this id among the named types. None, or an
     /// id more than one of them has, is no record; the second is reported.
     private func entity(id: String, among typeNames: [String]) -> Record? {
-        var found: [Record] = []
-        for name in typeNames {
-            if let record = records[name + ":" + id], !record.deleted { found.append(record) }
-        }
+        let found = live(id: id, among: typeNames)
         guard found.count == 1 else {
             if found.count > 1 { reportAmbiguousIdentity?(id, found) }
             return nil
