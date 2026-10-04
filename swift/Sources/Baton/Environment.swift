@@ -94,7 +94,6 @@ public final class Environment {
     /// data stays visible until the response commits.
     public func invalidate() {
         store.invalidate()
-        store.persistence?.invalidate()
         for handle in handles.values where handle.retainCount > 0 {
             handle.refetchIfStale()
         }

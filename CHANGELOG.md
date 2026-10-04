@@ -235,6 +235,9 @@ are expected and listed without apology.
   the whole response, and reads a part without headers. It scans the
   chunks it is given rather than a byte at a time: 978 KB of 20 parts in
   16 KB chunks parse in 0.50 ms against 14.6 ms.
+- One `invalidate`: `Environment.invalidate()`. `Store.invalidate()`, which
+  marked memory stale but left the image's fetch times, so data read back
+  from the image counted as fresh, is internal and does both.
 - `onError` is decided at compile time: `"onError"` in `baton.json`, sent
   with every operation the target compiles. Under `NULL` the fields the
   schema types non-null are typed by their semantic nullability, so an

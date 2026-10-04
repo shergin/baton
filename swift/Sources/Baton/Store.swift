@@ -83,8 +83,12 @@ public final class Store {
         #endif
     }
 
-    /// Marks everything fetched so far as stale.
-    public func invalidate() { invalidationEpoch += 1 }
+    /// Marks everything fetched so far as stale, in memory and in the image;
+    /// `Environment.invalidate()` is the public way, which also refetches.
+    func invalidate() {
+        invalidationEpoch += 1
+        persistence?.invalidate()
+    }
 
     /// The placeholder record of a type.
     func placeholder(_ type: TypeID) -> Record {
