@@ -103,6 +103,71 @@ query TestConditions(
     }
 }
 
+/// Operation value for `query TestFoldedNode`.
+nonisolated public struct TestFoldedNode: Baton.Operation {
+    public var name: String
+    public var resolution: Baton.OperationHandle<Self>? = nil
+
+    public init(name: String) {
+        self.name = name
+    }
+
+    public static let name = "TestFoldedNode"
+    public static let kind = Baton.OperationKind.query
+    public static let persistedID = "92680cf5c9b1b4ee959a029fe9832a52"
+    public static let text = #"""
+query TestFoldedNode(
+  $name: String!
+) {
+  search(name: $name) {
+    __typename
+    ... on Node {
+      __isNode: __typename
+      id
+    }
+  }
+}
+"""#
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["name": Baton.Variable(name)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.name == rhs.name
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
+    }
+
+    public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
+            .linked("search", key: .dynamic(Slots.Query_search_954c44), plural: true, selection: Baton.Selection(type: Types.SearchResult, hasID: true, abstract: true, variants: [
+                .init(types: [Types.Character, Types.Episode, Types.Location], fields: [
+                    .scalar("__typename", key: .fixed(Slots.SearchResult___typename), kind: .string, list: false),
+                    .scalar("id", key: .fixed(Slots.SearchResult_id), kind: .string, list: false),
+                ]),
+                .init(types: nil, fields: [
+                    .scalar("__typename", key: .fixed(Slots.SearchResult___typename), kind: .string, list: false),
+                ]),
+            ])),
+        ]))
+
+    nonisolated public struct Data: Baton.Lens {
+        public let anchor: Baton.Anchor
+        public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Query"
+        @MainActor public var search: Baton.List<Search>? { anchor.list(anchor.owner.slot(Slots.Query_search_954c44)) }
+
+        nonisolated public struct Search: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "SearchResult"
+            @MainActor public var id: String? { anchor.string(AbstractSlots.SearchResult_id.on(anchor.record.type)) }
+        }
+    }
+}
+
 /// Operation value for `query TestNamedSpread`.
 nonisolated public struct TestNamedSpread: Baton.Operation {
     public var id: String

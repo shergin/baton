@@ -139,4 +139,5 @@ nonisolated enum Sites {
 nonisolated enum AbstractSlots {
     static let Named_name = Baton.AbstractSlot("name")
     static let Node_id = Baton.AbstractSlot("id")
+    static let SearchResult_id = Baton.AbstractSlot("id")
 }

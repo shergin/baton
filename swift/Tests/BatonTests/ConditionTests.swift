@@ -126,4 +126,15 @@ struct ConditionTests {
             #expect((node.named != nil) == (name != nil), "\(file)")
         }
     }
+
+    @Test("a type condition every type the parent admits satisfies folds into the parent's lens")
+    func conditionThatAlwaysHolds() throws {
+        let store = Store()
+        store.reportMissing = nil
+        let query = TestFoldedNode(name: "1")
+        store.commit(try Ingest.normalize(fixture("search-1"), plan: TestFoldedNode.plan.resolve(query.variables)))
+        let results = try #require(TestFoldedNode.Data(anchor: Anchor(record: store.root, variables: query.variables, store: store)).search)
+        let ids: [String?] = results.map(\.id)
+        #expect(ids == ["1", "1", "1"], "every SearchResult is a Node, so `id` reads on the result itself")
+    }
 }

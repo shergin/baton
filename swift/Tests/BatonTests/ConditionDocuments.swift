@@ -6,8 +6,9 @@ import Baton
 /// interface only some members implement, an abstract selection read through
 /// its own fields, one fragment spread twice and once more under a
 /// condition, caught fields and `__typename` under a condition in an
-/// operation that throws on field errors, and a fragment on an interface
-/// spread under another.
+/// operation that throws on field errors, a fragment on an interface
+/// spread under another, and an interface every member of a union
+/// implements.
 @MainActor
 struct ConditionDocuments {
     @Query("""
@@ -85,4 +86,11 @@ struct ConditionDocuments {
         }
         """)
     var namedSpread: TestNamedSpread
+
+    @Query("""
+        query TestFoldedNode($name: String!) {
+          search(name: $name) { ... on Node { id } }
+        }
+        """)
+    var foldedNode: TestFoldedNode
 }
