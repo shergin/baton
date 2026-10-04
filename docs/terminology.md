@@ -61,7 +61,9 @@ and reads errors as null.
 operation, the policy under which `@semanticNonNull` fields are typed
 non-null. Here: a fragment's spread accessor is `get throws` and throws
 `FieldErrors` for an uncaught error inside; an operation with an uncaught
-field error is `.failed(FieldErrors)` with its data in the store. Semantic
+field error in its own selection, or one its response carried without a
+field to hold it, is `.failed(FieldErrors)` with its data in the store. An
+error inside a spread is the fragment's to weigh, as in Relay. Semantic
 non-null fields read non-optional under either, and inside `@catch`.
 
 **Deferred fragment.** GraphQL: `...F @defer(label:)`, a fragment the server
