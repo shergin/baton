@@ -297,7 +297,8 @@ impl<'a> Scanner<'a> {
         self.advance();
         let mut identifier = self.read_identifier();
         // `@Baton.Query` names the same macro as `@Query`.
-        if identifier == "Baton" && self.peek(0) == Some('.') {
+        let qualified = identifier == "Baton" && self.peek(0) == Some('.');
+        if qualified {
             self.advance();
             identifier = self.read_identifier();
         }
@@ -310,16 +311,18 @@ impl<'a> Scanner<'a> {
         }
         self.advance();
         self.skip_whitespace();
-        // A labelled first argument belongs to another macro of the same
-        // name, such as SwiftData's `@Query(sort:)`.
-        if self.at_label() {
-            return;
-        }
         let mut hashes = 0;
         while self.peek(hashes) == Some('#') {
             hashes += 1;
         }
         if self.peek(hashes) != Some('"') {
+            // A bare `@Query` without a literal is SwiftData's, which shares
+            // the name and never takes a string first: `@Query(sort:)`,
+            // `@Query(FetchDescriptor<Item>())`. The other markers and
+            // `@Baton.Query` are Baton's alone.
+            if marker == Marker::Query && !qualified {
+                return;
+            }
             self.errors.push(ScanError::MissingLiteral {
                 marker,
                 at: self.position(),
@@ -343,22 +346,6 @@ impl<'a> Scanner<'a> {
             text,
             property,
         });
-    }
-
-    /// Whether the cursor is at an argument label: an identifier and a colon.
-    fn at_label(&self) -> bool {
-        let mut offset = 0;
-        while matches!(self.peek(offset), Some(character) if character.is_alphanumeric() || character == '_')
-        {
-            offset += 1;
-        }
-        if offset == 0 {
-            return false;
-        }
-        while matches!(self.peek(offset), Some(character) if character.is_whitespace()) {
-            offset += 1;
-        }
-        self.peek(offset) == Some(':')
     }
 
     /// Whether the cursor is at a closing delimiter's quotes followed by the

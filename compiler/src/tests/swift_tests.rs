@@ -82,7 +82,7 @@ fn text_positions_map_straight_onto_file_positions() {
 
 #[test]
 fn reports_escapes_and_missing_literals_without_stopping() {
-    let source = "@Fragment(\"fragment A on B { \\(x) }\") var a: A\n@Query(42) var b: B\n@Mutation(\"mutation M { m }\") var m: M\n";
+    let source = "@Fragment(\"fragment A on B { \\(x) }\") var a: A\n@Subscription(42) var b: B\n@Mutation(\"mutation M { m }\") var m: M\n";
     let (documents, errors) = scan(source);
     assert_eq!(documents.len(), 2);
     assert_eq!(errors.len(), 2);
@@ -90,7 +90,7 @@ fn reports_escapes_and_missing_literals_without_stopping() {
     assert!(matches!(
         errors[1],
         ScanError::MissingLiteral {
-            marker: Marker::Query,
+            marker: Marker::Subscription,
             ..
         }
     ));
@@ -156,9 +156,24 @@ fn reports_an_escape_in_a_raw_literal_only_with_its_hashes() {
 }
 
 #[test]
-fn leaves_a_marker_whose_first_argument_is_labelled_to_its_own_macro() {
-    let source = "@Query(sort: \\Item.name) var items: [Item]\n@Query(filter: #Predicate<Item> { $0.done }) var done: [Item]\n";
+fn leaves_a_query_whose_first_argument_is_not_a_literal_to_the_other_macro_of_its_name() {
+    let source = "@Query(sort: \\Item.name) var items: [Item]\n@Query(filter: #Predicate<Item> { $0.done }) var done: [Item]\n@Query(FetchDescriptor<Item>()) var all: [Item]\n@Query(Item.recent) var recent: [Item]\n";
     let (documents, errors) = scan(source);
     assert!(documents.is_empty(), "{documents:?}");
     assert!(errors.is_empty(), "{errors:?}");
+}
+
+#[test]
+fn a_marker_no_other_macro_shares_wants_a_literal_labelled_or_not() {
+    let source = "@Baton.Query(Item.recent) var q: Q\n@Fragment(sort: \\Item.name) var f: F\n@Mutation(descriptor) var m: M\n";
+    let (documents, errors) = scan(source);
+    assert!(documents.is_empty(), "{documents:?}");
+    let markers: Vec<Marker> = errors
+        .iter()
+        .map(|error| match error {
+            ScanError::MissingLiteral { marker, .. } => *marker,
+            other => panic!("{other:?}"),
+        })
+        .collect();
+    assert_eq!(markers, [Marker::Query, Marker::Fragment, Marker::Mutation]);
 }

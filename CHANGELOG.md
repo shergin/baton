@@ -376,10 +376,12 @@ are expected and listed without apology.
   list.
 - The compiler reads a marker qualified by the module, `@Baton.Query`,
   and raw string literals (`#"""` to `"""#`), in which only a backslash
-  followed by the literal's hashes is an escape. A marker whose first
-  argument is labelled, such as SwiftData's `@Query(sort:)`, is another
-  macro of the same name and is left alone; it was an error. The plugin
-  hands the compiler every file that names a marker.
+  followed by the literal's hashes is an escape. A bare `@Query` whose
+  first argument is not a string literal, such as SwiftData's
+  `@Query(sort:)` or `@Query(FetchDescriptor<Item>())`, is that other macro
+  and is left alone; it was an error. The other markers and `@Baton.Query`
+  still want a literal. The plugin hands the compiler every file that names
+  a marker.
 - A `.graphql` or `.gql` file in a target writes its own output; its
   documents compiled and their lenses were never written. Outputs are named
   by the source's path in the target, so `Thing.swift` and `Thing.graphql`,
