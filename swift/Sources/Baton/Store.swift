@@ -53,6 +53,11 @@ public final class Store {
     /// The store's image on disk, when it has one: every commit is written
     /// behind, and the availability check reads from it what memory lacks.
     public let persistence: Persistence?
+    /// How many times the image had been removed when this store was made.
+    /// The store hands it over with everything it asks of the image, so a
+    /// store from before a sign-out's `removeAll()` reads, writes and dates
+    /// nothing there after it.
+    let imageRemovals: Int
     /// How many records have been filled from the image; for tests and
     /// benchmarks.
     package internal(set) var hydratedRecords = 0
@@ -72,6 +77,7 @@ public final class Store {
 
     public init(persistence: Persistence? = nil) {
         self.persistence = persistence
+        imageRemovals = persistence?.removals ?? 0
         root = Record(type: Registry.type("Query"), key: Store.rootKey)
         mutationRoot = Record(type: Registry.type("Mutation"), key: Store.mutationRootKey)
         subscriptionRoot = Record(type: Registry.type("Subscription"), key: Store.subscriptionRootKey)
@@ -95,7 +101,7 @@ public final class Store {
     /// `Environment.invalidate()` is the public way, which also refetches.
     func invalidate() {
         invalidationEpoch += 1
-        persistence?.invalidate()
+        persistence?.invalidate(removals: imageRemovals)
     }
 
     /// The placeholder record of a type.
@@ -269,7 +275,7 @@ public final class Store {
         forgets = persistence == nil ? nil : Forgets()
         let undo = apply(changes, into: &transaction)
         if let forgets, !forgets.keys.isEmpty || !forgets.ids.isEmpty {
-            persistence?.forget(keys: forgets.keys, ids: forgets.ids)
+            persistence?.forget(keys: forgets.keys, ids: forgets.ids, removals: imageRemovals)
             forgottenKeys.formUnion(forgets.keys)
             forgottenIDs.formUnion(forgets.ids)
             // A record with the id that an earlier payload wrote is forgotten
@@ -363,7 +369,7 @@ public final class Store {
             }
         }
         if records.isEmpty, fields.isEmpty { return }
-        persistence.committed(records, root: fields)
+        persistence.committed(records, root: fields, removals: imageRemovals)
     }
 
     /// Applies an optimistic response on top of everything else.
@@ -842,7 +848,7 @@ public final class Store {
         // the read that is open.
         if let reading { return available(selection, at: record, from: reading) ? .image : .miss }
         guard let persistence else { return .miss }
-        let found = persistence.reading { disk in
+        let found = persistence.reading(removals: imageRemovals) { disk in
             reading = disk
             defer { reading = nil }
             return available(selection, at: record, from: disk)

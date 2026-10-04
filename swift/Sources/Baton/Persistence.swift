@@ -76,6 +76,13 @@ public final class Persistence: Sendable {
     private let disk: Mutex<Disk>
     private let pending = Mutex(Pending())
     private let ages = Mutex(Ages())
+    /// How many times `removeAll()` has run. A store notes the count when it
+    /// is made and hands it over with everything it asks of the image; once
+    /// a removal has come after, nothing it asks is done. A removal counts
+    /// itself before it clears anything, and the count is compared under the
+    /// lock of what it guards, so a store's work is either cleared by the
+    /// removal or refused after it.
+    private let removalCount = Atomic<Int>(0)
 
     /// An image in the file at `url`; its directory is created when missing.
     /// The file is opened at once, off the caller's thread.
@@ -114,11 +121,15 @@ public final class Persistence: Sendable {
     /// Deletes the image, for a sign-out: the work queued before it is
     /// dropped and the file removed, names and argument values with it, so
     /// nothing of the session survives a failed write. A database of another
-    /// kind at the path is left alone. Records in memory are untouched; what
-    /// the store commits afterwards starts a new file. A sign-out releases
-    /// the old environment's handles, as its views going away does, removes
-    /// the image, and makes a new environment.
+    /// kind at the path is left alone. A sign-out releases the old
+    /// environment's handles, as its views going away does, removes the
+    /// image, and makes a new environment over it, whose store starts a new
+    /// file. A store made before the removal keeps its records in memory but
+    /// reads, writes and dates nothing in the image after it, so a response
+    /// that lands late for the user who signed out reaches neither the file
+    /// nor the next user.
     public func removeAll() {
+        removalCount.add(1, ordering: .sequentiallyConsistent)
         ages.withLock { ages in
             ages.times.removeAll()
             ages.cleared = true
@@ -132,15 +143,30 @@ public final class Persistence: Sendable {
 
     // MARK: From the main actor
 
+    // The calls that read, write or date the image carry `removals`, the
+    // count its store noted when it was made, and do nothing once another
+    // removal has come.
+
+    /// How many times the image has been removed so far, which a store notes
+    /// when it is made.
+    var removals: Int {
+        removalCount.load(ordering: .sequentiallyConsistent)
+    }
+
+    /// Whether no removal has come since a store noted `removals`.
+    private func current(_ removals: Int) -> Bool {
+        removalCount.load(ordering: .sequentiallyConsistent) == removals
+    }
+
     /// Queues what a commit changed.
-    func committed(_ records: [Snapshot], root: [RootField]) {
-        enqueue(.commit(records: records, root: root))
+    func committed(_ records: [Snapshot], root: [RootField], removals: Int) {
+        enqueue(.commit(records: records, root: root), removals: removals)
     }
 
     /// Queues the records a payload could not edit in memory, for the image
     /// to drop: the next read misses them and fetches.
-    func forget(keys: [String], ids: [String]) {
-        enqueue(.forget(keys: keys, ids: ids))
+    func forget(keys: [String], ids: [String], removals: Int) {
+        enqueue(.forget(keys: keys, ids: ids), removals: removals)
     }
 
     /// Whether a forget waits in the queue, the rows it names still in the
@@ -151,10 +177,14 @@ public final class Persistence: Sendable {
     }
 
     /// Notes that an operation's response just committed.
-    func fetched(_ operation: String) {
+    func fetched(_ operation: String, removals: Int) {
         let time = Date().timeIntervalSince1970
-        ages.withLock { $0.times[operation] = time }
-        enqueue(.fetched(operation: operation, time: time))
+        let noted = ages.withLock { ages in
+            guard current(removals) else { return false }
+            ages.times[operation] = time
+            return true
+        }
+        if noted { enqueue(.fetched(operation: operation, time: time), removals: removals) }
     }
 
     /// How many seconds ago the operation's last response committed, in this
@@ -162,22 +192,25 @@ public final class Persistence: Sendable {
     /// A time read from the image is stamped as used, once per launch, so
     /// data read every launch keeps its age and does not go stale at the
     /// next but one.
-    func age(of operation: String) -> Double? {
-        let (time, first) = ages.withLock { ages in
-            (ages.times[operation], ages.read.insert(operation).inserted)
+    func age(of operation: String, removals: Int) -> Double? {
+        let (time, first): (Double?, Bool) = ages.withLock { ages in
+            guard current(removals) else { return (nil, false) }
+            return (ages.times[operation], ages.read.insert(operation).inserted)
         }
         guard let time else { return nil }
-        if first { enqueue(.dated(operation: operation)) }
+        if first { enqueue(.dated(operation: operation), removals: removals) }
         return max(0, Date().timeIntervalSince1970 - time)
     }
 
     /// Forgets every fetch time, so data from the image reads as stale.
-    func invalidate() {
-        ages.withLock { ages in
+    func invalidate(removals: Int) {
+        let cleared = ages.withLock { ages in
+            guard current(removals) else { return false }
             ages.times.removeAll()
             ages.cleared = true
+            return true
         }
-        enqueue(.invalidate)
+        if cleared { enqueue(.invalidate, removals: removals) }
     }
 
     /// Runs `body` holding the connection, inside one read transaction. It
@@ -185,17 +218,18 @@ public final class Persistence: Sendable {
     /// lock is had, and the records of a batch still queued, with those its
     /// root fields link to, are kept in memory by the collector, so a read
     /// never meets an older row than memory held. False when the file
-    /// cannot be opened.
-    func reading(_ body: (Disk) -> Bool) -> Bool {
+    /// cannot be opened, and once a removal has come since the store noted
+    /// `removals`.
+    func reading(removals: Int, _ body: (Disk) -> Bool) -> Bool {
         var used: Work?
         let result = disk.withLock { disk in
-            guard opened(disk) else { return false }
+            guard current(removals), opened(disk) else { return false }
             guard disk.beginRead() else { return false }
             let result = body(disk)
             used = disk.endRead()
             return result
         }
-        if let used { enqueue(used) }
+        if let used { enqueue(used, removals: removals) }
         return result
     }
 
@@ -203,9 +237,10 @@ public final class Persistence: Sendable {
     /// until it has: those whose snapshots wait, and those a waiting root
     /// field links to. The root drops its links to swept records, and a
     /// field dropped before its row is written would be read back from the
-    /// row before it.
-    func unwrittenRecords() -> [Record] {
+    /// row before it. A store made before the last removal has none.
+    func unwrittenRecords(removals: Int) -> [Record] {
         pending.withLock { pending in
+            guard current(removals) else { return [] }
             var kept: [Record] = []
             for case .commit(let records, let root) in pending.work {
                 for snapshot in records { kept.append(snapshot.record) }
@@ -223,8 +258,9 @@ public final class Persistence: Sendable {
 
     // MARK: The writer
 
-    private func enqueue(_ work: Work) {
+    private func enqueue(_ work: Work, removals: Int) {
         let start = pending.withLock { pending in
+            guard current(removals) else { return false }
             pending.work.append(work)
             if case .forget = work { pending.forgets += 1 }
             if pending.scheduled { return false }

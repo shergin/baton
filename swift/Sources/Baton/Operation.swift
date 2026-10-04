@@ -240,7 +240,7 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
     private func didFetch() {
         fetchTime = .now
         fetchEpoch = store.invalidationEpoch
-        store.persistence?.fetched(imageKey)
+        store.persistence?.fetched(imageKey, removals: store.imageRemovals)
     }
 
     /// Gives data this handle did not fetch the age the image knows: the time
@@ -248,7 +248,7 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
     /// image and has no such time is stale.
     private func takeAge(hydrated: Bool) {
         guard fetchTime == nil, let persistence = store.persistence else { return }
-        if let age = persistence.age(of: imageKey) {
+        if let age = persistence.age(of: imageKey, removals: store.imageRemovals) {
             fetchTime = .now - .seconds(age)
             fetchEpoch = store.invalidationEpoch
         } else if hydrated {

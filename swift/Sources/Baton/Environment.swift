@@ -350,7 +350,7 @@ public final class Environment {
         }
         // Records whose rows wait to be written stay, so the image, which a
         // read does not write first, is never older than memory.
-        for record in store.persistence?.unwrittenRecords() ?? [] {
+        for record in store.persistence?.unwrittenRecords(removals: store.imageRemovals) ?? [] {
             reachable.insert(ObjectIdentifier(record))
         }
         // Records an optimistic layer wrote stay until the layer is resolved.

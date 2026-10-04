@@ -755,6 +755,72 @@ struct PersistenceTests {
             .replacingOccurrences(of: "\"name\":\"Morty Smith\"", with: "\"name\":\"Morty C-137\"").utf8)
     }
 
+    @Test("a response the user who signed out was waiting for lands after removeAll and reaches neither the image nor the next user, whose environment took the same image")
+    func aLateResponseAfterASignOut() async throws {
+        let persistence = Persistence(url: image.url)
+        let gate = GatedTransport()
+        let leaving = Environment(transport: gate, store: Store(persistence: persistence))
+        leaving.store.reportMissing = nil
+        let screen = leaving.handle(for: Fixture(page: 1))
+        screen.retain()
+        await until { gate.pending == 1 }
+
+        // The sign-out the README describes: the views go away, the image is
+        // removed, and the next environment gets the same image.
+        screen.release()
+        persistence.removeAll()
+        let renamed = renamedFixture
+        let transport = RecordedTransport { _ in renamed }
+        let next = Environment(transport: transport, store: Store(persistence: persistence))
+        next.store.reportMissing = nil
+
+        gate.respond(fixtureData)
+        await screen.settle()
+        await persistence.flush()
+
+        let handle = next.handle(for: Fixture(page: 1))
+        handle.retain()
+        await handle.settle()
+        #expect(transport.requestCount == 1, "the image had nothing to answer with")
+        guard case .ready(let data) = handle.phase else {
+            Issue.record("expected the next user's data, got \(handle.phase)")
+            return
+        }
+        #expect(data.characters?.results?[1].name == "Morty C-137")
+        handle.release()
+        await persistence.close()
+
+        let later = try stored(Fixture(page: 1), in: launch())
+        #expect(later.characters?.results?[1].name == "Morty C-137", "the rows the next user's fetch wrote")
+    }
+
+    @Test("a store made before removeAll reads nothing from the image after it, and its invalidation leaves the next user's data fresh")
+    func aSignedOutStoreLeavesTheImageAlone() async throws {
+        let persistence = Persistence(url: image.url)
+        let leaving = Environment(transport: SilentTransport(), store: Store(persistence: persistence))
+        leaving.store.reportMissing = nil
+        persistence.removeAll()
+        let next = Environment(transport: RecordedTransport { _ in fixtureData }, store: Store(persistence: persistence))
+        next.store.reportMissing = nil
+        let handle = next.handle(for: Fixture(page: 1))
+        handle.retain()
+        await handle.settle()
+        await persistence.flush()
+
+        #expect(leaving.store.check(Fixture.plan.resolve(Fixture(page: 1).variables)) == .miss, "the next user's rows")
+        leaving.invalidate()
+        handle.release()
+        await persistence.close()
+
+        let later = launch()
+        let reread = later.handle(for: Fixture(page: 1), fetchPolicy: .storeOnly)
+        guard case .ready = reread.phase else {
+            Issue.record("expected the next user's rows, got \(reread.phase)")
+            return
+        }
+        #expect(!reread.isStale, "the next user's fetch time stands")
+    }
+
     /// Asks `environment`, whose image does not hold the file, for its late
     /// work on it: a read, a commit and a removal, none of which may touch
     /// the file.

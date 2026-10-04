@@ -276,7 +276,10 @@ are expected and listed without apology.
   open dropped and a failed batch rolled back, and it kept the interned
   names, which hold argument values; work queued before it is dropped
   too. A sign-out releases the old environment's handles, removes the
-  image and makes a new environment.
+  image and makes a new environment over it. A store made before the
+  removal reads, writes and dates nothing in the image after it, so a
+  response that lands late for the user who signed out reaches neither
+  the file nor the next user.
 - `Persistence.close()` writes what is queued and closes the file, so a new
   environment can take the image over, as at a sign-out.
 - Opening the image scans nothing. The rows no launch has read since the
