@@ -312,6 +312,28 @@ struct DeliveryTests {
         guard case .ready = handle.phase else { Issue.record("expected ready again, got \(handle.phase)"); return }
     }
 
+    @Test("Environment.fetch of an operation that throws throws the field errors its handle fails on, and not an error inside a spread")
+    func fetchThrowsAsTheHandleFails() async throws {
+        let environment = Environment(transport: RecordedTransport([
+            TestThrowingSpread.name: fixture("character-name-hidden"),
+            TestStrictQuery.name: fixture("character-name-hidden"),
+        ]))
+        environment.store.reportMissing = nil
+        try await environment.fetch(TestThrowingSpread(id: "1"))
+        let handle = environment.handle(for: TestThrowingSpread(id: "1"), fetchPolicy: .storeOnly)
+        guard case .ready = handle.phase else {
+            Issue.record("the error is the spread's to weigh, got \(handle.phase)")
+            return
+        }
+        let own = await #expect(throws: FieldErrors.self) { try await environment.fetch(TestStrictQuery(id: "1")) }
+        #expect(own?.errors.map(\.path) == ["character.name"])
+
+        let unplaced = Environment(transport: RecordedTransport([TestStrictQuery.name: fixture("character-unplaced-error")]))
+        unplaced.store.reportMissing = nil
+        let carried = await #expect(throws: FieldErrors.self) { try await unplaced.fetch(TestStrictQuery(id: "1")) }
+        #expect(carried?.errors.map(\.message) == ["rate limited"])
+    }
+
     @Test("a response with errors and no data fails the fetch with the messages")
     func requestErrors() async throws {
         let environment = Environment(transport: OneResponse(fixture("not-authorized")))

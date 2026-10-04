@@ -112,10 +112,17 @@ public final class Environment {
 
     /// Fetches an operation and commits the response; the handle, if any,
     /// follows. `firstPart` runs after the first part of a deferred response
-    /// commits, so a view renders before the rest arrives.
+    /// commits, so a view renders before the rest arrives. An operation with
+    /// `@throwOnFieldError` throws the field errors its handle fails on.
     public func fetch<Op: Query>(_ operation: Op, firstPart: (() -> Void)? = nil) async throws {
         let fetched = try await fetch(Op.self, variables: operation.variables, resolved: Op.plan.resolve(operation.variables), firstPart: firstPart.map { firstPart in { _ in firstPart() } })
-        if Op.throwsOnFieldError, !fetched.uncaught.isEmpty { throw FieldErrors(fetched.uncaught) }
+        guard Op.throwsOnFieldError else { return }
+        // The handle's reading: the operation's own selection, where an error
+        // inside a spread is the fragment's to weigh, and the errors the
+        // response carried with no field to hold them.
+        let anchor = Anchor(record: store.root, variables: operation.variables, store: store)
+        let errors = fetched.unplaced + Op.Data.fieldErrors(anchor)
+        if !errors.isEmpty { throw FieldErrors(errors) }
     }
 
     /// What a fetch committed besides its records: the field errors no

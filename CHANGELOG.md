@@ -410,6 +410,10 @@ are expected and listed without apology.
   `retry()`. A failure on field errors or a `@required` null, whose data is
   in the store, goes stale as ready data does, so `invalidate()` and the
   expiration refetch it; `isStale` was false for every failure.
+- `Environment.fetch(_:)` of a `@throwOnFieldError` operation throws the
+  field errors its handle fails on. It threw for every uncaught error the
+  response placed, one inside a spread among them, so the fetch threw where
+  the handle was ready.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

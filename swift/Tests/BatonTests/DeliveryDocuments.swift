@@ -3,8 +3,8 @@ import Baton
 /// The documents behind the delivery tests, against the test schema: field
 /// errors read plainly and through `@catch`, `@required` in its three actions,
 /// `@throwOnFieldError` with the schema's `@semanticNonNull`, a deferred
-/// fragment, in an operation that throws too, and a subscription that
-/// appends to a connection.
+/// fragment, in an operation that throws too, an operation that throws with
+/// a spread that does not, and a subscription that appends to a connection.
 @MainActor
 struct DeliveryDocuments {
     @Fragment("""
@@ -58,6 +58,18 @@ struct DeliveryDocuments {
         }
         """)
     var strictDeferred: TestStrictDeferred
+
+    @Fragment("""
+        fragment TestName_character on Character { name }
+        """)
+    var name: TestName_character
+
+    @Query("""
+        query TestThrowingSpread($id: ID!) @throwOnFieldError {
+          character(id: $id) { species ...TestName_character }
+        }
+        """)
+    var throwingSpread: TestThrowingSpread
 
     @Query("""
         query TestNullsOnError($id: ID!) {
