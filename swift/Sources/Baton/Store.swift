@@ -541,13 +541,20 @@ public final class Store {
             if record.deleted { setDeleted(record, false, &transaction, &undo) }
             let range = Int(changes.starts[index])..<Int(changes.starts[index + 1])
             if created[index], !range.isEmpty {
-                // A new record makes room once, for the highest dense slot it
-                // receives.
-                var highest: Int32 = 0
-                for position in range where changes.entries[position].slot.index > highest {
-                    highest = changes.entries[position].slot.index
+                // A new record makes room once: for the highest dense slot it
+                // receives, and for each key numbered apart. The change set
+                // holds each slot of a record once.
+                var highest: Int32 = -1
+                var rendered = 0
+                for position in range {
+                    let slot = changes.entries[position].slot.index
+                    if slot > highest {
+                        highest = slot
+                    } else if slot < 0 {
+                        rendered &+= 1
+                    }
                 }
-                record.reserve(Int(highest) + 1)
+                record.reserve(dense: Int(highest) + 1, rendered: rendered)
             }
             for position in range {
                 let entry = changes.entries[position]

@@ -562,8 +562,8 @@ are expected and listed without apology.
   sorted by key, which a read of one searches by halves: a root field
   with a variable argument reads in 31.6 ns against 28.8 ns, and the
   newest of the session's 2,000 keys in 50.7 ns. A list of 5,000 rows,
-  each holding three fields with a variable, commits in 5.37 ms against
-  4.18 ms for three constants, and each row holds 112 bytes more. A key
+  each holding three fields with a variable, commits in 4.76 ms against
+  4.08 ms for three constants, and each row holds 96 bytes more. A key
   keeps the kind it is first met as: a constant whose text was rendered
   first, or that the image named first, is read through the search.
   `Slot.index` is negative for a rendered key, and `Registry.slotCount`

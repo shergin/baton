@@ -60,9 +60,15 @@ public final class Record: Observable {
         idOffset >= 0 && key.utf8.dropFirst(Int(idOffset)).elementsEqual(id.utf8)
     }
 
-    /// Makes room for the slots a batch is about to write.
-    func reserve(_ count: Int) {
-        values.reserveCapacity(count)
+    /// Makes room for the slots a batch is about to write: the dense ones up
+    /// to `dense`, and `rendered` keys numbered apart, so that a new record
+    /// allocates each list once.
+    func reserve(dense: Int, rendered: Int) {
+        if dense > 0 { values.reserveCapacity(dense) }
+        if rendered > 0 {
+            renderedIDs.reserveCapacity(rendered)
+            renderedValues.reserveCapacity(rendered)
+        }
     }
 
     /// Reads a slot and registers the read with the current tracking scope.
