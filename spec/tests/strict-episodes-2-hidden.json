@@ -1,0 +1,1 @@
+{"data":{"character":{"id":"2","episode":[{"id":"E2","name":null}]}},"errors":[{"message":"name hidden","path":["character","episode",0,"name"]}]}

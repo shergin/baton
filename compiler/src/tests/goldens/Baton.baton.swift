@@ -2,7 +2,10 @@
 import Baton
 
 /// Interned schema types used by this module's documents.
-enum Types {
+nonisolated enum Types {
+    /// The schema's digest: pass it as the image's `version`, so an image
+    /// written under another schema starts again.
+    static let schemaDigest = "1cef5b187d5b5986eb734a1b6f00c1b8"
     static let AddNotePayload = Baton.Registry.type("AddNotePayload")
     static let Character = Baton.Registry.type("Character")
     static let Characters = Baton.Registry.type("Characters")
@@ -11,6 +14,7 @@ enum Types {
     static let Info = Baton.Registry.type("Info")
     static let Location = Baton.Registry.type("Location")
     static let Mutation = Baton.Registry.type("Mutation")
+    static let Named = Baton.Registry.type("Named")
     static let Node = Baton.Registry.type("Node")
     static let Note = Baton.Registry.type("Note")
     static let NoteAddedPayload = Baton.Registry.type("NoteAddedPayload")
@@ -21,95 +25,181 @@ enum Types {
     static let RemoveNotePayload = Baton.Registry.type("RemoveNotePayload")
     static let SearchResult = Baton.Registry.type("SearchResult")
     static let Subscription = Baton.Registry.type("Subscription")
+    static let Tokenizer = Baton.Registry.type("Tokenizer")
+    static let Types = Baton.Registry.type("Types")
+    /// The types that satisfy `... on Named`.
+    static let Named_possible: Set<Baton.TypeID> = [Character, Location]
+    /// The types that satisfy `... on Node`.
+    static let Node_possible: Set<Baton.TypeID> = [Character, Episode, Location, Note]
 }
 
 /// Interned storage keys used by this module's documents.
-enum Slots {
-    static let AddNotePayload_noteEdge = Baton.Registry.slot(Types.AddNotePayload, "noteEdge")
-    static let Character___TestNotes_notes_connection = Baton.Registry.slot(Types.Character, "__TestNotes_notes_connection")
-    static let Character_created = Baton.Registry.slot(Types.Character, "created")
-    static let Character_episode = Baton.Registry.slot(Types.Character, "episode")
-    static let Character_favorite = Baton.Registry.slot(Types.Character, "favorite")
-    static let Character_gender = Baton.Registry.slot(Types.Character, "gender")
-    static let Character_id = Baton.Registry.slot(Types.Character, "id")
-    static let Character_image = Baton.Registry.slot(Types.Character, "image")
-    static let Character_location = Baton.Registry.slot(Types.Character, "location")
-    static let Character_name = Baton.Registry.slot(Types.Character, "name")
-    static func Character_notes_a7d47e(_ variables: Baton.Variables) -> Baton.Slot {
-        Baton.Registry.slot(Types.Character, "notes(after:null,first:" + variables.render("size") + ")")
+nonisolated enum Slots {
+    nonisolated enum AddNotePayload {
+        static let note = Baton.Registry.slot(Types.AddNotePayload, "note")
+        static let noteEdge = Baton.Registry.slot(Types.AddNotePayload, "noteEdge")
     }
-    static let Character_notes_4958eb = Baton.Registry.slot(Types.Character, "notes(after:null,first:2)")
-    static let Character_origin = Baton.Registry.slot(Types.Character, "origin")
-    static let Character_species = Baton.Registry.slot(Types.Character, "species")
-    static let Character_status = Baton.Registry.slot(Types.Character, "status")
-    static let Character_type = Baton.Registry.slot(Types.Character, "type")
-    static let Characters_info = Baton.Registry.slot(Types.Characters, "info")
-    static let Characters_results = Baton.Registry.slot(Types.Characters, "results")
-    static let Episode_air_date = Baton.Registry.slot(Types.Episode, "air_date")
-    static let Episode_characters = Baton.Registry.slot(Types.Episode, "characters")
-    static let Episode_created = Baton.Registry.slot(Types.Episode, "created")
-    static let Episode_episode = Baton.Registry.slot(Types.Episode, "episode")
-    static let Episode_id = Baton.Registry.slot(Types.Episode, "id")
-    static let Episode_name = Baton.Registry.slot(Types.Episode, "name")
-    static let FavoritePayload_character = Baton.Registry.slot(Types.FavoritePayload, "character")
-    static let Info_count = Baton.Registry.slot(Types.Info, "count")
-    static let Info_next = Baton.Registry.slot(Types.Info, "next")
-    static let Info_pages = Baton.Registry.slot(Types.Info, "pages")
-    static let Info_prev = Baton.Registry.slot(Types.Info, "prev")
-    static let Location_created = Baton.Registry.slot(Types.Location, "created")
-    static let Location_dimension = Baton.Registry.slot(Types.Location, "dimension")
-    static let Location_id = Baton.Registry.slot(Types.Location, "id")
-    static let Location_name = Baton.Registry.slot(Types.Location, "name")
-    static let Location_type = Baton.Registry.slot(Types.Location, "type")
-    static func Mutation_addNote_14b07d(_ variables: Baton.Variables) -> Baton.Slot {
-        Baton.Registry.slot(Types.Mutation, "addNote(characterId:" + variables.render("characterId") + ",text:" + variables.render("text") + ")")
+    nonisolated enum Character {
+        static let __TestDeferredNotes_notes_connection = Baton.Registry.slot(Types.Character, "__TestDeferredNotes_notes_connection")
+        static let __TestNotes_notes_connection = Baton.Registry.slot(Types.Character, "__TestNotes_notes_connection")
+        static let __TestRecentNotes_notes_connection = Baton.Registry.slot(Types.Character, "__TestRecentNotes_notes_connection")
+        static let __TestTwoPages_notes_connection = Baton.Registry.slot(Types.Character, "__TestTwoPages_notes_connection")
+        static let __typename = Baton.Registry.slot(Types.Character, "__typename")
+        static let created = Baton.Registry.slot(Types.Character, "created")
+        static let episode = Baton.Registry.slot(Types.Character, "episode")
+        static let favorite = Baton.Registry.slot(Types.Character, "favorite")
+        static let gender = Baton.Registry.slot(Types.Character, "gender")
+        static let id = Baton.Registry.slot(Types.Character, "id")
+        static let image = Baton.Registry.slot(Types.Character, "image")
+        static let location = Baton.Registry.slot(Types.Character, "location")
+        static let name = Baton.Registry.slot(Types.Character, "name")
+        static let notes_8d6d15 = Baton.Registry.slot(Types.Character, "notes(after:\"c2\",first:2)")
+        static let notes_a9400e = Baton.DynamicKey(Types.Character, [.literal("notes(after:"), .variable("cursor"), .literal(",first:"), .variable("count"), .literal(")")])
+        static let notes_a7d47e = Baton.DynamicKey(Types.Character, [.literal("notes(after:null,first:"), .variable("size"), .literal(")")])
+        static let notes_969630 = Baton.Registry.slot(Types.Character, "notes(after:null,first:1)")
+        static let notes_4958eb = Baton.Registry.slot(Types.Character, "notes(after:null,first:2)")
+        static let notes_7ca442 = Baton.Registry.slot(Types.Character, "notes(after:null,first:3)")
+        static let notes_d859b7 = Baton.DynamicKey(Types.Character, [.literal("notes(before:"), .variable("cursor"), .literal(",last:"), .variable("count"), .literal(")")])
+        static let notes_94703e = Baton.Registry.slot(Types.Character, "notes(before:null,last:2)")
+        static let notes_f89852 = Baton.Registry.slot(Types.Character, "notes(first:1)")
+        static let notes_29a6d8 = Baton.Registry.slot(Types.Character, "notes(first:2)")
+        static let origin = Baton.Registry.slot(Types.Character, "origin")
+        static let species = Baton.Registry.slot(Types.Character, "species")
+        static let status = Baton.Registry.slot(Types.Character, "status")
+        static let type = Baton.Registry.slot(Types.Character, "type")
     }
-    static func Mutation_removeNote_d28b99(_ variables: Baton.Variables) -> Baton.Slot {
-        Baton.Registry.slot(Types.Mutation, "removeNote(id:" + variables.render("id") + ")")
+    nonisolated enum Characters {
+        static let info = Baton.Registry.slot(Types.Characters, "info")
+        static let results = Baton.Registry.slot(Types.Characters, "results")
     }
-    static func Mutation_rename_04af03(_ variables: Baton.Variables) -> Baton.Slot {
-        Baton.Registry.slot(Types.Mutation, "rename(id:" + variables.render("id") + ",name:" + variables.render("name") + ")")
+    nonisolated enum Episode {
+        static let __typename = Baton.Registry.slot(Types.Episode, "__typename")
+        static let air_date = Baton.Registry.slot(Types.Episode, "air_date")
+        static let characters = Baton.Registry.slot(Types.Episode, "characters")
+        static let created = Baton.Registry.slot(Types.Episode, "created")
+        static let episode = Baton.Registry.slot(Types.Episode, "episode")
+        static let id = Baton.Registry.slot(Types.Episode, "id")
+        static let name = Baton.Registry.slot(Types.Episode, "name")
     }
-    static func Mutation_setFavorite_4ebf00(_ variables: Baton.Variables) -> Baton.Slot {
-        Baton.Registry.slot(Types.Mutation, "setFavorite(favorite:" + variables.render("favorite") + ",id:" + variables.render("id") + ")")
+    nonisolated enum FavoritePayload {
+        static let character = Baton.Registry.slot(Types.FavoritePayload, "character")
     }
-    static let Node___TestNotes_notes_connection = Baton.Registry.slot(Types.Node, "__TestNotes_notes_connection")
-    static let Node___typename = Baton.Registry.slot(Types.Node, "__typename")
-    static let Node_id = Baton.Registry.slot(Types.Node, "id")
-    static let Node_name = Baton.Registry.slot(Types.Node, "name")
-    static func Node_notes_a9400e(_ variables: Baton.Variables) -> Baton.Slot {
-        Baton.Registry.slot(Types.Node, "notes(after:" + variables.render("cursor") + ",first:" + variables.render("count") + ")")
+    nonisolated enum Info {
+        static let count = Baton.Registry.slot(Types.Info, "count")
+        static let next = Baton.Registry.slot(Types.Info, "next")
+        static let pages = Baton.Registry.slot(Types.Info, "pages")
+        static let prev = Baton.Registry.slot(Types.Info, "prev")
     }
-    static let Note___typename = Baton.Registry.slot(Types.Note, "__typename")
-    static let Note_id = Baton.Registry.slot(Types.Note, "id")
-    static let Note_text = Baton.Registry.slot(Types.Note, "text")
-    static let NoteAddedPayload_noteEdge = Baton.Registry.slot(Types.NoteAddedPayload, "noteEdge")
-    static let NoteConnection_edges = Baton.Registry.slot(Types.NoteConnection, "edges")
-    static let NoteConnection_pageInfo = Baton.Registry.slot(Types.NoteConnection, "pageInfo")
-    static let NoteConnection_totalCount = Baton.Registry.slot(Types.NoteConnection, "totalCount")
-    static let NoteEdge_cursor = Baton.Registry.slot(Types.NoteEdge, "cursor")
-    static let NoteEdge_node = Baton.Registry.slot(Types.NoteEdge, "node")
-    static let PageInfo_endCursor = Baton.Registry.slot(Types.PageInfo, "endCursor")
-    static let PageInfo_hasNextPage = Baton.Registry.slot(Types.PageInfo, "hasNextPage")
-    static func Query_character_bca4f9(_ variables: Baton.Variables) -> Baton.Slot {
-        Baton.Registry.slot(Types.Query, "character(id:" + variables.render("id") + ")")
+    nonisolated enum Location {
+        static let __typename = Baton.Registry.slot(Types.Location, "__typename")
+        static let created = Baton.Registry.slot(Types.Location, "created")
+        static let dimension = Baton.Registry.slot(Types.Location, "dimension")
+        static let id = Baton.Registry.slot(Types.Location, "id")
+        static let name = Baton.Registry.slot(Types.Location, "name")
+        static let type = Baton.Registry.slot(Types.Location, "type")
     }
-    static func Query_characters_5517f9(_ variables: Baton.Variables) -> Baton.Slot {
-        Baton.Registry.slot(Types.Query, "characters(page:" + variables.render("page") + ")")
+    nonisolated enum Mutation {
+        static let addNote = Baton.Registry.slot(Types.Mutation, "addNote")
+        static let removeNote = Baton.Registry.slot(Types.Mutation, "removeNote")
+        static let rename = Baton.Registry.slot(Types.Mutation, "rename")
+        static let setFavorite = Baton.Registry.slot(Types.Mutation, "setFavorite")
     }
-    static func Query_node_8f7d08(_ variables: Baton.Variables) -> Baton.Slot {
-        Baton.Registry.slot(Types.Query, "node(id:" + variables.render("id") + ")")
+    nonisolated enum Node {
+        static let __typename = Baton.Registry.slot(Types.Node, "__typename")
+        static let id = Baton.Registry.slot(Types.Node, "id")
+        static let name = Baton.Registry.slot(Types.Node, "name")
     }
-    static func Query_search_954c44(_ variables: Baton.Variables) -> Baton.Slot {
-        Baton.Registry.slot(Types.Query, "search(name:" + variables.render("name") + ")")
+    nonisolated enum Note {
+        static let __typename = Baton.Registry.slot(Types.Note, "__typename")
+        static let id = Baton.Registry.slot(Types.Note, "id")
+        static let text = Baton.Registry.slot(Types.Note, "text")
     }
-    static let RemoveNotePayload_removedNoteId = Baton.Registry.slot(Types.RemoveNotePayload, "removedNoteId")
-    static let SearchResult___typename = Baton.Registry.slot(Types.SearchResult, "__typename")
-    static let SearchResult_dimension = Baton.Registry.slot(Types.SearchResult, "dimension")
-    static let SearchResult_id = Baton.Registry.slot(Types.SearchResult, "id")
-    static let SearchResult_name = Baton.Registry.slot(Types.SearchResult, "name")
-    static let SearchResult_origin = Baton.Registry.slot(Types.SearchResult, "origin")
-    static func Subscription_noteAdded_5f458b(_ variables: Baton.Variables) -> Baton.Slot {
-        Baton.Registry.slot(Types.Subscription, "noteAdded(characterId:" + variables.render("characterId") + ")")
+    nonisolated enum NoteAddedPayload {
+        static let noteEdge = Baton.Registry.slot(Types.NoteAddedPayload, "noteEdge")
+    }
+    nonisolated enum NoteConnection {
+        static let edges = Baton.Registry.slot(Types.NoteConnection, "edges")
+        static let pageInfo = Baton.Registry.slot(Types.NoteConnection, "pageInfo")
+        static let totalCount = Baton.Registry.slot(Types.NoteConnection, "totalCount")
+    }
+    nonisolated enum NoteEdge {
+        static let cursor = Baton.Registry.slot(Types.NoteEdge, "cursor")
+        static let node = Baton.Registry.slot(Types.NoteEdge, "node")
+    }
+    nonisolated enum PageInfo {
+        static let endCursor = Baton.Registry.slot(Types.PageInfo, "endCursor")
+        static let hasNextPage = Baton.Registry.slot(Types.PageInfo, "hasNextPage")
+        static let hasPreviousPage = Baton.Registry.slot(Types.PageInfo, "hasPreviousPage")
+        static let startCursor = Baton.Registry.slot(Types.PageInfo, "startCursor")
+    }
+    nonisolated enum Query {
+        static let character_4a2dfc = Baton.Registry.slot(Types.Query, "character(id:\"a,b\")")
+        static let character_800bca = Baton.DynamicKey(Types.Query, [.literal("character(id:"), .variable("a"), .literal(")")])
+        static let character_ac9202 = Baton.DynamicKey(Types.Query, [.literal("character(id:"), .variable("b"), .literal(")")])
+        static let character_bca4f9 = Baton.DynamicKey(Types.Query, [.literal("character(id:"), .variable("id"), .literal(")")])
+        static let character_8fc9fb = Baton.DynamicKey(Types.Query, [.literal("character(id:"), .variable("where"), .literal(")")])
+        static let characters_498461 = Baton.DynamicKey(Types.Query, [.literal("characters(filter:{\"name\":"), .variable("name"), .literal(",\"status\":\"Alive\"})")])
+        static let characters_5517f9 = Baton.DynamicKey(Types.Query, [.literal("characters(page:"), .variable("page"), .literal(")")])
+        static let charactersByIds_0b7f7b = Baton.DynamicKey(Types.Query, [.literal("charactersByIds(ids:["), .variable("id"), .literal(",\"2\"])")])
+        static let node_8f7d08 = Baton.DynamicKey(Types.Query, [.literal("node(id:"), .variable("id"), .literal(")")])
+        static let search_6286a6 = Baton.Registry.slot(Types.Query, "search(name:\"$0.00\")")
+        static let search_823c67 = Baton.DynamicKey(Types.Query, [.literal("search(name:"), .variable("in"), .literal(")")])
+        static let search_954c44 = Baton.DynamicKey(Types.Query, [.literal("search(name:"), .variable("name"), .literal(")")])
+        static let tokenizer = Baton.Registry.slot(Types.Query, "tokenizer")
+        static let types = Baton.Registry.slot(Types.Query, "types")
+    }
+    nonisolated enum RemoveNotePayload {
+        static let removedNoteId = Baton.Registry.slot(Types.RemoveNotePayload, "removedNoteId")
+    }
+    nonisolated enum SearchResult {
+        static let __typename = Baton.Registry.slot(Types.SearchResult, "__typename")
+        static let id = Baton.Registry.slot(Types.SearchResult, "id")
+    }
+    nonisolated enum Subscription {
+        static let noteAdded_5f458b = Baton.DynamicKey(Types.Subscription, [.literal("noteAdded(characterId:"), .variable("characterId"), .literal(")")])
+    }
+    nonisolated enum Tokenizer {
+        static let count = Baton.Registry.slot(Types.Tokenizer, "count")
+        static let counts = Baton.Registry.slot(Types.Tokenizer, "counts")
+        static let flag = Baton.Registry.slot(Types.Tokenizer, "flag")
+        static let flags = Baton.Registry.slot(Types.Tokenizer, "flags")
+        static let id = Baton.Registry.slot(Types.Tokenizer, "id")
+        static let json = Baton.Registry.slot(Types.Tokenizer, "json")
+        static let jsons = Baton.Registry.slot(Types.Tokenizer, "jsons")
+        static let ratio = Baton.Registry.slot(Types.Tokenizer, "ratio")
+        static let ratios = Baton.Registry.slot(Types.Tokenizer, "ratios")
+        static let strings = Baton.Registry.slot(Types.Tokenizer, "strings")
+        static let text = Baton.Registry.slot(Types.Tokenizer, "text")
+    }
+    nonisolated enum Types_ {
+        static let Baton_ = Baton.Registry.slot(Types.Types, "Baton")
+        static let Protocol_ = Baton.Registry.slot(Types.Types, "Protocol")
+        static let Type_ = Baton.Registry.slot(Types.Types, "Type")
+    }
+}
+
+/// The spreads with `@arguments`, where an owner binds a fragment's scope once.
+nonisolated enum Sites {
+    static let TestDeferredNotesPaginationQuery_testDeferredNotes = Baton.ArgumentSite()
+    static let TestNotesPaginationQuery_testNotes = Baton.ArgumentSite()
+    static let TestNotesQuery_testNotes = Baton.ArgumentSite()
+    static let TestNotesSizedQuery_testNotes = Baton.ArgumentSite()
+    static let TestRecentNotesPaginationQuery_testRecentNotes = Baton.ArgumentSite()
+    static let TestRecentNotesQuery_testRecentNotes = Baton.ArgumentSite()
+    static let TestReservedNames_testNotes = Baton.ArgumentSite()
+    static let TestTwoScopes_testNotes = Baton.ArgumentSite()
+    static let TestTwoScopes_testNotes_2 = Baton.ArgumentSite()
+}
+
+/// Storage keys read on interfaces and unions, each resolved once per concrete type.
+nonisolated enum AbstractSlots {
+    nonisolated enum Named {
+        static let name = Baton.AbstractSlot("name")
+    }
+    nonisolated enum Node {
+        static let id = Baton.AbstractSlot("id")
+    }
+    nonisolated enum SearchResult {
+        static let id = Baton.AbstractSlot("id")
     }
 }

@@ -1,0 +1,6 @@
+{
+  "client:root": {"__typename": "Query", "search(name:\"a\")": {"__refs": ["client:root:search(name:\"a\"):0:Character"]}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:search(name:\"a\"):0:Character": {"__typename": "Character", "name": "Rick Sanchez", "status": "Alive"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

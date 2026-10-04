@@ -14,10 +14,14 @@ import SQLite3
 /// do not. Every row carries the generation, a launch counter, of its last
 /// write or read.
 final class Disk: @unchecked Sendable {
-    /// The row format. A file of another format is discarded.
-    static let format: Int64 = 1
+    /// The row format. A file of another format is discarded. 2: a path key
+    /// under an interface or union ends in the record's concrete type.
+    static let format: Int64 = 2
     /// Marks the file as an image, so a database of another kind is left alone.
     static let applicationID: Int64 = 0x4241_544E
+    /// How many names an image may intern before it starts again: argument
+    /// values make keys, and ids must stay dense, so the table only grows.
+    static let nameLimit = 65_536
     /// Client fields that describe a request in flight, not data.
     static let requestState: Set<String> = ["__isLoadingNext", "__isLoadingPrevious"]
     /// The key prefixes of records that hang off the mutation and the
@@ -35,6 +39,8 @@ final class Disk: @unchecked Sendable {
     private enum Failure: Error {
         /// Not an image this build can read: delete it and start again.
         case unreadable
+        /// A database of another kind: leave it, and leave it for good.
+        case foreign
         /// Anything else, a locked device included: leave it and try later.
         case unavailable
     }
@@ -44,24 +50,35 @@ final class Disk: @unchecked Sendable {
     private let sizeLimit: Int
     private var db: OpaquePointer?
     private var retryAfter: UInt64 = 0
+    /// Set when the file is another program's database: the image stays off
+    /// for the process instead of asking again every second.
+    private var foreign = false
+    /// Whether this process has moved the generation already: a connection
+    /// opened again after a failure is the same launch.
+    private var launched = false
+    /// Whether rows no launch has touched since the one before last have
+    /// been deleted, which the writer's first batch does: three scans that
+    /// opening the file does not wait for.
+    private var aged = false
     /// Set when SQLite reports the file corrupt; it is discarded at the end
     /// of the read or write that found out.
     private var damaged = false
     private(set) var generation: Int64 = 0
 
+    /// The prepared statements of the open connection. They are dropped
+    /// with it, so a statement can never be stepped after its connection
+    /// closed.
+    private struct Prepared {
+        let selectRecord, upsertRecord, useRecord: OpaquePointer
+        let selectRoot, upsertRoot, useRoot: OpaquePointer
+        let upsertFetch, useFetch, upsertName: OpaquePointer
+        let forgetRecord, forgetID: OpaquePointer
+        let begin, beginReading, commit, rollback: OpaquePointer
+    }
+
+    /// Every statement prepared on the connection, finalized when it closes.
     private var statements: [OpaquePointer] = []
-    private var selectRecord: OpaquePointer?
-    private var upsertRecord: OpaquePointer?
-    private var useRecord: OpaquePointer?
-    private var selectRoot: OpaquePointer?
-    private var upsertRoot: OpaquePointer?
-    private var useRoot: OpaquePointer?
-    private var upsertFetch: OpaquePointer?
-    private var upsertName: OpaquePointer?
-    private var begin: OpaquePointer?
-    private var beginReading: OpaquePointer?
-    private var commit: OpaquePointer?
-    private var rollback: OpaquePointer?
+    private var prepared: Prepared?
 
     /// Names by id, and back.
     private var names: [String] = []
@@ -96,6 +113,13 @@ final class Disk: @unchecked Sendable {
     /// started again; any other failure leaves the image off for a second.
     func open() -> Opening {
         if db != nil { return .already }
+        if foreign { return .unavailable }
+        // An image that missed a batch is behind memory and every launch
+        // after: it starts again.
+        if FileManager.default.fileExists(atPath: behind) {
+            discard()
+            try? FileManager.default.removeItem(atPath: behind)
+        }
         let now = DispatchTime.now().uptimeNanoseconds
         if now < retryAfter { return .unavailable }
         for attempt in 0..<2 {
@@ -103,6 +127,9 @@ final class Disk: @unchecked Sendable {
                 return .opened(try connect())
             } catch .unreadable where attempt == 0 {
                 discard()
+            } catch .foreign {
+                foreign = true
+                break
             } catch {
                 break
             }
@@ -128,7 +155,7 @@ final class Disk: @unchecked Sendable {
         let format = try integer("PRAGMA user_version")
         let tables = try integer("SELECT count(*) FROM sqlite_master")
         let fresh = application == 0 && format == 0 && tables == 0
-        if !fresh, application != Disk.applicationID { throw .unavailable }
+        if !fresh, application != Disk.applicationID { throw .foreign }
         if !fresh, format != Disk.format { throw .unreadable }
         // An image that outgrew its limit starts over.
         if let size = (try? FileManager.default.attributesOfItem(atPath: path))?[.size] as? Int, size > sizeLimit {
@@ -154,18 +181,18 @@ final class Disk: @unchecked Sendable {
         }
 
         // A new launch: the app's version decides whether the rows survive,
-        // and rows no launch has touched since the one before last go.
+        // and the generation moves once per process. Rows no launch has
+        // touched since the one before last go in the writer's first batch.
         try exec("BEGIN IMMEDIATE")
         if try text("SELECT value FROM meta WHERE key = 'version'") != version {
             try exec("DELETE FROM records; DELETE FROM root; DELETE FROM fetches; DELETE FROM names")
             try bind("INSERT OR REPLACE INTO meta(key, value) VALUES('version', ?1)") { sqlite3_bind_text($0, 1, version, -1, copied) }
         }
-        generation = try integer("SELECT coalesce((SELECT value FROM meta WHERE key = 'generation'), 0)") + 1
+        let stored = try integer("SELECT coalesce((SELECT value FROM meta WHERE key = 'generation'), 0)")
+        generation = launched ? stored : stored + 1
+        launched = true
         try exec("""
             INSERT OR REPLACE INTO meta(key, value) VALUES('generation', \(generation));
-            DELETE FROM records WHERE used < \(generation - 1);
-            DELETE FROM root WHERE used < \(generation - 1);
-            DELETE FROM fetches WHERE used < \(generation - 1);
             COMMIT
             """)
 
@@ -180,29 +207,44 @@ final class Disk: @unchecked Sendable {
             ids[String(cString: name)] = Int32(names.count)
             names.append(String(cString: name))
         }
-        if !dense { throw .unreadable }
+        if !dense || names.count > Disk.nameLimit { throw .unreadable }
         var times: [String: Double] = [:]
-        try each("SELECT operation, time FROM fetches") { statement in
+        try each("SELECT operation, time FROM fetches WHERE used >= \(generation - 1)") { statement in
             guard let operation = sqlite3_column_text(statement, 0) else { return }
             times[String(cString: operation)] = sqlite3_column_double(statement, 1)
         }
 
-        selectRecord = try prepare("SELECT used, row FROM records WHERE key = ?1")
-        upsertRecord = try prepare("INSERT OR REPLACE INTO records(key, used, row) VALUES(?1, ?2, ?3)")
-        useRecord = try prepare("UPDATE records SET used = ?2 WHERE key = ?1")
-        selectRoot = try prepare("SELECT used, cell FROM root WHERE field = ?1")
-        upsertRoot = try prepare("INSERT OR REPLACE INTO root(field, used, cell) VALUES(?1, ?2, ?3)")
-        useRoot = try prepare("UPDATE root SET used = ?2 WHERE field = ?1")
-        upsertFetch = try prepare("INSERT OR REPLACE INTO fetches(operation, used, time) VALUES(?1, ?2, ?3)")
-        upsertName = try prepare("INSERT OR REPLACE INTO names(id, name) VALUES(?1, ?2)")
-        begin = try prepare("BEGIN IMMEDIATE")
-        beginReading = try prepare("BEGIN")
-        commit = try prepare("COMMIT")
-        rollback = try prepare("ROLLBACK")
+        prepared = Prepared(
+            selectRecord: try prepare("SELECT used, row FROM records WHERE key = ?1"),
+            upsertRecord: try prepare("INSERT OR REPLACE INTO records(key, used, row) VALUES(?1, ?2, ?3)"),
+            useRecord: try prepare("UPDATE records SET used = ?2 WHERE key = ?1"),
+            selectRoot: try prepare("SELECT used, cell FROM root WHERE field = ?1"),
+            upsertRoot: try prepare("INSERT OR REPLACE INTO root(field, used, cell) VALUES(?1, ?2, ?3)"),
+            useRoot: try prepare("UPDATE root SET used = ?2 WHERE field = ?1"),
+            upsertFetch: try prepare("INSERT OR REPLACE INTO fetches(operation, used, time) VALUES(?1, ?2, ?3)"),
+            useFetch: try prepare("UPDATE fetches SET used = ?2 WHERE operation = ?1"),
+            // A plain insert: an id another connection took fails the batch
+            // rather than renaming what every row written with it means.
+            upsertName: try prepare("INSERT INTO names(id, name) VALUES(?1, ?2)"),
+            forgetRecord: try prepare("DELETE FROM records WHERE key = ?1"),
+            forgetID: try prepare("DELETE FROM records WHERE key IN (SELECT name || ':' || ?1 FROM names)"),
+            begin: try prepare("BEGIN IMMEDIATE"),
+            beginReading: try prepare("BEGIN"),
+            commit: try prepare("COMMIT"),
+            rollback: try prepare("ROLLBACK")
+        )
         return times
     }
 
+    /// Closes the connection, so another image may open the file: for a
+    /// sign-out's new environment, and for tests that run one launch after
+    /// another. Work that comes later opens it again.
+    func release() {
+        close()
+    }
+
     private func close() {
+        prepared = nil
         for statement in statements { sqlite3_finalize(statement) }
         statements.removeAll()
         if let db { sqlite3_close_v2(db) }
@@ -215,6 +257,42 @@ final class Disk: @unchecked Sendable {
         typeNames.removeAll()
         slots.removeAll()
         types.removeAll()
+    }
+
+    /// The file whose presence says a batch was lost: the image is behind.
+    private var behind: String { path + "-behind" }
+
+    /// Notes that a batch was lost, written in vain or dropped while the
+    /// file could not be opened, and closes the connection: the next open
+    /// discards the image rather than serve rows older than memory knew.
+    func markBehind() {
+        guard !foreign else { return }
+        FileManager.default.createFile(atPath: behind, contents: nil)
+        close()
+    }
+
+    /// Deletes the file for a sign-out when it is an image, and leaves a
+    /// database of another kind alone; the next work opens a new one.
+    func erase() {
+        if foreign { return }
+        // A file the connection does not hold open is told by its
+        // application id first: it may never have been opened.
+        if db == nil, !holdsAnImage() { return }
+        discard()
+    }
+
+    /// Whether the file at the path is an image, by its application id:
+    /// false when there is no file, or none SQLite can read.
+    private func holdsAnImage() -> Bool {
+        var handle: OpaquePointer?
+        defer { sqlite3_close_v2(handle) }
+        // Read and write, without create: a read-only connection cannot
+        // open a WAL file whose shared memory file is gone.
+        guard sqlite3_open_v2(path, &handle, SQLITE_OPEN_READWRITE | SQLITE_OPEN_NOMUTEX, nil) == SQLITE_OK else { return false }
+        var statement: OpaquePointer?
+        guard sqlite3_prepare_v2(handle, "PRAGMA application_id", -1, &statement, nil) == SQLITE_OK else { return false }
+        defer { sqlite3_finalize(statement) }
+        return sqlite3_step(statement) == SQLITE_ROW && sqlite3_column_int64(statement, 0) == Disk.applicationID
     }
 
     /// Deletes the file and its journal: an image that cannot be read is a
@@ -281,8 +359,7 @@ final class Disk: @unchecked Sendable {
     }
 
     /// Steps a prepared statement that returns no rows.
-    private func run(_ statement: OpaquePointer?) -> Bool {
-        guard let statement else { return false }
+    private func run(_ statement: OpaquePointer) -> Bool {
         let status = sqlite3_step(statement)
         sqlite3_reset(statement)
         if status == SQLITE_DONE { return true }
@@ -294,13 +371,14 @@ final class Disk: @unchecked Sendable {
 
     /// Opens the read transaction a hydration runs in.
     func beginRead() -> Bool {
-        run(beginReading)
+        guard let prepared else { return false }
+        return run(prepared.beginReading)
     }
 
     /// Closes the read transaction. Returns the rows the read found carrying
     /// an older generation, for the writer to stamp.
     func endRead() -> Persistence.Work? {
-        _ = run(commit)
+        if let prepared { _ = run(prepared.commit) }
         defer {
             readRecords.removeAll()
             readRoot.removeAll()
@@ -312,17 +390,18 @@ final class Disk: @unchecked Sendable {
 
     /// Calls `body` with the record's row, if the image has one.
     func record(_ key: String, _ body: (UnsafeRawBufferPointer) -> Void) -> Bool {
-        read(selectRecord, key, body)
+        guard let prepared else { return false }
+        return read(prepared.selectRecord, key, isRecord: true, body)
     }
 
     /// Calls `body` with a root field's cell, if the image has one.
     func rootField(_ storageKey: String, _ body: (UnsafeRawBufferPointer) -> Void) -> Bool {
-        read(selectRoot, storageKey, body)
+        guard let prepared else { return false }
+        return read(prepared.selectRoot, storageKey, isRecord: false, body)
     }
 
-    private func read(_ statement: OpaquePointer?, _ key: String, _ body: (UnsafeRawBufferPointer) -> Void) -> Bool {
-        guard let statement else { return false }
-        return key.withCString { text in
+    private func read(_ statement: OpaquePointer, _ key: String, isRecord: Bool, _ body: (UnsafeRawBufferPointer) -> Void) -> Bool {
+        key.withCString { text in
             sqlite3_bind_text(statement, 1, text, -1, nil)
             defer { sqlite3_reset(statement) }
             let status = sqlite3_step(statement)
@@ -331,8 +410,12 @@ final class Disk: @unchecked Sendable {
                 return false
             }
             guard let bytes = sqlite3_column_blob(statement, 1) else { return false }
-            if sqlite3_column_int64(statement, 0) != generation {
-                if statement == selectRecord { readRecords.append(key) } else { readRoot.append(key) }
+            let used = sqlite3_column_int64(statement, 0)
+            // A row no launch has touched since the one before last is gone,
+            // though the writer's first batch has not deleted it yet.
+            if used < generation - 1 { return false }
+            if used != generation {
+                if isRecord { readRecords.append(key) } else { readRoot.append(key) }
             }
             body(UnsafeRawBufferPointer(start: bytes, count: Int(sqlite3_column_bytes(statement, 1))))
             return true
@@ -341,7 +424,7 @@ final class Disk: @unchecked Sendable {
 
     /// The slot a stored name is on a type, interning it for this process.
     func slot(_ name: Int, on type: TypeID) -> Slot? {
-        guard name < names.count else { return nil }
+        guard name >= 0, name < names.count else { return nil }
         let table = Int(type.raw)
         if table >= slots.count { slots.append(contentsOf: repeatElement([], count: table + 1 - slots.count)) }
         if name >= slots[table].count { slots[table].append(contentsOf: repeatElement(-1, count: names.count - slots[table].count)) }
@@ -355,7 +438,7 @@ final class Disk: @unchecked Sendable {
 
     /// The type a stored name is.
     func type(_ name: Int) -> TypeID? {
-        guard name < names.count else { return nil }
+        guard name >= 0, name < names.count else { return nil }
         if name >= types.count { types.append(contentsOf: repeatElement(nil, count: names.count - types.count)) }
         if let type = types[name] { return type }
         let type = Registry.type(names[name])
@@ -368,41 +451,61 @@ final class Disk: @unchecked Sendable {
     /// Writes everything in one transaction. A failure rolls it back and the
     /// work is lost, which a cache can afford.
     func write(_ work: [Persistence.Work]) {
-        guard !work.isEmpty, db != nil, run(begin) else { return }
+        guard !work.isEmpty, let prepared else { return }
+        guard run(prepared.begin) else {
+            // A file too damaged to begin a transaction in is discarded now,
+            // not at the next read; one that could not begin for another
+            // reason has lost the batch.
+            if damaged { discard() } else { markBehind() }
+            return
+        }
         var good = true
+        if !aged {
+            good = (try? exec("""
+                DELETE FROM records WHERE used < \(generation - 1);
+                DELETE FROM root WHERE used < \(generation - 1);
+                DELETE FROM fetches WHERE used < \(generation - 1)
+                """)) != nil
+            aged = good
+        }
         for item in work {
             switch item {
             case .commit(let records, let root):
-                for snapshot in records { good = put(snapshot) && good }
-                for field in root { good = put(field) && good }
+                for snapshot in records { good = put(snapshot, prepared) && good }
+                for field in root { good = put(field, prepared) && good }
             case .fetched(let operation, let time):
-                good = put(operation, time) && good
+                good = put(operation, time, prepared) && good
             case .used(let records, let root):
-                for key in records { good = use(useRecord, key) && good }
-                for field in root { good = use(useRoot, field) && good }
+                for key in records { good = use(prepared.useRecord, key) && good }
+                for field in root { good = use(prepared.useRoot, field) && good }
+            case .dated(let operation):
+                good = use(prepared.useFetch, operation) && good
+            case .forget(let keys, let ids):
+                for key in keys { good = forget(prepared.forgetRecord, key) && good }
+                for id in ids { good = forget(prepared.forgetID, id) && good }
             case .invalidate:
                 good = (try? exec("DELETE FROM fetches")) != nil && good
-            case .removeAll:
-                good = (try? exec("DELETE FROM records; DELETE FROM root; DELETE FROM fetches")) != nil && good
             }
         }
-        for id in unwritten { good = put(name: id) && good }
-        if good, run(commit) {
+        for id in unwritten { good = put(name: id, prepared) && good }
+        if good, run(prepared.commit) {
             unwritten.removeAll()
         } else {
-            _ = run(rollback)
+            _ = run(prepared.rollback)
+            if damaged { discard() } else { markBehind() }
+            return
         }
         if damaged { discard() }
     }
 
-    private func put(_ snapshot: Persistence.Snapshot) -> Bool {
+    private func put(_ snapshot: Persistence.Snapshot, _ prepared: Prepared) -> Bool {
         let record = snapshot.record
         // What hangs off the mutation and subscription roots by path is a
         // payload, read once by its caller; entities inside it have keys of
         // their own and are written as themselves.
         if record.key.hasPrefix(Disk.mutationPayloads) || record.key.hasPrefix(Disk.subscriptionPayloads) { return true }
         scratch.removeAll(keepingCapacity: true)
-        scratch.append((snapshot.deleted ? 1 : 0) | (record.entityID != nil ? 2 : 0))
+        scratch.append((snapshot.deleted ? 1 : 0) | (record.isEntity ? 2 : 0))
         append(varint: UInt64(name(of: record.type)))
         for index in snapshot.values.indices {
             if case .missing = snapshot.values[index] { continue }
@@ -411,20 +514,19 @@ final class Disk: @unchecked Sendable {
             append(varint: UInt64(name))
             append(snapshot.values[index], error: snapshot.errors?[Int32(index)])
         }
-        return upsert(upsertRecord, record.key)
+        return upsert(prepared.upsertRecord, record.key)
     }
 
-    private func put(_ field: Persistence.RootField) -> Bool {
+    private func put(_ field: Persistence.RootField, _ prepared: Prepared) -> Bool {
         if case .missing = field.value { return true }
         scratch.removeAll(keepingCapacity: true)
         append(field.value, error: field.error)
-        return upsert(upsertRoot, Registry.storageKey(field.slot))
+        return upsert(prepared.upsertRoot, Registry.storageKey(field.slot))
     }
 
     /// Binds the key, the generation and the scratch bytes, and steps.
-    private func upsert(_ statement: OpaquePointer?, _ key: String) -> Bool {
-        guard let statement else { return false }
-        return key.withCString { text in
+    private func upsert(_ statement: OpaquePointer, _ key: String) -> Bool {
+        key.withCString { text in
             scratch.withUnsafeBufferPointer { bytes in
                 sqlite3_bind_text(statement, 1, text, -1, nil)
                 sqlite3_bind_int64(statement, 2, generation)
@@ -434,28 +536,32 @@ final class Disk: @unchecked Sendable {
         }
     }
 
-    private func put(_ operation: String, _ time: Double) -> Bool {
-        guard let upsertFetch else { return false }
-        return operation.withCString { text in
-            sqlite3_bind_text(upsertFetch, 1, text, -1, nil)
-            sqlite3_bind_int64(upsertFetch, 2, generation)
-            sqlite3_bind_double(upsertFetch, 3, time)
-            return run(upsertFetch)
+    private func put(_ operation: String, _ time: Double, _ prepared: Prepared) -> Bool {
+        operation.withCString { text in
+            sqlite3_bind_text(prepared.upsertFetch, 1, text, -1, nil)
+            sqlite3_bind_int64(prepared.upsertFetch, 2, generation)
+            sqlite3_bind_double(prepared.upsertFetch, 3, time)
+            return run(prepared.upsertFetch)
         }
     }
 
-    private func put(name id: Int32) -> Bool {
-        guard let upsertName else { return false }
-        return names[Int(id)].withCString { text in
-            sqlite3_bind_int64(upsertName, 1, Int64(id))
-            sqlite3_bind_text(upsertName, 2, text, -1, nil)
-            return run(upsertName)
+    private func put(name id: Int32, _ prepared: Prepared) -> Bool {
+        names[Int(id)].withCString { text in
+            sqlite3_bind_int64(prepared.upsertName, 1, Int64(id))
+            sqlite3_bind_text(prepared.upsertName, 2, text, -1, nil)
+            return run(prepared.upsertName)
         }
     }
 
-    private func use(_ statement: OpaquePointer?, _ key: String) -> Bool {
-        guard let statement else { return false }
-        return key.withCString { text in
+    private func forget(_ statement: OpaquePointer, _ key: String) -> Bool {
+        key.withCString { text in
+            sqlite3_bind_text(statement, 1, text, -1, nil)
+            return run(statement)
+        }
+    }
+
+    private func use(_ statement: OpaquePointer, _ key: String) -> Bool {
+        key.withCString { text in
             sqlite3_bind_text(statement, 1, text, -1, nil)
             sqlite3_bind_int64(statement, 2, generation)
             return run(statement)
@@ -520,7 +626,7 @@ final class Disk: @unchecked Sendable {
             scratch.append(0)
             return
         }
-        append(varint: UInt64(name(of: target.type) + 1) << 1 | (target.entityID != nil ? 1 : 0))
+        append(varint: UInt64(name(of: target.type) + 1) << 1 | (target.isEntity ? 1 : 0))
         append(target.key)
     }
 

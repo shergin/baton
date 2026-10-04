@@ -1,0 +1,5 @@
+{"data":{"search":[
+  {"__typename":"Character","id":"1","name":"Rick Sanchez"},
+  {"id":"1","name":"Earth (C-137)","dimension":"Dimension C-137","__typename":"Location"},
+  {"__typename":"Episode","id":"1","name":"Pilot"}
+]}}

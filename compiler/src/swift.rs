@@ -1,5 +1,6 @@
 //! Finds GraphQL embedded in Swift source: a marker attribute (`@Fragment`,
-//! `@Query`, `@Mutation`, `@Subscription`) followed by a string literal.
+//! `@Query`, `@Mutation`, `@Subscription`, each also qualified as
+//! `@Baton.Query`) followed by a string literal, plain or raw.
 //!
 //! The literal's text is taken verbatim, with its indentation, so every
 //! character of the GraphQL sits at its exact file position and diagnostics
@@ -294,7 +295,13 @@ impl<'a> Scanner<'a> {
     fn scan_attribute(&mut self) {
         let attribute = self.position();
         self.advance();
-        let identifier = self.read_identifier();
+        let mut identifier = self.read_identifier();
+        // `@Baton.Query` names the same macro as `@Query`.
+        let qualified = identifier == "Baton" && self.peek(0) == Some('.');
+        if qualified {
+            self.advance();
+            identifier = self.read_identifier();
+        }
         let Some(marker) = Marker::from_identifier(&identifier) else {
             return;
         };
@@ -304,17 +311,30 @@ impl<'a> Scanner<'a> {
         }
         self.advance();
         self.skip_whitespace();
-        if self.peek(0) != Some('"') {
+        let mut hashes = 0;
+        while self.peek(hashes) == Some('#') {
+            hashes += 1;
+        }
+        if self.peek(hashes) != Some('"') {
+            // A bare `@Query` without a literal is SwiftData's, which shares
+            // the name and never takes a string first: `@Query(sort:)`,
+            // `@Query(FetchDescriptor<Item>())`. The other markers and
+            // `@Baton.Query` are Baton's alone.
+            if marker == Marker::Query && !qualified {
+                return;
+            }
             self.errors.push(ScanError::MissingLiteral {
                 marker,
                 at: self.position(),
             });
             return;
         }
-        let Some((text, start)) = self.read_literal() else {
+        let Some((text, start)) = self.read_literal(hashes) else {
             return;
         };
-        if text.contains('\\') {
+        // In a raw literal only a backslash followed by its delimiter's hashes
+        // starts an escape or an interpolation.
+        if text.contains(&format!("\\{}", "#".repeat(hashes))) {
             self.errors.push(ScanError::EscapeInLiteral { at: start });
         }
         self.skip_remaining_arguments();
@@ -328,19 +348,32 @@ impl<'a> Scanner<'a> {
         });
     }
 
-    /// Reads the literal at the cursor and returns its verbatim content and the
-    /// file position of the content's first character.
-    fn read_literal(&mut self) -> Option<(String, Position)> {
+    /// Whether the cursor is at a closing delimiter's quotes followed by the
+    /// literal's hashes.
+    fn at_closing(&self, quotes: usize, hashes: usize) -> bool {
+        (0..quotes).all(|offset| self.peek(offset) == Some('"'))
+            && (0..hashes).all(|offset| self.peek(quotes + offset) == Some('#'))
+    }
+
+    /// Reads the literal at the cursor, raw when it opens with `hashes`
+    /// hashes, and returns its verbatim content and the file position of the
+    /// content's first character.
+    fn read_literal(&mut self, hashes: usize) -> Option<(String, Position)> {
         let opening = self.position();
+        for _ in 0..hashes {
+            self.advance();
+        }
         let multiline = self.peek(1) == Some('"') && self.peek(2) == Some('"');
         if !multiline {
             self.advance();
             let start = self.position();
             let begin = self.byte_offset();
             while let Some(character) = self.peek(0) {
-                if character == '"' {
+                if self.at_closing(1, hashes) {
                     let text = self.source[begin..self.byte_offset()].to_string();
-                    self.advance();
+                    for _ in 0..(1 + hashes) {
+                        self.advance();
+                    }
                     return Some((text, start));
                 }
                 if character == '\n' {
@@ -373,14 +406,14 @@ impl<'a> Scanner<'a> {
                     .push(ScanError::UnterminatedLiteral { at: opening });
                 return None;
             }
-            if self.peek(0) == Some('"') && self.peek(1) == Some('"') && self.peek(2) == Some('"') {
+            if self.at_closing(3, hashes) {
                 // The closing delimiter must be the first non-blank on its line;
                 // the content ends before that line's newline.
                 let prefix = &self.source[line_begin..self.byte_offset()];
                 if prefix.trim().is_empty() {
                     let end = line_begin.saturating_sub(1).max(begin);
                     let text = self.source[begin..end].to_string();
-                    for _ in 0..3 {
+                    for _ in 0..(3 + hashes) {
                         self.advance();
                     }
                     return Some((text, start));

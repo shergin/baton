@@ -95,6 +95,18 @@ fn extension(path: &Path) -> &str {
 }
 
 impl Document {
+    /// The schema as a document, so a diagnostic in it is positioned in its
+    /// file like one in a source.
+    pub fn schema(path: &str, text: &str) -> Document {
+        Document {
+            path: PathBuf::from(path),
+            index: 0,
+            start: Position { line: 1, column: 1 },
+            text: text.to_string(),
+            embedded: None,
+        }
+    }
+
     /// Maps a byte offset inside `text` to a position in the host file.
     pub fn position_of(&self, offset: usize) -> Position {
         let offset = offset.min(self.text.len());

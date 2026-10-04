@@ -17,6 +17,40 @@ public struct Slot: Hashable, Sendable {
     public var storageKey: String { Registry.storageKey(self) }
 }
 
+/// A storage key read on whatever concrete type a record has: a field
+/// selected on an interface or union. The slot of each type is resolved on
+/// its first read there, so every later read is two array loads.
+@MainActor
+public final class AbstractSlot {
+    nonisolated public let storageKey: String
+    /// Slot index by `TypeID.raw`; -1 until the type is first read.
+    private var indices: ContiguousArray<Int32> = []
+
+    nonisolated public init(_ storageKey: String) {
+        self.storageKey = storageKey
+    }
+
+    /// The key's slot on `type`.
+    @inline(__always)
+    public func on(_ type: TypeID) -> Slot {
+        let position = Int(type.raw)
+        if position < indices.count, indices[position] >= 0 {
+            return Slot(type: type, index: indices[position])
+        }
+        return resolve(type)
+    }
+
+    private func resolve(_ type: TypeID) -> Slot {
+        let slot = Registry.slot(type, storageKey)
+        let position = Int(type.raw)
+        if position >= indices.count {
+            indices.append(contentsOf: repeatElement(-1, count: position + 1 - indices.count))
+        }
+        indices[position] = slot.index
+        return slot
+    }
+}
+
 /// The process-wide table of types and storage keys. Independently compiled
 /// modules agree on slots because every slot is interned here on first use.
 public enum Registry {
@@ -25,6 +59,8 @@ public enum Registry {
         var typeNames: [String] = []
         var slotIndices: [[String: Int32]] = []
         var slotKeys: [[String]] = []
+        /// The slots of each connection type a plan describes, by `TypeID.raw`.
+        var connections: [ConnectionSlots?] = []
     }
 
     private static let state = Mutex(State())
@@ -56,6 +92,11 @@ public enum Registry {
         state.withLock { $0.typeNames[Int(type.raw)] }
     }
 
+    /// Every type interned so far, by name.
+    static func typeNames() -> [String] {
+        state.withLock { $0.typeNames }
+    }
+
     public static func storageKey(_ slot: Slot) -> String {
         state.withLock { $0.slotKeys[Int(slot.type.raw)][Int(slot.index)] }
     }
@@ -63,5 +104,24 @@ public enum Registry {
     /// How many storage keys the type has so far; records size their values to it.
     public static func slotCount(_ type: TypeID) -> Int {
         state.withLock { $0.slotKeys[Int(type.raw)].count }
+    }
+
+    /// Keeps the slots a plan resolved for a connection type, under the type.
+    static func register(_ slots: ConnectionSlots) {
+        state.withLock { state in
+            let position = Int(slots.connection.raw)
+            if position >= state.connections.count {
+                state.connections.append(contentsOf: repeatElement(nil, count: position + 1 - state.connections.count))
+            }
+            state.connections[position] = slots
+        }
+    }
+
+    /// The slots of a connection type, when a plan has described one of it.
+    static func connectionSlots(of type: TypeID) -> ConnectionSlots? {
+        state.withLock { state in
+            let position = Int(type.raw)
+            return position < state.connections.count ? state.connections[position] : nil
+        }
     }
 }

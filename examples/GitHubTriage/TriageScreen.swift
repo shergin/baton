@@ -106,7 +106,7 @@ struct TriageScreen: View {
         .navigationTitle("Triage")
         .toolbar {
             Button("Refresh", systemImage: "arrow.clockwise") {
-                Task { await triage.refetch() }
+                Task { try? await triage.refetch() }
             }
         }
     }

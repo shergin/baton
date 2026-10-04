@@ -76,6 +76,8 @@ errors stored beside the field, in memory and in the image, and read through
 `Environment.requiredFieldMissing`, or throwing from the accessor;
 `@throwOnFieldError` failing the operation or throwing at the spread, with
 `@semanticNonNull` types under it; `Environment.errorBehavior` for `onError`;
-`Store.reportMissing` for missing data, with zero values from the `required*`
-readers. Still planned: the heal's refetch of the owning operation. This
+`Store.reportMissing` for missing data and `Store.reportUnexpected` for a
+null in a field typed non-null or a value of another kind, with zero values
+from the `required*` readers and one placeholder record per type behind a
+non-null link without data. Still planned: the heal's refetch of the owning operation. This
 section may rot; the rest must not.

@@ -5,6 +5,497 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- A custom scalar is its text: a string's contents, or the bytes of any
+  other token exactly as the server wrote it, so `1.50`, an integer past
+  2^53 and an object or array all read back unchanged. Before, numbers were
+  rounded through `Double`, and objects and arrays were stored as null.
+- Ingest errors instead of wrong values or traps: an `Int` field given a
+  fraction, an exponent or a value outside `Int` fails the response with an
+  `IngestError` (it wrapped, rounded, or trapped), and `Int.min` reads. A
+  null inside a list of scalars is stored as a null element; it failed the
+  whole response. The generated readers, typed as lists of non-optional
+  values, still leave such elements out. A `\u` escape cut short by the end of a string, or a high
+  surrogate followed by an escape that is not a low surrogate, reads as
+  U+FFFD; the first read past the string and the second trapped.
+- Storage keys are built from the arguments, not parsed from text. A
+  string argument holding `$` (`price(format: "$0.00")`) was read as a
+  variable, a lookup argument holding a comma was cut at it, and a list or
+  input object with a variable inside was stored under its own text; an
+  input object's keys were written unquoted and unsorted. Floats in keys are
+  written as the runtime renders a variable. A lookup in `baton.json` whose
+  argument the selection does not pass is a compile error.
+- Plans know types and conditions. The normalization plan was flat: every
+  field of every type condition was expected on every record, so the
+  availability check failed right after an operation's own response for any
+  selection on an interface or union, and the ingest bound a response key to
+  the first field of that name, storing a Location's `label: dimension` in
+  its `name`. The compiler now decides, for each abstract selection, the
+  fields each group of concrete types reads, and turns `@include` and
+  `@skip` into guards the plan settles once per set of variables; the
+  ingest reads an object by its type's variant, and the check, collection
+  and deferred parts follow the same variants.
+- Lenses follow types and conditions. A type condition on an interface
+  emitted `asNode` behind a test of the record's concrete type, so it was
+  always nil; it is now tested against the set of types that satisfy it,
+  emitted once in the shared file, and folds into the parent when every
+  type the parent admits satisfies it. An accessor under `@include` or
+  `@skip` is optional and reads nil, reporting nothing missing, when its
+  condition does not select; `totalCount @include(if: $x)` read 0 and
+  reported missing data. A field selected twice, or a fragment spread
+  twice, emits one accessor: the file did not compile. An aliased spread
+  of a fragment on an interface or union is tested against the types that
+  satisfy it; it was always nil.
+- A field no variables can select, such as one under `@include(if: $x)`
+  and `@skip(if: $x)` at once, is fetched and read under no variables; it
+  was planned as always selected, so the check waited for a field the
+  server never sends. A field the initial part and a deferred one both
+  select is read from the initial payload by its own selection; the
+  deferred copy could come first, and the initial fields under it were
+  dropped.
+- One write path. Everything a batch does, field errors and deletion
+  included, is in its undo log and its net notification: a failed
+  optimistic write to a field no longer loses the server's error on it, an
+  optimistic response that revived a deleted record no longer leaves it
+  revived when it fails, and a server commit under a layer that deletes a
+  record no longer fires every channel of it twice.
+- A deletion is announced to the bodies that hold it. A body that read
+  only a list, or a connection's `nodes`, kept a row for a record
+  `@deleteRecord` removed, because the slot holding the link did not
+  change; the commit that changes whether a record is deleted now notifies
+  every slot that links to it, in one pass over the store (2.2 ms for a
+  commit that deletes one record from 8,965 on an M1 Pro, against 7 µs
+  without the pass). A read of a deleted record's field reports nothing
+  missing.
+- Identity is the key alone. The store indexed entities by bare id as well,
+  last created wins across types, and `@deleteRecord`, `@deleteEdge` and
+  lookups without a type resolved through it: in the Rick and Morty data
+  `Character:1`, `Location:1` and `Episode:1` coexist, and the index named
+  the episode. The index is gone. `@deleteRecord` deletes the one live
+  record of any type with the id, and when several types have it deletes
+  nothing and calls the new `Store.reportAmbiguousIdentity` (debug builds
+  print); `@deleteEdge` drops the edges whose node has the id; a lookup
+  without a type probes the field's possible types with the same rule. A
+  lookup the image cannot answer no longer leaves an empty record behind.
+  `Store.existing(id:)` is removed. An interface is keyed by id when the
+  types that implement it have one, as a union is. An object under an
+  interface or union that is keyed by its path is a record per concrete
+  type; before, a payload of another type at the same path wrote its fields
+  into the first type's record. The image's format moved to 2, so an image
+  an earlier version wrote is discarded at the next launch.
+- `baton.json` is checked: each lookup's field, argument and `type` against
+  the schema, and an unknown key is an error.
+- A superseded fetch does not commit. A response that arrived, or was still
+  being read, after a refetch replaced its fetch landed after the newer one
+  when the transport did not hear the cancellation. Ingest now runs in the
+  fetch's own task, so cancellation and priority reach it. A mutation's
+  request runs apart from its caller's task, and its payload commits
+  whoever stopped waiting, because the server applied it; with
+  `URLSessionTransport` a cancelled caller cancelled the request, and the
+  payload, and an optimistic layer with it, was lost.
+- `refetch()` on an operation value and on its handle is `async throws`:
+  a refetch that fails throws its error, and the data on screen stays. It
+  was dropped before. Breaking: a call site needs `try`.
+- `phase` changes only when it changes. A fetch that changed nothing
+  assigned an equal `.ready` and re-ran every body that read the phase; a
+  ready handle now stays as it is, and so does a failure on the same field
+  errors. A `@throwOnFieldError` or bubbling operation's phase follows any
+  commit that changes a field error, a null, a link or a deletion in the
+  store, not only its own fetch, and a parked one is settled again when a
+  view attaches it. Both read the same errors: the operation's own
+  selection's, as Relay's reader of the operation does (an error inside a
+  spread is the fragment's to weigh), and those its last response carried
+  that no field holds. `.networkOnly` no longer sends a handle another
+  view shows back to `.loading`, nor reads the store, and the image, to
+  decide. A preload's fetch serves the first attach while its data is
+  fresh; the attach made a second request when the preload had finished.
+- A field error under a parent the server nulled lands on that parent. The
+  walk that places an error left a `switch` where it meant to stop, so an
+  error at `character.origin.name` with `origin` null was stored on
+  `character.name`. An error keeps its whole path, and one with no path, or
+  a path that names nothing selected, is kept in
+  `ChangeSet.unplacedErrors` and counts as uncaught for
+  `@throwOnFieldError`; before, it was dropped.
+- Generated code states its isolation: `Types`, `Slots` and every generated
+  type are `nonisolated`, readers stay `@MainActor`, so a target built with
+  the Xcode template's default of main-actor isolation compiles them (it
+  failed on `static let plan`).
+- The compiler comes with the package. A package that depends on Baton
+  downloads the compiler bundle its release published, named by checksum in
+  `Package.swift`; a checkout that built its own with
+  `scripts/build-compiler.sh` runs that one (`BATON_COMPILER=local` or
+  `release` overrides the choice). The release workflow builds the bundle
+  for both Mac architectures and writes the release commit.
+- A handle outlives its environment: a view that releases its handle after
+  the environment is gone no longer traps; the release does nothing.
+- A damaged image is a miss, never a crash. A file damaged under the open
+  connection could leave a read stepping a statement already finalized; a
+  row with a name id past any table, a link that names no type, or lists
+  nested in lists trapped or recursed without bound. Such a row is used as
+  far as it reads.
+- Each slot is its own invalidation channel. A record had sixteen, so a
+  body woke for a change to a field sixteen slots from one it read; on the
+  query root, where each field with arguments is a slot, a screen woke for
+  root fields other screens fetched (four wakes of an unrelated root-field
+  reader in the bench, now none). A tracked read costs about 620 ns against
+  560 on an M1 Pro; an untracked read is unchanged at 29 ns.
+- A schema whose root types have other names, such as `QueryRoot` or
+  `query_root`, works: the compiler interns them by the names the store's
+  root records have, `Query`, `Mutation` and `Subscription`, as Relay's
+  root record is a `__Root` in any schema. Before, the root fields' slots
+  belonged to the schema's type and were written into a record of another.
+  A schema that renames a root and also has a type of that root's store
+  name, or whose renamed root implements an interface or belongs to a
+  union, is an error. `Store(rootType:mutationType:subscriptionType:)` is
+  removed.
+- Reads never write. A lens read of a root field that was never fetched
+  resolved its lookup and wrote the link, notifying, inside the body that
+  read it. The availability check binds a lookup before a handle is ready,
+  as it did; a lens read of a missing link now reads nil and reports it.
+  The `lookup:` parameters of `Anchor.linked`, `requiredLinked` and
+  `throwingLinked` are removed. See
+  [the decision](docs/decisions/lookups-bind-in-the-check.md).
+- Readers say what they could not read. A `required*` reader that finds a
+  null reports it through the new `Store.reportUnexpected`, and one that
+  finds no value reports the miss; both still return the zero value. A
+  value of another kind than the reader's reads nil and is reported; it
+  was nil silently. A `@required` field the store never received is
+  reported missing before its lens bubbles. A non-null link without a
+  record reads one placeholder per type, so the fields below it report
+  nothing a second time; a record was allocated per read. A `@catch` on a
+  non-null list reports a null as the other readers do.
+- A field error inside a type condition, `... on Character { name }` under
+  an interface, counts for `@throwOnFieldError` and `@catch` when the
+  record is of the type; the lens's error scan skipped the condition.
+- A `@required` link to a record `@deleteRecord` removed is null, as every
+  other read of the link is: the lens bubbles, a `THROW` collects the
+  error, and an operation that bubbles to its root fails. The lens read a
+  blank record and the operation stayed ready.
+- A connection's `nodes` builds its lenses in one pass instead of an array
+  of anchors mapped into a second one: 110 µs for 2,100 nodes against 124
+  µs on an M1 Pro.
+- A field selected on an interface or union reads through an
+  `AbstractSlot`, which resolves its key once per concrete type: 22 ns per
+  untracked read against 56 ns, which took the registry's lock and hashed
+  the key on every read. The `key:` readers of `Anchor` are removed.
+- Keys with variables and fragment arguments are resolved once per owner,
+  Relay's fragment owner: the scope a lens reads in, which a handle makes
+  once and keeps. A root field with a variable argument rendered its key,
+  took the registry's lock and hashed it on every read, 232 ns; it reads
+  in 28 ns, against 25 ns for the untracked read of a field with a constant
+  key. A spread with `@arguments` built two dictionaries per read and gave
+  its child a scope that never compared equal to the last: 453 ns for the
+  read and one variable of the child's scope, 45 ns now, and the spread
+  alone makes its lens in 10 ns. An
+  `Anchor` is a record, an owner and the record it was reached from, and
+  two are equal when those are the same objects. Breaking for code that
+  builds anchors: `Anchor(record:owner:parent:)` replaces the `parent:`
+  form, and `binding` takes the spread's `ArgumentSite`.
+- The ingest keeps the last value per field. An entity the response names
+  at many paths was written once per appearance and the commit picked the
+  winners on the main actor, taking the registry's lock per record; the
+  ingest now groups the change set by record, one entry per slot, off the
+  main actor. On an M1 Pro, a commit of the fixture's unchanged payload
+  takes 152 µs against 182, a commit that changes one field 154 µs against
+  185, and the ingest 2.95 ms against 2.78. Placing field errors scans the
+  record's entries instead of indexing every entry.
+- A commit compares a list where it is stored before building the new
+  one, so a list that did not change allocates nothing: the fixture's
+  unchanged payload commits in 133 µs against 152.
+- A plan resolves once where it can. A handle's fetch uses the resolution
+  the handle holds, a selection with no variable below it resolves once
+  and keeps the result, and each field's response key bytes and fixed key
+  are taken when the static plan is built. Resolving the fixture's plan for
+  another page takes 0.69 µs against 8.5 µs without the kept resolutions.
+- A subscription frame, an incremental part's envelope and the `errors`
+  array are read by a scanner of the response bytes alone; each built the
+  plan-driven cursor and its 48 scratch buffers. A 69-byte frame reads in
+  375 ns against 2.21 µs.
+- A small response costs what it is. The change set reserved room for
+  32,768 entries whatever the response, the cursor made 48 scratch buffers
+  before reading a byte, and the change set the ingest returned was copied
+  on its first append. Reservations now follow the response's size, a
+  buffer is made when the walk first reaches its depth, and the change set
+  is built where it is filled: a 64-byte mutation payload ingests in 2.4 µs
+  against 4.5 µs.
+- A floating-point number is read where it lies in the response; each one
+  was copied into a new array first, and a number the plan skips was
+  parsed.
+- A mutation's root fields are keyed without their arguments. Each
+  distinct input numbered a permanent slot on `Mutation`, named by the
+  input's text; now a field is keyed by its name, or by its alias when it
+  has one. The store dumps under `spec/` changed accordingly. The data a
+  `mutate` returns is the latest payload of its field.
+- The multipart reader drops a preamble, which it returned as a first
+  part, lets go of each part once its delimiter is read instead of keeping
+  the whole response, and reads a part without headers. It scans the
+  chunks it is given rather than a byte at a time: 978 KB of 20 parts in
+  16 KB chunks parse in 0.50 ms against 14.6 ms.
+- The compiler emits `Types.schemaDigest`, the MD5 of the schema's text, for
+  an app to pass as its image's `version`: an image written under another
+  schema is discarded. The version is the app's to pass, because generated
+  constants are made on first use and nothing has made one when the file
+  opens.
+- A deferred fragment the image holds only half reads absent, and its
+  operation fetches. A record read from the image holds every cell of its
+  row, a deferred fragment's link among them, while the records behind it
+  may be gone, and the check passes over deferred fields: the fragment
+  read present and empty. The deferred fields are now checked apart, in
+  memory and then in the image; one whose records are not whole is
+  cleared, unless the initial part selects the same field, whose data
+  stays, and a store-or-network attach fetches while the initial part
+  renders.
+- An image that lost a batch, written in vain or dropped while the file
+  could not open, is discarded at the next open; it served rows older
+  than memory had known, a deleted record among them.
+- An edit the store cannot make in memory makes the image forget what it
+  would have changed. An edge directive on a connection the store held
+  only in the image was dropped, and an insert into the empty record a
+  link had made wrote a connection of one edge over the image's; a
+  `@deleteRecord` of a record only the image held left it there, to come
+  back at the next launch. The connection, or every record with the id,
+  is dropped from the image and read as missing until a response gives
+  it again, so the screen fetches.
+- A read of the image writes nothing first. The availability check wrote
+  the writer's whole queue on the main actor before reading, and every
+  launch's first reads queued stamps that the next check then wrote there.
+  A batch being written lands before a read takes the file, and the
+  records of a batch still queued, with those its root fields link to, are
+  kept by the collector until written, so a read never meets a row older
+  than memory held.
+- Data read every launch keeps its age. A fetch time was kept only by the
+  fetch that wrote it, so data an app read from the image at every launch
+  without fetching went stale at every second launch; a launch that reads
+  a fetch time now keeps it for the next.
+- `Store.check` says where its answer came from: `.memory`, `.image` or
+  `.miss`. A handle took the image's part from a change in a global
+  counter, which missed the root's fields and records an earlier check had
+  filled, so data from the image without a fetch time could read as fresh.
+  `Store.hydratedRecords` is no longer public. Breaking: `check` returned a
+  `Bool`.
+- `removeAll()` deletes the image's file. It queued deletes that a failed
+  open dropped and a failed batch rolled back, and it kept the interned
+  names, which hold argument values; work queued before it is dropped
+  too. A sign-out releases the old environment's handles, removes the
+  image and makes a new environment.
+- `Persistence.close()` writes what is queued and closes the file, so a new
+  environment can take the image over, as at a sign-out.
+- Opening the image scans nothing. The rows no launch has read since the
+  one before last were deleted at open, three scans the first frame
+  waited for; a read now treats them as gone and the writer's first batch
+  deletes them. A database of another kind at the image's path turns the
+  image off for the process instead of being opened again every second.
+  The generation moves once per process, not per connection, names are
+  written with a plain insert, so a second connection that took an id
+  fails its batch instead of renaming every row written with it, and an
+  image past 65,536 names starts again.
+- One `invalidate`: `Environment.invalidate()`. `Store.invalidate()`, which
+  marked memory stale but left the image's fetch times, so data read back
+  from the image counted as fresh, is internal and does both.
+- Diagnostics point where they are. An error in the schema is positioned
+  in the schema file; it printed `1:1`. Related places print as `note:`
+  lines, and a message Relay writes over several lines prints on one. A
+  state of Relay's programs the lowering relies on never meeting is an
+  internal error at the place it was met, where it lowered into an empty
+  plan.
+- A linked field named `type`, `self`, `protocol` or `any` gets a nested
+  lens with `Lens` after its name; it emitted `struct Type` or `struct
+  Self`. A field named or aliased `anchor` or `recordID`, which every lens
+  has for itself, is a compile error that asks for an alias.
+- Generated slots are nested per type, `Slots.Character.name`; a type's
+  name and a field's ran together, so `A_b.c` and `A.b_c` were both
+  `Slots.A_b_c`.
+- A variable named like a Swift keyword, `$where` or `$in`, is escaped in
+  the operation value; it emitted `public var where`.
+- A directive Baton gives no meaning to is a compile error at the
+  directive, by place: `@inline`, `@relay(plural:)`, `@relay(mask: false)`,
+  `@raw_response_type`, `@preloadable` and `@stream` compiled through
+  Relay's transforms and did nothing, or, for `mask: false`, read unmasked
+  data that Baton has no word for. A marker holds exactly one definition
+  of its own kind: `@Fragment("query …")` and two fragments under one
+  `@Query` compiled.
+- A persisted id is the MD5 of the operation's text as the app holds it.
+  The hash took the printed text with its trailing line break, which the
+  emitted `text` drops, so no text the app held matched its id. The ids
+  change.
+- `onError` is decided at compile time: `"onError"` in `baton.json`, sent
+  with every operation the target compiles. Under `NULL` the fields the
+  schema types non-null are typed by their semantic nullability, so an
+  accessor no longer reads `""` or `0` for a field an error nulled.
+  `Environment.errorBehavior`, a switch at run time that changed what the
+  compiled types meant, is removed.
+- The default fetch policy is `FetchPolicy.default`, `.storeOrNetwork`, as
+  Relay's queries default to: the store answers when it can. It was
+  `.storeAndNetwork`, spelled in five places, so every attach of every
+  screen made a request. Breaking for code that relied on that default:
+  name `.storeAndNetwork`. `Environment.releaseBufferSize` is set at init
+  and fixed after.
+- The data a mutation returns stays readable. Nothing kept its payload
+  alive, so after the next collection it read nil; the environment now
+  keeps the completed mutation as a root, and its data lives until later
+  mutations push it out.
+- Kinds are types. An operation value conforms to `Query`, `Mutation` or
+  `Subscription`, each refining `Operation`, and each API takes only its
+  kind: `handle(for:)`, `preload`, `fetch` and `@Query` queries, `mutate`
+  and `@Mutation` mutations, `subscriptionHandle` and `@Subscription`
+  subscriptions. A `@Query` holding a mutation compiled, ran on attach and
+  wrote the mutation root's slots into the query root. A subscription
+  value carries its handle as a query value does; it found it in a table
+  of the whole process, keyed by the value, which equal values in two
+  environments shared. Breaking: `OperationKind` and `kind` are removed,
+  and code generic over operations names the kind it needs.
+- A subscription survives a bad event. An event with errors and no data
+  ended the subscription for good; it now sets `error` and the stream goes
+  on, and the next good event clears it. `retry()` opens a stream the
+  server or the socket ended. A stream that a newer one replaced no longer
+  closes the newer one's state when it ends. The WebSocket transport reads
+  an `error` frame's GraphQL errors as the messages, where it showed the
+  frame's text, and closes the socket when its last subscription ends.
+- Incremental delivery reads all of the format. A part's `subPath` places
+  its data below the announced path, its own `errors` land on the fields
+  they name, and an announced part that `completed` with errors puts them
+  on the fields it would have filled, where `@catch` reads them; all were
+  skipped. A part with `hasNext: false` ends the stream, where the fetch
+  waited for the connection to close. Later parts are parsed and
+  normalized off the main actor, and the first part's announcements are
+  read in the pass that ingests it rather than parsed a second time on
+  the main actor.
+- A deferred response is fetched when its stream completes, and its fetch
+  time is stamped then; it was stamped at the first part, as if the whole
+  response had come. A stream that breaks after the first part leaves no
+  fetch time, and the deferred parts it lacks make the next store-or-network
+  attach fetch again; the first part still renders at once.
+- `URLSessionTransport` reads an incremental response from its data task's
+  own delegate, in the chunks the loading system delivers; it iterated the
+  body a byte at a time. The bench's 978 KB response reads in 1.2 ms
+  against 6.1 ms.
+- `@defer` in a mutation or a subscription is a compile error. It compiled,
+  and the response was read as one part.
+- The ingest takes a type's name once per selection rather than from the
+  registry, under its lock, for every entity and path key, and reads a
+  list of links into a buffer kept per depth rather than a new array per
+  list.
+- The compiler reads a marker qualified by the module, `@Baton.Query`,
+  and raw string literals (`#"""` to `"""#`), in which only a backslash
+  followed by the literal's hashes is an escape. A bare `@Query` whose
+  first argument is not a string literal, such as SwiftData's
+  `@Query(sort:)` or `@Query(FetchDescriptor<Item>())`, is that other macro
+  and is left alone; it was an error. The other markers and `@Baton.Query`
+  still want a literal. The plugin hands the compiler every file that names
+  a marker.
+- A `.graphql` or `.gql` file in a target writes its own output; its
+  documents compiled and their lenses were never written. Outputs are named
+  by the source's path in the target, so `Thing.swift` and `Thing.graphql`,
+  or two files of one name in two directories, no longer write one file;
+  `batonc generate --out` names them the same way. A `Baton.swift` at the
+  target's root that declares GraphQL, whose output would be the shared
+  `Baton.baton.swift`, is an error naming it; the shared file overwrote its
+  output, or the build failed on two producers of one file. A document with
+  an error writes nothing, where every output was overwritten with a stub,
+  and a file holding GraphQL that no output is named for is an error.
+- Each `batonc` command takes only its own options, and any other is an
+  error naming the ones it takes: `--schem x` was ignored, and the schema
+  then came from wherever else it could.
+- The check that a marker's property is typed as its document's generated
+  type finds the definition by its file and its place among the file's
+  documents. It searched the document's text for the longest known name, so
+  a query that spread `HomeDetail_character` was taken for the operation
+  `HomeDetail`. A subscription's property typed `.Action` is now warned
+  about; only a mutation's may be.
+- A parked `@throwOnFieldError` or bubbling handle that was ready is
+  settled again when a view attaches it. A commit made while it was parked
+  that put a field error or a null into its selection left it ready; only
+  a failed one was settled.
+- The first part of a deferred response settles the phase by the errors
+  with no path that part carried. It read the last response's, so a
+  `@throwOnFieldError` operation whose first part carried one rendered
+  ready until the stream completed, and stayed ready when the stream broke
+  after it; one whose last response carried one stayed failed until a
+  clean response completed.
+- A `@throwOnFieldError` operation failed by an error with no path fetches
+  again when a view attaches it under `storeOrNetwork`. No record holds
+  such an error, so no commit could clear it, and the failure stayed until
+  `retry()`. A failure on field errors or a `@required` null, whose data is
+  in the store, goes stale as ready data does, so `invalidate()` and the
+  expiration refetch it, and a refetch that fails at the transport leaves
+  it as it leaves ready data; `isStale` was false for every failure.
+- `Environment.fetch(_:)` of a `@throwOnFieldError` operation throws the
+  field errors its handle fails on. It threw for every uncaught error the
+  response placed, one inside a spread among them, so the fetch threw where
+  the handle was ready.
+- A stream a retry replaced leaves the new one's `error` alone. A bad
+  event the old stream was still reading when `retry()` ran set its errors
+  on the handle, and the new stream showed them until its first good event.
+- A subscription whose transport ends its stream with a `CancellationError`
+  of its own ends: `isActive` is false and the next `retain()` opens it
+  again. The handle stayed active over a stream that had ended, and no
+  retain could reopen it short of `retry()` or a full release.
+- Completed mutations take no place in the release buffer. Each one
+  took a place of its own, so ten mutations pushed out the query of a
+  screen the user had left, and going back to it loaded and fetched again.
+  The environment keeps them apart, one per operation value and as many as
+  `releaseBufferSize`, and one pushed out is collected at once; its records
+  stayed until some unrelated release scheduled a collection.
+- A subscription that opens the WebSocket just after the last one closed
+  it keeps its socket. The closed socket's read, failing as it closed,
+  ended whichever socket was current, and the new subscription failed with
+  a cancellation. Each socket's frames and end now concern that socket
+  alone, a socket is not closed while a subscription is opening it or
+  starting on it, and the one that opens it no longer waits for an
+  acknowledgement that came, or a socket that failed, while its
+  `connection_init` was on the way.
+- A subscription whose reader goes away before the server acknowledges
+  the connection leaves nothing behind: it stops waiting for the
+  acknowledgement, and the socket closes when no other subscription is on
+  it or starting. The socket stayed open with no subscription on it until a
+  later one ended, and without an acknowledgement the subscription's start
+  waited for good.
+- A `@required(action: LOG)` field below a placeholder logs nothing. Reads
+  under a placeholder report nothing, since the non-null link above it was
+  reported missing, but a LOG field there still told
+  `Environment.requiredFieldMissing`, naming the placeholder's key.
+- Floats read as JSON writes them whatever the locale. They were read by
+  the thread's locale, in place in the response, so under one with a
+  decimal comma `0.25` read as 0, `[1,5]` as `[1.5, 5]`, and a response cut
+  off in digits was read past its end; they are read in the C locale now,
+  and never past the number the scan found.
+- A deferred part the server could not deliver fails an operation the
+  same however many errors it sent. Each error after the first was
+  unplaced, so with two a part whose fields are all under `@catch` failed a
+  `@throwOnFieldError` fetch and handle, and a spread's part failed a
+  handle though the spread's fragment weighs its own errors. The errors
+  count as uncaught now only when a field the part would have filled is
+  under no `@catch`; a part with no field on its record's type leaves them
+  all unplaced, where it dropped the first.
+- A fragment on the mutation type reads the payload. Its fields kept their
+  arguments in their keys while the mutation wrote them without, so a
+  mutation that spread it read nil; they are keyed as the mutation's own
+  root fields are.
+- Of two fields whose lenses would take one name, the second is checked
+  through its own lens. Its lens is numbered, `TypesLens2` beside a
+  `TypesLens`, but `fieldErrors` and `satisfied` named it again without the
+  number and checked the first field's lens, so a field error or a missing
+  `@required` field in the second went unseen.
+- A linked field named `mainActor`, `double` or `optional` gets a nested
+  lens with `Lens` after its name, as `type` and `string` do. Its lens hid
+  the attribute on every accessor, the `Double` a `Float` field reads as,
+  or the `Optional` a caught spread is wrapped in, and the generated code
+  did not compile. The names held back are every type and attribute a
+  lens spells unqualified, and Swift's own.
+- An edge directive's commit looks no key up by name. Each edit took the
+  registry's lock and hashed `edges`, `node`, `cursor` and
+  `__connection_next_edge_index` several times; it now edits the
+  connection by the slots its plans resolved, which the registry keeps
+  under the connection's type. A directive that names a record no
+  connection field made, or inserts an edge of another type than the
+  connection's edges, leaves it alone; it wrote edges into the record, or
+  an edge the connection's readers read by another type's slots.
+- The docs say what runs on the main actor: reads, commits, the
+  availability check with its reads of the image, collection, and the
+  normalization of an optimistic response. The vision, the store principle
+  and the README said collection and all normalization ran off it; a
+  decision record now says why they do not, with the numbers that would
+  move the check and collection.
+
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 
 The store outlives the process: an image on disk, written behind every

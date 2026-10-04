@@ -18,7 +18,11 @@ Swift source or a `.graphql` file; compiles to a [lens](#generated) type.
 
 **Operation.** GraphQL: a query, mutation or subscription. Here: assembled by
 the compiler from the fragments spread into it; one per screen; compiles to a
-variables type, a root lens, a [plan](#compiler) and a persisted id.
+variables type, a root lens, a [plan](#compiler) and a persisted id. The
+three kinds are three protocols refining `Operation`, in GraphQL's words:
+`Query`, read through a handle; `Mutation`, called as an
+[action](#generated); `Subscription`, a stream of events into the store.
+Each API takes only its kind.
 
 **Spread.** GraphQL: `...Name` inside a selection. Here: compiles to a named
 accessor on the parent lens that returns the child fragment's lens, optional
@@ -29,9 +33,9 @@ verbatim.
 **Fragment arguments.** Relay: `@argumentDefinitions` and `@arguments`. Here:
 the same directives. The compiler inlines them in the normalization plan and
 the operation text, as Relay does; the spread's accessor binds them into the
-child lens's scope over the parent's variables (the passed literal or
-variable, else the default, else null), and storage keys with fragment
-variables resolve against that scope.
+child lens's [owner](#generated) over the parent's variables (the passed
+literal or variable, else the default, else null), once per parent owner,
+and storage keys with fragment variables resolve against that scope.
 
 **Refetchable fragment.** Relay: `@refetchable(queryName:)`, a fragment the
 compiler generates a query for. Here: the same; the lens gets `refetch()`,
@@ -61,7 +65,9 @@ and reads errors as null.
 operation, the policy under which `@semanticNonNull` fields are typed
 non-null. Here: a fragment's spread accessor is `get throws` and throws
 `FieldErrors` for an uncaught error inside; an operation with an uncaught
-field error is `.failed(FieldErrors)` with its data in the store. Semantic
+field error in its own selection, or one its response carried without a
+field to hold it, is `.failed(FieldErrors)` with its data in the store. An
+error inside a spread is the fragment's to weigh, as in Relay. Semantic
 non-null fields read non-optional under either, and inside `@catch`.
 
 **Deferred fragment.** GraphQL: `...F @defer(label:)`, a fragment the server
@@ -76,15 +82,41 @@ properties of an [operation value](#generated).
 ## Generated
 
 **Lens.** Baton's word. The typed, read-only view a fragment or operation
-root compiles to: a record reference (and a context when variables are
-involved) with one accessor per declared field. Relay has two words,
-fragment reference and fragment data, for what is one value here; "reader"
-is Relay's name for machinery and "view" is SwiftUI's. See
+root compiles to: a record reference and a context, its owner, with one
+accessor per declared field. Relay has two words, fragment reference and
+fragment data, for what is one value here; "reader" is Relay's name for
+machinery and "view" is SwiftUI's. See
 [A fragment is a lens](principles/fragment-is-a-lens.md).
 
+**Owner.** Relay: the fragment owner, the request whose variables a fragment
+reference is read with. Here: the scope a lens reads in, one operation's
+variables or a fragment's arguments bound over them, carried by the lens's
+anchor beside its record. A handle makes one owner and keeps it; a storage
+key with variables is resolved once per owner, and a spread with arguments
+binds its scope once per owner, so later reads render, hash and allocate
+nothing.
+
+**Anchor.** Baton's word. Where a lens reads: its record, its
+[owner](#generated), and the record it was reached through, which a
+connection needs for its owner's id. Relay's fragment reference carries a
+record id and an owner; an anchor holds the record itself. Two anchors are
+equal when the three are the same objects. A handle makes the root anchor
+its data reads from, as `mutate` does for the data it returns, and
+generated accessors derive every anchor below it.
+
 **Operation value.** A `Hashable` struct of an operation's variables, the
-thing a parent constructs and a navigation path carries. Inside a view it
-resolves to a handle exposing `phase`, `data`, `refetch`, `retry`.
+thing a parent constructs and a navigation path carries. Inside a view a
+query value resolves to a handle exposing `phase`, `data`, `refetch`,
+`retry`, and a subscription value to one exposing its events; the handle
+travels with the value its storage hands out.
+
+**Operation handle.** Relay: the query reference a loader hands out, and
+the request the environment shares among equal fetches. Here:
+`OperationHandle`, the live side of a query value, made by the environment
+and shared by equal values: its phase, the fetch in flight,
+`isRefreshing`, `fetchTime`, and its place among the store's roots while
+retained or in the release buffer. `SubscriptionHandle` is the same for a
+subscription: the stream held open, its events, its last error.
 
 **Phase.** The state of a resolved operation: loading, ready (with
 `isRefreshing`), or failed. Always synchronously readable; previous data
@@ -102,23 +134,32 @@ exposes `isInFlight`. `@Mutation("…") var star: StarMutation.Action`.
 object identified by typename plus key, holding interned slots, per-field
 errors and type-membership bits. Its values are sized by what was written,
 not by how many storage keys the type has. A record `@deleteRecord` removed
-is *deleted*: links to it read as null, lists skip it, its observers are
-told, and a payload that names it again revives it. Telling the bodies that
-hold a link to it is *(planned)*; see
+is *deleted*: links to it read as null, lists skip it, the bodies that read
+its fields and those that hold a link to it are told, and a payload that
+names it again revives it, told the same way; see
 [A deletion is announced by its commit](decisions/deletion-is-announced-by-its-commit.md).
 
 **Key.** The configured identity fields of a type (default `id`), combined
-with the typename. Objects without a key get a path-based client id, as in
-Relay. The store also indexes entities by id alone, for lookups without a
-type (`node(id:)`).
+with the typename: `Type:id`. Objects without a key get a path-based client
+id, as in Relay; under an interface or union the path ends in the record's
+concrete type. The store has no index by id alone: a lookup without a type
+(`node(id:)`) and `@deleteRecord` probe `Type:id` for each possible type,
+and act only when exactly one live record has the id.
 
 **Storage key, slot.** Relay: a field name plus its serialized arguments,
 the key under which a value is stored. Here: computed by the compiler and
 emitted as a constant; the process numbers each key on first use, and a
 record stores the value at that number, so a read through a constant hashes
-nothing. Resolving keys with variables, and fields read through an interface
-or union, once rather than on every read is *(planned)*. See
+nothing. A field read through an interface or union reads an *abstract
+slot*: its key's slot on each concrete type, resolved on that type's first
+read. A key with variables is resolved once per [owner](#generated). See
 [Slots are numbered by the process](decisions/slots-are-numbered-by-the-process.md).
+
+**Invalidation channel.** Baton's word; Relay tells a fragment's subscribers
+when a record it read changes. Here: the Observation key path a read of a
+slot registers on and only a change of that slot notifies, one per slot
+index and shared by every record, so a body is invalidated by a change to a
+field it read of a record it read, and by nothing else.
 
 **Store.** Relay's word. All records, retained roots and lifetime state;
 owned by the main actor; read synchronously; written by atomic commits. See
@@ -132,7 +173,10 @@ entries, and notifies the observed fields that changed.
 
 **Root, retain, release buffer.** Relay's words. An operation whose handle is
 alive retains its records; a released root waits in a buffer (default ten)
-before its records become collectable.
+before its records become collectable. A completed mutation's payload is a
+root apart from the buffer, one per operation value (its name and
+variables) and as many as the buffer holds, so mutations push no released
+query out.
 
 **Invalidation, TTL.** Relay's and Apollo's shared words. `Environment.invalidate()`
 marks every fetched operation stale and refetches the retained ones;
@@ -165,7 +209,13 @@ the rebase explicit.)
 
 **Mutation root.** The record mutation payloads hang off,
 `client:root:mutation`, beside the query root. Entities inside a payload
-merge into their own records as always.
+merge into their own records as always. Its fields are keyed without their
+arguments, `addNote` rather than `addNote(text:"…")`, and an aliased one by
+its alias, `addNote(as:"first")`: the caller reads a payload once, and a
+key per input would number a slot for every call. The three root records are typed `Query`,
+`Mutation` and `Subscription` whatever the schema calls its root types, as
+Relay's root record is a `__Root` in any schema: the compiler interns a
+`QueryRoot` or a `query_root` by the store's name.
 
 **Abstract selection.** A selection on an interface or union. The compiler
 adds `__typename`; the ingest keys the object by the concrete type the
@@ -184,7 +234,9 @@ failure of the fetch.
 **Heal.** Baton's word for the response to missing data: record the event,
 mark the owning operation stale, refetch. See
 [Honest data](principles/honest-data.md). Today: `Store.reportMissing` is
-called; the refetch is *(planned)*.
+called; the refetch is *(planned)*. A value the generated type cannot hold,
+a null in a field typed non-null or a value of another kind, is reported
+through `Store.reportUnexpected`; it is not a miss, so nothing heals it.
 
 ## Compiler
 
@@ -214,6 +266,12 @@ delivery live: `execute` answers once, `stream` yields the parts of a
 deferred response. `URLSessionTransport` implements both; `MultipartParser`
 splits the parts.
 
+**Recorded transport.** Baton's word. `RecordedTransport` answers from
+recorded responses by operation name, or from a function of the whole
+request, and keeps the requests it was sent; for previews, tests and
+benchmarks. Not a mock: it is a transport like any other, and nothing
+behind it can tell.
+
 **Subscription.** GraphQL: an operation whose events arrive over time. Here:
 `@Subscription("…")` expands like `@Query`: the storage subscribes while the
 view lives and closes the stream when it goes; the handle exposes `events`,
@@ -223,8 +281,12 @@ payload work. `SubscriptionTransport` is the protocol;
 `GraphQLTransportWebSocket` speaks `graphql-transport-ws`.
 
 **Error behavior.** The GraphQL spec's `onError` request parameter
-(`PROPAGATE`, `NULL`, `ABORT`). Here: `Environment.errorBehavior`, sent when
-set and never inferred.
+(`PROPAGATE`, `NULL`, `ABORT`). Here: `"onError"` in `baton.json`, decided at
+compile time and sent with every operation the target compiles; never
+inferred. Under `NULL` an error nulls a field in place, so the compiler
+types the fields the schema calls non-null by their semantic nullability:
+non-optional under `@throwOnFieldError` and inside `@catch`, optional
+elsewhere.
 
 **Ingest.** The off-main-actor stage that decodes response bytes straight into
 a change set by following a plan.
@@ -234,8 +296,8 @@ renders. Here: `preload(operationValue)`; the destination's handle dedupes
 against it.
 
 **Fetch policy.** Relay's four, as `@Query("…", fetchPolicy:)`:
-`storeOrNetwork`, `storeAndNetwork` (default), `networkOnly`, `storeOnly`;
-decided on attach over the availability check and staleness.
+`storeOrNetwork` (`FetchPolicy.default`), `storeAndNetwork`, `networkOnly`,
+`storeOnly`; decided on attach over the availability check and staleness.
 
 **Lookup.** Baton's word for a root field configured in `baton.json` as
 returning an entity by one of its arguments, so a cached entity satisfies the
@@ -270,7 +332,11 @@ on the connection record (`__isLoadingNext`, `__isLoadingPrevious`).
 `@deleteEdge`, `@deleteRecord`. Here: the same, on mutation payload fields,
 applied as commit edits inside the transaction, so optimistic responses carry
 them and revert them. Inserted edges are copied into records the connection
-owns, numbered by Relay's `__connection_next_edge_index`.
+owns, numbered by Relay's `__connection_next_edge_index`. A commit edits a
+connection by the slots its plans resolved, which the registry keeps under
+the connection's type, so it looks no key up by name; a record no
+connection field made, or an edge of another type than the connection's,
+is left alone.
 
 **Page.** A list fetched by page number or offset, as the sample API does. Not
 a connection; composed in the UI from plain operations until the watch list

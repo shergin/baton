@@ -60,7 +60,8 @@ the vocabulary is `docs/terminology.md`. These files outrank any default.
 - No `Any`, no dictionaries and no `Codable` on the read path. Records are
   slots; values are enums.
 - Observation key paths used as invalidation channels must be stored
-  properties or computed properties with distinct bodies; identical getters
+  properties, computed properties with distinct bodies, or one subscript
+  whose getter body no other getter of the type shares; identical getters
   are merged by the optimizer and collide in the registrar. Test release
   builds.
 - Prefer early returns. Name things with full words; the only accepted

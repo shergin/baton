@@ -30,7 +30,7 @@ public struct QueryMacro: AccessorMacro, PeerMacro {
         in context: some MacroExpansionContext
     ) throws -> [AccessorDeclSyntax] {
         let (name, _) = try requireTypedProperty(declaration, attribute: node)
-        let policy = labeledArgument("fetchPolicy", of: node) ?? ".storeAndNetwork"
+        let policy = labeledArgument("fetchPolicy", of: node) ?? ".default"
         return [
             """
             @storageRestrictions(initializes: _\(raw: name))
@@ -100,7 +100,10 @@ public struct MutationMacro: AccessorMacro, PeerMacro {
         providingAccessorsOf declaration: some DeclSyntaxProtocol,
         in context: some MacroExpansionContext
     ) throws -> [AccessorDeclSyntax] {
-        let (name, _) = try requireTypedProperty(declaration, attribute: node)
+        let (name, type) = try requireTypedProperty(declaration, attribute: node)
+        // The peer reports a property of another type; a getter over storage
+        // that is never declared would only add an error that hides it.
+        guard actionBase(type) != nil else { return [] }
         return [
             """
             get {
@@ -116,11 +119,17 @@ public struct MutationMacro: AccessorMacro, PeerMacro {
         in context: some MacroExpansionContext
     ) throws -> [DeclSyntax] {
         let (name, type) = try requireTypedProperty(declaration, attribute: node)
-        guard let member = type.as(MemberTypeSyntax.self), member.name.text == "Action" else {
+        guard let operation = actionBase(type) else {
             throw MacroError(description: "@Mutation expects a property typed `<Operation>.Action`")
         }
         // Not `private`: a private stored property would make the view's memberwise initializer private.
-        return ["var _\(raw: name) = Baton.MutationStorage<\(member.baseType.trimmed)>()"]
+        return ["var _\(raw: name) = Baton.MutationStorage<\(operation.trimmed)>()"]
+    }
+
+    /// The operation of a type spelled `<Operation>.Action`.
+    private static func actionBase(_ type: TypeSyntax) -> TypeSyntax? {
+        guard let member = type.as(MemberTypeSyntax.self), member.name.text == "Action" else { return nil }
+        return member.baseType
     }
 }
 

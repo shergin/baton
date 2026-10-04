@@ -1,0 +1,6 @@
+{
+  "Character:1": {"__typename": "Character", "id": "1", "image": "rick.png", "name": "Rick Sanchez", "status": "Alive"},
+  "client:root": {"__typename": "Query", "character(id:\"1\")": {"__ref": "Character:1"}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

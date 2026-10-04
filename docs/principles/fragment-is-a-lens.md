@@ -2,7 +2,8 @@
 
 A fragment compiles to a typed, read-only view over one record: a reference
 and one accessor per declared field. Nothing is decoded to hand it to a view.
-The value a parent passes to a child is the fragment itself, pointer-sized.
+The value a parent passes to a child is the fragment itself: a record
+reference and a context.
 
 ## Why
 
@@ -45,7 +46,7 @@ registered, so a view body depends on the fields it read and nothing else.
 - A lens is valid only on the main actor, where the store lives. Code that
   needs a value elsewhere hops there or takes an explicit snapshot.
 - Equality of lenses is identity: same record, same context. SwiftUI's
-  diffing of a view holding a lens is a pointer comparison.
+  diffing of a view holding a lens compares references.
 - A fragment's name appears once in Swift, as the type of the property that
   holds it.
 
@@ -63,8 +64,12 @@ lens.
 
 ## Spelled today
 
-Nothing is spelled yet. Planned: a fragment `CharacterRow_character` compiles
-to `struct CharacterRow_character`; an operation root to
-`CharactersScreenQuery.Data`; a spread to an accessor such as
-`characterRow`; a plural field to a `RandomAccessCollection` of lenses.
-This section may rot; the rest must not.
+A fragment `CharacterRow_character` compiles to
+`struct CharacterRow_character: Baton.Lens`, which holds its anchor and has
+one accessor per field it declares; an operation root compiles to
+`CharactersScreenQuery.Data`, and a linked field to a nested struct such as
+`Data.Characters`. A spread is an accessor such as `characterRow` that
+returns the child's lens, and a plural link is a `Baton.List`, a
+`RandomAccessCollection` of lenses. A view declares
+`@Fragment("…") var character: CharacterRow_character`. This section may
+rot; the rest must not.

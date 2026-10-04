@@ -2,17 +2,40 @@
 import Baton
 
 /// Lens for `fragment TestFavorite_character on Character`.
-public struct TestFavorite_character: Baton.Lens {
+nonisolated public struct TestFavorite_character: Baton.Lens {
     public let anchor: Baton.Anchor
     public init(anchor: Baton.Anchor) { self.anchor = anchor }
     public static let typeName = "Character"
-    @MainActor public var id: String? { anchor.string(Slots.Character_id) }
-    @MainActor public var name: String? { anchor.string(Slots.Character_name) }
-    @MainActor public var favorite: Bool? { anchor.bool(Slots.Character_favorite) }
+    @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+    @MainActor public var name: String? { anchor.string(Slots.Character.name) }
+    @MainActor public var favorite: Bool? { anchor.bool(Slots.Character.favorite) }
+}
+
+/// Lens for `fragment TestRenamePayload_mutation on Mutation`.
+nonisolated public struct TestRenamePayload_mutation: Baton.Lens {
+    public let anchor: Baton.Anchor
+    public init(anchor: Baton.Anchor) { self.anchor = anchor }
+    public static let typeName = "Mutation"
+    @MainActor public var rename: Rename? { anchor.linked(Slots.Mutation.rename).map(Rename.init(anchor:)) }
+
+    nonisolated public struct Rename: Baton.Lens {
+        public let anchor: Baton.Anchor
+        public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "FavoritePayload"
+        @MainActor public var character: Character? { anchor.linked(Slots.FavoritePayload.character).map(Character.init(anchor:)) }
+
+        nonisolated public struct Character: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Character"
+            @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+            @MainActor public var name: String? { anchor.string(Slots.Character.name) }
+        }
+    }
 }
 
 /// Operation value for `query TestNode`.
-public struct TestNode: Baton.Operation {
+nonisolated public struct TestNode: Baton.Query {
     public var id: String
     public var resolution: Baton.OperationHandle<Self>? = nil
 
@@ -21,8 +44,7 @@ public struct TestNode: Baton.Operation {
     }
 
     public static let name = "TestNode"
-    public static let kind = Baton.OperationKind.query
-    public static let persistedID = "f4287aafacae3711c1424cdbcbfc508c"
+    public static let persistedID = "2304788bc851c146c51814dfce6bce4d"
     public static let text = #"""
 query TestNode(
   $id: ID!
@@ -55,51 +77,55 @@ query TestNode(
     }
 
     public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("node", key: .dynamic([.literal("node(id:"), .variable("id"), .literal(")")]), plural: false, lookup: Baton.Lookup(type: nil, key: .variable("id")), selection: Baton.Selection(type: Types.Node, hasID: true, abstract: true, fields: [
-                .scalar("__typename", key: .fixed(Slots.Node___typename), kind: .string, list: false),
-                .scalar("id", key: .fixed(Slots.Node_id), kind: .string, list: false),
-                .scalar("name", key: .fixed(Slots.Node_name), kind: .string, list: false),
-                .scalar("name", key: .fixed(Slots.Node_name), kind: .string, list: false),
+            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, hasID: true, abstract: true, variants: [
+                .init(types: [Types.Character, Types.Episode], fields: [
+                    .scalar("__typename", key: .fixed(Slots.Node.__typename), kind: .string, list: false),
+                    .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
+                    .scalar("name", key: .fixed(Slots.Node.name), kind: .string, list: false),
+                ]),
+                .init(types: nil, fields: [
+                    .scalar("__typename", key: .fixed(Slots.Node.__typename), kind: .string, list: false),
+                    .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
+                ]),
             ])),
         ]))
 
-    public struct Data: Baton.Lens {
+    nonisolated public struct Data: Baton.Lens {
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Query"
-        @MainActor public var node: Node? { anchor.linked(Slots.Query_node_8f7d08(anchor.variables), lookup: Baton.Lookup(type: nil, key: .variable("id"))).map(Node.init(anchor:)) }
+        @MainActor public var node: Node? { anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08)).map(Node.init(anchor:)) }
 
-        public struct Node: Baton.Lens {
+        nonisolated public struct Node: Baton.Lens {
             public let anchor: Baton.Anchor
             public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Node"
             @MainActor public var asCharacter: AsCharacter? { anchor.record.is(Types.Character) ? AsCharacter(anchor: anchor) : nil }
             @MainActor public var asEpisode: AsEpisode? { anchor.record.is(Types.Episode) ? AsEpisode(anchor: anchor) : nil }
 
-            public struct AsCharacter: Baton.Lens {
+            nonisolated public struct AsCharacter: Baton.Lens {
                 public let anchor: Baton.Anchor
                 public init(anchor: Baton.Anchor) { self.anchor = anchor }
                 public static let typeName = "Character"
-                @MainActor public var id: String? { anchor.string(Slots.Character_id) }
-                @MainActor public var name: String? { anchor.string(Slots.Character_name) }
+                @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+                @MainActor public var name: String? { anchor.string(Slots.Character.name) }
             }
 
-            public struct AsEpisode: Baton.Lens {
+            nonisolated public struct AsEpisode: Baton.Lens {
                 public let anchor: Baton.Anchor
                 public init(anchor: Baton.Anchor) { self.anchor = anchor }
                 public static let typeName = "Episode"
-                @MainActor public var id: String? { anchor.string(Slots.Episode_id) }
-                @MainActor public var name: String? { anchor.string(Slots.Episode_name) }
+                @MainActor public var id: String? { anchor.string(Slots.Episode.id) }
+                @MainActor public var name: String? { anchor.string(Slots.Episode.name) }
             }
         }
     }
 }
 
 /// Operation value for `mutation TestRename`.
-public struct TestRename: Baton.Operation {
+nonisolated public struct TestRename: Baton.Mutation {
     public var id: String
     public var name: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String, name: String) {
         self.id = id
@@ -107,8 +133,7 @@ public struct TestRename: Baton.Operation {
     }
 
     public static let name = "TestRename"
-    public static let kind = Baton.OperationKind.mutation
-    public static let persistedID = "a73fc2b7303f9449bedc2fffea97fb04"
+    public static let persistedID = "bbbb03578f7d58a0b3956defbc951f96"
     public static let text = #"""
 mutation TestRename(
   $id: ID!
@@ -137,32 +162,32 @@ mutation TestRename(
     }
 
     public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
-            .linked("rename", key: .dynamic([.literal("rename(id:"), .variable("id"), .literal(",name:"), .variable("name"), .literal(")")]), plural: false, selection: Baton.Selection(type: Types.FavoritePayload, hasID: false, abstract: false, fields: [
-                .linked("character", key: .fixed(Slots.FavoritePayload_character), plural: false, selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Character_id), kind: .string, list: false),
-                    .scalar("name", key: .fixed(Slots.Character_name), kind: .string, list: false),
+            .linked("rename", key: .fixed(Slots.Mutation.rename), plural: false, selection: Baton.Selection(type: Types.FavoritePayload, hasID: false, abstract: false, fields: [
+                .linked("character", key: .fixed(Slots.FavoritePayload.character), plural: false, selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                    .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+                    .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
                 ])),
             ])),
         ]))
 
-    public struct Data: Baton.Lens {
+    nonisolated public struct Data: Baton.Lens {
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Mutation"
-        @MainActor public var rename: Rename? { anchor.linked(Slots.Mutation_rename_04af03(anchor.variables)).map(Rename.init(anchor:)) }
+        @MainActor public var rename: Rename? { anchor.linked(Slots.Mutation.rename).map(Rename.init(anchor:)) }
 
-        public struct Rename: Baton.Lens {
+        nonisolated public struct Rename: Baton.Lens {
             public let anchor: Baton.Anchor
             public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "FavoritePayload"
-            @MainActor public var character: Character? { anchor.linked(Slots.FavoritePayload_character).map(Character.init(anchor:)) }
+            @MainActor public var character: Character? { anchor.linked(Slots.FavoritePayload.character).map(Character.init(anchor:)) }
 
-            public struct Character: Baton.Lens {
+            nonisolated public struct Character: Baton.Lens {
                 public let anchor: Baton.Anchor
                 public init(anchor: Baton.Anchor) { self.anchor = anchor }
                 public static let typeName = "Character"
-                @MainActor public var id: String? { anchor.string(Slots.Character_id) }
-                @MainActor public var name: String? { anchor.string(Slots.Character_name) }
+                @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+                @MainActor public var name: String? { anchor.string(Slots.Character.name) }
             }
         }
     }
@@ -170,7 +195,7 @@ mutation TestRename(
     public typealias Action = Baton.MutationAction<Self>
 
     /// A partial response to show before the server answers; absent fields leave the store untouched.
-    public struct OptimisticResponse: Sendable {
+    nonisolated public struct OptimisticResponse: Sendable {
         public var rename: Rename?
         public init(rename: Rename? = nil) {
             self.rename = rename
@@ -182,7 +207,7 @@ mutation TestRename(
         }
 
         /// A partial response to show before the server answers; absent fields leave the store untouched.
-        public struct Rename: Sendable {
+        nonisolated public struct Rename: Sendable {
             public var character: Character?
             public init(character: Character? = nil) {
                 self.character = character
@@ -194,7 +219,7 @@ mutation TestRename(
             }
 
             /// A partial response to show before the server answers; absent fields leave the store untouched.
-            public struct Character: Sendable {
+            nonisolated public struct Character: Sendable {
                 public var id: String?
                 public var name: String?
                 public init(id: String? = nil, name: String? = nil) {
@@ -220,8 +245,283 @@ extension Baton.MutationAction where Op == TestRename {
     }
 }
 
+/// Operation value for `mutation TestRenameThroughFragment`.
+nonisolated public struct TestRenameThroughFragment: Baton.Mutation {
+    public var id: String
+    public var name: String
+
+    public init(id: String, name: String) {
+        self.id = id
+        self.name = name
+    }
+
+    public static let name = "TestRenameThroughFragment"
+    public static let persistedID = "9e2e336fcd7c22f650f9acdf7c7f81e4"
+    public static let text = #"""
+mutation TestRenameThroughFragment(
+  $id: ID!
+  $name: String!
+) {
+  ...TestRenamePayload_mutation
+}
+
+fragment TestRenamePayload_mutation on Mutation {
+  rename(id: $id, name: $name) {
+    character {
+      id
+      name
+    }
+  }
+}
+"""#
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["id": Baton.Variable(id), "name": Baton.Variable(name)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.id == rhs.id && lhs.name == rhs.name
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+        hasher.combine(name)
+    }
+
+    public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
+            .linked("rename", key: .fixed(Slots.Mutation.rename), plural: false, selection: Baton.Selection(type: Types.FavoritePayload, hasID: false, abstract: false, fields: [
+                .linked("character", key: .fixed(Slots.FavoritePayload.character), plural: false, selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                    .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+                    .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
+                ])),
+            ])),
+        ]))
+
+    nonisolated public struct Data: Baton.Lens {
+        public let anchor: Baton.Anchor
+        public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Mutation"
+        @MainActor public var testRenamePayload: TestRenamePayload_mutation { TestRenamePayload_mutation(anchor: anchor) }
+    }
+
+    public typealias Action = Baton.MutationAction<Self>
+
+    /// A partial response to show before the server answers; absent fields leave the store untouched.
+    nonisolated public struct OptimisticResponse: Sendable {
+        public var rename: Rename?
+        public init(rename: Rename? = nil) {
+            self.rename = rename
+        }
+        public var variable: Baton.Variable {
+            var fields: [String: Baton.Variable] = [:]
+            if let rename { fields["rename"] = rename.variable }
+            return .object(fields)
+        }
+
+        /// A partial response to show before the server answers; absent fields leave the store untouched.
+        nonisolated public struct Rename: Sendable {
+            public var character: Character?
+            public init(character: Character? = nil) {
+                self.character = character
+            }
+            public var variable: Baton.Variable {
+                var fields: [String: Baton.Variable] = [:]
+                if let character { fields["character"] = character.variable }
+                return .object(fields)
+            }
+
+            /// A partial response to show before the server answers; absent fields leave the store untouched.
+            nonisolated public struct Character: Sendable {
+                public var id: String?
+                public var name: String?
+                public init(id: String? = nil, name: String? = nil) {
+                    self.id = id
+                    self.name = name
+                }
+                public var variable: Baton.Variable {
+                    var fields: [String: Baton.Variable] = [:]
+                    if let id { fields["id"] = Baton.Variable(id) }
+                    if let name { fields["name"] = Baton.Variable(name) }
+                    return .object(fields)
+                }
+            }
+        }
+    }
+}
+
+extension Baton.MutationAction where Op == TestRenameThroughFragment {
+    /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
+    @MainActor @discardableResult
+    public func callAsFunction(id: String, name: String, optimistic: TestRenameThroughFragment.OptimisticResponse? = nil) async throws -> TestRenameThroughFragment.Data {
+        try await commit(TestRenameThroughFragment(id: id, name: name), optimistic: optimistic?.variable)
+    }
+}
+
+/// Operation value for `mutation TestRenameWithOrigin`.
+nonisolated public struct TestRenameWithOrigin: Baton.Mutation {
+    public var id: String
+    public var name: String
+    public var withOrigin: Bool
+
+    public init(id: String, name: String, withOrigin: Bool) {
+        self.id = id
+        self.name = name
+        self.withOrigin = withOrigin
+    }
+
+    public static let name = "TestRenameWithOrigin"
+    public static let persistedID = "8457c567f89b7b5a3ed8f3f5c8364841"
+    public static let text = #"""
+mutation TestRenameWithOrigin(
+  $id: ID!
+  $name: String!
+  $withOrigin: Boolean!
+) {
+  rename(id: $id, name: $name) {
+    character {
+      id
+      name
+      origin @include(if: $withOrigin) {
+        id
+        name
+      }
+    }
+  }
+}
+"""#
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["id": Baton.Variable(id), "name": Baton.Variable(name), "withOrigin": Baton.Variable(withOrigin)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.id == rhs.id && lhs.name == rhs.name && lhs.withOrigin == rhs.withOrigin
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+        hasher.combine(name)
+        hasher.combine(withOrigin)
+    }
+
+    public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
+            .linked("rename", key: .fixed(Slots.Mutation.rename), plural: false, selection: Baton.Selection(type: Types.FavoritePayload, hasID: false, abstract: false, fields: [
+                .linked("character", key: .fixed(Slots.FavoritePayload.character), plural: false, selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                    .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+                    .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
+                    .linked("origin", key: .fixed(Slots.Character.origin), plural: false, guards: [[.init("withOrigin", passing: true)]], selection: Baton.Selection(type: Types.Location, hasID: true, abstract: false, fields: [
+                        .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
+                        .scalar("name", key: .fixed(Slots.Location.name), kind: .string, list: false),
+                    ])),
+                ])),
+            ])),
+        ]))
+
+    nonisolated public struct Data: Baton.Lens {
+        public let anchor: Baton.Anchor
+        public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Mutation"
+        @MainActor public var rename: Rename? { anchor.linked(Slots.Mutation.rename).map(Rename.init(anchor:)) }
+
+        nonisolated public struct Rename: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "FavoritePayload"
+            @MainActor public var character: Character? { anchor.linked(Slots.FavoritePayload.character).map(Character.init(anchor:)) }
+
+            nonisolated public struct Character: Baton.Lens {
+                public let anchor: Baton.Anchor
+                public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                public static let typeName = "Character"
+                @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+                @MainActor public var name: String? { anchor.string(Slots.Character.name) }
+                @MainActor public var origin: Origin? { anchor.selects("withOrigin", true) ? anchor.linked(Slots.Character.origin).map(Origin.init(anchor:)) : nil }
+
+                nonisolated public struct Origin: Baton.Lens {
+                    public let anchor: Baton.Anchor
+                    public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                    public static let typeName = "Location"
+                    @MainActor public var id: String? { anchor.string(Slots.Location.id) }
+                    @MainActor public var name: String? { anchor.string(Slots.Location.name) }
+                }
+            }
+        }
+    }
+
+    public typealias Action = Baton.MutationAction<Self>
+
+    /// A partial response to show before the server answers; absent fields leave the store untouched.
+    nonisolated public struct OptimisticResponse: Sendable {
+        public var rename: Rename?
+        public init(rename: Rename? = nil) {
+            self.rename = rename
+        }
+        public var variable: Baton.Variable {
+            var fields: [String: Baton.Variable] = [:]
+            if let rename { fields["rename"] = rename.variable }
+            return .object(fields)
+        }
+
+        /// A partial response to show before the server answers; absent fields leave the store untouched.
+        nonisolated public struct Rename: Sendable {
+            public var character: Character?
+            public init(character: Character? = nil) {
+                self.character = character
+            }
+            public var variable: Baton.Variable {
+                var fields: [String: Baton.Variable] = [:]
+                if let character { fields["character"] = character.variable }
+                return .object(fields)
+            }
+
+            /// A partial response to show before the server answers; absent fields leave the store untouched.
+            nonisolated public struct Character: Sendable {
+                public var id: String?
+                public var name: String?
+                public var origin: Origin?
+                public init(id: String? = nil, name: String? = nil, origin: Origin? = nil) {
+                    self.id = id
+                    self.name = name
+                    self.origin = origin
+                }
+                public var variable: Baton.Variable {
+                    var fields: [String: Baton.Variable] = [:]
+                    if let id { fields["id"] = Baton.Variable(id) }
+                    if let name { fields["name"] = Baton.Variable(name) }
+                    if let origin { fields["origin"] = origin.variable }
+                    return .object(fields)
+                }
+
+                /// A partial response to show before the server answers; absent fields leave the store untouched.
+                nonisolated public struct Origin: Sendable {
+                    public var id: String?
+                    public var name: String?
+                    public init(id: String? = nil, name: String? = nil) {
+                        self.id = id
+                        self.name = name
+                    }
+                    public var variable: Baton.Variable {
+                        var fields: [String: Baton.Variable] = [:]
+                        if let id { fields["id"] = Baton.Variable(id) }
+                        if let name { fields["name"] = Baton.Variable(name) }
+                        return .object(fields)
+                    }
+                }
+            }
+        }
+    }
+}
+
+extension Baton.MutationAction where Op == TestRenameWithOrigin {
+    /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
+    @MainActor @discardableResult
+    public func callAsFunction(id: String, name: String, withOrigin: Bool, optimistic: TestRenameWithOrigin.OptimisticResponse? = nil) async throws -> TestRenameWithOrigin.Data {
+        try await commit(TestRenameWithOrigin(id: id, name: name, withOrigin: withOrigin), optimistic: optimistic?.variable)
+    }
+}
+
 /// Operation value for `query TestSearch`.
-public struct TestSearch: Baton.Operation {
+nonisolated public struct TestSearch: Baton.Query {
     public var name: String
     public var resolution: Baton.OperationHandle<Self>? = nil
 
@@ -230,8 +530,7 @@ public struct TestSearch: Baton.Operation {
     }
 
     public static let name = "TestSearch"
-    public static let kind = Baton.OperationKind.query
-    public static let persistedID = "529930501b89d258d63e782735ce5cf7"
+    public static let persistedID = "813ee13fc31b31a05b576bb247d1db8b"
     public static let text = #"""
 query TestSearch(
   $name: String!
@@ -268,53 +567,63 @@ query TestSearch(
     }
 
     public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("search", key: .dynamic([.literal("search(name:"), .variable("name"), .literal(")")]), plural: true, selection: Baton.Selection(type: Types.SearchResult, hasID: true, abstract: true, fields: [
-                .scalar("__typename", key: .fixed(Slots.SearchResult___typename), kind: .string, list: false),
-                .scalar("id", key: .fixed(Slots.SearchResult_id), kind: .string, list: false),
-                .scalar("name", key: .fixed(Slots.SearchResult_name), kind: .string, list: false),
-                .scalar("id", key: .fixed(Slots.SearchResult_id), kind: .string, list: false),
-                .scalar("name", key: .fixed(Slots.SearchResult_name), kind: .string, list: false),
-                .scalar("dimension", key: .fixed(Slots.SearchResult_dimension), kind: .string, list: false),
-                .scalar("__isNode", key: .fixed(Slots.SearchResult___typename), kind: .string, list: false),
-                .scalar("id", key: .fixed(Slots.SearchResult_id), kind: .string, list: false),
+            .linked("search", key: .dynamic(Slots.Query.search_954c44), plural: true, selection: Baton.Selection(type: Types.SearchResult, hasID: true, abstract: true, variants: [
+                .init(types: [Types.Character], fields: [
+                    .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
+                    .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+                    .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
+                ]),
+                .init(types: [Types.Episode], fields: [
+                    .scalar("__typename", key: .fixed(Slots.Episode.__typename), kind: .string, list: false),
+                    .scalar("id", key: .fixed(Slots.Episode.id), kind: .string, list: false),
+                ]),
+                .init(types: [Types.Location], fields: [
+                    .scalar("__typename", key: .fixed(Slots.Location.__typename), kind: .string, list: false),
+                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
+                    .scalar("name", key: .fixed(Slots.Location.name), kind: .string, list: false),
+                    .scalar("dimension", key: .fixed(Slots.Location.dimension), kind: .string, list: false),
+                ]),
+                .init(types: nil, fields: [
+                    .scalar("__typename", key: .fixed(Slots.SearchResult.__typename), kind: .string, list: false),
+                ]),
             ])),
         ]))
 
-    public struct Data: Baton.Lens {
+    nonisolated public struct Data: Baton.Lens {
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Query"
-        @MainActor public var search: Baton.List<Search>? { anchor.list(Slots.Query_search_954c44(anchor.variables)) }
+        @MainActor public var search: Baton.List<Search>? { anchor.list(anchor.owner.slot(Slots.Query.search_954c44)) }
 
-        public struct Search: Baton.Lens {
+        nonisolated public struct Search: Baton.Lens {
             public let anchor: Baton.Anchor
             public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "SearchResult"
             @MainActor public var asCharacter: AsCharacter? { anchor.record.is(Types.Character) ? AsCharacter(anchor: anchor) : nil }
             @MainActor public var asLocation: AsLocation? { anchor.record.is(Types.Location) ? AsLocation(anchor: anchor) : nil }
 
-            public struct AsCharacter: Baton.Lens {
+            nonisolated public struct AsCharacter: Baton.Lens {
                 public let anchor: Baton.Anchor
                 public init(anchor: Baton.Anchor) { self.anchor = anchor }
                 public static let typeName = "Character"
-                @MainActor public var id: String? { anchor.string(Slots.Character_id) }
-                @MainActor public var name: String? { anchor.string(Slots.Character_name) }
+                @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+                @MainActor public var name: String? { anchor.string(Slots.Character.name) }
             }
 
-            public struct AsLocation: Baton.Lens {
+            nonisolated public struct AsLocation: Baton.Lens {
                 public let anchor: Baton.Anchor
                 public init(anchor: Baton.Anchor) { self.anchor = anchor }
                 public static let typeName = "Location"
-                @MainActor public var id: String? { anchor.string(Slots.Location_id) }
-                @MainActor public var name: String? { anchor.string(Slots.Location_name) }
-                @MainActor public var dimension: String? { anchor.string(Slots.Location_dimension) }
+                @MainActor public var id: String? { anchor.string(Slots.Location.id) }
+                @MainActor public var name: String? { anchor.string(Slots.Location.name) }
+                @MainActor public var dimension: String? { anchor.string(Slots.Location.dimension) }
             }
         }
     }
 }
 
 /// Operation value for `query TestSearchOrigins`.
-public struct TestSearchOrigins: Baton.Operation {
+nonisolated public struct TestSearchOrigins: Baton.Query {
     public var name: String
     public var resolution: Baton.OperationHandle<Self>? = nil
 
@@ -323,8 +632,7 @@ public struct TestSearchOrigins: Baton.Operation {
     }
 
     public static let name = "TestSearchOrigins"
-    public static let kind = Baton.OperationKind.query
-    public static let persistedID = "b901518a8b1a3f0fb9032a3ac9060d04"
+    public static let persistedID = "ef63ee320f68af412c96bcdec49f9223"
     public static let text = #"""
 query TestSearchOrigins(
   $name: String!
@@ -358,40 +666,48 @@ query TestSearchOrigins(
     }
 
     public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("search", key: .dynamic([.literal("search(name:"), .variable("name"), .literal(")")]), plural: true, selection: Baton.Selection(type: Types.SearchResult, hasID: true, abstract: true, fields: [
-                .scalar("__typename", key: .fixed(Slots.SearchResult___typename), kind: .string, list: false),
-                .linked("origin", key: .fixed(Slots.SearchResult_origin), plural: false, selection: Baton.Selection(type: Types.Location, hasID: true, abstract: false, fields: [
-                    .scalar("name", key: .fixed(Slots.Location_name), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Location_id), kind: .string, list: false),
-                ])),
-                .scalar("__isNode", key: .fixed(Slots.SearchResult___typename), kind: .string, list: false),
-                .scalar("id", key: .fixed(Slots.SearchResult_id), kind: .string, list: false),
+            .linked("search", key: .dynamic(Slots.Query.search_954c44), plural: true, selection: Baton.Selection(type: Types.SearchResult, hasID: true, abstract: true, variants: [
+                .init(types: [Types.Character], fields: [
+                    .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
+                    .linked("origin", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, hasID: true, abstract: false, fields: [
+                        .scalar("name", key: .fixed(Slots.Location.name), kind: .string, list: false),
+                        .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
+                    ])),
+                    .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+                ]),
+                .init(types: [Types.Episode, Types.Location], fields: [
+                    .scalar("__typename", key: .fixed(Slots.SearchResult.__typename), kind: .string, list: false),
+                    .scalar("id", key: .fixed(Slots.SearchResult.id), kind: .string, list: false),
+                ]),
+                .init(types: nil, fields: [
+                    .scalar("__typename", key: .fixed(Slots.SearchResult.__typename), kind: .string, list: false),
+                ]),
             ])),
         ]))
 
-    public struct Data: Baton.Lens {
+    nonisolated public struct Data: Baton.Lens {
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Query"
-        @MainActor public var search: Baton.List<Search>? { anchor.list(Slots.Query_search_954c44(anchor.variables)) }
+        @MainActor public var search: Baton.List<Search>? { anchor.list(anchor.owner.slot(Slots.Query.search_954c44)) }
 
-        public struct Search: Baton.Lens {
+        nonisolated public struct Search: Baton.Lens {
             public let anchor: Baton.Anchor
             public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "SearchResult"
             @MainActor public var asCharacter: AsCharacter? { anchor.record.is(Types.Character) ? AsCharacter(anchor: anchor) : nil }
 
-            public struct AsCharacter: Baton.Lens {
+            nonisolated public struct AsCharacter: Baton.Lens {
                 public let anchor: Baton.Anchor
                 public init(anchor: Baton.Anchor) { self.anchor = anchor }
                 public static let typeName = "Character"
-                @MainActor public var origin: Origin? { anchor.linked(Slots.Character_origin).map(Origin.init(anchor:)) }
+                @MainActor public var origin: Origin? { anchor.linked(Slots.Character.origin).map(Origin.init(anchor:)) }
 
-                public struct Origin: Baton.Lens {
+                nonisolated public struct Origin: Baton.Lens {
                     public let anchor: Baton.Anchor
                     public init(anchor: Baton.Anchor) { self.anchor = anchor }
                     public static let typeName = "Location"
-                    @MainActor public var name: String? { anchor.string(Slots.Location_name) }
+                    @MainActor public var name: String? { anchor.string(Slots.Location.name) }
                 }
             }
         }
@@ -399,10 +715,9 @@ query TestSearchOrigins(
 }
 
 /// Operation value for `mutation TestSetFavorite`.
-public struct TestSetFavorite: Baton.Operation {
+nonisolated public struct TestSetFavorite: Baton.Mutation {
     public var id: String
     public var favorite: Bool
-    public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String, favorite: Bool) {
         self.id = id
@@ -410,8 +725,7 @@ public struct TestSetFavorite: Baton.Operation {
     }
 
     public static let name = "TestSetFavorite"
-    public static let kind = Baton.OperationKind.mutation
-    public static let persistedID = "e84c45c8e83cd8488e3e4923ba0e045b"
+    public static let persistedID = "26a88e1bfd6ec2eaa6508d193effadc7"
     public static let text = #"""
 mutation TestSetFavorite(
   $id: ID!
@@ -441,34 +755,34 @@ mutation TestSetFavorite(
     }
 
     public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
-            .linked("setFavorite", key: .dynamic([.literal("setFavorite(favorite:"), .variable("favorite"), .literal(",id:"), .variable("id"), .literal(")")]), plural: false, selection: Baton.Selection(type: Types.FavoritePayload, hasID: false, abstract: false, fields: [
-                .linked("character", key: .fixed(Slots.FavoritePayload_character), plural: false, selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Character_id), kind: .string, list: false),
-                    .scalar("name", key: .fixed(Slots.Character_name), kind: .string, list: false),
-                    .scalar("favorite", key: .fixed(Slots.Character_favorite), kind: .bool, list: false),
+            .linked("setFavorite", key: .fixed(Slots.Mutation.setFavorite), plural: false, selection: Baton.Selection(type: Types.FavoritePayload, hasID: false, abstract: false, fields: [
+                .linked("character", key: .fixed(Slots.FavoritePayload.character), plural: false, selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                    .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+                    .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
+                    .scalar("favorite", key: .fixed(Slots.Character.favorite), kind: .bool, list: false),
                 ])),
             ])),
         ]))
 
-    public struct Data: Baton.Lens {
+    nonisolated public struct Data: Baton.Lens {
         public let anchor: Baton.Anchor
         public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Mutation"
-        @MainActor public var setFavorite: SetFavorite? { anchor.linked(Slots.Mutation_setFavorite_4ebf00(anchor.variables)).map(SetFavorite.init(anchor:)) }
+        @MainActor public var setFavorite: SetFavorite? { anchor.linked(Slots.Mutation.setFavorite).map(SetFavorite.init(anchor:)) }
 
-        public struct SetFavorite: Baton.Lens {
+        nonisolated public struct SetFavorite: Baton.Lens {
             public let anchor: Baton.Anchor
             public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "FavoritePayload"
-            @MainActor public var character: Character? { anchor.linked(Slots.FavoritePayload_character).map(Character.init(anchor:)) }
+            @MainActor public var character: Character? { anchor.linked(Slots.FavoritePayload.character).map(Character.init(anchor:)) }
 
-            public struct Character: Baton.Lens {
+            nonisolated public struct Character: Baton.Lens {
                 public let anchor: Baton.Anchor
                 public init(anchor: Baton.Anchor) { self.anchor = anchor }
                 public static let typeName = "Character"
-                @MainActor public var id: String? { anchor.string(Slots.Character_id) }
-                @MainActor public var name: String? { anchor.string(Slots.Character_name) }
-                @MainActor public var favorite: Bool? { anchor.bool(Slots.Character_favorite) }
+                @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+                @MainActor public var name: String? { anchor.string(Slots.Character.name) }
+                @MainActor public var favorite: Bool? { anchor.bool(Slots.Character.favorite) }
             }
         }
     }
@@ -476,7 +790,7 @@ mutation TestSetFavorite(
     public typealias Action = Baton.MutationAction<Self>
 
     /// A partial response to show before the server answers; absent fields leave the store untouched.
-    public struct OptimisticResponse: Sendable {
+    nonisolated public struct OptimisticResponse: Sendable {
         public var setFavorite: SetFavorite?
         public init(setFavorite: SetFavorite? = nil) {
             self.setFavorite = setFavorite
@@ -488,7 +802,7 @@ mutation TestSetFavorite(
         }
 
         /// A partial response to show before the server answers; absent fields leave the store untouched.
-        public struct SetFavorite: Sendable {
+        nonisolated public struct SetFavorite: Sendable {
             public var character: Character?
             public init(character: Character? = nil) {
                 self.character = character
@@ -500,7 +814,7 @@ mutation TestSetFavorite(
             }
 
             /// A partial response to show before the server answers; absent fields leave the store untouched.
-            public struct Character: Sendable {
+            nonisolated public struct Character: Sendable {
                 public var id: String?
                 public var name: String?
                 public var favorite: Bool?

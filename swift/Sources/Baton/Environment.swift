@@ -11,26 +11,28 @@ public final class Environment {
     /// The transport subscriptions run over, when the backend has one.
     public let subscriptions: (any SubscriptionTransport)?
 
-    /// How many released operations keep their data alive, oldest out first.
-    public var releaseBufferSize = 10
+    /// How many released queries keep their data alive, oldest out first;
+    /// as many completed mutations keep theirs, apart from them.
+    public let releaseBufferSize: Int
     /// How long a fetched response stays fresh; `nil` means forever.
     public var queryCacheExpiration: Duration?
-    /// The `onError` behaviour asked of the server, when set.
-    public var errorBehavior: ErrorBehavior?
     /// Called when a `@required(action: LOG)` field is null: the record and
     /// Relay's path. Debug builds print by default.
     public var requiredFieldMissing: ((Record, String) -> Void)?
 
     private var handles: [AnyHashable: any AnyOperationHandle] = [:]
     private var releaseBuffer: [AnyHashable] = []
+    /// The mutations that completed, oldest first and one per operation value.
+    private var completedMutations: [CompletedMutation] = []
     private var collectionScheduled = false
     /// How many collections have run; for tests and benchmarks.
     public private(set) var collections = 0
 
-    public init(transport: any Transport, subscriptions: (any SubscriptionTransport)? = nil, store: Store = Store()) {
+    public init(transport: any Transport, subscriptions: (any SubscriptionTransport)? = nil, store: Store = Store(), releaseBufferSize: Int = 10) {
         self.store = store
         self.transport = transport
         self.subscriptions = subscriptions
+        self.releaseBufferSize = releaseBufferSize
         store.environment = self
         #if DEBUG
         requiredFieldMissing = { record, path in
@@ -41,13 +43,13 @@ public final class Environment {
 
     /// An environment over HTTP. With `persistence`, the store keeps an image
     /// on disk and a launch renders from it before the network answers.
-    public convenience init(url: URL, headers: [String: String] = [:], subscriptions: (any SubscriptionTransport)? = nil, persistence: Persistence? = nil) {
-        self.init(transport: URLSessionTransport(url: url, headers: headers), subscriptions: subscriptions, store: Store(persistence: persistence))
+    public convenience init(url: URL, headers: [String: String] = [:], subscriptions: (any SubscriptionTransport)? = nil, persistence: Persistence? = nil, releaseBufferSize: Int = 10) {
+        self.init(transport: URLSessionTransport(url: url, headers: headers), subscriptions: subscriptions, store: Store(persistence: persistence), releaseBufferSize: releaseBufferSize)
     }
 
     /// The handle for an operation value, shared by every view that holds an
     /// equal value. The policy is applied on every attach.
-    public func handle<Op: Operation>(for operation: Op, fetchPolicy: FetchPolicy = .storeAndNetwork) -> OperationHandle<Op> {
+    public func handle<Op: Query>(for operation: Op, fetchPolicy: FetchPolicy = .default) -> OperationHandle<Op> {
         let key = AnyHashable(operation)
         let handle: OperationHandle<Op>
         if let existing = handles[key] as? OperationHandle<Op> {
@@ -63,7 +65,7 @@ public final class Environment {
 
     /// The handle for a subscription value, shared by equal values; a root
     /// while retained.
-    public func subscriptionHandle<Op: Operation>(for operation: Op) -> SubscriptionHandle<Op> {
+    public func subscriptionHandle<Op: Subscription>(for operation: Op) -> SubscriptionHandle<Op> {
         let key = AnyHashable(operation)
         if let existing = handles[key] as? SubscriptionHandle<Op> { return existing }
         let handle = SubscriptionHandle(operation: operation, environment: self)
@@ -72,19 +74,29 @@ public final class Environment {
     }
 
     /// Starts fetching before any view asks; the handle waits in the release
-    /// buffer for a view to attach.
+    /// buffer for a view to attach, and that attach makes no request of its
+    /// own.
     @discardableResult
-    public func preload<Op: Operation>(_ operation: Op, fetchPolicy: FetchPolicy = .storeAndNetwork) -> OperationHandle<Op> {
+    public func preload<Op: Query>(_ operation: Op, fetchPolicy: FetchPolicy = .default) -> OperationHandle<Op> {
         let handle = handle(for: operation, fetchPolicy: fetchPolicy)
+        // Only a fetch the preload made can serve the first attach.
+        handle.preloaded = handle.isFetching
         if handle.retainCount == 0 { park(handle.key) }
         return handle
+    }
+
+    /// Settles again the phases a commit's field errors or nulls can change:
+    /// those of retained `@throwOnFieldError` and bubbling operations.
+    func reevaluate() {
+        for handle in handles.values where handle.retainCount > 0 {
+            handle.reevaluate()
+        }
     }
 
     /// Marks every handle's data stale. Retained handles refetch at once; the
     /// data stays visible until the response commits.
     public func invalidate() {
         store.invalidate()
-        store.persistence?.invalidate()
         for handle in handles.values where handle.retainCount > 0 {
             handle.refetchIfStale()
         }
@@ -96,17 +108,43 @@ public final class Environment {
             text: Op.text,
             persistedID: Op.persistedID,
             variables: variables,
-            errorBehavior: errorBehavior,
+            errorBehavior: Op.errorBehavior,
             incremental: Op.hasDeferred
         )
     }
 
     /// Fetches an operation and commits the response; the handle, if any,
     /// follows. `firstPart` runs after the first part of a deferred response
-    /// commits, so a view renders before the rest arrives.
-    public func fetch<Op: Operation>(_ operation: Op, firstPart: (() -> Void)? = nil) async throws {
-        let uncaught = try await fetch(Op.self, variables: operation.variables, firstPart: firstPart)
-        if Op.throwsOnFieldError, !uncaught.isEmpty { throw FieldErrors(uncaught) }
+    /// commits, so a view renders before the rest arrives. An operation with
+    /// `@throwOnFieldError` throws the field errors its handle fails on.
+    public func fetch<Op: Query>(_ operation: Op, firstPart: (() -> Void)? = nil) async throws {
+        let fetched = try await fetch(Op.self, variables: operation.variables, resolved: Op.plan.resolve(operation.variables), firstPart: firstPart.map { firstPart in { _ in firstPart() } })
+        guard Op.throwsOnFieldError else { return }
+        // The handle's reading: the operation's own selection, where an error
+        // inside a spread is the fragment's to weigh, and the errors the
+        // response carried with no field to hold them.
+        let anchor = Anchor(record: store.root, variables: operation.variables, store: store)
+        let errors = fetched.unplaced + Op.Data.fieldErrors(anchor)
+        if !errors.isEmpty { throw FieldErrors(errors) }
+    }
+
+    /// What a fetch committed besides its records: the field errors no
+    /// `@catch` handled, and those no field in the store holds.
+    struct Fetched {
+        var uncaught: [FieldError] = []
+        var unplaced: [FieldError] = []
+
+        mutating func add(_ changes: ChangeSet) {
+            uncaught.append(contentsOf: changes.uncaughtFieldErrors)
+            unplaced.append(contentsOf: changes.unplacedErrors)
+        }
+    }
+
+    /// Fetches with a plan already resolved, as a handle holds it. The field
+    /// errors are the handle's to weigh, so none is thrown; `firstPart` is
+    /// handed what the first part committed besides its records.
+    func fetch<Op: Query>(_ operation: Op, resolved: ResolvedSelection, firstPart: ((Fetched) -> Void)? = nil) async throws -> Fetched {
+        try await fetch(Op.self, variables: operation.variables, resolved: resolved, firstPart: firstPart)
     }
 
     /// Fetches an operation by its type and variables and commits the response.
@@ -114,62 +152,92 @@ public final class Environment {
     /// and the records they fill stay alive through whatever reaches them.
     /// Returns the field errors no `@catch` handled.
     @discardableResult
-    public func fetch<Op: Operation>(_ operation: Op.Type, variables: Variables, firstPart: (() -> Void)? = nil) async throws -> [FieldError] {
+    public func fetch<Op: Query>(_ operation: Op.Type, variables: Variables, firstPart: (() -> Void)? = nil) async throws -> [FieldError] {
+        try await fetch(operation, variables: variables, resolved: Op.plan.resolve(variables), firstPart: firstPart.map { firstPart in { _ in firstPart() } }).uncaught
+    }
+
+    private func fetch<Op: Query>(_ operation: Op.Type, variables: Variables, resolved: ResolvedSelection, firstPart: ((Fetched) -> Void)?) async throws -> Fetched {
         let request = request(Op.self, variables: variables)
-        let resolved = Op.plan.resolve(variables)
         if !Op.hasDeferred {
             let data = try await transport.execute(request)
-            let changes = try await Task.detached(priority: .userInitiated) {
-                try Ingest.normalize(data, plan: resolved)
-            }.value
+            let changes = try await Ingest.normalized(data, plan: resolved)
+            // A fetch superseded while its response was on the way or being
+            // read must not land after the one that replaced it.
+            try Task.checkCancellation()
             store.commit(changes)
-            return changes.uncaughtFieldErrors
+            var fetched = Fetched()
+            fetched.add(changes)
+            return fetched
         }
-        var uncaught: [FieldError] = []
+        var fetched = Fetched()
         var first = true
         var pending: [String: Ingest.IncrementalPart.Pending] = [:]
         for try await part in transport.stream(request) {
             if first {
                 first = false
-                let changes = try await Task.detached(priority: .userInitiated) {
-                    try Ingest.normalize(part, plan: resolved)
-                }.value
+                let changes = try await Ingest.normalized(part, plan: resolved)
+                try Task.checkCancellation()
                 store.commit(changes)
-                uncaught.append(contentsOf: changes.uncaughtFieldErrors)
+                fetched.add(changes)
                 // The 2024 format announces the parts to come in the first one.
-                for announced in try Ingest.incremental(part).pending { pending[announced.id] = announced }
-                firstPart?()
+                for announced in changes.pending { pending[announced.id] = announced }
+                firstPart?(fetched)
+                if !changes.hasNext { break }
                 continue
             }
-            let incremental = try Ingest.incremental(part)
+            let incremental = try await Ingest.incrementalPart(part)
             for announced in incremental.pending { pending[announced.id] = announced }
+            // Where each object goes is read from the store, here; the
+            // objects are normalized off the main actor in one call.
+            var objects: [Ingest.ObjectPart] = []
             for item in incremental.items {
-                let path = item.path ?? item.id.flatMap { pending[$0]?.path }
+                let base = item.path ?? item.id.flatMap { pending[$0]?.path }
                 let label = item.label ?? item.id.flatMap { pending[$0]?.label }
-                guard let path, let label,
-                      let (record, selection) = store.walk(path, resolved),
+                guard let base, let label else { continue }
+                let path = base + (item.subPath ?? [])
+                guard let (record, selection) = store.walk(path, resolved) else { continue }
+                // Below the announced path the item carries the rest of an
+                // object the part selects, by the object's own selection.
+                let plan = item.subPath?.isEmpty == false ? selection : selection.deferred(label)
+                guard let plan else { continue }
+                objects.append(Ingest.ObjectPart(data: item.data, plan: plan, key: record.key, type: record.type, entity: record.isEntity, path: path, errors: item.errors))
+            }
+            var changes = try await Ingest.normalized(objects)
+            for completion in incremental.completed where !completion.errors.isEmpty {
+                guard let announced = pending[completion.id], let label = announced.label,
+                      let (record, selection) = store.walk(announced.path, resolved),
                       let deferred = selection.deferred(label)
                 else { continue }
-                let changes = try Ingest.normalizeObject(item.data, plan: deferred, rootKey: record.key)
-                store.commit(changes)
-                uncaught.append(contentsOf: changes.uncaughtFieldErrors)
+                changes.append(Ingest.failed(deferred, key: record.key, type: record.type, entity: record.isEntity, at: announced.path, errors: completion.errors))
             }
+            try Task.checkCancellation()
+            for change in changes {
+                store.commit(change)
+                fetched.add(change)
+            }
+            if !incremental.hasNext { break }
         }
-        return uncaught
+        return fetched
     }
 
     /// Fetches a page of a connection: the loading flag on the connection
     /// record is set for the duration, and the commit merges the page.
-    func paginate<Op: Operation>(_ operation: Op.Type, variables: Variables, connection: Record, loading: Slot) async throws {
+    func paginate<Op: Query>(_ operation: Op.Type, variables: Variables, connection: Record, loading: Slot) async throws {
         connection.write(loading, .bool(true))
         defer { connection.write(loading, .bool(false)) }
         _ = try await fetch(operation, variables: variables)
     }
 
     /// Commits a mutation. The optimistic response, if any, is ingested with the
-    /// mutation's own plan and applied as a layer first; the server's payload
-    /// then replaces it in one batch, or the layer is reverted on failure.
-    public func mutate<Op: Operation>(_ operation: Op, optimistic: Variable? = nil) async throws -> Op.Data {
+    /// mutation's own plan and applied as a layer first, on the main actor, so
+    /// the layer shows in the turn of the call; the server's payload is
+    /// ingested off it and then replaces the layer in one batch, or the layer
+    /// is reverted on failure.
+    /// The data returned reads the mutation root: its payload stays alive
+    /// until `releaseBufferSize` completions of other operation values follow
+    /// it, and then reads only the records other roots keep. A completion of
+    /// an equal value, the same name and variables, takes its place.
+    public func mutate<Op: Mutation>(_ operation: Op, optimistic: Variable? = nil) async throws -> Op.Data {
         let resolved = Op.plan.resolve(operation.variables)
         var layer: UUID?
         if let optimistic {
@@ -179,10 +247,14 @@ public final class Environment {
         }
         let uncaught: [FieldError]
         do {
-            let data = try await transport.execute(request(Op.self, variables: operation.variables))
-            let changes = try await Task.detached(priority: .userInitiated) {
-                try Ingest.normalize(data, plan: resolved, rootKey: Store.mutationRootKey)
-            }.value
+            // The request runs in a task of its own, which the caller's
+            // cancellation does not reach: a server that received the
+            // mutation applies it, so its payload commits whoever stopped
+            // waiting, and no cancellation check stands before the commit.
+            let request = request(Op.self, variables: operation.variables)
+            let transport = transport
+            let data = try await Task { try await transport.execute(request) }.value
+            let changes = try await Ingest.normalized(data, plan: resolved, rootKey: Store.mutationRootKey)
             if let layer {
                 store.commit(changes, replacingOptimistic: layer)
             } else {
@@ -193,12 +265,13 @@ public final class Environment {
             if let layer { store.revertOptimistic(layer) }
             throw error
         }
+        keep(CompletedMutation(key: AnyHashable(operation), store: store, resolved: resolved))
         if Op.throwsOnFieldError, !uncaught.isEmpty { throw FieldErrors(uncaught) }
         return Op.Data(anchor: Anchor(record: store.mutationRoot, variables: operation.variables, store: store))
     }
 
     /// The events of a subscription, as the transport delivers them.
-    func subscribe<Op: Operation>(_ operation: Op) -> AsyncThrowingStream<Data, any Error> {
+    func subscribe<Op: Subscription>(_ operation: Op) -> AsyncThrowingStream<Data, any Error> {
         guard let subscriptions else {
             return AsyncThrowingStream { continuation in
                 continuation.finish(throwing: TransportError(statusCode: 0, body: "no subscription transport: pass `subscriptions:` to the environment"))
@@ -236,6 +309,22 @@ public final class Environment {
         scheduleCollection()
     }
 
+    /// Keeps a completed mutation's payload alive as a root, apart from the
+    /// release buffer, so mutations push no released query out of it. A
+    /// mutation's root fields are keyed by response key, so an earlier
+    /// completion of an equal operation value, whose selection is the same,
+    /// keeps what the latest one does, and the latest takes its place. One
+    /// with other variables keeps its own: its selection may reach records
+    /// the latest one's does not, through `@include`, `@skip` or an argument
+    /// below the root field.
+    private func keep(_ completed: CompletedMutation) {
+        completedMutations.removeAll { $0.key == completed.key }
+        completedMutations.append(completed)
+        guard completedMutations.count > releaseBufferSize else { return }
+        completedMutations.removeFirst(completedMutations.count - releaseBufferSize)
+        scheduleCollection()
+    }
+
     /// Handles that are roots for collection: retained or buffered.
     public var rootCount: Int { handles.count }
 
@@ -255,6 +344,14 @@ public final class Environment {
         reachable.reserveCapacity(store.count)
         for handle in handles.values {
             handle.mark(into: &reachable)
+        }
+        for completed in completedMutations {
+            completed.mark(into: &reachable)
+        }
+        // Records whose rows wait to be written stay, so the image, which a
+        // read does not write first, is never older than memory.
+        for record in store.persistence?.unwrittenRecords() ?? [] {
+            reachable.insert(ObjectIdentifier(record))
         }
         // Records an optimistic layer wrote stay until the layer is resolved.
         for layer in store.optimisticLayers {

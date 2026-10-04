@@ -1,1 +1,0 @@
-{"data":{"node":{"__typename":"Character","id":"1","name":"Rick Sanchez","notes":{"totalCount":5,"edges":[{"cursor":"c3","node":{"__typename":"Note","id":"n3","text":"Get Schwifty"}},{"cursor":"c4","node":{"__typename":"Note","id":"n4","text":"Avoid the Citadel"}}],"pageInfo":{"endCursor":"c4","hasNextPage":true}}}}}

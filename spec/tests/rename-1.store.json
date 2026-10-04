@@ -1,0 +1,7 @@
+{
+  "Character:1": {"__typename": "Character", "id": "1", "name": "Rick Prime"},
+  "client:root": {"__typename": "Query"},
+  "client:root:mutation": {"__typename": "Mutation", "rename": {"__ref": "client:root:mutation:rename"}},
+  "client:root:mutation:rename": {"__typename": "FavoritePayload", "character": {"__ref": "Character:1"}},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

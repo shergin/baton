@@ -10,7 +10,7 @@ import SwiftUI
 struct RickAndMortyApp: App {
     @State private var environment = Baton.Environment(
         url: URL(string: "https://rickandmortyapi.com/graphql")!,
-        persistence: Persistence(name: "RickAndMorty")
+        persistence: Persistence(name: "RickAndMorty", version: Types.schemaDigest)
     )
 
     var body: some Scene {

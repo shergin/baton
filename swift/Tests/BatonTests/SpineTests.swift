@@ -1,16 +1,11 @@
 import Baton
+import BatonSpec
 import Foundation
 import Observation
 import Testing
 
-/// The recorded response for `Fixture(page: 1)`.
-let fixtureData: Data = {
-    let url = Bundle.module.url(forResource: "characters-page-1", withExtension: "json", subdirectory: "Fixtures")!
-    return try! Data(contentsOf: url)
-}()
-
 @MainActor
-@Suite("The vertical spine")
+@Suite("The vertical spine", .timeLimit(.minutes(1)))
 struct SpineTests {
     @Test("ingesting the fixture and reading it through lenses agrees with the raw response")
     func theResponseIsTheOracle() throws {
@@ -42,6 +37,28 @@ struct SpineTests {
         #expect(rick.recordID == rickViaEpisode.recordID)
     }
 
+    @Test("a document under the module-qualified marker in a raw literal compiles and reads")
+    func qualifiedMarker() throws {
+        let store = Store()
+        store.reportMissing = nil
+        store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
+        let query = TestQualifiedQuery(id: "1")
+        #expect(store.check(TestQualifiedQuery.plan.resolve(query.variables)) != .miss)
+        let data = TestQualifiedQuery.Data(anchor: Anchor(record: store.root, variables: query.variables, store: store))
+        #expect(data.character?.name == "Rick Sanchez")
+    }
+
+    @Test("a type named Types with fields named Type, Protocol and Baton compiles, and each field reads its own value")
+    func namesTheGeneratedCodeUses() throws {
+        let store = Store()
+        let query = TestNames()
+        store.commit(try Ingest.normalize(fixture("names-1"), plan: TestNames.plan.resolve(query.variables)))
+        let types = try #require(TestNames.Data(anchor: Anchor(record: store.root, variables: query.variables, store: store)).types)
+        #expect(types.`Type` == "not a metatype")
+        #expect(types.`Protocol` == "not a protocol")
+        #expect(types.Baton == "not the module")
+    }
+
     @Test("a character already in the store renders in the first body of its detail")
     func firstBodyFromCache() throws {
         let environment = Environment(transport: SilentTransport())
@@ -49,8 +66,8 @@ struct SpineTests {
         environment.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(listVariables)))
 
         // The detail's root field `character(id: "1")` was never fetched; the
-        // lookup satisfies it from the cached entity, synchronously.
-        let cached = environment.handle(for: TestHeaderQuery(id: "1"))
+        // check binds its lookup to the cached entity, synchronously.
+        let cached = environment.handle(for: TestHeaderQuery(id: "1"), fetchPolicy: .storeAndNetwork)
         guard case .ready(let data) = cached.phase else {
             Issue.record("expected .ready on creation, got \(cached.phase)")
             return
@@ -103,17 +120,83 @@ struct SpineTests {
         #expect(rows[1].testRow.name == "Morty C-137")
     }
 
-    @Test("a lens read of a root field falls through to the cached entity")
-    func lookupOnRead() throws {
+    @Test("a body that reads one field of a record is invalidated by a commit that changes that field and by no other")
+    func oneFieldOfOneRecord() throws {
         let store = Store()
+        let variables = TestList(page: 1).variables
+        store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(variables)))
+        let data = TestList.Data(anchor: Anchor(record: store.root, variables: variables, store: store))
+        let morty = try #require(data.characters?.results?[1].testRow)
+        #expect(morty.name == "Morty Smith")
+
+        final class Counter: @unchecked Sendable { var fired = 0 }
+        let counter = Counter()
+        func track() {
+            withObservationTracking { _ = morty.name } onChange: { counter.fired += 1 }
+        }
+        func commit(_ from: String, _ to: String) throws {
+            let edited = String(decoding: fixtureData, as: UTF8.self).replacingOccurrences(of: from, with: to)
+            store.commit(try Ingest.normalize(Data(edited.utf8), plan: TestList.plan.resolve(variables)))
+        }
+
+        track()
+        try commit(#""name":"Morty Smith","status":"Alive""#, #""name":"Morty Smith","status":"Dead""#)
+        #expect(counter.fired == 0, "the status changed, which the body did not read")
+        #expect(morty.status == "Dead")
+        try commit(#""name":"Morty Smith""#, #""name":"Morty C-137""#)
+        #expect(counter.fired == 1, "the name changed")
+    }
+
+    @Test("a field whose slot is a multiple of sixteen from the one a body reads does not invalidate it")
+    func slotsSixteenApart() throws {
+        let store = Store()
+        let variables = TestList(page: 1).variables
+        store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(variables)))
+        let data = TestList.Data(anchor: Anchor(record: store.root, variables: variables, store: store))
+        let morty = try #require(data.characters?.results?[1].testRow)
+
+        // A key of Character numbered at the name's place modulo sixteen,
+        // where a pool of sixteen channels would put the two on one.
+        let query = Registry.type("Query")
+        let character = Registry.type("Character")
+        let name = Registry.slot(character, "name")
+        var probe = 0
+        while Registry.slot(character, "probe\(probe)").index & 15 != name.index & 15 { probe += 1 }
+        let sibling = Registry.slot(character, "probe\(probe)")
+        let plan = Plan(root: Selection(type: query, hasID: false, fields: [
+            .linked("probe", key: .fixed(Registry.slot(query, "probe")), plural: false, selection: Selection(type: character, hasID: true, fields: [
+                .scalar("id", key: .fixed(Registry.slot(character, "id")), kind: .string, list: false),
+                .scalar("probe\(probe)", key: .fixed(sibling), kind: .string, list: false),
+            ])),
+        ])).resolve(.none)
+
+        final class Counter: @unchecked Sendable { var fired = 0 }
+        let counter = Counter()
+        withObservationTracking { _ = morty.name } onChange: { counter.fired += 1 }
+        store.commit(try Ingest.normalize(Data(#"{"data":{"probe":{"id":"2","probe\#(probe)":"written"}}}"#.utf8), plan: plan))
+        #expect(store.existing("Character:2")?.read(sibling) == .string("written"))
+        #expect(counter.fired == 0, "slot \(sibling.index) and the name's slot \(name.index) are channels apart")
+    }
+
+    @Test("a lens read never writes: a root field the store lacks reads nil until the check binds its lookup to the cached entity")
+    func lookupBindsInTheCheck() throws {
+        final class Misses: @unchecked Sendable { var reads: [String] = [] }
+        let misses = Misses()
+        let store = Store()
+        store.reportMissing = { record, slot in misses.reads.append(record.key + "." + slot.storageKey) }
         let variables = TestList(page: 1).variables
         store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(variables)))
 
         let detail = TestHeaderQuery(id: "3")
         let data = TestHeaderQuery.Data(anchor: Anchor(record: store.root, variables: detail.variables, store: store))
-        #expect(data.character?.testHeader.name == "Summer Smith")
-        // The link is now written, so the plan checks as available.
-        #expect(store.check(TestHeaderQuery.plan.resolve(detail.variables)))
+        #expect(data.character == nil, "the read does not resolve the lookup")
+        #expect(misses.reads == [#"client:root.character(id:"3")"#])
+        guard case .missing = store.root.read(Registry.slot(store.root.type, #"character(id:"3")"#)) else {
+            Issue.record("the read wrote the link")
+            return
+        }
+        #expect(store.check(TestHeaderQuery.plan.resolve(detail.variables)) != .miss)
+        #expect(data.character?.testHeader.name == "Summer Smith", "the check wrote the link")
     }
 
     @Test("an object whose id arrives after a link is keyed by its id, so a detail joins the entity the list fetched")
@@ -124,8 +207,10 @@ struct SpineTests {
         store.reportMissing = { record, slot in misses.reads.append(record.key + "." + slot.storageKey) }
         store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
 
-        // The detail's header renders from the store, through the lookup.
+        // The detail's header renders from the store, through the lookup the
+        // check binds.
         let header = TestHeaderQuery(id: "9")
+        #expect(store.check(TestHeaderQuery.plan.resolve(header.variables)) != .miss)
         let data = TestHeaderQuery.Data(anchor: Anchor(record: store.root, variables: header.variables, store: store))
         #expect(data.character?.testHeader.name == "Agency Director")
 
@@ -133,7 +218,7 @@ struct SpineTests {
         // the one Relay adds, after the `episode` link, and the server sends
         // it there.
         let episodes = TestEpisodesQuery(id: "9")
-        store.commit(try Ingest.normalize(fixture("character-episodes-9"), plan: TestEpisodesQuery.plan.resolve(episodes.variables)))
+        store.commit(try Ingest.normalize(Spec.data("rickandmorty/character-episodes-9.json"), plan: TestEpisodesQuery.plan.resolve(episodes.variables)))
         let character = try #require(data.character)
         #expect(character.recordID.key == "Character:9")
         #expect(store.existing(#"client:root:character(id:"9")"#) == nil, "no second record for the same entity")
@@ -147,7 +232,7 @@ struct SpineTests {
         // The header's own response carries the `id` last as well: it lands on
         // the same records and changes nothing.
         let count = store.count
-        let changed = store.commit(try Ingest.normalize(fixture("character-header-9"), plan: TestHeaderQuery.plan.resolve(header.variables)))
+        let changed = store.commit(try Ingest.normalize(Spec.data("rickandmorty/character-header-9.json"), plan: TestHeaderQuery.plan.resolve(header.variables)))
         #expect(changed == 0)
         #expect(store.count == count)
     }

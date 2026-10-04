@@ -1,0 +1,8 @@
+{
+  "Note:n9": {"__typename": "Note", "id": "n9", "text": "Pending"},
+  "client:root": {"__typename": "Query"},
+  "client:root:mutation": {"__typename": "Mutation", "addNote": {"__ref": "client:root:mutation:addNote"}},
+  "client:root:mutation:addNote": {"__typename": "AddNotePayload", "noteEdge": {"__ref": "client:root:mutation:addNote:noteEdge"}},
+  "client:root:mutation:addNote:noteEdge": {"__typename": "NoteEdge", "cursor": "c9", "node": {"__ref": "Note:n9"}},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

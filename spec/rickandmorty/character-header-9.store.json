@@ -1,0 +1,7 @@
+{
+  "Character:9": {"__typename": "Character", "id": "9", "image": "https://rickandmortyapi.com/api/character/avatar/9.jpeg", "name": "Agency Director", "origin": {"__ref": "Location:20"}, "species": "Human", "status": "Dead"},
+  "Location:20": {"__typename": "Location", "id": "20", "name": "Earth (Replacement Dimension)"},
+  "client:root": {"__typename": "Query", "character(id:\"9\")": {"__ref": "Character:9"}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

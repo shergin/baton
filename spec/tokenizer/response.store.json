@@ -1,0 +1,6 @@
+{
+  "Tokenizer:t1": {"__typename": "Tokenizer", "count": -42, "counts": [0, 9007199254740993, -9223372036854775808, 9223372036854775807, null], "flag": false, "flags": [true, null, false], "id": "t1", "json": "{\"b\":1,\"a\":[true,null]}", "jsons": ["text", "12345678901234567890", "1.50", "true", "{\"k\":\"v\"}", "[1,2]", null], "ratio": -0.0025, "ratios": [1000.0, 0.25, -1.5, 9007199254740992.0, null, -0.0, 100.0], "strings": ["plain", null, "été", "", null], "text": "quote \" backslash \\ slash / backspace \u0008 formfeed \u000c newline \n return \r tab \t e-acute é control \u0001 pair 😀 raw é end"},
+  "client:root": {"__typename": "Query", "tokenizer": {"__ref": "Tokenizer:t1"}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

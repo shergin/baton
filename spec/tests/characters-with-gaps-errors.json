@@ -1,0 +1,1 @@
+{"data":{"characters":{"results":[{"id":"7","name":"Abradolf Lincler"},null,{"id":"8","name":"Adjudicator Rick"}]}},"errors":[{"message":"row hidden","path":["characters","results",1,"name"]},{"message":"past the end","path":["characters","results",9,"name"]},{"message":"below a scalar","path":["characters","results",0,"name","initial"]}]}

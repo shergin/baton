@@ -1,6 +1,8 @@
 # Lookups satisfy root fields from cached entities
 
-Status: accepted, 2026-10-02. Serves
+Status: superseded, 2026-10-03, by
+[A lookup binds in the availability check, never in a read](lookups-bind-in-the-check.md);
+accepted, 2026-10-02. Serves
 [The store is the UI's state](../principles/store-is-the-ui-state.md) and
 [Relay's words](../principles/relays-words.md). Reopen when a schema needs an
 entity resolved by more than one argument, or by a field below the root; the

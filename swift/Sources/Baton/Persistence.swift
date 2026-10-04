@@ -42,18 +42,26 @@ public final class Persistence: Sendable {
         case fetched(operation: String, time: Double)
         /// Rows a read found carrying an older generation.
         case used(records: [String], root: [String])
+        /// A fetch time this launch read, which keeps it for the next.
+        case dated(operation: String)
+        /// Records a server's payload changed in a way memory could not
+        /// apply, by key, and by bare id under every type the image names.
+        case forget(keys: [String], ids: [String])
         case invalidate
-        case removeAll
     }
 
     private struct Pending: Sendable {
         var work: [Work] = []
         var scheduled = false
+        /// How many forgets the work holds.
+        var forgets = 0
     }
 
     /// When each operation last committed a response, by the wall clock.
     private struct Ages: Sendable {
         var times: [String: Double] = [:]
+        /// The operations whose time this launch read and stamped.
+        var read: Set<String> = []
         /// Set by an invalidation or a removal that ran before the file's
         /// own times were loaded, so the load does not bring them back.
         var cleared = false
@@ -87,14 +95,32 @@ public final class Persistence: Sendable {
         await Task.detached(priority: .userInitiated) { self.drain() }.value
     }
 
-    /// Empties the image, for a sign-out. Records in memory are untouched;
-    /// what the store commits afterwards is written as usual.
+    /// Writes what is queued and closes the file: before a new environment
+    /// takes it over, as at a sign-out. Work queued later opens it again.
+    public func close() async {
+        await Task.detached(priority: .userInitiated) {
+            self.drain()
+            self.disk.withLock { $0.release() }
+        }.value
+    }
+
+    /// Deletes the image, for a sign-out: the work queued before it is
+    /// dropped and the file removed, names and argument values with it, so
+    /// nothing of the session survives a failed write. A database of another
+    /// kind at the path is left alone. Records in memory are untouched; what
+    /// the store commits afterwards starts a new file. A sign-out releases
+    /// the old environment's handles, as its views going away does, removes
+    /// the image, and makes a new environment.
     public func removeAll() {
         ages.withLock { ages in
             ages.times.removeAll()
             ages.cleared = true
         }
-        enqueue(.removeAll)
+        pending.withLock { pending in
+            pending.work.removeAll()
+            pending.forgets = 0
+        }
+        disk.withLock { $0.erase() }
     }
 
     // MARK: From the main actor
@@ -102,6 +128,19 @@ public final class Persistence: Sendable {
     /// Queues what a commit changed.
     func committed(_ records: [Snapshot], root: [RootField]) {
         enqueue(.commit(records: records, root: root))
+    }
+
+    /// Queues the records a payload could not edit in memory, for the image
+    /// to drop: the next read misses them and fetches.
+    func forget(keys: [String], ids: [String]) {
+        enqueue(.forget(keys: keys, ids: ids))
+    }
+
+    /// Whether a forget waits in the queue, the rows it names still in the
+    /// file. One the writer has taken is done, or the image is to be
+    /// discarded, before a read can take the file.
+    var forgetting: Bool {
+        pending.withLock { $0.forgets > 0 }
     }
 
     /// Notes that an operation's response just committed.
@@ -113,8 +152,15 @@ public final class Persistence: Sendable {
 
     /// How many seconds ago the operation's last response committed, in this
     /// launch or an earlier one.
+    /// A time read from the image is stamped as used, once per launch, so
+    /// data read every launch keeps its age and does not go stale at the
+    /// next but one.
     func age(of operation: String) -> Double? {
-        guard let time = ages.withLock({ $0.times[operation] }) else { return nil }
+        let (time, first) = ages.withLock { ages in
+            (ages.times[operation], ages.read.insert(operation).inserted)
+        }
+        guard let time else { return nil }
+        if first { enqueue(.dated(operation: operation)) }
         return max(0, Date().timeIntervalSince1970 - time)
     }
 
@@ -127,14 +173,16 @@ public final class Persistence: Sendable {
         enqueue(.invalidate)
     }
 
-    /// Runs `body` holding the connection, inside one read transaction, after
-    /// everything queued has been written: a read never sees less than memory
-    /// once knew. False when the file cannot be opened.
+    /// Runs `body` holding the connection, inside one read transaction. It
+    /// writes nothing first: a batch the writer is writing lands before the
+    /// lock is had, and the records of a batch still queued, with those its
+    /// root fields link to, are kept in memory by the collector, so a read
+    /// never meets an older row than memory held. False when the file
+    /// cannot be opened.
     func reading(_ body: (Disk) -> Bool) -> Bool {
         var used: Work?
         let result = disk.withLock { disk in
             guard opened(disk) else { return false }
-            disk.write(take())
             guard disk.beginRead() else { return false }
             let result = body(disk)
             used = disk.endRead()
@@ -144,11 +192,34 @@ public final class Persistence: Sendable {
         return result
     }
 
+    /// The records the queue has yet to write, which the collector keeps
+    /// until it has: those whose snapshots wait, and those a waiting root
+    /// field links to. The root drops its links to swept records, and a
+    /// field dropped before its row is written would be read back from the
+    /// row before it.
+    func unwrittenRecords() -> [Record] {
+        pending.withLock { pending in
+            var kept: [Record] = []
+            for case .commit(let records, let root) in pending.work {
+                for snapshot in records { kept.append(snapshot.record) }
+                for field in root {
+                    switch field.value {
+                    case .ref(let target): kept.append(target)
+                    case .refs(let targets): for case let target? in targets { kept.append(target) }
+                    default: continue
+                    }
+                }
+            }
+            return kept
+        }
+    }
+
     // MARK: The writer
 
     private func enqueue(_ work: Work) {
         let start = pending.withLock { pending in
             pending.work.append(work)
+            if case .forget = work { pending.forgets += 1 }
             if pending.scheduled { return false }
             pending.scheduled = true
             return true
@@ -159,6 +230,7 @@ public final class Persistence: Sendable {
     private func take() -> [Work] {
         pending.withLock { pending in
             pending.scheduled = false
+            pending.forgets = 0
             let work = pending.work
             pending.work.removeAll(keepingCapacity: true)
             return work
@@ -170,7 +242,11 @@ public final class Persistence: Sendable {
     private func drain() {
         disk.withLock { disk in
             let work = take()
-            guard opened(disk) else { return }
+            guard opened(disk) else {
+                // Work the file could not take is lost: the image is behind.
+                if !work.isEmpty { disk.markBehind() }
+                return
+            }
             disk.write(work)
         }
     }

@@ -33,15 +33,16 @@ compiler and the write side of its store, and deletes the read side rather
 than porting it.
 
 - The compiler finds the GraphQL in source, validates it against the schema,
-  aggregates fragments into operations, applies fragment arguments, interns
+  aggregates fragments into operations, applies fragment arguments, computes
   every storage key, hashes persisted ids, and emits a typed lens per
   fragment and a normalization plan per operation. Errors point at the
   GraphQL text inside the Swift file.
-- The transport sends a persisted id and variables and streams bytes back.
-- The ingest decodes bytes straight into record slots, off the main actor,
-  with no intermediate model.
-- The store commits a change set on the main actor: pointer swaps for the
-  records that changed, notifications for the fields that observed views read.
+- The transport can send a persisted id and variables, and streams bytes
+  back.
+- The ingest decodes a response's bytes straight into record slots, off the
+  main actor, with no intermediate model.
+- The store commits a change set on the main actor: writes for the slots
+  that changed, notifications for the fields that observed views read.
 - A lens reads a record's slots synchronously and registers each read with
   the framework; a view body is invalidated by the fields it read and by
   nothing else.
@@ -72,13 +73,17 @@ true, who decides, and what the words are.
 
 1. **A fragment is a lens.** A fragment compiles to a typed, read-only view
    over one record: a reference and one accessor per declared field. Nothing
-   is decoded into a model to hand it to a view; a parent passes a pointer.
+   is decoded into a model to hand it to a view; a parent passes a reference
+   and a context.
    Masking is not enforced, it is structural: the lens has no accessor for a
    field the fragment did not declare.
 2. **The store is the UI's state.** Records are observable objects. A body
    that read a field is invalidated when that field of that record changes
    and at no other time. Reads are synchronous on the main actor; commits are
-   atomic batches on it; decoding, normalization, persistence and collection
+   atomic batches on it, and the availability check, which reads the image
+   when memory lacks a record, collection, and the normalization of an
+   optimistic response, whose layer shows in the turn of the call, run
+   there too; decoding and normalizing a response and the image's writes
    run off it. There is no asynchronous read path for views.
 3. **The response is the oracle.** Whatever path a value takes through
    ingest, interned slots, optimistic overlays and persisted images, reading
@@ -88,7 +93,10 @@ true, who decides, and what the words are.
 4. **The compiler decides; the runtime executes.** Every operation is static.
    Identity, aggregation, masking, storage keys, persisted ids and
    diagnostics are settled at build time. The runtime interprets plans; it
-   never parses GraphQL, hashes a field name or consults a policy object.
+   never parses GraphQL or consults a policy object, and no path a view or
+   a commit takes hashes a field name: the compiler emits a constant per
+   storage key and the process numbers it once
+   ([decision](decisions/slots-are-numbered-by-the-process.md)).
 5. **Relay's words, a closed set.** The vocabulary is Relay's and the GraphQL
    specification's wherever they have a word, and the concept inventory is
    closed: a feature is a composition of existing concepts or a directive the

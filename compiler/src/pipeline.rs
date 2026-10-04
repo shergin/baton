@@ -4,12 +4,13 @@
 //! Everything in this file up to `lower` is Relay's; everything after is ours.
 //! The plan IR is the seam: emitters never see Relay types.
 
+use std::collections::BTreeMap;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 use common::{Diagnostic, DirectiveName, NamedItem, NoopPerfLogger, SourceLocationKey};
 use graphql_ir::{
-    ConditionValue, FragmentDefinition, FragmentDefinitionNameSet, Program, Selection,
+    ConditionValue, Field, FragmentDefinition, FragmentDefinitionNameSet, Program, Selection,
 };
 use graphql_syntax::OperationKind;
 use graphql_text_printer::{PrinterOptions, print_full_operation};
@@ -54,16 +55,37 @@ impl Timings {
 pub struct Plan {
     pub fragments: Vec<FragmentPlan>,
     pub operations: Vec<OperationPlan>,
+    /// The schema's root types the store knows by another name, such as
+    /// `QueryRoot` by `Query`.
+    #[serde(skip_serializing_if = "BTreeMap::is_empty")]
+    pub root_names: BTreeMap<String, String>,
+    /// The MD5 of the schema's text, which an app passes as its image's
+    /// version so a new schema starts the image again.
+    #[serde(skip)]
+    pub schema_digest: String,
 }
+
+/// The names the store types its three root records by, whatever the schema
+/// calls its root types, as Relay's root record is a `__Root` in any schema.
+const ROOT_NAMES: [(OperationKind, &str); 3] = [
+    (OperationKind::Query, "Query"),
+    (OperationKind::Mutation, "Mutation"),
+    (OperationKind::Subscription, "Subscription"),
+];
 
 #[derive(Debug, Clone, serde::Serialize)]
 pub struct FragmentPlan {
     pub name: String,
     /// The file the fragment was declared in.
     pub source: String,
+    /// Which of the file's documents declared it, as the scanner numbered
+    /// them.
+    pub document: usize,
     pub type_condition: String,
     /// Whether the type condition is an interface or union.
     pub type_is_abstract: bool,
+    /// The concrete types the type condition admits, sorted.
+    pub possible_types: Vec<String>,
     /// `@argumentDefinitions`, with defaults.
     pub arguments: Vec<VariablePlan>,
     /// `@refetchable`: the generated query and how to bind it.
@@ -102,6 +124,9 @@ pub struct OperationPlan {
     pub name: String,
     /// The file the operation was declared in.
     pub source: String,
+    /// Which of the file's documents declared it, as the scanner numbered
+    /// them; a refetch query is its fragment's.
+    pub document: usize,
     pub kind: String,
     pub root_type: String,
     pub variables: Vec<VariablePlan>,
@@ -113,6 +138,8 @@ pub struct OperationPlan {
     pub bubbles: bool,
     /// Whether any part of the response may arrive incrementally.
     pub has_deferred: bool,
+    /// The `onError` value `baton.json` names, as `Baton.ErrorBehavior`'s case.
+    pub error_behavior: Option<String>,
     pub reader: Vec<SelectionPlan>,
     pub normalization: Vec<SelectionPlan>,
 }
@@ -148,7 +175,7 @@ pub enum TypeKind {
 }
 
 /// A GraphQL constant, as a fragment argument or a variable default.
-#[derive(Debug, Clone, serde::Serialize)]
+#[derive(Debug, Clone, PartialEq, serde::Serialize)]
 #[serde(tag = "kind", content = "value", rename_all = "snake_case")]
 pub enum ConstantPlan {
     Null,
@@ -160,36 +187,52 @@ pub enum ConstantPlan {
     Object(Vec<(String, ConstantPlan)>),
 }
 
-/// An argument value: a variable of the enclosing scope, or a constant.
-#[derive(Debug, Clone, serde::Serialize)]
+/// An argument value: a variable of the enclosing scope, a constant, or a
+/// list or object whose items may be either.
+#[derive(Debug, Clone, PartialEq, serde::Serialize)]
 #[serde(tag = "kind", content = "value", rename_all = "snake_case")]
 pub enum ArgumentValuePlan {
     Variable(String),
     Constant(ConstantPlan),
+    List(Vec<ArgumentValuePlan>),
+    Object(Vec<(String, ArgumentValuePlan)>),
 }
 
-#[derive(Debug, Clone, serde::Serialize)]
+#[derive(Debug, Clone, PartialEq, serde::Serialize)]
 pub struct ArgumentPlan {
     pub name: String,
     pub value: ArgumentValuePlan,
 }
 
+/// Relay's storage key, as a tree: the field name and its arguments, sorted
+/// by name. The emitter writes it as the runtime renders one; nothing parses
+/// it again.
+#[derive(Debug, Clone, PartialEq, serde::Serialize)]
+pub struct StorageKeyPlan {
+    pub name: String,
+    pub arguments: Vec<ArgumentPlan>,
+}
+
 /// A root field that returns an entity addressable by one of its arguments,
 /// so a cached entity can satisfy the field before it was ever fetched.
-#[derive(Debug, Clone, serde::Serialize)]
+#[derive(Debug, Clone, PartialEq, serde::Serialize)]
 pub struct LookupPlan {
-    /// `None` resolves by id across types.
+    /// `None` resolves by id among `possible_types`.
     pub type_name: Option<String>,
+    /// The concrete types the field returns, for a lookup without a type.
+    pub possible_types: Vec<String>,
     pub argument: String,
+    /// The argument's value in the document.
+    pub value: ArgumentValuePlan,
 }
 
 /// A `@connection` field: the client record pages merge into, and the cursor
 /// arguments that decide whether a page replaces, appends or prepends.
-#[derive(Debug, Clone, serde::Serialize)]
+#[derive(Debug, Clone, PartialEq, serde::Serialize)]
 pub struct ConnectionPlan {
     pub key: String,
     /// Relay's handle key with the filters: `__Key_connection(states:"OPEN")`.
-    pub storage_key: String,
+    pub storage_key: StorageKeyPlan,
     pub edge_type: String,
     pub page_info_type: String,
     pub after: Option<ArgumentValuePlan>,
@@ -197,7 +240,7 @@ pub struct ConnectionPlan {
 }
 
 /// An edge directive on a mutation payload field, as Relay's handle.
-#[derive(Debug, Clone, serde::Serialize)]
+#[derive(Debug, Clone, PartialEq, serde::Serialize)]
 pub struct HandlePlan {
     /// `appendEdge`, `prependEdge`, `appendNode`, `prependNode`, `deleteEdge`, `deleteRecord`.
     pub kind: String,
@@ -235,7 +278,7 @@ pub enum SelectionPlan {
         /// `@semanticNonNull` in the schema: null only when an error occurred.
         semantic_non_null: bool,
         list: bool,
-        storage_key: String,
+        storage_key: StorageKeyPlan,
         handle: Option<HandlePlan>,
         required: Option<RequiredPlan>,
         catch: Option<CatchPlan>,
@@ -257,7 +300,10 @@ pub enum SelectionPlan {
         /// Whether the target type is an interface or union: records are then
         /// keyed and sloted by the payload's `__typename`.
         is_abstract: bool,
-        storage_key: String,
+        /// The concrete types the target type admits, sorted: itself for an
+        /// object type.
+        possible_types: Vec<String>,
+        storage_key: StorageKeyPlan,
         lookup: Option<LookupPlan>,
         connection: Option<ConnectionPlan>,
         handle: Option<HandlePlan>,
@@ -270,6 +316,10 @@ pub enum SelectionPlan {
     },
     Inline {
         type_condition: Option<String>,
+        /// The concrete types the type condition admits, sorted.
+        condition_types: Option<Vec<String>>,
+        /// How the type condition stands to the parent's possible types.
+        condition_class: Option<ConditionClass>,
         /// An explicit `@alias(as:)` name.
         alias: Option<String>,
         /// `@defer`: the label the incremental part carries.
@@ -289,6 +339,19 @@ pub enum SelectionPlan {
         passing: bool,
         selections: Vec<SelectionPlan>,
     },
+}
+
+/// How an inline fragment's type condition stands to the types its parent
+/// admits: every one of them satisfies it, one does, or several do.
+#[derive(Debug, Clone, PartialEq, serde::Serialize)]
+#[serde(tag = "kind", content = "type", rename_all = "snake_case")]
+pub enum ConditionClass {
+    /// The fields fold into the parent's lens.
+    Always,
+    /// A record of this concrete type, and only of it, satisfies it.
+    Concrete(String),
+    /// Records of several concrete types satisfy it.
+    Set,
 }
 
 /// Output of a successful compilation.
@@ -314,6 +377,11 @@ pub fn compile(
     )?;
     let schema = Arc::new(schema);
     timings.schema = started.elapsed();
+    let errors = validate_lookups(&schema, config);
+    if !errors.is_empty() {
+        return Err(errors);
+    }
+    let root_names = root_names(&schema, schema_path)?;
 
     let started = Instant::now();
     let mut definitions = Vec::new();
@@ -321,7 +389,11 @@ pub fn compile(
     for document in documents {
         let key = SourceLocationKey::embedded(&document.path.to_string_lossy(), document.index);
         match graphql_syntax::parse_executable(&document.text, key) {
-            Ok(parsed) => definitions.extend(parsed.definitions),
+            Ok(parsed) => {
+                let marker = document.embedded.as_ref().map(|embedded| embedded.marker);
+                diagnostics.extend(crate::directives::check(&parsed.definitions, key, marker));
+                definitions.extend(parsed.definitions);
+            }
             Err(errors) => diagnostics.extend(errors),
         }
     }
@@ -355,10 +427,175 @@ pub fn compile(
     timings.transform = started.elapsed();
 
     let started = Instant::now();
-    let plan = lower(&schema, &programs, config);
+    let mut plan = lower(&schema, &programs, config)?;
+    plan.root_names = root_names;
+    plan.schema_digest = format!("{:x}", md5::compute(schema_sdl.as_bytes()));
     timings.lower = started.elapsed();
 
     Ok(Compiled { plan, timings })
+}
+
+/// A mutation's root fields keyed without their arguments: the payload is
+/// read once by the caller, and a key that carried the input would number
+/// a new slot for every distinct one. An aliased field keeps its alias in
+/// the key, as `addNote(as:"first")`, so two fields never share a slot.
+fn key_by_response(selections: &mut [SelectionPlan]) {
+    for selection in selections {
+        match selection {
+            SelectionPlan::Scalar {
+                name,
+                alias,
+                storage_key,
+                ..
+            }
+            | SelectionPlan::Linked {
+                name,
+                alias,
+                storage_key,
+                ..
+            } => {
+                *storage_key = StorageKeyPlan {
+                    name: name.clone(),
+                    arguments: alias
+                        .iter()
+                        .map(|alias| ArgumentPlan {
+                            name: "as".to_string(),
+                            value: ArgumentValuePlan::Constant(ConstantPlan::String(alias.clone())),
+                        })
+                        .collect(),
+                };
+            }
+            SelectionPlan::Inline { selections, .. }
+            | SelectionPlan::Condition { selections, .. } => key_by_response(selections),
+            SelectionPlan::Spread { .. } => {}
+        }
+    }
+}
+
+/// The schema's root types whose names differ from the store's. A slot is
+/// numbered within its type, so every slot of a root field must belong to
+/// the type the store's root record has; another type of the schema that
+/// already has that name would share its numbering, and is an error.
+fn root_names(
+    schema: &SDLSchema,
+    schema_path: &str,
+) -> Result<BTreeMap<String, String>, Vec<Diagnostic>> {
+    let location = common::Location::new(
+        SourceLocationKey::standalone(schema_path),
+        common::Span::new(0, 0),
+    );
+    let mut names = BTreeMap::new();
+    let mut errors = Vec::new();
+    for (kind, store_name) in ROOT_NAMES {
+        let root = match kind {
+            OperationKind::Query => schema.query_type(),
+            OperationKind::Mutation => schema.mutation_type(),
+            OperationKind::Subscription => schema.subscription_type(),
+        };
+        let Some(root) = root else { continue };
+        let name = schema.get_type_name(root).lookup().to_string();
+        if name == store_name {
+            continue;
+        }
+        if schema.get_type(store_name.intern()).is_some() {
+            errors.push(Diagnostic::error(
+                format!(
+                    "the {kind} type is `{name}` and another type is named `{store_name}`: the store types its {kind} root `{store_name}`, so the two would share their fields"
+                ),
+                location,
+            ));
+            continue;
+        }
+        // Under an interface or union a record's type is the payload's
+        // `__typename`, which would name the schema's type, not the store's.
+        let abstract_member = match root {
+            Type::Object(id) => {
+                !schema.object(id).interfaces.is_empty()
+                    || schema.unions().any(|union| union.members.contains(&id))
+            }
+            _ => false,
+        };
+        if abstract_member {
+            errors.push(Diagnostic::error(
+                format!(
+                    "the {kind} type `{name}` implements an interface or belongs to a union: the store types its {kind} root `{store_name}`, which a payload's `__typename` would not name"
+                ),
+                location,
+            ));
+            continue;
+        }
+        names.insert(name, store_name.to_string());
+    }
+    if errors.is_empty() {
+        Ok(names)
+    } else {
+        Err(errors)
+    }
+}
+
+/// Checks each lookup in `baton.json` against the schema: the root field
+/// exists and takes the argument, and `type` is the field's concrete return
+/// type, omitted only when the field returns an interface or a union.
+fn validate_lookups(schema: &SDLSchema, config: &Config) -> Vec<Diagnostic> {
+    let location = common::Location::new(
+        SourceLocationKey::standalone(&config.path.to_string_lossy()),
+        common::Span::new(0, 0),
+    );
+    let mut errors = Vec::new();
+    for lookup in &config.lookups {
+        let mut fail = |message: String| errors.push(Diagnostic::error(message, location));
+        let Some((type_name, field_name)) = lookup.field.split_once('.') else {
+            fail(format!(
+                "the lookup `{}` names no field: write `Type.field`",
+                lookup.field
+            ));
+            continue;
+        };
+        let Some(parent) = schema.get_type(type_name.intern()) else {
+            fail(format!(
+                "the lookup `{}` names the type `{type_name}`, which the schema does not have",
+                lookup.field
+            ));
+            continue;
+        };
+        let Some(field) = schema.named_field(parent, field_name.intern()) else {
+            fail(format!(
+                "the lookup `{}` names a field `{type_name}` does not have",
+                lookup.field
+            ));
+            continue;
+        };
+        let field = schema.field(field);
+        if field
+            .arguments
+            .named(common::ArgumentName(lookup.argument.as_str().intern()))
+            .is_none()
+        {
+            fail(format!(
+                "the lookup `{}` takes `{}`, which the field has no argument of",
+                lookup.field, lookup.argument
+            ));
+        }
+        let returns = field.type_.inner();
+        let returned = schema.get_type_name(returns).lookup();
+        match (&lookup.type_name, returns.is_abstract_type()) {
+            (Some(named), false) if named == returned => {}
+            (Some(named), false) => fail(format!(
+                "the lookup `{}` names the type `{named}`, but the field returns `{returned}`",
+                lookup.field
+            )),
+            (Some(_), true) => fail(format!(
+                "`{}` returns `{returned}`, an interface or union: the lookup takes no `type`, and finds the id among its types",
+                lookup.field
+            )),
+            (None, false) => fail(format!(
+                "`{}` returns `{returned}`: name it as the lookup's `type`",
+                lookup.field
+            )),
+            (None, true) => {}
+        }
+    }
+    errors
 }
 
 /// The subset of Relay's validations that apply to Baton's directive set,
@@ -403,6 +640,8 @@ struct Lowering<'a> {
     schema: &'a SDLSchema,
     programs: &'a Programs,
     config: &'a Config,
+    /// Errors found while lowering, reported together at the end.
+    diagnostics: std::cell::RefCell<Vec<Diagnostic>>,
 }
 
 fn directive_name(name: &str) -> DirectiveName {
@@ -410,11 +649,16 @@ fn directive_name(name: &str) -> DirectiveName {
 }
 
 /// Lowers Relay's reader and normalization programs into the plan IR.
-fn lower(schema: &SDLSchema, programs: &Programs, config: &Config) -> Plan {
+fn lower(
+    schema: &SDLSchema,
+    programs: &Programs,
+    config: &Config,
+) -> Result<Plan, Vec<Diagnostic>> {
     let lowering = Lowering {
         schema,
         programs,
         config,
+        diagnostics: std::cell::RefCell::new(Vec::new()),
     };
     let mut plan = Plan::default();
     for fragment in programs.reader.fragments() {
@@ -436,7 +680,13 @@ fn lower(schema: &SDLSchema, programs: &Programs, config: &Config) -> Plan {
                     false,
                 )
             })
-            .unwrap_or_default();
+            .unwrap_or_else(|| {
+                lowering.internal(
+                    "the reader program has no such operation",
+                    operation.name.location,
+                );
+                Vec::new()
+            });
         let text = programs
             .operation_text
             .operation(operation.name.item)
@@ -447,16 +697,43 @@ fn lower(schema: &SDLSchema, programs: &Programs, config: &Config) -> Plan {
                     PrinterOptions::default(),
                 )
             })
-            .unwrap_or_default();
-        let normalization = lowering.selections(
+            .unwrap_or_else(|| {
+                lowering.internal(
+                    "the operation has no printable text",
+                    operation.name.location,
+                );
+                String::new()
+            })
+            // Trimmed once, here: the id is the hash of the very text the
+            // app holds and sends.
+            .trim_end()
+            .to_string();
+        let mut normalization = lowering.selections(
             &operation.selections,
             operation.type_,
             Side::Normalization,
             false,
         );
+        let mut reader = reader;
+        if operation.kind == OperationKind::Mutation {
+            key_by_response(&mut normalization);
+            key_by_response(&mut reader);
+        }
+        // A mutation's payload and a subscription's event each arrive whole:
+        // neither is read as a stream of parts.
+        if operation.kind != OperationKind::Query && has_deferred(&normalization) {
+            lowering.diagnostics.borrow_mut().push(Diagnostic::error(
+                format!(
+                    "`@defer` in the {} `{name}`: its response arrives in one part, so nothing can be deferred",
+                    operation.kind
+                ),
+                operation.name.location,
+            ));
+        }
         plan.operations.push(OperationPlan {
             name: name.to_string(),
             source: operation.name.location.source_location().path().to_string(),
+            document: document_index(operation.name.location),
             kind: match operation.kind {
                 OperationKind::Query => "query",
                 OperationKind::Mutation => "mutation",
@@ -478,13 +755,32 @@ fn lower(schema: &SDLSchema, programs: &Programs, config: &Config) -> Plan {
                     .is_some()
             }),
             has_deferred: has_deferred(&normalization),
+            error_behavior: config
+                .on_error
+                .map(|behavior| behavior.swift_case().to_string()),
             reader,
             normalization,
         });
     }
     plan.operations
         .sort_by(|left, right| left.name.cmp(&right.name));
-    plan
+    // An operation is lowered twice, as its reader and as its
+    // normalization, so a selection's error is found twice: once is told.
+    let mut diagnostics: Vec<Diagnostic> = Vec::new();
+    for diagnostic in lowering.diagnostics.into_inner() {
+        let repeated = diagnostics.iter().any(|told| {
+            told.location() == diagnostic.location()
+                && told.message().to_string() == diagnostic.message().to_string()
+        });
+        if !repeated {
+            diagnostics.push(diagnostic);
+        }
+    }
+    if diagnostics.is_empty() {
+        Ok(plan)
+    } else {
+        Err(diagnostics)
+    }
 }
 
 fn has_deferred(selections: &[SelectionPlan]) -> bool {
@@ -501,17 +797,27 @@ fn has_deferred(selections: &[SelectionPlan]) -> bool {
     })
 }
 
+/// The place among its file's documents of the one a definition came from.
+fn document_index(location: common::Location) -> usize {
+    match location.source_location() {
+        SourceLocationKey::Embedded { index, .. } => usize::from(index),
+        _ => 0,
+    }
+}
+
 impl Lowering<'_> {
     fn fragment(&self, fragment: &FragmentDefinition) -> FragmentPlan {
-        FragmentPlan {
+        let mut plan = FragmentPlan {
             name: fragment.name.item.0.lookup().to_string(),
             source: fragment.name.location.source_location().path().to_string(),
+            document: document_index(fragment.name.location),
             type_condition: self
                 .schema
                 .get_type_name(fragment.type_condition)
                 .lookup()
                 .to_string(),
             type_is_abstract: fragment.type_condition.is_abstract_type(),
+            possible_types: self.possible_types(fragment.type_condition),
             arguments: self.variables(&fragment.variable_definitions),
             refetch: self.refetch(fragment),
             throws_on_field_error: fragment
@@ -528,7 +834,14 @@ impl Lowering<'_> {
                 Side::Reader,
                 false,
             ),
+        };
+        // A fragment on the mutation type is only ever read at the mutation
+        // root, whose fields the mutation writes by response key: it reads
+        // them by the same keys.
+        if self.schema.mutation_type() == Some(fragment.type_condition) {
+            key_by_response(&mut plan.reader);
         }
+        plan
     }
 
     /// The `@refetchable` metadata Relay attached: the generated query's name
@@ -547,7 +860,13 @@ impl Lowering<'_> {
                     .map(|variable| variable.name.item.0.lookup().to_string())
                     .collect()
             })
-            .unwrap_or_default();
+            .unwrap_or_else(|| {
+                self.internal(
+                    "the refetch query Relay generated is missing",
+                    fragment.name.location,
+                );
+                Vec::new()
+            });
         let connection = extract_connection_metadata_from_directive(&fragment.directives)
             .filter(|metadatas| metadatas.len() == 1)
             .and_then(|metadatas| {
@@ -599,18 +918,66 @@ impl Lowering<'_> {
     /// payload's `__typename` then names the type to key by.
     fn type_has_id(&self, type_: Type) -> bool {
         match type_ {
-            Type::Union(id) => self.schema.union(id).members.iter().any(|member| {
-                self.schema
-                    .named_field(Type::Object(*member), "id".intern())
-                    .is_some()
-            }),
+            // An interface need not declare the `id` its implementers have:
+            // GitHub's `Actor` does not, and its users are still entities.
+            Type::Union(_) | Type::Interface(_) => {
+                self.possible_objects(type_).into_iter().any(|object| {
+                    self.schema
+                        .named_field(Type::Object(object), "id".intern())
+                        .is_some()
+                })
+            }
             _ => self.schema.named_field(type_, "id".intern()).is_some(),
+        }
+    }
+
+    /// The concrete types a type admits, sorted by name: an object type is
+    /// itself, an interface every object that implements it, a union its
+    /// members.
+    fn possible_types(&self, type_: Type) -> Vec<String> {
+        let mut names: Vec<String> = self
+            .possible_objects(type_)
+            .into_iter()
+            .map(|id| self.schema.object(id).name.item.0.lookup().to_string())
+            .collect();
+        names.sort();
+        names
+    }
+
+    fn possible_objects(&self, type_: Type) -> Vec<schema::ObjectID> {
+        match type_ {
+            Type::Object(id) => vec![id],
+            Type::Interface(id) => self
+                .schema
+                .interface(id)
+                .recursively_implementing_objects(self.schema)
+                .into_iter()
+                .collect(),
+            Type::Union(id) => self.schema.union(id).members.clone(),
+            _ => Vec::new(),
+        }
+    }
+
+    /// How a type condition stands to the parent's possible types.
+    fn condition_class(&self, parent: Type, condition: Type) -> ConditionClass {
+        let admitted = self.possible_types(condition);
+        let satisfying: Vec<String> = self
+            .possible_types(parent)
+            .into_iter()
+            .filter(|type_name| admitted.contains(type_name))
+            .collect();
+        if parent == condition || satisfying.len() == self.possible_types(parent).len() {
+            ConditionClass::Always
+        } else if let [only] = satisfying.as_slice() {
+            ConditionClass::Concrete(only.clone())
+        } else {
+            ConditionClass::Set
         }
     }
 
     /// The named type of a field on `parent`, for the connection's edge and
     /// page info types.
-    fn field_type_name(&self, parent: Type, field: &str) -> String {
+    fn field_type_name(&self, parent: Type, field: &str, location: common::Location) -> String {
         self.schema
             .named_field(parent, field.intern())
             .map(|id| {
@@ -619,7 +986,13 @@ impl Lowering<'_> {
                     .lookup()
                     .to_string()
             })
-            .unwrap_or_default()
+            .unwrap_or_else(|| {
+                self.internal(
+                    &format!("a connection Relay validated has no `{field}`"),
+                    location,
+                );
+                String::new()
+            })
     }
 
     /// The edge directive or connection handle Relay attached to a field.
@@ -627,11 +1000,25 @@ impl Lowering<'_> {
         let directive = extract_handle_field_directives(directives).next()?;
         let values = extract_values_from_handle_field_directive(directive);
         let arguments = values.handle_args.unwrap_or_default();
+        let connections = arguments
+            .named(common::ArgumentName("connections".intern()))
+            .and_then(|argument| {
+                let value = argument_value_plan(&argument.value.item);
+                if matches!(
+                    value,
+                    ArgumentValuePlan::List(_) | ArgumentValuePlan::Object(_)
+                ) {
+                    self.diagnostics.borrow_mut().push(Diagnostic::error(
+                        "pass the connection ids as one variable or as a list of constants",
+                        argument.value.location,
+                    ));
+                    return None;
+                }
+                Some(value)
+            });
         Some(HandlePlan {
             kind: values.handle.lookup().to_string(),
-            connections: arguments
-                .named(common::ArgumentName("connections".intern()))
-                .map(|argument| argument_value_plan(&argument.value.item)),
+            connections,
             edge_type_name: arguments
                 .named(common::ArgumentName("edgeTypeName".intern()))
                 .and_then(|argument| match &argument.value.item {
@@ -683,9 +1070,34 @@ impl Lowering<'_> {
             .is_some()
     }
 
-    /// `@semanticNonNull` makes a nullable field non-null in the absence of errors.
+    /// Reports a state of Relay's programs the lowering relies on never
+    /// meeting: a fault of the compiler, said where it was met rather than
+    /// lowered into an empty plan.
+    fn internal(&self, what: &str, location: common::Location) {
+        self.diagnostics.borrow_mut().push(Diagnostic::error(
+            format!("internal error: {what}; please report it"),
+            location,
+        ));
+    }
+
+    /// `@semanticNonNull` makes a nullable field non-null in the absence of
+    /// errors; under `onError: NULL` every field the schema types non-null is
+    /// one too, since an error nulls it in place.
     fn semantic_non_null(&self, definition: &schema::definitions::Field) -> bool {
+        if self.nulls_on_error() && definition.type_.is_non_null() {
+            return true;
+        }
         !definition.type_.is_non_null() && definition.semantic_type().is_non_null()
+    }
+
+    /// Whether a field the schema types non-null is non-null in the response:
+    /// not under `onError: NULL`, where an error nulls it.
+    fn non_null(&self, definition: &schema::definitions::Field) -> bool {
+        definition.type_.is_non_null() && !self.nulls_on_error()
+    }
+
+    fn nulls_on_error(&self) -> bool {
+        self.config.on_error == Some(crate::config::OnError::Null)
     }
 
     fn selections(
@@ -711,7 +1123,7 @@ impl Lowering<'_> {
                             .lookup()
                             .to_string(),
                         base_kind: self.type_kind(definition.type_.inner()),
-                        non_null: definition.type_.is_non_null(),
+                        non_null: self.non_null(definition),
                         semantic_non_null: self.semantic_non_null(definition),
                         list: definition.type_.is_list(),
                         storage_key: storage_key(definition.name.item.lookup(), &field.arguments),
@@ -731,9 +1143,37 @@ impl Lowering<'_> {
                         .lookups
                         .iter()
                         .find(|lookup| lookup.field == format!("{parent_name}.{name}"))
-                        .map(|lookup| LookupPlan {
-                            type_name: lookup.type_name.clone(),
-                            argument: lookup.argument.clone(),
+                        .and_then(|lookup| {
+                            let argument = field
+                                .arguments
+                                .named(common::ArgumentName(lookup.argument.as_str().intern()));
+                            let Some(argument) = argument else {
+                                self.diagnostics.borrow_mut().push(Diagnostic::error(
+                                    format!(
+                                        "baton.json looks `{parent_name}.{name}` up by `{}`, which this selection does not pass",
+                                        lookup.argument
+                                    ),
+                                    field.alias_or_name_location(),
+                                ));
+                                return None;
+                            };
+                            let value = argument_value_plan(&argument.value.item);
+                            if matches!(value, ArgumentValuePlan::List(_) | ArgumentValuePlan::Object(_)) {
+                                self.diagnostics.borrow_mut().push(Diagnostic::error(
+                                    format!(
+                                        "the lookup argument `{}` of `{parent_name}.{name}` must be a variable or a constant",
+                                        lookup.argument
+                                    ),
+                                    argument.value.location,
+                                ));
+                                return None;
+                            }
+                            Some(LookupPlan {
+                                type_name: lookup.type_name.clone(),
+                                possible_types: self.possible_types(target),
+                                argument: lookup.argument.clone(),
+                                value,
+                            })
                         });
                     let mut handle = self.handle(&field.directives);
                     let mut connection = None;
@@ -782,8 +1222,12 @@ impl Lowering<'_> {
                         connection = Some(ConnectionPlan {
                             key: values.key.lookup().to_string(),
                             storage_key: client_key,
-                            edge_type: self.field_type_name(target, "edges"),
-                            page_info_type: self.field_type_name(target, "pageInfo"),
+                            edge_type: self.field_type_name(target, "edges", field.alias_or_name_location()),
+                            page_info_type: self.field_type_name(
+                                target,
+                                "pageInfo",
+                                field.alias_or_name_location(),
+                            ),
                             after: cursor("after"),
                             before: cursor("before"),
                         });
@@ -795,11 +1239,12 @@ impl Lowering<'_> {
                         type_name: self.type_reference_name(&definition.type_),
                         base_type: self.schema.get_type_name(target).lookup().to_string(),
                         base_kind: self.type_kind(target),
-                        non_null: definition.type_.is_non_null(),
+                        non_null: self.non_null(definition),
                         semantic_non_null: self.semantic_non_null(definition),
                         plural: definition.type_.is_list(),
                         has_id: self.type_has_id(target),
                         is_abstract: target.is_abstract_type(),
+                        possible_types: self.possible_types(target),
                         storage_key: field_storage_key,
                         lookup,
                         connection,
@@ -848,6 +1293,12 @@ impl Lowering<'_> {
                         type_condition: inline
                             .type_condition
                             .map(|type_| self.schema.get_type_name(type_).lookup().to_string()),
+                        condition_types: inline
+                            .type_condition
+                            .map(|type_| self.possible_types(type_)),
+                        condition_class: inline
+                            .type_condition
+                            .map(|type_| self.condition_class(parent_type, type_)),
                         alias,
                         deferred,
                         catch: self.catch(&inline.directives),
@@ -872,7 +1323,10 @@ impl Lowering<'_> {
                                 .lookup()
                                 .to_string()
                         })
-                        .unwrap_or_default(),
+                        .unwrap_or_else(|| {
+                            self.internal("the spread names a fragment the reader program lacks", spread.fragment.location);
+                            String::new()
+                        }),
                     arguments: spread
                         .arguments
                         .iter()
@@ -929,25 +1383,21 @@ impl Lowering<'_> {
     }
 }
 
-/// Relay's storage key: the field name, plus `(arg:value,...)` when the field
-/// has arguments. Variables are kept symbolic; the runtime binds them.
-fn storage_key(name: &str, arguments: &[graphql_ir::Argument]) -> String {
-    if arguments.is_empty() {
-        return name.to_string();
-    }
+/// Relay's storage key: the field name and its arguments sorted by name.
+/// Variables stay symbolic; the runtime binds them.
+fn storage_key(name: &str, arguments: &[graphql_ir::Argument]) -> StorageKeyPlan {
     let mut sorted: Vec<&graphql_ir::Argument> = arguments.iter().collect();
     sorted.sort_by_key(|argument| argument.name.item.0.lookup());
-    let rendered: Vec<String> = sorted
-        .iter()
-        .map(|argument| {
-            format!(
-                "{}:{}",
-                argument.name.item.0.lookup(),
-                render_value(&argument.value.item)
-            )
-        })
-        .collect();
-    format!("{}({})", name, rendered.join(","))
+    StorageKeyPlan {
+        name: name.to_string(),
+        arguments: sorted
+            .into_iter()
+            .map(|argument| ArgumentPlan {
+                name: argument.name.item.0.lookup().to_string(),
+                value: argument_value_plan(&argument.value.item),
+            })
+            .collect(),
+    }
 }
 
 fn constant_plan(value: &graphql_ir::ConstantValue) -> ConstantPlan {
@@ -976,8 +1426,8 @@ fn constant_plan(value: &graphql_ir::ConstantValue) -> ConstantPlan {
     }
 }
 
-/// An argument as the plan carries it: a variable name or a constant. Lists
-/// and objects that mix variables in are kept as their rendered text.
+/// An argument as the plan carries it: a variable name, a constant, or a
+/// list or object of either.
 fn argument_value_plan(value: &graphql_ir::Value) -> ArgumentValuePlan {
     match value {
         graphql_ir::Value::Constant(constant) => {
@@ -986,81 +1436,23 @@ fn argument_value_plan(value: &graphql_ir::Value) -> ArgumentValuePlan {
         graphql_ir::Value::Variable(variable) => {
             ArgumentValuePlan::Variable(variable.name.item.0.lookup().to_string())
         }
-        other => ArgumentValuePlan::Constant(ConstantPlan::String(render_value(other))),
-    }
-}
-
-/// A constant argument as JSON, the way Relay's `formatStorageKey` renders it:
-/// enums as strings, object keys in source order (the IR sorts them).
-fn render_constant(value: &graphql_ir::ConstantValue) -> String {
-    match value {
-        graphql_ir::ConstantValue::Int(int) => int.to_string(),
-        graphql_ir::ConstantValue::Float(float) => float.as_float().to_string(),
-        graphql_ir::ConstantValue::String(string) | graphql_ir::ConstantValue::Enum(string) => {
-            json_string(string.lookup())
-        }
-        graphql_ir::ConstantValue::Boolean(boolean) => boolean.to_string(),
-        graphql_ir::ConstantValue::Null() => "null".to_string(),
-        graphql_ir::ConstantValue::List(items) => {
-            let items: Vec<String> = items.iter().map(render_constant).collect();
-            format!("[{}]", items.join(","))
-        }
-        graphql_ir::ConstantValue::Object(fields) => {
-            let mut sorted: Vec<&graphql_ir::ConstantArgument> = fields.iter().collect();
-            sorted.sort_by_key(|field| field.name.item.0.lookup());
-            let fields: Vec<String> = sorted
-                .iter()
-                .map(|field| {
-                    format!(
-                        "{}:{}",
-                        json_string(field.name.item.0.lookup()),
-                        render_constant(&field.value.item)
-                    )
-                })
-                .collect();
-            format!("{{{}}}", fields.join(","))
-        }
-    }
-}
-
-fn json_string(text: &str) -> String {
-    let mut output = String::with_capacity(text.len() + 2);
-    output.push('"');
-    for character in text.chars() {
-        match character {
-            '"' => output.push_str("\\\""),
-            '\\' => output.push_str("\\\\"),
-            '\n' => output.push_str("\\n"),
-            '\r' => output.push_str("\\r"),
-            '\t' => output.push_str("\\t"),
-            other if (other as u32) < 0x20 => output.push_str(&format!("\\u{:04x}", other as u32)),
-            other => output.push(other),
-        }
-    }
-    output.push('"');
-    output
-}
-
-fn render_value(value: &graphql_ir::Value) -> String {
-    match value {
-        graphql_ir::Value::Constant(constant) => render_constant(constant),
-        graphql_ir::Value::Variable(variable) => format!("${}", variable.name.item.0.lookup()),
         graphql_ir::Value::List(items) => {
-            let items: Vec<String> = items.iter().map(render_value).collect();
-            format!("[{}]", items.join(","))
+            ArgumentValuePlan::List(items.iter().map(argument_value_plan).collect())
         }
-        graphql_ir::Value::Object(fields) => {
-            let fields: Vec<String> = fields
+        graphql_ir::Value::Object(fields) => ArgumentValuePlan::Object(
+            fields
                 .iter()
                 .map(|field| {
-                    format!(
-                        "{}:{}",
-                        field.name.item.0.lookup(),
-                        render_value(&field.value.item)
+                    (
+                        field.name.item.0.lookup().to_string(),
+                        argument_value_plan(&field.value.item),
                     )
                 })
-                .collect();
-            format!("{{{}}}", fields.join(","))
-        }
+                .collect(),
+        ),
     }
 }
+
+#[cfg(test)]
+#[path = "tests/pipeline_tests.rs"]
+mod tests;

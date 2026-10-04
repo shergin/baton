@@ -31,16 +31,18 @@ other native clients is at the end, and at length in
 
 - **A fragment per view.** GraphQL lives in the Swift file, next to the view
   that reads it, as a full, valid document. A parent passes a child its
-  fragment as a pointer-sized value; a child can read nothing it did not
-  declare.
+  fragment as a record reference and a context; a child can read nothing it
+  did not declare.
 - **One request per screen.** The compiler assembles the operation from the
   fragments spread into it and emits a persisted id for it. Nobody writes the
   screen's query by hand, and nothing waterfalls.
 - **Cached data in the first frame.** Reads are synchronous on the main
   actor; a handle resolves against the store before the first body runs, and
   after a launch the store reads what that handle needs from its image on
-  disk. Decoding, normalization, the image's writes and garbage collection
-  run off it.
+  disk. Decoding and normalizing a response and the image's writes run off
+  it; the check and garbage collection stay on it, each under a third of a
+  frame on the benchmark machine, and an optimistic response is normalized
+  on it, so its layer shows in the turn of the call.
 - **Only changed views re-render.** Records are observable objects; a body
   that read `user.name` is invalidated when that field of that record changes
   and at no other time. An unchanged refetch of the benchmark fixture costs
@@ -205,13 +207,14 @@ full in [`CHANGELOG.md`](CHANGELOG.md).
 ## Using it
 
 Add the package and the plugin to a target, put `baton.json` with the schema
-path (and lookups) in the target's directory or at the package root, and
-build. The plugin runs `batonc` for every Swift file that declares GraphQL
+path (and lookups, and `onError` if the server takes it) in the target's
+directory or at the package root, and build. The plugin runs `batonc` for every Swift file that declares GraphQL
 and reports schema errors at the GraphQL text.
 
 To keep the store across launches, give the environment an image:
-`Environment(url: endpoint, persistence: Persistence(name: "Main"))`; call
-`removeAll()` on it at sign-out.
+`Environment(url: endpoint, persistence: Persistence(name: "Main", version: Types.schemaDigest))`,
+where `Types.schemaDigest` is the generated digest of the schema, so a new
+schema starts the image again; call `removeAll()` on it at sign-out.
 
 In this repository:
 
@@ -223,9 +226,13 @@ In this repository:
 - `swift run -c release BatonBenchmarks` prints the numbers behind
   [`BENCHMARKS.md`](BENCHMARKS.md).
 
-Requires the 26 releases of Apple's platforms and Swift 6.2 tools. The
-compiler binary is built from `compiler/` with `scripts/build-compiler.sh`
-until artifact bundles are published.
+Requires the 26 releases of Apple's platforms and Swift 6.2 tools. In a
+checkout, `scripts/build-compiler.sh` builds the compiler from `compiler/`
+and the plugin runs that one; a checkout that SwiftPM evaluated before the
+compiler was built keeps its first answer until told
+`BATON_COMPILER=local`. A package that depends on Baton downloads the
+compiler bundle its release published; releases before the first that
+publishes one need the checkout's.
 
 ## The name
 
@@ -245,13 +252,12 @@ documented to stay off the main thread. Baton generates a lens per fragment
 and the UI framework observes the record: the first body already has the
 cached data, and a changed field re-renders the view that read it.
 
-The response and read rows are the head-to-head in
-[`BENCHMARKS.md`](BENCHMARKS.md). Rick and Morty, page one: 686 KB, 899
-records, Apple M1 Pro, October 2026. Apollo's response for the same data is
-849 KB, because its normalizer asks for `__typename` on every object. The
-memory and optimistic rows are Baton's 0.5.0 benches on that machine. The
-disk row is 0.6.0. A launch with the file already open reads the fixture
-back in 1.78 ms.
+Baton's column is its 0.6.0 benches, and Apollo's the head-to-head in
+[`BENCHMARKS.md`](BENCHMARKS.md), on one fixture and one machine: Rick and
+Morty, page one, 686 KB and 899 records, on an Apple M1 Pro, October 2026.
+Apollo's response for the same data is 849 KB, because its normalizer asks
+for `__typename` on every object. A launch with the file already open reads
+the fixture back in 1.78 ms.
 
 | | Baton 0.6 | Apollo iOS 2.4 | Apollo Kotlin 5.2 |
 |---|---|---|---|
@@ -259,8 +265,8 @@ back in 1.78 ms.
 | A child view receives | A lens: the fields it declared | A snapshot of the parent's dictionary | A nested model the parent can also read |
 | Warm cache, first frame | The data | Loading. The read is `async` | Loading. The read stays off the main thread |
 | One field changes | The view that read it | The whole query, rebuilt into a new tree | The whole query, rebuilt into a new tree |
-| Bytes into the store | 3.4 ms | 318 ms | Rebuilds models into records. Their own bench is below |
-| Read it back | 26 ns a field | 228 ms to rebuild, then 296 ns a field | Rebuilds the operation into models |
+| Bytes into the store | 4.1 ms | 318 ms | Rebuilds models into records. Their own bench is below |
+| Read it back | 28 ns a field, 0.54 µs a field in a view body | 228 ms to rebuild, then 296 ns a field | Rebuilds the operation into models |
 | Memory while scrolling | Plateaus. 42 pages stay near +5 MB | Keeps every record. No eviction | You call GC. TTL and trimming exist |
 | A list | Pages merged in the store, one update per page | One watcher per page, concatenated in the pager | Pages merged in the store |
 | An optimistic write | A typed response, rebased, 0.4 ms for the cycle | A separate mutable model you write into the cache | Opt-in. Watchers then re-run the query |

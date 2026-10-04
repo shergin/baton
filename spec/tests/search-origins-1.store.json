@@ -1,0 +1,8 @@
+{
+  "Character:1": {"__typename": "Character", "id": "1", "origin": {"__ref": "Location:1"}},
+  "Character:2": {"__typename": "Character", "id": "2", "origin": null},
+  "Location:1": {"__typename": "Location", "id": "1", "name": "Earth (C-137)"},
+  "client:root": {"__typename": "Query", "search(name:\"1\")": {"__refs": ["Character:1", "Character:2"]}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

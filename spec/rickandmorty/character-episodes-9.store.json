@@ -1,0 +1,7 @@
+{
+  "Character:9": {"__typename": "Character", "episode": {"__refs": ["Episode:24"]}, "id": "9"},
+  "Episode:24": {"__typename": "Episode", "id": "24", "name": "Pickle Rick"},
+  "client:root": {"__typename": "Query", "character(id:\"9\")": {"__ref": "Character:9"}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

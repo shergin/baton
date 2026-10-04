@@ -26,8 +26,37 @@ final class GatedTransport: Transport, @unchecked Sendable {
     }
 }
 
+/// A transport that answers when told and, as `URLSession` does, fails the
+/// request with a cancellation when the task that made it is cancelled.
+final class CancellableGate: Transport, @unchecked Sendable {
+    private let lock = NSLock()
+    private var waiting: CheckedContinuation<Data, any Error>?
+
+    var pending: Bool { lock.withLock { waiting != nil } }
+
+    func execute(_ request: Request) async throws -> Data {
+        try await withTaskCancellationHandler {
+            try await withCheckedThrowingContinuation { continuation in
+                lock.withLock { waiting = continuation }
+            }
+        } onCancel: {
+            lock.withLock { () -> CheckedContinuation<Data, any Error>? in
+                defer { waiting = nil }
+                return waiting
+            }?.resume(throwing: CancellationError())
+        }
+    }
+
+    func respond(_ data: Data) {
+        lock.withLock { () -> CheckedContinuation<Data, any Error>? in
+            defer { waiting = nil }
+            return waiting
+        }?.resume(returning: data)
+    }
+}
+
 @MainActor
-@Suite("Writes")
+@Suite("Writes", .timeLimit(.minutes(1)))
 struct WriteTests {
     /// A store holding the first page of the fixture through the list plan.
     func seededStore() throws -> Store {
@@ -56,7 +85,7 @@ struct WriteTests {
 
         let optimistic = TestSetFavorite.OptimisticResponse(setFavorite: .init(character: .init(id: "1", favorite: true)))
         let mutation = Task { try await environment.mutate(TestSetFavorite(id: "1", favorite: true), optimistic: optimistic.variable) }
-        while transport.pending == 0 { await Task.yield() }
+        await until { transport.pending != 0 }
 
         #expect(rick.favorite == true, "the layer is visible before the server answers")
         #expect(environment.store.optimisticLayers.count == 1)
@@ -75,16 +104,111 @@ struct WriteTests {
 
         let optimistic = TestSetFavorite.OptimisticResponse(setFavorite: .init(character: .init(id: "1", favorite: true)))
         let mutation = Task { try await environment.mutate(TestSetFavorite(id: "1", favorite: true), optimistic: optimistic.variable) }
-        while transport.pending == 0 { await Task.yield() }
+        await until { transport.pending != 0 }
         #expect(rick.favorite == true)
 
-        transport.respond(Data(#"{"data":{"setFavorite":{"character":{"id":"1","name":"Rick Sanchez","favorite":true}}}}"#.utf8))
+        transport.respond(fixture("set-favorite-1"))
         let data = try await mutation.value
         #expect(data.setFavorite?.character?.favorite == true)
         #expect(data.setFavorite?.character?.name == "Rick Sanchez")
         #expect(rick.favorite == true)
         #expect(environment.store.optimisticLayers.isEmpty)
         #expect(environment.store.mutationRoot !== environment.store.root)
+    }
+
+    @Test("the data a mutation returns stays readable through a collection while the environment keeps the mutation, and not after")
+    func mutationResultLives() async throws {
+        for bufferSize in [10, 0] {
+            let environment = Environment(transport: RecordedTransport([TestRename.name: fixture("rename-1")]), releaseBufferSize: bufferSize)
+            let data = try await environment.mutate(TestRename(id: "1", name: "Rick Prime"))
+            #expect(data.rename?.character?.name == "Rick Prime")
+            environment.collect()
+            if bufferSize > 0 {
+                #expect(data.rename?.character?.name == "Rick Prime", "the completed mutation keeps its payload")
+            } else {
+                #expect(data.rename == nil, "with a buffer of zero nothing is kept, and the payload is collected")
+            }
+        }
+    }
+
+    @Test("mutations push no released query out of the release buffer, and a mutation made again takes the place it had")
+    func mutationsKeepTheirOwnPlaces() async throws {
+        let transport = RecordedTransport([TestList.name: fixtureData, TestRename.name: fixture("rename-1"), TestSetFavorite.name: fixture("set-favorite-1")])
+        let environment = Environment(transport: transport, releaseBufferSize: 2)
+        let list = environment.handle(for: TestList(page: 1), fetchPolicy: .storeOrNetwork)
+        list.retain()
+        await list.settle()
+        list.release()
+
+        let favorited = try await environment.mutate(TestSetFavorite(id: "1", favorite: true))
+        for _ in 0..<3 {
+            _ = try await environment.mutate(TestRename(id: "1", name: "Rick Prime"))
+        }
+        environment.collect()
+        #expect(environment.store.existing("Character:2") != nil, "the released list keeps its records")
+        let again = environment.handle(for: TestList(page: 1), fetchPolicy: .storeOrNetwork)
+        #expect(again === list)
+        await again.settle()
+        #expect(transport.requestCount == 5, "the list once and four mutations, with no refetch")
+        #expect(favorited.setFavorite?.character?.favorite == true, "the three renames took one place, so the earlier mutation keeps its payload")
+    }
+
+    @Test("an earlier completion of a mutation with other variables keeps the records its own selection reaches through a collection")
+    func mutationWithOtherVariablesKeepsItsOwnPlace() async throws {
+        let transport = RecordedTransport { request in
+            if case .bool(true)? = request.variables["withOrigin"] { return fixture("rename-1-origin") }
+            return fixture("rename-1")
+        }
+        let environment = Environment(transport: transport)
+        environment.store.reportMissing = nil
+        let first = try await environment.mutate(TestRenameWithOrigin(id: "1", name: "Rick Prime", withOrigin: true))
+        _ = try await environment.mutate(TestRenameWithOrigin(id: "1", name: "Rick Prime", withOrigin: false))
+        environment.collect()
+        #expect(environment.store.existing("Location:L1") != nil, "only the first completion's selection reaches the origin")
+        #expect(first.rename?.character?.origin?.name == "Earth (C-137)")
+    }
+
+    @Test("a mutation pushed out of the buffer has its payload collected without a call to collect")
+    func mutationPushedOutIsCollected() async throws {
+        let environment = Environment(transport: RecordedTransport([TestRename.name: fixture("rename-1"), TestSetFavorite.name: fixture("set-favorite-1")]), releaseBufferSize: 1)
+        let renamed = try await environment.mutate(TestRename(id: "1", name: "Rick Prime"))
+        let collections = environment.collections
+        let favorited = try await environment.mutate(TestSetFavorite(id: "1", favorite: true))
+        await until { environment.collections > collections }
+        #expect(renamed.rename == nil, "the rename was pushed out and its payload collected")
+        #expect(favorited.setFavorite?.character?.favorite == true)
+    }
+
+    @Test("a mutation that only spreads a fragment on the mutation type reads its payload through the fragment")
+    func mutationFragmentReadsThePayload() async throws {
+        let environment = Environment(transport: RecordedTransport([TestRenameThroughFragment.name: fixture("rename-1")]))
+        let data = try await environment.mutate(TestRenameThroughFragment(id: "1", name: "Rick Prime"))
+        #expect(data.testRenamePayload.rename?.character?.name == "Rick Prime")
+    }
+
+    @Test("a mutation whose caller stops waiting still commits the payload the server sends")
+    func mutationOutlivesItsCaller() async throws {
+        let transport = CancellableGate()
+        let environment = Environment(transport: transport, store: try seededStore())
+        let caller = Task { try await environment.mutate(TestRename(id: "1", name: "Rick Prime")) }
+        await until { transport.pending }
+        caller.cancel()
+        try await Task.sleep(for: .milliseconds(50))
+        #expect(transport.pending, "the request was not cancelled with its caller")
+        transport.respond(fixture("rename-1"))
+        _ = try? await caller.value
+        let rick = try #require(environment.store.existing("Character:1"))
+        #expect(rick.read(Registry.slot(rick.type, "name")) == .string("Rick Prime"))
+    }
+
+    @Test("a mutation's root field is keyed without its input, so a call with a new input numbers no new slot")
+    func mutationRootKeys() throws {
+        let mutation = Registry.type("Mutation")
+        let first = TestRename.plan.resolve(TestRename(id: "1", name: "Rick Prime").variables)
+        let count = Registry.slotCount(mutation)
+        let second = TestRename.plan.resolve(TestRename(id: "1", name: "a name no other test sends").variables)
+        #expect(Registry.slotCount(mutation) == count)
+        #expect(first.variant(for: mutation).fields.map(\.slot) == second.variant(for: mutation).fields.map(\.slot))
     }
 
     @Test("a server payload commits under a live layer and the layer stays on top until it resolves")
@@ -109,7 +233,7 @@ struct WriteTests {
         #expect(changed == 1, "only Morty's name changed in the end")
 
         // The mutation's own answer replaces the layer; nothing visible changes.
-        let answer = Data(#"{"data":{"rename":{"character":{"id":"1","name":"Rick Prime"}}}}"#.utf8)
+        let answer = fixture("rename-1")
         let net = store.commit(try Ingest.normalize(answer, plan: TestRename.plan.resolve(rename.variables), rootKey: Store.mutationRootKey), replacingOptimistic: layer)
         #expect(net == 0)
         #expect(rick.name == "Rick Prime")
@@ -132,7 +256,7 @@ struct WriteTests {
         #expect(counter.fired == 1, "the apply changed the name")
 
         track()
-        let answer = Data(#"{"data":{"rename":{"character":{"id":"1","name":"Rick Prime"}}}}"#.utf8)
+        let answer = fixture("rename-1")
         store.commit(try Ingest.normalize(answer, plan: TestRename.plan.resolve(rename.variables), rootKey: Store.mutationRootKey), replacingOptimistic: first)
         #expect(counter.fired == 1, "the answer agreed with the layer: no notification")
 
@@ -149,13 +273,7 @@ struct WriteTests {
     @Test("objects behind a union are keyed by their concrete type, whichever order the typename arrives in")
     func abstractObjectsKeyByTypename() throws {
         let store = Store()
-        let payload = Data(#"""
-        {"data":{"search":[
-          {"__typename":"Character","id":"1","name":"Rick Sanchez"},
-          {"id":"1","name":"Earth (C-137)","dimension":"Dimension C-137","__typename":"Location"},
-          {"__typename":"Episode","id":"1","name":"Pilot"}
-        ]}}
-        """#.utf8)
+        let payload = fixture("search-1")
         let variables = TestSearch(name: "1").variables
         store.commit(try Ingest.normalize(payload, plan: TestSearch.plan.resolve(variables)))
 
@@ -176,12 +294,7 @@ struct WriteTests {
     @Test("an object behind a union is keyed by its type and id when both arrive after a link")
     func abstractIdentityArrivesAfterALink() throws {
         let store = Store()
-        let payload = Data(#"""
-        {"data":{"search":[
-          {"origin":{"name":"Earth (C-137)","id":"1"},"__typename":"Character","id":"1"},
-          {"origin":null,"id":"2","__typename":"Character"}
-        ]}}
-        """#.utf8)
+        let payload = fixture("search-origins-1")
         let variables = TestSearchOrigins(name: "1").variables
         store.commit(try Ingest.normalize(payload, plan: TestSearchOrigins.plan.resolve(variables)))
 
@@ -200,14 +313,14 @@ struct WriteTests {
     func nodeLookup() throws {
         let store = Store()
         store.reportMissing = nil
-        let list = Data(#"{"data":{"characters":{"results":[{"id":"7","name":"Abradolf Lincler"},{"id":"8","name":"Adjudicator Rick"}]}}}"#.utf8)
+        let list = fixture("characters-7-8")
         store.commit(try Ingest.normalize(list, plan: TestList.plan.resolve(TestList(page: 1).variables)))
 
         let variables = TestNode(id: "8").variables
-        #expect(store.check(TestNode.plan.resolve(variables)), "the id index satisfies the lookup")
+        #expect(store.check(TestNode.plan.resolve(variables)) != .miss, "the id index satisfies the lookup")
         let data = TestNode.Data(anchor: Anchor(record: store.root, variables: variables, store: store))
         #expect(data.node?.asCharacter?.name == "Adjudicator Rick")
         #expect(data.node?.asEpisode == nil)
-        #expect(!store.check(TestNode.plan.resolve(TestNode(id: "999").variables)))
+        #expect(store.check(TestNode.plan.resolve(TestNode(id: "999").variables)) == .miss)
     }
 }

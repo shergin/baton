@@ -1,0 +1,14 @@
+{
+  "Character:1": {"__TestRecentNotes_notes_connection": {"__ref": "Character:1:__TestRecentNotes_notes_connection"}, "__typename": "Character", "id": "1", "notes(before:\"c4\",last:2)": {"__ref": "Character:1:notes(before:\"c4\",last:2)"}},
+  "Character:1:__TestRecentNotes_notes_connection": {"__typename": "NoteConnection", "edges": {"__refs": ["Character:1:notes(before:\"c4\",last:2):edges:0", "Character:1:notes(before:\"c4\",last:2):edges:1"]}, "pageInfo": {"__ref": "Character:1:__TestRecentNotes_notes_connection:pageInfo"}},
+  "Character:1:__TestRecentNotes_notes_connection:pageInfo": {"__typename": "PageInfo", "hasPreviousPage": true, "startCursor": "c2"},
+  "Character:1:notes(before:\"c4\",last:2)": {"__typename": "NoteConnection", "edges": {"__refs": ["Character:1:notes(before:\"c4\",last:2):edges:0", "Character:1:notes(before:\"c4\",last:2):edges:1"]}, "pageInfo": {"__ref": "Character:1:notes(before:\"c4\",last:2):pageInfo"}},
+  "Character:1:notes(before:\"c4\",last:2):edges:0": {"__typename": "NoteEdge", "cursor": "c2", "node": {"__ref": "Note:n2"}},
+  "Character:1:notes(before:\"c4\",last:2):edges:1": {"__typename": "NoteEdge", "cursor": "c3", "node": {"__ref": "Note:n3"}},
+  "Character:1:notes(before:\"c4\",last:2):pageInfo": {"__typename": "PageInfo", "hasPreviousPage": true, "startCursor": "c2"},
+  "Note:n2": {"__typename": "Note", "id": "n2", "text": "Portal gun needs charging"},
+  "Note:n3": {"__typename": "Note", "id": "n3", "text": "Get Schwifty"},
+  "client:root": {"__typename": "Query", "node(id:\"1\")": {"__ref": "Character:1"}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

@@ -1,0 +1,8 @@
+{
+  "Character:7": {"__typename": "Character", "id": "7", "name": "Abradolf Lincler"},
+  "Character:8": {"__typename": "Character", "id": "8", "name": "Adjudicator Rick"},
+  "client:root": {"__typename": "Query", "characters(page:1)": {"__ref": "client:root:characters(page:1)"}},
+  "client:root:characters(page:1)": {"__typename": "Characters", "results": {"__refs": ["Character:7", "Character:8"]}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

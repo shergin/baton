@@ -1,0 +1,6 @@
+{
+  "Tokenizer:t1": {"__typename": "Tokenizer", "id": "t1", "ratio": 3.0, "ratios": [1.0, 5.0, 2.0, 0.5]},
+  "client:root": {"__typename": "Query", "tokenizer": {"__ref": "Tokenizer:t1"}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

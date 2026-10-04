@@ -3,14 +3,8 @@ import Foundation
 import Observation
 import Testing
 
-/// A recorded page of the notes connection, by file name.
-func notesPage(_ number: Int) -> Data {
-    let url = Bundle.module.url(forResource: "notes-page-\(number)", withExtension: "json", subdirectory: "Fixtures")!
-    return try! Data(contentsOf: url)
-}
-
 @MainActor
-@Suite("Lists")
+@Suite("Lists", .timeLimit(.minutes(1)))
 struct ListTests {
     /// Answers the notes query with page 1 and the pagination query with the
     /// page after the cursor it carries; counts the requests.
@@ -133,7 +127,7 @@ struct ListTests {
         let paging = Environment(transport: gate, store: environment.store)
         #expect(!character.notes.isLoadingNext)
         let loading = Task { try await character.notes.loadNext() }
-        while gate.pending == 0 { await Task.yield() }
+        await until { gate.pending != 0 }
         #expect(character.notes.isLoadingNext)
         gate.respond(notesPage(2))
         try await loading.value
@@ -150,13 +144,13 @@ struct ListTests {
 
         track()
         let appended = TestAddNote(characterId: "1", text: "Appended", connections: connections)
-        let payload = Data(#"{"data":{"addNote":{"noteEdge":{"cursor":"c9","node":{"id":"n9","text":"Appended"}}}}}"#.utf8)
+        let payload = fixture("add-note-n9")
         environment.store.commit(try Ingest.normalize(payload, plan: TestAddNote.plan.resolve(appended.variables), rootKey: Store.mutationRootKey))
         #expect(character.notes.nodes.map(\.text) == ["Wubba lubba dub dub", "Portal gun needs charging", "Appended"])
         #expect(fired() == 1)
 
         let prepended = TestAddNoteFirst(characterId: "1", text: "First", connections: connections)
-        let first = Data(#"{"data":{"addNote":{"noteEdge":{"cursor":"c0","node":{"id":"n0","text":"First"}}}}}"#.utf8)
+        let first = fixture("add-note-n0")
         environment.store.commit(try Ingest.normalize(first, plan: TestAddNoteFirst.plan.resolve(prepended.variables), rootKey: Store.mutationRootKey))
         #expect(character.notes.nodes.map(\.text) == ["First", "Wubba lubba dub dub", "Portal gun needs charging", "Appended"])
 
@@ -174,7 +168,7 @@ struct ListTests {
         let optimistic = TestAddNote.OptimisticResponse(addNote: .init(noteEdge: .init(node: .init(id: "client:new", text: "Pending"))))
 
         let mutation = Task { try await mutating.mutate(TestAddNote(characterId: "1", text: "Pending", connections: connections), optimistic: optimistic.variable) }
-        while gate.pending == 0 { await Task.yield() }
+        await until { gate.pending != 0 }
         #expect(character.notes.nodes.map(\.text) == ["Wubba lubba dub dub", "Portal gun needs charging", "Pending"])
 
         // A page arrives while the layer is live: it lands under the optimistic edge.
@@ -182,7 +176,7 @@ struct ListTests {
         environment.store.commit(try Ingest.normalize(notesPage(2), plan: TestNotesPaginationQuery.plan.resolve(variables)))
         #expect(character.notes.nodes.map(\.text) == ["Wubba lubba dub dub", "Portal gun needs charging", "Get Schwifty", "Avoid the Citadel", "Pending"])
 
-        gate.respond(Data(#"{"data":{"addNote":{"noteEdge":{"cursor":"c9","node":{"id":"n9","text":"Pending"}}}}}"#.utf8))
+        gate.respond(fixture("add-note-n9-pending"))
         _ = try await mutation.value
         #expect(character.notes.nodes.map(\.text) == ["Wubba lubba dub dub", "Portal gun needs charging", "Get Schwifty", "Avoid the Citadel", "Pending"])
         #expect(character.notes.nodes.last?.id == "n9")
@@ -190,7 +184,7 @@ struct ListTests {
 
         // A failure reverts the optimistic edge.
         let failing = Task { try await mutating.mutate(TestAddNote(characterId: "1", text: "Doomed", connections: connections), optimistic: TestAddNote.OptimisticResponse(addNote: .init(noteEdge: .init(node: .init(id: "client:doomed", text: "Doomed")))).variable) }
-        while gate.pending == 0 { await Task.yield() }
+        await until { gate.pending != 0 }
         #expect(character.notes.nodes.count == 6)
         gate.fail(TransportError(statusCode: 500, body: "no"))
         await #expect(throws: TransportError.self) { try await failing.value }
@@ -206,7 +200,7 @@ struct ListTests {
 
         track()
         let removal = TestRemoveNote(id: "n2", connections: [character.notes.connectionID])
-        let payload = Data(#"{"data":{"removeNote":{"removedNoteId":"n2","deleted":"n2"}}}"#.utf8)
+        let payload = fixture("remove-note-n2")
         environment.store.commit(try Ingest.normalize(payload, plan: TestRemoveNote.plan.resolve(removal.variables), rootKey: Store.mutationRootKey))
         #expect(character.notes.nodes.map(\.text) == ["Wubba lubba dub dub"])
         #expect(fired() == 1, "the deleted record's observer was told")
@@ -218,7 +212,108 @@ struct ListTests {
         #expect(character.notes.edges?.count == 1)
     }
 
-    @Test("a spread with @arguments binds the fragment's variables; a spread without them takes the defaults")
+    @Test("loadPrevious fetches before the start cursor, prepends, and is a no-op at the start")
+    func loadPrevious() async throws {
+        let transport = RecordedTransport { request in
+            if request.operationName == TestRecentNotesQuery.name { return fixture("recent-notes-page-1") }
+            switch request.variables["cursor"] {
+            case .string("c4")?: return fixture("recent-notes-page-2")
+            case .string("c2")?: return fixture("recent-notes-page-3")
+            default: return nil
+            }
+        }
+        let environment = Environment(transport: transport)
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestRecentNotesQuery(id: "1"))
+        handle.retain()
+        await handle.settle()
+        guard case .ready(let data) = handle.phase else { throw TransportError(statusCode: 0, body: "the last page did not arrive") }
+        let notes = try #require(data.character?.testRecentNotes.notes)
+        #expect(notes.nodes.map(\.id) == ["n4", "n5"])
+        #expect(notes.hasPrevious)
+
+        try await notes.loadPrevious()
+        #expect(transport.requests.last?.operationName == "TestRecentNotesPaginationQuery")
+        #expect(transport.requests.last?.variables["cursor"] == .string("c4"))
+        #expect(transport.requests.last?.variables["count"] == .int(2))
+        #expect(transport.requests.last?.variables["id"] == .string("1"))
+        #expect(notes.nodes.map(\.id) == ["n2", "n3", "n4", "n5"], "the earlier page goes in front")
+        #expect(!notes.isLoadingPrevious)
+
+        try await notes.loadPrevious(1)
+        #expect(transport.requests.last?.variables["count"] == .int(1))
+        #expect(notes.nodes.map(\.id) == ["n1", "n2", "n3", "n4", "n5"])
+        #expect(!notes.hasPrevious)
+
+        try await notes.loadPrevious()
+        #expect(transport.requestCount == 3, "nothing before the start")
+    }
+
+    @Test("@appendNode and @prependNode wrap the payload's node in an edge of the connection named by the variable")
+    func nodeDirectives() async throws {
+        let (environment, character) = try await seededEnvironment()
+        let connections = [character.notes.connectionID]
+        let (fired, track) = counter { _ = character.notes.nodes }
+
+        track()
+        let appended = TestAddNoteNode(characterId: "1", text: "Node appended", connections: connections)
+        environment.store.commit(try Ingest.normalize(fixture("add-note-node-n7"), plan: TestAddNoteNode.plan.resolve(appended.variables), rootKey: Store.mutationRootKey))
+        #expect(character.notes.nodes.map(\.text) == ["Wubba lubba dub dub", "Portal gun needs charging", "Node appended"])
+        #expect(fired() == 1)
+        #expect(character.notes.edges?.last?.cursor == "", "the edge the store made has no cursor")
+
+        let prepended = TestAddNoteNodeFirst(characterId: "1", text: "Node first", connections: connections)
+        environment.store.commit(try Ingest.normalize(fixture("add-note-node-n0"), plan: TestAddNoteNodeFirst.plan.resolve(prepended.variables), rootKey: Store.mutationRootKey))
+        #expect(character.notes.nodes.map(\.text) == ["Node first", "Wubba lubba dub dub", "Portal gun needs charging", "Node appended"])
+
+        // The same node again is not wrapped twice.
+        environment.store.commit(try Ingest.normalize(fixture("add-note-node-n7"), plan: TestAddNoteNode.plan.resolve(appended.variables), rootKey: Store.mutationRootKey))
+        #expect(character.notes.nodes.count == 4)
+    }
+
+    @Test("an edge directive that names a record no connection field made leaves the record alone")
+    func edgeDirectiveOnARecordThatIsNotAConnection() async throws {
+        let (environment, character) = try await seededEnvironment()
+        let entity = try #require(environment.store.existing("Character:1"))
+        let appended = TestAddNote(characterId: "1", text: "Appended", connections: ["Character:1"])
+        environment.store.commit(try Ingest.normalize(fixture("add-note-n9"), plan: TestAddNote.plan.resolve(appended.variables), rootKey: Store.mutationRootKey))
+        #expect(environment.store.existing("Character:1:edges:0") == nil, "no edge was made for it")
+        #expect(entity.read(Registry.slot(entity.type, "edges")) == .missing)
+        #expect(character.notes.nodes.map(\.text) == ["Wubba lubba dub dub", "Portal gun needs charging"])
+    }
+
+    @Test("@appendNode whose edge type is not the connection's inserts no edge")
+    func nodeDirectiveOfAnotherEdgeType() async throws {
+        let (environment, character) = try await seededEnvironment()
+        let appended = TestAddNoteNodeOfAnotherType(characterId: "1", text: "Node appended", connections: [character.notes.connectionID])
+        environment.store.commit(try Ingest.normalize(fixture("add-note-node-n7"), plan: TestAddNoteNodeOfAnotherType.plan.resolve(appended.variables), rootKey: Store.mutationRootKey))
+        #expect(character.notes.edges?.count == 2)
+        #expect(character.notes.nodes.map(\.text) == ["Wubba lubba dub dub", "Portal gun needs charging"])
+    }
+
+    @Test("refetch fetches the fragment again with its variables and the owner's id, and the records update in place")
+    func refetch() async throws {
+        let transport = RecordedTransport { request in
+            request.operationName == TestNotesQuery.name ? notesPage(1) : fixture("notes-refetch")
+        }
+        let (environment, character) = try await seededEnvironment(transport)
+        let first = try #require(character.notes.nodes.first)
+        #expect(first.text == "Wubba lubba dub dub")
+        let (fired, track) = counter { _ = first.text }
+        track()
+
+        try await character.refetch()
+        let request = try #require(transport.requests.last)
+        #expect(request.operationName == "TestNotesPaginationQuery")
+        #expect(request.variables["id"] == .string("1"))
+        #expect(request.variables["count"] == .int(2))
+        #expect(first.text == "Wubba lubba dub dub!", "the lens over the same record reads the new value")
+        #expect(fired() == 1)
+        #expect(character.notes.nodes.count == 2)
+        #expect(environment.rootCount == 1, "the refetch is no root of its own")
+    }
+
+    @Test("a spread with @arguments binds the fragment's variables once, so each read of it is the same lens; a spread without them takes the defaults")
     func fragmentArguments() async throws {
         let store = Store()
         store.reportMissing = nil
@@ -229,10 +324,48 @@ struct ListTests {
         #expect(character.anchor.variables["count"] == .int(7))
         #expect(character.anchor.variables["cursor"] == .null)
         #expect(character.notes.nodes.count == 2)
+        #expect(data.character?.testNotes.anchor == character.anchor, "the owner bound the spread once")
 
         let plain = TestNotesQuery.Data(anchor: Anchor(record: store.root, variables: TestNotesQuery(id: "1").variables, store: store))
         #expect(plain.character?.testNotes.anchor.variables["count"] == .int(2), "the @argumentDefinitions default")
         #expect(store.existing("Character:1:notes(after:null,first:7)") != nil, "the page is stored under the inlined arguments")
+    }
+
+    @Test("a query whose page was fetched after a cursor is whole once its response is in, and a field error inside the page lands on the field it names")
+    func pageAfterACursor() throws {
+        let store = Store()
+        store.reportMissing = nil
+        store.commit(try Ingest.normalize(notesPage(1), plan: TestNotesQuery.plan.resolve(TestNotesQuery(id: "1").variables)))
+        let plan = TestNotesPaginationQuery.plan.resolve(TestNotesPaginationQuery(count: 2, cursor: "c2", id: "1").variables)
+        #expect(store.check(plan) == .miss, "the first page does not answer the second")
+        let changes = try Ingest.normalize(fixture("notes-page-2-errors"), plan: plan)
+        let placed = try #require(changes.fieldErrors.first)
+        #expect(changes.recordKeys[Int(placed.record)] == "Note:n3")
+        #expect(placed.slot.storageKey == "text")
+        store.commit(changes)
+        #expect(store.check(plan) == .memory)
+        #expect(store.existing("Note:n3")?.error(Registry.slot(Registry.type("Note"), "text"))?.message == "text hidden")
+    }
+
+    @Test("a deferred part under a page fetched after a cursor lands on the page's node, and a failed one leaves its error there")
+    func deferredUnderAppendedPage() async throws {
+        let environment = Environment(transport: Parts([fixture("deferred-notes-page-2-1"), fixture("deferred-notes-page-2-2")]))
+        environment.store.reportMissing = nil
+        _ = try await environment.fetch(TestDeferredNotesPaginationQuery.self, variables: TestDeferredNotesPaginationQuery(count: 2, cursor: "c2", id: "1").variables)
+        let text = Registry.slot(Registry.type("Note"), "text")
+        #expect(environment.store.existing("Note:n3")?.read(text) == .string("Get Schwifty"))
+        #expect(environment.store.existing("Note:n4")?.error(text)?.message == "text hidden")
+    }
+
+    @Test("an error inside the second page a response merges into one connection lands on that page's record")
+    func errorInTheSecondPage() throws {
+        let changes = try Ingest.normalize(fixture("two-notes-pages"), plan: TestTwoPagesQuery.plan.resolve(TestTwoPagesQuery(id: "1").variables))
+        let store = Store()
+        store.reportMissing = nil
+        store.commit(changes)
+        let text = Registry.slot(Registry.type("Note"), "text")
+        #expect(store.existing("Note:n3")?.error(text)?.message == "text hidden")
+        #expect(store.existing("Note:n1")?.error(text) == nil)
     }
 
     @Test("@alias(as:) names the spread's accessor")
@@ -241,6 +374,7 @@ struct ListTests {
         store.reportMissing = nil
         store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
         let query = TestAliasQuery(id: "1")
+        #expect(store.check(TestAliasQuery.plan.resolve(query.variables)) != .miss, "the lookup finds the character the list fetched")
         let data = TestAliasQuery.Data(anchor: Anchor(record: store.root, variables: query.variables, store: store))
         #expect(data.character?.row.name == "Rick Sanchez")
     }

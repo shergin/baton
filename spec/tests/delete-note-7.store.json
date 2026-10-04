@@ -1,0 +1,6 @@
+{
+  "client:root": {"__typename": "Query"},
+  "client:root:mutation": {"__typename": "Mutation", "removeNote": {"__ref": "client:root:mutation:removeNote"}},
+  "client:root:mutation:removeNote": {"__typename": "RemoveNotePayload", "removedNoteId": "7"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

@@ -3,17 +3,22 @@ import Foundation
 import Network
 
 /// A `graphql-transport-ws` server on the loopback interface, for the tests of
-/// the WebSocket transport: it acknowledges the connection, records the frames
-/// the client sends, and sends the frames a test hands it.
+/// the WebSocket transport: it acknowledges the connection, at once or when
+/// the test says, records the frames the client sends, and sends the frames a
+/// test hands it.
 final class SocketServer: @unchecked Sendable {
     private let listener: NWListener
     private let queue = DispatchQueue(label: "baton.tests.socket-server")
     private let lock = NSLock()
     private var connection: NWConnection?
     private var received: [(type: String, id: String?)] = []
+    private var closes = 0
     private let handshake = Handshake()
+    /// Whether `connection_init` is acknowledged as it arrives.
+    private let acknowledges: Bool
 
-    init() throws {
+    init(acknowledges: Bool = true) throws {
+        self.acknowledges = acknowledges
         let options = NWProtocolWebSocket.Options()
         options.setClientRequestHandler(queue) { [handshake] subprotocols, _ in
             handshake.offer(subprotocols)
@@ -68,9 +73,17 @@ final class SocketServer: @unchecked Sendable {
         lock.withLock { received.filter { $0.type == type }.compactMap(\.id) }
     }
 
+    /// How many times the client closed its connection.
+    var closed: Int { lock.withLock { closes } }
+
     /// How many frames of one type the client has sent.
     func count(of type: String) -> Int {
         lock.withLock { received.filter { $0.type == type }.count }
+    }
+
+    /// Acknowledges the connection, for a server made not to at once.
+    func acknowledge() {
+        send(#"{"type":"connection_ack"}"#)
     }
 
     /// Sends one text frame to the client.
@@ -87,11 +100,17 @@ final class SocketServer: @unchecked Sendable {
     }
 
     private func receive(on connection: NWConnection) {
-        connection.receiveMessage { [weak self] data, _, _, error in
-            guard let self, let data, error == nil else { return }
+        connection.receiveMessage { [weak self] data, context, _, error in
+            guard let self else { return }
+            let metadata = context?.protocolMetadata(definition: NWProtocolWebSocket.definition) as? NWProtocolWebSocket.Metadata
+            if error != nil || metadata?.opcode == .close {
+                lock.withLock { closes += 1 }
+                return
+            }
+            guard let data else { return }
             if let frame = try? Ingest.frame(data), let type = frame.type {
                 lock.withLock { received.append((type, frame.id)) }
-                if type == "connection_init" { send(#"{"type":"connection_ack"}"#) }
+                if type == "connection_init", acknowledges { acknowledge() }
             }
             receive(on: connection)
         }

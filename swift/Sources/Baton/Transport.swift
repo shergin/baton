@@ -107,30 +107,37 @@ public struct URLSessionTransport: Transport {
     }
 
     public func stream(_ request: Request) -> AsyncThrowingStream<Data, any Error> {
-        AsyncThrowingStream { continuation in
+        let urlRequest = urlRequest(request)
+        let session = session
+        return AsyncThrowingStream { continuation in
             let task = Task {
                 do {
-                    let (bytes, response) = try await session.bytes(for: urlRequest(request))
-                    let http = response as? HTTPURLResponse
-                    if let http, !(200..<300).contains(http.statusCode) {
-                        var body = Data()
-                        for try await byte in bytes { body.append(byte) }
-                        throw TransportError(statusCode: http.statusCode, body: String(decoding: body, as: UTF8.self))
+                    var response: HTTPURLResponse?
+                    var parser: MultipartParser?
+                    var body = Data()
+                    for try await delivery in Deliveries.of(urlRequest, on: session) {
+                        switch delivery {
+                        case .response(let received):
+                            response = received as? HTTPURLResponse
+                            let contentType = response?.value(forHTTPHeaderField: "Content-Type") ?? ""
+                            parser = MultipartParser.boundary(in: contentType).map(MultipartParser.init(boundary:))
+                        case .chunk(let chunk):
+                            guard var reader = parser, let response, (200..<300).contains(response.statusCode) else {
+                                body.append(chunk)
+                                continue
+                            }
+                            for part in reader.push(chunk) { continuation.yield(part) }
+                            parser = reader
+                        }
                     }
-                    let contentType = http?.value(forHTTPHeaderField: "Content-Type") ?? ""
-                    guard let boundary = MultipartParser.boundary(in: contentType) else {
-                        var body = Data()
-                        for try await byte in bytes { body.append(byte) }
+                    if let response, !(200..<300).contains(response.statusCode) {
+                        throw TransportError(statusCode: response.statusCode, body: String(decoding: body, as: UTF8.self))
+                    }
+                    if var reader = parser {
+                        for part in reader.finish() { continuation.yield(part) }
+                    } else {
                         continuation.yield(body)
-                        continuation.finish()
-                        return
                     }
-                    var parser = MultipartParser(boundary: boundary)
-                    for try await byte in bytes {
-                        for part in parser.push(byte) { continuation.yield(part) }
-                        if parser.finished { break }
-                    }
-                    for part in parser.finish() { continuation.yield(part) }
                     continuation.finish()
                 } catch {
                     continuation.finish(throwing: error)
@@ -141,14 +148,63 @@ public struct URLSessionTransport: Transport {
     }
 }
 
-/// Splits a `multipart/mixed` body into the bodies of its parts, byte by
-/// byte, however the bytes are chunked. Each part's headers are dropped; the
-/// body between the header's blank line and the next delimiter is a part.
+/// A data task's response and its body in the chunks the loading system
+/// hands over, from a delegate of the task's own: an async sequence of bytes
+/// would be iterated a byte at a time.
+private final class Deliveries: NSObject, URLSessionDataDelegate, Sendable {
+    enum Delivery: Sendable {
+        case response(URLResponse)
+        case chunk(Data)
+    }
+
+    private let continuation: AsyncThrowingStream<Delivery, any Error>.Continuation
+
+    private init(_ continuation: AsyncThrowingStream<Delivery, any Error>.Continuation) {
+        self.continuation = continuation
+    }
+
+    /// Starts the request; ending the iteration cancels it.
+    static func of(_ request: URLRequest, on session: URLSession) -> AsyncThrowingStream<Delivery, any Error> {
+        let (deliveries, continuation) = AsyncThrowingStream<Delivery, any Error>.makeStream()
+        let task = session.dataTask(with: request)
+        task.delegate = Deliveries(continuation)
+        continuation.onTermination = { _ in task.cancel() }
+        task.resume()
+        return deliveries
+    }
+
+    func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse) async -> URLSession.ResponseDisposition {
+        continuation.yield(.response(response))
+        return .allow
+    }
+
+    func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
+        continuation.yield(.chunk(data))
+    }
+
+    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: (any Error)?) {
+        if let error {
+            continuation.finish(throwing: error)
+        } else {
+            continuation.finish()
+        }
+    }
+}
+
+/// Splits a `multipart/mixed` body into the bodies of its parts, however the
+/// bytes are chunked. Bytes before the first delimiter are a preamble and
+/// are dropped; each part's headers are dropped; the body between the
+/// headers' blank line and the next delimiter is a part. What a delimiter
+/// closes is let go, so the buffer holds one part at most.
 public struct MultipartParser: Sendable {
     private let delimiter: [UInt8]
     private var buffer: [UInt8] = []
+    /// Where the line being read starts.
     private var lineStart = 0
-    private var partStart = 0
+    /// How far the buffer has been searched for a line end.
+    private var scanned = 0
+    /// Whether a delimiter has been read, so the bytes after it are a part.
+    private var inPart = false
     public private(set) var finished = false
 
     public init(boundary: String) {
@@ -168,28 +224,40 @@ public struct MultipartParser: Sendable {
 
     /// Feeds one byte; returns the parts completed by it.
     public mutating func push(_ byte: UInt8) -> [Data] {
-        if finished { return [] }
-        buffer.append(byte)
-        guard byte == 0x0A else { return [] }
-        var lineEnd = buffer.count - 1
-        if lineEnd > lineStart, buffer[lineEnd - 1] == 0x0D { lineEnd -= 1 }
-        let line = buffer[lineStart..<lineEnd]
-        var parts: [Data] = []
-        if line.starts(with: delimiter) {
-            if let part = body(buffer[partStart..<lineStart]) { parts.append(part) }
-            if line.count >= delimiter.count + 2, line[line.startIndex + delimiter.count] == 0x2D, line[line.startIndex + delimiter.count + 1] == 0x2D {
-                finished = true
-            }
-            partStart = buffer.count
-        }
-        lineStart = buffer.count
-        return parts
+        push(CollectionOfOne(byte))
     }
 
     /// Feeds a chunk; returns the parts completed within it.
-    public mutating func push(_ chunk: Data) -> [Data] {
+    public mutating func push(_ chunk: some Collection<UInt8>) -> [Data] {
+        if finished { return [] }
+        buffer.append(contentsOf: chunk)
         var parts: [Data] = []
-        for byte in chunk { parts.append(contentsOf: push(byte)) }
+        while let newline = buffer[scanned...].firstIndex(of: 0x0A) {
+            scanned = newline + 1
+            var lineEnd = newline
+            if lineEnd > lineStart, buffer[lineEnd - 1] == 0x0D { lineEnd -= 1 }
+            let line = buffer[lineStart..<lineEnd]
+            guard line.starts(with: delimiter) else {
+                if !inPart {
+                    // A preamble line: nothing keeps it.
+                    buffer.removeSubrange(0..<scanned)
+                    scanned = 0
+                }
+                lineStart = scanned
+                continue
+            }
+            if inPart, let part = body(buffer[0..<lineStart]) { parts.append(part) }
+            inPart = true
+            if line.count >= delimiter.count + 2, line[line.startIndex + delimiter.count] == 0x2D, line[line.startIndex + delimiter.count + 1] == 0x2D {
+                finished = true
+                buffer = []
+                return parts
+            }
+            buffer.removeSubrange(0..<scanned)
+            scanned = 0
+            lineStart = 0
+        }
+        scanned = buffer.count
         return parts
     }
 
@@ -197,7 +265,8 @@ public struct MultipartParser: Sendable {
     public mutating func finish() -> [Data] {
         if finished { return [] }
         finished = true
-        return body(buffer[partStart...]).map { [$0] } ?? []
+        guard inPart else { return [] }
+        return body(buffer[...]).map { [$0] } ?? []
     }
 
     /// A part's body: after its headers' blank line, without the trailing line break.
@@ -205,6 +274,9 @@ public struct MultipartParser: Sendable {
         var bytes = part
         while let last = bytes.last, last == 0x0A || last == 0x0D { bytes = bytes.dropLast() }
         if bytes.isEmpty { return nil }
+        // A part without headers opens with the blank line that ends them.
+        if bytes.first == 0x0A { return Data(bytes.dropFirst()) }
+        if bytes.first == 0x0D, bytes.dropFirst().first == 0x0A { return Data(bytes.dropFirst(2)) }
         var index = bytes.startIndex
         while index < bytes.endIndex {
             if bytes[index] == 0x0A {
@@ -233,7 +305,12 @@ public actor GraphQLTransportWebSocket: SubscriptionTransport {
     private let session: URLSession
     private var socket: URLSessionWebSocketTask?
     private var acknowledged = false
-    private var waitingForAck: [CheckedContinuation<Void, any Error>] = []
+    /// The subscriptions waiting for `connection_ack`, by id.
+    private var waitingForAck: [String: CheckedContinuation<Void, any Error>] = [:]
+    /// How many subscriptions have started and are not yet listed in
+    /// `subscribers`: opening the connection, waiting for its
+    /// acknowledgement, or resumed by it and not yet run.
+    private var starting = 0
     private var receiving: Task<Void, Never>?
     private var subscribers: [String: AsyncThrowingStream<Data, any Error>.Continuation] = [:]
 
@@ -258,14 +335,29 @@ public actor GraphQLTransportWebSocket: SubscriptionTransport {
     }
 
     private func start(_ id: String, _ request: Request, _ continuation: AsyncThrowingStream<Data, any Error>.Continuation) async {
+        // Counted until it is listed or gives up, so the connection it opens
+        // or waits on is not closed under it.
+        starting += 1
         do {
-            try await connect()
-            // The stream may have ended while the connection opened.
-            guard !Task.isCancelled else { return }
-            subscribers[id] = continuation
-            let payload = "{\"query\":" + Variable.quote(request.text)
-                + ",\"operationName\":" + Variable.quote(request.operationName)
-                + ",\"variables\":" + request.variables.json + "}"
+            try await connect(id)
+        } catch {
+            starting -= 1
+            continuation.finish(throwing: error)
+            closeIfUnused()
+            return
+        }
+        starting -= 1
+        // The stream may have ended while the connection opened, and then
+        // nothing may be left on it.
+        guard !Task.isCancelled else {
+            closeIfUnused()
+            return
+        }
+        subscribers[id] = continuation
+        let payload = "{\"query\":" + Variable.quote(request.text)
+            + ",\"operationName\":" + Variable.quote(request.operationName)
+            + ",\"variables\":" + request.variables.json + "}"
+        do {
             try await send("{\"id\":\"\(id)\",\"type\":\"subscribe\",\"payload\":\(payload)}")
         } catch {
             continuation.finish(throwing: error)
@@ -278,9 +370,21 @@ public actor GraphQLTransportWebSocket: SubscriptionTransport {
     private func stop(_ id: String) async {
         guard subscribers.removeValue(forKey: id) != nil else { return }
         try? await send("{\"id\":\"\(id)\",\"type\":\"complete\"}")
+        closeIfUnused()
     }
 
-    private func connect() async throws {
+    /// Closes the connection when no subscription is on it and none is
+    /// starting on it; the next subscription opens another.
+    private func closeIfUnused() {
+        guard subscribers.isEmpty, starting == 0, socket != nil else { return }
+        socket?.cancel(with: .normalClosure, reason: nil)
+        socket = nil
+        acknowledged = false
+        receiving?.cancel()
+        receiving = nil
+    }
+
+    private func connect(_ id: String) async throws {
         if acknowledged { return }
         if socket == nil {
             var urlRequest = URLRequest(url: url)
@@ -289,13 +393,32 @@ public actor GraphQLTransportWebSocket: SubscriptionTransport {
             let socket = session.webSocketTask(with: urlRequest)
             self.socket = socket
             socket.resume()
-            receiving = Task { await self.receive() }
+            receiving = Task { await self.receive(from: socket) }
             let payload = connectionParams.map { ",\"payload\":" + $0.json } ?? ""
             try await send("{\"type\":\"connection_init\"\(payload)}")
+            // While the frame was on its way the socket may have failed, and
+            // then nothing would answer, or been acknowledged already.
+            guard self.socket === socket else { throw TransportError(statusCode: 0, body: "the socket is closed") }
+            if acknowledged { return }
         }
-        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, any Error>) in
-            waitingForAck.append(continuation)
+        // A stream that ends while it waits stops waiting, for the
+        // acknowledgement may never come; one that ended before does not
+        // start.
+        try await withTaskCancellationHandler {
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, any Error>) in
+                guard !Task.isCancelled else {
+                    continuation.resume(throwing: CancellationError())
+                    return
+                }
+                waitingForAck[id] = continuation
+            }
+        } onCancel: {
+            Task { await self.stopWaiting(id) }
         }
+    }
+
+    private func stopWaiting(_ id: String) {
+        waitingForAck.removeValue(forKey: id)?.resume(throwing: CancellationError())
     }
 
     private func send(_ text: String) async throws {
@@ -303,10 +426,14 @@ public actor GraphQLTransportWebSocket: SubscriptionTransport {
         try await socket.send(.string(text))
     }
 
-    private func receive() async {
-        while let socket, !Task.isCancelled {
+    /// Reads one socket's frames. A socket that is no longer the current one
+    /// was closed on purpose or replaced, so neither its frames nor its end
+    /// concern the subscriptions on the current one.
+    private func receive(from socket: URLSessionWebSocketTask) async {
+        while !Task.isCancelled {
             do {
                 let message = try await socket.receive()
+                guard self.socket === socket else { return }
                 let data: Data = switch message {
                 case .data(let data): data
                 case .string(let text): Data(text.utf8)
@@ -314,6 +441,7 @@ public actor GraphQLTransportWebSocket: SubscriptionTransport {
                 }
                 try handle(data)
             } catch {
+                guard self.socket === socket else { return }
                 fail(error)
                 return
             }
@@ -325,7 +453,7 @@ public actor GraphQLTransportWebSocket: SubscriptionTransport {
         switch frame.type {
         case "connection_ack":
             acknowledged = true
-            for waiting in waitingForAck { waiting.resume() }
+            for waiting in waitingForAck.values { waiting.resume() }
             waitingForAck.removeAll()
         case "ping":
             Task { try? await send("{\"type\":\"pong\"}") }
@@ -333,12 +461,16 @@ public actor GraphQLTransportWebSocket: SubscriptionTransport {
             if let id = frame.id, let payload = frame.payload { subscribers[id]?.yield(payload) }
         case "error":
             if let id = frame.id {
-                let message = frame.payload.map { String(decoding: $0, as: UTF8.self) } ?? "subscription error"
-                subscribers.removeValue(forKey: id)?.finish(throwing: GraphQLErrors(messages: [message]))
+                // The payload is the operation's GraphQL errors.
+                let errors = frame.payload.flatMap { try? Ingest.responseErrors($0) } ?? []
+                let messages = errors.isEmpty ? ["subscription error"] : errors.map(\.message)
+                subscribers.removeValue(forKey: id)?.finish(throwing: GraphQLErrors(messages: messages))
+                closeIfUnused()
             }
         case "complete":
             if let id = frame.id {
                 subscribers.removeValue(forKey: id)?.finish()
+                closeIfUnused()
             }
         default:
             return
@@ -347,7 +479,7 @@ public actor GraphQLTransportWebSocket: SubscriptionTransport {
 
     /// Ends every subscription and the connection; the next subscription reconnects.
     private func fail(_ error: any Error) {
-        for waiting in waitingForAck { waiting.resume(throwing: error) }
+        for waiting in waitingForAck.values { waiting.resume(throwing: error) }
         waitingForAck.removeAll()
         for subscriber in subscribers.values { subscriber.finish(throwing: error) }
         subscribers.removeAll()

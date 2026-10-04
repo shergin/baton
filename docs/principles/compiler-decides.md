@@ -2,8 +2,8 @@
 
 Every operation is static. Identity, aggregation, masking, storage keys,
 persisted ids, nullability and diagnostics are settled at build time. The
-runtime interprets plans; it never parses GraphQL, hashes a field name or
-consults a policy object.
+runtime interprets plans; it never parses GraphQL or consults a policy
+object, and no path a view or a commit takes hashes a field name.
 
 ## Why
 
@@ -26,8 +26,14 @@ The compiler reads the schema, the identity configuration and every document
 in the app, whether in Swift source or `.graphql` files. It validates, applies
 fragment arguments by cloning per unique argument set, inlines fragments into
 one normalization plan per operation, inserts the key fields and typenames
-identity needs, interns every storage key to a slot, hashes the operation text
-to a persisted id, and emits the lens types and the plans. Errors carry the
+identity needs, computes every storage key and emits a constant for it,
+hashes the operation text to a persisted id the transport can send, and
+emits the lens types and the plans. The process numbers each constant the
+first time it is touched, in one table every module shares, because modules
+compile apart and share one store
+([Slots are numbered by the process](../decisions/slots-are-numbered-by-the-process.md));
+a key with variables is resolved once per owner, and a field read through
+an interface or union once per concrete type. Errors carry the
 file, line and column of the GraphQL text inside the Swift source. The front
 end is Relay's compiler, pinned, behind a driver that is ours; the plan format
 is the seam between the two.
@@ -61,7 +67,11 @@ See [Relay's words](relays-words.md) for why the front end is Relay's, and
 
 ## Spelled today
 
-Nothing is spelled yet. Planned: `batonc`, a SwiftPM build-tool plugin over a
-binary artifact bundle, a CLI mode, `baton.json`, and `<File>.baton.swift`
-outputs beside each source that declares GraphQL. This section may rot; the
-rest must not.
+`batonc`, run by a SwiftPM and Xcode build-tool plugin over a binary
+artifact bundle, with `baton.json` beside the target or the package. Each
+source that declares GraphQL, a Swift file or a `.graphql` or `.gql` file,
+writes one output named by its path in the target (`Screens/Home.swift`
+writes `Screens_Home.baton.swift`), and the module's types, slots and sites
+go to one shared `Baton.baton.swift`, so a `Baton.swift` at the target's
+root may not declare GraphQL. A document with an error writes nothing. This
+section may rot; the rest must not.
