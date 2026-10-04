@@ -439,13 +439,39 @@ struct LifetimeTests {
         #expect(!ready.isRefreshing, "a second refetch does not hang either")
 
         empty.retry()
-        guard case .failed = empty.phase else { Issue.record("a retry with nothing to fetch with fails, got \(empty.phase)"); return }
+        guard case .failed(let error as EnvironmentError) = empty.phase, error == .gone else {
+            Issue.record("a retry with nothing to fetch with fails on the environment it lost, got \(empty.phase)")
+            return
+        }
 
         subscription.retain()
         #expect(!subscription.isActive, "no stream opens without an environment")
         subscription.release()
         ready.release()
         empty.release()
+    }
+
+    @Test("a request with nothing to send it fails on what is missing: the view's environment, the lens's, or the subscription transport")
+    func nothingToSendWith() async throws {
+        let unconfigured = Environment.resolve(nil).handle(for: TestList(page: 404))
+        await unconfigured.settle()
+        guard case .failed(let error as EnvironmentError) = unconfigured.phase, error == .notInjected else {
+            Issue.record("expected the missing environment, got \(unconfigured.phase)")
+            return
+        }
+
+        let store = Store()
+        store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
+        let character = try #require(store.existing("Character:1"))
+        let notes = TestNotes_character(anchor: Anchor(record: character, variables: TestNotesQuery(id: "1").variables, store: store))
+        await #expect(throws: EnvironmentError.outsideEnvironment) { try await notes.refetch() }
+
+        let environment = Baton.Environment(transport: SilentTransport())
+        let subscription = environment.subscriptionHandle(for: TestNoteAdded(characterId: "1", connections: []))
+        subscription.retain()
+        await until { !subscription.isActive }
+        #expect(subscription.error as? EnvironmentError == .noSubscriptionTransport)
+        subscription.release()
     }
 
     @Test("a view whose environment is replaced resolves its operation again in the new one")

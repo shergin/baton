@@ -260,6 +260,9 @@ plans, ids.
 **Environment.** Relay's word for store plus network plus configuration.
 Here the same, injected through SwiftUI's environment as `\.baton`. Chosen
 over "client" (Apollo's word) by [Relay's words](principles/relays-words.md).
+A request with nothing to send it fails with `EnvironmentError`, which says
+what is missing: the view's environment, the lens's, the one that made a
+handle and is gone, or the subscription transport.
 
 **Transport.** The protocol behind which HTTP and multipart incremental
 delivery live: `execute` answers once, `stream` yields the parts of a

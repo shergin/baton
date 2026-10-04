@@ -320,7 +320,7 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
             task = nil
             isRefreshing = false
             if case .loading = phase {
-                phase = .failed(TransportError(statusCode: 0, body: "the handle's environment is gone, so it cannot fetch"))
+                phase = .failed(EnvironmentError.gone)
             }
             return
         }

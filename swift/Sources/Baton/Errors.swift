@@ -36,6 +36,28 @@ public struct RequiredFieldError: Error, Sendable, CustomStringConvertible {
     public var description: String { "the @required field \(path) is null" }
 }
 
+/// A request with nothing to send it: no environment where one was needed,
+/// or an environment without the transport the operation runs over.
+public enum EnvironmentError: Error, Equatable, Sendable, CustomStringConvertible {
+    /// A view outside every `.environment(\.baton, ...)` asked for data.
+    case notInjected
+    /// A lens read outside an environment's store asked to fetch.
+    case outsideEnvironment
+    /// The environment that made a handle is gone.
+    case gone
+    /// A subscription ran in an environment made without `subscriptions:`.
+    case noSubscriptionTransport
+
+    public var description: String {
+        switch self {
+        case .notInjected: "no Baton environment: set `.environment(\\.baton, environment)` on an ancestor view"
+        case .outsideEnvironment: "the lens was read outside an environment's store, so it cannot fetch"
+        case .gone: "the handle's environment is gone, so it cannot fetch"
+        case .noSubscriptionTransport: "no subscription transport: pass `subscriptions:` to the environment"
+        }
+    }
+}
+
 /// A response that carried errors and no data: the request failed as a whole.
 public struct GraphQLErrors: Error, Sendable, CustomStringConvertible {
     public let messages: [String]

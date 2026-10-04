@@ -498,6 +498,11 @@ are expected and listed without apology.
 - A view's storage releases its handle as SwiftUI drops the view's state,
   on the main actor. It released it from a task started for each
   teardown, so the handle stayed retained, and a root, until the task ran.
+- A request with nothing to send it fails with `EnvironmentError`, which
+  says what is missing: a view's environment, a lens's, the one that made a
+  handle and is gone, or a subscription transport. It failed with a
+  `TransportError` whose status code was 0 and whose description read as
+  an HTTP status.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

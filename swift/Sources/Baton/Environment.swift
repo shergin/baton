@@ -274,7 +274,7 @@ public final class Environment {
     func subscribe<Op: Subscription>(_ operation: Op) -> AsyncThrowingStream<Data, any Error> {
         guard let subscriptions else {
             return AsyncThrowingStream { continuation in
-                continuation.finish(throwing: TransportError(statusCode: 0, body: "no subscription transport: pass `subscriptions:` to the environment"))
+                continuation.finish(throwing: EnvironmentError.noSubscriptionTransport)
             }
         }
         return subscriptions.subscribe(request(Op.self, variables: operation.variables))
@@ -372,7 +372,7 @@ public final class Environment {
 
 struct UnconfiguredTransport: Transport {
     func execute(_ request: Request) async throws -> Data {
-        throw TransportError(statusCode: 0, body: "no Baton environment: set `.environment(\\.baton, environment)` on an ancestor view")
+        throw EnvironmentError.notInjected
     }
 }
 

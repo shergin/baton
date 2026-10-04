@@ -426,7 +426,7 @@ extension Anchor {
 
     private func environment() throws -> Environment {
         guard let environment = store?.environment else {
-            throw TransportError(statusCode: 0, body: "the lens has no environment: it was read outside a store, so it cannot fetch")
+            throw EnvironmentError.outsideEnvironment
         }
         return environment
     }
