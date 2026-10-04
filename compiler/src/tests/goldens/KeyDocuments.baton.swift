@@ -43,7 +43,7 @@ query TestKeys(
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["id": Baton.Variable(id), "name": Baton.Variable(name)])
+        Baton.Variables(["id": Baton.Variable(self.id), "name": Baton.Variable(self.name)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -51,8 +51,8 @@ query TestKeys(
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-        hasher.combine(name)
+        hasher.combine(self.id)
+        hasher.combine(self.name)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
@@ -159,7 +159,7 @@ query TestNoteCounts(
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["page": Baton.Variable(page), "count": Baton.Variable(count)])
+        Baton.Variables(["page": Baton.Variable(self.page), "count": Baton.Variable(self.count)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -167,8 +167,8 @@ query TestNoteCounts(
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(page)
-        hasher.combine(count)
+        hasher.combine(self.page)
+        hasher.combine(self.count)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [

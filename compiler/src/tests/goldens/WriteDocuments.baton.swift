@@ -65,7 +65,7 @@ query TestNode(
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["id": Baton.Variable(id)])
+        Baton.Variables(["id": Baton.Variable(self.id)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -73,7 +73,7 @@ query TestNode(
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
+        hasher.combine(self.id)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
@@ -149,7 +149,7 @@ mutation TestRename(
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["id": Baton.Variable(id), "name": Baton.Variable(name)])
+        Baton.Variables(["id": Baton.Variable(self.id), "name": Baton.Variable(self.name)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -157,8 +157,8 @@ mutation TestRename(
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-        hasher.combine(name)
+        hasher.combine(self.id)
+        hasher.combine(self.name)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
@@ -241,7 +241,7 @@ extension Baton.MutationAction where Op == TestRename {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
     public func callAsFunction(id: String, name: String, optimistic: TestRename.OptimisticResponse? = nil) async throws -> TestRename.Data {
-        try await commit(TestRename(id: id, name: name), optimistic: optimistic?.variable)
+        try await self.commit(TestRename(id: id, name: name), optimistic: optimistic?.variable)
     }
 }
 
@@ -276,7 +276,7 @@ fragment TestRenamePayload_mutation on Mutation {
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["id": Baton.Variable(id), "name": Baton.Variable(name)])
+        Baton.Variables(["id": Baton.Variable(self.id), "name": Baton.Variable(self.name)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -284,8 +284,8 @@ fragment TestRenamePayload_mutation on Mutation {
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-        hasher.combine(name)
+        hasher.combine(self.id)
+        hasher.combine(self.name)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
@@ -353,7 +353,7 @@ extension Baton.MutationAction where Op == TestRenameThroughFragment {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
     public func callAsFunction(id: String, name: String, optimistic: TestRenameThroughFragment.OptimisticResponse? = nil) async throws -> TestRenameThroughFragment.Data {
-        try await commit(TestRenameThroughFragment(id: id, name: name), optimistic: optimistic?.variable)
+        try await self.commit(TestRenameThroughFragment(id: id, name: name), optimistic: optimistic?.variable)
     }
 }
 
@@ -391,7 +391,7 @@ mutation TestRenameWithOrigin(
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["id": Baton.Variable(id), "name": Baton.Variable(name), "withOrigin": Baton.Variable(withOrigin)])
+        Baton.Variables(["id": Baton.Variable(self.id), "name": Baton.Variable(self.name), "withOrigin": Baton.Variable(self.withOrigin)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -399,9 +399,9 @@ mutation TestRenameWithOrigin(
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-        hasher.combine(name)
-        hasher.combine(withOrigin)
+        hasher.combine(self.id)
+        hasher.combine(self.name)
+        hasher.combine(self.withOrigin)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
@@ -516,7 +516,7 @@ extension Baton.MutationAction where Op == TestRenameWithOrigin {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
     public func callAsFunction(id: String, name: String, withOrigin: Bool, optimistic: TestRenameWithOrigin.OptimisticResponse? = nil) async throws -> TestRenameWithOrigin.Data {
-        try await commit(TestRenameWithOrigin(id: id, name: name, withOrigin: withOrigin), optimistic: optimistic?.variable)
+        try await self.commit(TestRenameWithOrigin(id: id, name: name, withOrigin: withOrigin), optimistic: optimistic?.variable)
     }
 }
 
@@ -555,7 +555,7 @@ query TestSearch(
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["name": Baton.Variable(name)])
+        Baton.Variables(["name": Baton.Variable(self.name)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -563,7 +563,7 @@ query TestSearch(
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(name)
+        hasher.combine(self.name)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
@@ -654,7 +654,7 @@ query TestSearchOrigins(
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["name": Baton.Variable(name)])
+        Baton.Variables(["name": Baton.Variable(self.name)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -662,7 +662,7 @@ query TestSearchOrigins(
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(name)
+        hasher.combine(self.name)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
@@ -742,7 +742,7 @@ mutation TestSetFavorite(
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["id": Baton.Variable(id), "favorite": Baton.Variable(favorite)])
+        Baton.Variables(["id": Baton.Variable(self.id), "favorite": Baton.Variable(self.favorite)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -750,8 +750,8 @@ mutation TestSetFavorite(
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-        hasher.combine(favorite)
+        hasher.combine(self.id)
+        hasher.combine(self.favorite)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
@@ -839,7 +839,7 @@ extension Baton.MutationAction where Op == TestSetFavorite {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
     public func callAsFunction(id: String, favorite: Bool, optimistic: TestSetFavorite.OptimisticResponse? = nil) async throws -> TestSetFavorite.Data {
-        try await commit(TestSetFavorite(id: id, favorite: favorite), optimistic: optimistic?.variable)
+        try await self.commit(TestSetFavorite(id: id, favorite: favorite), optimistic: optimistic?.variable)
     }
 }
 

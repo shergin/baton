@@ -165,6 +165,7 @@ nonisolated enum Slots {
         static let character_4a2dfc = Baton.Registry.slot(Types.Query, "character(id:\"a,b\")")
         static let character_800bca = Baton.DynamicKey(Types.Query, [.literal("character(id:"), .variable("a"), .literal(")")])
         static let character_ac9202 = Baton.DynamicKey(Types.Query, [.literal("character(id:"), .variable("b"), .literal(")")])
+        static let character_662906 = Baton.DynamicKey(Types.Query, [.literal("character(id:"), .variable("hasher"), .literal(")")])
         static let character_bca4f9 = Baton.DynamicKey(Types.Query, [.literal("character(id:"), .variable("id"), .literal(")")])
         static let character_8fc9fb = Baton.DynamicKey(Types.Query, [.literal("character(id:"), .variable("where"), .literal(")")])
         static let characters_498461 = Baton.DynamicKey(Types.Query, [.literal("characters(filter:{\"name\":"), .variable("name"), .literal(",\"status\":\"Alive\"})")])

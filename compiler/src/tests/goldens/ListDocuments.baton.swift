@@ -222,7 +222,7 @@ mutation TestAddNote(
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["characterId": Baton.Variable(characterId), "text": Baton.Variable(text), "connections": Baton.Variable(connections)])
+        Baton.Variables(["characterId": Baton.Variable(self.characterId), "text": Baton.Variable(self.text), "connections": Baton.Variable(self.connections)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -230,9 +230,9 @@ mutation TestAddNote(
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(characterId)
-        hasher.combine(text)
-        hasher.combine(connections)
+        hasher.combine(self.characterId)
+        hasher.combine(self.text)
+        hasher.combine(self.connections)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
@@ -342,7 +342,7 @@ extension Baton.MutationAction where Op == TestAddNote {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
     public func callAsFunction(characterId: String, text: String, connections: [String], optimistic: TestAddNote.OptimisticResponse? = nil) async throws -> TestAddNote.Data {
-        try await commit(TestAddNote(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
+        try await self.commit(TestAddNote(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
     }
 }
 
@@ -378,7 +378,7 @@ mutation TestAddNoteFirst(
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["characterId": Baton.Variable(characterId), "text": Baton.Variable(text), "connections": Baton.Variable(connections)])
+        Baton.Variables(["characterId": Baton.Variable(self.characterId), "text": Baton.Variable(self.text), "connections": Baton.Variable(self.connections)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -386,9 +386,9 @@ mutation TestAddNoteFirst(
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(characterId)
-        hasher.combine(text)
-        hasher.combine(connections)
+        hasher.combine(self.characterId)
+        hasher.combine(self.text)
+        hasher.combine(self.connections)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
@@ -498,7 +498,7 @@ extension Baton.MutationAction where Op == TestAddNoteFirst {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
     public func callAsFunction(characterId: String, text: String, connections: [String], optimistic: TestAddNoteFirst.OptimisticResponse? = nil) async throws -> TestAddNoteFirst.Data {
-        try await commit(TestAddNoteFirst(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
+        try await self.commit(TestAddNoteFirst(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
     }
 }
 
@@ -531,7 +531,7 @@ mutation TestAddNoteNode(
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["characterId": Baton.Variable(characterId), "text": Baton.Variable(text), "connections": Baton.Variable(connections)])
+        Baton.Variables(["characterId": Baton.Variable(self.characterId), "text": Baton.Variable(self.text), "connections": Baton.Variable(self.connections)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -539,9 +539,9 @@ mutation TestAddNoteNode(
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(characterId)
-        hasher.combine(text)
-        hasher.combine(connections)
+        hasher.combine(self.characterId)
+        hasher.combine(self.text)
+        hasher.combine(self.connections)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
@@ -624,7 +624,7 @@ extension Baton.MutationAction where Op == TestAddNoteNode {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
     public func callAsFunction(characterId: String, text: String, connections: [String], optimistic: TestAddNoteNode.OptimisticResponse? = nil) async throws -> TestAddNoteNode.Data {
-        try await commit(TestAddNoteNode(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
+        try await self.commit(TestAddNoteNode(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
     }
 }
 
@@ -657,7 +657,7 @@ mutation TestAddNoteNodeFirst(
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["characterId": Baton.Variable(characterId), "text": Baton.Variable(text), "connections": Baton.Variable(connections)])
+        Baton.Variables(["characterId": Baton.Variable(self.characterId), "text": Baton.Variable(self.text), "connections": Baton.Variable(self.connections)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -665,9 +665,9 @@ mutation TestAddNoteNodeFirst(
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(characterId)
-        hasher.combine(text)
-        hasher.combine(connections)
+        hasher.combine(self.characterId)
+        hasher.combine(self.text)
+        hasher.combine(self.connections)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
@@ -750,7 +750,7 @@ extension Baton.MutationAction where Op == TestAddNoteNodeFirst {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
     public func callAsFunction(characterId: String, text: String, connections: [String], optimistic: TestAddNoteNodeFirst.OptimisticResponse? = nil) async throws -> TestAddNoteNodeFirst.Data {
-        try await commit(TestAddNoteNodeFirst(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
+        try await self.commit(TestAddNoteNodeFirst(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
     }
 }
 
@@ -783,7 +783,7 @@ mutation TestAddNoteNodeOfAnotherType(
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["characterId": Baton.Variable(characterId), "text": Baton.Variable(text), "connections": Baton.Variable(connections)])
+        Baton.Variables(["characterId": Baton.Variable(self.characterId), "text": Baton.Variable(self.text), "connections": Baton.Variable(self.connections)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -791,9 +791,9 @@ mutation TestAddNoteNodeOfAnotherType(
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(characterId)
-        hasher.combine(text)
-        hasher.combine(connections)
+        hasher.combine(self.characterId)
+        hasher.combine(self.text)
+        hasher.combine(self.connections)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
@@ -876,7 +876,7 @@ extension Baton.MutationAction where Op == TestAddNoteNodeOfAnotherType {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
     public func callAsFunction(characterId: String, text: String, connections: [String], optimistic: TestAddNoteNodeOfAnotherType.OptimisticResponse? = nil) async throws -> TestAddNoteNodeOfAnotherType.Data {
-        try await commit(TestAddNoteNodeOfAnotherType(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
+        try await self.commit(TestAddNoteNodeOfAnotherType(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
     }
 }
 
@@ -909,7 +909,7 @@ fragment TestRow_character on Character {
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["id": Baton.Variable(id)])
+        Baton.Variables(["id": Baton.Variable(self.id)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -917,7 +917,7 @@ fragment TestRow_character on Character {
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
+        hasher.combine(self.id)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
@@ -997,7 +997,7 @@ fragment TestNoteText_note on Note {
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["count": Baton.Variable(count), "cursor": Baton.Variable(cursor), "id": Baton.Variable(id)])
+        Baton.Variables(["count": Baton.Variable(self.count), "cursor": Baton.Variable(self.cursor), "id": Baton.Variable(self.id)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -1005,9 +1005,9 @@ fragment TestNoteText_note on Note {
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(count)
-        hasher.combine(cursor)
-        hasher.combine(id)
+        hasher.combine(self.count)
+        hasher.combine(self.cursor)
+        hasher.combine(self.id)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
@@ -1077,7 +1077,7 @@ mutation TestDeleteNote(
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["id": Baton.Variable(id)])
+        Baton.Variables(["id": Baton.Variable(self.id)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -1085,7 +1085,7 @@ mutation TestDeleteNote(
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
+        hasher.combine(self.id)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
@@ -1141,7 +1141,7 @@ extension Baton.MutationAction where Op == TestDeleteNote {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
     public func callAsFunction(id: String, optimistic: TestDeleteNote.OptimisticResponse? = nil) async throws -> TestDeleteNote.Data {
-        try await commit(TestDeleteNote(id: id), optimistic: optimistic?.variable)
+        try await self.commit(TestDeleteNote(id: id), optimistic: optimistic?.variable)
     }
 }
 
@@ -1195,7 +1195,7 @@ fragment TestNotes_character_1G22uz on Character {
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["count": Baton.Variable(count), "cursor": Baton.Variable(cursor), "id": Baton.Variable(id)])
+        Baton.Variables(["count": Baton.Variable(self.count), "cursor": Baton.Variable(self.cursor), "id": Baton.Variable(self.id)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -1203,9 +1203,9 @@ fragment TestNotes_character_1G22uz on Character {
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(count)
-        hasher.combine(cursor)
-        hasher.combine(id)
+        hasher.combine(self.count)
+        hasher.combine(self.cursor)
+        hasher.combine(self.id)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
@@ -1299,7 +1299,7 @@ fragment TestNotes_character on Character {
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["id": Baton.Variable(id)])
+        Baton.Variables(["id": Baton.Variable(self.id)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -1307,7 +1307,7 @@ fragment TestNotes_character on Character {
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
+        hasher.combine(self.id)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
@@ -1396,7 +1396,7 @@ fragment TestNotes_character_2H9PL on Character {
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["id": Baton.Variable(id), "size": Baton.Variable(size)])
+        Baton.Variables(["id": Baton.Variable(self.id), "size": Baton.Variable(self.size)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -1404,8 +1404,8 @@ fragment TestNotes_character_2H9PL on Character {
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-        hasher.combine(size)
+        hasher.combine(self.id)
+        hasher.combine(self.size)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
@@ -1496,7 +1496,7 @@ fragment TestRecentNotes_character_1G22uz on Character {
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["count": Baton.Variable(count), "cursor": Baton.Variable(cursor), "id": Baton.Variable(id)])
+        Baton.Variables(["count": Baton.Variable(self.count), "cursor": Baton.Variable(self.cursor), "id": Baton.Variable(self.id)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -1504,9 +1504,9 @@ fragment TestRecentNotes_character_1G22uz on Character {
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(count)
-        hasher.combine(cursor)
-        hasher.combine(id)
+        hasher.combine(self.count)
+        hasher.combine(self.cursor)
+        hasher.combine(self.id)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
@@ -1596,7 +1596,7 @@ fragment TestRecentNotes_character on Character {
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["id": Baton.Variable(id)])
+        Baton.Variables(["id": Baton.Variable(self.id)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -1604,7 +1604,7 @@ fragment TestRecentNotes_character on Character {
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
+        hasher.combine(self.id)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
@@ -1669,7 +1669,7 @@ mutation TestRemoveNote(
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["id": Baton.Variable(id), "connections": Baton.Variable(connections)])
+        Baton.Variables(["id": Baton.Variable(self.id), "connections": Baton.Variable(self.connections)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -1677,8 +1677,8 @@ mutation TestRemoveNote(
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-        hasher.combine(connections)
+        hasher.combine(self.id)
+        hasher.combine(self.connections)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
@@ -1739,7 +1739,7 @@ extension Baton.MutationAction where Op == TestRemoveNote {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
     public func callAsFunction(id: String, connections: [String], optimistic: TestRemoveNote.OptimisticResponse? = nil) async throws -> TestRemoveNote.Data {
-        try await commit(TestRemoveNote(id: id, connections: connections), optimistic: optimistic?.variable)
+        try await self.commit(TestRemoveNote(id: id, connections: connections), optimistic: optimistic?.variable)
     }
 }
 
@@ -1799,7 +1799,7 @@ query TestTwoPagesQuery(
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["id": Baton.Variable(id)])
+        Baton.Variables(["id": Baton.Variable(self.id)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -1807,7 +1807,7 @@ query TestTwoPagesQuery(
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
+        hasher.combine(self.id)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [

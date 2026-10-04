@@ -546,7 +546,9 @@ are expected and listed without apology.
 - A variable named `self` is a parameter, a property and a request
   variable of that name. The value's initializer, `variables` and `hash`
   read the instance itself in its place, and the generated code did not
-  compile.
+  compile. A variable named `hasher`, or `commit` in a mutation, compiles
+  too: `hash(into:)` combined its own parameter in its place, and the
+  action called the parameter for its `commit`.
 - A plan's edge directive is an `Edit`, as the change set's
   `ChangeSet.Edit` it becomes, so "handle" means only the operation handle.
   Breaking for a plan built by hand: `Handle` is `Edit`, `ResolvedHandle`
@@ -617,8 +619,11 @@ are expected and listed without apology.
   module, and the generated code did not compile. So is a field named
   `Types`, `Slots`, `AbstractSlots` or `Sites` where its lens, or a lens
   nested in it, reads through that shared enum, which the field's accessor
-  hid. A clash between two names the compiler chose stays an internal
-  error.
+  hid; a variable named `Baton`, `Types` or `Slots`, or `AbstractSlots` or
+  `Sites` where the operation's lenses read through them, which the
+  variable hid from the operation's code; and a mutation's variable named
+  `optimistic`, which its action takes as a parameter of its own. A clash
+  between two names the compiler chose stays an internal error.
 - A field named `Baton` compiles in any lens. A lens under `@catch` or
   `@throwOnFieldError`, a refetchable fragment's and a connection's named
   the runtime's module in expressions, which the field's accessor hid; a

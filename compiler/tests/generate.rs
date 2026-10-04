@@ -342,3 +342,34 @@ var fields: Fields
         String::from_utf8_lossy(&output.stderr)
     );
 }
+
+#[test]
+fn a_variable_named_like_what_its_operation_spells_is_an_error_at_the_name() {
+    let directory = workspace("variables");
+    // `$Sites` is free: no lens of the query binds a spread's arguments.
+    write(
+        &directory,
+        "Variables.swift",
+        r##"@Query("query Probe($Baton: ID!, $Types: ID!, $Slots: ID!, $AbstractSlots: ID!, $Sites: String!) { character(id: $Baton) { id } location(id: $Types) { id } episode(id: $Slots) { id } node(id: $AbstractSlots) { id } search(name: $Sites) { __typename } }")
+var probe: Probe
+@Mutation("mutation Favorite($id: ID!, $optimistic: Boolean!) { setFavorite(id: $id, favorite: $optimistic) { character { id } } }")
+var favorite: Favorite.Action
+"##,
+    );
+    let output = generate(&directory, &["--out", "out", "Variables.swift"]);
+    assert!(!output.status.success());
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    let mut lines: Vec<&str> = stderr.lines().collect();
+    lines.sort();
+    assert_eq!(
+        lines,
+        [
+            "Variables.swift:1:21: error: the variable `$Baton` clashes with the runtime's module `Baton` in the generated Swift; rename the variable",
+            "Variables.swift:1:34: error: the variable `$Types` clashes with the shared enum `Types` in the generated Swift; rename the variable",
+            "Variables.swift:1:47: error: the variable `$Slots` clashes with the shared enum `Slots` in the generated Swift; rename the variable",
+            "Variables.swift:1:60: error: the variable `$AbstractSlots` clashes with the shared enum `AbstractSlots` in the generated Swift; rename the variable",
+            "Variables.swift:3:40: error: the variable `$optimistic` clashes with the action's parameter `optimistic` in the generated Swift; rename the variable",
+        ]
+    );
+    assert!(!directory.join("out").exists(), "an output was written");
+}

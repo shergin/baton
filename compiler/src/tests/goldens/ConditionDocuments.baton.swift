@@ -48,7 +48,7 @@ query TestConditions(
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["id": Baton.Variable(id), "withOrigin": Baton.Variable(withOrigin), "hideStatus": Baton.Variable(hideStatus)])
+        Baton.Variables(["id": Baton.Variable(self.id), "withOrigin": Baton.Variable(self.withOrigin), "hideStatus": Baton.Variable(self.hideStatus)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -56,9 +56,9 @@ query TestConditions(
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-        hasher.combine(withOrigin)
-        hasher.combine(hideStatus)
+        hasher.combine(self.id)
+        hasher.combine(self.withOrigin)
+        hasher.combine(self.hideStatus)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
@@ -128,7 +128,7 @@ query TestFoldedNode(
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["name": Baton.Variable(name)])
+        Baton.Variables(["name": Baton.Variable(self.name)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -136,7 +136,7 @@ query TestFoldedNode(
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(name)
+        hasher.combine(self.name)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
@@ -195,7 +195,7 @@ fragment TestNamed_named on Named {
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["id": Baton.Variable(id)])
+        Baton.Variables(["id": Baton.Variable(self.id)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -203,7 +203,7 @@ fragment TestNamed_named on Named {
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
+        hasher.combine(self.id)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
@@ -275,7 +275,7 @@ fragment TestAppearances_character on Character {
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["id": Baton.Variable(id)])
+        Baton.Variables(["id": Baton.Variable(self.id)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -283,7 +283,7 @@ fragment TestAppearances_character on Character {
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
+        hasher.combine(self.id)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
@@ -365,7 +365,7 @@ query TestNodeFields(
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["id": Baton.Variable(id)])
+        Baton.Variables(["id": Baton.Variable(self.id)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -373,7 +373,7 @@ query TestNodeFields(
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
+        hasher.combine(self.id)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
@@ -447,7 +447,7 @@ query TestStrictConditions(
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["id": Baton.Variable(id), "withStatus": Baton.Variable(withStatus)])
+        Baton.Variables(["id": Baton.Variable(self.id), "withStatus": Baton.Variable(self.withStatus)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -455,8 +455,8 @@ query TestStrictConditions(
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-        hasher.combine(withStatus)
+        hasher.combine(self.id)
+        hasher.combine(self.withStatus)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
@@ -573,7 +573,7 @@ fragment TestRow_character on Character {
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["id": Baton.Variable(id), "again": Baton.Variable(again)])
+        Baton.Variables(["id": Baton.Variable(self.id), "again": Baton.Variable(self.again)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -581,8 +581,8 @@ fragment TestRow_character on Character {
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-        hasher.combine(again)
+        hasher.combine(self.id)
+        hasher.combine(self.again)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
@@ -654,7 +654,7 @@ query TestUnion(
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["name": Baton.Variable(name)])
+        Baton.Variables(["name": Baton.Variable(self.name)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -662,7 +662,7 @@ query TestUnion(
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(name)
+        hasher.combine(self.name)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [

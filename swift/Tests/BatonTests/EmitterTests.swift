@@ -61,6 +61,20 @@ struct EmitterTests {
         #expect(onNode.errors.map(\.path) == ["character.origin.name"])
     }
 
+    @Test("variables named hasher and commit, like a parameter and a method the generated code calls, compile, and the values hash, read and commit by them")
+    func variablesNamedLikeWhatTheGeneratedCodeCalls() async throws {
+        let query = TestHasherVariable(hasher: "1")
+        #expect(Set([query, TestHasherVariable(hasher: "1"), TestHasherVariable(hasher: "2")]).count == 2)
+        #expect(query.variables["hasher"] == .string("1"))
+        let store = Store()
+        let data = TestHasherVariable.Data(anchor: try root(query, "hasher-variable-1", in: store))
+        #expect(data.character?.name == "Rick Sanchez")
+
+        let environment = Environment(transport: RecordedTransport([TestCommitVariable.name: fixture("set-favorite-1")]))
+        let committed = try await environment.mutate(TestCommitVariable(commit: "1"))
+        #expect(committed.setFavorite?.character?.favorite == true)
+    }
+
     @Test("a field and an aliased selection named like a type condition's accessor keep their names, and the condition's accessor and lens take the next number")
     func conditionNames() throws {
         let store = Store()

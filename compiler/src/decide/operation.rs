@@ -74,7 +74,6 @@ pub(super) fn operation(
     duplicates: &mut Vec<NameError>,
 ) -> OperationValue {
     let resolves = operation.kind != OperationKind::Mutation;
-    duplicates.extend(operation_scope(operation, resolves));
     let names: Vec<&str> = operation
         .variables
         .iter()
@@ -92,6 +91,7 @@ pub(super) fn operation(
         .collect();
     let normalization = super::normalization(&operation.root_type, &operation.normalization);
     let data = readers.operation(operation);
+    duplicates.extend(operation_scope(operation, resolves, &data));
     let optimistic = (operation.kind == OperationKind::Mutation).then(|| {
         let path = format!("{}.OptimisticResponse", operation.name);
         builder(
@@ -120,10 +120,26 @@ pub(super) fn operation(
 }
 
 /// The names an operation's value would declare twice: its variables beside
-/// what every operation value has.
-fn operation_scope(operation: &OperationPlan, resolves: bool) -> Vec<NameError> {
+/// what every operation value has, and beside the names its code spells,
+/// which a variable would hide: the runtime's module, the shared enums its
+/// plan and its root lens read through, and a mutation's action's own
+/// parameter.
+fn operation_scope(operation: &OperationPlan, resolves: bool, data: &ReaderPlan) -> Vec<NameError> {
     let none = Reserved::none();
     let mut scope = Scope::new(operation.name.as_str(), &none);
+    scope.declare("Baton", Kind::Type, "the runtime's module `Baton`");
+    let mut spelled = data.shared_enums();
+    spelled.extend(["Types", "Slots"]);
+    for name in spelled {
+        scope.declare(name, Kind::Type, format!("the shared enum `{name}`"));
+    }
+    if operation.kind == OperationKind::Mutation {
+        scope.declare(
+            "optimistic",
+            Kind::Instance,
+            "the action's parameter `optimistic`",
+        );
+    }
     for variable in &operation.variables {
         scope.declare_written(
             &variable.name,

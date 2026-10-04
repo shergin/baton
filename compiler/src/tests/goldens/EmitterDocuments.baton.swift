@@ -201,7 +201,7 @@ mutation TestBuilderNames(
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["id": Baton.Variable(id), "favorite": Baton.Variable(favorite), "self": Baton.Variable(self.`self`)])
+        Baton.Variables(["id": Baton.Variable(self.id), "favorite": Baton.Variable(self.favorite), "self": Baton.Variable(self.`self`)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -209,8 +209,8 @@ mutation TestBuilderNames(
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-        hasher.combine(favorite)
+        hasher.combine(self.id)
+        hasher.combine(self.favorite)
         hasher.combine(self.`self`)
     }
 
@@ -456,7 +456,7 @@ extension Baton.MutationAction where Op == TestBuilderNames {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
     public func callAsFunction(id: String, favorite: Bool, `self` selfValue: String, optimistic: TestBuilderNames.OptimisticResponse? = nil) async throws -> TestBuilderNames.Data {
-        try await commit(TestBuilderNames(id: id, favorite: favorite, self: selfValue), optimistic: optimistic?.variable)
+        try await self.commit(TestBuilderNames(id: id, favorite: favorite, self: selfValue), optimistic: optimistic?.variable)
     }
 }
 
@@ -503,7 +503,7 @@ fragment TestCaughtStrict_character on Character {
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["id": Baton.Variable(id)])
+        Baton.Variables(["id": Baton.Variable(self.id)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -511,7 +511,7 @@ fragment TestCaughtStrict_character on Character {
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
+        hasher.combine(self.id)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
@@ -585,6 +585,131 @@ fragment TestCaughtStrict_character on Character {
     }
 }
 
+/// Operation value for `mutation TestCommitVariable`.
+nonisolated public struct TestCommitVariable: Baton.Mutation {
+    public var commit: String
+
+    public init(commit: String) {
+        self.commit = commit
+    }
+
+    public static let name = "TestCommitVariable"
+    public static let persistedID = "74901df28f2929f51d2e12a1d300c09c"
+    public static let text = #"""
+mutation TestCommitVariable(
+  $commit: ID!
+) {
+  setFavorite(id: $commit, favorite: true) {
+    character {
+      id
+      name
+      favorite
+    }
+  }
+}
+"""#
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["commit": Baton.Variable(self.commit)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.commit == rhs.commit
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.commit)
+    }
+
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
+            .linked("setFavorite", key: .fixed(Slots.Mutation.setFavorite), plural: false, selection: Baton.Selection(type: Types.FavoritePayload, hasID: false, abstract: false, fields: [
+                .linked("character", key: .fixed(Slots.FavoritePayload.character), plural: false, selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                    .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+                    .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
+                    .scalar("favorite", key: .fixed(Slots.Character.favorite), kind: .bool, list: false),
+                ])),
+            ])),
+        ]))
+
+    nonisolated public struct Data: Baton.Lens {
+        @_spi(Generated) public let anchor: Baton.Anchor
+        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Mutation"
+        @MainActor public var setFavorite: SetFavorite? { anchor.linked(Slots.Mutation.setFavorite).map(SetFavorite.init(anchor:)) }
+
+        nonisolated public struct SetFavorite: Baton.Lens {
+            @_spi(Generated) public let anchor: Baton.Anchor
+            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "FavoritePayload"
+            @MainActor public var character: Character? { anchor.linked(Slots.FavoritePayload.character).map(Character.init(anchor:)) }
+
+            nonisolated public struct Character: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                public static let typeName = "Character"
+                @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+                @MainActor public var name: String? { anchor.string(Slots.Character.name) }
+                @MainActor public var favorite: Bool? { anchor.bool(Slots.Character.favorite) }
+            }
+        }
+    }
+
+    public typealias Action = Baton.MutationAction<Self>
+
+    /// A partial response to show before the server answers; absent fields leave the store untouched.
+    nonisolated public struct OptimisticResponse: Sendable {
+        public var setFavorite: SetFavorite?
+        public init(setFavorite: SetFavorite? = nil) {
+            self.setFavorite = setFavorite
+        }
+        public var variable: Baton.Variable {
+            var fields: [String: Baton.Variable] = [:]
+            if let setFavorite { fields["setFavorite"] = setFavorite.variable }
+            return .object(fields)
+        }
+
+        /// A partial response to show before the server answers; absent fields leave the store untouched.
+        nonisolated public struct SetFavorite: Sendable {
+            public var character: Character?
+            public init(character: Character? = nil) {
+                self.character = character
+            }
+            public var variable: Baton.Variable {
+                var fields: [String: Baton.Variable] = [:]
+                if let character { fields["character"] = character.variable }
+                return .object(fields)
+            }
+
+            /// A partial response to show before the server answers; absent fields leave the store untouched.
+            nonisolated public struct Character: Sendable {
+                public var id: String?
+                public var name: String?
+                public var favorite: Bool?
+                public init(id: String? = nil, name: String? = nil, favorite: Bool? = nil) {
+                    self.id = id
+                    self.name = name
+                    self.favorite = favorite
+                }
+                public var variable: Baton.Variable {
+                    var fields: [String: Baton.Variable] = [:]
+                    if let id { fields["id"] = Baton.Variable(id) }
+                    if let name { fields["name"] = Baton.Variable(name) }
+                    if let favorite { fields["favorite"] = Baton.Variable(favorite) }
+                    return .object(fields)
+                }
+            }
+        }
+    }
+}
+
+extension Baton.MutationAction where Op == TestCommitVariable {
+    /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
+    @MainActor @discardableResult
+    public func callAsFunction(commit: String, optimistic: TestCommitVariable.OptimisticResponse? = nil) async throws -> TestCommitVariable.Data {
+        try await self.commit(TestCommitVariable(commit: commit), optimistic: optimistic?.variable)
+    }
+}
+
 /// Operation value for `query TestConditionNames`.
 nonisolated public struct TestConditionNames: Baton.Query {
     public var id: String
@@ -628,7 +753,7 @@ query TestConditionNames(
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["id": Baton.Variable(id), "name": Baton.Variable(name)])
+        Baton.Variables(["id": Baton.Variable(self.id), "name": Baton.Variable(self.name)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -636,8 +761,8 @@ query TestConditionNames(
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-        hasher.combine(name)
+        hasher.combine(self.id)
+        hasher.combine(self.name)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
@@ -761,7 +886,7 @@ fragment TestEdgesNames_character on Character {
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["id": Baton.Variable(id)])
+        Baton.Variables(["id": Baton.Variable(self.id)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -769,7 +894,7 @@ fragment TestEdgesNames_character on Character {
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
+        hasher.combine(self.id)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
@@ -868,6 +993,63 @@ query TestEscapedText {
     }
 }
 
+/// Operation value for `query TestHasherVariable`.
+nonisolated public struct TestHasherVariable: Baton.Query {
+    public var hasher: String
+    public var resolution: Baton.OperationHandle<Self>? = nil
+
+    public init(hasher: String) {
+        self.hasher = hasher
+    }
+
+    public static let name = "TestHasherVariable"
+    public static let persistedID = "2c80978abfd935e0e3e0bd9006ff6e49"
+    public static let text = #"""
+query TestHasherVariable(
+  $hasher: ID!
+) {
+  character(id: $hasher) {
+    id
+    name
+  }
+}
+"""#
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["hasher": Baton.Variable(self.hasher)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.hasher == rhs.hasher
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.hasher)
+    }
+
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
+            .linked("character", key: .dynamic(Slots.Query.character_662906), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("hasher")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+                .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            ])),
+        ]))
+
+    nonisolated public struct Data: Baton.Lens {
+        @_spi(Generated) public let anchor: Baton.Anchor
+        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Query"
+        @MainActor public var character: Character? { anchor.linked(anchor.owner.slot(Slots.Query.character_662906)).map(Character.init(anchor:)) }
+
+        nonisolated public struct Character: Baton.Lens {
+            @_spi(Generated) public let anchor: Baton.Anchor
+            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Character"
+            @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+            @MainActor public var name: String? { anchor.string(Slots.Character.name) }
+        }
+    }
+}
+
 /// Operation value for `query TestProgramNamesQuery`.
 nonisolated public struct TestProgramNamesQuery: Baton.Query {
     public var id: String
@@ -912,7 +1094,7 @@ fragment TestProgramNames_character on Character {
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["id": Baton.Variable(id)])
+        Baton.Variables(["id": Baton.Variable(self.id)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -920,7 +1102,7 @@ fragment TestProgramNames_character on Character {
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
+        hasher.combine(self.id)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
@@ -1002,7 +1184,7 @@ fragment TestProgramNames_character on Character {
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["id": Baton.Variable(id)])
+        Baton.Variables(["id": Baton.Variable(self.id)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -1010,7 +1192,7 @@ fragment TestProgramNames_character on Character {
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
+        hasher.combine(self.id)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
@@ -1085,7 +1267,7 @@ fragment TestCaughtStrict_character on Character {
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["id": Baton.Variable(id)])
+        Baton.Variables(["id": Baton.Variable(self.id)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -1093,7 +1275,7 @@ fragment TestCaughtStrict_character on Character {
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
+        hasher.combine(self.id)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [

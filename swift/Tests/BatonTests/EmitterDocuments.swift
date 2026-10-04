@@ -112,6 +112,20 @@ struct EmitterDocuments {
         """)
     var builderNames: TestBuilderNames.Action
 
+    @Query("""
+        query TestHasherVariable($hasher: ID!) {
+          character(id: $hasher) { id name }
+        }
+        """)
+    var hasherVariable: TestHasherVariable
+
+    @Mutation("""
+        mutation TestCommitVariable($commit: ID!) {
+          setFavorite(id: $commit, favorite: true) { character { id name favorite } }
+        }
+        """)
+    var commitVariable: TestCommitVariable.Action
+
     @Query(##"""
         query TestEscapedText {
           search(name: "\\#1") { __typename }

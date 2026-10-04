@@ -150,9 +150,11 @@ pub(super) fn operation_text(operation: &OperationValue) -> String {
             .iter()
             .map(|variable| format!("{}: {}", call_label(&variable.name), variable.local))
             .collect();
+        // The action calls its `commit` through `self`, as a parameter for
+        // a variable named `$commit` would take its place.
         let _ = writeln!(
             output,
-            "extension Baton.MutationAction where Op == {name} {{\n    /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.\n    @MainActor @discardableResult\n    public func callAsFunction({parameters}{separator}optimistic: {name}.OptimisticResponse? = nil) async throws -> {name}.Data {{\n        try await commit({name}({args}), optimistic: optimistic?.variable)\n    }}\n}}\n",
+            "extension Baton.MutationAction where Op == {name} {{\n    /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.\n    @MainActor @discardableResult\n    public func callAsFunction({parameters}{separator}optimistic: {name}.OptimisticResponse? = nil) async throws -> {name}.Data {{\n        try await self.commit({name}({args}), optimistic: optimistic?.variable)\n    }}\n}}\n",
             name = operation.name,
             args = arguments.join(", ")
         );
@@ -176,12 +178,9 @@ fn parameter_list(variables: &[VariableValue]) -> String {
         .join(", ")
 }
 
-/// A stored property read inside the value's own methods: by its name, or
-/// through `self` for `self`, which alone would name the instance.
+/// A stored property read inside the value's own methods, through `self`,
+/// so neither a parameter such as `hash(into:)`'s `hasher` nor the instance
+/// itself, for a property named `self`, takes its place.
 fn stored(property: &str) -> String {
-    if property == "self" {
-        "self.`self`".to_string()
-    } else {
-        escape(property)
-    }
+    format!("self.{}", escape(property))
 }
