@@ -537,7 +537,7 @@ struct DeliveryTests {
     @Test("a subscription's events commit at the subscription root and append through @appendEdge")
     func subscription() async throws {
         let events = Events()
-        let environment = Environment(transport: ListTests.PagingTransport(), subscriptions: events)
+        let environment = Environment(transport: notesTransport(), subscriptions: events)
         environment.store.reportMissing = nil
         let handle = environment.handle(for: TestNotesQuery(id: "1"))
         handle.retain()

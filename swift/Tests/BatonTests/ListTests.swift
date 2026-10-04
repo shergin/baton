@@ -6,25 +6,7 @@ import Testing
 @MainActor
 @Suite("Lists", .timeLimit(.minutes(1)))
 struct ListTests {
-    /// Answers the notes query with page 1 and the pagination query with the
-    /// page after the cursor it carries; counts the requests.
-    final class PagingTransport: Transport, @unchecked Sendable {
-        var requests: [Request] = []
-        var fail = false
-
-        func execute(_ request: Request) async throws -> Data {
-            requests.append(request)
-            if fail { throw TransportError(statusCode: 500, body: "no") }
-            if request.operationName == TestNotesQuery.name { return notesPage(1) }
-            switch request.variables["cursor"] {
-            case .string("c2")?: return notesPage(2)
-            case .string("c4")?: return notesPage(3)
-            default: return notesPage(1)
-            }
-        }
-    }
-
-    func seededEnvironment(_ transport: any Transport = PagingTransport()) async throws -> (Environment, TestNotes_character) {
+    func seededEnvironment(_ transport: any Transport = notesTransport()) async throws -> (Environment, TestNotes_character) {
         let environment = Environment(transport: transport)
         environment.store.reportMissing = nil
         let handle = environment.handle(for: TestNotesQuery(id: "1"))
@@ -89,12 +71,12 @@ struct ListTests {
 
     @Test("loadNext fetches after the end cursor, appends, and is a no-op at the end")
     func loadNext() async throws {
-        let transport = PagingTransport()
+        let transport = notesTransport()
         let (environment, character) = try await seededEnvironment(transport)
-        #expect(transport.requests.count == 1)
+        #expect(transport.requestCount == 1)
 
         try await character.notes.loadNext()
-        #expect(transport.requests.count == 2)
+        #expect(transport.requestCount == 2)
         let request = transport.requests[1]
         #expect(request.operationName == "TestNotesPaginationQuery")
         #expect(request.variables["cursor"] == .string("c2"))
@@ -110,7 +92,7 @@ struct ListTests {
         #expect(!character.notes.hasNext)
 
         try await character.notes.loadNext()
-        #expect(transport.requests.count == 3, "nothing to load")
+        #expect(transport.requestCount == 3, "nothing to load")
 
         // The pagination fetches created no roots; the connection keeps its pages.
         #expect(environment.rootCount == 1)

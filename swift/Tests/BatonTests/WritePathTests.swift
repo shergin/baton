@@ -43,7 +43,7 @@ struct WritePathTests {
 
     @Test("a record an optimistic response revives is deleted again when the layer fails")
     func revivalsAreUndone() async throws {
-        let environment = Environment(transport: ListTests.PagingTransport())
+        let environment = Environment(transport: notesTransport())
         environment.store.reportMissing = nil
         let handle = environment.handle(for: TestNotesQuery(id: "1"))
         handle.retain()
@@ -80,7 +80,7 @@ struct WritePathTests {
 
     @Test("a body that reads only a connection's nodes is told when @deleteRecord deletes one, with no @deleteEdge")
     func deletionTellsConnections() async throws {
-        let environment = Environment(transport: ListTests.PagingTransport())
+        let environment = Environment(transport: notesTransport())
         environment.store.reportMissing = nil
         let handle = environment.handle(for: TestNotesQuery(id: "1"))
         handle.retain()

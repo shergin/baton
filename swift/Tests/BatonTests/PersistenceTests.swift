@@ -183,7 +183,7 @@ struct PersistenceTests {
 
     @Test("a connection's merged pages and a deletion survive a launch, and the loading flag does not")
     func connectionsSurvive() async throws {
-        let first = launch(ListTests.PagingTransport())
+        let first = launch(notesTransport())
         let fetched = first.handle(for: TestNotesQuery(id: "1"))
         fetched.retain()
         await fetched.settle()
