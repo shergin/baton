@@ -386,6 +386,12 @@ are expected and listed without apology.
 - Each `batonc` command takes only its own options, and any other is an
   error naming the ones it takes: `--schem x` was ignored, and the schema
   then came from wherever else it could.
+- The check that a marker's property is typed as its document's generated
+  type finds the definition by its file and its place among the file's
+  documents. It searched the document's text for the longest known name, so
+  a query that spread `HomeDetail_character` was taken for the operation
+  `HomeDetail`. A subscription's property typed `.Action` is now warned
+  about; only a mutation's may be.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

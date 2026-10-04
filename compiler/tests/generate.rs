@@ -144,3 +144,34 @@ fn an_option_the_command_does_not_take_is_an_error() {
     assert!(!scan.status.success());
     assert!(String::from_utf8_lossy(&scan.stderr).contains("which takes no options"));
 }
+
+#[test]
+fn the_property_check_finds_each_document_by_where_it_came_from() {
+    let directory = workspace("property");
+    write(
+        &directory,
+        "Home.swift",
+        "@Query(\"query Home($id: ID!) { character(id: $id) { ...HomeDetail_character } }\")\nvar home: Home\n",
+    );
+    write(
+        &directory,
+        "Detail.swift",
+        "@Fragment(\"fragment HomeDetail_character on Character { name }\")\nvar character: HomeDetail_character\n@Query(\"query HomeDetail { character(id: 1) { id } }\")\nvar detail: HomeDetail\n@Subscription(\"subscription NoteAdded { noteAdded(characterId: 1) { noteEdge { cursor } } }\")\nvar added: NoteAdded.Action\n",
+    );
+    let output = generate(&directory, &["--out", "out", "Home.swift", "Detail.swift"]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let warnings: Vec<String> = String::from_utf8_lossy(&output.stderr)
+        .lines()
+        .filter(|line| line.contains("warning"))
+        .map(str::to_string)
+        .collect();
+    assert_eq!(warnings.len(), 1, "{warnings:?}");
+    assert!(
+        warnings[0].contains("@Subscription declares `NoteAdded` but the property `added` is typed `NoteAdded.Action`"),
+        "{warnings:?}"
+    );
+}

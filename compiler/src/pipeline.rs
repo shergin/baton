@@ -78,6 +78,9 @@ pub struct FragmentPlan {
     pub name: String,
     /// The file the fragment was declared in.
     pub source: String,
+    /// Which of the file's documents declared it, as the scanner numbered
+    /// them.
+    pub document: usize,
     pub type_condition: String,
     /// Whether the type condition is an interface or union.
     pub type_is_abstract: bool,
@@ -121,6 +124,9 @@ pub struct OperationPlan {
     pub name: String,
     /// The file the operation was declared in.
     pub source: String,
+    /// Which of the file's documents declared it, as the scanner numbered
+    /// them; a refetch query is its fragment's.
+    pub document: usize,
     pub kind: String,
     pub root_type: String,
     pub variables: Vec<VariablePlan>,
@@ -727,6 +733,7 @@ fn lower(
         plan.operations.push(OperationPlan {
             name: name.to_string(),
             source: operation.name.location.source_location().path().to_string(),
+            document: document_index(operation.name.location),
             kind: match operation.kind {
                 OperationKind::Query => "query",
                 OperationKind::Mutation => "mutation",
@@ -790,11 +797,20 @@ fn has_deferred(selections: &[SelectionPlan]) -> bool {
     })
 }
 
+/// The place among its file's documents of the one a definition came from.
+fn document_index(location: common::Location) -> usize {
+    match location.source_location() {
+        SourceLocationKey::Embedded { index, .. } => usize::from(index),
+        _ => 0,
+    }
+}
+
 impl Lowering<'_> {
     fn fragment(&self, fragment: &FragmentDefinition) -> FragmentPlan {
         FragmentPlan {
             name: fragment.name.item.0.lookup().to_string(),
             source: fragment.name.location.source_location().path().to_string(),
+            document: document_index(fragment.name.location),
             type_condition: self
                 .schema
                 .get_type_name(fragment.type_condition)

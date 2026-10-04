@@ -347,6 +347,8 @@ fn write_output(path: &Path, text: &str) -> Result<(), DriverError> {
 
 /// Warns when the property holding a document is not typed as that document's
 /// generated type: the one Baton convention the compiler can check for free.
+/// The definition is found by where it came from, its file and its place
+/// among the file's documents, never by searching the text for a name.
 fn check_property_types(documents: &[Document], plan: &pipeline::Plan) -> Vec<Rendered> {
     let mut rendered = Vec::new();
     for document in documents {
@@ -356,31 +358,30 @@ fn check_property_types(documents: &[Document], plan: &pipeline::Plan) -> Vec<Re
         let Some(property) = &embedded.property else {
             continue;
         };
-        let expected: Option<&str> = match embedded.marker {
-            // The longest name the text contains: `TestAddNote` is inside
-            // `TestAddNoteFirst`.
+        let path = document.path.to_string_lossy();
+        let expected = match embedded.marker {
             Marker::Fragment => plan
                 .fragments
                 .iter()
-                .map(|fragment| fragment.name.as_str())
-                .filter(|name| document.text.contains(name))
-                .max_by_key(|name| name.len()),
-            _ => plan
+                .find(|fragment| fragment.source == path && fragment.document == document.index)
+                .map(|fragment| fragment.name.as_str()),
+            marker => plan
                 .operations
                 .iter()
-                .map(|operation| operation.name.as_str())
-                .filter(|name| document.text.contains(name))
-                .max_by_key(|name| name.len()),
+                .find(|operation| {
+                    operation.source == path
+                        && operation.document == document.index
+                        && operation.kind == kind_of(marker)
+                })
+                .map(|operation| operation.name.as_str()),
         };
         let Some(expected) = expected else { continue };
         // Module-qualified spellings are accepted: `App.Foo` names `Foo`.
         let written = property.type_name.trim_end_matches('?');
         let names = |name: &str| written == name || written.ends_with(&format!(".{name}"));
         let matches = match embedded.marker {
-            Marker::Fragment | Marker::Query => names(expected),
-            Marker::Mutation | Marker::Subscription => {
-                names(expected) || names(&format!("{expected}.Action"))
-            }
+            Marker::Mutation => names(expected) || names(&format!("{expected}.Action")),
+            _ => names(expected),
         };
         if !matches {
             rendered.push(diagnostics::own(
@@ -396,6 +397,16 @@ fn check_property_types(documents: &[Document], plan: &pipeline::Plan) -> Vec<Re
         }
     }
     rendered
+}
+
+/// The operation kind a marker declares, as the plan spells it.
+fn kind_of(marker: Marker) -> &'static str {
+    match marker {
+        Marker::Query => "query",
+        Marker::Mutation => "mutation",
+        Marker::Subscription => "subscription",
+        Marker::Fragment => "fragment",
+    }
 }
 
 fn write_if_changed(path: &Path, text: &str) -> Result<(), DriverError> {
