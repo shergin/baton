@@ -452,6 +452,29 @@ struct DeliveryTests {
         }
     }
 
+    @Test("an attach under the default policy fetches a deferred fragment memory lacks, and the initial part renders meanwhile")
+    func deferredPartMissingFromMemory() async throws {
+        let transport = GatedParts(fixture("character-deferred-1"), fixture("character-deferred-2"))
+        let environment = Environment(transport: transport)
+        environment.store.reportMissing = nil
+        let plan = TestProfileQuery.plan.resolve(TestProfileQuery(id: "1").variables)
+        environment.store.commit(try Ingest.normalize(fixture("character-deferred-1"), plan: plan))
+        let handle = environment.handle(for: TestProfileQuery(id: "1"))
+        handle.retain()
+        guard case .ready(let data) = handle.phase else {
+            Issue.record("the initial part renders from memory, got \(handle.phase)")
+            return
+        }
+        #expect(data.character?.testAppearances == nil)
+        #expect(handle.isRefreshing)
+        await until { transport.continuation != nil }
+        transport.release()
+        await handle.settle()
+        #expect(transport.requests.count == 1)
+        #expect(data.character?.testAppearances?.episode.map(\.name) == ["Pilot", "Lawnmower Dog"])
+        handle.release()
+    }
+
     @Test("a subscription's events commit at the subscription root and append through @appendEdge")
     func subscription() async throws {
         let events = Events()
