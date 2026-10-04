@@ -1011,3 +1011,66 @@ fragment TestProgramNames_character on Character {
     }
 }
 
+/// Operation value for `query TestSpreadNames`.
+nonisolated public struct TestSpreadNames: Baton.Query {
+    public var id: String
+    public var resolution: Baton.OperationHandle<Self>? = nil
+
+    public init(id: String) {
+        self.id = id
+    }
+
+    public static let name = "TestSpreadNames"
+    public static let persistedID = "2fe130f1c33827440491d07eada160bf"
+    public static let text = #"""
+query TestSpreadNames(
+  $id: ID!
+) {
+  character(id: $id) {
+    testCaughtStrict: species
+    ...TestCaughtStrict_character
+    id
+  }
+}
+
+fragment TestCaughtStrict_character on Character {
+  species
+}
+"""#
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["id": Baton.Variable(id)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+
+    public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
+            .linked("character", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                .scalar("testCaughtStrict", key: .fixed(Slots.Character.species), kind: .string, list: false),
+                .scalar("species", key: .fixed(Slots.Character.species), kind: .string, list: false),
+                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            ])),
+        ]))
+
+    nonisolated public struct Data: Baton.Lens {
+        public let anchor: Baton.Anchor
+        public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Query"
+        @MainActor public var character: Character? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(Character.init(anchor:)) }
+
+        nonisolated public struct Character: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Character"
+            @MainActor public var testCaughtStrict: String? { anchor.string(Slots.Character.species) }
+            @MainActor public var testCaughtStrict_character: TestCaughtStrict_character { get throws { try TestCaughtStrict_character.throwing(anchor) } }
+        }
+    }
+}
+

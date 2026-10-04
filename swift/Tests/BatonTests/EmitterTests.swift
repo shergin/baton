@@ -90,6 +90,15 @@ struct EmitterTests {
         #expect(TestProgramNames_character.refetchable.identifier == "id")
     }
 
+    @Test("a field named like a spread's accessor keeps its name, and the spread's accessor takes the fragment's whole name")
+    func spreadNames() throws {
+        let store = Store()
+        let data = TestSpreadNames.Data(anchor: try root(TestSpreadNames(id: "1"), "spread-names-1", in: store))
+        let character = try #require(data.character)
+        #expect(character.testCaughtStrict == "Human")
+        #expect(try character.testCaughtStrict_character.species == "Human")
+    }
+
     @Test("a connection whose edges' lens takes another name reads its nodes through that lens")
     func edgesNames() throws {
         let store = Store()

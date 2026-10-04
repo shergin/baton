@@ -6,8 +6,9 @@ import Baton
 /// an error policy and of one with `@throwOnFieldError`, on a link of the
 /// fragment's own type and under a type condition on an interface; a field
 /// and an aliased selection named like a type condition's accessor; fields
-/// named like the fragments and the refetch query a lens refers to; a
-/// connection whose edges' lens cannot be named `Edges`; and a mutation whose
+/// named like the fragments and the refetch query a lens refers to; a field
+/// named like a spread's accessor; a connection whose edges' lens cannot be
+/// named `Edges`; and a mutation whose
 /// payload fields are named like the types an optimistic builder spells,
 /// with a variable named `self`.
 @MainActor
@@ -75,6 +76,13 @@ struct EmitterDocuments {
         }
         """)
     var programNamesQuery: TestProgramNamesQuery
+
+    @Query("""
+        query TestSpreadNames($id: ID!) {
+          character(id: $id) { testCaughtStrict: species ...TestCaughtStrict_character }
+        }
+        """)
+    var spreadNames: TestSpreadNames
 
     @Fragment("""
         fragment TestEdgesNames_character on Character {
