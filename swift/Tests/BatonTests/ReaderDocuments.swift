@@ -1,7 +1,8 @@
 import Baton
 
 /// The documents behind the reader tests, against the test schema: a root
-/// field and a link `@required` all the way up, a non-null list under
+/// field and a link `@required` all the way up, with NONE and with LOG, a
+/// non-null list under
 /// `@catch`, one scope holding two keys with variables and two spreads
 /// with arguments, fields named like the module's shared enums and like the
 /// Swift types, keywords and attribute a lens spells, two fields whose
@@ -22,6 +23,16 @@ struct ReaderDocuments {
         }
         """)
     var requiredOrigin: TestRequiredOrigin
+
+    @Query("""
+        query TestLoggedOrigin($id: ID!) {
+          character(id: $id) @required(action: LOG) {
+            id
+            origin @required(action: LOG) { id name }
+          }
+        }
+        """)
+    var loggedOrigin: TestLoggedOrigin
 
     @Fragment("""
         fragment TestThrowingOrigin_character on Character @throwOnFieldError {

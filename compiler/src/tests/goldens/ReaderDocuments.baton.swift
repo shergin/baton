@@ -530,6 +530,12 @@ query TestCollidingRequired(
             guard let child = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)), TypesLens2.satisfied(child) else { return anchor.requiredMissing(path: "typesLens", log: false) }
             return true
         }
+        /// The path of the first `@required` field that is missing, which bubbles to the root.
+        @MainActor public static func missingRequiredField(_ anchor: Baton.Anchor) -> String? {
+            guard let child = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)) else { return "typesLens" }
+            if let missing = TypesLens2.missingRequiredField(child) { return missing }
+            return nil
+        }
 
         nonisolated public struct TypesLens: Baton.Lens {
             public let anchor: Baton.Anchor
@@ -548,6 +554,11 @@ query TestCollidingRequired(
             @MainActor public static func satisfied(_ anchor: Baton.Anchor) -> Bool {
                 guard anchor.hasValue(Slots.Character.name, path: "typesLens.name", log: false) else { return false }
                 return true
+            }
+            /// The path of the first `@required` field that is missing, which bubbles to the root.
+            @MainActor public static func missingRequiredField(_ anchor: Baton.Anchor) -> String? {
+                guard anchor.hasValue(Slots.Character.name, path: "typesLens.name", log: false) else { return "typesLens.name" }
+                return nil
             }
         }
     }
@@ -634,6 +645,99 @@ query TestKeywordVariables(
     }
 }
 
+/// Operation value for `query TestLoggedOrigin`.
+nonisolated public struct TestLoggedOrigin: Baton.Query {
+    public var id: String
+    public var resolution: Baton.OperationHandle<Self>? = nil
+
+    public init(id: String) {
+        self.id = id
+    }
+
+    public static let name = "TestLoggedOrigin"
+    public static let persistedID = "162893bcb25f9ff0cdc7e12c2b356db8"
+    public static let bubbles = true
+    public static let text = #"""
+query TestLoggedOrigin(
+  $id: ID!
+) {
+  character(id: $id) {
+    id
+    origin {
+      id
+      name
+    }
+  }
+}
+"""#
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["id": Baton.Variable(id)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+
+    public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
+            .linked("character", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+                .linked("origin", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, hasID: true, abstract: false, fields: [
+                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
+                    .scalar("name", key: .fixed(Slots.Location.name), kind: .string, list: false),
+                ])),
+            ])),
+        ]))
+
+    nonisolated public struct Data: Baton.Lens {
+        public let anchor: Baton.Anchor
+        public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Query"
+        @MainActor public var character: Character { Character(anchor: anchor.requiredLinked(anchor.owner.slot(Slots.Query.character_bca4f9), type: Types.Character)) }
+        /// Whether every `@required` field is present; the lens is otherwise null to its parent, as Relay bubbles.
+        @MainActor public static func satisfied(_ anchor: Baton.Anchor) -> Bool {
+            guard let child = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)), Character.satisfied(child) else { return anchor.requiredMissing(path: "character", log: true) }
+            return true
+        }
+        /// The path of the first `@required` field that is missing, which bubbles to the root.
+        @MainActor public static func missingRequiredField(_ anchor: Baton.Anchor) -> String? {
+            guard let child = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)) else { _ = anchor.requiredMissing(path: "character", log: true); return "character" }
+            if let missing = Character.missingRequiredField(child) { _ = anchor.requiredMissing(path: "character", log: true); return missing }
+            return nil
+        }
+
+        nonisolated public struct Character: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Character"
+            @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+            @MainActor public var origin: Origin { Origin(anchor: anchor.requiredLinked(Slots.Character.origin, type: Types.Location)) }
+            /// Whether every `@required` field is present; the lens is otherwise null to its parent, as Relay bubbles.
+            @MainActor public static func satisfied(_ anchor: Baton.Anchor) -> Bool {
+                guard anchor.hasValue(Slots.Character.origin, path: "character.origin", log: true) else { return false }
+                return true
+            }
+            /// The path of the first `@required` field that is missing, which bubbles to the root.
+            @MainActor public static func missingRequiredField(_ anchor: Baton.Anchor) -> String? {
+                guard anchor.hasValue(Slots.Character.origin, path: "character.origin", log: true) else { return "character.origin" }
+                return nil
+            }
+
+            nonisolated public struct Origin: Baton.Lens {
+                public let anchor: Baton.Anchor
+                public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                public static let typeName = "Location"
+                @MainActor public var id: String? { anchor.string(Slots.Location.id) }
+                @MainActor public var name: String? { anchor.string(Slots.Location.name) }
+            }
+        }
+    }
+}
+
 /// Operation value for `query TestRequiredOrigin`.
 nonisolated public struct TestRequiredOrigin: Baton.Query {
     public var id: String
@@ -692,6 +796,12 @@ query TestRequiredOrigin(
             guard let child = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)), Character.satisfied(child) else { return anchor.requiredMissing(path: "character", log: false) }
             return true
         }
+        /// The path of the first `@required` field that is missing, which bubbles to the root.
+        @MainActor public static func missingRequiredField(_ anchor: Baton.Anchor) -> String? {
+            guard let child = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)) else { return "character" }
+            if let missing = Character.missingRequiredField(child) { return missing }
+            return nil
+        }
 
         nonisolated public struct Character: Baton.Lens {
             public let anchor: Baton.Anchor
@@ -703,6 +813,11 @@ query TestRequiredOrigin(
             @MainActor public static func satisfied(_ anchor: Baton.Anchor) -> Bool {
                 guard anchor.hasValue(Slots.Character.origin, path: "character.origin", log: false) else { return false }
                 return true
+            }
+            /// The path of the first `@required` field that is missing, which bubbles to the root.
+            @MainActor public static func missingRequiredField(_ anchor: Baton.Anchor) -> String? {
+                guard anchor.hasValue(Slots.Character.origin, path: "character.origin", log: false) else { return "character.origin" }
+                return nil
             }
 
             nonisolated public struct Origin: Baton.Lens {

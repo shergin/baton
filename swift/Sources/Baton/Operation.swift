@@ -207,8 +207,8 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
             let errors = unplaced + Op.Data.fieldErrors(anchor)
             if !errors.isEmpty { return .failed(FieldErrors(errors)) }
         }
-        if Op.bubbles, !Op.Data.satisfied(anchor) {
-            return .failed(RequiredFieldError(bubbledToRootOf: Op.name))
+        if Op.bubbles, let path = Op.Data.missingRequiredField(anchor) {
+            return .failed(RequiredFieldError(bubbledToRootOf: Op.name, path: path))
         }
         return .ready(data)
     }

@@ -1,6 +1,7 @@
 //! Lens types: a fragment's lens and every lens nested in a lens, their
 //! accessors, the connection and refetch surface, and the `satisfied`,
-//! `fieldErrors` and `isPresent` checks, printed from the `ReaderPlan`.
+//! `missingRequiredField`, `fieldErrors` and `isPresent` checks, printed
+//! from the `ReaderPlan`.
 
 use std::fmt::Write as _;
 
@@ -56,6 +57,9 @@ pub(super) fn lens(output: &mut String, lens: &ReaderPlan, indent: &str) {
     }
     if let Some(entries) = &lens.satisfied {
         satisfied_function(output, entries, &inner);
+        if lens.reports_missing {
+            missing_required_function(output, entries, &inner);
+        }
     }
     if let Some(checks) = &lens.field_errors {
         field_errors_function(output, checks, &inner);
@@ -653,6 +657,68 @@ fn satisfied_function(
         }
     }
     let _ = writeln!(output, "{indent}    return true");
+    let _ = writeln!(output, "{indent}}}");
+}
+
+/// `missingRequiredField`: the path of the first `@required` field (NONE or
+/// LOG) of the selection that is missing, recursing into required links;
+/// nil when `satisfied` holds. It reads and reports what `satisfied` does.
+fn missing_required_function(
+    output: &mut String,
+    entries: &[Guarded<Option<SatisfiedCheck>>],
+    indent: &str,
+) {
+    let _ = writeln!(
+        output,
+        "{indent}/// The path of the first `@required` field that is missing, which bubbles to the root."
+    );
+    let _ = writeln!(
+        output,
+        "{indent}@MainActor public static func missingRequiredField(_ anchor: Baton.Anchor) -> String? {{"
+    );
+    for entry in entries {
+        let (indent, close) = open_guard(output, &entry.guards, indent);
+        match &entry.item {
+            Some(SatisfiedCheck::HasValue { slot, path, log }) => {
+                let path = swift_literal(path);
+                let _ = writeln!(
+                    output,
+                    "{indent}    guard anchor.hasValue({}, path: {path}, log: {log}) else {{ return {path} }}",
+                    slot_expression(slot)
+                );
+            }
+            Some(SatisfiedCheck::Linked {
+                slot,
+                lens,
+                path,
+                log,
+            }) => {
+                let path = swift_literal(path);
+                // A link that is null, or that a missing field below it
+                // nulls, is reported under its own path, as `satisfied`
+                // reports it.
+                let report = if *log {
+                    format!("_ = anchor.requiredMissing(path: {path}, log: true); ")
+                } else {
+                    String::new()
+                };
+                let _ = writeln!(
+                    output,
+                    "{indent}    guard let child = anchor.linked({}) else {{ {report}return {path} }}",
+                    slot_expression(slot)
+                );
+                let _ = writeln!(
+                    output,
+                    "{indent}    if let missing = {lens}.missingRequiredField(child) {{ {report}return missing }}"
+                );
+            }
+            None => {}
+        }
+        if !close.is_empty() {
+            let _ = writeln!(output, "{close}");
+        }
+    }
+    let _ = writeln!(output, "{indent}    return nil");
     let _ = writeln!(output, "{indent}}}");
 }
 

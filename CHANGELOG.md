@@ -504,9 +504,9 @@ are expected and listed without apology.
   `TransportError` whose status code was 0 and whose description read as
   an HTTP status.
 - An operation whose root a `@required` field bubbled to fails with a
-  `RequiredFieldError` that names it in `operationName`, with an empty
-  path, and says the root bubbled. Its path was the operation's name, so
-  the error described a null field of that name.
+  `RequiredFieldError` that names it in `operationName` and says the root
+  bubbled. Its path was the operation's name, so the error described a
+  null field of that name.
 - A preloaded operation is settled on its first attach. When the preload's
   fetch had finished with fresh data, the attach returned before reading
   the phase again, so a commit that put a field error or a null into the
@@ -604,6 +604,13 @@ are expected and listed without apology.
   and `Types.Protocol` as metatypes, so the shared file did not compile.
   The shared file's sets of types are `Swift.Set`, which a type of the
   module named `Set` no longer hides.
+- The `RequiredFieldError` of a root that a `@required` field bubbled to
+  has the path of that field, the first required field that is null, as
+  `character.origin`, and says it: "TestRequiredOrigin: the @required field
+  character.origin is null and bubbled to the root". The generated root
+  lens, and each lens its check recurses into, has `missingRequiredField`,
+  which `Lens` declares and which reads and reports what `satisfied` does;
+  `satisfied` is unchanged.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

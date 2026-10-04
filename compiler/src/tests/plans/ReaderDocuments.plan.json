@@ -3,7 +3,7 @@
     {
       "name": "TestCaughtAppearances_character",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
-      "document": 14,
+      "document": 15,
       "type_condition": "Character",
       "type_is_abstract": false,
       "possible_types": [
@@ -69,7 +69,7 @@
     {
       "name": "TestLogEdges_connection",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
-      "document": 12,
+      "document": 13,
       "type_condition": "NoteConnection",
       "type_is_abstract": false,
       "possible_types": [
@@ -136,7 +136,7 @@
     {
       "name": "TestLoggedNotes_character",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
-      "document": 13,
+      "document": 14,
       "type_condition": "Character",
       "type_is_abstract": false,
       "possible_types": [
@@ -217,7 +217,7 @@
     {
       "name": "TestOriginAndEpisode_character",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
-      "document": 17,
+      "document": 18,
       "type_condition": "Character",
       "type_is_abstract": false,
       "possible_types": [
@@ -329,7 +329,7 @@
     {
       "name": "TestThrowingOrigin_character",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
-      "document": 1,
+      "document": 2,
       "type_condition": "Character",
       "type_is_abstract": false,
       "possible_types": [
@@ -398,7 +398,7 @@
     {
       "name": "TestCaughtEpisodes",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
-      "document": 2,
+      "document": 3,
       "kind": "query",
       "root_type": "Query",
       "variables": [
@@ -675,7 +675,7 @@
     {
       "name": "TestCaughtPartQuery",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
-      "document": 15,
+      "document": 16,
       "kind": "query",
       "root_type": "Query",
       "variables": [
@@ -970,7 +970,7 @@
     {
       "name": "TestCollidingErrors",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
-      "document": 6,
+      "document": 7,
       "kind": "query",
       "root_type": "Query",
       "variables": [
@@ -1300,7 +1300,7 @@
     {
       "name": "TestCollidingRequired",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
-      "document": 7,
+      "document": 8,
       "kind": "query",
       "root_type": "Query",
       "variables": [
@@ -1636,7 +1636,7 @@
     {
       "name": "TestKeywordVariables",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
-      "document": 11,
+      "document": 12,
       "kind": "query",
       "root_type": "Query",
       "variables": [
@@ -1976,6 +1976,306 @@
       ]
     },
     {
+      "name": "TestLoggedOrigin",
+      "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
+      "document": 1,
+      "kind": "query",
+      "root_type": "Query",
+      "variables": [
+        {
+          "name": "id",
+          "type_name": "ID!",
+          "base_type": "ID",
+          "base_kind": "id",
+          "non_null": true,
+          "list": false,
+          "default_value": null
+        }
+      ],
+      "text": "query TestLoggedOrigin(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    origin {\n      id\n      name\n    }\n  }\n}",
+      "id": "162893bcb25f9ff0cdc7e12c2b356db8",
+      "throws_on_field_error": false,
+      "bubbles": true,
+      "has_deferred": false,
+      "error_behavior": null,
+      "reader": [
+        {
+          "kind": "linked",
+          "name": "character",
+          "alias": null,
+          "type_name": "Character",
+          "base_type": "Character",
+          "base_kind": "object",
+          "non_null": false,
+          "semantic_non_null": false,
+          "plural": false,
+          "has_id": true,
+          "is_abstract": false,
+          "possible_types": [
+            "Character"
+          ],
+          "storage_key": {
+            "name": "character",
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
+          },
+          "lookup": {
+            "type_name": "Character",
+            "possible_types": [
+              "Character"
+            ],
+            "argument": "id",
+            "value": {
+              "kind": "variable",
+              "value": "id"
+            }
+          },
+          "connection": null,
+          "edit": null,
+          "required": {
+            "action": "LOG",
+            "path": "character"
+          },
+          "catch": null,
+          "caught": false,
+          "bubbles": true,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "id",
+              "alias": null,
+              "type_name": "ID",
+              "base_type": "ID",
+              "base_kind": "id",
+              "non_null": false,
+              "semantic_non_null": false,
+              "list": false,
+              "storage_key": {
+                "name": "id",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "linked",
+              "name": "origin",
+              "alias": null,
+              "type_name": "Location",
+              "base_type": "Location",
+              "base_kind": "object",
+              "non_null": false,
+              "semantic_non_null": false,
+              "plural": false,
+              "has_id": true,
+              "is_abstract": false,
+              "possible_types": [
+                "Location"
+              ],
+              "storage_key": {
+                "name": "origin",
+                "arguments": []
+              },
+              "lookup": null,
+              "connection": null,
+              "edit": null,
+              "required": {
+                "action": "LOG",
+                "path": "character.origin"
+              },
+              "catch": null,
+              "caught": false,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type_name": "ID",
+                  "base_type": "ID",
+                  "base_kind": "id",
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "list": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "name",
+                  "alias": null,
+                  "type_name": "String",
+                  "base_type": "String",
+                  "base_kind": "string",
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "list": false,
+                  "storage_key": {
+                    "name": "name",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "normalization": [
+        {
+          "kind": "linked",
+          "name": "character",
+          "alias": null,
+          "type_name": "Character",
+          "base_type": "Character",
+          "base_kind": "object",
+          "non_null": false,
+          "semantic_non_null": false,
+          "plural": false,
+          "has_id": true,
+          "is_abstract": false,
+          "possible_types": [
+            "Character"
+          ],
+          "storage_key": {
+            "name": "character",
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
+          },
+          "lookup": {
+            "type_name": "Character",
+            "possible_types": [
+              "Character"
+            ],
+            "argument": "id",
+            "value": {
+              "kind": "variable",
+              "value": "id"
+            }
+          },
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "id",
+              "alias": null,
+              "type_name": "ID",
+              "base_type": "ID",
+              "base_kind": "id",
+              "non_null": false,
+              "semantic_non_null": false,
+              "list": false,
+              "storage_key": {
+                "name": "id",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "linked",
+              "name": "origin",
+              "alias": null,
+              "type_name": "Location",
+              "base_type": "Location",
+              "base_kind": "object",
+              "non_null": false,
+              "semantic_non_null": false,
+              "plural": false,
+              "has_id": true,
+              "is_abstract": false,
+              "possible_types": [
+                "Location"
+              ],
+              "storage_key": {
+                "name": "origin",
+                "arguments": []
+              },
+              "lookup": null,
+              "connection": null,
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type_name": "ID",
+                  "base_type": "ID",
+                  "base_kind": "id",
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "list": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "name",
+                  "alias": null,
+                  "type_name": "String",
+                  "base_type": "String",
+                  "base_kind": "string",
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "list": false,
+                  "storage_key": {
+                    "name": "name",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "TestRequiredOrigin",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
       "document": 0,
@@ -2278,7 +2578,7 @@
     {
       "name": "TestReservedNames",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
-      "document": 4,
+      "document": 5,
       "kind": "query",
       "root_type": "Query",
       "variables": [
@@ -3017,7 +3317,7 @@
     {
       "name": "TestStrictEpisodes",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
-      "document": 10,
+      "document": 11,
       "kind": "query",
       "root_type": "Query",
       "variables": [
@@ -3311,7 +3611,7 @@
     {
       "name": "TestStrictOrigin",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
-      "document": 9,
+      "document": 10,
       "kind": "query",
       "root_type": "Query",
       "variables": [
@@ -3605,7 +3905,7 @@
     {
       "name": "TestSwiftNames",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
-      "document": 5,
+      "document": 6,
       "kind": "query",
       "root_type": "Query",
       "variables": [
@@ -5969,7 +6269,7 @@
     {
       "name": "TestThrowingNode",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
-      "document": 8,
+      "document": 9,
       "kind": "query",
       "root_type": "Query",
       "variables": [
@@ -6232,7 +6532,7 @@
     {
       "name": "TestTwoFieldPartQuery",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
-      "document": 18,
+      "document": 19,
       "kind": "query",
       "root_type": "Query",
       "variables": [
@@ -6594,7 +6894,7 @@
     {
       "name": "TestTwoScopes",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
-      "document": 3,
+      "document": 4,
       "kind": "query",
       "root_type": "Query",
       "variables": [
@@ -7563,7 +7863,7 @@
     {
       "name": "TestUncaughtPartQuery",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
-      "document": 16,
+      "document": 17,
       "kind": "query",
       "root_type": "Query",
       "variables": [

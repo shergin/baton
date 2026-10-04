@@ -71,8 +71,9 @@ the lens produces nil when a required field in it is null (a generated
 `satisfied` checks), and LOG reports the path through
 `Environment.requiredFieldMissing`. THROW makes the field's accessor
 `get throws`, raising `RequiredFieldError`. A root that bubbles fails the
-operation with a `RequiredFieldError` that names the operation and has an
-empty path.
+operation with a `RequiredFieldError` that names the operation and the path
+of the first required field that is null (a generated
+`missingRequiredField` finds it).
 
 **Catch.** *Concept: directive.* Relay: `@catch(to: RESULT | NULL)`, a field
 or aliased spread whose errors the view handles. Here: RESULT makes the

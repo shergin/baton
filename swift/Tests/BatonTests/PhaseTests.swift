@@ -36,8 +36,8 @@ struct PhaseTests {
         handle.release()
     }
 
-    @Test("a root a @required field bubbled to fails with an error that names the operation and says the root bubbled, with no field path")
-    func bubbledRootDescribesItself() async throws {
+    @Test("a root a @required field bubbled to fails with an error that names the operation and the path of the field that bubbled")
+    func bubbledRootNamesTheField() async throws {
         let environment = Environment(transport: RecordedTransport([TestRequiredOrigin.name: fixture("required-origin-1-null")]))
         environment.store.reportMissing = nil
         let handle = environment.handle(for: TestRequiredOrigin(id: "1"))
@@ -48,9 +48,39 @@ struct PhaseTests {
             return
         }
         #expect(error.operationName == TestRequiredOrigin.name)
-        #expect(error.path == "")
-        #expect(error.description == "TestRequiredOrigin: a @required field is null and bubbled to the root")
+        #expect(error.path == "character.origin")
+        #expect(error.description == "TestRequiredOrigin: the @required field character.origin is null and bubbled to the root")
         #expect(RequiredFieldError(path: "character.origin").description == "the @required field character.origin is null")
+        handle.release()
+
+        let absent = Environment(transport: RecordedTransport([TestRequiredOrigin.name: fixture("character-null")]))
+        absent.store.reportMissing = nil
+        let root = absent.handle(for: TestRequiredOrigin(id: "1"))
+        root.retain()
+        await settled(root)
+        guard case .failed(let rootError as RequiredFieldError) = root.phase else {
+            Issue.record("expected the required character to fail the operation, got \(root.phase)")
+            return
+        }
+        #expect(rootError.path == "character", "a null field at the root bubbles itself")
+        root.release()
+    }
+
+    @Test("a root a @required(action: LOG) field bubbled to fails with the path of that field, and the environment is told of it and of the link it nulled")
+    func loggedBubbledRootNamesTheField() async throws {
+        let environment = Environment(transport: RecordedTransport([TestLoggedOrigin.name: fixture("required-origin-1-null")]))
+        environment.store.reportMissing = nil
+        var logged: [String] = []
+        environment.requiredFieldMissing = { _, path in logged.append(path) }
+        let handle = environment.handle(for: TestLoggedOrigin(id: "1"))
+        handle.retain()
+        await settled(handle)
+        guard case .failed(let error as RequiredFieldError) = handle.phase else {
+            Issue.record("expected the required origin to fail the operation, got \(handle.phase)")
+            return
+        }
+        #expect(error.path == "character.origin")
+        #expect(Array(logged.prefix(2)) == ["character.origin", "character"])
         handle.release()
     }
 

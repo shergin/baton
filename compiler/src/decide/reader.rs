@@ -36,6 +36,11 @@ pub struct ReaderPlan {
     /// `satisfied`, when a required child can null the lens: one entry per
     /// own member, a check when it has one.
     pub satisfied: Option<Vec<Guarded<Option<SatisfiedCheck>>>>,
+    /// `missingRequiredField`, the same checks naming the first field that
+    /// is missing: on an operation's root that a required field can bubble
+    /// to, whose handle's failure names the field, and on the lenses its
+    /// checks recurse into.
+    pub reports_missing: bool,
     /// `fieldErrors`, `throwing` and `caught`, under an error policy or for
     /// a catch.
     pub field_errors: Option<Vec<ErrorCheck>>,
@@ -485,7 +490,7 @@ impl Readers {
             within_catch: false,
             caught_spread: false,
         };
-        self.lens(
+        let mut data = self.lens(
             "Data",
             &operation.root_type,
             false,
@@ -494,7 +499,11 @@ impl Readers {
             None,
             false,
             operation.bubbles,
-        )
+        );
+        if operation.bubbles {
+            report_missing(&mut data);
+        }
+        data
     }
 
     /// A lens over a selection set on `type_name`. A fragment root with
@@ -567,6 +576,7 @@ impl Readers {
             refetch,
             connection,
             satisfied,
+            reports_missing: false,
             field_errors,
             is_present,
             nested,
@@ -1119,6 +1129,27 @@ fn refetch_members(refetch: &RefetchPlan, context: Context<'_>) -> RefetchMember
         last: pagination.and_then(|pagination| pagination.last.clone()),
         before: pagination.and_then(|pagination| pagination.before.clone()),
         owner: context.owner.to_string(),
+    }
+}
+
+/// Marks `lens` to report the path of its first missing `@required` field,
+/// and the lenses its `satisfied` recurses into, which report the paths
+/// below it.
+fn report_missing(lens: &mut ReaderPlan) {
+    lens.reports_missing = true;
+    let targets: Vec<String> = lens
+        .satisfied
+        .iter()
+        .flatten()
+        .filter_map(|entry| match &entry.item {
+            Some(SatisfiedCheck::Linked { lens: target, .. }) => Some(target.clone()),
+            _ => None,
+        })
+        .collect();
+    for child in &mut lens.nested {
+        if targets.contains(&child.name) {
+            report_missing(child);
+        }
     }
 }
 

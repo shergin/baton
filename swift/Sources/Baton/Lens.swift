@@ -53,6 +53,10 @@ public protocol Lens: Sendable {
     static var typeName: String { get }
     /// Whether every `@required` field of the selection is present.
     @MainActor static func satisfied(_ anchor: Anchor) -> Bool
+    /// The path of the first `@required` field of the selection that is
+    /// missing, for an operation's root that it bubbles to; nil when every
+    /// one is present.
+    @MainActor static func missingRequiredField(_ anchor: Anchor) -> String?
     /// The field errors in the selection, for `@catch` and `@throwOnFieldError`.
     @MainActor static func fieldErrors(_ anchor: Anchor) -> [FieldError]
     /// Whether a deferred fragment's fields have arrived.
@@ -64,6 +68,7 @@ extension Lens {
     @MainActor public var recordID: RecordID { RecordID(anchor.record) }
 
     @MainActor public static func satisfied(_ anchor: Anchor) -> Bool { true }
+    @MainActor public static func missingRequiredField(_ anchor: Anchor) -> String? { nil }
     @MainActor public static func fieldErrors(_ anchor: Anchor) -> [FieldError] { [] }
     @MainActor public static func isPresent(_ anchor: Anchor) -> Bool { true }
 }
