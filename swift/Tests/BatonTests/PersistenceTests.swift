@@ -25,9 +25,9 @@ struct PersistenceTests {
 
     /// An environment over the image, as a launch of the app makes one. A
     /// test runs its launches one after another, as a device does, and ends
-    /// each with `finish`.
-    func launch(_ transport: any Transport = SilentTransport(), version: String = "", sizeLimit: Int = 64 << 20, releaseBufferSize: Int = 10) -> Environment {
-        let store = Store(persistence: Persistence(url: image.url, version: version, sizeLimit: sizeLimit))
+    /// each with `finish`. `url` spells the image's path another way.
+    func launch(_ transport: any Transport = SilentTransport(), at url: URL? = nil, version: String = "", sizeLimit: Int = 64 << 20, releaseBufferSize: Int = 10) -> Environment {
+        let store = Store(persistence: Persistence(url: url ?? image.url, version: version, sizeLimit: sizeLimit))
         store.reportMissing = nil
         return Environment(transport: transport, store: store, releaseBufferSize: releaseBufferSize)
     }
@@ -847,6 +847,14 @@ struct PersistenceTests {
         #expect(data.characters?.results?[1].name == "Morty Smith", "the rows the second image wrote")
     }
 
+    /// The image's path spelled the other way: through `/private`, where
+    /// macOS keeps `/var` and `/tmp`, or without it. Foundation's
+    /// standardized path drops `/private` only once the file exists.
+    var otherSpelling: URL {
+        let path = image.url.path
+        return URL(fileURLWithPath: path.hasPrefix("/private/") ? String(path.dropFirst("/private".count)) : "/private" + path)
+    }
+
     #if DEBUG
     @Test("a second image made on a file another image in the process holds stops a debug build where it is made")
     func aSecondImageStopsADebugBuild() async {
@@ -854,6 +862,21 @@ struct PersistenceTests {
         await #expect(processExitsWith: .failure) { [url = image.url as URL] in
             let first = Persistence(url: url)
             let second = Persistence(url: url)
+            withExtendedLifetime((first, second)) {}
+        }
+    }
+
+    @Test("a second image made on the file under another spelling of its path stops a debug build, before the file exists and after")
+    func aSecondSpellingStopsADebugBuild() async {
+        await #expect(processExitsWith: .failure) { [url = image.url as URL, other = otherSpelling as URL] in
+            let first = Persistence(url: url)
+            let second = Persistence(url: other)
+            withExtendedLifetime((first, second)) {}
+        }
+        await #expect(processExitsWith: .failure) { [other = otherSpelling as URL] in
+            let first = Persistence(url: other)
+            await first.flush()
+            let second = Persistence(url: other)
             withExtendedLifetime((first, second)) {}
         }
     }
@@ -873,6 +896,22 @@ struct PersistenceTests {
 
         let data = try stored(Fixture(page: 1), in: launch())
         #expect(data.characters?.results?[1].name == "Morty Smith", "the rows the first image wrote")
+    }
+
+    @Test("a second image made with the first's URL spelled through /private, once the file exists, runs without it, and the rows the first wrote reach the next launch")
+    func aSecondSpellingRunsWithoutTheFile() async throws {
+        // Made before the file exists, then again after, under the spelling
+        // Foundation standardizes differently once the file is there.
+        let first = launch(at: otherSpelling)
+        first.store.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables)))
+        await first.store.persistence?.flush()
+        let second = launch(at: otherSpelling)
+        try await lateWork(in: second)
+        await finish(second)
+        await finish(first)
+
+        let data = try stored(Fixture(page: 1), in: launch())
+        #expect(data.characters?.results?[1].name == "Morty Smith", "the rows the first image wrote, in the launch before")
     }
     #endif
 

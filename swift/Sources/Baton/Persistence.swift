@@ -90,8 +90,29 @@ public final class Persistence: Sendable {
         self.url = url
         self.version = version
         self.sizeLimit = sizeLimit
-        disk = Mutex(Disk(path: url.standardizedFileURL.path, version: version, sizeLimit: sizeLimit))
+        disk = Mutex(Disk(path: Persistence.canonicalPath(of: url), version: version, sizeLimit: sizeLimit))
         Task.detached(priority: .userInitiated) { self.drain() }
+    }
+
+    /// The file's path with its directory's symbolic links resolved, which
+    /// the image opens and claims the file by: every spelling of one file
+    /// names it alike, `/tmp` and `/private/tmp` among them, whether the
+    /// file exists yet or not. A directory not made yet is resolved from the
+    /// nearest one that exists, so nothing is created here.
+    private static func canonicalPath(of url: URL) -> String {
+        let file = url.standardizedFileURL
+        var directory = file.deletingLastPathComponent().path
+        var rest = [file.lastPathComponent]
+        while true {
+            if let resolved = realpath(directory, nil) {
+                defer { free(resolved) }
+                return rest.reversed().reduce(String(cString: resolved)) { ($0 as NSString).appendingPathComponent($1) }
+            }
+            let parent = (directory as NSString).deletingLastPathComponent
+            if parent == directory { return file.path }
+            rest.append((directory as NSString).lastPathComponent)
+            directory = parent
+        }
     }
 
     /// An image named `name` in the app's caches directory, which the system

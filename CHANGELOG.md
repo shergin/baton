@@ -572,12 +572,13 @@ are expected and listed without apology.
   `Slot.index` is negative for a rendered key, and `Registry.slotCount`
   counts both kinds.
 - One image in a process holds its file. A second `Persistence` made on a
-  file another holds runs without the image, as over a database of another
-  kind, and stops a debug build where it is made; it opened a second
-  connection, which moved the generation again and could fail the first's
-  batches on a name both interned. `close()` and the image's end hand the
-  file over; a closed image whose file another has taken reads, writes and
-  removes nothing there.
+  file another holds, under any spelling of its path (`/tmp` and
+  `/private/tmp`, before the file exists and after), runs without the image,
+  as over a database of another kind, and stops a debug build where it is
+  made; it opened a second connection, which moved the generation again and
+  could fail the first's batches on a name both interned. `close()` and the
+  image's end hand the file over; a closed image whose file another has
+  taken reads, writes and removes nothing there.
 - `RecordedTransport.requests` is read under the lock `execute` appends
   under. It was read without it, so reading it while a request arrived
   off the main actor was a data race.
