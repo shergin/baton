@@ -227,6 +227,56 @@ struct LifetimeTests {
         #expect(morty.name == "Morty Prime", "the refetch's response did")
     }
 
+    /// A transport whose streams deliver the parts a test hands them, each
+    /// stream in the order it was asked for.
+    final class ManualStreams: Transport, @unchecked Sendable {
+        private let lock = NSLock()
+        private var streams: [AsyncThrowingStream<Data, any Error>.Continuation] = []
+
+        var count: Int { lock.withLock { streams.count } }
+
+        func execute(_ request: Request) async throws -> Data { throw TransportError(statusCode: 0, body: "streams only") }
+
+        func stream(_ request: Request) -> AsyncThrowingStream<Data, any Error> {
+            let (stream, continuation) = AsyncThrowingStream<Data, any Error>.makeStream()
+            lock.withLock { streams.append(continuation) }
+            return stream
+        }
+
+        func deliver(_ part: Data, to index: Int) {
+            _ = lock.withLock { streams[index] }.yield(part)
+        }
+    }
+
+    @Test("a deferred fetch a refetch superseded commits neither the first part nor a later one it had in hand")
+    func supersededDeferredParts() async throws {
+        for afterFirstPart in [false, true] {
+            let transport = ManualStreams()
+            let environment = Environment(transport: transport)
+            environment.store.reportMissing = nil
+            let handle = environment.handle(for: TestProfileQuery(id: "1"))
+            handle.retain()
+            await until { transport.count == 1 }
+            if afterFirstPart {
+                transport.deliver(fixture("character-deferred-1"), to: 0)
+                await until { if case .loading = handle.phase { false } else { true } }
+            }
+            // The parts are in the stream's hands when the refetch, in the
+            // same turn of the main actor, cancels its fetch.
+            if !afterFirstPart { transport.deliver(fixture("character-deferred-1"), to: 0) }
+            transport.deliver(fixture("character-deferred-2"), to: 0)
+            let refetch = Task { try await handle.refetch() }
+            await until { transport.count == 2 }
+            try await Task.sleep(for: .milliseconds(200))
+            #expect(environment.store.existing("Episode:2") == nil, "the superseded later part did not land")
+            if !afterFirstPart {
+                #expect(environment.store.existing("Character:1") == nil, "the superseded first part did not land")
+            }
+            refetch.cancel()
+            handle.release()
+        }
+    }
+
     @Test("a refetch that changes nothing re-runs no body that reads the phase, and one that fails throws while the data stays")
     func phaseChangesOnlyWhenItChanges() async throws {
         let attempts = Attempts()
