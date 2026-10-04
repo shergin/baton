@@ -1,13 +1,14 @@
 # The test schema: the public Rick and Morty schema plus what the write- and
 # list-side tests need and the public API lacks: a Node interface, a union, a
 # lookup by id across types, an interface only some of the union's members
-# implement, mutations with payloads, and a cursor connection
-# of notes on a character with the mutations that edit it, a subscription,
-# the `@defer` directive and a `@semanticNonNull` field, the scalars the
-# tokenizer fixture (`spec/tokenizer/`) reads, and types and fields named as
-# Swift and the generated code name their own. Documents.swift compiles
-# against it unchanged; every document here would also be valid against the
-# public schema except those that use the additions.
+# implement, mutations with payloads, one of them of every kind of scalar
+# list, and a cursor connection of notes on a character with the mutations
+# that edit it, a subscription, the `@defer` directive and a
+# `@semanticNonNull` field, the scalars the tokenizer fixture
+# (`spec/tokenizer/`) reads, and types and fields named as Swift and the
+# generated code name their own. Documents.swift compiles against it
+# unchanged; every document here would also be valid against the public
+# schema except those that use the additions.
 
 directive @defer(label: String, if: Boolean = true) on FRAGMENT_SPREAD | INLINE_FRAGMENT
 
@@ -43,6 +44,7 @@ type Mutation {
   rename(id: ID!, name: String!): FavoritePayload
   addNote(characterId: ID!, text: String!): AddNotePayload
   removeNote(id: ID!): RemoveNotePayload
+  setLists: ListsPayload
 }
 
 type Subscription {
@@ -65,6 +67,24 @@ type AddNotePayload {
 
 type RemoveNotePayload {
   removedNoteId: ID
+}
+
+"""Every kind of scalar list, for an optimistic response to write."""
+type ListsPayload {
+  strings: [String]
+  ids: [ID!]!
+  counts: [Int]
+  ratios: [Float]
+  flags: [Boolean]
+  jsons: [JSON]
+  statuses: [Status]
+}
+
+"""A character's status as an enum, for a list of an enum's values."""
+enum Status {
+  ALIVE
+  DEAD
+  UNKNOWN
 }
 
 union SearchResult = Character | Location | Episode

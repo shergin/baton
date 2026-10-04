@@ -5,7 +5,7 @@
 nonisolated enum Types {
     /// The schema's digest: pass it as the image's `version`, so an image
     /// written under another schema starts again.
-    static let schemaDigest = "29351384b7bf0bc46563c142dc33c897"
+    static let schemaDigest = "8af55576d263ca48fd23aa2a53a47a0e"
     static let AddNotePayload = Baton.Registry.type("AddNotePayload")
     static let Any_ = Baton.Registry.type("Any")
     static let Baton_ = Baton.Registry.type("Baton")
@@ -14,6 +14,7 @@ nonisolated enum Types {
     static let Episode = Baton.Registry.type("Episode")
     static let FavoritePayload = Baton.Registry.type("FavoritePayload")
     static let Info = Baton.Registry.type("Info")
+    static let ListsPayload = Baton.Registry.type("ListsPayload")
     static let Location = Baton.Registry.type("Location")
     static let Mutation = Baton.Registry.type("Mutation")
     static let Named = Baton.Registry.type("Named")
@@ -110,6 +111,15 @@ nonisolated enum Slots {
         static let pages = Baton.Registry.slot(Types.Info, "pages")
         static let prev = Baton.Registry.slot(Types.Info, "prev")
     }
+    nonisolated enum ListsPayload {
+        static let counts = Baton.Registry.slot(Types.ListsPayload, "counts")
+        static let flags = Baton.Registry.slot(Types.ListsPayload, "flags")
+        static let ids = Baton.Registry.slot(Types.ListsPayload, "ids")
+        static let jsons = Baton.Registry.slot(Types.ListsPayload, "jsons")
+        static let ratios = Baton.Registry.slot(Types.ListsPayload, "ratios")
+        static let statuses = Baton.Registry.slot(Types.ListsPayload, "statuses")
+        static let strings = Baton.Registry.slot(Types.ListsPayload, "strings")
+    }
     nonisolated enum Location {
         static let __typename = Baton.Registry.slot(Types.Location, "__typename")
         static let created = Baton.Registry.slot(Types.Location, "created")
@@ -127,6 +137,7 @@ nonisolated enum Slots {
         static let setFavorite_a93f6b = Baton.Registry.slot(Types.Mutation, "setFavorite(as:\"sendable\")")
         static let setFavorite_937be0 = Baton.Registry.slot(Types.Mutation, "setFavorite(as:\"string\")")
         static let setFavorite_10eb38 = Baton.Registry.slot(Types.Mutation, "setFavorite(as:\"type\")")
+        static let setLists = Baton.Registry.slot(Types.Mutation, "setLists")
     }
     nonisolated enum Named {
         static let __typename = Baton.Registry.slot(Types.Named, "__typename")

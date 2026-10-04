@@ -701,6 +701,12 @@ are expected and listed without apology.
   reads the descriptor as `Self.refetchable`, and the query, and in a
   connection the fragment, are named through local aliases of their
   types.
+- A mutation's payload field that is a list of floats or of booleans
+  compiles in its optimistic builder, and so does a variable of either
+  list type: `Variable` has initializers from `[Double]?` and `[Bool]?`.
+  With those from `[String]?`, which lists of strings, IDs, enums and
+  custom scalars take, and from `[Int]?`, every list of scalars a builder
+  or a variable writes has one.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

@@ -216,6 +216,43 @@ struct EmitterTests {
         #expect(data.setFavorite?.Baton?.Baton == "Rick Prime")
     }
 
+    @Test("a payload of every kind of scalar list, of strings, ids, ints, floats, booleans, a custom scalar and an enum, renders through its builder, applies and reads back")
+    func builderLists() throws {
+        let store = Store()
+        store.reportMissing = nil
+        let mutation = TestListPayload()
+        let optimistic = TestListPayload.OptimisticResponse(setLists: .init(
+            strings: ["Rick", "Morty"],
+            ids: ["1", "2"],
+            counts: [1, 2],
+            ratios: [0.5, 1.25],
+            flags: [true, false],
+            jsons: ["{\"a\":1}", "1.50"],
+            statuses: ["ALIVE", "DEAD"]
+        ))
+        #expect(optimistic.variable == .object(["setLists": .object([
+            "strings": .list([.string("Rick"), .string("Morty")]),
+            "ids": .list([.string("1"), .string("2")]),
+            "counts": .list([.int(1), .int(2)]),
+            "ratios": .list([.double(0.5), .double(1.25)]),
+            "flags": .list([.bool(true), .bool(false)]),
+            "jsons": .list([.string("{\"a\":1}"), .string("1.50")]),
+            "statuses": .list([.string("ALIVE"), .string("DEAD")]),
+        ])]))
+        let json = Data(("{\"data\":" + optimistic.variable.json + "}").utf8)
+        _ = store.applyOptimistic(try Ingest.normalize(json, plan: TestListPayload.plan.resolve(mutation.variables), rootKey: Store.mutationRootKey))
+        let root = try #require(store.existing(Store.mutationRootKey))
+        let data = TestListPayload.Data(anchor: Anchor(record: root, variables: mutation.variables, store: store))
+        let lists = try #require(data.setLists)
+        #expect(lists.strings == ["Rick", "Morty"])
+        #expect(lists.ids == ["1", "2"])
+        #expect(lists.counts == [1, 2])
+        #expect(lists.ratios == [0.5, 1.25])
+        #expect(lists.flags == [true, false])
+        #expect(lists.jsons == ["{\"a\":1}", "1.50"])
+        #expect(lists.statuses == ["ALIVE", "DEAD"])
+    }
+
     @Test("an operation whose text holds a backslash before a hash compiles, and its text holds both as the document wrote them")
     func textWithBackslashBeforeHash() {
         #expect(TestEscapedText.text.contains(##"search(name: "\\#1")"##))

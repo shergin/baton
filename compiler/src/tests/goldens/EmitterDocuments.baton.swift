@@ -1212,6 +1212,126 @@ query TestHasherVariable(
     }
 }
 
+/// Operation value for `mutation TestListPayload`.
+nonisolated public struct TestListPayload: Baton.Mutation {
+
+    public init() {
+    }
+
+    public static let name = "TestListPayload"
+    public static let persistedID = "e514975665a261c9f916bec907cd2b6b"
+    public static let text = #"""
+mutation TestListPayload {
+  setLists {
+    strings
+    ids
+    counts
+    ratios
+    flags
+    jsons
+    statuses
+  }
+}
+"""#
+
+    public var variables: Baton.Variables {
+        Baton.Variables([:])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        true
+    }
+
+    public func hash(into hasher: inout Hasher) {
+    }
+
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
+            .linked("setLists", key: .fixed(Slots.Mutation.setLists), plural: false, selection: Baton.Selection(type: Types.ListsPayload, hasID: false, abstract: false, fields: [
+                .scalar("strings", key: .fixed(Slots.ListsPayload.strings), kind: .string, list: true),
+                .scalar("ids", key: .fixed(Slots.ListsPayload.ids), kind: .string, list: true),
+                .scalar("counts", key: .fixed(Slots.ListsPayload.counts), kind: .int, list: true),
+                .scalar("ratios", key: .fixed(Slots.ListsPayload.ratios), kind: .double, list: true),
+                .scalar("flags", key: .fixed(Slots.ListsPayload.flags), kind: .bool, list: true),
+                .scalar("jsons", key: .fixed(Slots.ListsPayload.jsons), kind: .custom, list: true),
+                .scalar("statuses", key: .fixed(Slots.ListsPayload.statuses), kind: .string, list: true),
+            ])),
+        ]))
+
+    nonisolated public struct Data: Baton.Lens {
+        @_spi(Generated) public let anchor: Baton.Anchor
+        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Mutation"
+        @MainActor public var setLists: SetLists? { anchor.linked(Slots.Mutation.setLists).map(SetLists.init(anchor:)) }
+
+        nonisolated public struct SetLists: Baton.Lens {
+            @_spi(Generated) public let anchor: Baton.Anchor
+            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "ListsPayload"
+            @MainActor public var strings: [String]? { anchor.strings(Slots.ListsPayload.strings) }
+            @MainActor public var ids: [String] { anchor.requiredStrings(Slots.ListsPayload.ids) }
+            @MainActor public var counts: [Int]? { anchor.ints(Slots.ListsPayload.counts) }
+            @MainActor public var ratios: [Double]? { anchor.doubles(Slots.ListsPayload.ratios) }
+            @MainActor public var flags: [Bool]? { anchor.bools(Slots.ListsPayload.flags) }
+            @MainActor public var jsons: [String]? { anchor.strings(Slots.ListsPayload.jsons) }
+            @MainActor public var statuses: [String]? { anchor.strings(Slots.ListsPayload.statuses) }
+        }
+    }
+
+    public typealias Action = Baton.MutationAction<Self>
+
+    /// A partial response to show before the server answers; absent fields leave the store untouched.
+    nonisolated public struct OptimisticResponse: Sendable {
+        public var setLists: SetLists?
+        public init(setLists: SetLists? = nil) {
+            self.setLists = setLists
+        }
+        public var variable: Baton.Variable {
+            var fields: [String: Baton.Variable] = [:]
+            if let setLists { fields["setLists"] = setLists.variable }
+            return .object(fields)
+        }
+
+        /// A partial response to show before the server answers; absent fields leave the store untouched.
+        nonisolated public struct SetLists: Sendable {
+            public var strings: [String]?
+            public var ids: [String]?
+            public var counts: [Int]?
+            public var ratios: [Double]?
+            public var flags: [Bool]?
+            public var jsons: [String]?
+            public var statuses: [String]?
+            public init(strings: [String]? = nil, ids: [String]? = nil, counts: [Int]? = nil, ratios: [Double]? = nil, flags: [Bool]? = nil, jsons: [String]? = nil, statuses: [String]? = nil) {
+                self.strings = strings
+                self.ids = ids
+                self.counts = counts
+                self.ratios = ratios
+                self.flags = flags
+                self.jsons = jsons
+                self.statuses = statuses
+            }
+            public var variable: Baton.Variable {
+                var fields: [String: Baton.Variable] = [:]
+                if let strings { fields["strings"] = .init(strings) }
+                if let ids { fields["ids"] = .init(ids) }
+                if let counts { fields["counts"] = .init(counts) }
+                if let ratios { fields["ratios"] = .init(ratios) }
+                if let flags { fields["flags"] = .init(flags) }
+                if let jsons { fields["jsons"] = .init(jsons) }
+                if let statuses { fields["statuses"] = .init(statuses) }
+                return .object(fields)
+            }
+        }
+    }
+}
+
+extension Baton.MutationAction where Op == TestListPayload {
+    /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
+    @MainActor @discardableResult
+    public func callAsFunction(optimistic: TestListPayload.OptimisticResponse? = nil) async throws -> TestListPayload.Data {
+        try await self.commit(TestListPayload(), optimistic: optimistic?.variable)
+    }
+}
+
 /// Operation value for `query TestLowercaseSpreads`.
 nonisolated public struct TestLowercaseSpreads: Baton.Query {
     public var id: String

@@ -15,7 +15,8 @@ import Baton
 /// named `Edges`; a mutation whose
 /// payload fields are named like the types an optimistic builder spells,
 /// with a variable named `self`; one whose payload field, and a field under
-/// it, are named like the runtime's module; and a query whose text holds a
+/// it, are named like the runtime's module; one whose payload has every
+/// kind of scalar list; and a query whose text holds a
 /// backslash before a hash, which a raw literal of one hash reads as an
 /// escape.
 @MainActor
@@ -182,6 +183,13 @@ struct EmitterDocuments {
         }
         """)
     var moduleNamedPayload: TestModuleNamedPayload.Action
+
+    @Mutation("""
+        mutation TestListPayload {
+          setLists { strings ids counts ratios flags jsons statuses }
+        }
+        """)
+    var listPayload: TestListPayload.Action
 
     @Query(##"""
         query TestEscapedText {
