@@ -876,6 +876,30 @@ struct DeliveryTests {
         }
         #expect(received == parts)
     }
+
+    @Test("a recorded transport's requests, read while requests arrive off the main actor, are each time those sent so far, each read keeping the one before")
+    func recordedRequestsReadWhileSent() async throws {
+        let transport = RecordedTransport { _ in Data() }
+        let count = 4_000
+        let sending = Task.detached {
+            await withTaskGroup(of: Void.self) { group in
+                for index in 0..<count {
+                    group.addTask {
+                        _ = try? await transport.execute(Request(operationName: "Op\(index)", text: "", persistedID: "", variables: .none))
+                    }
+                }
+            }
+        }
+        var previous: [String] = []
+        while previous.count < count {
+            let names = transport.requests.map(\.operationName)
+            #expect(names.starts(with: previous))
+            previous = names
+            await Task.yield()
+        }
+        await sending.value
+        #expect(Set(previous) == Set((0..<count).map { "Op\($0)" }))
+    }
 }
 
 /// A server that answers with the status, content type and body its request's

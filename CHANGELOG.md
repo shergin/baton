@@ -568,6 +568,9 @@ are expected and listed without apology.
   batches on a name both interned. `close()` and the image's end hand the
   file over; a closed image whose file another has taken reads, writes and
   removes nothing there.
+- `RecordedTransport.requests` is read under the lock `execute` appends
+  under. It was read without it, so reading it while a request arrived
+  off the main actor was a data race.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 
