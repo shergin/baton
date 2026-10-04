@@ -116,7 +116,7 @@ struct WriteTests {
         #expect(environment.store.mutationRoot !== environment.store.root)
     }
 
-    @Test("the data a mutation returns stays readable through a collection while the mutation waits in the release buffer, and not after")
+    @Test("the data a mutation returns stays readable through a collection while the environment keeps the mutation, and not after")
     func mutationResultLives() async throws {
         for bufferSize in [10, 0] {
             let environment = Environment(transport: RecordedTransport([TestRename.name: fixture("rename-1")]), releaseBufferSize: bufferSize)
@@ -124,11 +124,44 @@ struct WriteTests {
             #expect(data.rename?.character?.name == "Rick Prime")
             environment.collect()
             if bufferSize > 0 {
-                #expect(data.rename?.character?.name == "Rick Prime", "the parked mutation keeps its payload")
+                #expect(data.rename?.character?.name == "Rick Prime", "the completed mutation keeps its payload")
             } else {
-                #expect(data.rename == nil, "pushed out of an empty buffer, the payload is collected")
+                #expect(data.rename == nil, "with a buffer of zero nothing is kept, and the payload is collected")
             }
         }
+    }
+
+    @Test("mutations push no released query out of the release buffer, and a mutation made again takes the place it had")
+    func mutationsKeepTheirOwnPlaces() async throws {
+        let transport = RecordedTransport([TestList.name: fixtureData, TestRename.name: fixture("rename-1"), TestSetFavorite.name: fixture("set-favorite-1")])
+        let environment = Environment(transport: transport, releaseBufferSize: 2)
+        let list = environment.handle(for: TestList(page: 1), fetchPolicy: .storeOrNetwork)
+        list.retain()
+        await list.settle()
+        list.release()
+
+        let favorited = try await environment.mutate(TestSetFavorite(id: "1", favorite: true))
+        for _ in 0..<3 {
+            _ = try await environment.mutate(TestRename(id: "1", name: "Rick Prime"))
+        }
+        environment.collect()
+        #expect(environment.store.existing("Character:2") != nil, "the released list keeps its records")
+        let again = environment.handle(for: TestList(page: 1), fetchPolicy: .storeOrNetwork)
+        #expect(again === list)
+        await again.settle()
+        #expect(transport.requestCount == 5, "the list once and four mutations, with no refetch")
+        #expect(favorited.setFavorite?.character?.favorite == true, "the three renames took one place, so the earlier mutation keeps its payload")
+    }
+
+    @Test("a mutation pushed out of the buffer has its payload collected without a call to collect")
+    func mutationPushedOutIsCollected() async throws {
+        let environment = Environment(transport: RecordedTransport([TestRename.name: fixture("rename-1"), TestSetFavorite.name: fixture("set-favorite-1")]), releaseBufferSize: 1)
+        let renamed = try await environment.mutate(TestRename(id: "1", name: "Rick Prime"))
+        let collections = environment.collections
+        let favorited = try await environment.mutate(TestSetFavorite(id: "1", favorite: true))
+        await until { environment.collections > collections }
+        #expect(renamed.rename == nil, "the rename was pushed out and its payload collected")
+        #expect(favorited.setFavorite?.character?.favorite == true)
     }
 
     @Test("a mutation whose caller stops waiting still commits the payload the server sends")

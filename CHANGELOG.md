@@ -328,9 +328,9 @@ are expected and listed without apology.
   name `.storeAndNetwork`. `Environment.releaseBufferSize` is set at init
   and fixed after.
 - The data a mutation returns stays readable. Nothing kept its payload
-  alive, so after the next collection it read nil; the completed mutation
-  now waits in the release buffer as a released query does, and its data
-  lives until later releases push it out.
+  alive, so after the next collection it read nil; the environment now
+  keeps the completed mutation as a root, and its data lives until later
+  mutations push it out.
 - Kinds are types. An operation value conforms to `Query`, `Mutation` or
   `Subscription`, each refining `Operation`, and each API takes only its
   kind: `handle(for:)`, `preload`, `fetch` and `@Query` queries, `mutate`
@@ -421,6 +421,12 @@ are expected and listed without apology.
   of its own ends: `isActive` is false and the next `retain()` opens it
   again. The handle stayed active over a stream that had ended, and no
   retain could reopen it short of `retry()` or a full release.
+- Completed mutations take no place in the release buffer. Each one
+  took a place of its own, so ten mutations pushed out the query of a
+  screen the user had left, and going back to it loaded and fetched again.
+  The environment keeps them apart, one per mutation name and as many as
+  `releaseBufferSize`, and one pushed out is collected at once; its records
+  stayed until some unrelated release scheduled a collection.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

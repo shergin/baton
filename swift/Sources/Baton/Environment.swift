@@ -11,7 +11,8 @@ public final class Environment {
     /// The transport subscriptions run over, when the backend has one.
     public let subscriptions: (any SubscriptionTransport)?
 
-    /// How many released operations keep their data alive, oldest out first.
+    /// How many released queries keep their data alive, oldest out first;
+    /// as many completed mutations keep theirs, apart from them.
     public let releaseBufferSize: Int
     /// How long a fetched response stays fresh; `nil` means forever.
     public var queryCacheExpiration: Duration?
@@ -21,6 +22,8 @@ public final class Environment {
 
     private var handles: [AnyHashable: any AnyOperationHandle] = [:]
     private var releaseBuffer: [AnyHashable] = []
+    /// The mutations that completed, oldest first and one per name.
+    private var completedMutations: [CompletedMutation] = []
     private var collectionScheduled = false
     /// How many collections have run; for tests and benchmarks.
     public private(set) var collections = 0
@@ -229,9 +232,8 @@ public final class Environment {
     /// mutation's own plan and applied as a layer first; the server's payload
     /// then replaces it in one batch, or the layer is reverted on failure.
     /// The data returned reads the mutation root: its payload stays alive
-    /// while the completed mutation waits in the release buffer, until
-    /// `releaseBufferSize` later releases push it out, and then reads only
-    /// the records other roots keep.
+    /// until `releaseBufferSize` mutations of other names complete after it,
+    /// and then reads only the records other roots keep.
     public func mutate<Op: Mutation>(_ operation: Op, optimistic: Variable? = nil) async throws -> Op.Data {
         let resolved = Op.plan.resolve(operation.variables)
         var layer: UUID?
@@ -260,12 +262,7 @@ public final class Environment {
             if let layer { store.revertOptimistic(layer) }
             throw error
         }
-        // The payload stays alive while the completed mutation waits in the
-        // release buffer, as a released query's data does.
-        // A root added makes nothing collectable, so no collection follows.
-        let completed = CompletedMutation(store: store, resolved: resolved)
-        handles[completed.key] = completed
-        park(completed.key, collect: false)
+        keep(CompletedMutation(name: Op.name, store: store, resolved: resolved))
         if Op.throwsOnFieldError, !uncaught.isEmpty { throw FieldErrors(uncaught) }
         return Op.Data(anchor: Anchor(record: store.mutationRoot, variables: operation.variables, store: store))
     }
@@ -298,7 +295,7 @@ public final class Environment {
         scheduleCollection()
     }
 
-    private func park(_ key: AnyHashable, collect: Bool = true) {
+    private func park(_ key: AnyHashable) {
         releaseBuffer.removeAll { $0 == key }
         releaseBuffer.append(key)
         while releaseBuffer.count > releaseBufferSize {
@@ -306,7 +303,20 @@ public final class Environment {
             handles[evicted]?.cancel()
             handles.removeValue(forKey: evicted)
         }
-        if collect { scheduleCollection() }
+        scheduleCollection()
+    }
+
+    /// Keeps a completed mutation's payload alive as a root, apart from the
+    /// release buffer, so mutations push no released query out of it. A
+    /// mutation's root fields are keyed by response key, so an earlier
+    /// completion of the same mutation keeps what the latest one does, and
+    /// the latest takes its place.
+    private func keep(_ completed: CompletedMutation) {
+        completedMutations.removeAll { $0.name == completed.name }
+        completedMutations.append(completed)
+        guard completedMutations.count > releaseBufferSize else { return }
+        completedMutations.removeFirst(completedMutations.count - releaseBufferSize)
+        scheduleCollection()
     }
 
     /// Handles that are roots for collection: retained or buffered.
@@ -328,6 +338,9 @@ public final class Environment {
         reachable.reserveCapacity(store.count)
         for handle in handles.values {
             handle.mark(into: &reachable)
+        }
+        for completed in completedMutations {
+            completed.mark(into: &reachable)
         }
         // Records whose rows wait to be written stay, so the image, which a
         // read does not write first, is never older than memory.
