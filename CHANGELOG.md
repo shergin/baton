@@ -427,6 +427,14 @@ are expected and listed without apology.
   The environment keeps them apart, one per mutation name and as many as
   `releaseBufferSize`, and one pushed out is collected at once; its records
   stayed until some unrelated release scheduled a collection.
+- A subscription that opens the WebSocket just after the last one closed
+  it keeps its socket. The closed socket's read, failing as it closed,
+  ended whichever socket was current, and the new subscription failed with
+  a cancellation. Each socket's frames and end now concern that socket
+  alone, a socket is not closed while a subscription is opening it or
+  starting on it, and the one that opens it no longer waits for an
+  acknowledgement that came, or a socket that failed, while its
+  `connection_init` was on the way.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

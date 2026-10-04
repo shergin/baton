@@ -306,6 +306,10 @@ public actor GraphQLTransportWebSocket: SubscriptionTransport {
     private var socket: URLSessionWebSocketTask?
     private var acknowledged = false
     private var waitingForAck: [CheckedContinuation<Void, any Error>] = []
+    /// How many subscriptions have started and are not yet listed in
+    /// `subscribers`: opening the connection, waiting for its
+    /// acknowledgement, or resumed by it and not yet run.
+    private var starting = 0
     private var receiving: Task<Void, Never>?
     private var subscribers: [String: AsyncThrowingStream<Data, any Error>.Continuation] = [:]
 
@@ -330,14 +334,24 @@ public actor GraphQLTransportWebSocket: SubscriptionTransport {
     }
 
     private func start(_ id: String, _ request: Request, _ continuation: AsyncThrowingStream<Data, any Error>.Continuation) async {
+        // Counted until it is listed or gives up, so the connection it opens
+        // or waits on is not closed under it.
+        starting += 1
         do {
             try await connect()
-            // The stream may have ended while the connection opened.
-            guard !Task.isCancelled else { return }
-            subscribers[id] = continuation
-            let payload = "{\"query\":" + Variable.quote(request.text)
-                + ",\"operationName\":" + Variable.quote(request.operationName)
-                + ",\"variables\":" + request.variables.json + "}"
+        } catch {
+            starting -= 1
+            continuation.finish(throwing: error)
+            return
+        }
+        starting -= 1
+        // The stream may have ended while the connection opened.
+        guard !Task.isCancelled else { return }
+        subscribers[id] = continuation
+        let payload = "{\"query\":" + Variable.quote(request.text)
+            + ",\"operationName\":" + Variable.quote(request.operationName)
+            + ",\"variables\":" + request.variables.json + "}"
+        do {
             try await send("{\"id\":\"\(id)\",\"type\":\"subscribe\",\"payload\":\(payload)}")
         } catch {
             continuation.finish(throwing: error)
@@ -354,9 +368,9 @@ public actor GraphQLTransportWebSocket: SubscriptionTransport {
     }
 
     /// Closes the connection when no subscription is on it and none is
-    /// waiting for it to open; the next subscription opens another.
+    /// starting on it; the next subscription opens another.
     private func closeIfUnused() {
-        guard subscribers.isEmpty, waitingForAck.isEmpty, socket != nil else { return }
+        guard subscribers.isEmpty, starting == 0, socket != nil else { return }
         socket?.cancel(with: .normalClosure, reason: nil)
         socket = nil
         acknowledged = false
@@ -373,9 +387,13 @@ public actor GraphQLTransportWebSocket: SubscriptionTransport {
             let socket = session.webSocketTask(with: urlRequest)
             self.socket = socket
             socket.resume()
-            receiving = Task { await self.receive() }
+            receiving = Task { await self.receive(from: socket) }
             let payload = connectionParams.map { ",\"payload\":" + $0.json } ?? ""
             try await send("{\"type\":\"connection_init\"\(payload)}")
+            // While the frame was on its way the socket may have failed, and
+            // then nothing would answer, or been acknowledged already.
+            guard self.socket === socket else { throw TransportError(statusCode: 0, body: "the socket is closed") }
+            if acknowledged { return }
         }
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, any Error>) in
             waitingForAck.append(continuation)
@@ -387,10 +405,14 @@ public actor GraphQLTransportWebSocket: SubscriptionTransport {
         try await socket.send(.string(text))
     }
 
-    private func receive() async {
-        while let socket, !Task.isCancelled {
+    /// Reads one socket's frames. A socket that is no longer the current one
+    /// was closed on purpose or replaced, so neither its frames nor its end
+    /// concern the subscriptions on the current one.
+    private func receive(from socket: URLSessionWebSocketTask) async {
+        while !Task.isCancelled {
             do {
                 let message = try await socket.receive()
+                guard self.socket === socket else { return }
                 let data: Data = switch message {
                 case .data(let data): data
                 case .string(let text): Data(text.utf8)
@@ -398,6 +420,7 @@ public actor GraphQLTransportWebSocket: SubscriptionTransport {
                 }
                 try handle(data)
             } catch {
+                guard self.socket === socket else { return }
                 fail(error)
                 return
             }

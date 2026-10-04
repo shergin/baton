@@ -676,6 +676,54 @@ struct DeliveryTests {
         await until { server.closed == 2 }
     }
 
+    @Test("a subscription that starts as the last one's socket closes keeps the socket it opens")
+    func subscriptionAfterTheSocketCloses() async throws {
+        /// What a reader saw: its payloads, and whether its stream ended.
+        final class Reader: @unchecked Sendable {
+            private let lock = NSLock()
+            private var payloads = 0
+            private var ended = false
+
+            func receive() { lock.withLock { payloads += 1 } }
+            func end() { lock.withLock { ended = true } }
+            var received: Int { lock.withLock { payloads } }
+            var finished: Bool { lock.withLock { ended } }
+        }
+        let value = TestNoteAdded(characterId: "1", connections: [])
+        let request = Request(operationName: TestNoteAdded.name, text: TestNoteAdded.text, persistedID: TestNoteAdded.persistedID, variables: value.variables)
+        // The closed socket's read fails a few milliseconds after the close,
+        // and a subscription that opens a socket within them is the case, so
+        // the sequence runs until one has met it or long enough that one
+        // would have.
+        for _ in 0..<40 {
+            let server = try SocketServer()
+            let socket = GraphQLTransportWebSocket(url: try await server.start())
+            defer { server.stop() }
+            let first = Task { for try await _ in socket.subscribe(request) {} }
+            await until { server.count(of: "subscribe") == 1 }
+            first.cancel()
+            await until { server.count(of: "complete") == 1 }
+
+            let reader = Reader()
+            let second = Task {
+                do {
+                    for try await _ in socket.subscribe(request) { reader.receive() }
+                } catch {}
+                reader.end()
+            }
+            await until(timeout: .seconds(2)) { server.count(of: "subscribe") == 2 || reader.finished }
+            if let id = server.ids(of: "subscribe").dropFirst().first {
+                server.send(#"{"id":"\#(id)","type":"next","payload":{"data":{"noteAdded":null}}}"#)
+            }
+            await until(timeout: .seconds(2)) { reader.received == 1 || reader.finished }
+            second.cancel()
+            guard reader.received == 1, !reader.finished else {
+                Issue.record("the second subscription ended before its event")
+                break
+            }
+        }
+    }
+
     @Test("equal subscriptions on one socket are separate: the end of one leaves the other open")
     func equalSubscriptionsOnOneSocket() async throws {
         /// What each reader saw, by reader.
