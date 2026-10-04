@@ -231,3 +231,22 @@ fn a_root_named_otherwise_that_an_interface_or_union_reaches_is_an_error() {
         );
     }
 }
+
+#[test]
+fn an_error_in_a_selection_is_told_once_though_the_operation_is_lowered_twice() {
+    let sdl = "type Query { person(id: ID): Person } type Person { id: ID! name: String }";
+    let mut config: Config = serde_json::from_str(
+        r#"{"lookups": [{"field": "Query.person", "type": "Person", "argument": "id"}]}"#,
+    )
+    .expect("the configuration parses");
+    config.path = PathBuf::from("baton.json");
+    let Err(errors) = compile(
+        sdl,
+        "schema.graphql",
+        &[document("query Probe { person { name } }")],
+        &config,
+    ) else {
+        panic!("the selection passes no id");
+    };
+    assert_eq!(errors.len(), 1, "{errors:?}");
+}

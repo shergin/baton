@@ -727,7 +727,18 @@ fn lower(
     }
     plan.operations
         .sort_by(|left, right| left.name.cmp(&right.name));
-    let diagnostics = lowering.diagnostics.into_inner();
+    // An operation is lowered twice, as its reader and as its
+    // normalization, so a selection's error is found twice: once is told.
+    let mut diagnostics: Vec<Diagnostic> = Vec::new();
+    for diagnostic in lowering.diagnostics.into_inner() {
+        let repeated = diagnostics.iter().any(|told| {
+            told.location() == diagnostic.location()
+                && told.message().to_string() == diagnostic.message().to_string()
+        });
+        if !repeated {
+            diagnostics.push(diagnostic);
+        }
+    }
     if diagnostics.is_empty() {
         Ok(plan)
     } else {
