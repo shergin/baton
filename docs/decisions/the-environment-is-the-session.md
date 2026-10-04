@@ -16,7 +16,7 @@ through a response that lands late. The first adopter asked for this
 store swapped at sign-in and sign-out, and a generation on the store so
 that work begun under the old one commits nothing.
 
-At 0.6.0 the other answer is half built. `Environment.store` is a `let`,
+As built, the other answer is half there. `Environment.store` is a `let`,
 the README's sign-out makes a new environment, and a view's storage
 resolves its operation again when the environment it sees is another one.
 The far end is missing: an environment can be made and cannot be ended.
@@ -53,8 +53,8 @@ it.
   environment dropped without an end leaks nothing. That is a net, not the
   end: the moment is not defined while anything holds the store.
 - A refreshed credential is the same identity and the same environment.
-  At 0.6.0 the built-in transports take their headers once, so an app
-  whose token rotates brings its own transport.
+  Today the built-in transports take their headers once, so an app whose
+  token rotates brings its own transport.
 
 The end does not reach the process's table of slots, which keeps the text
 of every key rendered from variables, an id or a search string among them,
@@ -67,15 +67,15 @@ for the life of the process
   macOS 26.5.2, Swift 6.3.3; kept in the planning notes): a response whose
   two records link to each other is committed and the store dropped. The
   store is freed and both records stay. Swept first, both are freed.
-- The lifetime tests at 0.6.0. "A handle whose environment is gone keeps
+- The lifetime tests. "A handle whose environment is gone keeps
   its data and stops loading instead of hanging": one retained handle
   keeps a store, and its data, past its environment. "A view whose
   environment is replaced resolves its operation again in the new one":
   views follow with no help from the app.
-- The runtime at 0.6.0, by reading: a fetch's task holds its environment
+- The runtime as built, by reading: a fetch's task holds its environment
   until it finishes, a subscription's for as long as its stream is open,
   and a mutation's request runs in a task nothing cancels.
-- The image at 0.6.0 shows what a generation costs: one image serves
+- The image as built shows what a generation costs: one image serves
   successive stores, so eight of its functions take the count of removals
   a store noted when it was made.
 - Relay was asked for a store reset at logout

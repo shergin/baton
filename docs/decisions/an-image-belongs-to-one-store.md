@@ -1,6 +1,6 @@
 # An image belongs to one store
 
-Status: accepted, 2026-10-04; supersedes the sign-out of 0.6.0, one image
+Status: accepted, 2026-10-04; supersedes the README's sign-out, one image
 removed and handed from environment to environment, which stands until the
 end it rests on is built. Serves
 [What earns a concept](../principles/what-earns-a-concept.md). Reopen if
@@ -10,7 +10,7 @@ environments of one account.
 
 ## Context
 
-At 0.6.0 a `Persistence` outlives its stores. A sign-out is `removeAll()`
+As built, a `Persistence` outlives its stores. A sign-out is `removeAll()`
 on the image and the same image for the next environment. A store made
 before the removal must read, write and date nothing after it, so the
 image counts its removals, a store notes the count when it is made, and
@@ -35,7 +35,7 @@ purge had not begun.
   the purge. Either the account is in the path, so each account has a
   file, caches coexist and a switch of accounts keeps them; or it is in
   `version`, so one file serves, and opened for another account it is
-  emptied before anything is read. Both work at 0.6.0.
+  emptied before anything is read. Both work today.
 - Deleting the file is then hygiene: it can be interrupted and repeated. A
   switch of accounts ends the environment and keeps the file; a sign-out
   ends it and removes the file.
@@ -46,7 +46,7 @@ purge had not begun.
 
 ## Evidence
 
-- The image's open at 0.6.0: an image written under another `version` has
+- The image's open: an image written under another `version` has
   its rows deleted in the transaction that opens it, before any read. The
   persistence test "an unreadable image is a miss: garbage, another
   version and a removed image start over" covers it.
