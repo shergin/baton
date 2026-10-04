@@ -110,6 +110,60 @@ struct PhaseTests {
         handle.release()
     }
 
+    @Test("a field error failure whose refetch fails at the transport keeps its failure, and a commit that answers the field makes it ready")
+    func failedRefetchKeepsAFieldErrorFailure() async throws {
+        let attempts = Attempts()
+        let transport = RecordedTransport { _ in attempts.next() == 1 ? fixture("character-name-hidden") : nil }
+        let environment = Environment(transport: transport)
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestStrictQuery(id: "1"))
+        handle.retain()
+        defer { handle.release() }
+        await settled(handle)
+        environment.invalidate()
+        await handle.settle()
+        #expect(transport.requestCount == 2)
+        guard case .failed(let error as FieldErrors) = handle.phase else {
+            Issue.record("expected the field error the store still holds, got \(handle.phase)")
+            return
+        }
+        #expect(error.errors.map(\.message) == ["name hidden"])
+        #expect(handle.isStale, "no response replaced the data the invalidation made stale")
+        let plan = TestStrictQuery.plan.resolve(TestStrictQuery(id: "1").variables)
+        environment.store.commit(try Ingest.normalize(fixture("character-name-shown"), plan: plan))
+        guard case .ready = handle.phase else {
+            Issue.record("expected ready once a commit answers the field, got \(handle.phase)")
+            return
+        }
+    }
+
+    @Test("a parked field error failure whose refetch failed at the transport is ready when attached again over the answered field, and fetches because it is stale")
+    func failedRefetchOfAFieldErrorFailureSettlesOnAttach() async throws {
+        let attempts = Attempts()
+        let transport = RecordedTransport { _ in attempts.next() == 1 ? fixture("character-name-hidden") : nil }
+        let environment = Environment(transport: transport)
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestStrictQuery(id: "1"))
+        handle.retain()
+        await settled(handle)
+        environment.invalidate()
+        await handle.settle()
+        handle.release()
+        let plan = TestStrictQuery.plan.resolve(TestStrictQuery(id: "1").variables)
+        environment.store.commit(try Ingest.normalize(fixture("character-name-shown"), plan: plan))
+
+        let again = environment.handle(for: TestStrictQuery(id: "1"))
+        #expect(again === handle)
+        again.retain()
+        defer { again.release() }
+        guard case .ready = again.phase else {
+            Issue.record("expected ready over the answered field, got \(again.phase)")
+            return
+        }
+        await again.settle()
+        #expect(transport.requestCount == 3)
+    }
+
     @Test("a failed phase is not assigned again when an unrelated commit evaluates it to the same failure")
     func failureIsNotReassigned() async throws {
         let environment = Environment(transport: RecordedTransport([TestStrictQuery.name: fixture("character-name-hidden")]))

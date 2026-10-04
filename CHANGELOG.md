@@ -411,7 +411,8 @@ are expected and listed without apology.
   such an error, so no commit could clear it, and the failure stayed until
   `retry()`. A failure on field errors or a `@required` null, whose data is
   in the store, goes stale as ready data does, so `invalidate()` and the
-  expiration refetch it; `isStale` was false for every failure.
+  expiration refetch it, and a refetch that fails at the transport leaves
+  it as it leaves ready data; `isStale` was false for every failure.
 - `Environment.fetch(_:)` of a `@throwOnFieldError` operation throws the
   field errors its handle fails on. It threw for every uncaught error the
   response placed, one inside a spread among them, so the fetch threw where

@@ -356,8 +356,14 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
                 return nil
             case let error?:
                 // Earlier data stays visible; `refetch()` throws the failure.
-                if case .ready = phase { return error }
-                phase = .failed(error)
+                // A failure with data behind it stays as well, so a later
+                // commit or attach can still settle it by that data.
+                switch phase {
+                case .ready, .failed(is FieldErrors), .failed(is RequiredFieldError):
+                    return error
+                case .loading, .failed:
+                    phase = .failed(error)
+                }
             }
             return failure
         }
