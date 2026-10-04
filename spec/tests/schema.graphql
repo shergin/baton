@@ -87,19 +87,21 @@ type Tokenizer {
   jsons: [JSON]
 }
 
-"""A type and fields named as the generated code names its own."""
+"""A type and fields named as Swift and the generated code name their own."""
 type Types {
   Type: String
   Protocol: String
   Baton: String
+  Any: String
 }
 
 """
 Types named as Swift and the generated code name their own: `Baton`, the
 runtime's module; `Type` and `Protocol`, which Swift reads after a dot as
-metatypes; and `Set`, the type of the shared file's sets of types. The four
-are `Spelled`, which `Spelling` admits with `Episode` besides, so a
-condition on `Spelled` is tested as a set.
+metatypes; `Set`, the type of the shared file's sets of types; and `Any`,
+which Swift lets no member take. The five are `Spelled`, which `Spelling`
+admits with `Episode` besides, so a condition on `Spelled` is tested as a
+set.
 """
 interface Spelled {
   label: String
@@ -125,7 +127,12 @@ type Set implements Spelled {
   label: String
 }
 
-union Spelling = Baton | Type | Protocol | Set | Episode
+type Any implements Spelled {
+  id: ID
+  label: String
+}
+
+union Spelling = Baton | Type | Protocol | Set | Any | Episode
 
 type Character implements Node & Named {
   id: ID

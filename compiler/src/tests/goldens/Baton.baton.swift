@@ -5,8 +5,9 @@
 nonisolated enum Types {
     /// The schema's digest: pass it as the image's `version`, so an image
     /// written under another schema starts again.
-    static let schemaDigest = "830e6936e77bf78f5e4f642f56846b1a"
+    static let schemaDigest = "29351384b7bf0bc46563c142dc33c897"
     static let AddNotePayload = Baton.Registry.type("AddNotePayload")
+    static let Any_ = Baton.Registry.type("Any")
     static let Baton_ = Baton.Registry.type("Baton")
     static let Character = Baton.Registry.type("Character")
     static let Characters = Baton.Registry.type("Characters")
@@ -38,7 +39,7 @@ nonisolated enum Types {
     /// The types that satisfy `... on Node`.
     static let Node_possible: Swift.Set<Baton.TypeID> = [Character, Episode, Location, Note]
     /// The types that satisfy `... on Spelled`.
-    static let Spelled_possible: Swift.Set<Baton.TypeID> = [Baton_, Protocol_, Set, Type_]
+    static let Spelled_possible: Swift.Set<Baton.TypeID> = [Any_, Baton_, Protocol_, Set, Type_]
 }
 
 /// Interned storage keys used by this module's documents.
@@ -46,6 +47,9 @@ nonisolated enum Slots {
     nonisolated enum AddNotePayload {
         static let note = Baton.Registry.slot(Types.AddNotePayload, "note")
         static let noteEdge = Baton.Registry.slot(Types.AddNotePayload, "noteEdge")
+    }
+    nonisolated enum Any_ {
+        static let id = Baton.Registry.slot(Types.Any_, "id")
     }
     nonisolated enum Baton_ {
         static let id = Baton.Registry.slot(Types.Baton_, "id")
@@ -211,6 +215,7 @@ nonisolated enum Slots {
         static let id = Baton.Registry.slot(Types.Type_, "id")
     }
     nonisolated enum Types_ {
+        static let Any_ = Baton.Registry.slot(Types.Types, "Any")
         static let Baton_ = Baton.Registry.slot(Types.Types, "Baton")
         static let Protocol_ = Baton.Registry.slot(Types.Types, "Protocol")
         static let Type_ = Baton.Registry.slot(Types.Types, "Type")

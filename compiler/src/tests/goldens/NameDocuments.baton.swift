@@ -9,13 +9,14 @@ nonisolated public struct TestNames: Baton.Query {
     }
 
     public static let name = "TestNames"
-    public static let persistedID = "8385a2813e8a206635bc6814e916fccc"
+    public static let persistedID = "f80468c3bd6f67ad159a99b53afae0f4"
     public static let text = #"""
 query TestNames {
   types {
     Type
     Protocol
     Baton
+    Any
   }
 }
 """#
@@ -36,6 +37,7 @@ query TestNames {
                 .scalar("Type", key: .fixed(Slots.Types_.Type_), kind: .string, list: false),
                 .scalar("Protocol", key: .fixed(Slots.Types_.Protocol_), kind: .string, list: false),
                 .scalar("Baton", key: .fixed(Slots.Types_.Baton_), kind: .string, list: false),
+                .scalar("Any", key: .fixed(Slots.Types_.Any_), kind: .string, list: false),
             ])),
         ]))
 
@@ -52,6 +54,7 @@ query TestNames {
             @MainActor public var `Type`: String? { anchor.string(Slots.Types_.Type_) }
             @MainActor public var `Protocol`: String? { anchor.string(Slots.Types_.Protocol_) }
             @MainActor public var Baton: String? { anchor.string(Slots.Types_.Baton_) }
+            @MainActor public var `Any`: String? { anchor.string(Slots.Types_.Any_) }
         }
     }
 }
@@ -64,7 +67,7 @@ nonisolated public struct TestSpellings: Baton.Query {
     }
 
     public static let name = "TestSpellings"
-    public static let persistedID = "246054e0116191cab2fc8661a703b68a"
+    public static let persistedID = "893428989104274048d66226fef98695"
     public static let text = #"""
 query TestSpellings {
   spellings {
@@ -83,6 +86,9 @@ query TestSpellings {
       id
     }
     ... on Set {
+      id
+    }
+    ... on Any {
       id
     }
     ... on Node {
@@ -106,7 +112,7 @@ query TestSpellings {
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
             .linked("spellings", key: .fixed(Slots.Query.spellings), plural: true, selection: Baton.Selection(type: Types.Spelling, hasID: true, abstract: true, variants: [
-                .init(types: [Types.Baton_, Types.Protocol_, Types.Set, Types.Type_], fields: [
+                .init(types: [Types.Any_, Types.Baton_, Types.Protocol_, Types.Set, Types.Type_], fields: [
                     .scalar("__typename", key: .fixed(Slots.Spelling.__typename), kind: .string, list: false),
                     .scalar("label", key: .fixed(Slots.Spelling.label), kind: .string, list: false),
                     .scalar("id", key: .fixed(Slots.Spelling.id), kind: .string, list: false),
@@ -136,6 +142,7 @@ query TestSpellings {
             @MainActor public var asType: AsType? { anchor.record.is(Types.Type_) ? AsType(anchor: anchor) : nil }
             @MainActor public var asProtocol: AsProtocol? { anchor.record.is(Types.Protocol_) ? AsProtocol(anchor: anchor) : nil }
             @MainActor public var asSet: AsSet? { anchor.record.is(Types.Set) ? AsSet(anchor: anchor) : nil }
+            @MainActor public var asAny: AsAny? { anchor.record.is(Types.Any_) ? AsAny(anchor: anchor) : nil }
 
             nonisolated public struct AsSpelled: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
@@ -170,6 +177,13 @@ query TestSpellings {
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
                 public static let typeName = "Set"
                 @MainActor public var id: String? { anchor.string(Slots.Set.id) }
+            }
+
+            nonisolated public struct AsAny: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                public static let typeName = "Any"
+                @MainActor public var id: String? { anchor.string(Slots.Any_.id) }
             }
         }
     }

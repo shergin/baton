@@ -617,13 +617,16 @@ are expected and listed without apology.
   more hashes can hold `\#`, as in `search(name: "\\#1")`, which the
   literal of one hash read as an escape, and the generated code did not
   compile.
-- A schema type named `Baton`, `Type` or `Protocol` is `Baton_`, `Type_`
-  or `Protocol_` in `Types`, at its constant and at every reference, as in
-  `Slots`. `Baton` referred to itself in its own initializer and hid the
-  runtime's module from the other constants, and Swift read `Types.Type`
-  and `Types.Protocol` as metatypes, so the shared file did not compile.
-  The shared file's sets of types are `Swift.Set`, which a type of the
-  module named `Set` no longer hides.
+- A schema type named `Baton`, `Type`, `Protocol` or `Any` is `Baton_`,
+  `Type_`, `Protocol_` or `Any_` in `Types`, at its constant and at every
+  reference, as in `Slots`, where a field named `Any` is `Any_` too.
+  `Baton` referred to itself in its own initializer and hid the runtime's
+  module from the other constants, Swift read `Types.Type` and
+  `Types.Protocol` as metatypes, and Swift lets no member be named `Any`,
+  so the shared file did not compile. A field or a variable named `Any` is
+  escaped where the generated code declares it, as `Type` is. The shared
+  file's sets of types are `Swift.Set`, which a type of the module named
+  `Set` no longer hides.
 - The `RequiredFieldError` of a root that a `@required` field bubbled to
   has the path of that field, the first required field that is null, as
   `character.origin`, and says it: "TestRequiredOrigin: the @required field

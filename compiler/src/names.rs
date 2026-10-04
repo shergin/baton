@@ -361,21 +361,22 @@ pub fn lower_camel(text: &str) -> String {
 }
 
 /// A type's or a field's name in `Slots` and `AbstractSlots`. Swift reads
-/// `Type` and `Protocol` after a dot as metatypes, and a scope or a member
-/// named `Types` or `Baton` hides the enum or the module the slots are built
-/// from, so these names take an underscore.
+/// `Type` and `Protocol` after a dot as metatypes, takes `Any` as no
+/// member's name, and a scope or a member named `Types` or `Baton` hides the
+/// enum or the module the slots are built from, so these names take an
+/// underscore.
 pub fn slot_name(name: &str) -> String {
-    underscored(name, &["Type", "Protocol", "Types", "Baton"])
+    underscored(name, &["Type", "Protocol", "Any", "Types", "Baton"])
 }
 
 /// A schema type's constant in `Types`, as every reference spells it.
-/// Swift reads `Types.Type` and `Types.Protocol` as metatypes, and a member
-/// named `Baton` refers to itself in its own initializer and hides the
-/// module from every other, so these names take an underscore, as in
-/// `slot_name`. A member named `Types` hides nothing: inside the enum the
-/// members are named bare.
+/// Swift reads `Types.Type` and `Types.Protocol` as metatypes and takes
+/// `Any` as no member's name, and a member named `Baton` refers to itself
+/// in its own initializer and hides the module from every other, so these
+/// names take an underscore, as in `slot_name`. A member named `Types`
+/// hides nothing: inside the enum the members are named bare.
 pub fn type_constant(name: &str) -> String {
-    underscored(name, &["Type", "Protocol", "Baton"])
+    underscored(name, &["Type", "Protocol", "Any", "Baton"])
 }
 
 /// The constant in `Types` of the types that satisfy `condition`.
@@ -409,6 +410,7 @@ pub fn escape(name: &str) -> String {
     const KEYWORDS: &[&str] = &[
         "Type",
         "Protocol",
+        "Any",
         "self",
         "Self",
         "init",
