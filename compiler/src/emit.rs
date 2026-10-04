@@ -100,6 +100,14 @@ struct FragmentFlags {
     throws: bool,
 }
 
+/// A fragment's type condition: on an interface or union, the concrete
+/// types that satisfy it.
+#[derive(Clone, Default)]
+struct FragmentCondition {
+    is_abstract: bool,
+    possible_types: Vec<String>,
+}
+
 struct Emitter {
     slots: BTreeSet<SlotRef>,
     /// Constant keys read on an interface or union.
@@ -110,6 +118,7 @@ struct Emitter {
     /// Every fragment's `@argumentDefinitions`, for binding spreads.
     fragment_arguments: BTreeMap<String, Vec<VariablePlan>>,
     fragment_flags: BTreeMap<String, FragmentFlags>,
+    fragment_conditions: BTreeMap<String, FragmentCondition>,
     /// Fragments spread with `@defer` somewhere: their lenses get `isPresent`.
     deferred_fragments: BTreeSet<String>,
     /// The possible types of each abstract type condition tested as a set.
@@ -179,6 +188,19 @@ pub fn emit(plan: &Plan) -> Output {
                     FragmentFlags {
                         bubbles: fragment.bubbles,
                         throws: fragment.throws_on_field_error,
+                    },
+                )
+            })
+            .collect(),
+        fragment_conditions: plan
+            .fragments
+            .iter()
+            .map(|fragment| {
+                (
+                    fragment.name.clone(),
+                    FragmentCondition {
+                        is_abstract: fragment.type_is_abstract,
+                        possible_types: fragment.possible_types.clone(),
                     },
                 )
             })
@@ -1687,7 +1709,28 @@ impl Emitter {
             guards.push(condition.to_string());
         }
         if conditional {
-            guards.push(format!("anchor.record.is(Types.{})", spread.type_condition));
+            // A condition on an interface or union holds for any of the
+            // types that satisfy it; one on an object type for that type.
+            let condition = self
+                .fragment_conditions
+                .get(fragment)
+                .cloned()
+                .unwrap_or_default();
+            if condition.is_abstract {
+                for type_name in &condition.possible_types {
+                    self.types.insert(type_name.clone());
+                }
+                self.possible_sets.insert(
+                    spread.type_condition.to_string(),
+                    condition.possible_types.clone(),
+                );
+                guards.push(format!(
+                    "Types.{}_possible.contains(anchor.record.type)",
+                    spread.type_condition
+                ));
+            } else {
+                guards.push(format!("anchor.record.is(Types.{})", spread.type_condition));
+            }
         }
         if spread.deferred {
             guards.push(format!("{fragment}.isPresent({anchor})"));

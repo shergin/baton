@@ -5,8 +5,9 @@ import Baton
 /// a union whose members read disjoint fields, one alias under two types, an
 /// interface only some members implement, an abstract selection read through
 /// its own fields, one fragment spread twice and once more under a
-/// condition, and caught fields and `__typename` under a condition in an
-/// operation that throws on field errors.
+/// condition, caught fields and `__typename` under a condition in an
+/// operation that throws on field errors, and a fragment on an interface
+/// spread under another.
 @MainActor
 struct ConditionDocuments {
     @Query("""
@@ -72,4 +73,16 @@ struct ConditionDocuments {
         }
         """)
     var strictConditions: TestStrictConditions
+
+    @Fragment("""
+        fragment TestNamed_named on Named { name }
+        """)
+    var named: TestNamed_named
+
+    @Query("""
+        query TestNamedSpread($id: ID!) {
+          node(id: $id) { id ...TestNamed_named @alias(as: "named") }
+        }
+        """)
+    var namedSpread: TestNamedSpread
 }

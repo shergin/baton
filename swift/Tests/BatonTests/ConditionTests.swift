@@ -113,4 +113,17 @@ struct ConditionTests {
         #expect(plain.status == nil)
         #expect(plain.species == nil)
     }
+
+    @Test("a fragment on an interface spread under another reads on every type that implements it, and on no other")
+    func spreadOnAnInterface() throws {
+        for (file, id, name) in [("node-fields-character", "1", "Rick Sanchez" as String?), ("node-fields-episode", "1", nil)] {
+            let store = Store()
+            store.reportMissing = nil
+            let query = TestNamedSpread(id: id)
+            store.commit(try Ingest.normalize(fixture(file), plan: TestNamedSpread.plan.resolve(query.variables)))
+            let node = try #require(TestNamedSpread.Data(anchor: Anchor(record: store.root, variables: query.variables, store: store)).node)
+            #expect(node.named?.name == name, "\(file)")
+            #expect((node.named != nil) == (name != nil), "\(file)")
+        }
+    }
 }
