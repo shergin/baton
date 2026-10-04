@@ -15,7 +15,9 @@ the vocabulary is `docs/terminology.md`. These files outrank any default.
 - Reads are synchronous on the main actor; everything else runs off it. Never
   add an asynchronous read API for views. Never parse GraphQL at run time.
 - The response is the oracle: a change to the store, the tokenizer or the
-  record layout is behavior-frozen under `spec/` fixtures.
+  record layout is behavior-frozen under `spec/` fixtures. The fixtures are
+  server responses, not tests; the rules under Tests do not let a change
+  edit one to fit the code.
 - A claim without a bench does not ship. Numbers in docs come from the bench
   suite and are recorded in `BENCHMARKS.md` with device, OS and date.
 - Public docs are updated in the same change that makes them stale: README,
