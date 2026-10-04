@@ -85,12 +85,17 @@ are expected and listed without apology.
   was dropped before. Breaking: a call site needs `try`.
 - `phase` changes only when it changes. A fetch that changed nothing
   assigned an equal `.ready` and re-ran every body that read the phase; a
-  ready handle now stays as it is. A `@throwOnFieldError` or bubbling
-  operation's phase follows any commit that changes a field error, a null
-  or a deletion in the store, not only its own fetch. `.networkOnly` no
-  longer sends a handle another view shows back to `.loading`, nor reads
-  the store, and the image, to decide. A preload's fetch serves the first
-  attach; the attach made a second request when the preload had finished.
+  ready handle now stays as it is, and so does a failure on the same field
+  errors. A `@throwOnFieldError` or bubbling operation's phase follows any
+  commit that changes a field error, a null, a link or a deletion in the
+  store, not only its own fetch, and a parked one is settled again when a
+  view attaches it. Both read the same errors: the operation's own
+  selection's, as Relay's reader of the operation does (an error inside a
+  spread is the fragment's to weigh), and those its last response carried
+  that no field holds. `.networkOnly` no longer sends a handle another
+  view shows back to `.loading`, nor reads the store, and the image, to
+  decide. A preload's fetch serves the first attach while its data is
+  fresh; the attach made a second request when the preload had finished.
 - A field error under a parent the server nulled lands on that parent. The
   walk that places an error left a `switch` where it meant to stop, so an
   error at `character.origin.name` with `origin` null was stored on

@@ -77,7 +77,8 @@ public final class Environment {
     @discardableResult
     public func preload<Op: Operation>(_ operation: Op, fetchPolicy: FetchPolicy = .storeAndNetwork) -> OperationHandle<Op> {
         let handle = handle(for: operation, fetchPolicy: fetchPolicy)
-        handle.preloaded = true
+        // Only a fetch the preload made can serve the first attach.
+        handle.preloaded = handle.isFetching
         if handle.retainCount == 0 { park(handle.key) }
         return handle
     }
@@ -115,13 +116,21 @@ public final class Environment {
     /// follows. `firstPart` runs after the first part of a deferred response
     /// commits, so a view renders before the rest arrives.
     public func fetch<Op: Operation>(_ operation: Op, firstPart: (() -> Void)? = nil) async throws {
-        try await fetch(operation, resolved: Op.plan.resolve(operation.variables), firstPart: firstPart)
+        let fetched = try await fetch(Op.self, variables: operation.variables, resolved: Op.plan.resolve(operation.variables), firstPart: firstPart)
+        if Op.throwsOnFieldError, !fetched.uncaught.isEmpty { throw FieldErrors(fetched.uncaught) }
     }
 
-    /// Fetches with a plan already resolved, as a handle holds it.
-    func fetch<Op: Operation>(_ operation: Op, resolved: ResolvedSelection, firstPart: (() -> Void)? = nil) async throws {
-        let uncaught = try await fetch(Op.self, variables: operation.variables, resolved: resolved, firstPart: firstPart)
-        if Op.throwsOnFieldError, !uncaught.isEmpty { throw FieldErrors(uncaught) }
+    /// What a fetch committed besides its records: the field errors no
+    /// `@catch` handled, and those no field in the store holds.
+    struct Fetched {
+        var uncaught: [FieldError] = []
+        var unplaced: [FieldError] = []
+    }
+
+    /// Fetches with a plan already resolved, as a handle holds it. The field
+    /// errors are the handle's to weigh, so none is thrown.
+    func fetch<Op: Operation>(_ operation: Op, resolved: ResolvedSelection, firstPart: (() -> Void)? = nil) async throws -> Fetched {
+        try await fetch(Op.self, variables: operation.variables, resolved: resolved, firstPart: firstPart)
     }
 
     /// Fetches an operation by its type and variables and commits the response.
@@ -130,10 +139,10 @@ public final class Environment {
     /// Returns the field errors no `@catch` handled.
     @discardableResult
     public func fetch<Op: Operation>(_ operation: Op.Type, variables: Variables, firstPart: (() -> Void)? = nil) async throws -> [FieldError] {
-        try await fetch(operation, variables: variables, resolved: Op.plan.resolve(variables), firstPart: firstPart)
+        try await fetch(operation, variables: variables, resolved: Op.plan.resolve(variables), firstPart: firstPart).uncaught
     }
 
-    private func fetch<Op: Operation>(_ operation: Op.Type, variables: Variables, resolved: ResolvedSelection, firstPart: (() -> Void)?) async throws -> [FieldError] {
+    private func fetch<Op: Operation>(_ operation: Op.Type, variables: Variables, resolved: ResolvedSelection, firstPart: (() -> Void)?) async throws -> Fetched {
         let request = request(Op.self, variables: variables)
         if !Op.hasDeferred {
             let data = try await transport.execute(request)
@@ -142,9 +151,9 @@ public final class Environment {
             // read must not land after the one that replaced it.
             try Task.checkCancellation()
             store.commit(changes)
-            return changes.uncaughtFieldErrors
+            return Fetched(uncaught: changes.uncaughtFieldErrors, unplaced: changes.unplacedErrors)
         }
-        var uncaught: [FieldError] = []
+        var fetched = Fetched()
         var first = true
         var pending: [String: Ingest.IncrementalPart.Pending] = [:]
         for try await part in transport.stream(request) {
@@ -153,7 +162,8 @@ public final class Environment {
                 let changes = try await Ingest.normalized(part, plan: resolved)
                 try Task.checkCancellation()
                 store.commit(changes)
-                uncaught.append(contentsOf: changes.uncaughtFieldErrors)
+                fetched.uncaught.append(contentsOf: changes.uncaughtFieldErrors)
+                fetched.unplaced.append(contentsOf: changes.unplacedErrors)
                 // The 2024 format announces the parts to come in the first one.
                 for announced in try Ingest.incremental(part).pending { pending[announced.id] = announced }
                 firstPart?()
@@ -171,10 +181,11 @@ public final class Environment {
                 let changes = try Ingest.normalizeObject(item.data, plan: deferred, key: record.key, type: record.type, entity: record.isEntity)
                 try Task.checkCancellation()
                 store.commit(changes)
-                uncaught.append(contentsOf: changes.uncaughtFieldErrors)
+                fetched.uncaught.append(contentsOf: changes.uncaughtFieldErrors)
+                fetched.unplaced.append(contentsOf: changes.unplacedErrors)
             }
         }
-        return uncaught
+        return fetched
     }
 
     /// Fetches a page of a connection: the loading flag on the connection

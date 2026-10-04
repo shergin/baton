@@ -57,9 +57,9 @@ public final class Store {
     public internal(set) var hydratedRecords = 0
     /// The image's connection while a check is reading from it.
     private var reading: Disk?
-    /// Whether the batch in progress changed a field error, a null, or
-    /// whether a record is deleted: what `@throwOnFieldError` and bubbling
-    /// `@required` read.
+    /// Whether the batch in progress changed a field error, a null, a link,
+    /// or whether a record is deleted: what `@throwOnFieldError` and
+    /// bubbling `@required` read.
     private var nullsOrErrorsChanged = false
 
     public init(persistence: Persistence? = nil) {
@@ -380,16 +380,23 @@ public final class Store {
         nullsOrErrorsChanged = true
     }
 
-    /// Notes a write to or from null for the batch.
+    /// Notes for the batch a write to or from null, or a link that moved.
     @inline(__always)
     private func noteNulls(_ previous: Value, _ value: Value) {
-        if case .null = value { nullsOrErrorsChanged = true } else if case .null = previous { nullsOrErrorsChanged = true }
+        switch (previous, value) {
+        case (.null, _), (_, .null):
+            nullsOrErrorsChanged = true
+        // A link moved onto another record brings that record's errors and
+        // nulls into every selection that reads through it.
+        case (.ref(let old), .ref(let new)) where old !== new:
+            nullsOrErrorsChanged = true
+        case (.refs, .refs):
+            nullsOrErrorsChanged = true
+        default:
+            return
+        }
     }
 
-    /// Writes a change set silently: last entry wins per (record, slot); a
-    /// value equal to the slot's current value is neither allocated nor
-    /// recorded. The edits follow: connection pages merge, edges insert,
-    /// records delete. Returns the undo log of what changed.
     /// Whether a stored list of links holds the records the change set's
     /// list names, in order.
     private static func same(_ existing: ContiguousArray<Record?>, _ changes: ChangeSet, _ start: Int32, _ count: Int32, _ objects: ContiguousArray<Record>) -> Bool {
@@ -422,6 +429,10 @@ public final class Store {
         return true
     }
 
+    /// Writes a change set silently: last entry wins per (record, slot); a
+    /// value equal to the slot's current value is neither allocated nor
+    /// recorded. The edits follow: connection pages merge, edges insert,
+    /// records delete. Returns the undo log of what changed.
     private func apply(_ changes: ChangeSet, into transaction: inout Transaction) -> [Undo] {
         var objects = ContiguousArray<Record>()
         objects.reserveCapacity(changes.recordKeys.count)

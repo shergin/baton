@@ -4,7 +4,8 @@ import Baton
 /// field and a link `@required` all the way up, a non-null list under
 /// `@catch`, one scope holding two keys with variables and two spreads
 /// with arguments, fields named like the module's shared enums, and a type
-/// condition in an operation that throws on field errors.
+/// condition in an operation that throws on field errors, and a link an
+/// operation that throws reads through.
 @MainActor
 struct ReaderDocuments {
     @Query("""
@@ -54,4 +55,11 @@ struct ReaderDocuments {
         }
         """)
     var throwingNode: TestThrowingNode
+
+    @Query("""
+        query TestStrictOrigin($id: ID!) @throwOnFieldError {
+          character(id: $id) { id origin { id name } }
+        }
+        """)
+    var strictOrigin: TestStrictOrigin
 }

@@ -110,8 +110,12 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
     /// The scope every lens of the handle reads in.
     @ObservationIgnored private let owner: Owner
     @ObservationIgnored public internal(set) var retainCount = 0
-    /// Set by `preload`: the first attach finds the fetch already made.
+    /// Set by a `preload` that fetched: the first attach finds the fetch
+    /// made, or on the way.
     @ObservationIgnored var preloaded = false
+    /// The field errors of the last fetch that no field in the store holds,
+    /// which `@throwOnFieldError` counts until the next fetch.
+    @ObservationIgnored private var unplaced: [FieldError] = []
 
     init(operation: Op, environment: Environment) {
         self.operation = operation
@@ -125,11 +129,23 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
 
     /// Moves to the next phase. Ready after ready is no change: both carry a
     /// lens over the same root, so a fetch that changed nothing re-runs no
-    /// body that reads the phase.
+    /// body that reads the phase. Nor is a failure on the same field errors,
+    /// or the same `@required` path, after another.
     private func settle(_ next: Phase<Op.Data>) {
-        if case .ready = phase, case .ready = next { return }
-        phase = next
+        switch (phase, next) {
+        case (.ready, .ready):
+            return
+        case let (.failed(old as FieldErrors), .failed(new as FieldErrors)) where old.errors == new.errors:
+            return
+        case let (.failed(old as RequiredFieldError), .failed(new as RequiredFieldError)) where old.path == new.path:
+            return
+        default:
+            phase = next
+        }
     }
+
+    /// Whether a fetch is in flight.
+    var isFetching: Bool { task != nil }
 
     private var anchor: Anchor {
         Anchor(record: store.root, owner: owner)
@@ -139,11 +155,14 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
 
     /// The phase the store's data deserves: ready, unless the operation's
     /// policies say otherwise. `@throwOnFieldError` fails on an uncaught field
-    /// error anywhere in the selection; a root whose `@required` fields bubble
-    /// fails, because there is no null data.
+    /// error in the operation's own selection, as Relay's reader of the
+    /// operation does (a spread's fragment weighs its own), or on one the
+    /// last response carried that no field holds; a root whose `@required`
+    /// fields bubble fails, because there is no null data. The fetch and
+    /// every later commit settle the phase by this one reading.
     private func evaluate() -> Phase<Op.Data> {
         if Op.throwsOnFieldError {
-            let errors = Op.Data.fieldErrors(anchor)
+            let errors = unplaced + Op.Data.fieldErrors(anchor)
             if !errors.isEmpty { return .failed(FieldErrors(errors)) }
         }
         if Op.bubbles, !Op.Data.satisfied(anchor) {
@@ -190,11 +209,12 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
     /// Applies a policy on attach: renders what the store allows, fetches
     /// when the policy asks for it.
     func apply(_ policy: FetchPolicy) {
-        // A preload's fetch is the first attach's: in flight or done, it is
-        // not made again.
+        // A preload's fetch is the first attach's: in flight, or done with
+        // data that is still fresh, it is not made again.
         if preloaded {
             preloaded = false
-            if task != nil || fetchTime != nil { return }
+            if task != nil { return }
+            if case .ready = phase, !isStale { return }
         }
         if policy == .networkOnly {
             // What the store holds is not asked; a handle no one shows yet
@@ -206,8 +226,16 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
         let hydrated = store.hydratedRecords
         let complete = isComplete
         if complete { takeAge(hydrated: store.hydratedRecords != hydrated) }
-        if complete, case .loading = phase {
-            phase = evaluate()
+        if complete {
+            switch phase {
+            case .loading:
+                phase = evaluate()
+            // A parked handle saw no commit: what it failed on may be gone.
+            case .failed(let error) where error is FieldErrors || error is RequiredFieldError:
+                settle(evaluate())
+            default:
+                break
+            }
         }
         switch policy {
         case .storeOnly:
@@ -244,12 +272,13 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
             guard let self, let environment else { return nil }
             var failure: (any Error)?
             do {
-                try await environment.fetch(operation, resolved: resolved) { [weak self] in
+                let fetched = try await environment.fetch(operation, resolved: resolved) { [weak self] in
                     // A deferred response renders its first part at once.
                     guard let self, !Task.isCancelled else { return }
                     didFetch()
                     settle(evaluate())
                 }
+                if !Task.isCancelled { unplaced = fetched.unplaced }
             } catch {
                 failure = error
             }
@@ -262,11 +291,11 @@ public final class OperationHandle<Op: Operation>: AnyOperationHandle {
             case nil:
                 didFetch()
                 settle(evaluate())
+                // A response whose field errors fail the operation fails its
+                // refetch the same way.
+                if case .failed(let error) = phase { return error }
             case is CancellationError:
                 return nil
-            case let error as FieldErrors:
-                // `@throwOnFieldError`: the data is in the store, the phase says why it is not shown.
-                phase = .failed(error)
             case let error?:
                 // Earlier data stays visible; `refetch()` throws the failure.
                 if case .ready = phase { return error }

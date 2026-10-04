@@ -1,0 +1,140 @@
+import Baton
+import Foundation
+import Observation
+import Testing
+
+@MainActor
+@Suite("Phases", .timeLimit(.minutes(1)))
+struct PhaseTests {
+    /// A response about a character the operations below do not read, with
+    /// nulls in it, so the store settles their phases again.
+    func unrelatedCommit(_ store: Store) throws {
+        store.commit(try Ingest.normalize(fixture("characters-7-nulls"), plan: TestList.plan.resolve(TestList(page: 3).variables)))
+    }
+
+    func settled<Op: Baton.Operation>(_ handle: OperationHandle<Op>) async {
+        await until { if case .loading = handle.phase { false } else { true } }
+    }
+
+    @Test("an error with no path fails an operation that throws, and an unrelated commit leaves it failed")
+    func unplacedError() async throws {
+        let environment = Environment(transport: RecordedTransport([TestStrictQuery.name: fixture("character-unplaced-error")]))
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestStrictQuery(id: "1"))
+        handle.retain()
+        await settled(handle)
+        guard case .failed(let error as FieldErrors) = handle.phase else {
+            Issue.record("expected the unplaced error, got \(handle.phase)")
+            return
+        }
+        #expect(error.errors.map(\.message) == ["rate limited"])
+        try unrelatedCommit(environment.store)
+        guard case .failed = handle.phase else {
+            Issue.record("an unrelated commit made it \(handle.phase)")
+            return
+        }
+        handle.release()
+    }
+
+    @Test("a failed phase is not assigned again when an unrelated commit evaluates it to the same failure")
+    func failureIsNotReassigned() async throws {
+        let environment = Environment(transport: RecordedTransport([TestStrictQuery.name: fixture("character-name-hidden")]))
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestStrictQuery(id: "1"))
+        handle.retain()
+        await settled(handle)
+        guard case .failed = handle.phase else {
+            Issue.record("expected a failure, got \(handle.phase)")
+            return
+        }
+        final class Counter: @unchecked Sendable { var fired = 0 }
+        let counter = Counter()
+        withObservationTracking { _ = handle.phase } onChange: { counter.fired += 1 }
+        try unrelatedCommit(environment.store)
+        #expect(counter.fired == 0)
+        handle.release()
+    }
+
+    @Test("a preload's fetch serves the first attach only while its data is fresh")
+    func preloadThenInvalidate() async throws {
+        let transport = RecordedTransport([TestList.name: fixtureData])
+        let environment = Environment(transport: transport)
+        environment.store.reportMissing = nil
+        let preloaded = environment.preload(TestList(page: 1))
+        await settled(preloaded)
+        #expect(transport.requests.count == 1)
+        environment.invalidate()
+        let handle = environment.handle(for: TestList(page: 1), fetchPolicy: .storeOrNetwork)
+        await until { transport.requests.count == 2 }
+        #expect(transport.requests.count == 2, "the data went stale after the preload")
+        handle.retain()
+        handle.release()
+    }
+
+    @Test("a preload that sent nothing serves no attach: a later networkOnly attach fetches")
+    func preloadWithoutAFetch() async throws {
+        let transport = RecordedTransport([TestList.name: fixtureData])
+        let environment = Environment(transport: transport)
+        environment.store.reportMissing = nil
+        let first = environment.handle(for: TestList(page: 1))
+        first.retain()
+        await settled(first)
+        first.release()
+        #expect(transport.requests.count == 1)
+        _ = environment.preload(TestList(page: 1), fetchPolicy: .storeOrNetwork)
+        #expect(transport.requests.count == 1, "the store had the data, fresh")
+        _ = environment.handle(for: TestList(page: 1), fetchPolicy: .networkOnly)
+        await until { transport.requests.count == 2 }
+        #expect(transport.requests.count == 2)
+    }
+
+    @Test("a parked handle that failed on a field error is ready when attached again after the error cleared")
+    func parkedFailureClears() async throws {
+        let environment = Environment(transport: RecordedTransport([TestStrictQuery.name: fixture("character-name-hidden")]))
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestStrictQuery(id: "1"), fetchPolicy: .storeOrNetwork)
+        handle.retain()
+        await settled(handle)
+        handle.release()
+        guard case .failed = handle.phase else {
+            Issue.record("expected a failure, got \(handle.phase)")
+            return
+        }
+        // Another operation answers the name while the handle is parked.
+        let plan = TestProfileQuery.plan.resolve(TestProfileQuery(id: "1").variables)
+        environment.store.commit(try Ingest.normalize(fixture("character-deferred-1"), plan: plan))
+        let again = environment.handle(for: TestStrictQuery(id: "1"), fetchPolicy: .storeOnly)
+        #expect(again === handle)
+        guard case .ready = again.phase else {
+            Issue.record("expected ready, got \(again.phase)")
+            return
+        }
+    }
+
+    @Test("a commit that moves a link onto a record with a field error fails an operation that throws and reads through it")
+    func movedLink() async throws {
+        let environment = Environment(transport: RecordedTransport([TestStrictOrigin.name: fixture("strict-origin-1")]))
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestStrictOrigin(id: "1"))
+        handle.retain()
+        await settled(handle)
+        guard case .ready = handle.phase else {
+            Issue.record("expected ready, got \(handle.phase)")
+            return
+        }
+        let other = TestStrictOrigin.plan.resolve(TestStrictOrigin(id: "2").variables)
+        environment.store.commit(try Ingest.normalize(fixture("strict-origin-2-hidden"), plan: other))
+        guard case .ready = handle.phase else {
+            Issue.record("another character's origin is not in the selection, got \(handle.phase)")
+            return
+        }
+        let own = TestStrictOrigin.plan.resolve(TestStrictOrigin(id: "1").variables)
+        environment.store.commit(try Ingest.normalize(fixture("strict-origin-1-moved"), plan: own))
+        guard case .failed(let error as FieldErrors) = handle.phase else {
+            Issue.record("expected the moved-in error, got \(handle.phase)")
+            return
+        }
+        #expect(error.errors.map(\.message) == ["name hidden"])
+        handle.release()
+    }
+}
