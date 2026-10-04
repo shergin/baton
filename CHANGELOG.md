@@ -235,6 +235,12 @@ are expected and listed without apology.
   the whole response, and reads a part without headers. It scans the
   chunks it is given rather than a byte at a time: 978 KB of 20 parts in
   16 KB chunks parse in 0.50 ms against 14.6 ms.
+- `onError` is decided at compile time: `"onError"` in `baton.json`, sent
+  with every operation the target compiles. Under `NULL` the fields the
+  schema types non-null are typed by their semantic nullability, so an
+  accessor no longer reads `""` or `0` for a field an error nulled.
+  `Environment.errorBehavior`, a switch at run time that changed what the
+  compiled types meant, is removed.
 - The default fetch policy is `FetchPolicy.default`, `.storeOrNetwork`, as
   Relay's queries default to: the store answers when it can. It was
   `.storeAndNetwork`, spelled in five places, so every attach of every

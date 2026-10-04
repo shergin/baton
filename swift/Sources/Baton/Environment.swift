@@ -15,8 +15,6 @@ public final class Environment {
     public let releaseBufferSize: Int
     /// How long a fetched response stays fresh; `nil` means forever.
     public var queryCacheExpiration: Duration?
-    /// The `onError` behaviour asked of the server, when set.
-    public var errorBehavior: ErrorBehavior?
     /// Called when a `@required(action: LOG)` field is null: the record and
     /// Relay's path. Debug builds print by default.
     public var requiredFieldMissing: ((Record, String) -> Void)?
@@ -108,7 +106,7 @@ public final class Environment {
             text: Op.text,
             persistedID: Op.persistedID,
             variables: variables,
-            errorBehavior: errorBehavior,
+            errorBehavior: Op.errorBehavior,
             incremental: Op.hasDeferred
         )
     }

@@ -325,14 +325,15 @@ struct DeliveryTests {
         #expect(errors.messages == ["not authorized"])
     }
 
-    @Test("onError is sent when the environment asks for it")
+    @Test("onError is sent as the operation names it, and not at all when baton.json names none")
     func errorBehavior() async throws {
         let transport = OneResponse(fixture("character-deferred-1"))
         let environment = Environment(transport: transport)
-        environment.errorBehavior = .null
         _ = try await environment.fetch(TestStrictQuery.self, variables: TestStrictQuery(id: "1").variables)
-        let body = String(decoding: try #require(transport.requests.first?.body), as: UTF8.self)
-        #expect(body.contains("\"onError\":\"NULL\""))
+        _ = try await environment.fetch(TestNullsOnError.self, variables: TestNullsOnError(id: "1").variables)
+        let bodies = transport.requests.map { String(decoding: $0.body, as: UTF8.self) }
+        #expect(!bodies[0].contains("onError"))
+        #expect(bodies[1].contains("\"onError\":\"NULL\""))
         #expect(transport.requests.first?.incremental == false)
     }
 
@@ -681,4 +682,10 @@ final class ChunkedStub: URLProtocol, @unchecked Sendable {
         }
         client?.urlProtocolDidFinishLoading(self)
     }
+}
+
+/// What the compiler emits for an operation when `baton.json` names
+/// `"onError": "NULL"`; the test target's configuration names none.
+extension TestNullsOnError {
+    public static let errorBehavior: ErrorBehavior? = .null
 }

@@ -46,7 +46,9 @@ public struct GraphQLErrors: Error, Sendable, CustomStringConvertible {
 }
 
 /// The `onError` request parameter: how the server should treat field errors.
-/// Sent only when the environment sets it.
+/// Named in `baton.json` and sent with every operation the compiler emits
+/// under it; under `NULL` the compiler types the fields the schema calls
+/// non-null by their semantic nullability.
 public enum ErrorBehavior: String, Sendable {
     /// Errors null the field and bubble to the nearest nullable parent (the default).
     case propagate = "PROPAGATE"

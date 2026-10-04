@@ -52,6 +52,13 @@ struct DeliveryDocuments {
     var strictQuery: TestStrictQuery
 
     @Query("""
+        query TestNullsOnError($id: ID!) {
+          character(id: $id) { name }
+        }
+        """)
+    var nullsOnError: TestNullsOnError
+
+    @Query("""
         query TestRosterQuery($page: Int) {
           characters(page: $page) {
             results { id name status @required(action: NONE) }

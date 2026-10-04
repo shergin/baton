@@ -128,6 +128,8 @@ pub struct OperationPlan {
     pub bubbles: bool,
     /// Whether any part of the response may arrive incrementally.
     pub has_deferred: bool,
+    /// The `onError` value `baton.json` names, as `Baton.ErrorBehavior`'s case.
+    pub error_behavior: Option<String>,
     pub reader: Vec<SelectionPlan>,
     pub normalization: Vec<SelectionPlan>,
 }
@@ -721,6 +723,9 @@ fn lower(
                     .is_some()
             }),
             has_deferred: has_deferred(&normalization),
+            error_behavior: config
+                .on_error
+                .map(|behavior| behavior.swift_case().to_string()),
             reader,
             normalization,
         });
@@ -1005,9 +1010,24 @@ impl Lowering<'_> {
             .is_some()
     }
 
-    /// `@semanticNonNull` makes a nullable field non-null in the absence of errors.
+    /// `@semanticNonNull` makes a nullable field non-null in the absence of
+    /// errors; under `onError: NULL` every field the schema types non-null is
+    /// one too, since an error nulls it in place.
     fn semantic_non_null(&self, definition: &schema::definitions::Field) -> bool {
+        if self.nulls_on_error() && definition.type_.is_non_null() {
+            return true;
+        }
         !definition.type_.is_non_null() && definition.semantic_type().is_non_null()
+    }
+
+    /// Whether a field the schema types non-null is non-null in the response:
+    /// not under `onError: NULL`, where an error nulls it.
+    fn non_null(&self, definition: &schema::definitions::Field) -> bool {
+        definition.type_.is_non_null() && !self.nulls_on_error()
+    }
+
+    fn nulls_on_error(&self) -> bool {
+        self.config.on_error == Some(crate::config::OnError::Null)
     }
 
     fn selections(
@@ -1033,7 +1053,7 @@ impl Lowering<'_> {
                             .lookup()
                             .to_string(),
                         base_kind: self.type_kind(definition.type_.inner()),
-                        non_null: definition.type_.is_non_null(),
+                        non_null: self.non_null(definition),
                         semantic_non_null: self.semantic_non_null(definition),
                         list: definition.type_.is_list(),
                         storage_key: storage_key(definition.name.item.lookup(), &field.arguments),
@@ -1145,7 +1165,7 @@ impl Lowering<'_> {
                         type_name: self.type_reference_name(&definition.type_),
                         base_type: self.schema.get_type_name(target).lookup().to_string(),
                         base_kind: self.type_kind(target),
-                        non_null: definition.type_.is_non_null(),
+                        non_null: self.non_null(definition),
                         semantic_non_null: self.semantic_non_null(definition),
                         plural: definition.type_.is_list(),
                         has_id: self.type_has_id(target),

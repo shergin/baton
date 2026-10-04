@@ -34,6 +34,8 @@ public protocol Operation: Hashable, Sendable {
     static var bubbles: Bool { get }
     /// Whether the response may arrive in parts (`@defer`).
     static var hasDeferred: Bool { get }
+    /// The `onError` value `baton.json` names, sent with every request.
+    static var errorBehavior: ErrorBehavior? { get }
     var variables: Variables { get }
 }
 
@@ -57,6 +59,7 @@ extension Operation {
     public static var throwsOnFieldError: Bool { false }
     public static var bubbles: Bool { false }
     public static var hasDeferred: Bool { false }
+    public static var errorBehavior: ErrorBehavior? { nil }
 }
 
 /// The state of a resolved operation. Always synchronously readable.

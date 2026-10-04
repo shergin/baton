@@ -18,6 +18,26 @@ pub struct Lookup {
     pub argument: String,
 }
 
+/// The GraphQL specification's `onError` values.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Deserialize)]
+#[serde(rename_all = "UPPERCASE")]
+pub enum OnError {
+    Propagate,
+    Null,
+    Abort,
+}
+
+impl OnError {
+    /// The case of `Baton.ErrorBehavior` that names it.
+    pub fn swift_case(self) -> &'static str {
+        match self {
+            OnError::Propagate => "propagate",
+            OnError::Null => "null",
+            OnError::Abort => "abort",
+        }
+    }
+}
+
 #[derive(Debug, Clone, Default, serde::Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Config {
@@ -26,6 +46,12 @@ pub struct Config {
     pub schema: String,
     #[serde(default)]
     pub lookups: Vec<Lookup>,
+    /// The `onError` request parameter every operation sends: `PROPAGATE`,
+    /// `NULL` or `ABORT`. Under `NULL` a server nulls an errored field in
+    /// place, so a field the schema types non-null is typed by its semantic
+    /// nullability: non-null only where errors are handled.
+    #[serde(rename = "onError", default)]
+    pub on_error: Option<OnError>,
     /// Where the configuration was read from, for its diagnostics.
     #[serde(skip)]
     pub path: PathBuf,

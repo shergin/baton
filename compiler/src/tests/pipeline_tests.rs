@@ -250,3 +250,38 @@ fn an_error_in_a_selection_is_told_once_though_the_operation_is_lowered_twice() 
     };
     assert_eq!(errors.len(), 1, "{errors:?}");
 }
+
+#[test]
+fn on_error_null_sends_the_value_and_types_non_null_fields_by_their_semantic_nullability() {
+    let (sdl, path) = schema();
+    let mut config: Config =
+        serde_json::from_str(r#"{"onError": "NULL"}"#).expect("the configuration parses");
+    config.path = PathBuf::from("baton.json");
+    let text = "query Probe { character(id: \"1\") { name notes(first: 1) @connection(key: \"Probe_notes\") { totalCount edges { node { id } } } } }";
+    let compiled = compile(&sdl, &path, &[document(text)], &config)
+        .unwrap_or_else(|errors| panic!("{errors:?}"));
+    let operation = &compiled.plan.operations[0];
+    assert_eq!(operation.error_behavior.as_deref(), Some("null"));
+    let output = crate::emit::emit(&compiled.plan);
+    let file = output
+        .files
+        .values()
+        .next()
+        .expect("the operation has a file");
+    assert!(file.contains("public static let errorBehavior: Baton.ErrorBehavior? = .null"));
+    assert!(
+        file.contains("public var totalCount: Int? {"),
+        "`Int!` reads optional outside `@catch` and `@throwOnFieldError`"
+    );
+
+    let plain = compile(&sdl, &path, &[document(text)], &Config::default())
+        .unwrap_or_else(|errors| panic!("{errors:?}"));
+    let plain_file = crate::emit::emit(&plain.plan);
+    let plain_file = plain_file
+        .files
+        .values()
+        .next()
+        .expect("the operation has a file");
+    assert!(!plain_file.contains("errorBehavior"));
+    assert!(plain_file.contains("public var totalCount: Int {"));
+}

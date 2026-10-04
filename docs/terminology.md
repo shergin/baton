@@ -256,8 +256,12 @@ payload work. `SubscriptionTransport` is the protocol;
 `GraphQLTransportWebSocket` speaks `graphql-transport-ws`.
 
 **Error behavior.** The GraphQL spec's `onError` request parameter
-(`PROPAGATE`, `NULL`, `ABORT`). Here: `Environment.errorBehavior`, sent when
-set and never inferred.
+(`PROPAGATE`, `NULL`, `ABORT`). Here: `"onError"` in `baton.json`, decided at
+compile time and sent with every operation the target compiles; never
+inferred. Under `NULL` an error nulls a field in place, so the compiler
+types the fields the schema calls non-null by their semantic nullability:
+non-optional under `@throwOnFieldError` and inside `@catch`, optional
+elsewhere.
 
 **Ingest.** The off-main-actor stage that decodes response bytes straight into
 a change set by following a plan.

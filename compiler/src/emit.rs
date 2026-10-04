@@ -419,6 +419,12 @@ impl Emitter {
             "    public static let persistedID = \"{}\"",
             operation.id
         );
+        if let Some(behavior) = &operation.error_behavior {
+            let _ = writeln!(
+                output,
+                "    public static let errorBehavior: Baton.ErrorBehavior? = .{behavior}"
+            );
+        }
         if operation.throws_on_field_error {
             output.push_str("    public static let throwsOnFieldError = true\n");
         }
