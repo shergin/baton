@@ -586,16 +586,6 @@ func persistenceBench(changes: ChangeSet, edited: ChangeSet, plan: ResolvedSelec
         precondition(hydrated.check(plan) != .miss)
     }
 
-    await measureEach("hydration right behind a commit of 899 records") {
-        Store(persistence: persistence).commit(changes)
-        let store = Store(persistence: persistence)
-        let start = now()
-        precondition(store.check(plan) != .miss)
-        let elapsed = now() - start
-        await persistence.flush()
-        return elapsed
-    }
-
     // A launch: this program again, as a process that has never touched
     // SQLite, answering the fixture from the image. Once asking the moment
     // the image's handle exists, so the main actor pays for the open too;

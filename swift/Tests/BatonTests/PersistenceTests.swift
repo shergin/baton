@@ -283,6 +283,15 @@ struct PersistenceTests {
         #expect(transport.requestCount == 4)
     }
 
+    @Test("records whose rows wait to be written survive a collection, so a check right behind a commit finds them")
+    func unwrittenRecordsStay() async throws {
+        let environment = launch()
+        environment.store.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables)))
+        environment.collect()
+        #expect(environment.store.check(Fixture.plan.resolve(Fixture(page: 1).variables)) != .miss)
+        await finish(environment)
+    }
+
     @Test("data read every launch keeps its age: expired in the second launch, still dated and fresh in the third")
     func ageReadEveryLaunch() async throws {
         let transport = RecordedTransport { _ in fixtureData }

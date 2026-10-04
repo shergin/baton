@@ -151,14 +151,15 @@ public final class Persistence: Sendable {
         enqueue(.invalidate)
     }
 
-    /// Runs `body` holding the connection, inside one read transaction, after
-    /// everything queued has been written: a read never sees less than memory
-    /// once knew. False when the file cannot be opened.
+    /// Runs `body` holding the connection, inside one read transaction. It
+    /// writes nothing first: a batch the writer is writing lands before the
+    /// lock is had, and the records of a batch still queued are kept in
+    /// memory by the collector, so a read never meets an older row than
+    /// memory held. False when the file cannot be opened.
     func reading(_ body: (Disk) -> Bool) -> Bool {
         var used: Work?
         let result = disk.withLock { disk in
             guard opened(disk) else { return false }
-            disk.write(take())
             guard disk.beginRead() else { return false }
             let result = body(disk)
             used = disk.endRead()
@@ -166,6 +167,17 @@ public final class Persistence: Sendable {
         }
         if let used { enqueue(used) }
         return result
+    }
+
+    /// The records whose snapshots wait in the queue, which the collector
+    /// keeps until they are written.
+    func unwrittenRecords() -> [Record] {
+        pending.withLock { pending in
+            pending.work.flatMap { work -> [Record] in
+                guard case .commit(let records, _) = work else { return [] }
+                return records.map(\.record)
+            }
+        }
     }
 
     // MARK: The writer

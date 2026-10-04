@@ -321,6 +321,11 @@ public final class Environment {
         for handle in handles.values {
             handle.mark(into: &reachable)
         }
+        // Records whose rows wait to be written stay, so the image, which a
+        // read does not write first, is never older than memory.
+        for record in store.persistence?.unwrittenRecords() ?? [] {
+            reachable.insert(ObjectIdentifier(record))
+        }
         // Records an optimistic layer wrote stay until the layer is resolved.
         for layer in store.optimisticLayers {
             for key in layer.changes.recordKeys {
