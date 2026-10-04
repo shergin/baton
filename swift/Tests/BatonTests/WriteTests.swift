@@ -153,6 +153,21 @@ struct WriteTests {
         #expect(favorited.setFavorite?.character?.favorite == true, "the three renames took one place, so the earlier mutation keeps its payload")
     }
 
+    @Test("an earlier completion of a mutation with other variables keeps the records its own selection reaches through a collection")
+    func mutationWithOtherVariablesKeepsItsOwnPlace() async throws {
+        let transport = RecordedTransport { request in
+            if case .bool(true)? = request.variables["withOrigin"] { return fixture("rename-1-origin") }
+            return fixture("rename-1")
+        }
+        let environment = Environment(transport: transport)
+        environment.store.reportMissing = nil
+        let first = try await environment.mutate(TestRenameWithOrigin(id: "1", name: "Rick Prime", withOrigin: true))
+        _ = try await environment.mutate(TestRenameWithOrigin(id: "1", name: "Rick Prime", withOrigin: false))
+        environment.collect()
+        #expect(environment.store.existing("Location:L1") != nil, "only the first completion's selection reaches the origin")
+        #expect(first.rename?.character?.origin?.name == "Earth (C-137)")
+    }
+
     @Test("a mutation pushed out of the buffer has its payload collected without a call to collect")
     func mutationPushedOutIsCollected() async throws {
         let environment = Environment(transport: RecordedTransport([TestRename.name: fixture("rename-1"), TestSetFavorite.name: fixture("set-favorite-1")]), releaseBufferSize: 1)

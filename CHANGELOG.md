@@ -427,7 +427,7 @@ are expected and listed without apology.
 - Completed mutations take no place in the release buffer. Each one
   took a place of its own, so ten mutations pushed out the query of a
   screen the user had left, and going back to it loaded and fetched again.
-  The environment keeps them apart, one per mutation name and as many as
+  The environment keeps them apart, one per operation value and as many as
   `releaseBufferSize`, and one pushed out is collected at once; its records
   stayed until some unrelated release scheduled a collection.
 - A subscription that opens the WebSocket just after the last one closed

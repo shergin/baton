@@ -22,7 +22,7 @@ public final class Environment {
 
     private var handles: [AnyHashable: any AnyOperationHandle] = [:]
     private var releaseBuffer: [AnyHashable] = []
-    /// The mutations that completed, oldest first and one per name.
+    /// The mutations that completed, oldest first and one per operation value.
     private var completedMutations: [CompletedMutation] = []
     private var collectionScheduled = false
     /// How many collections have run; for tests and benchmarks.
@@ -232,8 +232,9 @@ public final class Environment {
     /// mutation's own plan and applied as a layer first; the server's payload
     /// then replaces it in one batch, or the layer is reverted on failure.
     /// The data returned reads the mutation root: its payload stays alive
-    /// until `releaseBufferSize` mutations of other names complete after it,
-    /// and then reads only the records other roots keep.
+    /// until `releaseBufferSize` completions of other operation values follow
+    /// it, and then reads only the records other roots keep. A completion of
+    /// an equal value, the same name and variables, takes its place.
     public func mutate<Op: Mutation>(_ operation: Op, optimistic: Variable? = nil) async throws -> Op.Data {
         let resolved = Op.plan.resolve(operation.variables)
         var layer: UUID?
@@ -262,7 +263,7 @@ public final class Environment {
             if let layer { store.revertOptimistic(layer) }
             throw error
         }
-        keep(CompletedMutation(name: Op.name, store: store, resolved: resolved))
+        keep(CompletedMutation(key: AnyHashable(operation), store: store, resolved: resolved))
         if Op.throwsOnFieldError, !uncaught.isEmpty { throw FieldErrors(uncaught) }
         return Op.Data(anchor: Anchor(record: store.mutationRoot, variables: operation.variables, store: store))
     }
@@ -309,10 +310,13 @@ public final class Environment {
     /// Keeps a completed mutation's payload alive as a root, apart from the
     /// release buffer, so mutations push no released query out of it. A
     /// mutation's root fields are keyed by response key, so an earlier
-    /// completion of the same mutation keeps what the latest one does, and
-    /// the latest takes its place.
+    /// completion of an equal operation value, whose selection is the same,
+    /// keeps what the latest one does, and the latest takes its place. One
+    /// with other variables keeps its own: its selection may reach records
+    /// the latest one's does not, through `@include`, `@skip` or an argument
+    /// below the root field.
     private func keep(_ completed: CompletedMutation) {
-        completedMutations.removeAll { $0.name == completed.name }
+        completedMutations.removeAll { $0.key == completed.key }
         completedMutations.append(completed)
         guard completedMutations.count > releaseBufferSize else { return }
         completedMutations.removeFirst(completedMutations.count - releaseBufferSize)

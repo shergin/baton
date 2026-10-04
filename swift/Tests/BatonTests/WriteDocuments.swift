@@ -32,6 +32,15 @@ struct WriteDocuments {
         """)
     var rename: TestRename.Action
 
+    @Mutation("""
+        mutation TestRenameWithOrigin($id: ID!, $name: String!, $withOrigin: Boolean!) {
+          rename(id: $id, name: $name) {
+            character { id name origin @include(if: $withOrigin) { id name } }
+          }
+        }
+        """)
+    var renameWithOrigin: TestRenameWithOrigin.Action
+
     @Fragment("""
         fragment TestRenamePayload_mutation on Mutation {
           rename(id: $id, name: $name) {

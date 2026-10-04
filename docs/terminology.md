@@ -173,8 +173,9 @@ entries, and notifies the observed fields that changed.
 **Root, retain, release buffer.** Relay's words. An operation whose handle is
 alive retains its records; a released root waits in a buffer (default ten)
 before its records become collectable. A completed mutation's payload is a
-root apart from the buffer, one per mutation name and as many as the buffer
-holds, so mutations push no released query out.
+root apart from the buffer, one per operation value (its name and
+variables) and as many as the buffer holds, so mutations push no released
+query out.
 
 **Invalidation, TTL.** Relay's and Apollo's shared words. `Environment.invalidate()`
 marks every fetched operation stale and refetches the retained ones;

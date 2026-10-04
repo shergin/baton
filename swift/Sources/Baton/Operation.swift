@@ -109,16 +109,17 @@ protocol AnyOperationHandle: AnyObject {
 /// A mutation that committed, kept by the environment as a root, so the data
 /// `mutate` returned stays readable until later mutations push it out. A
 /// root field of the mutation root holds the latest payload of its field,
-/// and that is what it keeps.
+/// and that is what it keeps, by the selection its own variables resolved.
 @MainActor
 final class CompletedMutation {
-    /// The mutation's name, under which a later completion takes its place.
-    let name: String
+    /// The operation value, under which a later completion of an equal value
+    /// takes its place.
+    let key: AnyHashable
     private let store: Store
     private let resolved: ResolvedSelection
 
-    init(name: String, store: Store, resolved: ResolvedSelection) {
-        self.name = name
+    init(key: AnyHashable, store: Store, resolved: ResolvedSelection) {
+        self.key = key
         self.store = store
         self.resolved = resolved
     }
