@@ -441,6 +441,10 @@ are expected and listed without apology.
   it or starting. The socket stayed open with no subscription on it until a
   later one ended, and without an acknowledgement the subscription's start
   waited for good.
+- A `@required(action: LOG)` field below a placeholder logs nothing. Reads
+  under a placeholder report nothing, since the non-null link above it was
+  reported missing, but a LOG field there still told
+  `Environment.requiredFieldMissing`, naming the placeholder's key.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

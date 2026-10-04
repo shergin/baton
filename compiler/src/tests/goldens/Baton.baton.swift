@@ -60,6 +60,7 @@ nonisolated enum Slots {
         static let notes_7ca442 = Baton.Registry.slot(Types.Character, "notes(after:null,first:3)")
         static let notes_d859b7 = Baton.DynamicKey(Types.Character, [.literal("notes(before:"), .variable("cursor"), .literal(",last:"), .variable("count"), .literal(")")])
         static let notes_94703e = Baton.Registry.slot(Types.Character, "notes(before:null,last:2)")
+        static let notes_f89852 = Baton.Registry.slot(Types.Character, "notes(first:1)")
         static let notes_29a6d8 = Baton.Registry.slot(Types.Character, "notes(first:2)")
         static let origin = Baton.Registry.slot(Types.Character, "origin")
         static let species = Baton.Registry.slot(Types.Character, "species")

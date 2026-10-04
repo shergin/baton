@@ -7,8 +7,9 @@
 public final class Owner {
     nonisolated public let variables: Variables
     nonisolated let store: Store?
-    /// Whether reads in the scope report missing and unexpected values; not
-    /// under a placeholder, whose link reported already.
+    /// Whether reads in the scope report missing and unexpected values and
+    /// log required fields; not under a placeholder, whose link reported
+    /// already.
     nonisolated let reports: Bool
     /// The slot of each key with variables, resolved on first use.
     private var slots: [(key: DynamicKey, slot: Slot)] = []

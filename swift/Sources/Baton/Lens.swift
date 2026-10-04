@@ -244,10 +244,11 @@ extension Anchor {
         }
     }
 
-    /// Reports a `@required(action: LOG)` field that is null; always false, so a
-    /// guard can return it.
+    /// Reports a `@required(action: LOG)` field that is null, unless a
+    /// placeholder holds it, whose link reported already; always false, so
+    /// a guard can return it.
     public func requiredMissing(path: String, log: Bool) -> Bool {
-        if log { store?.environment?.requiredFieldMissing?(record, path) }
+        if log, owner.reports { store?.environment?.requiredFieldMissing?(record, path) }
         return false
     }
 

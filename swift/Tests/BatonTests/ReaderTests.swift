@@ -9,6 +9,7 @@ struct ReaderTests {
     final class Reports: @unchecked Sendable {
         var missing: [String] = []
         var unexpected: [String] = []
+        var logged: [String] = []
     }
 
     func store(_ reports: Reports) -> Store {
@@ -51,6 +52,20 @@ struct ReaderTests {
         #expect(again.pageInfo.anchor.record === notes.pageInfo.anchor.record, "a link below a placeholder reads its type's placeholder too")
         #expect(store.existing(notes.pageInfo.anchor.record.key) == nil)
         #expect(reports.missing.count == 2, "each read of the link reports it once, and nothing below it: \(reports.missing)")
+    }
+
+    @Test("a @required(action: LOG) field below a placeholder logs nothing, as nothing else under it reports: the link above it reported already")
+    func loggedBelowAPlaceholder() throws {
+        let reports = Reports()
+        let environment = Environment(transport: SilentTransport(), store: store(reports))
+        environment.requiredFieldMissing = { record, path in reports.logged.append(record.key + " " + path) }
+        environment.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
+        let record = try #require(environment.store.existing("Character:1"))
+        let character = TestLoggedNotes_character(anchor: Anchor(record: record, variables: .none, store: environment.store))
+
+        #expect(character.notes.testLogEdges == nil, "the placeholder has no edges, so the required field bubbles")
+        #expect(reports.missing == ["Character:1.notes(first:1)"])
+        #expect(reports.logged.isEmpty, "\(reports.logged)")
     }
 
     @Test("a @required link to a record @deleteRecord removed is null: the lens bubbles, a throwing selection collects the error, and a bubbling operation fails")
