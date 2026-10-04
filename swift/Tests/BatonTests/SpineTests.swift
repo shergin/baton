@@ -37,6 +37,17 @@ struct SpineTests {
         #expect(rick.recordID == rickViaEpisode.recordID)
     }
 
+    @Test("a document under the module-qualified marker in a raw literal compiles and reads")
+    func qualifiedMarker() throws {
+        let store = Store()
+        store.reportMissing = nil
+        store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
+        let query = TestQualifiedQuery(id: "1")
+        #expect(store.check(TestQualifiedQuery.plan.resolve(query.variables)) != .miss)
+        let data = TestQualifiedQuery.Data(anchor: Anchor(record: store.root, variables: query.variables, store: store))
+        #expect(data.character?.name == "Rick Sanchez")
+    }
+
     @Test("a character already in the store renders in the first body of its detail")
     func firstBodyFromCache() throws {
         let environment = Environment(transport: SilentTransport())

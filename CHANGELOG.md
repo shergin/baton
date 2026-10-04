@@ -370,6 +370,12 @@ are expected and listed without apology.
   registry, under its lock, for every entity and path key, and reads a
   list of links into a buffer kept per depth rather than a new array per
   list.
+- The compiler reads a marker qualified by the module, `@Baton.Query`,
+  and raw string literals (`#"""` to `"""#`), in which only a backslash
+  followed by the literal's hashes is an escape. A marker whose first
+  argument is labelled, such as SwiftData's `@Query(sort:)`, is another
+  macro of the same name and is left alone; it was an error. The plugin
+  hands the compiler every file that names a marker.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

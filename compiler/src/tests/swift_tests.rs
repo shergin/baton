@@ -119,3 +119,46 @@ fn skips_extra_attribute_arguments_before_the_property() {
         Some("Q")
     );
 }
+
+#[test]
+fn reads_a_qualified_marker_and_raw_literals() {
+    let source = "@Baton.Query(#\"query Q { a(b: \"c\") }\"#) var q: Q\n@Fragment(##\"\"\"\n    fragment F on T { \"#\" a }\n    \"\"\"##) var f: F\n";
+    let (documents, errors) = scan(source);
+    assert!(errors.is_empty(), "{errors:?}");
+    assert_eq!(documents.len(), 2);
+    assert_eq!(documents[0].marker, Marker::Query);
+    assert_eq!(documents[0].text, "query Q { a(b: \"c\") }");
+    assert_eq!(
+        documents[0].start,
+        Position {
+            line: 1,
+            column: 16
+        }
+    );
+    assert_eq!(documents[1].text, "    fragment F on T { \"#\" a }");
+    assert_eq!(documents[1].start, Position { line: 3, column: 1 });
+    assert_eq!(
+        documents[1]
+            .property
+            .as_ref()
+            .map(|property| property.type_name.as_str()),
+        Some("F")
+    );
+}
+
+#[test]
+fn reports_an_escape_in_a_raw_literal_only_with_its_hashes() {
+    let source = "@Query(#\"query Q { a(b: \"\\n\") }\"#) var q: Q\n@Query(#\"query R { \\#(x) }\"#) var r: R\n";
+    let (documents, errors) = scan(source);
+    assert_eq!(documents.len(), 2);
+    assert_eq!(errors.len(), 1, "{errors:?}");
+    assert!(matches!(errors[0], ScanError::EscapeInLiteral { at } if at.line == 2));
+}
+
+#[test]
+fn leaves_a_marker_whose_first_argument_is_labelled_to_its_own_macro() {
+    let source = "@Query(sort: \\Item.name) var items: [Item]\n@Query(filter: #Predicate<Item> { $0.done }) var done: [Item]\n";
+    let (documents, errors) = scan(source);
+    assert!(documents.is_empty(), "{documents:?}");
+    assert!(errors.is_empty(), "{errors:?}");
+}

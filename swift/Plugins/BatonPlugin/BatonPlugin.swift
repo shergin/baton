@@ -60,10 +60,13 @@ struct BatonPlugin: BuildToolPlugin {
         ]
     }
 
-    /// The same rule the compiler applies: a marker attribute followed by a parenthesis.
+    /// Whether a file may declare GraphQL: it names a marker, bare or
+    /// qualified by the module. A superset of what the compiler's scanner
+    /// accepts, which also wants a literal after the parenthesis, so no file
+    /// with a document is left out; a file without one gets a header only.
     private static func declaresGraphQL(_ file: URL) -> Bool {
         guard let text = try? String(contentsOf: file, encoding: .utf8) else { return false }
-        return ["@Fragment(", "@Query(", "@Mutation(", "@Subscription("].contains { text.contains($0) }
+        return ["@Fragment", "@Query", "@Mutation", "@Subscription", "@Baton."].contains { text.contains($0) }
     }
 }
 
