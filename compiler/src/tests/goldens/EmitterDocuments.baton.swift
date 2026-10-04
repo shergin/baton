@@ -822,6 +822,64 @@ fragment TestEdgesNames_character on Character {
     }
 }
 
+/// Operation value for `query TestEscapedText`.
+nonisolated public struct TestEscapedText: Baton.Query {
+    public var resolution: Baton.OperationHandle<Self>? = nil
+
+    public init() {
+    }
+
+    public static let name = "TestEscapedText"
+    public static let persistedID = "e45d6792260fea7beb23f33fa5369c96"
+    public static let text = ##"""
+query TestEscapedText {
+  search(name: "\\#1") {
+    __typename
+    ... on Node {
+      __isNode: __typename
+      id
+    }
+  }
+}
+"""##
+
+    public var variables: Baton.Variables {
+        Baton.Variables([:])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        true
+    }
+
+    public func hash(into hasher: inout Hasher) {
+    }
+
+    public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
+            .linked("search", key: .fixed(Slots.Query.search_b80531), plural: true, selection: Baton.Selection(type: Types.SearchResult, hasID: true, abstract: true, variants: [
+                .init(types: [Types.Character, Types.Episode, Types.Location], fields: [
+                    .scalar("__typename", key: .fixed(Slots.SearchResult.__typename), kind: .string, list: false),
+                    .scalar("id", key: .fixed(Slots.SearchResult.id), kind: .string, list: false),
+                ]),
+                .init(types: nil, fields: [
+                    .scalar("__typename", key: .fixed(Slots.SearchResult.__typename), kind: .string, list: false),
+                ]),
+            ])),
+        ]))
+
+    nonisolated public struct Data: Baton.Lens {
+        public let anchor: Baton.Anchor
+        public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Query"
+        @MainActor public var search: Baton.List<Search>? { anchor.list(Slots.Query.search_b80531) }
+
+        nonisolated public struct Search: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "SearchResult"
+        }
+    }
+}
+
 /// Operation value for `query TestProgramNamesQuery`.
 nonisolated public struct TestProgramNamesQuery: Baton.Query {
     public var id: String

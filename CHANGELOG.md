@@ -592,6 +592,11 @@ are expected and listed without apology.
   report it, and a fragment named `Baton` hid the runtime's module from the
   generated code. A clash between two names the compiler chose stays an
   internal error.
+- An operation's `text` is a raw literal delimited by one `#` more than the
+  longest run of them in the text. A document in a raw literal of two or
+  more hashes can hold `\#`, as in `search(name: "\\#1")`, which the
+  literal of one hash read as an escape, and the generated code did not
+  compile.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

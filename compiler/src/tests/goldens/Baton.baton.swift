@@ -153,6 +153,7 @@ nonisolated enum Slots {
         static let namesake_9b6471 = Baton.DynamicKey(Types.Query, [.literal("namesake(name:"), .variable("name"), .literal(")")])
         static let node_8f7d08 = Baton.DynamicKey(Types.Query, [.literal("node(id:"), .variable("id"), .literal(")")])
         static let search_6286a6 = Baton.Registry.slot(Types.Query, "search(name:\"$0.00\")")
+        static let search_b80531 = Baton.Registry.slot(Types.Query, "search(name:\"\\\\\\\\#1\")")
         static let search_823c67 = Baton.DynamicKey(Types.Query, [.literal("search(name:"), .variable("in"), .literal(")")])
         static let search_954c44 = Baton.DynamicKey(Types.Query, [.literal("search(name:"), .variable("name"), .literal(")")])
         static let tokenizer = Baton.Registry.slot(Types.Query, "tokenizer")

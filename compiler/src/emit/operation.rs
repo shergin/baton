@@ -6,7 +6,7 @@ use std::fmt::Write as _;
 use super::builder::builder;
 use super::lens::lens;
 use super::plan::selection_plan;
-use super::swift::parameter;
+use super::swift::{parameter, raw_multiline_literal};
 use crate::decide::{OperationValue, VariableValue};
 use crate::names::{call_label, escape};
 use crate::pipeline::OperationKind;
@@ -85,8 +85,8 @@ pub(super) fn operation_text(operation: &OperationValue) -> String {
     }
     let _ = writeln!(
         output,
-        "    public static let text = #\"\"\"\n{}\n\"\"\"#\n",
-        operation.text
+        "    public static let text = {}\n",
+        raw_multiline_literal(&operation.text)
     );
     output.push_str("    public var variables: Baton.Variables {\n        Baton.Variables([");
     if operation.variables.is_empty() {

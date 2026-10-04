@@ -143,4 +143,9 @@ struct EmitterTests {
         #expect(data.`self`?.character?.favorite == true)
         #expect(data.sendable?.character?.favorite == true)
     }
+
+    @Test("an operation whose text holds a backslash before a hash compiles, and its text holds both as the document wrote them")
+    func textWithBackslashBeforeHash() {
+        #expect(TestEscapedText.text.contains(##"search(name: "\\#1")"##))
+    }
 }

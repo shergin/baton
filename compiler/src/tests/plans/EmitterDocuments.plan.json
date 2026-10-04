@@ -3159,6 +3159,203 @@
       ]
     },
     {
+      "name": "TestEscapedText",
+      "source": "swift/Tests/BatonTests/EmitterDocuments.swift",
+      "document": 10,
+      "kind": "query",
+      "root_type": "Query",
+      "variables": [],
+      "text": "query TestEscapedText {\n  search(name: \"\\\\#1\") {\n    __typename\n    ... on Node {\n      __isNode: __typename\n      id\n    }\n  }\n}",
+      "id": "e45d6792260fea7beb23f33fa5369c96",
+      "throws_on_field_error": false,
+      "bubbles": false,
+      "has_deferred": false,
+      "error_behavior": null,
+      "reader": [
+        {
+          "kind": "linked",
+          "name": "search",
+          "alias": null,
+          "type_name": "[SearchResult]",
+          "base_type": "SearchResult",
+          "base_kind": "union",
+          "non_null": false,
+          "semantic_non_null": false,
+          "plural": true,
+          "has_id": true,
+          "is_abstract": true,
+          "possible_types": [
+            "Character",
+            "Episode",
+            "Location"
+          ],
+          "storage_key": {
+            "name": "search",
+            "arguments": [
+              {
+                "name": "name",
+                "value": {
+                  "kind": "constant",
+                  "value": {
+                    "kind": "string",
+                    "value": "\\\\#1"
+                  }
+                }
+              }
+            ]
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "__typename",
+              "alias": null,
+              "type_name": "String!",
+              "base_type": "String",
+              "base_kind": "string",
+              "non_null": true,
+              "semantic_non_null": false,
+              "list": false,
+              "storage_key": {
+                "name": "__typename",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            }
+          ]
+        }
+      ],
+      "normalization": [
+        {
+          "kind": "linked",
+          "name": "search",
+          "alias": null,
+          "type_name": "[SearchResult]",
+          "base_type": "SearchResult",
+          "base_kind": "union",
+          "non_null": false,
+          "semantic_non_null": false,
+          "plural": true,
+          "has_id": true,
+          "is_abstract": true,
+          "possible_types": [
+            "Character",
+            "Episode",
+            "Location"
+          ],
+          "storage_key": {
+            "name": "search",
+            "arguments": [
+              {
+                "name": "name",
+                "value": {
+                  "kind": "constant",
+                  "value": {
+                    "kind": "string",
+                    "value": "\\\\#1"
+                  }
+                }
+              }
+            ]
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "__typename",
+              "alias": null,
+              "type_name": "String!",
+              "base_type": "String",
+              "base_kind": "string",
+              "non_null": true,
+              "semantic_non_null": false,
+              "list": false,
+              "storage_key": {
+                "name": "__typename",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "inline",
+              "type_condition": "Node",
+              "condition_types": [
+                "Character",
+                "Episode",
+                "Location",
+                "Note"
+              ],
+              "condition_class": {
+                "kind": "always"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "__typename",
+                  "alias": "__isNode",
+                  "type_name": "String!",
+                  "base_type": "String",
+                  "base_kind": "string",
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "list": false,
+                  "storage_key": {
+                    "name": "__typename",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type_name": "ID",
+                  "base_type": "ID",
+                  "base_kind": "id",
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "list": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "TestProgramNamesQuery",
       "source": "swift/Tests/BatonTests/EmitterDocuments.swift",
       "document": 5,

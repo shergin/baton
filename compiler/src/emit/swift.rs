@@ -20,6 +20,20 @@ pub(super) fn swift_literal(text: &str) -> String {
     output
 }
 
+/// A raw multi-line Swift string literal holding `text` as it is. Its
+/// delimiter takes one `#` more than the longest run of them in the text,
+/// so no backslash in the text starts an escape and no `"""` ends the
+/// literal.
+pub(super) fn raw_multiline_literal(text: &str) -> String {
+    let longest = text
+        .split(|character| character != '#')
+        .map(str::len)
+        .max()
+        .unwrap_or(0);
+    let hashes = "#".repeat(longest + 1);
+    format!("{hashes}\"\"\"\n{text}\n\"\"\"{hashes}")
+}
+
 /// A `Baton.Variable` expression for a constant.
 pub(super) fn variable_literal(constant: &ConstantPlan) -> String {
     match constant {
