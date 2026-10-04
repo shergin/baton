@@ -153,8 +153,9 @@ and an edge directive in a plan is an [edit](#lists).
 ready, or failed. Always synchronously readable; previous data stays visible
 while refreshing, and `isRefreshing` says a fetch runs behind it: behind
 ready data, or behind a failure on field errors or a `@required` null, whose
-data is in the store. Named after `AsyncImagePhase`, the platform's own word
-for the same shape.
+data is in the store, which `retry()` leaves in place as a refetch does;
+after any other failure a retry shows loading. Named after
+`AsyncImagePhase`, the platform's own word for the same shape.
 
 **Action.** *Composition: lens, operation value, environment.* A mutation as
 a callable value, after SwiftUI's `dismiss` and `openURL`: called with one

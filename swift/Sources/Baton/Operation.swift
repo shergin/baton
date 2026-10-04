@@ -89,7 +89,9 @@ extension Query {
     /// failure is thrown here rather than shown in place of it.
     @MainActor public func refetch() async throws { try await resolution?.refetch() }
 
-    /// After a failure, fetches again.
+    /// After a failure, fetches again. A failure on field errors or a
+    /// `@required` null keeps its data visible meanwhile, as a refetch does;
+    /// any other shows loading.
     @MainActor public func retry() { resolution?.retry() }
 }
 
@@ -395,8 +397,18 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
         _ = await task?.value
     }
 
+    /// After a failure, fetches again. A failure on field errors or a
+    /// `@required` null stays in place, its data visible, and the fetch
+    /// refreshes behind it as `refetch()` does: a fetch that fails at the
+    /// transport leaves it for a later commit or attach to settle. Any other
+    /// failure shows loading meanwhile.
     public func retry() {
-        if case .failed = phase { phase = .loading }
+        switch phase {
+        case .ready, .loading, .failed(is FieldErrors), .failed(is RequiredFieldError):
+            break
+        case .failed:
+            phase = .loading
+        }
         start()
     }
 

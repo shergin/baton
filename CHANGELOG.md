@@ -590,10 +590,13 @@ are expected and listed without apology.
   recorded for the operation, describes itself by what went wrong; it
   read `HTTP 0: ...`. Its `statusCode` is still 0, now documented as no
   response.
-- `isRefreshing` is true while an operation that failed on field errors or
-  a `@required` null, with its data in the store, fetches again. It was set
-  only behind ready data, so a view showing that data and the failure did
-  not see the refetch.
+- `isRefreshing` is true while an operation that failed on field errors or a
+  `@required` null, with its data in the store, fetches again, and `retry()`
+  leaves such a failure in place, its data visible, as `refetch()` does.
+  `isRefreshing` was set only behind ready data, so a view showing that data
+  and the failure did not see the refetch; `retry()` showed loading over the
+  data, and when its fetch failed at the transport the failure became the
+  transport's, which no later commit could clear.
 - A name the document chose that the generated code needs is an error at
   that name, which says what it clashes with and asks for an alias or a
   rename: a variable named `variables`, or `resolution` in a query or a
