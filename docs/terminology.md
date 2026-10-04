@@ -231,6 +231,15 @@ layers never reach it. `Persistence(url:)` or `Persistence(name:)`, handed
 to `Store(persistence:)`. It is a cache: an image of another format or
 `version`, a corrupt one and one over its size limit are deleted and started
 again, and a record that goes a whole launch unread is dropped at the next.
+**Persistence, image.** Baton's words; Relay's store lives in memory. The
+image is the store's records in one SQLite file, written behind every commit
+of server data, off the main actor: a row per record, the query root a row
+per field, each operation's fetch time. Optimistic layers never reach it.
+`Persistence(url:)` or `Persistence(name:)`, handed to `Store(persistence:)`.
+It is a cache: an image of another format or `version`, a corrupt one and one
+over its size limit are deleted and started again, and a record that goes a
+whole launch unread is dropped at the next. One image in a process holds a
+file; a second made on it runs without it, and `close()` hands it over.
 
 **Hydration.** *Composition: store, plan.* The web's word for filling a
 client's state from stored data. Here: the availability check reading from

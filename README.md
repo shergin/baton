@@ -214,7 +214,9 @@ and reports schema errors at the GraphQL text.
 To keep the store across launches, give the environment an image:
 `Environment(url: endpoint, persistence: Persistence(name: "Main", version: Types.schemaDigest))`,
 where `Types.schemaDigest` is the generated digest of the schema, so a new
-schema starts the image again; call `removeAll()` on it at sign-out.
+schema starts the image again; call `removeAll()` on it at sign-out, and
+hand the same image to the next environment: one image holds a file, and a
+second made on it while the first lives runs without it.
 
 In this repository:
 

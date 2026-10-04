@@ -1,5 +1,6 @@
 import Foundation
 import SQLite3
+import Synchronization
 
 /// The connection to the image, its prepared statements and the names it
 /// interns. Not thread-safe: `Persistence` holds it behind its lock, and
@@ -24,6 +25,10 @@ final class Disk: @unchecked Sendable {
     static let nameLimit = 65_536
     /// Client fields that describe a request in flight, not data.
     static let requestState: Set<String> = ["__isLoadingNext", "__isLoadingPrevious"]
+    /// The files the process's images hold, by path. One image writes a file
+    /// at a time: a second would interleave its names and generations with
+    /// the first's.
+    private static let held = Mutex<Set<String>>([])
     /// The key prefixes of records that hang off the mutation and the
     /// subscription root by path.
     static let mutationPayloads = Store.mutationRootKey + ":"
@@ -50,9 +55,14 @@ final class Disk: @unchecked Sendable {
     private let sizeLimit: Int
     private var db: OpaquePointer?
     private var retryAfter: UInt64 = 0
-    /// Set when the file is another program's database: the image stays off
-    /// for the process instead of asking again every second.
-    private var foreign = false
+    /// Set when the file is another program's database, or when another
+    /// image in the process holds it: this image stays off for the process,
+    /// leaves the file alone, and does not ask again every second.
+    private var off = false
+    /// Whether this image holds its file among the process's images: from
+    /// its creation, or from the open after a `release()`, until the next
+    /// `release()` or its end.
+    private(set) var holding = false
     /// Whether this process has moved the generation already: a connection
     /// opened again after a failure is the same launch.
     private var launched = false
@@ -105,9 +115,29 @@ final class Disk: @unchecked Sendable {
         self.path = path
         self.version = version
         self.sizeLimit = sizeLimit
+        let claimed = claim()
+        assert(claimed, "another Persistence in this process holds \(path); close() it before making another")
     }
 
-    deinit { close() }
+    deinit {
+        close()
+        letGo()
+    }
+
+    /// Takes the file for this image unless another image holds it, in
+    /// which case this one stays off.
+    private func claim() -> Bool {
+        holding = Disk.held.withLock { $0.insert(path).inserted }
+        if !holding { off = true }
+        return holding
+    }
+
+    /// Gives the file back, for another image to take.
+    private func letGo() {
+        guard holding else { return }
+        holding = false
+        _ = Disk.held.withLock { $0.remove(path) }
+    }
 
     // MARK: Opening
 
@@ -115,7 +145,10 @@ final class Disk: @unchecked Sendable {
     /// started again; any other failure leaves the image off for a second.
     func open() -> Opening {
         if db != nil { return .already }
-        if foreign { return .unavailable }
+        if off { return .unavailable }
+        // A released image takes its file again, unless another took it
+        // over meanwhile.
+        if !holding, !claim() { return .unavailable }
         // An image that missed a batch is behind memory and every launch
         // after: it starts again.
         if FileManager.default.fileExists(atPath: behind) {
@@ -130,7 +163,7 @@ final class Disk: @unchecked Sendable {
             } catch .unreadable where attempt == 0 {
                 discard()
             } catch .foreign {
-                foreign = true
+                off = true
                 break
             } catch {
                 break
@@ -238,11 +271,13 @@ final class Disk: @unchecked Sendable {
         return times
     }
 
-    /// Closes the connection, so another image may open the file: for a
-    /// sign-out's new environment, and for tests that run one launch after
-    /// another. Work that comes later opens it again.
+    /// Closes the connection and gives the file back, so another image may
+    /// take it: for a sign-out's new environment, and for tests that run one
+    /// launch after another. Work that comes later takes it again, unless
+    /// another image has.
     func release() {
         close()
+        letGo()
     }
 
     private func close() {
@@ -269,15 +304,21 @@ final class Disk: @unchecked Sendable {
     /// file could not be opened, and closes the connection: the next open
     /// discards the image rather than serve rows older than memory knew.
     func markBehind() {
-        guard !foreign else { return }
+        guard !off else { return }
         FileManager.default.createFile(atPath: behind, contents: nil)
         close()
     }
 
     /// Deletes the file for a sign-out when it is an image, and leaves a
-    /// database of another kind alone; the next work opens a new one.
+    /// database of another kind, or a file another image holds, alone; the
+    /// next work opens a new one.
     func erase() {
-        if foreign { return }
+        if off { return }
+        // A released image holds its file for the removal alone, so the
+        // next image may still take it.
+        let borrowed = !holding
+        if borrowed, !claim() { return }
+        defer { if borrowed { letGo() } }
         // A file the connection does not hold open is told by its
         // application id first: it may never have been opened.
         if db == nil, !holdsAnImage() { return }

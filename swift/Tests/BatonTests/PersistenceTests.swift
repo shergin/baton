@@ -736,16 +736,107 @@ struct PersistenceTests {
         let opened = Persistence(url: image.url)
         await opened.flush()
         opened.removeAll()
+        await opened.close()
         // Whether a new image's first open or its removal takes the file
         // first is a race; a few rounds give the removal its turn.
         for _ in 0..<12 {
             let fresh = Persistence(url: image.url)
             fresh.removeAll()
-            await fresh.flush()
+            await fresh.close()
         }
         #expect(sqlite3_open_v2(image.url.path, &db, SQLITE_OPEN_READONLY, nil) == SQLITE_OK)
         #expect(sqlite3_exec(db, "SELECT text FROM notes", nil, nil, nil) == SQLITE_OK, "the table is still there")
         sqlite3_close(db)
+    }
+
+    /// The fixture with Morty renamed, as a later response has it.
+    var renamedFixture: Data {
+        Data(String(decoding: fixtureData, as: UTF8.self)
+            .replacingOccurrences(of: "\"name\":\"Morty Smith\"", with: "\"name\":\"Morty C-137\"").utf8)
+    }
+
+    /// Asks `environment`, whose image does not hold the file, for its late
+    /// work on it: a read, a commit and a removal, none of which may touch
+    /// the file.
+    func lateWork(in environment: Environment) async throws {
+        #expect(throws: NotStored.self) { try stored(Fixture(page: 1), in: environment) }
+        environment.store.commit(try Ingest.normalize(renamedFixture, plan: Fixture.plan.resolve(Fixture(page: 1).variables)))
+        await environment.store.persistence?.flush()
+        environment.store.persistence?.removeAll()
+        #expect(FileManager.default.fileExists(atPath: image.url.path), "the file is the other image's")
+    }
+
+    @Test("an image that closed runs without its file once another image has taken it: it reads nothing from it, writes nothing to it and removes nothing")
+    func aClosedImageWhoseFileWasTaken() async throws {
+        let first = launch()
+        await finish(first)
+        let second = launch()
+        second.store.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables)))
+        await second.store.persistence?.flush()
+        try await lateWork(in: first)
+        await finish(first)
+        await finish(second)
+
+        let data = try stored(Fixture(page: 1), in: launch())
+        #expect(data.characters?.results?[1].name == "Morty Smith", "the rows the second image wrote")
+    }
+
+    #if DEBUG
+    @Test("a second image made on a file another image in the process holds stops a debug build where it is made")
+    func aSecondImageStopsADebugBuild() async {
+        // The child process gets the path by value; the macro needs its type.
+        await #expect(processExitsWith: .failure) { [url = image.url as URL] in
+            let first = Persistence(url: url)
+            let second = Persistence(url: url)
+            withExtendedLifetime((first, second)) {}
+        }
+    }
+    #else
+    @Test("a second image made on a file another image in the process holds runs without it, and its close leaves the file to the first")
+    func aSecondImageRunsWithoutTheFile() async throws {
+        let first = launch()
+        first.store.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables)))
+        await first.store.persistence?.flush()
+        let second = launch()
+        try await lateWork(in: second)
+        await finish(second)
+        let third = launch()
+        #expect(throws: NotStored.self) { try stored(Fixture(page: 1), in: third) }
+        await finish(third)
+        await finish(first)
+
+        let data = try stored(Fixture(page: 1), in: launch())
+        #expect(data.characters?.results?[1].name == "Morty Smith", "the rows the first image wrote")
+    }
+    #endif
+
+    @Test("an image that is gone gives its file back, and the next image on the file reads what it wrote")
+    func aGoneImageGivesItsFileBack() async throws {
+        weak var gone: Persistence?
+        do {
+            let environment = launch()
+            gone = environment.store.persistence
+            environment.store.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables)))
+            await environment.store.persistence?.flush()
+        }
+        await until { gone == nil }
+        let data = try stored(Fixture(page: 1), in: launch())
+        #expect(data.characters?.results?[1].name == "Morty Smith")
+    }
+
+    @Test("an image closed right behind its commit gives its file to the next, though the drain the commit scheduled may run after the close")
+    func closedRightBehindACommit() async throws {
+        // Kept alive, so an image that took its file again would keep it.
+        var closed: [Environment] = []
+        for _ in 0..<12 {
+            let environment = launch()
+            try commitUnknown(environment)
+            await finish(environment)
+            closed.append(environment)
+        }
+        try await seed(launch())
+        _ = try stored(Fixture(page: 1), in: launch())
+        withExtendedLifetime(closed) {}
     }
 
     @Test("a file damaged between a commit and a check is a miss, not a crash")

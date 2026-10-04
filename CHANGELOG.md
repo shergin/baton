@@ -561,6 +561,13 @@ are expected and listed without apology.
   a root field with a variable argument reads in 31.6 ns against 28.8 ns,
   and the newest of the session's 2,000 keys in 50.7 ns. `Slot.index` is
   negative for such a key, and `Registry.slotCount` counts both kinds.
+- One image in a process holds its file. A second `Persistence` made on a
+  file another holds runs without the image, as over a database of another
+  kind, and stops a debug build where it is made; it opened a second
+  connection, which moved the generation again and could fail the first's
+  batches on a name both interned. `close()` and the image's end hand the
+  file over; a closed image whose file another has taken reads, writes and
+  removes nothing there.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

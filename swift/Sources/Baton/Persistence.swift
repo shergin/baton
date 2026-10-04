@@ -9,7 +9,10 @@ import Synchronization
 /// lacks. The image is a cache: a file of another format or version, a
 /// corrupt file and a file over its size limit are deleted and started again,
 /// and a record that goes a whole session unread is dropped at the next
-/// launch. One process uses a file at a time.
+/// launch. One process uses a file at a time, and one image in it: a second
+/// image made on a file another holds runs without it, as on a database of
+/// another kind, and stops a debug build where it is made. `close()` and
+/// the image's end hand the file over.
 public final class Persistence: Sendable {
     public let url: URL
     /// The app's own version of what it caches. An image written under
@@ -80,7 +83,7 @@ public final class Persistence: Sendable {
         self.url = url
         self.version = version
         self.sizeLimit = sizeLimit
-        disk = Mutex(Disk(path: url.path, version: version, sizeLimit: sizeLimit))
+        disk = Mutex(Disk(path: url.standardizedFileURL.path, version: version, sizeLimit: sizeLimit))
         Task.detached(priority: .userInitiated) { self.drain() }
     }
 
@@ -98,8 +101,9 @@ public final class Persistence: Sendable {
         await Task.detached(priority: .userInitiated) { self.drain() }.value
     }
 
-    /// Writes what is queued and closes the file: before a new environment
-    /// takes it over, as at a sign-out. Work queued later opens it again.
+    /// Writes what is queued, closes the file and gives it back, so a new
+    /// image may take it over, as at a sign-out. Work queued later opens it
+    /// again, unless another image has taken it.
     public func close() async {
         await Task.detached(priority: .userInitiated) {
             self.drain()
@@ -245,6 +249,10 @@ public final class Persistence: Sendable {
     private func drain() {
         disk.withLock { disk in
             let work = take()
+            // An image that gave its file back takes it again for work, not
+            // to be ready for it: the open its creation scheduled, or a
+            // drain behind `close()`, must not take it from the next image.
+            if work.isEmpty, !disk.holding { return }
             guard opened(disk) else {
                 // Work the file could not take is lost: the image is behind.
                 if !work.isEmpty { disk.markBehind() }
