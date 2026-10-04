@@ -258,8 +258,9 @@ are expected and listed without apology.
   the writer's whole queue on the main actor before reading, and every
   launch's first reads queued stamps that the next check then wrote there.
   A batch being written lands before a read takes the file, and the
-  records of a batch still queued are kept by the collector until written,
-  so a read never meets a row older than memory held.
+  records of a batch still queued, with those its root fields link to, are
+  kept by the collector until written, so a read never meets a row older
+  than memory held.
 - Data read every launch keeps its age. A fetch time was kept only by the
   fetch that wrote it, so data an app read from the image at every launch
   without fetching went stale at every second launch; a launch that reads

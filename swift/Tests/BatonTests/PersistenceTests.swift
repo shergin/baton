@@ -381,6 +381,67 @@ struct PersistenceTests {
         await finish(environment)
     }
 
+    /// The plan of the header query for a character.
+    func header(_ id: String) -> ResolvedSelection {
+        TestHeaderQuery.plan.resolve(TestHeaderQuery(id: id).variables)
+    }
+
+    /// Commits the root field `whileTheWriterWaits` reads: a character the
+    /// server does not know, which the image holds as null.
+    func commitUnknown(_ environment: Environment) throws {
+        environment.store.commit(try Ingest.normalize(fixture("character-null"), plan: header("999")))
+    }
+
+    /// Runs `body` while a check holds the image's connection, which the
+    /// writer waits for: what `body` commits is queued and not written until
+    /// it returns, the window between a commit and its write held open. The
+    /// check reads the field `commitUnknown` wrote in an earlier launch and
+    /// this one has not read; memory cannot answer a null, so it comes from
+    /// the image, and the field's observer runs `body`.
+    func whileTheWriterWaits(in environment: Environment, _ body: @escaping @MainActor () -> Void) {
+        let store = environment.store
+        let plan = header("999")
+        let slot = plan.variant(for: store.root.type).fields[0].slot
+        let runs = Notifications()
+        withObservationTracking { _ = store.root.read(slot) } onChange: {
+            MainActor.assumeIsolated {
+                runs.fired += 1
+                body()
+            }
+        }
+        _ = store.check(plan)
+        #expect(runs.fired == 1 && store.root.read(slot) == .null, "the check read the root field from the image")
+    }
+
+    @Test("a root field's new link keeps its record through a collection until the field's row is written, so a check does not read the row before it")
+    func aQueuedRootLinkKeepsItsRecord() async throws {
+        let first = launch()
+        first.store.commit(try Ingest.normalize(fixture("character-null"), plan: header("5")))
+        try commitUnknown(first)
+        try await seed(first)
+
+        let second = launch(releaseBufferSize: 0)
+        let list = second.handle(for: Fixture(page: 1), fetchPolicy: .storeOnly)
+        guard case .ready = list.phase else {
+            Issue.record("expected the image's data, got \(list.phase)")
+            return
+        }
+        list.retain()
+        let detail = header("5")
+        let jerry = try Ingest.normalize(fixture("character-header-5"), plan: detail)
+        whileTheWriterWaits(in: second) {
+            // The list read Jerry as the answer has him: only the root field
+            // moves, and the batch holds no snapshot of him.
+            #expect(second.store.commit(jerry) == 1)
+            list.release()
+            second.collect()
+            _ = second.store.check(detail)
+        }
+        let data = try stored(TestHeaderQuery(id: "5"), in: second)
+        #expect(data.character?.testHeader.name == "Jerry Smith", "the image's row of the field, not yet written, says null")
+        await finish(second)
+    }
+
     @Test("data read every launch keeps its age: expired in the second launch, still dated and fresh in the third")
     func ageReadEveryLaunch() async throws {
         let transport = RecordedTransport { _ in fixtureData }
