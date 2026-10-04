@@ -93,7 +93,7 @@ struct ReaderTests {
         #expect(caught.errors.map(\.message) == ["appearances unavailable"])
     }
 
-    @Test("a deferred spread the server could not deliver, with a field under no @catch, reports each error it sent once, and in a handle is the spread's to weigh however many it sent", arguments: [
+    @Test("a deferred spread the server could not deliver, with a field under no @catch, reports each error it sent once, and in a handle or a throwing fetch is the spread's to weigh however many it sent", arguments: [
         ("character-deferred-2-failed", ["appearances unavailable"]),
         ("character-deferred-2-failed-twice", ["appearances unavailable", "episodes timed out"]),
     ])
@@ -103,7 +103,7 @@ struct ReaderTests {
         environment.store.reportMissing = nil
         let query = TestUncaughtPartQuery(id: "1")
         #expect(try await environment.fetch(TestUncaughtPartQuery.self, variables: query.variables).map(\.message) == sent)
-        await #expect(throws: FieldErrors.self) { try await environment.fetch(query) }
+        try await environment.fetch(query)
 
         let handle = environment.handle(for: query)
         handle.retain()
