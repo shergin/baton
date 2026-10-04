@@ -335,8 +335,6 @@ pub struct RefetchMembers {
     pub after: Option<String>,
     pub last: Option<String>,
     pub before: Option<String>,
-    /// The fragment whose descriptor it is.
-    pub owner: String,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -646,7 +644,7 @@ impl Readers {
         let refetch = context
             .refetch
             .filter(|_| is_fragment_root)
-            .map(|refetch| refetch_members(refetch, context));
+            .map(refetch_members);
         let connection = connection.map(|connection| {
             self.connection_members(connection, type_name, &members, facts.nodes, context)
         });
@@ -1229,7 +1227,7 @@ impl Readers {
 
 /// The `@refetchable` surface of a fragment lens: the descriptor of its
 /// query and `refetch()`.
-fn refetch_members(refetch: &RefetchPlan, context: Context<'_>) -> RefetchMembers {
+fn refetch_members(refetch: &RefetchPlan) -> RefetchMembers {
     let pagination = refetch.connection.as_ref();
     RefetchMembers {
         operation: refetch.operation.clone(),
@@ -1239,7 +1237,6 @@ fn refetch_members(refetch: &RefetchPlan, context: Context<'_>) -> RefetchMember
         after: pagination.and_then(|pagination| pagination.after.clone()),
         last: pagination.and_then(|pagination| pagination.last.clone()),
         before: pagination.and_then(|pagination| pagination.before.clone()),
-        owner: context.owner.to_string(),
     }
 }
 

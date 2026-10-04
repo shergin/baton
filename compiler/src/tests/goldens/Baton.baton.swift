@@ -5,7 +5,7 @@
 nonisolated enum Types {
     /// The schema's digest: pass it as the image's `version`, so an image
     /// written under another schema starts again.
-    static let schemaDigest = "29351384b7bf0bc46563c142dc33c897"
+    static let schemaDigest = "b170ac848059eae3fac3ca0b9c8de535"
     static let AddNotePayload = Baton.Registry.type("AddNotePayload")
     static let Any_ = Baton.Registry.type("Any")
     static let Baton_ = Baton.Registry.type("Baton")
@@ -14,6 +14,7 @@ nonisolated enum Types {
     static let Episode = Baton.Registry.type("Episode")
     static let FavoritePayload = Baton.Registry.type("FavoritePayload")
     static let Info = Baton.Registry.type("Info")
+    static let ListsPayload = Baton.Registry.type("ListsPayload")
     static let Location = Baton.Registry.type("Location")
     static let Mutation = Baton.Registry.type("Mutation")
     static let Named = Baton.Registry.type("Named")
@@ -57,6 +58,8 @@ nonisolated enum Slots {
     nonisolated enum Character {
         static let __TestDeferredNotes_notes_connection = Baton.Registry.slot(Types.Character, "__TestDeferredNotes_notes_connection")
         static let __TestEdgesNames_notes_connection = Baton.Registry.slot(Types.Character, "__TestEdgesNames_notes_connection")
+        static let __TestHiddenNotes_notes_connection = Baton.Registry.slot(Types.Character, "__TestHiddenNotes_notes_connection")
+        static let __TestHiddenRecentNotes_notes_connection = Baton.Registry.slot(Types.Character, "__TestHiddenRecentNotes_notes_connection")
         static let __TestNotes_notes_connection = Baton.Registry.slot(Types.Character, "__TestNotes_notes_connection")
         static let __TestRecentNotes_notes_connection = Baton.Registry.slot(Types.Character, "__TestRecentNotes_notes_connection")
         static let __TestTwoPages_notes_connection = Baton.Registry.slot(Types.Character, "__TestTwoPages_notes_connection")
@@ -108,6 +111,15 @@ nonisolated enum Slots {
         static let pages = Baton.Registry.slot(Types.Info, "pages")
         static let prev = Baton.Registry.slot(Types.Info, "prev")
     }
+    nonisolated enum ListsPayload {
+        static let counts = Baton.Registry.slot(Types.ListsPayload, "counts")
+        static let flags = Baton.Registry.slot(Types.ListsPayload, "flags")
+        static let ids = Baton.Registry.slot(Types.ListsPayload, "ids")
+        static let jsons = Baton.Registry.slot(Types.ListsPayload, "jsons")
+        static let ratios = Baton.Registry.slot(Types.ListsPayload, "ratios")
+        static let statuses = Baton.Registry.slot(Types.ListsPayload, "statuses")
+        static let strings = Baton.Registry.slot(Types.ListsPayload, "strings")
+    }
     nonisolated enum Location {
         static let __typename = Baton.Registry.slot(Types.Location, "__typename")
         static let created = Baton.Registry.slot(Types.Location, "created")
@@ -125,6 +137,7 @@ nonisolated enum Slots {
         static let setFavorite_a93f6b = Baton.Registry.slot(Types.Mutation, "setFavorite(as:\"sendable\")")
         static let setFavorite_937be0 = Baton.Registry.slot(Types.Mutation, "setFavorite(as:\"string\")")
         static let setFavorite_10eb38 = Baton.Registry.slot(Types.Mutation, "setFavorite(as:\"type\")")
+        static let setLists = Baton.Registry.slot(Types.Mutation, "setLists")
     }
     nonisolated enum Named {
         static let __typename = Baton.Registry.slot(Types.Named, "__typename")
@@ -171,6 +184,7 @@ nonisolated enum Slots {
         static let characters_498461 = Baton.DynamicKey(Types.Query, [.literal("characters(filter:{\"name\":"), .variable("name"), .literal(",\"status\":\"Alive\"})")])
         static let characters_5517f9 = Baton.DynamicKey(Types.Query, [.literal("characters(page:"), .variable("page"), .literal(")")])
         static let charactersByIds_0b7f7b = Baton.DynamicKey(Types.Query, [.literal("charactersByIds(ids:["), .variable("id"), .literal(",\"2\"])")])
+        static let charactersMatching_ca82bd = Baton.DynamicKey(Types.Query, [.literal("charactersMatching(filters:"), .variable("filters"), .literal(")")])
         static let namesake_9b6471 = Baton.DynamicKey(Types.Query, [.literal("namesake(name:"), .variable("name"), .literal(")")])
         static let node_8f7d08 = Baton.DynamicKey(Types.Query, [.literal("node(id:"), .variable("id"), .literal(")")])
         static let search_6286a6 = Baton.Registry.slot(Types.Query, "search(name:\"$0.00\")")
@@ -226,6 +240,10 @@ nonisolated enum Slots {
 /// The spreads with `@arguments`, where an owner binds a fragment's scope once.
 nonisolated enum Sites {
     static let TestDeferredNotesPaginationQuery_testDeferredNotes = Baton.ArgumentSite()
+    static let TestHiddenNotesPaginationQuery_testHiddenNotes = Baton.ArgumentSite()
+    static let TestHiddenNotesQuery_testHiddenNotes = Baton.ArgumentSite()
+    static let TestHiddenRecentNotesPaginationQuery_testHiddenRecentNotes = Baton.ArgumentSite()
+    static let TestHiddenRecentNotesQuery_testHiddenRecentNotes = Baton.ArgumentSite()
     static let TestNotesPaginationQuery_testNotes = Baton.ArgumentSite()
     static let TestNotesQuery_testNotes = Baton.ArgumentSite()
     static let TestNotesSizedQuery_testNotes = Baton.ArgumentSite()

@@ -113,6 +113,47 @@ struct EmitterTests {
         #expect(try character.testCaughtStrict_character.species == "Human")
     }
 
+    @Test("fields named like the fragments their lens spreads keep their names, and each spread reads its fragment, plain, throwing, caught and nulled, one named Fragment among them")
+    func fieldsNamedLikeSpreadFragments() throws {
+        let store = Store()
+        let data = TestFragmentNamedFields.Data(anchor: try root(TestFragmentNamedFields(id: "1"), "fragment-named-fields-1", in: store))
+        let character = try #require(data.character)
+        #expect(character.TestCaughtProfile_character == "Rick Sanchez")
+        #expect(character.TestCaughtStrict_character == "Human")
+        let profile: TestCaughtProfile_character = character.testCaughtProfile
+        #expect(profile.origin?.name == "Earth (C-137)")
+        #expect(try character.testCaughtStrict.species == "Human")
+        #expect(try character.caughtProfile.get().name == "Rick Sanchez")
+        #expect(character.nulledProfile?.name == "Rick Sanchez")
+        #expect(character.Fragment == "Alive")
+        #expect(character.nulledFragment?.status == "Alive")
+
+        let failing = Store()
+        let failed = try #require(TestFragmentNamedFields.Data(anchor: try root(TestFragmentNamedFields(id: "1"), "fragment-named-fields-1-errors", in: failing)).character)
+        guard case .failure(let errors) = failed.caughtProfile else {
+            Issue.record("expected the error in the profile's origin, got \(failed.caughtProfile)")
+            return
+        }
+        #expect(errors.errors == [FieldError(message: "origin name redacted", path: "character.origin.name")])
+        #expect(failed.nulledProfile == nil)
+        #expect(failed.testCaughtProfile.name == "Rick Sanchez")
+    }
+
+    @Test("fragments named in lower case read through the spreads' accessors that take their names, and the one a required field nulls reads nil without it")
+    func fragmentsNamedInLowerCase() throws {
+        let store = Store()
+        let data = TestLowercaseSpreads.Data(anchor: try root(TestLowercaseSpreads(id: "1"), "lowercase-spreads-1", in: store))
+        let character = try #require(data.character)
+        let lowercase: testLowercase = character.testLowercase
+        #expect(lowercase.name == "Rick Sanchez")
+        #expect(character.testLowercaseRequired?.origin.name == "Earth (C-137)")
+
+        let bare = Store()
+        let orphan = try #require(TestLowercaseSpreads.Data(anchor: try root(TestLowercaseSpreads(id: "1"), "lowercase-spreads-1-no-origin", in: bare)).character)
+        #expect(orphan.testLowercase.name == "Rick Sanchez")
+        #expect(orphan.testLowercaseRequired == nil)
+    }
+
     @Test("a connection whose edges' lens takes another name reads its nodes through that lens")
     func edgesNames() throws {
         let store = Store()
@@ -156,6 +197,60 @@ struct EmitterTests {
         #expect(data.type?.character?.favorite == true)
         #expect(data.`self`?.character?.favorite == true)
         #expect(data.sendable?.character?.favorite == true)
+    }
+
+    @Test("a payload field named Baton, and one named Baton under it, render through their builders and apply")
+    func builderFieldsNamedLikeTheModule() throws {
+        let store = Store()
+        store.reportMissing = nil
+        let mutation = TestModuleNamedPayload(id: "1")
+        let optimistic = TestModuleNamedPayload.OptimisticResponse(setFavorite: .init(Baton: .init(id: "1", Baton: "Rick Prime")))
+        #expect(optimistic.variable == .object([
+            "setFavorite": .object(["Baton": .object(["id": .string("1"), "Baton": .string("Rick Prime")])]),
+        ]))
+        let json = Data(("{\"data\":" + optimistic.variable.json + "}").utf8)
+        _ = store.applyOptimistic(try Ingest.normalize(json, plan: TestModuleNamedPayload.plan.resolve(mutation.variables), rootKey: Store.mutationRootKey))
+        let root = try #require(store.existing(Store.mutationRootKey))
+        let data = TestModuleNamedPayload.Data(anchor: Anchor(record: root, variables: mutation.variables, store: store))
+        #expect(data.setFavorite?.Baton?.id == "1")
+        #expect(data.setFavorite?.Baton?.Baton == "Rick Prime")
+    }
+
+    @Test("a payload of every kind of scalar list, of strings, ids, ints, floats, booleans, a custom scalar and an enum, renders through its builder, applies and reads back")
+    func builderLists() throws {
+        let store = Store()
+        store.reportMissing = nil
+        let mutation = TestListPayload()
+        let optimistic = TestListPayload.OptimisticResponse(setLists: .init(
+            strings: ["Rick", "Morty"],
+            ids: ["1", "2"],
+            counts: [1, 2],
+            ratios: [0.5, 1.25],
+            flags: [true, false],
+            jsons: ["{\"a\":1}", "1.50"],
+            statuses: ["ALIVE", "DEAD"]
+        ))
+        #expect(optimistic.variable == .object(["setLists": .object([
+            "strings": .list([.string("Rick"), .string("Morty")]),
+            "ids": .list([.string("1"), .string("2")]),
+            "counts": .list([.int(1), .int(2)]),
+            "ratios": .list([.double(0.5), .double(1.25)]),
+            "flags": .list([.bool(true), .bool(false)]),
+            "jsons": .list([.string("{\"a\":1}"), .string("1.50")]),
+            "statuses": .list([.string("ALIVE"), .string("DEAD")]),
+        ])]))
+        let json = Data(("{\"data\":" + optimistic.variable.json + "}").utf8)
+        _ = store.applyOptimistic(try Ingest.normalize(json, plan: TestListPayload.plan.resolve(mutation.variables), rootKey: Store.mutationRootKey))
+        let root = try #require(store.existing(Store.mutationRootKey))
+        let data = TestListPayload.Data(anchor: Anchor(record: root, variables: mutation.variables, store: store))
+        let lists = try #require(data.setLists)
+        #expect(lists.strings == ["Rick", "Morty"])
+        #expect(lists.ids == ["1", "2"])
+        #expect(lists.counts == [1, 2])
+        #expect(lists.ratios == [0.5, 1.25])
+        #expect(lists.flags == [true, false])
+        #expect(lists.jsons == ["{\"a\":1}", "1.50"])
+        #expect(lists.statuses == ["ALIVE", "DEAD"])
     }
 
     @Test("an operation whose text holds a backslash before a hash compiles, and its text holds both as the document wrote them")

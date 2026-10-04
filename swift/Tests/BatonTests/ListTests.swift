@@ -295,6 +295,60 @@ struct ListTests {
         #expect(environment.rootCount == 1, "the refetch is no root of its own")
     }
 
+    @Test("fields named like a refetchable fragment and its refetch query, in its lens and in its connection's, leave refetch and loadNext fetching through the query")
+    func refetchAndLoadNextPastFieldsNamedLikeThem() async throws {
+        let transport = RecordedTransport { request in
+            if request.operationName == TestHiddenNotesQuery.name { return fixture("hidden-notes-page-1") }
+            return request.variables["cursor"] == .string("c2") ? fixture("hidden-notes-page-2") : fixture("hidden-notes-refetch")
+        }
+        let environment = Environment(transport: transport)
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestHiddenNotesQuery(id: "1"))
+        handle.retain()
+        await handle.settle()
+        guard case .ready(let data) = handle.phase else { throw TransportError(statusCode: 0, body: "the first page did not arrive") }
+        let character = try #require(data.character?.testHiddenNotes)
+        #expect(character.TestHiddenNotes_character == "Rick Sanchez")
+        #expect(character.TestHiddenNotesPaginationQuery == "Alive")
+        #expect(character.notes.TestHiddenNotes_character == 5)
+        #expect(character.notes.TestHiddenNotesPaginationQuery == 5)
+        #expect(character.notes.nodes.map(\.text) == ["Wubba lubba dub dub", "Portal gun needs charging"])
+
+        try await character.notes.loadNext()
+        #expect(transport.requests.last?.operationName == "TestHiddenNotesPaginationQuery")
+        #expect(transport.requests.last?.variables["cursor"] == .string("c2"))
+        #expect(character.notes.nodes.map(\.text) == ["Wubba lubba dub dub", "Portal gun needs charging", "Get Schwifty", "Avoid the Citadel"])
+
+        try await character.refetch()
+        let request = try #require(transport.requests.last)
+        #expect(request.operationName == "TestHiddenNotesPaginationQuery")
+        #expect(request.variables["id"] == .string("1"))
+        #expect(request.variables["count"] == .int(2))
+        #expect(character.notes.nodes.first?.text == "Wubba lubba dub dub!")
+        #expect(transport.requestCount == 3)
+    }
+
+    @Test("fields named like a refetchable fragment and its refetch query in its connection's lens leave loadPrevious fetching through the query")
+    func loadPreviousPastFieldsNamedLikeThem() async throws {
+        let transport = RecordedTransport { request in
+            request.operationName == TestHiddenRecentNotesQuery.name ? fixture("hidden-recent-notes-page-1") : fixture("hidden-recent-notes-page-2")
+        }
+        let environment = Environment(transport: transport)
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestHiddenRecentNotesQuery(id: "1"))
+        handle.retain()
+        await handle.settle()
+        guard case .ready(let data) = handle.phase else { throw TransportError(statusCode: 0, body: "the last page did not arrive") }
+        let notes = try #require(data.character?.testHiddenRecentNotes.notes)
+        #expect(notes.TestHiddenRecentNotes_character == 5)
+        #expect(notes.nodes.map(\.id) == ["n4", "n5"])
+
+        try await notes.loadPrevious()
+        #expect(transport.requests.last?.operationName == "TestHiddenRecentNotesPaginationQuery")
+        #expect(transport.requests.last?.variables["cursor"] == .string("c4"))
+        #expect(notes.nodes.map(\.id) == ["n2", "n3", "n4", "n5"])
+    }
+
     @Test("a spread with @arguments binds the fragment's variables once, so each read of it is the same lens; a spread without them takes the defaults")
     func fragmentArguments() async throws {
         let store = Store()

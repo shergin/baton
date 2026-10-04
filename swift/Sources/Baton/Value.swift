@@ -51,7 +51,10 @@ public enum Variable: Hashable, Sendable {
     public init(_ value: String?) { self = value.map(Variable.string) ?? .null }
     public init(_ value: [String]?) { self = value.map { .list($0.map(Variable.string)) } ?? .null }
     public init(_ value: [Int]?) { self = value.map { .list($0.map(Variable.int)) } ?? .null }
+    public init(_ value: [Double]?) { self = value.map { .list($0.map(Variable.double)) } ?? .null }
+    public init(_ value: [Bool]?) { self = value.map { .list($0.map(Variable.bool)) } ?? .null }
     public init(_ value: Variable?) { self = value ?? .null }
+    public init(_ value: [Variable]?) { self = value.map(Variable.list) ?? .null }
 
     /// JSON text, with object keys sorted so equal values render equally.
     public var json: String {

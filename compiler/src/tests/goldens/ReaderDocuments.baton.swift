@@ -64,8 +64,9 @@ nonisolated public struct TestLoggedNotes_character: Baton.Lens {
         public static let typeName = "NoteConnection"
         @MainActor public var totalCount: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
         @MainActor public var testLogEdges: TestLogEdges_connection? {
-            guard TestLogEdges_connection.satisfied(anchor) else { return nil }
-            return TestLogEdges_connection(anchor: anchor)
+            typealias Fragment = TestLogEdges_connection
+            guard Fragment.satisfied(anchor) else { return nil }
+            return .init(anchor: anchor)
         }
     }
 }
@@ -301,8 +302,9 @@ fragment TestCaughtAppearances_character on Character {
             @MainActor public var id: String? { anchor.string(Slots.Character.id) }
             @MainActor public var name: String? { anchor.string(Slots.Character.name) }
             @MainActor public var testCaughtAppearances: TestCaughtAppearances_character? {
-                guard TestCaughtAppearances_character.isPresent(anchor) else { return nil }
-                return TestCaughtAppearances_character(anchor: anchor)
+                typealias Fragment = TestCaughtAppearances_character
+                guard Fragment.isPresent(anchor) else { return nil }
+                return .init(anchor: anchor)
             }
             /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
             @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
@@ -524,6 +526,63 @@ query TestCollidingRequired(
                 guard anchor.hasValue(Slots.Character.name, path: "typesLens.name", log: false) else { return "typesLens.name" }
                 return nil
             }
+        }
+    }
+}
+
+/// Operation value for `query TestFilteredCharacters`.
+nonisolated public struct TestFilteredCharacters: Baton.Query {
+    public var filters: [Baton.Variable]
+    public var resolution: Baton.OperationHandle<Self>? = nil
+
+    public init(filters: [Baton.Variable]) {
+        self.filters = filters
+    }
+
+    public static let name = "TestFilteredCharacters"
+    public static let persistedID = "dedd00157463c6921fd1dd45d90622a4"
+    public static let text = #"""
+query TestFilteredCharacters(
+  $filters: [FilterCharacter!]!
+) {
+  charactersMatching(filters: $filters) {
+    id
+    name
+  }
+}
+"""#
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["filters": Baton.Variable(self.filters)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.filters == rhs.filters
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.filters)
+    }
+
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
+            .linked("charactersMatching", key: .dynamic(Slots.Query.charactersMatching_ca82bd), plural: true, selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+                .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            ])),
+        ]))
+
+    nonisolated public struct Data: Baton.Lens {
+        @_spi(Generated) public let anchor: Baton.Anchor
+        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Query"
+        @MainActor public var charactersMatching: Baton.List<CharactersMatching>? { anchor.list(anchor.owner.slot(Slots.Query.charactersMatching_ca82bd)) }
+
+        nonisolated public struct CharactersMatching: Baton.Lens {
+            @_spi(Generated) public let anchor: Baton.Anchor
+            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Character"
+            @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+            @MainActor public var name: String? { anchor.string(Slots.Character.name) }
         }
     }
 }
@@ -898,7 +957,7 @@ fragment TestNotes_character_35kO5h on Character {
             @MainActor public var id: String? { anchor.string(Slots.Character.id) }
             @MainActor public var testNotes: TestNotes_character {
                 let bound = anchor.binding(Sites.TestReservedNames_testNotes) { ["count": .int(1), "cursor": .null] }
-                return TestNotes_character(anchor: bound)
+                return .init(anchor: bound)
             }
         }
 
@@ -1635,8 +1694,9 @@ fragment TestOriginAndEpisode_character on Character {
             @MainActor public var id: String? { anchor.string(Slots.Character.id) }
             @MainActor public var name: String? { anchor.string(Slots.Character.name) }
             @MainActor public var testOriginAndEpisode: TestOriginAndEpisode_character? {
-                guard TestOriginAndEpisode_character.isPresent(anchor) else { return nil }
-                return TestOriginAndEpisode_character(anchor: anchor)
+                typealias Fragment = TestOriginAndEpisode_character
+                guard Fragment.isPresent(anchor) else { return nil }
+                return .init(anchor: anchor)
             }
         }
     }
@@ -1782,7 +1842,7 @@ fragment TestNotes_character_41grAF on Character {
             @MainActor public var name: String? { anchor.string(Slots.Character.name) }
             @MainActor public var testNotes: TestNotes_character {
                 let bound = anchor.binding(Sites.TestTwoScopes_testNotes) { ["count": .int(1), "cursor": .null] }
-                return TestNotes_character(anchor: bound)
+                return .init(anchor: bound)
             }
         }
 
@@ -1794,7 +1854,7 @@ fragment TestNotes_character_41grAF on Character {
             @MainActor public var name: String? { anchor.string(Slots.Character.name) }
             @MainActor public var testNotes: TestNotes_character {
                 let bound = anchor.binding(Sites.TestTwoScopes_testNotes_2) { ["count": .int(3), "cursor": .null] }
-                return TestNotes_character(anchor: bound)
+                return .init(anchor: bound)
             }
         }
     }
@@ -1883,8 +1943,9 @@ fragment TestAppearances_character on Character {
             @MainActor public var id: String? { anchor.string(Slots.Character.id) }
             @MainActor public var name: String? { anchor.string(Slots.Character.name) }
             @MainActor public var testAppearances: TestAppearances_character? {
-                guard TestAppearances_character.isPresent(anchor) else { return nil }
-                return TestAppearances_character(anchor: anchor)
+                typealias Fragment = TestAppearances_character
+                guard Fragment.isPresent(anchor) else { return nil }
+                return .init(anchor: anchor)
             }
             /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
             @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {

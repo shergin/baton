@@ -1,0 +1,1 @@
+{"data":{"character":{"TestCaughtProfile_character":"Rick Sanchez","TestCaughtStrict_character":"Human","name":"Rick Sanchez","origin":{"id":"1","name":null},"species":"Human","Fragment":"Alive","status":"Alive","id":"1"}},"errors":[{"message":"origin name redacted","path":["character","origin","name"]}]}

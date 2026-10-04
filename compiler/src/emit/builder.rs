@@ -1,4 +1,10 @@
 //! A mutation's optimistic-response builders.
+//!
+//! A builder names the runtime's module only in types, where Swift looks up
+//! types alone: a payload field named `Baton` is a property that hides the
+//! module from the expressions of its builder and of every builder nested
+//! in it. A value takes its type from the dictionary it is stored in, as
+//! `.init(name)` does.
 
 use std::fmt::Write as _;
 
@@ -51,7 +57,7 @@ pub(super) fn builder(output: &mut String, builder: &BuilderPlan, indent: &str) 
         };
         renders.push(match &field.value {
             BuilderValue::Scalar { .. } => {
-                format!("if let {bind} {{ fields[\"{key}\"] = Baton.Variable({local}) }}")
+                format!("if let {bind} {{ fields[\"{key}\"] = .init({local}) }}")
             }
             BuilderValue::Object { plural: true, .. } => {
                 format!("if let {bind} {{ fields[\"{key}\"] = .list({local}.map(\\.variable)) }}")

@@ -6,7 +6,11 @@
 //! A lens names the runtime's module only in a type, where Swift looks up
 //! types alone, so an accessor named `Baton` hides it from nothing; an
 //! expression takes the runtime's type from its context, as
-//! `.failure(.init(errors))` does.
+//! `.failure(.init(errors))` does. The fragments and queries a lens uses
+//! are named the same way: a member named like one of them, of the lens,
+//! of a lens or an operation it is nested in, or the accessor itself,
+//! would hide it from an expression, so a body takes the type from its
+//! context, names it as `Self`, or names it through a local alias.
 
 use std::fmt::Write as _;
 
@@ -15,7 +19,7 @@ use super::swift::{
 };
 use crate::decide::{
     Accessor, AliasGuard, AliasedRead, BoundArgument, ConditionRead, ConnectionMembers, ErrorCheck,
-    ErrorLine, FragmentLens, Guard, Guarded, LinkedForm, LinkedRead, Read, ReaderPlan,
+    ErrorLine, FragmentLens, Guard, Guarded, LinkedForm, LinkedRead, LoadMore, Read, ReaderPlan,
     RefetchMembers, SatisfiedCheck, ScalarForm, ScalarRead, SlotAccess, SpreadForm, SpreadGuard,
     SpreadRead, TypeTest,
 };
@@ -244,9 +248,13 @@ fn linked_accessor(
 }
 
 /// A spread's accessor: the fragment's lens over the record, in the scope
-/// its arguments bind, optional when anything must hold first.
+/// its arguments bind, optional when anything must hold first. It builds
+/// the lens from its own type, as `.init(anchor:)`, and calls the
+/// fragment's checks through a local alias, which names the fragment in a
+/// type.
 fn spread_accessor(output: &mut String, name: &str, read: &SpreadRead, indent: &str) {
     let fragment = &read.fragment;
+    let alias = local_alias(&FRAGMENT_ALIASES, &[fragment]);
     let anchor = if read.binding.is_some() {
         "bound"
     } else {
@@ -260,11 +268,20 @@ fn spread_accessor(output: &mut String, name: &str, read: &SpreadRead, indent: &
                 guard_condition(guards).expect("a spread guard has conditions")
             }
             SpreadGuard::Test(test) => type_test(test),
-            SpreadGuard::Present => format!("{fragment}.isPresent({anchor})"),
-            SpreadGuard::Satisfied => format!("{fragment}.satisfied({anchor})"),
-            SpreadGuard::NoErrors => format!("{fragment}.fieldErrors({anchor}).isEmpty"),
+            SpreadGuard::Present => format!("{alias}.isPresent({anchor})"),
+            SpreadGuard::Satisfied => format!("{alias}.satisfied({anchor})"),
+            SpreadGuard::NoErrors => format!("{alias}.fieldErrors({anchor}).isEmpty"),
         })
         .collect();
+    // The body declares the alias only when it calls one of the fragment's
+    // checks, and a catch calls `fieldErrors`.
+    let checks = read.form == SpreadForm::Caught
+        || read.guards.iter().any(|guard| {
+            matches!(
+                guard,
+                SpreadGuard::Present | SpreadGuard::Satisfied | SpreadGuard::NoErrors
+            )
+        });
     let accessor = escape(name);
     let optional = !guards.is_empty();
     let (result_type, effect) = match read.form {
@@ -280,8 +297,8 @@ fn spread_accessor(output: &mut String, name: &str, read: &SpreadRead, indent: &
     // policy of its own has `caught`.
     let make = match read.form {
         SpreadForm::Caught => None,
-        SpreadForm::Throwing => Some(format!("try {fragment}.throwing({anchor})")),
-        SpreadForm::Plain => Some(format!("{fragment}(anchor: {anchor})")),
+        SpreadForm::Throwing => Some(format!("try .throwing({anchor})")),
+        SpreadForm::Plain => Some(format!(".init(anchor: {anchor})")),
     };
     let miss = if read.form == SpreadForm::Caught {
         ".success(nil)"
@@ -315,6 +332,9 @@ fn spread_accessor(output: &mut String, name: &str, read: &SpreadRead, indent: &
         let _ = writeln!(output, "{indent}    get throws {{");
         format!("{indent}        ")
     };
+    if checks {
+        let _ = writeln!(output, "{body_indent}typealias {alias} = {fragment}");
+    }
     if let Some(binding) = &read.binding {
         let bindings: Vec<String> = binding
             .arguments
@@ -349,11 +369,11 @@ fn spread_accessor(output: &mut String, name: &str, read: &SpreadRead, indent: &
         None => {
             let _ = writeln!(
                 output,
-                "{body_indent}let errors = {fragment}.fieldErrors({anchor})"
+                "{body_indent}let errors = {alias}.fieldErrors({anchor})"
             );
             let _ = writeln!(
                 output,
-                "{body_indent}return errors.isEmpty ? .success({fragment}(anchor: {anchor})) : .failure(.init(errors))"
+                "{body_indent}return errors.isEmpty ? .success(.init(anchor: {anchor})) : .failure(.init(errors))"
             );
         }
     }
@@ -361,6 +381,24 @@ fn spread_accessor(output: &mut String, name: &str, read: &SpreadRead, indent: &
         let _ = writeln!(output, "{indent}    }}");
     }
     let _ = writeln!(output, "{indent}}}");
+}
+
+/// The names a body gives a fragment's type through a local alias: one
+/// more than the types a body aliases, so one is always free.
+const FRAGMENT_ALIASES: [&str; 3] = ["Fragment", "Spread", "Owner"];
+
+/// The names a body gives a query's type through a local alias.
+const QUERY_ALIASES: [&str; 3] = ["Query", "Operation", "RefetchQuery"];
+
+/// The first of `candidates` that is none of `named`, the types a body's
+/// aliases stand for: an alias named like one of them would refer to
+/// itself or to another alias.
+fn local_alias(candidates: &[&'static str], named: &[&str]) -> &'static str {
+    candidates
+        .iter()
+        .copied()
+        .find(|candidate| !named.contains(candidate))
+        .expect("an alias has more candidates than the types a body aliases")
 }
 
 /// An aliased selection's accessor: its nested lens, optional under its
@@ -507,11 +545,21 @@ fn refetch_members(output: &mut String, refetch: &RefetchMembers, indent: &str) 
         "{indent}/// Fetches the fragment again through `{}` with its current variables; the records update in place.",
         refetch.operation
     );
+    let query = local_alias(&QUERY_ALIASES, &[&refetch.operation]);
     let _ = writeln!(
         output,
-        "{indent}@MainActor public func refetch() async throws {{ try await anchor.refetch({}.self, {}.refetchable) }}",
-        refetch.operation, refetch.owner
+        "{indent}@MainActor public func refetch() async throws {{"
     );
+    let _ = writeln!(
+        output,
+        "{indent}    typealias {query} = {}",
+        refetch.operation
+    );
+    let _ = writeln!(
+        output,
+        "{indent}    try await anchor.refetch({query}.self, Self.refetchable)"
+    );
+    let _ = writeln!(output, "{indent}}}");
 }
 
 /// The connection surface of a lens over a `@connection` field: Relay's
@@ -573,23 +621,13 @@ fn connection_members(output: &mut String, connection: &ConnectionMembers, inden
         output,
         "{indent}@MainActor public var connectionID: String {{ anchor.record.key }}"
     );
-    let default_count = |count: Option<i64>| match count {
-        Some(count) => format!(" = {count}"),
-        None => String::new(),
-    };
     if let Some(load) = &connection.load_next {
         let _ = writeln!(
             output,
             "{indent}/// Fetches the next `count` edges through `{}` and appends them; a no-op while loading or at the end.",
             load.operation
         );
-        let _ = writeln!(
-            output,
-            "{indent}@MainActor public func loadNext(_ count: Int{}) async throws {{ try await anchor.loadNext({}.self, Self.connection, {}.refetchable, count: count) }}",
-            default_count(load.default_count),
-            load.operation,
-            load.owner
-        );
+        load_more(output, "loadNext", load, indent);
     }
     if let Some(load) = &connection.load_previous {
         let _ = writeln!(
@@ -597,14 +635,32 @@ fn connection_members(output: &mut String, connection: &ConnectionMembers, inden
             "{indent}/// Fetches the previous `count` edges through `{}` and prepends them; a no-op while loading or at the start.",
             load.operation
         );
-        let _ = writeln!(
-            output,
-            "{indent}@MainActor public func loadPrevious(_ count: Int{}) async throws {{ try await anchor.loadPrevious({}.self, Self.connection, {}.refetchable, count: count) }}",
-            default_count(load.default_count),
-            load.operation,
-            load.owner
-        );
+        load_more(output, "loadPrevious", load, indent);
     }
+}
+
+/// `loadNext` or `loadPrevious`, named `function`: the fragment's refetch
+/// query and descriptor, both named through local aliases, since the
+/// connection's lens is nested in the fragment's.
+fn load_more(output: &mut String, function: &str, load: &LoadMore, indent: &str) {
+    let named = [load.operation.as_str(), load.owner.as_str()];
+    let query = local_alias(&QUERY_ALIASES, &named);
+    let fragment = local_alias(&FRAGMENT_ALIASES, &named);
+    let default_count = match load.default_count {
+        Some(count) => format!(" = {count}"),
+        None => String::new(),
+    };
+    let _ = writeln!(
+        output,
+        "{indent}@MainActor public func {function}(_ count: Int{default_count}) async throws {{"
+    );
+    let _ = writeln!(output, "{indent}    typealias {query} = {}", load.operation);
+    let _ = writeln!(output, "{indent}    typealias {fragment} = {}", load.owner);
+    let _ = writeln!(
+        output,
+        "{indent}    try await anchor.{function}({query}.self, Self.connection, {fragment}.refetchable, count: count)"
+    );
+    let _ = writeln!(output, "{indent}}}");
 }
 
 /// Opens the block a guarded check is written in: the indent its lines

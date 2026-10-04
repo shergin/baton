@@ -3,7 +3,7 @@
     {
       "name": "TestCaughtAppearances_character",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
-      "document": 15,
+      "document": 16,
       "type_condition": "Character",
       "type_is_abstract": false,
       "possible_types": [
@@ -69,7 +69,7 @@
     {
       "name": "TestLogEdges_connection",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
-      "document": 13,
+      "document": 14,
       "type_condition": "NoteConnection",
       "type_is_abstract": false,
       "possible_types": [
@@ -136,7 +136,7 @@
     {
       "name": "TestLoggedNotes_character",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
-      "document": 14,
+      "document": 15,
       "type_condition": "Character",
       "type_is_abstract": false,
       "possible_types": [
@@ -217,7 +217,7 @@
     {
       "name": "TestOriginAndEpisode_character",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
-      "document": 18,
+      "document": 19,
       "type_condition": "Character",
       "type_is_abstract": false,
       "possible_types": [
@@ -675,7 +675,7 @@
     {
       "name": "TestCaughtPartQuery",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
-      "document": 16,
+      "document": 17,
       "kind": "query",
       "root_type": "Query",
       "variables": [
@@ -1584,6 +1584,184 @@
               "value": "id"
             }
           },
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "id",
+              "alias": null,
+              "type_name": "ID",
+              "base_type": "ID",
+              "base_kind": "id",
+              "non_null": false,
+              "semantic_non_null": false,
+              "list": false,
+              "storage_key": {
+                "name": "id",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "name",
+              "alias": null,
+              "type_name": "String",
+              "base_type": "String",
+              "base_kind": "string",
+              "non_null": false,
+              "semantic_non_null": false,
+              "list": false,
+              "storage_key": {
+                "name": "name",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TestFilteredCharacters",
+      "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
+      "document": 13,
+      "kind": "query",
+      "root_type": "Query",
+      "variables": [
+        {
+          "name": "filters",
+          "type_name": "[FilterCharacter!]!",
+          "base_type": "FilterCharacter",
+          "base_kind": "input_object",
+          "non_null": true,
+          "list": true,
+          "default_value": null
+        }
+      ],
+      "text": "query TestFilteredCharacters(\n  $filters: [FilterCharacter!]!\n) {\n  charactersMatching(filters: $filters) {\n    id\n    name\n  }\n}",
+      "id": "dedd00157463c6921fd1dd45d90622a4",
+      "throws_on_field_error": false,
+      "bubbles": false,
+      "has_deferred": false,
+      "error_behavior": null,
+      "reader": [
+        {
+          "kind": "linked",
+          "name": "charactersMatching",
+          "alias": null,
+          "type_name": "[Character]",
+          "base_type": "Character",
+          "base_kind": "object",
+          "non_null": false,
+          "semantic_non_null": false,
+          "plural": true,
+          "has_id": true,
+          "is_abstract": false,
+          "possible_types": [
+            "Character"
+          ],
+          "storage_key": {
+            "name": "charactersMatching",
+            "arguments": [
+              {
+                "name": "filters",
+                "value": {
+                  "kind": "variable",
+                  "value": "filters"
+                }
+              }
+            ]
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "id",
+              "alias": null,
+              "type_name": "ID",
+              "base_type": "ID",
+              "base_kind": "id",
+              "non_null": false,
+              "semantic_non_null": false,
+              "list": false,
+              "storage_key": {
+                "name": "id",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "name",
+              "alias": null,
+              "type_name": "String",
+              "base_type": "String",
+              "base_kind": "string",
+              "non_null": false,
+              "semantic_non_null": false,
+              "list": false,
+              "storage_key": {
+                "name": "name",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            }
+          ]
+        }
+      ],
+      "normalization": [
+        {
+          "kind": "linked",
+          "name": "charactersMatching",
+          "alias": null,
+          "type_name": "[Character]",
+          "base_type": "Character",
+          "base_kind": "object",
+          "non_null": false,
+          "semantic_non_null": false,
+          "plural": true,
+          "has_id": true,
+          "is_abstract": false,
+          "possible_types": [
+            "Character"
+          ],
+          "storage_key": {
+            "name": "charactersMatching",
+            "arguments": [
+              {
+                "name": "filters",
+                "value": {
+                  "kind": "variable",
+                  "value": "filters"
+                }
+              }
+            ]
+          },
+          "lookup": null,
           "connection": null,
           "edit": null,
           "required": null,
@@ -6532,7 +6710,7 @@
     {
       "name": "TestTwoFieldPartQuery",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
-      "document": 19,
+      "document": 20,
       "kind": "query",
       "root_type": "Query",
       "variables": [
@@ -7863,7 +8041,7 @@
     {
       "name": "TestUncaughtPartQuery",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
-      "document": 17,
+      "document": 18,
       "kind": "query",
       "root_type": "Query",
       "variables": [

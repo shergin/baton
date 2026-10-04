@@ -1,0 +1,1 @@
+{"data":{"node":{"__typename":"Character","notes":{"TestHiddenRecentNotes_character":5,"TestHiddenRecentNotesPaginationQuery":5,"edges":[{"node":{"id":"n2","text":"Portal gun needs charging","__typename":"Note"},"cursor":"c2"},{"node":{"id":"n3","text":"Get Schwifty","__typename":"Note"},"cursor":"c3"}],"pageInfo":{"hasPreviousPage":true,"startCursor":"c2"}},"id":"1"}}}

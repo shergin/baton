@@ -680,6 +680,36 @@ are expected and listed without apology.
   reports hand an app a slot and a record. Breaking for code that read a
   record, built an anchor or a lens, or named a plan: it needs
   `@_spi(Generated) import Baton`, as the tests and benchmarks have.
+- A mutation's payload field named or aliased `Baton` compiles. Its
+  optimistic builder wrote each scalar as `Baton.Variable(value)`, which
+  the field's property hid in the builder and in every builder nested in
+  it; a builder now names the runtime's module only in types and writes a
+  scalar as `.init(value)`.
+- A spread's accessor compiles where a member is named like its fragment:
+  a field aliased like the fragment it is spread beside, as
+  `TestRow_character: name ...TestRow_character`, a variable of the
+  operation, or the accessor itself, which a fragment named in lower case,
+  as `fragment row`, gives its name. The accessor spelled the fragment in
+  expressions, as `row(anchor: anchor)` and `row.satisfied(anchor)`, which
+  the member hid; it now builds the lens as `.init(anchor:)` and calls the
+  fragment's checks through a local alias of its type.
+- `refetch()`, and a connection's `loadNext` and `loadPrevious`, compile
+  where a field is named like the fragment or its refetch query, in the
+  fragment's lens or in the connection's. They named both in expressions,
+  as `anchor.refetch(TestNotesPaginationQuery.self,
+  TestNotes_character.refetchable)`, which the field hid; `refetch()` now
+  reads the descriptor as `Self.refetchable`, and the query, and in a
+  connection the fragment, are named through local aliases of their
+  types.
+- A mutation's payload field that is a list of floats or of booleans
+  compiles in its optimistic builder, and so does a variable of either
+  list type: `Variable` has initializers from `[Double]?` and `[Bool]?`.
+  With those from `[String]?`, which lists of strings, IDs, enums and
+  custom scalars take, and from `[Int]?`, every list of scalars a builder
+  or a variable writes has one.
+- A variable that is a list of input objects, such as
+  `$filters: [FilterCharacter!]!`, compiles: `Variable` has an initializer
+  from a list of variables, which the operation value's `variables` calls.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

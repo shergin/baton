@@ -228,8 +228,8 @@ mutation TestRename(
                 }
                 public var variable: Baton.Variable {
                     var fields: [String: Baton.Variable] = [:]
-                    if let id { fields["id"] = Baton.Variable(id) }
-                    if let name { fields["name"] = Baton.Variable(name) }
+                    if let id { fields["id"] = .init(id) }
+                    if let name { fields["name"] = .init(name) }
                     return .object(fields)
                 }
             }
@@ -301,7 +301,7 @@ fragment TestRenamePayload_mutation on Mutation {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Mutation"
-        @MainActor public var testRenamePayload: TestRenamePayload_mutation { TestRenamePayload_mutation(anchor: anchor) }
+        @MainActor public var testRenamePayload: TestRenamePayload_mutation { .init(anchor: anchor) }
     }
 
     public typealias Action = Baton.MutationAction<Self>
@@ -340,8 +340,8 @@ fragment TestRenamePayload_mutation on Mutation {
                 }
                 public var variable: Baton.Variable {
                     var fields: [String: Baton.Variable] = [:]
-                    if let id { fields["id"] = Baton.Variable(id) }
-                    if let name { fields["name"] = Baton.Variable(name) }
+                    if let id { fields["id"] = .init(id) }
+                    if let name { fields["name"] = .init(name) }
                     return .object(fields)
                 }
             }
@@ -486,8 +486,8 @@ mutation TestRenameWithOrigin(
                 }
                 public var variable: Baton.Variable {
                     var fields: [String: Baton.Variable] = [:]
-                    if let id { fields["id"] = Baton.Variable(id) }
-                    if let name { fields["name"] = Baton.Variable(name) }
+                    if let id { fields["id"] = .init(id) }
+                    if let name { fields["name"] = .init(name) }
                     if let origin { fields["origin"] = origin.variable }
                     return .object(fields)
                 }
@@ -502,8 +502,8 @@ mutation TestRenameWithOrigin(
                     }
                     public var variable: Baton.Variable {
                         var fields: [String: Baton.Variable] = [:]
-                        if let id { fields["id"] = Baton.Variable(id) }
-                        if let name { fields["name"] = Baton.Variable(name) }
+                        if let id { fields["id"] = .init(id) }
+                        if let name { fields["name"] = .init(name) }
                         return .object(fields)
                     }
                 }
@@ -825,9 +825,9 @@ mutation TestSetFavorite(
                 }
                 public var variable: Baton.Variable {
                     var fields: [String: Baton.Variable] = [:]
-                    if let id { fields["id"] = Baton.Variable(id) }
-                    if let name { fields["name"] = Baton.Variable(name) }
-                    if let favorite { fields["favorite"] = Baton.Variable(favorite) }
+                    if let id { fields["id"] = .init(id) }
+                    if let name { fields["name"] = .init(name) }
+                    if let favorite { fields["favorite"] = .init(favorite) }
                     return .object(fields)
                 }
             }

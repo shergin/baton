@@ -7,11 +7,18 @@ import Baton
 /// fragment's own type and under a type condition on an interface; a field
 /// and an aliased selection named like a type condition's accessor; fields
 /// named like the fragments and the refetch query a lens refers to; a field
-/// named like a spread's accessor; a connection whose edges' lens cannot be
+/// named like a spread's accessor; fields named like the fragments their
+/// lens spreads, plain, throwing, caught and nulled, one of them named
+/// `Fragment`; fragments named in
+/// lower case, whose spreads' accessors take their names, one of them
+/// nulled by a required field; a connection whose edges' lens cannot be
 /// named `Edges`; a mutation whose
 /// payload fields are named like the types an optimistic builder spells,
-/// with a variable named `self`; and a query whose text holds a backslash
-/// before a hash, which a raw literal of one hash reads as an escape.
+/// with a variable named `self`; one whose payload field, and a field under
+/// it, are named like the runtime's module; one whose payload has every
+/// kind of scalar list; and a query whose text holds a
+/// backslash before a hash, which a raw literal of one hash reads as an
+/// escape.
 @MainActor
 struct EmitterDocuments {
     @Fragment("""
@@ -86,6 +93,50 @@ struct EmitterDocuments {
     var spreadNames: TestSpreadNames
 
     @Fragment("""
+        fragment Fragment on Character {
+          status
+        }
+        """)
+    var fragment: Fragment
+
+    @Query("""
+        query TestFragmentNamedFields($id: ID!) {
+          character(id: $id) {
+            TestCaughtProfile_character: name
+            TestCaughtStrict_character: species
+            ...TestCaughtProfile_character
+            ...TestCaughtStrict_character
+            ... @alias(as: "caughtProfile") @catch { ...TestCaughtProfile_character }
+            ... @alias(as: "nulledProfile") @catch(to: NULL) { ...TestCaughtProfile_character }
+            Fragment: status
+            ... @alias(as: "nulledFragment") @catch(to: NULL) { ...Fragment }
+          }
+        }
+        """)
+    var fragmentNamedFields: TestFragmentNamedFields
+
+    @Fragment("""
+        fragment testLowercase on Character {
+          name
+        }
+        """)
+    var lowercase: testLowercase
+
+    @Fragment("""
+        fragment testLowercaseRequired on Character {
+          origin @required(action: NONE) { name }
+        }
+        """)
+    var lowercaseRequired: testLowercaseRequired
+
+    @Query("""
+        query TestLowercaseSpreads($id: ID!) {
+          character(id: $id) { ...testLowercase ...testLowercaseRequired }
+        }
+        """)
+    var lowercaseSpreads: TestLowercaseSpreads
+
+    @Fragment("""
         fragment TestEdgesNames_character on Character {
           notes(first: 2) @connection(key: "TestEdgesNames_notes") {
             Edges: pageInfo { hasNextPage }
@@ -125,6 +176,20 @@ struct EmitterDocuments {
         }
         """)
     var commitVariable: TestCommitVariable.Action
+
+    @Mutation("""
+        mutation TestModuleNamedPayload($id: ID!) {
+          setFavorite(id: $id, favorite: true) { Baton: character { id Baton: name } }
+        }
+        """)
+    var moduleNamedPayload: TestModuleNamedPayload.Action
+
+    @Mutation("""
+        mutation TestListPayload {
+          setLists { strings ids counts ratios flags jsons statuses }
+        }
+        """)
+    var listPayload: TestListPayload.Action
 
     @Query(##"""
         query TestEscapedText {

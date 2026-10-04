@@ -5,8 +5,10 @@ import Baton
 /// paginating it backward, the screens that spread them with and without
 /// arguments, the mutations that edit the connection declaratively by edge
 /// and by node, one that only deletes a record, an aliased spread, a
-/// connection whose nodes defer a fragment, and a query that fetches two
-/// pages of one connection.
+/// connection whose nodes defer a fragment, a query that fetches two
+/// pages of one connection, and refetchable fragments paginating forward
+/// and backward with fields named like the fragment and its refetch query,
+/// in its lens and in the connection's.
 @MainActor
 struct ListDocuments {
     @Fragment("""
@@ -153,4 +155,46 @@ struct ListDocuments {
         }
         """)
     var twoPages: TestTwoPagesQuery
+
+    @Fragment("""
+        fragment TestHiddenNotes_character on Character
+        @refetchable(queryName: "TestHiddenNotesPaginationQuery")
+        @argumentDefinitions(count: {type: "Int", defaultValue: 2}, cursor: {type: "String"}) {
+          TestHiddenNotes_character: name
+          TestHiddenNotesPaginationQuery: status
+          notes(first: $count, after: $cursor) @connection(key: "TestHiddenNotes_notes") {
+            TestHiddenNotes_character: totalCount
+            TestHiddenNotesPaginationQuery: totalCount
+            edges { node { id text } }
+          }
+        }
+        """)
+    var hiddenNotes: TestHiddenNotes_character
+
+    @Query("""
+        query TestHiddenNotesQuery($id: ID!) {
+          character(id: $id) { ...TestHiddenNotes_character }
+        }
+        """)
+    var hiddenNotesQuery: TestHiddenNotesQuery
+
+    @Fragment("""
+        fragment TestHiddenRecentNotes_character on Character
+        @refetchable(queryName: "TestHiddenRecentNotesPaginationQuery")
+        @argumentDefinitions(count: {type: "Int", defaultValue: 2}, cursor: {type: "String"}) {
+          notes(last: $count, before: $cursor) @connection(key: "TestHiddenRecentNotes_notes") {
+            TestHiddenRecentNotes_character: totalCount
+            TestHiddenRecentNotesPaginationQuery: totalCount
+            edges { node { id text } }
+          }
+        }
+        """)
+    var hiddenRecentNotes: TestHiddenRecentNotes_character
+
+    @Query("""
+        query TestHiddenRecentNotesQuery($id: ID!) {
+          character(id: $id) { ...TestHiddenRecentNotes_character }
+        }
+        """)
+    var hiddenRecentNotesQuery: TestHiddenRecentNotesQuery
 }

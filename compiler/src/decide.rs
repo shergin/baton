@@ -24,8 +24,9 @@ pub use keys::{KeyPart, SlotRef, constant_json};
 pub use operation::{BuilderPlan, BuilderValue, OperationValue, VariableValue};
 pub use reader::{
     Accessor, AliasGuard, AliasedRead, BoundArgument, ConditionRead, ConnectionMembers, ErrorCheck,
-    ErrorLine, Guarded, LinkedForm, LinkedRead, Read, ReaderPlan, RefetchMembers, SatisfiedCheck,
-    ScalarForm, ScalarRead, SlotAccess, SpreadForm, SpreadGuard, SpreadRead, TypeTest,
+    ErrorLine, Guarded, LinkedForm, LinkedRead, LoadMore, Read, ReaderPlan, RefetchMembers,
+    SatisfiedCheck, ScalarForm, ScalarRead, SlotAccess, SpreadForm, SpreadGuard, SpreadRead,
+    TypeTest,
 };
 
 use crate::names::{NameError, Reserved, Written};
