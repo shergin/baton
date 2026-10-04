@@ -294,6 +294,12 @@ are expected and listed without apology.
 - One `invalidate`: `Environment.invalidate()`. `Store.invalidate()`, which
   marked memory stale but left the image's fetch times, so data read back
   from the image counted as fresh, is internal and does both.
+- Diagnostics point where they are. An error in the schema is positioned
+  in the schema file; it printed `1:1`. Related places print as `note:`
+  lines, and a message Relay writes over several lines prints on one. A
+  state of Relay's programs the lowering relies on never meeting is an
+  internal error at the place it was met, where it lowered into an empty
+  plan.
 - A linked field named `type`, `self`, `protocol` or `any` gets a nested
   lens with `Lens` after its name; it emitted `struct Type` or `struct
   Self`. A field named or aliased `anchor` or `recordID`, which every lens

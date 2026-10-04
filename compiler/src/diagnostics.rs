@@ -8,7 +8,8 @@ use intern::Lookup;
 
 use crate::documents::Document;
 
-/// A rendered diagnostic, ready to print.
+/// A rendered diagnostic, ready to print: one line, and a `note:` line for
+/// each place it relates to.
 #[derive(Debug, Clone)]
 pub struct Rendered {
     pub path: String,
@@ -16,6 +17,7 @@ pub struct Rendered {
     pub column: u32,
     pub severity: &'static str,
     pub message: String,
+    pub notes: Vec<Rendered>,
 }
 
 impl std::fmt::Display for Rendered {
@@ -24,30 +26,58 @@ impl std::fmt::Display for Rendered {
             formatter,
             "{}:{}:{}: {}: {}",
             self.path, self.line, self.column, self.severity, self.message
-        )
+        )?;
+        for note in &self.notes {
+            write!(formatter, "\n{note}")?;
+        }
+        Ok(())
     }
 }
 
-/// Renders a front-end diagnostic against the documents it may refer to.
+/// Renders a front-end diagnostic against the documents it may refer to,
+/// the schema among them, so an error in the schema points into its file.
 pub fn render(diagnostic: &Diagnostic, documents: &[Document]) -> Rendered {
     let location = diagnostic.location();
     let mut message = String::new();
     let _ = write!(message, "{}", diagnostic.message());
-    for related in diagnostic.related_information() {
-        let _ = write!(message, "; {}", related.message);
-    }
     let (path, line, column) = resolve(
         location.source_location(),
         location.span().start as usize,
         documents,
     );
+    let notes = diagnostic
+        .related_information()
+        .iter()
+        .map(|related| {
+            let (path, line, column) = resolve(
+                related.location.source_location(),
+                related.location.span().start as usize,
+                documents,
+            );
+            Rendered {
+                path,
+                line,
+                column,
+                severity: "note",
+                message: one_line(&related.message.to_string()),
+                notes: Vec::new(),
+            }
+        })
+        .collect();
     Rendered {
         path,
         line,
         column,
         severity: "error",
-        message,
+        message: one_line(&message),
+        notes,
     }
+}
+
+/// A message on one line, as an editor shows a diagnostic: Relay's end in
+/// a line of their own with a link.
+fn one_line(message: &str) -> String {
+    message.split_whitespace().collect::<Vec<_>>().join(" ")
 }
 
 fn resolve(key: SourceLocationKey, offset: usize, documents: &[Document]) -> (String, u32, u32) {
@@ -96,5 +126,10 @@ pub fn own(
         column,
         severity,
         message: message.into(),
+        notes: Vec::new(),
     }
 }
+
+#[cfg(test)]
+#[path = "tests/diagnostics_tests.rs"]
+mod tests;

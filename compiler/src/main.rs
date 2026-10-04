@@ -45,13 +45,40 @@ fn main() -> ExitCode {
     };
     match result {
         Ok(()) => ExitCode::SUCCESS,
+        Err(DriverError::Reported) => ExitCode::FAILURE,
         Err(failure) => {
-            if !failure.is_empty() {
-                eprintln!("{failure}");
-            }
+            eprintln!("{failure}");
             ExitCode::FAILURE
         }
     }
+}
+
+/// Why a command failed.
+#[derive(Debug, thiserror::Error)]
+enum DriverError {
+    /// The command line asked for something the command cannot do.
+    #[error("batonc: {0}")]
+    Usage(String),
+    /// `baton.json` could not be read or parsed.
+    #[error("{0}")]
+    Config(String),
+    #[error("batonc: cannot read {path}: {source}")]
+    Read {
+        path: String,
+        #[source]
+        source: std::io::Error,
+    },
+    #[error("batonc: cannot write {path}: {source}")]
+    Write {
+        path: String,
+        #[source]
+        source: std::io::Error,
+    },
+    #[error("batonc: {0}")]
+    Json(#[from] serde_json::Error),
+    /// The diagnostics have been printed.
+    #[error("batonc: the documents have errors")]
+    Reported,
 }
 
 /// Parsed command-line options: `--name value` pairs, repeated `--emit`, and
@@ -62,7 +89,7 @@ struct Options {
     paths: Vec<PathBuf>,
 }
 
-fn parse_options(arguments: &[String]) -> Result<Options, String> {
+fn parse_options(arguments: &[String]) -> Result<Options, DriverError> {
     let mut options = Options {
         values: BTreeMap::new(),
         emits: Vec::new(),
@@ -73,11 +100,11 @@ fn parse_options(arguments: &[String]) -> Result<Options, String> {
         if let Some(name) = argument.strip_prefix("--") {
             let value = iterator
                 .next()
-                .ok_or_else(|| format!("batonc: `--{name}` needs a value"))?;
+                .ok_or_else(|| DriverError::Usage(format!("`--{name}` needs a value")))?;
             if name == "emit" {
-                let (source, output) = value
-                    .split_once('=')
-                    .ok_or_else(|| "batonc: `--emit` takes `<source>=<output>`".to_string())?;
+                let (source, output) = value.split_once('=').ok_or_else(|| {
+                    DriverError::Usage("`--emit` takes `<source>=<output>`".to_string())
+                })?;
                 options
                     .emits
                     .push((PathBuf::from(source), PathBuf::from(output)));
@@ -93,39 +120,44 @@ fn parse_options(arguments: &[String]) -> Result<Options, String> {
 
 /// The schema SDL and its path, from `--schema`, or from the `schema` entry of
 /// the `--config` file. The config also carries the lookups.
-fn read_schema(options: &Options) -> Result<(String, String, Config), String> {
+fn read_schema(options: &Options) -> Result<(String, String, Config), DriverError> {
     let config = match options.values.get("config") {
-        Some(path) => Config::load(Path::new(path))?,
+        Some(path) => Config::load(Path::new(path)).map_err(DriverError::Config)?,
         None => Config::default(),
     };
-    let path = match (options.values.get("schema"), options.values.get("config")) {
-        (Some(schema), _) => PathBuf::from(schema),
-        (None, Some(config_path)) if !config.schema.is_empty() => config.schema_path(Path::new(config_path)),
-        _ => return Err("batonc: `--schema <file>` or `--config <baton.json>` with a `schema` entry is required".to_string()),
-    };
-    let sdl = std::fs::read_to_string(&path)
-        .map_err(|error| format!("batonc: cannot read schema {}: {error}", path.display()))?;
+    let path =
+        match (options.values.get("schema"), options.values.get("config")) {
+            (Some(schema), _) => PathBuf::from(schema),
+            (None, Some(config_path)) if !config.schema.is_empty() => {
+                config.schema_path(Path::new(config_path))
+            }
+            _ => return Err(DriverError::Usage(
+                "`--schema <file>` or `--config <baton.json>` with a `schema` entry is required"
+                    .to_string(),
+            )),
+        };
+    let sdl = std::fs::read_to_string(&path).map_err(|source| DriverError::Read {
+        path: path.display().to_string(),
+        source,
+    })?;
     Ok((sdl, path.to_string_lossy().into_owned(), config))
 }
 
-fn scan(arguments: &[String]) -> Result<(), String> {
+fn scan(arguments: &[String]) -> Result<(), DriverError> {
     let options = parse_options(arguments)?;
     let (documents, errors) = documents::collect(&options.paths);
     for error in &errors {
         eprintln!("{error}");
     }
-    println!(
-        "{}",
-        serde_json::to_string_pretty(&documents).map_err(|error| error.to_string())?
-    );
+    println!("{}", serde_json::to_string_pretty(&documents)?);
     if errors.is_empty() {
         Ok(())
     } else {
-        Err(String::new())
+        Err(DriverError::Reported)
     }
 }
 
-fn plan(arguments: &[String]) -> Result<(), String> {
+fn plan(arguments: &[String]) -> Result<(), DriverError> {
     let options = parse_options(arguments)?;
     let (sdl, schema_path, config) = read_schema(&options)?;
     let (documents, errors) = documents::collect(&options.paths);
@@ -133,27 +165,25 @@ fn plan(arguments: &[String]) -> Result<(), String> {
         eprintln!("{error}");
     }
     if !errors.is_empty() {
-        return Err(String::new());
+        return Err(DriverError::Reported);
     }
     match pipeline::compile(&sdl, &schema_path, &documents, &config) {
         Ok(compiled) => {
-            println!(
-                "{}",
-                serde_json::to_string_pretty(&compiled.plan).map_err(|error| error.to_string())?
-            );
+            println!("{}", serde_json::to_string_pretty(&compiled.plan)?);
             report_timings(&compiled.timings, documents.len());
             Ok(())
         }
         Err(diagnostics) => {
+            let known = with_schema(&documents, &schema_path, &sdl);
             for diagnostic in &diagnostics {
-                eprintln!("{}", diagnostics::render(diagnostic, &documents));
+                eprintln!("{}", diagnostics::render(diagnostic, &known));
             }
-            Err(String::new())
+            Err(DriverError::Reported)
         }
     }
 }
 
-fn generate(arguments: &[String]) -> Result<(), String> {
+fn generate(arguments: &[String]) -> Result<(), DriverError> {
     let options = parse_options(arguments)?;
     let (sdl, schema_path, config) = read_schema(&options)?;
     let out_dir = options.values.get("out").map(PathBuf::from);
@@ -170,8 +200,9 @@ fn generate(arguments: &[String]) -> Result<(), String> {
         Ok(compiled) => compiled.plan.clone(),
         Err(diagnostics) => {
             failed = true;
+            let known = with_schema(&documents, &schema_path, &sdl);
             for diagnostic in diagnostics {
-                rendered.push(diagnostics::render(diagnostic, &documents));
+                rendered.push(diagnostics::render(diagnostic, &known));
             }
             pipeline::Plan::default()
         }
@@ -213,16 +244,25 @@ fn generate(arguments: &[String]) -> Result<(), String> {
         eprintln!("{line}");
     }
     if failed || rendered.iter().any(|line| line.severity == "error") {
-        Err(String::new())
+        Err(DriverError::Reported)
     } else {
         Ok(())
     }
 }
 
-fn write_output(path: &Path, text: &str) -> Result<(), String> {
+/// The documents a diagnostic may point into: the sources and the schema.
+fn with_schema(documents: &[Document], schema_path: &str, sdl: &str) -> Vec<Document> {
+    let mut known = documents.to_vec();
+    known.push(Document::schema(schema_path, sdl));
+    known
+}
+
+fn write_output(path: &Path, text: &str) -> Result<(), DriverError> {
     if let Some(parent) = path.parent() {
-        std::fs::create_dir_all(parent)
-            .map_err(|error| format!("batonc: cannot create {}: {error}", parent.display()))?;
+        std::fs::create_dir_all(parent).map_err(|source| DriverError::Write {
+            path: parent.display().to_string(),
+            source,
+        })?;
     }
     write_if_changed(path, text)
 }
@@ -280,18 +320,20 @@ fn check_property_types(documents: &[Document], plan: &pipeline::Plan) -> Vec<Re
     rendered
 }
 
-fn write_if_changed(path: &Path, text: &str) -> Result<(), String> {
+fn write_if_changed(path: &Path, text: &str) -> Result<(), DriverError> {
     if std::fs::read_to_string(path)
         .map(|existing| existing == text)
         .unwrap_or(false)
     {
         return Ok(());
     }
-    std::fs::write(path, text)
-        .map_err(|error| format!("batonc: cannot write {}: {error}", path.display()))
+    std::fs::write(path, text).map_err(|source| DriverError::Write {
+        path: path.display().to_string(),
+        source,
+    })
 }
 
-fn bench(arguments: &[String]) -> Result<(), String> {
+fn bench(arguments: &[String]) -> Result<(), DriverError> {
     let options = parse_options(arguments)?;
     let (sdl, schema_path, config) = read_schema(&options)?;
     let count: usize = options
@@ -300,7 +342,7 @@ fn bench(arguments: &[String]) -> Result<(), String> {
         .map(|value| {
             value
                 .parse()
-                .map_err(|_| "batonc: `--fragments` must be a number".to_string())
+                .map_err(|_| DriverError::Usage("`--fragments` must be a number".to_string()))
         })
         .transpose()?
         .unwrap_or(500);
@@ -321,7 +363,7 @@ fn bench(arguments: &[String]) -> Result<(), String> {
                 for diagnostic in &diagnostics {
                     eprintln!("{}", diagnostics::render(diagnostic, &documents));
                 }
-                return Err(String::new());
+                return Err(DriverError::Reported);
             }
         }
     }

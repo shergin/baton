@@ -674,7 +674,13 @@ fn lower(
                     false,
                 )
             })
-            .unwrap_or_default();
+            .unwrap_or_else(|| {
+                lowering.internal(
+                    "the reader program has no such operation",
+                    operation.name.location,
+                );
+                Vec::new()
+            });
         let text = programs
             .operation_text
             .operation(operation.name.item)
@@ -685,7 +691,13 @@ fn lower(
                     PrinterOptions::default(),
                 )
             })
-            .unwrap_or_default()
+            .unwrap_or_else(|| {
+                lowering.internal(
+                    "the operation has no printable text",
+                    operation.name.location,
+                );
+                String::new()
+            })
             // Trimmed once, here: the id is the hash of the very text the
             // app holds and sends.
             .trim_end()
@@ -825,7 +837,13 @@ impl Lowering<'_> {
                     .map(|variable| variable.name.item.0.lookup().to_string())
                     .collect()
             })
-            .unwrap_or_default();
+            .unwrap_or_else(|| {
+                self.internal(
+                    "the refetch query Relay generated is missing",
+                    fragment.name.location,
+                );
+                Vec::new()
+            });
         let connection = extract_connection_metadata_from_directive(&fragment.directives)
             .filter(|metadatas| metadatas.len() == 1)
             .and_then(|metadatas| {
@@ -936,7 +954,7 @@ impl Lowering<'_> {
 
     /// The named type of a field on `parent`, for the connection's edge and
     /// page info types.
-    fn field_type_name(&self, parent: Type, field: &str) -> String {
+    fn field_type_name(&self, parent: Type, field: &str, location: common::Location) -> String {
         self.schema
             .named_field(parent, field.intern())
             .map(|id| {
@@ -945,7 +963,13 @@ impl Lowering<'_> {
                     .lookup()
                     .to_string()
             })
-            .unwrap_or_default()
+            .unwrap_or_else(|| {
+                self.internal(
+                    &format!("a connection Relay validated has no `{field}`"),
+                    location,
+                );
+                String::new()
+            })
     }
 
     /// The edge directive or connection handle Relay attached to a field.
@@ -1021,6 +1045,16 @@ impl Lowering<'_> {
         directives
             .named(*CHILDREN_CAN_BUBBLE_METADATA_KEY)
             .is_some()
+    }
+
+    /// Reports a state of Relay's programs the lowering relies on never
+    /// meeting: a fault of the compiler, said where it was met rather than
+    /// lowered into an empty plan.
+    fn internal(&self, what: &str, location: common::Location) {
+        self.diagnostics.borrow_mut().push(Diagnostic::error(
+            format!("internal error: {what}; please report it"),
+            location,
+        ));
     }
 
     /// `@semanticNonNull` makes a nullable field non-null in the absence of
@@ -1165,8 +1199,12 @@ impl Lowering<'_> {
                         connection = Some(ConnectionPlan {
                             key: values.key.lookup().to_string(),
                             storage_key: client_key,
-                            edge_type: self.field_type_name(target, "edges"),
-                            page_info_type: self.field_type_name(target, "pageInfo"),
+                            edge_type: self.field_type_name(target, "edges", field.alias_or_name_location()),
+                            page_info_type: self.field_type_name(
+                                target,
+                                "pageInfo",
+                                field.alias_or_name_location(),
+                            ),
                             after: cursor("after"),
                             before: cursor("before"),
                         });
@@ -1262,7 +1300,10 @@ impl Lowering<'_> {
                                 .lookup()
                                 .to_string()
                         })
-                        .unwrap_or_default(),
+                        .unwrap_or_else(|| {
+                            self.internal("the spread names a fragment the reader program lacks", spread.fragment.location);
+                            String::new()
+                        }),
                     arguments: spread
                         .arguments
                         .iter()
