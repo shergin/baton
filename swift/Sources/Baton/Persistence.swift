@@ -87,6 +87,15 @@ public final class Persistence: Sendable {
         await Task.detached(priority: .userInitiated) { self.drain() }.value
     }
 
+    /// Writes what is queued and closes the file: before a new environment
+    /// takes it over, as at a sign-out. Work queued later opens it again.
+    public func close() async {
+        await Task.detached(priority: .userInitiated) {
+            self.drain()
+            self.disk.withLock { $0.release() }
+        }.value
+    }
+
     /// Empties the image, for a sign-out. Records in memory are untouched;
     /// what the store commits afterwards is written as usual.
     public func removeAll() {

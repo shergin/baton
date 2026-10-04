@@ -226,6 +226,13 @@ final class Disk: @unchecked Sendable {
         return times
     }
 
+    /// Closes the connection, so another image may open the file: for a
+    /// sign-out's new environment, and for tests that run one launch after
+    /// another. Work that comes later opens it again.
+    func release() {
+        close()
+    }
+
     private func close() {
         prepared = nil
         for statement in statements { sqlite3_finalize(statement) }

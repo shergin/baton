@@ -117,7 +117,7 @@ struct OracleTests {
         StoreDump.expectMatches(store, oracle.name)
 
         if oracle.persisted {
-            await persistence.flush()
+            await persistence.close()
             let second = Store(persistence: Persistence(url: image.url))
             second.reportMissing = nil
             let environment = Environment(transport: SilentTransport(), store: second)

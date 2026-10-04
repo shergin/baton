@@ -32,9 +32,10 @@ struct PersistenceTests {
         return Environment(transport: transport, store: store, releaseBufferSize: releaseBufferSize)
     }
 
-    /// Waits until the launch has written what it owes the image.
+    /// Waits until the launch has written what it owes the image, and ends
+    /// it: one launch has the file open at a time, as on a device.
     func finish(_ environment: Environment) async {
-        await environment.store.persistence?.flush()
+        await environment.store.persistence?.close()
     }
 
     /// Commits the fixture through its own plan and waits for the image.
