@@ -106,6 +106,41 @@ struct TokenizerTests {
         #expect(Oracle.leaves(of: store.root, plan: plan).first { $0.path == path }?.value == value)
     }
 
+    /// Runs `body` while this thread's locale writes a decimal comma; per
+    /// thread, so tests running beside it keep their locale.
+    func underADecimalComma(_ body: () throws -> Void) throws {
+        let decimalComma: locale_t? = newlocale(LC_NUMERIC_MASK, "fr_FR.UTF-8", nil)
+        let locale = try #require(decimalComma)
+        let previous = uselocale(locale)
+        defer {
+            uselocale(previous)
+            freelocale(locale)
+        }
+        #expect(strtod("0,5", nil) == 0.5, "the thread's locale writes a decimal comma")
+        try body()
+    }
+
+    @Test("numbers read as JSON writes them while the thread's locale writes a decimal comma, so a comma between two list elements ends the first", arguments: ["tokenizer/response", "tokenizer/integral-floats"])
+    func numbersUnderADecimalComma(_ name: String) throws {
+        try underADecimalComma {
+            let store = Store()
+            store.reportMissing = nil
+            store.commit(try Ingest.normalize(Spec.data(name + ".json"), plan: plan))
+            StoreDump.expectMatches(store, name)
+        }
+    }
+
+    /// Without the bound the number before the cut read on through the
+    /// comma to the end of the response and past it, which Guard Malloc
+    /// (`DYLD_INSERT_LIBRARIES=/usr/lib/libgmalloc.dylib`) stops: the
+    /// fixture is a multiple of 16 bytes long, so it ends at a page.
+    @Test("a response cut off in a list of numbers fails with an ingest error while the thread's locale writes a decimal comma, reading nothing past its end")
+    func cutOffUnderADecimalComma() throws {
+        try underADecimalComma {
+            #expect(throws: IngestError.self) { try Ingest.normalize(Spec.data("tokenizer/cut-off-in-a-number.json"), plan: plan) }
+        }
+    }
+
     @Test("an entity whose id is a custom scalar given as a number is one record, whether its id comes before a link or after it")
     func numericCustomIDs() throws {
         let query = Registry.type("Query")

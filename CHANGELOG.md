@@ -445,6 +445,11 @@ are expected and listed without apology.
   under a placeholder report nothing, since the non-null link above it was
   reported missing, but a LOG field there still told
   `Environment.requiredFieldMissing`, naming the placeholder's key.
+- Floats read as JSON writes them whatever the locale. They were read by
+  the thread's locale, in place in the response, so under one with a
+  decimal comma `0.25` read as 0, `[1,5]` as `[1.5, 5]`, and a response cut
+  off in digits was read past its end; they are read in the C locale now,
+  and never past the number the scan found.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

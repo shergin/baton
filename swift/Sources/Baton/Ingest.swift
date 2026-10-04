@@ -1055,23 +1055,42 @@ public enum Ingest {
             guard position > start else { throw IngestError(offset: position, message: "expected a number") }
         }
 
-        /// A number read where it lies. JSON puts a delimiter after it, which
-        /// stops `strtod` there; a number that ends the input, or one followed
-        /// by a byte `strtod` might read on, is copied to the stack first.
+        /// `strtod_l`, which reads in the locale it is given rather than the
+        /// thread's, whose decimal separator may be a comma where JSON's is
+        /// a point. A null locale is the C locale (`LC_C_LOCALE`), and reads
+        /// faster than one `newlocale` makes. The SDK declares the function
+        /// in a header Swift imports only through a module it names an
+        /// implementation detail, so the C library's symbol is looked up by
+        /// name, once (a handle of -2 is `RTLD_DEFAULT`).
+        nonisolated(unsafe) static let strtodInLocale = unsafeBitCast(
+            dlsym(UnsafeMutableRawPointer(bitPattern: -2), "strtod_l"),
+            to: (@convention(c) (UnsafePointer<CChar>, UnsafeMutablePointer<UnsafeMutablePointer<CChar>?>?, locale_t?) -> Double).self
+        )
+
+        /// A number read where it lies, in the C locale. JSON puts a
+        /// delimiter after it, which stops `strtod_l` there; a number that
+        /// ends the input, one followed by a byte `strtod_l` might read on,
+        /// or one it did not read to the end the scan found, is copied to the
+        /// stack first.
         mutating func parseDouble() throws -> Double {
             let start = position
             try skipNumber()
+            let length = position - start
             if position < count {
                 let next = base[position]
                 if next == 0x2C || next == 0x7D || next == 0x5D || next == 0x20 || next == 0x0A || next == 0x0D || next == 0x09 {
-                    return UnsafeRawPointer(base + start).withMemoryRebound(to: CChar.self, capacity: position - start + 1) { strtod($0, nil) }
+                    let (value, read) = UnsafeRawPointer(base + start).withMemoryRebound(to: CChar.self, capacity: length + 1) { text in
+                        var end: UnsafeMutablePointer<CChar>?
+                        let value = Scanner.strtodInLocale(text, &end, nil)
+                        return (value, end.map { UnsafePointer($0) - text } ?? 0)
+                    }
+                    if read == length { return value }
                 }
             }
-            let length = position - start
             return withUnsafeTemporaryAllocation(of: CChar.self, capacity: length + 1) { buffer in
                 for offset in 0..<length { buffer[offset] = CChar(bitPattern: base[start + offset]) }
                 buffer[length] = 0
-                return strtod(buffer.baseAddress!, nil)
+                return Scanner.strtodInLocale(buffer.baseAddress!, nil, nil)
             }
         }
 
