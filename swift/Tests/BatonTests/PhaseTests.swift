@@ -36,6 +36,61 @@ struct PhaseTests {
         handle.release()
     }
 
+    @Test("an operation that failed on an error with no path fetches again when a view attaches it, and is ready once the error is gone")
+    func unplacedErrorFetchesOnAttach() async throws {
+        let attempts = Attempts()
+        let transport = RecordedTransport { _ in fixture(attempts.next() == 1 ? "character-unplaced-error" : "character-name-shown") }
+        let environment = Environment(transport: transport)
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestStrictQuery(id: "1"))
+        handle.retain()
+        await settled(handle)
+        guard case .failed(let error as FieldErrors) = handle.phase else {
+            Issue.record("expected the unplaced error, got \(handle.phase)")
+            return
+        }
+        #expect(error.errors.map(\.message) == ["rate limited"])
+        handle.release()
+
+        // No record holds the error, so no commit clears it; a fetch does.
+        let again = environment.handle(for: TestStrictQuery(id: "1"))
+        #expect(again === handle)
+        again.retain()
+        await again.settle()
+        #expect(transport.requestCount == 2)
+        guard case .ready = again.phase else {
+            Issue.record("expected ready, got \(again.phase)")
+            return
+        }
+        again.release()
+    }
+
+    @Test("invalidate refetches a retained operation that failed on a field error, and the response that answers the field makes it ready")
+    func invalidateRefetchesAFieldErrorFailure() async throws {
+        let attempts = Attempts()
+        let transport = RecordedTransport { _ in fixture(attempts.next() == 1 ? "character-name-hidden" : "character-name-shown") }
+        let environment = Environment(transport: transport)
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestStrictQuery(id: "1"))
+        handle.retain()
+        await settled(handle)
+        guard case .failed(let error) = handle.phase, error is FieldErrors else {
+            Issue.record("expected the field error, got \(handle.phase)")
+            return
+        }
+        #expect(!handle.isStale)
+        environment.invalidate()
+        #expect(handle.isStale, "the failure's data is in the store, and it predates the invalidation")
+        await handle.settle()
+        #expect(transport.requestCount == 2)
+        guard case .ready = handle.phase else {
+            Issue.record("expected ready, got \(handle.phase)")
+            return
+        }
+        #expect(!handle.isStale)
+        handle.release()
+    }
+
     @Test("a failed phase is not assigned again when an unrelated commit evaluates it to the same failure")
     func failureIsNotReassigned() async throws {
         let environment = Environment(transport: RecordedTransport([TestStrictQuery.name: fixture("character-name-hidden")]))

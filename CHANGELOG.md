@@ -404,6 +404,12 @@ are expected and listed without apology.
   ready until the stream completed, and stayed ready when the stream broke
   after it; one whose last response carried one stayed failed until a
   clean response completed.
+- A `@throwOnFieldError` operation failed by an error with no path fetches
+  again when a view attaches it under `storeOrNetwork`. No record holds
+  such an error, so no commit could clear it, and the failure stayed until
+  `retry()`. A failure on field errors or a `@required` null, whose data is
+  in the store, goes stale as ready data does, so `invalidate()` and the
+  expiration refetch it; `isStale` was false for every failure.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

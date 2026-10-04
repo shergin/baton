@@ -218,8 +218,16 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
     public var isComplete: Bool { store.check(resolved) != .miss }
 
     /// Whether the data predates `Environment.invalidate()` or the expiration.
+    /// A handle that is loading, or failed with no data behind the failure,
+    /// has nothing to go stale; one failed on field errors or a `@required`
+    /// null has its data in the store, and it ages as ready data does.
     public var isStale: Bool {
-        guard case .ready = phase else { return false }
+        switch phase {
+        case .ready, .failed(is FieldErrors), .failed(is RequiredFieldError):
+            break
+        case .loading, .failed:
+            return false
+        }
         if fetchEpoch < store.invalidationEpoch { return true }
         if let expiration = environment?.queryCacheExpiration, let fetchTime, fetchTime + expiration < .now { return true }
         return false
@@ -290,7 +298,10 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
                 phase = .failed(MissingDataError(operationName: Op.name))
             }
         case .storeOrNetwork:
-            if !complete || partial || isStale { fetch() }
+            // An error the last response carried with no field to hold it
+            // is in no record a commit could clear; only a fetch clears it.
+            let failsUnplaced = Op.throwsOnFieldError && !unplaced.isEmpty
+            if !complete || partial || isStale || failsUnplaced { fetch() }
         case .storeAndNetwork, .networkOnly:
             fetch()
         }
