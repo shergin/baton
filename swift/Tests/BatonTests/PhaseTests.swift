@@ -248,8 +248,8 @@ struct PhaseTests {
         }
     }
 
-    @Test("a fetch that starts behind loading is not refreshing, though the fetch it replaced started behind ready data")
-    func aFetchBehindLoadingIsNotRefreshing() async throws {
+    @Test("a handle that shows loading is not refreshing, though a refetch behind its ready data is in flight: not when a networkOnly view attaches over the refetch, nor when a fetch starts behind it")
+    func loadingIsNotRefreshing() async throws {
         let gate = GatedTransport()
         let environment = Environment(transport: gate)
         environment.store.reportMissing = nil
@@ -273,6 +273,7 @@ struct PhaseTests {
             Issue.record("expected loading until its own response, got \(handle.phase)")
             return
         }
+        #expect(!handle.isRefreshing, "the refetch in flight is the view's own response")
         let second = Task { try? await handle.refetch() }
         await until { gate.pending == 2 }
         #expect(!handle.isRefreshing, "nothing shows behind loading")

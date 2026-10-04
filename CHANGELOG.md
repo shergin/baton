@@ -596,9 +596,10 @@ are expected and listed without apology.
   `isRefreshing` was set only behind ready data, so a view showing that data
   and the failure did not see the refetch; `retry()` showed loading over the
   data, and when its fetch failed at the transport the failure became the
-  transport's, which no later commit could clear. A fetch that starts behind
-  loading is not refreshing, though the fetch it replaced started behind
-  data; it kept `isRefreshing` true over a screen that showed nothing.
+  transport's, which no later commit could clear. A handle that shows
+  loading is not refreshing: a `networkOnly` view that attached while a
+  refetch behind ready data was in flight, and a fetch started behind it,
+  kept `isRefreshing` true over a screen that showed nothing.
 - A name the document chose that the generated code needs is an error at
   that name, which says what it clashes with and asks for an alias or a
   rename: a variable named `variables`, or `resolution` in a query or a

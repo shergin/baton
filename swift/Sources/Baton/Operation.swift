@@ -274,8 +274,12 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
         }
         if policy == .networkOnly {
             // What the store holds is not asked; a handle no one shows yet
-            // waits for its own response.
-            if retainCount == 0 { phase = .loading }
+            // waits for its own response, which may be a refetch in flight:
+            // nothing shows behind it.
+            if retainCount == 0 {
+                phase = .loading
+                isRefreshing = false
+            }
             fetch()
             return
         }
