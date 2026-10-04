@@ -15,7 +15,9 @@ the vocabulary is `docs/terminology.md`. These files outrank any default.
 - Reads are synchronous on the main actor; everything else runs off it. Never
   add an asynchronous read API for views. Never parse GraphQL at run time.
 - The response is the oracle: a change to the store, the tokenizer or the
-  record layout is behavior-frozen under `spec/` fixtures.
+  record layout is behavior-frozen under `spec/` fixtures. The fixtures are
+  server responses, not tests; the rules under Tests do not let a change
+  edit one to fit the code.
 - A claim without a bench does not ship. Numbers in docs come from the bench
   suite and are recorded in `BENCHMARKS.md` with device, OS and date.
 - Public docs are updated in the same change that makes them stale: README,
@@ -25,6 +27,17 @@ the vocabulary is `docs/terminology.md`. These files outrank any default.
   the full log stays in the planning notes. Do not relitigate without new
   evidence; when evidence arrives, supersede the record rather than editing
   its history.
+
+## Tests
+
+- Production code comes first; tests serve it and come second.
+- Existing tests never define the library's behaviour; the architecture and
+  the purity of its concepts do. When a test stands in the way of the right
+  design, the test changes.
+- Only Opus-tier models write or update tests; Fable does not. Fable's part
+  in testing is conceptual and strategic: what to prove and why. When Fable
+  runs the main context, it hands writing and updating tests to an
+  Opus-based subagent.
 
 ## Git
 

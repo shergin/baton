@@ -1,9 +1,11 @@
 # What earns a concept
 
-A concept sits in the vocabulary only when real screens demand it and no
-composition of the existing concepts expresses it. Both clauses. Everything
-else is a directive the compiler already understands, a value on a handle, or
-an example.
+Baton does not try to solve every problem a data layer meets. It does more
+with less: few concepts, each with a clear design and a careful
+implementation. A concept sits in the vocabulary only when real screens
+demand it and no composition of the existing concepts expresses it. Both
+clauses. Everything else is a directive the compiler already understands, a
+value on a handle, or an example.
 
 ## Why
 
@@ -13,6 +15,11 @@ a flag on codegen. Ten years later the client has four codegen modes, a
 dozen cache policies and a documentation site explaining which combinations
 work. The complaints were real; the answers multiplied the surface instead of
 fixing the mechanism.
+
+Breadth also costs depth. Each concept has to be designed, measured, proved
+against the oracle and built once per runtime; a client that covers twice the
+ground does each part half as well, and the half shows in the first frame
+and in the bugs.
 
 The opposite failure is a client so pure it cannot do the job. Pagination,
 optimistic updates and error handling are real; a store that refuses them is
@@ -37,6 +44,8 @@ gets a type in code, and a principle file if it constrains the others.
 
 - Subtraction is a contribution. A concept that stops paying for itself is
   removed before 1.0.
+- Leaving a problem unsolved is a fair answer: the app, an example or the
+  watch list can own it. A half-built feature in the library is not.
 - Requests that fail the test become examples: here is how to do that with
   what exists.
 - Page-based pagination, imperative store updaters, a binary wire format and

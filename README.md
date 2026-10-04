@@ -4,9 +4,9 @@
 
 # Baton 🥖
 
-**Relay for SwiftUI and Compose.** A fragment beside every view, one request
-per screen, cached data in the first frame, and a re-render only where a
-field changed.
+**Baton brings Relay to SwiftUI and Compose.** A fragment beside every view,
+one request per screen, cached data in the first frame, and a re-render only
+where a field changed.
 
 A view declares the GraphQL fragment it reads, beside its body. The compiler
 aggregates the fragments of a screen into one operation, validates everything
