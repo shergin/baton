@@ -142,10 +142,11 @@ exposes `isInFlight`. `@Mutation("…") var star: StarMutation.Action`.
 **Record.** Relay: a normalized object in the store. Here: an observable
 object identified by typename plus key, holding interned slots, per-field
 errors and type-membership bits. Its values are sized by what was written,
-not by how many storage keys the type has. A record `@deleteRecord` removed
-is *deleted*: links to it read as null, lists skip it, the bodies that read
-its fields and those that hold a link to it are told, and a payload that
-names it again revives it, told the same way; see
+not by how many storage keys the type has, and the keys with arguments
+written to it are kept in a short list apart. A record `@deleteRecord`
+removed is *deleted*: links to it read as null, lists skip it, the bodies
+that read its fields and those that hold a link to it are told, and a
+payload that names it again revives it, told the same way; see
 [A deletion is announced by its commit](decisions/deletion-is-announced-by-its-commit.md).
 
 **Key.** The configured identity fields of a type (default `id`), combined
@@ -159,9 +160,13 @@ and act only when exactly one live record has the id.
 the key under which a value is stored. Here: computed by the compiler and
 emitted as a constant; the process numbers each key on first use, and a
 record stores the value at that number, so a read through a constant hashes
-nothing. A field read through an interface or union reads an *abstract
-slot*: its key's slot on each concrete type, resolved on that type's first
-read. A key with variables is resolved once per [owner](#generated). See
+nothing. Keys with arguments, of which a session makes one per cursor and
+per id, are numbered apart from the type's other keys, and a record keeps
+those written to it in a list sorted by number, so they never widen the
+records they are not written to. A field read through an interface or union
+reads an *abstract slot*: its key's slot on each concrete type, resolved on
+that type's first read. A key with variables is resolved once per
+[owner](#generated). See
 [Slots are numbered by the process](decisions/slots-are-numbered-by-the-process.md).
 
 **Invalidation channel.** Baton's word; Relay tells a fragment's subscribers

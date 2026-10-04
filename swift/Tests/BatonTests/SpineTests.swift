@@ -178,6 +178,61 @@ struct SpineTests {
         #expect(counter.fired == 0, "slot \(sibling.index) and the name's slot \(name.index) are channels apart")
     }
 
+    @Test("keys with arguments, one per cursor, leave the dense numbering of their type alone, so a field first used after a hundred of them is stored beside the type's other fields")
+    func keysWithArgumentsAreNumberedApart() throws {
+        // A type of its own, so that no other test numbers keys on it.
+        let paged = Registry.type("Paged_" + UUID().uuidString.replacingOccurrences(of: "-", with: ""))
+        let query = Registry.type("Query")
+        let id = Registry.slot(paged, "id")
+        let pages = (0..<100).map { Registry.slot(paged, #"items(after:"c\#($0)")"#) }
+        let late = Registry.slot(paged, "late")
+        #expect(id.index == 0)
+        #expect(late.index == 1, "the dense keys of the type are id and late, whatever the cursors made")
+        #expect(Set(pages.map(\.index)).count == 100, "each cursor's key has a slot of its own")
+
+        let link = Registry.slot(query, "paged" + paged.name)
+        let plan = Plan(root: Selection(type: query, hasID: false, fields: [
+            .linked("paged", key: .fixed(link), plural: false, selection: Selection(type: paged, hasID: true, fields: [
+                .scalar("id", key: .fixed(id), kind: .string, list: false),
+                .scalar("late", key: .fixed(late), kind: .string, list: false),
+                .scalar("items", key: .fixed(pages[57]), kind: .string, list: false),
+            ])),
+        ])).resolve(.none)
+        let store = Store()
+        store.commit(try Ingest.normalize(Data(#"{"data":{"paged":{"id":"1","late":"read","items":"page 57"}}}"#.utf8), plan: plan))
+        let record = try #require(store.existing(paged.name + ":1"))
+        #expect(record.read(late) == .string("read"))
+        #expect(record.read(pages[57]) == .string("page 57"))
+        #expect(record.read(pages[56]) == .missing)
+    }
+
+    @Test("root fields with arguments read back their own values whatever order they arrive in, and a commit of one wakes no body that read another")
+    func rootFieldsWithArgumentsKeepTheirOwnValues() throws {
+        let query = Registry.type("Query")
+        let prefix = "spine_" + UUID().uuidString.replacingOccurrences(of: "-", with: "")
+        // Numbered in this order, written in the reverse one.
+        let keys = (0..<10).map { Registry.slot(query, "\(prefix)(n:\($0))") }
+        func commit(_ number: Int, _ value: String, into store: Store) throws {
+            let plan = Plan(root: Selection(type: query, hasID: false, fields: [
+                .scalar("field", key: .fixed(keys[number]), kind: .string, list: false),
+            ])).resolve(.none)
+            store.commit(try Ingest.normalize(Data(#"{"data":{"field":"\#(value)"}}"#.utf8), plan: plan))
+        }
+        let store = Store()
+        for number in (0..<10).reversed() { try commit(number, "value \(number)", into: store) }
+        #expect(keys.map { store.root.read($0) } == (0..<10).map { Value.string("value \($0)") })
+
+        final class Counter: @unchecked Sendable { var fired = 0 }
+        let counter = Counter()
+        withObservationTracking { _ = store.root.read(keys[3]) } onChange: { counter.fired += 1 }
+        try commit(4, "changed", into: store)
+        #expect(counter.fired == 0, "the body read another root field")
+        try commit(3, "changed", into: store)
+        #expect(counter.fired == 1)
+        #expect(store.root.read(keys[3]) == .string("changed"))
+        #expect(store.root.read(keys[4]) == .string("changed"))
+    }
+
     @Test("a lens read never writes: a root field the store lacks reads nil until the check binds its lookup to the cached entity")
     func lookupBindsInTheCheck() throws {
         final class Misses: @unchecked Sendable { var reads: [String] = [] }

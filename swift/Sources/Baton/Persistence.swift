@@ -25,6 +25,9 @@ public final class Persistence: Sendable {
     struct Snapshot: Sendable {
         let record: Record
         let values: ContiguousArray<Value>
+        /// The keys with arguments, as `~index`, and their values.
+        let argumentIDs: ContiguousArray<Int32>
+        let argumentValues: ContiguousArray<Value>
         let errors: [Int32: FieldError]?
         let deleted: Bool
     }

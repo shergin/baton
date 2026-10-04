@@ -541,7 +541,8 @@ public final class Store {
             if record.deleted { setDeleted(record, false, &transaction, &undo) }
             let range = Int(changes.starts[index])..<Int(changes.starts[index + 1])
             if created[index], !range.isEmpty {
-                // A new record makes room once, for the highest slot it receives.
+                // A new record makes room once, for the highest dense slot it
+                // receives.
                 var highest: Int32 = 0
                 for position in range where changes.entries[position].slot.index > highest {
                     highest = changes.entries[position].slot.index
@@ -655,7 +656,7 @@ public final class Store {
     /// or keep its old edges in the image: the image forgets it instead, so
     /// the next read fetches it.
     private func editable(_ key: String) -> Record? {
-        if let connection = records[key], !connection.deleted, connection.hydrated || connection.slotCount > 0 {
+        if let connection = records[key], !connection.deleted, connection.hydrated || !connection.isEmpty {
             return connection
         }
         forgets?.keys.append(key)
@@ -695,10 +696,9 @@ public final class Store {
     /// by node; the page info merges per direction. A page fetched after a
     /// cursor that is no longer the end is ignored.
     private func merge(_ connection: Record, page: Record, slots: ConnectionSlots, mode: ConnectionMode, _ transaction: inout Transaction, _ undo: inout [Undo]) {
-        for index in 0..<page.slotCount where index != Int(slots.edges.index) && index != Int(slots.pageInfoLink.index) {
-            let value = page.peek(index: index)
-            if case .missing = value { continue }
-            set(connection, Slot(type: slots.connection, index: Int32(index)), value, &transaction, &undo)
+        page.forEachValue { slot, value in
+            if slot.index == slots.edges.index || slot.index == slots.pageInfoLink.index { return }
+            set(connection, Slot(type: slots.connection, index: slot.index), value, &transaction, &undo)
         }
 
         let pageInfo: Record
@@ -754,10 +754,8 @@ public final class Store {
         guard case let (connection, slots)? = editableConnection(connectionKey), edge.type == slots.edge else { return }
         if contains(connection, node: Store.node(of: edge, slots.node), slots) { return }
         let copy = ownEdge(of: connection, slots, &transaction, &undo)
-        for index in 0..<edge.slotCount {
-            let value = edge.peek(index: index)
-            if case .missing = value { continue }
-            set(copy, Slot(type: slots.edge, index: Int32(index)), value, &transaction, &undo)
+        edge.forEachValue { slot, value in
+            set(copy, Slot(type: slots.edge, index: slot.index), value, &transaction, &undo)
         }
         append(copy, to: connection, slots, prepend: prepend, &transaction, &undo)
     }
@@ -813,10 +811,8 @@ public final class Store {
     /// it read as null and lists skip it; the batch's end tells the bodies
     /// that hold a link to it.
     private func delete(_ record: Record, _ transaction: inout Transaction, _ undo: inout [Undo]) {
-        for index in 0..<record.slotCount {
-            let value = record.peek(index: index)
-            if case .missing = value { continue }
-            set(record, Slot(type: record.type, index: Int32(index)), .missing, &transaction, &undo)
+        record.forEachValue { slot, _ in
+            set(record, slot, .missing, &transaction, &undo)
         }
         setDeleted(record, true, &transaction, &undo)
     }
@@ -966,7 +962,7 @@ public final class Store {
                 // it. With the image at hand it is walked, so its merged
                 // pages come back with it, and one the image has no row for
                 // stays a miss.
-                if let connection, case .ref(let found) = record.peek(connection.slot), found.swept || found.slotCount == 0 {
+                if let connection, case .ref(let found) = record.peek(connection.slot), found.swept || found.isEmpty {
                     guard let disk else { return false }
                     let merged = live(found, disk)
                     if merged !== found { record.write(connection.slot, .ref(merged)) }
@@ -992,7 +988,7 @@ public final class Store {
     /// was deleted is known before the walk decides to enter it.
     private func live(_ found: Record, _ disk: Disk) -> Record {
         let record = found.swept ? target(key: found.key, type: found.type, entity: found.isEntity) : found
-        if !record.hydrated, record.slotCount == 0, record !== root, record !== mutationRoot, record !== subscriptionRoot {
+        if !record.hydrated, record.isEmpty, record !== root, record !== mutationRoot, record !== subscriptionRoot {
             _ = hydrate(record, from: disk)
         }
         return record

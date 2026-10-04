@@ -88,9 +88,11 @@ final class Disk: @unchecked Sendable {
     /// By type, then by slot index: the name id, -1 when not asked yet, -2
     /// for a slot that is never written.
     private var slotNames: [[Int32]] = []
+    /// The same for keys with arguments, by `~index`.
+    private var argumentNames: [[Int32]] = []
     /// By type: the name id of the type's name, or -1.
     private var typeNames: [Int32] = []
-    /// By type, then by name id: the slot index, or -1.
+    /// By type, then by name id: the slot index, or `Int32.min`.
     private var slots: [[Int32]] = []
     /// By name id: the type of that name.
     private var types: [TypeID?] = []
@@ -254,6 +256,7 @@ final class Disk: @unchecked Sendable {
         ids.removeAll()
         unwritten.removeAll()
         slotNames.removeAll()
+        argumentNames.removeAll()
         typeNames.removeAll()
         slots.removeAll()
         types.removeAll()
@@ -427,9 +430,9 @@ final class Disk: @unchecked Sendable {
         guard name >= 0, name < names.count else { return nil }
         let table = Int(type.raw)
         if table >= slots.count { slots.append(contentsOf: repeatElement([], count: table + 1 - slots.count)) }
-        if name >= slots[table].count { slots[table].append(contentsOf: repeatElement(-1, count: names.count - slots[table].count)) }
+        if name >= slots[table].count { slots[table].append(contentsOf: repeatElement(.min, count: names.count - slots[table].count)) }
         var index = slots[table][name]
-        if index < 0 {
+        if index == .min {
             index = Registry.slot(type, names[name]).index
             slots[table][name] = index
         }
@@ -508,13 +511,21 @@ final class Disk: @unchecked Sendable {
         scratch.append((snapshot.deleted ? 1 : 0) | (record.isEntity ? 2 : 0))
         append(varint: UInt64(name(of: record.type)))
         for index in snapshot.values.indices {
-            if case .missing = snapshot.values[index] { continue }
-            let name = name(of: Slot(type: record.type, index: Int32(index)))
-            if name < 0 { continue }
-            append(varint: UInt64(name))
-            append(snapshot.values[index], error: snapshot.errors?[Int32(index)])
+            appendCell(Slot(type: record.type, index: Int32(index)), snapshot.values[index], snapshot.errors)
+        }
+        for position in snapshot.argumentIDs.indices {
+            appendCell(Slot(type: record.type, index: ~snapshot.argumentIDs[position]), snapshot.argumentValues[position], snapshot.errors)
         }
         return upsert(prepared.upsertRecord, record.key)
+    }
+
+    /// Appends a record's cell: the key's name and the value with its error.
+    private func appendCell(_ slot: Slot, _ value: Value, _ errors: [Int32: FieldError]?) {
+        if case .missing = value { return }
+        let name = name(of: slot)
+        if name < 0 { return }
+        append(varint: UInt64(name))
+        append(value, error: errors?[slot.index])
     }
 
     private func put(_ field: Persistence.RootField, _ prepared: Prepared) -> Bool {
@@ -589,15 +600,19 @@ final class Disk: @unchecked Sendable {
     /// The name id of a slot's storage key; negative for a slot that is never
     /// written.
     private func name(of slot: Slot) -> Int32 {
-        let table = Int(slot.type.raw)
-        let index = Int(slot.index)
-        if table >= slotNames.count { slotNames.append(contentsOf: repeatElement([], count: table + 1 - slotNames.count)) }
-        if index >= slotNames[table].count { slotNames[table].append(contentsOf: repeatElement(-1, count: index + 1 - slotNames[table].count)) }
-        if slotNames[table][index] == -1 {
+        if slot.index < 0 { return name(of: slot, at: Int(~slot.index), in: &argumentNames) }
+        return name(of: slot, at: Int(slot.index), in: &slotNames)
+    }
+
+    private func name(of slot: Slot, at index: Int, in table: inout [[Int32]]) -> Int32 {
+        let type = Int(slot.type.raw)
+        if type >= table.count { table.append(contentsOf: repeatElement([], count: type + 1 - table.count)) }
+        if index >= table[type].count { table[type].append(contentsOf: repeatElement(-1, count: index + 1 - table[type].count)) }
+        if table[type][index] == -1 {
             let storageKey = Registry.storageKey(slot)
-            slotNames[table][index] = Disk.requestState.contains(storageKey) ? -2 : intern(storageKey)
+            table[type][index] = Disk.requestState.contains(storageKey) ? -2 : intern(storageKey)
         }
-        return slotNames[table][index]
+        return table[type][index]
     }
 
     // MARK: Encoding

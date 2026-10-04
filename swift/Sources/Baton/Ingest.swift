@@ -96,12 +96,20 @@ public struct ChangeSet: Sendable {
         var sorted = ContiguousArray<Entry>()
         var kept = 0
         entries.withUnsafeBufferPointer { source in
+            // The highest dense index, and the highest `~index` of a key
+            // with arguments, which the tables below place after the dense.
             var highest: Int32 = -1
+            var highestArgument: Int32 = -1
             var counts = ContiguousArray<Int32>(repeating: 0, count: recordCount + 1)
             counts.withUnsafeMutableBufferPointer { counts in
                 for entry in source {
                     counts[Int(entry.record) &+ 1] &+= 1
-                    if entry.slot.index > highest { highest = entry.slot.index }
+                    let index = entry.slot.index
+                    if index > highest {
+                        highest = index
+                    } else if index < 0, ~index > highestArgument {
+                        highestArgument = ~index
+                    }
                 }
                 for index in 0..<recordCount { counts[index &+ 1] &+= counts[index] }
             }
@@ -116,9 +124,10 @@ public struct ChangeSet: Sendable {
                 }
                 initialized = total
             }
-            // The record that last kept each slot index, and where it kept it.
-            var keeper = ContiguousArray<Int32>(repeating: -1, count: Int(highest) + 1)
-            var place = ContiguousArray<Int32>(repeating: 0, count: Int(highest) + 1)
+            // The record that last kept each slot, and where it kept it.
+            let width = Int(highest) + 1 + Int(highestArgument) + 1
+            var keeper = ContiguousArray<Int32>(repeating: -1, count: width)
+            var place = ContiguousArray<Int32>(repeating: 0, count: width)
             sorted.withUnsafeMutableBufferPointer { sorted in
                 keeper.withUnsafeMutableBufferPointer { keeper in
                     place.withUnsafeMutableBufferPointer { place in
@@ -126,7 +135,8 @@ public struct ChangeSet: Sendable {
                             grouped[record] = Int32(kept)
                             for position in Int(counts[record])..<Int(counts[record &+ 1]) {
                                 let entry = sorted[position]
-                                let index = Int(entry.slot.index)
+                                let slot = entry.slot.index
+                                let index = slot >= 0 ? Int(slot) : Int(highest) &+ 1 &+ Int(~slot)
                                 if keeper[index] == Int32(record) {
                                     sorted[Int(place[index])] = entry
                                 } else {

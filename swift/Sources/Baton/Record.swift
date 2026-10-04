@@ -19,15 +19,25 @@ public final class Record: Observable {
     /// Whether the collector took the record out of the store. A link that
     /// still holds it is repointed when the image is read.
     private(set) var swept = false
+    /// The values of keys without arguments, by slot index.
     private var values: ContiguousArray<Value>
+    /// The keys with arguments written to the record, as `~index` in
+    /// ascending order, and their values beside them. A key per cursor or
+    /// per id is numbered for the life of the process; kept apart, it widens
+    /// only the records it is written to. Isolated to the main actor, so no
+    /// two accesses overlap and the dynamic exclusivity check each search
+    /// would pay is left out.
+    @exclusivity(unchecked)
+    private var argumentIDs: ContiguousArray<Int32> = []
+    @exclusivity(unchecked)
+    private var argumentValues: ContiguousArray<Value> = []
     /// Field errors by slot index; allocated when the first error lands.
     private var errors: [Int32: FieldError]?
     nonisolated private let registrar = ObservationRegistrar()
 
     /// Values are sized by what is written, not by how many storage keys the
-    /// type has: a cursor-paginated field registers a slot per page on its
-    /// parent type, and records of that type must not pay for pages they
-    /// never saw.
+    /// type has: a record makes room up to the highest dense slot written to
+    /// it.
     init(type: TypeID, key: String, idOffset: Int32 = -1) {
         self.type = type
         self.key = key
@@ -59,23 +69,68 @@ public final class Record: Observable {
     @inline(__always)
     public func read(_ slot: Slot) -> Value {
         registrar.access(self, keyPath: Record.channel(slot.index))
-        let index = Int(slot.index)
-        return index < values.count ? values[index] : .missing
+        return peek(slot)
     }
 
     /// Reads without registering; for the store's own bookkeeping.
+    @inline(__always)
     func peek(_ slot: Slot) -> Value {
+        // One comparison for a dense slot the record has room for; a key
+        // with arguments is negative and takes the call.
         let index = Int(slot.index)
-        return index < values.count ? values[index] : .missing
+        if UInt(bitPattern: index) < UInt(values.count) { return values[index] }
+        if index >= 0 { return .missing }
+        let position = argumentLookup(slot.index)
+        return position >= 0 ? argumentValues[position] : .missing
     }
 
-    /// Reads a slot by index without registering; for copying between records.
-    func peek(index: Int) -> Value {
-        index < values.count ? values[index] : .missing
+    /// Where a key with arguments is among the record's, or -1. Out of line,
+    /// so that the reads of dense slots stay small where they are inlined.
+    @inline(never)
+    private func argumentLookup(_ index: Int32) -> Int {
+        let (position, found) = argumentPosition(index)
+        return found ? position : -1
     }
 
-    /// How many slots hold a value or could; for copying between records.
-    var slotCount: Int { values.count }
+    /// Where a key with arguments is among the record's, or where it would
+    /// go. The list is searched by halves, since the root holds a key per id
+    /// a session looked up, and without a branch per step, whose outcome no
+    /// predictor could guess.
+    private func argumentPosition(_ index: Int32) -> (position: Int, found: Bool) {
+        let id = ~index
+        let count = argumentIDs.count
+        guard count > 0 else { return (0, false) }
+        // The last position whose id is at most `id`, or 0.
+        var base = 0
+        var length = count
+        while length > 1 {
+            let half = length >> 1
+            base = argumentIDs[base &+ half] <= id ? base &+ half : base
+            length &-= half
+        }
+        let found = argumentIDs[base]
+        if found == id { return (base, true) }
+        return (found < id ? base &+ 1 : base, false)
+    }
+
+    /// Whether the record has never been written to, nor filled from the
+    /// image.
+    var isEmpty: Bool { values.isEmpty && argumentIDs.isEmpty }
+
+    /// Calls `body` with every slot that holds a value, for copying between
+    /// records. `body` may write the slot it is given.
+    func forEachValue(_ body: (Slot, Value) -> Void) {
+        for index in values.indices {
+            let value = values[index]
+            if case .missing = value { continue }
+            body(Slot(type: type, index: Int32(index)), value)
+        }
+        for position in argumentIDs.indices {
+            let value = argumentValues[position]
+            if case .missing = value { continue }
+            body(Slot(type: type, index: ~argumentIDs[position]), value)
+        }
+    }
 
     /// Makes the values long enough to hold `index`, every new slot missing.
     @inline(__always)
@@ -89,6 +144,11 @@ public final class Record: Observable {
     /// only then.
     @discardableResult
     func write(_ slot: Slot, _ value: Value) -> Bool {
+        if slot.index < 0 {
+            guard writeArgument(slot.index, value) != nil else { return false }
+            notify(slot)
+            return true
+        }
         let index = Int(slot.index)
         grow(to: index)
         if values[index] == value { return false }
@@ -104,12 +164,30 @@ public final class Record: Observable {
         // A slot of another type would land at an index this type uses for
         // another field.
         assert(slot.type == type, "a \(slot.type.name) slot written into a \(type.name) record")
+        if slot.index < 0 { return writeArgument(slot.index, value) }
         let index = Int(slot.index)
         grow(to: index)
         let previous = values[index]
         if previous == value { return nil }
         values[index] = value
         return previous
+    }
+
+    /// Writes a key with arguments without notifying; the previous value
+    /// when it changed. A key the record lacks is inserted in its place,
+    /// which is the end for the key interned last.
+    private func writeArgument(_ index: Int32, _ value: Value) -> Value? {
+        let (position, found) = argumentPosition(index)
+        if found {
+            let previous = argumentValues[position]
+            if previous == value { return nil }
+            argumentValues[position] = value
+            return previous
+        }
+        if case .missing = value { return nil }
+        argumentIDs.insert(~index, at: position)
+        argumentValues.insert(value, at: position)
+        return .missing
     }
 
     /// Notifies observers of a slot whose value a batch has already changed.
@@ -150,15 +228,18 @@ public final class Record: Observable {
             if let only { return ObjectIdentifier(record) == only }
             return targets.contains(ObjectIdentifier(record))
         }
-        for index in values.indices {
-            switch values[index] {
-            case .ref(let target) where isTarget(target):
-                registrar.withMutation(of: self, keyPath: Record.channel(Int32(index))) {}
-            case .refs(let list) where list.contains(where: { $0.map(isTarget) ?? false }):
-                registrar.withMutation(of: self, keyPath: Record.channel(Int32(index))) {}
-            default:
-                continue
+        @inline(__always) func links(_ value: Value) -> Bool {
+            switch value {
+            case .ref(let target): isTarget(target)
+            case .refs(let list): list.contains(where: { $0.map(isTarget) ?? false })
+            default: false
             }
+        }
+        for index in values.indices where links(values[index]) {
+            registrar.withMutation(of: self, keyPath: Record.channel(Int32(index))) {}
+        }
+        for position in argumentIDs.indices where links(argumentValues[position]) {
+            registrar.withMutation(of: self, keyPath: Record.channel(~argumentIDs[position])) {}
         }
     }
 
@@ -170,13 +251,14 @@ public final class Record: Observable {
     /// anything still holding it reads missing data and reports it.
     func clear() {
         for index in values.indices { values[index] = .missing }
+        for position in argumentValues.indices { argumentValues[position] = .missing }
         errors = nil
         swept = true
     }
 
     /// The record as the image stores it: its values and errors now.
     func snapshot() -> Persistence.Snapshot {
-        Persistence.Snapshot(record: self, values: values, errors: errors, deleted: deleted)
+        Persistence.Snapshot(record: self, values: values, argumentIDs: argumentIDs, argumentValues: argumentValues, errors: errors, deleted: deleted)
     }
 
     /// The field error beside a slot, without registering the read.
@@ -187,11 +269,9 @@ public final class Record: Observable {
     /// Every slot that holds a value, with its error; for the store dumps
     /// under `spec/`.
     package var storedSlots: [(slot: Slot, value: Value, error: FieldError?)] {
-        values.indices.compactMap { index in
-            if case .missing = values[index] { return nil }
-            let slot = Slot(type: type, index: Int32(index))
-            return (slot, values[index], errors?[Int32(index)])
-        }
+        var stored: [(slot: Slot, value: Value, error: FieldError?)] = []
+        forEachValue { slot, value in stored.append((slot, value, errors?[slot.index])) }
+        return stored
     }
 
     /// Notes that the record's row has been read from the image.
@@ -203,12 +283,14 @@ public final class Record: Observable {
     /// its field error with it, silently. A slot that holds a value is left
     /// alone: memory is the truth. Returns whether the slot was filled.
     func fill(_ slot: Slot, _ value: Value, error: FieldError?) -> Bool {
-        let index = Int(slot.index)
-        if index < values.count {
-            guard case .missing = values[index] else { return false }
+        guard case .missing = peek(slot) else { return false }
+        if slot.index < 0 {
+            _ = writeArgument(slot.index, value)
+        } else {
+            let index = Int(slot.index)
+            grow(to: index)
+            values[index] = value
         }
-        grow(to: index)
-        values[index] = value
         if let error {
             if errors == nil { errors = [:] }
             errors?[slot.index] = error
@@ -224,15 +306,18 @@ public final class Record: Observable {
 
     /// Drops links to swept records, silently; used on the root.
     func prune(_ swept: Set<ObjectIdentifier>) {
-        for index in values.indices {
-            switch values[index] {
-            case .ref(let target) where swept.contains(ObjectIdentifier(target)):
-                values[index] = .missing
-            case .refs(let targets) where targets.contains(where: { $0.map { swept.contains(ObjectIdentifier($0)) } ?? false }):
-                values[index] = .missing
-            default:
-                continue
+        func linksSwept(_ value: Value) -> Bool {
+            switch value {
+            case .ref(let target): swept.contains(ObjectIdentifier(target))
+            case .refs(let targets): targets.contains(where: { $0.map { swept.contains(ObjectIdentifier($0)) } ?? false })
+            default: false
             }
+        }
+        for index in values.indices where linksSwept(values[index]) {
+            values[index] = .missing
+        }
+        for position in argumentValues.indices where linksSwept(argumentValues[position]) {
+            argumentValues[position] = .missing
         }
     }
 
@@ -242,26 +327,39 @@ public final class Record: Observable {
     // the type that a key path reaches may have this body.
     nonisolated subscript(channel index: Int32) -> UInt8 { UInt8(truncatingIfNeeded: index) }
 
-    /// The channel of each slot index, made on first use. Isolated to the
-    /// main actor, so no two accesses overlap and the dynamic exclusivity
-    /// check every read would pay is left out.
+    /// The channel of each dense slot index, and of each key with
+    /// arguments by `~index`, made on first use. Isolated to the main actor,
+    /// so no two accesses overlap and the dynamic exclusivity check every
+    /// read would pay is left out.
     @exclusivity(unchecked)
     private static var channels: ContiguousArray<KeyPath<Record, UInt8>> = []
+    @exclusivity(unchecked)
+    private static var argumentChannels: ContiguousArray<KeyPath<Record, UInt8>> = []
 
     /// The invalidation channel of a slot: a read registers on it, and only
     /// a change of that slot notifies it.
     @inline(__always)
     static func channel(_ index: Int32) -> KeyPath<Record, UInt8> {
         let position = Int(index)
-        if position < channels.count { return channels[position] }
-        return makeChannels(through: position)
+        if UInt(bitPattern: position) < UInt(channels.count) { return channels[position] }
+        return makeChannels(through: index)
     }
 
-    private static func makeChannels(through position: Int) -> KeyPath<Record, UInt8> {
-        while channels.count <= position {
-            channels.append(\Record.[channel: Int32(channels.count)])
+    /// The channel of a key with arguments, or of a dense slot index not
+    /// seen yet, made if it is new.
+    @inline(never)
+    private static func makeChannels(through index: Int32) -> KeyPath<Record, UInt8> {
+        if index < 0, Int(~index) < argumentChannels.count { return argumentChannels[Int(~index)] }
+        if index >= 0 {
+            while channels.count <= Int(index) {
+                channels.append(\Record.[channel: Int32(channels.count)])
+            }
+            return channels[Int(index)]
         }
-        return channels[position]
+        while argumentChannels.count <= Int(~index) {
+            argumentChannels.append(\Record.[channel: ~Int32(argumentChannels.count)])
+        }
+        return argumentChannels[Int(~index)]
     }
 }
 
