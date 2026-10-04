@@ -285,3 +285,16 @@ fn on_error_null_sends_the_value_and_types_non_null_fields_by_their_semantic_nul
     assert!(!plain_file.contains("errorBehavior"));
     assert!(plain_file.contains("public var totalCount: Int {"));
 }
+
+#[test]
+fn a_persisted_id_is_the_hash_of_the_text_the_app_holds() {
+    let (sdl, path) = schema();
+    let compiled = compile(&sdl, &path, &[document(QUERY)], &Config::default())
+        .unwrap_or_else(|errors| panic!("{errors:?}"));
+    let operation = &compiled.plan.operations[0];
+    assert_eq!(operation.text, operation.text.trim_end());
+    assert_eq!(
+        operation.id,
+        format!("{:x}", md5::compute(operation.text.as_bytes()))
+    );
+}

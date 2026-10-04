@@ -40,7 +40,7 @@ nonisolated public struct Fixture: Baton.Query {
     }
 
     public static let name = "Fixture"
-    public static let persistedID = "8a0697b90ec687e4e75a8b8336cd6537"
+    public static let persistedID = "3d9dc678bfac56c131a97a41a12a85aa"
     public static let text = #"""
 query Fixture(
   $page: Int
@@ -247,7 +247,7 @@ nonisolated public struct TestEpisodesQuery: Baton.Query {
     }
 
     public static let name = "TestEpisodesQuery"
-    public static let persistedID = "f2cffc3168234fe6702241f611873ada"
+    public static let persistedID = "d3ca7bbeabf349fc8eb63ff4d3479894"
     public static let text = #"""
 query TestEpisodesQuery(
   $id: ID!
@@ -317,7 +317,7 @@ nonisolated public struct TestHeaderQuery: Baton.Query {
     }
 
     public static let name = "TestHeaderQuery"
-    public static let persistedID = "35a64d23c7810d837afdfc339ae668ee"
+    public static let persistedID = "fef41cbb99eebe5a4620d97ef4e6b842"
     public static let text = #"""
 query TestHeaderQuery(
   $id: ID!
@@ -391,7 +391,7 @@ nonisolated public struct TestList: Baton.Query {
     }
 
     public static let name = "TestList"
-    public static let persistedID = "e4489e6f29fe9b2f24109d857bc12bd4"
+    public static let persistedID = "f632fca9890e6241cddd433536ada6c0"
     public static let text = #"""
 query TestList(
   $page: Int

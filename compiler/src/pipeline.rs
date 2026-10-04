@@ -681,7 +681,11 @@ fn lower(
                     PrinterOptions::default(),
                 )
             })
-            .unwrap_or_default();
+            .unwrap_or_default()
+            // Trimmed once, here: the id is the hash of the very text the
+            // app holds and sends.
+            .trim_end()
+            .to_string();
         let mut normalization = lowering.selections(
             &operation.selections,
             operation.type_,

@@ -13,7 +13,7 @@ nonisolated public struct TestKeys: Baton.Query {
     }
 
     public static let name = "TestKeys"
-    public static let persistedID = "261b318876bed479691b17cc2db55e21"
+    public static let persistedID = "620898ed47f113ee21ff882045dcf004"
     public static let text = #"""
 query TestKeys(
   $id: ID!

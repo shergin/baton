@@ -444,7 +444,7 @@ impl Emitter {
         let _ = writeln!(
             output,
             "    public static let text = #\"\"\"\n{}\n\"\"\"#\n",
-            operation.text.trim_end()
+            operation.text
         );
         output.push_str("    public var variables: Baton.Variables {\n        Baton.Variables([");
         if operation.variables.is_empty() {

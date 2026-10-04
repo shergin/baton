@@ -111,7 +111,7 @@ nonisolated public struct TestNoteAdded: Baton.Subscription {
     }
 
     public static let name = "TestNoteAdded"
-    public static let persistedID = "2e61d862c0d0e5ffb8311c6c4b4f7124"
+    public static let persistedID = "cf0998ad43d615f1abc7fa2f45eaf960"
     public static let text = #"""
 subscription TestNoteAdded(
   $characterId: ID!
@@ -194,7 +194,7 @@ nonisolated public struct TestNullsOnError: Baton.Query {
     }
 
     public static let name = "TestNullsOnError"
-    public static let persistedID = "dc444ddc2d4359f79f525cee131ed379"
+    public static let persistedID = "4d4a2bbc05b4baf85072c8ea0a966a6e"
     public static let text = #"""
 query TestNullsOnError(
   $id: ID!
@@ -250,7 +250,7 @@ nonisolated public struct TestProfileQuery: Baton.Query {
     }
 
     public static let name = "TestProfileQuery"
-    public static let persistedID = "eff75e89a7fd840fa7d5531ef07afcb8"
+    public static let persistedID = "70ad694748252a110b96ae2b4033bc12"
     public static let hasDeferred = true
     public static let text = #"""
 query TestProfileQuery(
@@ -365,7 +365,7 @@ nonisolated public struct TestRosterQuery: Baton.Query {
     }
 
     public static let name = "TestRosterQuery"
-    public static let persistedID = "9515d2f7c1681c6beda1da8659de4ca3"
+    public static let persistedID = "9cf4d40da7eb0a96233db2f98c79b140"
     public static let text = #"""
 query TestRosterQuery(
   $page: Int
@@ -441,7 +441,7 @@ nonisolated public struct TestStrictQuery: Baton.Query {
     }
 
     public static let name = "TestStrictQuery"
-    public static let persistedID = "b598ad0269e42e896ecc49549ed97149"
+    public static let persistedID = "8db65463081ccceb09383a40aced3a00"
     public static let throwsOnFieldError = true
     public static let text = #"""
 query TestStrictQuery(

@@ -294,6 +294,10 @@ are expected and listed without apology.
 - One `invalidate`: `Environment.invalidate()`. `Store.invalidate()`, which
   marked memory stale but left the image's fetch times, so data read back
   from the image counted as fresh, is internal and does both.
+- A persisted id is the MD5 of the operation's text as the app holds it.
+  The hash took the printed text with its trailing line break, which the
+  emitted `text` drops, so no text the app held matched its id. The ids
+  change.
 - `onError` is decided at compile time: `"onError"` in `baton.json`, sent
   with every operation the target compiles. Under `NULL` the fields the
   schema types non-null are typed by their semantic nullability, so an

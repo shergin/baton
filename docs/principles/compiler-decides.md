@@ -27,7 +27,8 @@ in the app, whether in Swift source or `.graphql` files. It validates, applies
 fragment arguments by cloning per unique argument set, inlines fragments into
 one normalization plan per operation, inserts the key fields and typenames
 identity needs, interns every storage key to a slot, hashes the operation text
-to a persisted id, and emits the lens types and the plans. Errors carry the
+to a persisted id the transport can send, and emits the lens types and the
+plans. Errors carry the
 file, line and column of the GraphQL text inside the Swift source. The front
 end is Relay's compiler, pinned, behind a driver that is ours; the plan format
 is the seam between the two.

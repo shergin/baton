@@ -9,7 +9,7 @@ nonisolated public struct TestTokenizerQuery: Baton.Query {
     }
 
     public static let name = "TestTokenizerQuery"
-    public static let persistedID = "504409d6f5f972bacc91cd4b4546bf53"
+    public static let persistedID = "69704a29c1f5d9c37d6359e8993cc0bc"
     public static let text = #"""
 query TestTokenizerQuery {
   tokenizer {

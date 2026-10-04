@@ -132,7 +132,7 @@ nonisolated public struct TestAddNote: Baton.Mutation {
     }
 
     public static let name = "TestAddNote"
-    public static let persistedID = "eb58474cb385661c71cbe13ccf987007"
+    public static let persistedID = "5a07754467a5f4de707c49c03c103b1b"
     public static let text = #"""
 mutation TestAddNote(
   $characterId: ID!
@@ -288,7 +288,7 @@ nonisolated public struct TestAddNoteFirst: Baton.Mutation {
     }
 
     public static let name = "TestAddNoteFirst"
-    public static let persistedID = "794a9e345a0cf0b310e0bdbbba6912af"
+    public static let persistedID = "0f4a65f28de5eb79da63f815e2673c66"
     public static let text = #"""
 mutation TestAddNoteFirst(
   $characterId: ID!
@@ -444,7 +444,7 @@ nonisolated public struct TestAddNoteNode: Baton.Mutation {
     }
 
     public static let name = "TestAddNoteNode"
-    public static let persistedID = "357de83e8eff33b95dfd7673a6ba3df9"
+    public static let persistedID = "fd16be3f9e54a4d8b90dbd6c2540e125"
     public static let text = #"""
 mutation TestAddNoteNode(
   $characterId: ID!
@@ -570,7 +570,7 @@ nonisolated public struct TestAddNoteNodeFirst: Baton.Mutation {
     }
 
     public static let name = "TestAddNoteNodeFirst"
-    public static let persistedID = "f305c5381cda7e9235357eef859387d9"
+    public static let persistedID = "430e5437a3d09a6cc59e8e6680c73775"
     public static let text = #"""
 mutation TestAddNoteNodeFirst(
   $characterId: ID!
@@ -693,7 +693,7 @@ nonisolated public struct TestAliasQuery: Baton.Query {
     }
 
     public static let name = "TestAliasQuery"
-    public static let persistedID = "a2fc86bdc15069e2ca4cf336fe033e80"
+    public static let persistedID = "b06f7b4d33bcb11443b3596c68b4a660"
     public static let text = #"""
 query TestAliasQuery(
   $id: ID!
@@ -756,7 +756,7 @@ nonisolated public struct TestDeleteNote: Baton.Mutation {
     }
 
     public static let name = "TestDeleteNote"
-    public static let persistedID = "751968cd184efb0f3405d379e4ad4ffe"
+    public static let persistedID = "c7cf4459c400adc68e490e0bc8e9cddc"
     public static let text = #"""
 mutation TestDeleteNote(
   $id: ID!
@@ -850,7 +850,7 @@ nonisolated public struct TestNotesPaginationQuery: Baton.Query {
     }
 
     public static let name = "TestNotesPaginationQuery"
-    public static let persistedID = "4d985ec250bd7a163e20562d233403ac"
+    public static let persistedID = "5d9969b436413f5c9c550b52bc769c88"
     public static let text = #"""
 query TestNotesPaginationQuery(
   $count: Int = 2
@@ -957,7 +957,7 @@ nonisolated public struct TestNotesQuery: Baton.Query {
     }
 
     public static let name = "TestNotesQuery"
-    public static let persistedID = "0d8066dc9d27de5fa13df8bd95a8fbbf"
+    public static let persistedID = "379fb818f58f3f0a471674832450dd6e"
     public static let text = #"""
 query TestNotesQuery(
   $id: ID!
@@ -1053,7 +1053,7 @@ nonisolated public struct TestNotesSizedQuery: Baton.Query {
     }
 
     public static let name = "TestNotesSizedQuery"
-    public static let persistedID = "cbd1fc6f6bf922726866f5b557a1c550"
+    public static let persistedID = "acab01211ce6326e2f3fc479099a653d"
     public static let text = #"""
 query TestNotesSizedQuery(
   $id: ID!
@@ -1153,7 +1153,7 @@ nonisolated public struct TestRecentNotesPaginationQuery: Baton.Query {
     }
 
     public static let name = "TestRecentNotesPaginationQuery"
-    public static let persistedID = "1968a7fa8350f2d0c78f7540977995a5"
+    public static let persistedID = "4c01794506d90fcca71068bb79a1743f"
     public static let text = #"""
 query TestRecentNotesPaginationQuery(
   $count: Int = 2
@@ -1256,7 +1256,7 @@ nonisolated public struct TestRecentNotesQuery: Baton.Query {
     }
 
     public static let name = "TestRecentNotesQuery"
-    public static let persistedID = "e322c577573ae41444b924f8ee688008"
+    public static let persistedID = "818da2ddf28252508a6269de7bae304b"
     public static let text = #"""
 query TestRecentNotesQuery(
   $id: ID!
@@ -1347,7 +1347,7 @@ nonisolated public struct TestRemoveNote: Baton.Mutation {
     }
 
     public static let name = "TestRemoveNote"
-    public static let persistedID = "bb72485abdd41be5d42f0686db83a211"
+    public static let persistedID = "73769fd47c8321b438a68e9b694b3640"
     public static let text = #"""
 mutation TestRemoveNote(
   $id: ID!

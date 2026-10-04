@@ -61,7 +61,7 @@ nonisolated public struct TestCaughtEpisodes: Baton.Query {
     }
 
     public static let name = "TestCaughtEpisodes"
-    public static let persistedID = "eae05d9532c2687c5a430800946c3121"
+    public static let persistedID = "e909dfbed5bf572c69adaf400ab82e12"
     public static let text = #"""
 query TestCaughtEpisodes(
   $id: ID!
@@ -148,7 +148,7 @@ nonisolated public struct TestRequiredOrigin: Baton.Query {
     }
 
     public static let name = "TestRequiredOrigin"
-    public static let persistedID = "539afa4ddc619552d2cd4652b757ead3"
+    public static let persistedID = "235cb310643a9e9fa1f02a857ffe6a89"
     public static let bubbles = true
     public static let text = #"""
 query TestRequiredOrigin(
@@ -230,7 +230,7 @@ nonisolated public struct TestReservedNames: Baton.Query {
     }
 
     public static let name = "TestReservedNames"
-    public static let persistedID = "5ebef09abdd944666af9974ee50e9565"
+    public static let persistedID = "7c64f918dc54753ad9f26e4fe258c6c8"
     public static let text = #"""
 query TestReservedNames(
   $id: ID!
@@ -353,7 +353,7 @@ nonisolated public struct TestStrictOrigin: Baton.Query {
     }
 
     public static let name = "TestStrictOrigin"
-    public static let persistedID = "aa91b13d57478d24f1bce40a0580314b"
+    public static let persistedID = "d7eedac34bcf237d983981fca1f53360"
     public static let throwsOnFieldError = true
     public static let text = #"""
 query TestStrictOrigin(
@@ -478,7 +478,7 @@ nonisolated public struct TestThrowingNode: Baton.Query {
     }
 
     public static let name = "TestThrowingNode"
-    public static let persistedID = "cb1c4a49d7e89fec44f00dc7f3355ad3"
+    public static let persistedID = "96fc39563fe0cb4857d8ee11a1488869"
     public static let throwsOnFieldError = true
     public static let text = #"""
 query TestThrowingNode(
@@ -607,7 +607,7 @@ nonisolated public struct TestTwoScopes: Baton.Query {
     }
 
     public static let name = "TestTwoScopes"
-    public static let persistedID = "be751e5f3cdc65dfdac3eecbbf7c14c1"
+    public static let persistedID = "64dff497dac89da38b66ce3d636da558"
     public static let text = #"""
 query TestTwoScopes(
   $a: ID!

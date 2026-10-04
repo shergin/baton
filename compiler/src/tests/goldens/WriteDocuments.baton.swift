@@ -21,7 +21,7 @@ nonisolated public struct TestNode: Baton.Query {
     }
 
     public static let name = "TestNode"
-    public static let persistedID = "f4287aafacae3711c1424cdbcbfc508c"
+    public static let persistedID = "2304788bc851c146c51814dfce6bce4d"
     public static let text = #"""
 query TestNode(
   $id: ID!
@@ -110,7 +110,7 @@ nonisolated public struct TestRename: Baton.Mutation {
     }
 
     public static let name = "TestRename"
-    public static let persistedID = "a73fc2b7303f9449bedc2fffea97fb04"
+    public static let persistedID = "bbbb03578f7d58a0b3956defbc951f96"
     public static let text = #"""
 mutation TestRename(
   $id: ID!
@@ -232,7 +232,7 @@ nonisolated public struct TestSearch: Baton.Query {
     }
 
     public static let name = "TestSearch"
-    public static let persistedID = "529930501b89d258d63e782735ce5cf7"
+    public static let persistedID = "813ee13fc31b31a05b576bb247d1db8b"
     public static let text = #"""
 query TestSearch(
   $name: String!
@@ -334,7 +334,7 @@ nonisolated public struct TestSearchOrigins: Baton.Query {
     }
 
     public static let name = "TestSearchOrigins"
-    public static let persistedID = "b901518a8b1a3f0fb9032a3ac9060d04"
+    public static let persistedID = "ef63ee320f68af412c96bcdec49f9223"
     public static let text = #"""
 query TestSearchOrigins(
   $name: String!
@@ -427,7 +427,7 @@ nonisolated public struct TestSetFavorite: Baton.Mutation {
     }
 
     public static let name = "TestSetFavorite"
-    public static let persistedID = "e84c45c8e83cd8488e3e4923ba0e045b"
+    public static let persistedID = "26a88e1bfd6ec2eaa6508d193effadc7"
     public static let text = #"""
 mutation TestSetFavorite(
   $id: ID!

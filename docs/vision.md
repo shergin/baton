@@ -37,7 +37,8 @@ than porting it.
   every storage key, hashes persisted ids, and emits a typed lens per
   fragment and a normalization plan per operation. Errors point at the
   GraphQL text inside the Swift file.
-- The transport sends a persisted id and variables and streams bytes back.
+- The transport can send a persisted id and variables, and streams bytes
+  back.
 - The ingest decodes bytes straight into record slots, off the main actor,
   with no intermediate model.
 - The store commits a change set on the main actor: pointer swaps for the
