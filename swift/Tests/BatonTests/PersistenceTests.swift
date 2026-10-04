@@ -450,6 +450,32 @@ struct PersistenceTests {
         await finish(second)
     }
 
+    @Test("a record @deleteRecord named that only the image holds stays unread while the forget waits for the writer, when a record of another type with its id arrives; that record reads its own row")
+    func aForgottenIDIsLiftedOnlyByItsKey() async throws {
+        let first = launch()
+        try commitUnknown(first)
+        try await seed(first)
+
+        let second = launch(releaseBufferSize: 0)
+        readAndSweep(Fixture(page: 1), in: second)
+        let list = Fixture.plan.resolve(Fixture(page: 1).variables)
+        let deletion = try Ingest.normalize(fixture("delete-record-1"), plan: TestDeleteNote.plan.resolve(TestDeleteNote(id: "1").variables), rootKey: Store.mutationRootKey)
+        // Albert Einstein, whose origin is `Location:1`.
+        let einstein = try Ingest.normalize(fixture("character-header-11"), plan: header("11"))
+        let origin = TestConditions.plan.resolve(TestConditions(id: "11", withOrigin: true, hideStatus: false).variables)
+        whileTheWriterWaits(in: second) {
+            second.store.commit(deletion)
+            #expect(second.store.check(list) == .miss, "the list holds Character:1")
+            second.store.commit(einstein)
+            #expect(second.store.check(list) == .miss, "a payload with Location:1 brings Character:1 back")
+            #expect(second.store.check(origin) == .image, "Location:1's dimension, which the payload lacks, comes from its row")
+        }
+        await second.store.persistence?.flush()
+        #expect(second.store.check(list) == .miss, "the writer has dropped the row")
+        await finish(second)
+        #expect(throws: NotStored.self) { try stored(Fixture(page: 1), in: launch()) }
+    }
+
     @Test("data read every launch keeps its age: expired in the second launch, still dated and fresh in the third")
     func ageReadEveryLaunch() async throws {
         let transport = RecordedTransport { _ in fixtureData }

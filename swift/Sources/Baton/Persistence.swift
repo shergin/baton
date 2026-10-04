@@ -53,6 +53,8 @@ public final class Persistence: Sendable {
     private struct Pending: Sendable {
         var work: [Work] = []
         var scheduled = false
+        /// How many forgets the work holds.
+        var forgets = 0
     }
 
     /// When each operation last committed a response, by the wall clock.
@@ -113,7 +115,10 @@ public final class Persistence: Sendable {
             ages.times.removeAll()
             ages.cleared = true
         }
-        pending.withLock { $0.work.removeAll() }
+        pending.withLock { pending in
+            pending.work.removeAll()
+            pending.forgets = 0
+        }
         disk.withLock { $0.erase() }
     }
 
@@ -128,6 +133,13 @@ public final class Persistence: Sendable {
     /// to drop: the next read misses them and fetches.
     func forget(keys: [String], ids: [String]) {
         enqueue(.forget(keys: keys, ids: ids))
+    }
+
+    /// Whether a forget waits in the queue, the rows it names still in the
+    /// file. One the writer has taken is done, or the image is to be
+    /// discarded, before a read can take the file.
+    var forgetting: Bool {
+        pending.withLock { $0.forgets > 0 }
     }
 
     /// Notes that an operation's response just committed.
@@ -206,6 +218,7 @@ public final class Persistence: Sendable {
     private func enqueue(_ work: Work) {
         let start = pending.withLock { pending in
             pending.work.append(work)
+            if case .forget = work { pending.forgets += 1 }
             if pending.scheduled { return false }
             pending.scheduled = true
             return true
@@ -216,6 +229,7 @@ public final class Persistence: Sendable {
     private func take() -> [Work] {
         pending.withLock { pending in
             pending.scheduled = false
+            pending.forgets = 0
             let work = pending.work
             pending.work.removeAll(keepingCapacity: true)
             return work
