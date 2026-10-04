@@ -21,6 +21,90 @@ Best ingest and best commit of the fixture at each release below.
   <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
 
+## Unreleased at 418ceff — 2026-10-03
+
+Revision: 418ceff, the improvements after 0.6.0, before a release. Machine:
+Apple M1 Pro (MacBook Pro), macOS 26.5.2, Xcode 26.6, Swift 6.3.3, release
+build. Same fixture, same image setup as 0.6.0. Three runs of each tree,
+alternating, the same evening; the 0.6.0 column is the 0.6.0 tree run again
+that evening, so the two columns share the day. Best of the three runs,
+median of the three medians.
+
+### The paths 0.6.0 measured, same day
+
+| Measurement | 0.6.0 best (median) | This revision best (median) | Notes |
+|---|---|---|---|
+| Response bytes into a change set | 2.74 ms (2.89) | 2.87 ms (2.88) | the ingest now groups each record's entries off the main actor, one per slot, which the commit used to do |
+| Commit into an empty store, 899 records | 1.36 ms (1.42) | 632 µs (653) | |
+| Commit of the same payload again | 185 µs (190) | 124 µs (125) | a list that did not change allocates nothing |
+| Untracked read, per field | 28.3 ns (28.3) | 25.0 ns (30.4) | one run read 25.0 ns and two 30.4 ns, with nothing else moving between them |
+| Tracked read, a row body of 8 fields, per field | 527 ns (569) | 574 ns (608) | exact channels: one key path per slot, built on first use |
+| The check of the fixture plan | 105 µs (105) | 107 µs (110) | |
+| `@catch` read of a field without an error | 123 ns (127) | 83.1 ns (83.4) | |
+| `satisfied` of a lens with one `@required` field | 28.6 ns (29.8) | 20.0 ns (20.2) | |
+| `nodes` of 2,100 merged edges, untracked | 123 µs (127) | 84.9 µs (85.3) | one pass, no array of anchors in between |
+| `nodes` of 2,100 merged edges, tracked | 1.12 ms (1.24) | 1.16 ms (1.25) | |
+| Commit into an empty store with the image on | 1.47 ms (1.50) | 721 µs (746) | |
+| Write-behind of that commit, off the main actor | 1.15 ms (1.17) | 1.15 ms (1.16) | |
+| Write-behind of one changed record | 45.9 µs (49.7) | 43.2 µs (46.6) | |
+| Hydration: the check reads 898 rows | 1.69 ms (1.72) | 1.57 ms (1.59) | |
+| The check once the records are in memory | 105 µs (106) | 106 µs (107) | |
+| A launch, open and hydrate at once | 3.89 ms (4.24) | 3.84 ms (4.06) | |
+| A launch, hydrate after the image opened | 1.76 ms (1.84) | 1.76 ms (1.92) | |
+| First use in a process: open, create, a read that misses | 2.74 to 2.77 ms | 2.68 to 2.95 ms | one shot per run; 0.6.0's entry recorded 1.6 to 2.3 ms on its own day |
+| Collection pass over about 9,000 records, from 10 roots | 0.20 ms (2.9), worst 3.7 | 0.17 ms (2.4), worst 3.2 | the lifetime bench below |
+| Scroll footprint at page 42 | +4.1 to +4.3 MB | +4.3 MB | one run read +0.5 MB, a resident-size reading after the system reclaimed pages |
+
+0.6.0's bench printed the image's file alone, 167,936 bytes; this
+revision's prints the file and its write-ahead log together, 4,440,384
+bytes, because the log is what the disk holds until a checkpoint.
+
+### New measurements
+
+| Measurement | Best | Median | Notes |
+|---|---|---|---|
+| Resolve the fixture plan for another page | 676 ns | 678 ns | 8.5 µs before the plan kept its resolutions |
+| One field changed, 20 rows observing their name, one commit | 127 µs | 128 µs | one notification; 0.6.0 timed two commits and no observer here (368 µs) |
+| A root field with a variable argument, untracked | 28.1 ns | 28.2 ns | 232 ns before keys with variables resolved once per owner |
+| The same, tracked, one body per read | 952 ns | 981 ns | |
+| A field selected on an interface, untracked | 22.2 ns | 22.3 ns | 56 ns before abstract slots |
+| A spread with `@arguments`, the fragment's lens | 10.2 ns | 10.4 ns | 453 ns before, for the read and one variable of the child's scope |
+| Apply an optimistic layer, 20 rows observing | 3.00 µs | 3.21 µs | one notification |
+| Revert it | 2.21 µs | 2.33 µs | one notification |
+| Commit the fixture under the layer | 126 µs | 127 µs | no notification |
+| Resolve the layer with the server's answer | 1.21 µs | 1.38 µs | no notification |
+| Ingest a 64-byte mutation payload | 2.42 µs | 2.50 µs | 4.5 µs before reservations followed the response's size |
+| Commit it into the 899-record store, one field changing | 791 ns | 834 ns | |
+| A 69-byte subscription frame, its envelope read | 334 ns | 375 ns | 2.21 µs before the scanner stood apart from the cursor |
+| Ingest with 20 field errors | 2.89 ms | 2.89 ms | 20 placed, 20 uncaught |
+| Commit the errors, 20 rows observing their image | 151 µs | 151 µs | 20 notifications |
+| Commit that clears them | 149 µs | 150 µs | 20 notifications |
+| A commit that deletes one record from 8,965 | 2.10 ms | 2.21 ms | the pass that tells every slot linking to it |
+| Wakes of a body reading one root field while 64 others are written | 0 | — | |
+| `loadNext` with no body on the nodes, per page of 50 | 167 µs | 218 µs | page 2 about 200 µs, page 21 about 200 µs, page 41 230 to 340 µs |
+| `loadNext` with a body reading every node, per page of 50 | 185 µs | 556 µs | page 2 185 to 230 µs, page 21 516 to 558 µs, page 41 0.88 to 1.16 ms |
+| An optimistic `@appendEdge` on a connection of 50 edges: apply | 5.79 µs | 5.96 µs | |
+| Revert it | 4.62 µs | 4.71 µs | |
+| A multipart response of 20 parts, 978 KB, parsed in 16 KB chunks | 483 µs | 489 µs | 14.6 ms before the reader scanned whole chunks |
+| The same response read through `URLSessionTransport` | 1.10 ms | 1.38 ms | 6.1 ms before the transport read its data task's chunks |
+
+The "before" figures in the notes were measured at the commit that made
+the change, on this machine, alternating the two builds; each is in that
+commit's message and in the changelog.
+
+What it means: a commit of the fixture costs half of what it did, and a
+read through a key with variables, an interface or a spread with arguments
+costs what a plain read costs. A tracked read costs about a tenth more,
+the price of a channel per slot instead of channels shared by slots.
+
+A correction to 0.4.0, which said a page costs the main actor a merge
+"whatever the number of pages already merged". Split by page, with no body
+reading the nodes, a page costs about the same at page 21 as at page 2 and
+up to two thirds more at page 41: the merge builds a set and an array of
+every edge already merged. A body that reads every node pays for reading
+them again on every page, which grows with the connection, to about 1 ms
+at page 41. The merge is left as it is until a phone shows it in a frame.
+
 ## 0.6.0 — 2026-10-03
 
 Revision: the 0.6.0 tree. Machine: Apple M1 Pro (MacBook Pro), macOS 26.5.2,
