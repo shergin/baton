@@ -488,6 +488,81 @@ struct DeliveryTests {
         #expect(environment.rootCount == 1)
     }
 
+    @Test("an event with errors and no data is one bad event: the subscription shows it and goes on, and the next good event clears it")
+    func badEvent() async throws {
+        let events = Events()
+        let environment = Environment(transport: SilentTransport(), subscriptions: events)
+        environment.store.reportMissing = nil
+        let live = environment.subscriptionHandle(for: TestNoteAdded(characterId: "events-\(#line)", connections: []))
+        live.retain()
+        await until { events.continuation != nil }
+        events.send(fixture("not-authorized"))
+        await until { live.error != nil }
+        #expect((live.error as? GraphQLErrors)?.messages == ["not authorized"])
+        #expect(live.isActive)
+        events.send(fixture("note-added-1"))
+        await until { live.events == 1 }
+        #expect(live.error == nil)
+        live.release()
+    }
+
+    @Test("retry opens a stream the server ended, and the stream it replaces leaves the new one's state alone")
+    func retrySubscription() async throws {
+        let events = Events()
+        let environment = Environment(transport: SilentTransport(), subscriptions: events)
+        environment.store.reportMissing = nil
+        let live = environment.subscriptionHandle(for: TestNoteAdded(characterId: "events-\(#line)", connections: []))
+        live.retain()
+        await until { events.requests.count == 1 }
+        events.continuation?.finish()
+        await until { !live.isActive }
+        live.retry()
+        await until { events.requests.count == 2 }
+        #expect(live.isActive)
+
+        // A retry while open replaces the stream; the old one ending later
+        // does not close the new one.
+        live.retry()
+        await until { events.requests.count == 3 }
+        try await Task.sleep(for: .milliseconds(50))
+        #expect(live.isActive)
+        events.send(fixture("note-added-1"))
+        await until { live.events == 1 }
+        live.release()
+    }
+
+    @Test("the socket closes when its last subscription ends, and an error frame's GraphQL errors are its messages")
+    func socketLifetime() async throws {
+        let server = try SocketServer()
+        let socket = GraphQLTransportWebSocket(url: try await server.start())
+        defer { server.stop() }
+        let value = TestNoteAdded(characterId: "1", connections: [])
+        let request = Request(operationName: TestNoteAdded.name, text: TestNoteAdded.text, persistedID: TestNoteAdded.persistedID, variables: value.variables)
+
+        final class Outcome: @unchecked Sendable { var messages: [String]? }
+        let outcome = Outcome()
+        let failing = Task {
+            do {
+                for try await _ in socket.subscribe(request) {}
+            } catch {
+                outcome.messages = (error as? GraphQLErrors)?.messages ?? ["\(error)"]
+            }
+        }
+        await until { server.count(of: "subscribe") == 1 }
+        let id = try #require(server.ids(of: "subscribe").first)
+        server.send(#"{"id":"\#(id)","type":"error","payload":[{"message":"bad subscription","path":["noteAdded"]}]}"#)
+        await until { outcome.messages != nil }
+        #expect(outcome.messages == ["bad subscription"])
+        await failing.value
+        await until { server.closed == 1 }
+
+        let reader = Task { for try await _ in socket.subscribe(request) {} }
+        await until { server.count(of: "subscribe") == 2 }
+        reader.cancel()
+        await until { server.count(of: "complete") == 1 }
+        await until { server.closed == 2 }
+    }
+
     @Test("a subscription value reaches its handle while the handle is retained, and not after")
     func subscriptionResolution() {
         let environment = Environment(transport: SilentTransport(), subscriptions: Events())

@@ -410,6 +410,16 @@ public enum Ingest {
         return part
     }
 
+    /// Reads an array of GraphQL errors, such as a subscription's `error` frame
+    /// carries: messages and paths.
+    public static func responseErrors(_ data: Data) throws -> [ResponseError] {
+        let bytes = [UInt8](data)
+        return try bytes.withUnsafeBufferPointer { buffer in
+            var scanner = Scanner(base: buffer.baseAddress!, count: buffer.count)
+            return try scanner.responseErrors()
+        }
+    }
+
     /// Reads a `graphql-transport-ws` frame: its type, id and payload bytes.
     public static func frame(_ data: Data) throws -> (type: String?, id: String?, payload: Data?) {
         let bytes = [UInt8](data)

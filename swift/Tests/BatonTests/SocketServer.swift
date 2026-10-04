@@ -11,6 +11,7 @@ final class SocketServer: @unchecked Sendable {
     private let lock = NSLock()
     private var connection: NWConnection?
     private var received: [(type: String, id: String?)] = []
+    private var closes = 0
     private let handshake = Handshake()
 
     init() throws {
@@ -68,6 +69,9 @@ final class SocketServer: @unchecked Sendable {
         lock.withLock { received.filter { $0.type == type }.compactMap(\.id) }
     }
 
+    /// How many times the client closed its connection.
+    var closed: Int { lock.withLock { closes } }
+
     /// How many frames of one type the client has sent.
     func count(of type: String) -> Int {
         lock.withLock { received.filter { $0.type == type }.count }
@@ -87,8 +91,14 @@ final class SocketServer: @unchecked Sendable {
     }
 
     private func receive(on connection: NWConnection) {
-        connection.receiveMessage { [weak self] data, _, _, error in
-            guard let self, let data, error == nil else { return }
+        connection.receiveMessage { [weak self] data, context, _, error in
+            guard let self else { return }
+            let metadata = context?.protocolMetadata(definition: NWProtocolWebSocket.definition) as? NWProtocolWebSocket.Metadata
+            if error != nil || metadata?.opcode == .close {
+                lock.withLock { closes += 1 }
+                return
+            }
+            guard let data else { return }
             if let frame = try? Ingest.frame(data), let type = frame.type {
                 lock.withLock { received.append((type, frame.id)) }
                 if type == "connection_init" { send(#"{"type":"connection_ack"}"#) }

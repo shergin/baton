@@ -471,7 +471,8 @@ public final class SubscriptionHandle<Op: Operation>: AnyOperationHandle {
     public private(set) var events = 0
     /// The latest event, as a lens over the subscription root.
     public private(set) var latest: Op.Data?
-    /// The error that ended the stream, if one did.
+    /// The error of the last event, cleared by the next good one, or the
+    /// error that ended the stream.
     public private(set) var error: (any Error)?
     /// Whether the stream is open.
     public private(set) var isActive = false
@@ -502,24 +503,41 @@ public final class SubscriptionHandle<Op: Operation>: AnyOperationHandle {
         error = nil
         task = Task { [weak self] in
             guard let self, let environment else { return }
-            defer {
-                task = nil
-                isActive = false
-            }
             do {
                 for try await payload in environment.subscribe(operation) {
                     guard !Task.isCancelled else { return }
-                    let changes = try await Ingest.normalized(payload, plan: resolved, rootKey: Store.subscriptionRootKey)
-                    store.commit(changes)
-                    events += 1
-                    latest = Op.Data(anchor: Anchor(record: store.subscriptionRoot, owner: owner))
+                    do {
+                        let changes = try await Ingest.normalized(payload, plan: resolved, rootKey: Store.subscriptionRootKey)
+                        guard !Task.isCancelled else { return }
+                        store.commit(changes)
+                        events += 1
+                        latest = Op.Data(anchor: Anchor(record: store.subscriptionRoot, owner: owner))
+                        error = nil
+                    } catch let failure as GraphQLErrors {
+                        // An event with errors and no data is one bad event;
+                        // the stream goes on.
+                        error = failure
+                    }
                 }
             } catch is CancellationError {
                 return
             } catch {
+                guard !Task.isCancelled else { return }
                 self.error = error
             }
+            // A stream a newer one replaced leaves the newer one's state be.
+            guard !Task.isCancelled else { return }
+            task = nil
+            isActive = false
         }
+    }
+
+    /// Opens the stream again after it ended, by an error or the server's
+    /// completion, while the handle is retained.
+    public func retry() {
+        guard retainCount > 0 else { return }
+        cancel()
+        start()
     }
 
     /// Keeps the stream open and the latest event's records alive.

@@ -235,6 +235,13 @@ are expected and listed without apology.
   the whole response, and reads a part without headers. It scans the
   chunks it is given rather than a byte at a time: 978 KB of 20 parts in
   16 KB chunks parse in 0.50 ms against 14.6 ms.
+- A subscription survives a bad event. An event with errors and no data
+  ended the subscription for good; it now sets `error` and the stream goes
+  on, and the next good event clears it. `retry()` opens a stream the
+  server or the socket ended. A stream that a newer one replaced no longer
+  closes the newer one's state when it ends. The WebSocket transport reads
+  an `error` frame's GraphQL errors as the messages, where it showed the
+  frame's text, and closes the socket when its last subscription ends.
 - Incremental delivery reads all of the format. A part's `subPath` places
   its data below the announced path, its own `errors` land on the fields
   they name, and an announced part that `completed` with errors puts them

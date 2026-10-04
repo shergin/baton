@@ -350,6 +350,18 @@ public actor GraphQLTransportWebSocket: SubscriptionTransport {
     private func stop(_ id: String) async {
         guard subscribers.removeValue(forKey: id) != nil else { return }
         try? await send("{\"id\":\"\(id)\",\"type\":\"complete\"}")
+        closeIfUnused()
+    }
+
+    /// Closes the connection when no subscription is on it and none is
+    /// waiting for it to open; the next subscription opens another.
+    private func closeIfUnused() {
+        guard subscribers.isEmpty, waitingForAck.isEmpty, socket != nil else { return }
+        socket?.cancel(with: .normalClosure, reason: nil)
+        socket = nil
+        acknowledged = false
+        receiving?.cancel()
+        receiving = nil
     }
 
     private func connect() async throws {
@@ -405,12 +417,16 @@ public actor GraphQLTransportWebSocket: SubscriptionTransport {
             if let id = frame.id, let payload = frame.payload { subscribers[id]?.yield(payload) }
         case "error":
             if let id = frame.id {
-                let message = frame.payload.map { String(decoding: $0, as: UTF8.self) } ?? "subscription error"
-                subscribers.removeValue(forKey: id)?.finish(throwing: GraphQLErrors(messages: [message]))
+                // The payload is the operation's GraphQL errors.
+                let errors = frame.payload.flatMap { try? Ingest.responseErrors($0) } ?? []
+                let messages = errors.isEmpty ? ["subscription error"] : errors.map(\.message)
+                subscribers.removeValue(forKey: id)?.finish(throwing: GraphQLErrors(messages: messages))
+                closeIfUnused()
             }
         case "complete":
             if let id = frame.id {
                 subscribers.removeValue(forKey: id)?.finish()
+                closeIfUnused()
             }
         default:
             return
