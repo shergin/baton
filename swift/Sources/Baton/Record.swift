@@ -77,14 +77,20 @@ public final class Record: Observable {
     /// How many slots hold a value or could; for copying between records.
     var slotCount: Int { values.count }
 
+    /// Makes the values long enough to hold `index`, every new slot missing.
+    @inline(__always)
+    private func grow(to index: Int) {
+        if index >= values.count {
+            values.append(contentsOf: repeatElement(.missing, count: index + 1 - values.count))
+        }
+    }
+
     /// Writes a slot. Returns whether the value changed; observers are notified
     /// only then.
     @discardableResult
     func write(_ slot: Slot, _ value: Value) -> Bool {
         let index = Int(slot.index)
-        if index >= values.count {
-            values.append(contentsOf: repeatElement(.missing, count: index + 1 - values.count))
-        }
+        grow(to: index)
         if values[index] == value { return false }
         registrar.withMutation(of: self, keyPath: Record.channel(Int32(index))) {
             values[index] = value
@@ -99,9 +105,7 @@ public final class Record: Observable {
         // another field.
         assert(slot.type == type, "a \(slot.type.name) slot written into a \(type.name) record")
         let index = Int(slot.index)
-        if index >= values.count {
-            values.append(contentsOf: repeatElement(.missing, count: index + 1 - values.count))
-        }
+        grow(to: index)
         let previous = values[index]
         if previous == value { return nil }
         values[index] = value
@@ -200,11 +204,10 @@ public final class Record: Observable {
     /// alone: memory is the truth. Returns whether the slot was filled.
     func fill(_ slot: Slot, _ value: Value, error: FieldError?) -> Bool {
         let index = Int(slot.index)
-        if index >= values.count {
-            values.append(contentsOf: repeatElement(.missing, count: index + 1 - values.count))
-        } else {
+        if index < values.count {
             guard case .missing = values[index] else { return false }
         }
+        grow(to: index)
         values[index] = value
         if let error {
             if errors == nil { errors = [:] }

@@ -810,15 +810,15 @@ public final class Store {
     public func check(_ selection: ResolvedSelection, at record: Record? = nil) -> Answer {
         let record = record ?? root
         metHydrated = false
-        if holds(selection, at: record) { return metHydrated ? .image : .memory }
+        if available(selection, at: record, from: nil) { return metHydrated ? .image : .memory }
         // A check an observer starts while the image is being read joins
         // the read that is open.
-        if let reading { return fill(selection, at: record, from: reading) ? .image : .miss }
+        if let reading { return available(selection, at: record, from: reading) ? .image : .miss }
         guard let persistence else { return .miss }
         let found = persistence.reading { disk in
             reading = disk
             defer { reading = nil }
-            return fill(selection, at: record, from: disk)
+            return available(selection, at: record, from: disk)
         }
         return found ? .image : .miss
     }
@@ -871,55 +871,23 @@ public final class Store {
         case miss
     }
 
-    /// The walk in memory: whether the store holds every field as it stands.
-    private func holds(_ selection: ResolvedSelection, at record: Record) -> Bool {
-        selection.isAbstract ? holds(selection.variant(for: record.type).fields, at: record) : holds(selection.fields, at: record)
+    /// The availability walk: whether every field of the selection is
+    /// present at `record`. Without a disk it reads memory as it stands; with
+    /// one, a record that lacks a field reads its row first, a link to a
+    /// record the collector swept is pointed at the live record of that key,
+    /// and a connection's client record is walked while it is still unread.
+    private func available(_ selection: ResolvedSelection, at record: Record, from disk: Disk?) -> Bool {
+        selection.isAbstract ? available(selection.variant(for: record.type).fields, at: record, from: disk) : available(selection.fields, at: record, from: disk)
     }
 
     /// The walk over one record's fields. They are taken as a parameter and
     /// read in place, so neither the list nor a field is retained per record.
-    private func holds(_ fields: [ResolvedField], at record: Record) -> Bool {
-        if record.hydrated { metHydrated = true }
+    private func available(_ fields: [ResolvedField], at record: Record, from disk: Disk?) -> Bool {
+        if disk == nil, record.hydrated { metHydrated = true }
         for index in fields.indices {
             if fields[index].isTypename || fields[index].deferred != nil { continue }
             let slot = fields[index].slot
-            switch fields[index].kind {
-            case .scalar:
-                if case .missing = record.peek(slot) { return false }
-            case .linked(let child, let plural, let lookupKey, _):
-                switch record.peek(slot) {
-                case .missing:
-                    guard !plural, let lookupKey, let target = resolve(lookupKey) else { return false }
-                    guard holds(child, at: target) else { return false }
-                    record.write(slot, .ref(target))
-                case .null:
-                    continue
-                case .ref(let target):
-                    if target.deleted { continue }
-                    if !holds(child, at: target) { return false }
-                case .refs(let targets):
-                    for case let target? in targets where !target.deleted && !holds(child, at: target) { return false }
-                default:
-                    return false
-                }
-            }
-        }
-        return true
-    }
-
-    /// The same walk with the image at hand. A record that lacks a field
-    /// reads its row first; a link to a record the collector swept is pointed
-    /// at the live record of that key; a connection's client record is walked
-    /// while it is still unread.
-    private func fill(_ selection: ResolvedSelection, at record: Record, from disk: Disk) -> Bool {
-        selection.isAbstract ? fill(selection.variant(for: record.type).fields, at: record, from: disk) : fill(selection.fields, at: record, from: disk)
-    }
-
-    private func fill(_ fields: [ResolvedField], at record: Record, from disk: Disk) -> Bool {
-        for index in fields.indices {
-            if fields[index].isTypename || fields[index].deferred != nil { continue }
-            let slot = fields[index].slot
-            if case .missing = record.peek(slot) { hydrate(record, slot, from: disk) }
+            if let disk, case .missing = record.peek(slot) { hydrate(record, slot, from: disk) }
             switch fields[index].kind {
             case .scalar:
                 if case .missing = record.peek(slot) { return false }
@@ -927,37 +895,42 @@ public final class Store {
                 switch record.peek(slot) {
                 case .missing:
                     guard !plural, let lookupKey, let target = resolve(lookupKey, disk) else { return false }
-                    guard fill(child, at: target, from: disk) else { return false }
+                    guard available(child, at: target, from: disk) else { return false }
                     record.write(slot, .ref(target))
                 case .null:
                     break
                 case .ref(let found):
-                    let target = live(found, disk)
-                    if target !== found { record.write(slot, .ref(target)) }
-                    if !target.deleted, !fill(child, at: target, from: disk) { return false }
-                case .refs(var targets):
-                    var moved = false
-                    for position in targets.indices {
-                        guard let found = targets[position] else { continue }
-                        let target = live(found, disk)
-                        if target !== found {
-                            targets[position] = target
-                            moved = true
-                        }
+                    var target = found
+                    if let disk {
+                        target = live(found, disk)
+                        if target !== found { record.write(slot, .ref(target)) }
                     }
-                    if moved { record.write(slot, .refs(targets)) }
-                    for case let target? in targets where !target.deleted && !fill(child, at: target, from: disk) { return false }
+                    if !target.deleted, !available(child, at: target, from: disk) { return false }
+                case .refs(var targets):
+                    if let disk {
+                        var moved = false
+                        for position in targets.indices {
+                            guard let found = targets[position] else { continue }
+                            let target = live(found, disk)
+                            if target !== found {
+                                targets[position] = target
+                                moved = true
+                            }
+                        }
+                        if moved { record.write(slot, .refs(targets)) }
+                    }
+                    for case let target? in targets where !target.deleted && !available(child, at: target, from: disk) { return false }
                 default:
                     return false
                 }
                 // Lenses read a connection through its client record, which
                 // the walk above does not pass. One the image has yet to fill
                 // is walked here, so its merged pages come back with it.
-                if let connection, case .ref(let found) = record.peek(connection.slot) {
+                if let disk, let connection, case .ref(let found) = record.peek(connection.slot) {
                     let unread = found.swept || (!found.hydrated && found.slotCount == 0)
                     let merged = live(found, disk)
                     if merged !== found { record.write(connection.slot, .ref(merged)) }
-                    if unread, !merged.deleted, !fill(child, at: merged, from: disk) { return false }
+                    if unread, !merged.deleted, !available(child, at: merged, from: disk) { return false }
                 }
             }
         }
