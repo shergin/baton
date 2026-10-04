@@ -150,15 +150,11 @@ and the edge directives handles; here "handle" is only the operation handle,
 and an edge directive in a plan is an [edit](#lists).
 
 **Phase.** *Concept: phase.* The state of a resolved operation: loading,
-ready (with `isRefreshing`), or failed. Always synchronously readable;
-previous data stays visible while refreshing. Named after `AsyncImagePhase`,
-the platform's own word for the same shape.
-**Phase.** The state of a resolved operation: loading, ready, or failed.
-Always synchronously readable; previous data stays visible while
-refreshing, and `isRefreshing` says a fetch runs behind it: behind ready
-data, or behind a failure on field errors or a `@required` null, whose
-data is in the store. Named after `AsyncImagePhase`, the platform's
-own word for the same shape.
+ready, or failed. Always synchronously readable; previous data stays visible
+while refreshing, and `isRefreshing` says a fetch runs behind it: behind
+ready data, or behind a failure on field errors or a `@required` null, whose
+data is in the store. Named after `AsyncImagePhase`, the platform's own word
+for the same shape.
 
 **Action.** *Composition: lens, operation value, environment.* A mutation as
 a callable value, after SwiftUI's `dismiss` and `openURL`: called with one
@@ -242,15 +238,8 @@ layers never reach it. `Persistence(url:)` or `Persistence(name:)`, handed
 to `Store(persistence:)`. It is a cache: an image of another format or
 `version`, a corrupt one and one over its size limit are deleted and started
 again, and a record that goes a whole launch unread is dropped at the next.
-**Persistence, image.** Baton's words; Relay's store lives in memory. The
-image is the store's records in one SQLite file, written behind every commit
-of server data, off the main actor: a row per record, the query root a row
-per field, each operation's fetch time. Optimistic layers never reach it.
-`Persistence(url:)` or `Persistence(name:)`, handed to `Store(persistence:)`.
-It is a cache: an image of another format or `version`, a corrupt one and one
-over its size limit are deleted and started again, and a record that goes a
-whole launch unread is dropped at the next. One image in a process holds a
-file; a second made on it runs without it, and `close()` hands it over.
+One image in a process holds a file; a second made on it runs without it,
+and `close()` hands it over.
 
 **Hydration.** *Composition: store, plan.* The web's word for filling a
 client's state from stored data. Here: the availability check reading from
@@ -337,14 +326,10 @@ subscription transport.
 **Transport.** *Concept: transport.* The protocol behind which HTTP and
 multipart incremental delivery live: `execute` answers once, `stream` yields
 the parts of a deferred response. `URLSessionTransport` implements both;
-`MultipartParser` splits the parts.
-**Transport.** The protocol behind which HTTP and multipart incremental
-delivery live: `execute` answers once, `stream` yields the parts of a
-deferred response. `URLSessionTransport` implements both; `MultipartParser`
-splits the parts. A response outside 2xx fails with `TransportError`, its
-HTTP status and body; a socket that closed under a subscription and a
-recorded transport with nothing recorded fail with one of status 0, which
-says what went wrong.
+`MultipartParser` splits the parts. A response outside 2xx fails with
+`TransportError`, its HTTP status and body; a socket that closed under a
+subscription and a recorded transport with nothing recorded fail with one of
+status 0, which says what went wrong.
 
 **Recorded transport.** *Concept: transport.* Baton's word.
 `RecordedTransport` answers from recorded responses by operation name, or
