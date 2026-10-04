@@ -19,6 +19,9 @@ final class Disk: @unchecked Sendable {
     static let format: Int64 = 2
     /// Marks the file as an image, so a database of another kind is left alone.
     static let applicationID: Int64 = 0x4241_544E
+    /// How many names an image may intern before it starts again: argument
+    /// values make keys, and ids must stay dense, so the table only grows.
+    static let nameLimit = 65_536
     /// Client fields that describe a request in flight, not data.
     static let requestState: Set<String> = ["__isLoadingNext", "__isLoadingPrevious"]
     /// The key prefixes of records that hang off the mutation and the
@@ -36,6 +39,8 @@ final class Disk: @unchecked Sendable {
     private enum Failure: Error {
         /// Not an image this build can read: delete it and start again.
         case unreadable
+        /// A database of another kind: leave it, and leave it for good.
+        case foreign
         /// Anything else, a locked device included: leave it and try later.
         case unavailable
     }
@@ -45,6 +50,16 @@ final class Disk: @unchecked Sendable {
     private let sizeLimit: Int
     private var db: OpaquePointer?
     private var retryAfter: UInt64 = 0
+    /// Set when the file is another program's database: the image stays off
+    /// for the process instead of asking again every second.
+    private var foreign = false
+    /// Whether this process has moved the generation already: a connection
+    /// opened again after a failure is the same launch.
+    private var launched = false
+    /// Whether rows no launch has touched since the one before last have
+    /// been deleted, which the writer's first batch does: three scans that
+    /// opening the file does not wait for.
+    private var aged = false
     /// Set when SQLite reports the file corrupt; it is discarded at the end
     /// of the read or write that found out.
     private var damaged = false
@@ -97,6 +112,7 @@ final class Disk: @unchecked Sendable {
     /// started again; any other failure leaves the image off for a second.
     func open() -> Opening {
         if db != nil { return .already }
+        if foreign { return .unavailable }
         let now = DispatchTime.now().uptimeNanoseconds
         if now < retryAfter { return .unavailable }
         for attempt in 0..<2 {
@@ -104,6 +120,9 @@ final class Disk: @unchecked Sendable {
                 return .opened(try connect())
             } catch .unreadable where attempt == 0 {
                 discard()
+            } catch .foreign {
+                foreign = true
+                break
             } catch {
                 break
             }
@@ -129,7 +148,7 @@ final class Disk: @unchecked Sendable {
         let format = try integer("PRAGMA user_version")
         let tables = try integer("SELECT count(*) FROM sqlite_master")
         let fresh = application == 0 && format == 0 && tables == 0
-        if !fresh, application != Disk.applicationID { throw .unavailable }
+        if !fresh, application != Disk.applicationID { throw .foreign }
         if !fresh, format != Disk.format { throw .unreadable }
         // An image that outgrew its limit starts over.
         if let size = (try? FileManager.default.attributesOfItem(atPath: path))?[.size] as? Int, size > sizeLimit {
@@ -155,18 +174,18 @@ final class Disk: @unchecked Sendable {
         }
 
         // A new launch: the app's version decides whether the rows survive,
-        // and rows no launch has touched since the one before last go.
+        // and the generation moves once per process. Rows no launch has
+        // touched since the one before last go in the writer's first batch.
         try exec("BEGIN IMMEDIATE")
         if try text("SELECT value FROM meta WHERE key = 'version'") != version {
             try exec("DELETE FROM records; DELETE FROM root; DELETE FROM fetches; DELETE FROM names")
             try bind("INSERT OR REPLACE INTO meta(key, value) VALUES('version', ?1)") { sqlite3_bind_text($0, 1, version, -1, copied) }
         }
-        generation = try integer("SELECT coalesce((SELECT value FROM meta WHERE key = 'generation'), 0)") + 1
+        let stored = try integer("SELECT coalesce((SELECT value FROM meta WHERE key = 'generation'), 0)")
+        generation = launched ? stored : stored + 1
+        launched = true
         try exec("""
             INSERT OR REPLACE INTO meta(key, value) VALUES('generation', \(generation));
-            DELETE FROM records WHERE used < \(generation - 1);
-            DELETE FROM root WHERE used < \(generation - 1);
-            DELETE FROM fetches WHERE used < \(generation - 1);
             COMMIT
             """)
 
@@ -181,9 +200,9 @@ final class Disk: @unchecked Sendable {
             ids[String(cString: name)] = Int32(names.count)
             names.append(String(cString: name))
         }
-        if !dense { throw .unreadable }
+        if !dense || names.count > Disk.nameLimit { throw .unreadable }
         var times: [String: Double] = [:]
-        try each("SELECT operation, time FROM fetches") { statement in
+        try each("SELECT operation, time FROM fetches WHERE used >= \(generation - 1)") { statement in
             guard let operation = sqlite3_column_text(statement, 0) else { return }
             times[String(cString: operation)] = sqlite3_column_double(statement, 1)
         }
@@ -196,7 +215,9 @@ final class Disk: @unchecked Sendable {
             upsertRoot: try prepare("INSERT OR REPLACE INTO root(field, used, cell) VALUES(?1, ?2, ?3)"),
             useRoot: try prepare("UPDATE root SET used = ?2 WHERE field = ?1"),
             upsertFetch: try prepare("INSERT OR REPLACE INTO fetches(operation, used, time) VALUES(?1, ?2, ?3)"),
-            upsertName: try prepare("INSERT OR REPLACE INTO names(id, name) VALUES(?1, ?2)"),
+            // A plain insert: an id another connection took fails the batch
+            // rather than renaming what every row written with it means.
+            upsertName: try prepare("INSERT INTO names(id, name) VALUES(?1, ?2)"),
             begin: try prepare("BEGIN IMMEDIATE"),
             beginReading: try prepare("BEGIN"),
             commit: try prepare("COMMIT"),
@@ -336,7 +357,11 @@ final class Disk: @unchecked Sendable {
                 return false
             }
             guard let bytes = sqlite3_column_blob(statement, 1) else { return false }
-            if sqlite3_column_int64(statement, 0) != generation {
+            let used = sqlite3_column_int64(statement, 0)
+            // A row no launch has touched since the one before last is gone,
+            // though the writer's first batch has not deleted it yet.
+            if used < generation - 1 { return false }
+            if used != generation {
                 if isRecord { readRecords.append(key) } else { readRoot.append(key) }
             }
             body(UnsafeRawBufferPointer(start: bytes, count: Int(sqlite3_column_bytes(statement, 1))))
@@ -381,6 +406,14 @@ final class Disk: @unchecked Sendable {
             return
         }
         var good = true
+        if !aged {
+            good = (try? exec("""
+                DELETE FROM records WHERE used < \(generation - 1);
+                DELETE FROM root WHERE used < \(generation - 1);
+                DELETE FROM fetches WHERE used < \(generation - 1)
+                """)) != nil
+            aged = good
+        }
         for item in work {
             switch item {
             case .commit(let records, let root):
