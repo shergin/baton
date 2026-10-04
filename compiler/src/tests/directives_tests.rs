@@ -83,3 +83,18 @@ fn a_marker_holds_exactly_one_definition_of_its_own_kind() {
         "a .graphql file holds any number"
     );
 }
+
+#[test]
+fn a_field_named_like_a_lens_member_must_be_aliased() {
+    assert_eq!(
+        errors("query Q { anchor { id } }", Some(Marker::Query)),
+        vec![
+            "`anchor` is a member every lens has, so a field of that name would hide it; alias the field"
+        ]
+    );
+    assert_eq!(
+        errors("query Q { a { recordID } }", Some(Marker::Query)).len(),
+        1
+    );
+    assert!(errors("query Q { place: anchor { id } }", Some(Marker::Query)).is_empty());
+}

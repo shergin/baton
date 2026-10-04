@@ -2960,8 +2960,13 @@ fn spread_accessor_names(
 
 /// The names generated code refers to unqualified from inside a lens: the
 /// module's shared enums, the runtime's module, and Swift types the
-/// accessors spell. A nested lens of one of these names would shadow it.
-const RESERVED_TYPE_NAMES: [&str; 9] = [
+/// accessors spell; and the names Swift keeps for itself. A nested lens of
+/// one of these names would shadow it or not compile.
+const RESERVED_TYPE_NAMES: [&str; 13] = [
+    "Type",
+    "Self",
+    "Protocol",
+    "Any",
     "Baton",
     "Types",
     "Slots",

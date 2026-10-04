@@ -317,3 +317,24 @@ fn slots_are_nested_per_type_so_a_type_and_a_field_never_run_together() {
         "    nonisolated enum A_b {\n        static let c = Baton.Registry.slot(Types.A_b, \"c\")\n    }"
     ));
 }
+
+#[test]
+fn a_linked_field_named_like_a_swift_type_gets_a_lens_of_another_name() {
+    let sdl = "type Query { type: T, self: T } type T { a: String }";
+    let compiled = compile(
+        sdl,
+        "schema.graphql",
+        &[document("query Probe { type { a } self { a } }")],
+        &Config::default(),
+    )
+    .unwrap_or_else(|errors| panic!("{errors:?}"));
+    let output = crate::emit::emit(&compiled.plan);
+    let file = output
+        .files
+        .values()
+        .next()
+        .expect("the operation has a file");
+    assert!(file.contains("public struct TypeLens: Baton.Lens"));
+    assert!(file.contains("public struct SelfLens: Baton.Lens"));
+    assert!(!file.contains("struct Type:"));
+}

@@ -90,14 +90,28 @@ pub fn check(
     errors
 }
 
+/// The members every lens has, which an accessor of the same name would
+/// shadow.
+const LENS_MEMBERS: &[&str] = &["anchor", "recordID"];
+
 fn walk(selections: &[Selection], key: SourceLocationKey, errors: &mut Vec<Diagnostic>) {
     for selection in selections {
         match selection {
             Selection::ScalarField(field) => {
-                directives(&field.directives, FIELD, "a field", key, errors)
+                directives(&field.directives, FIELD, "a field", key, errors);
+                let name = field
+                    .alias
+                    .as_ref()
+                    .map_or(&field.name, |alias| &alias.alias);
+                member(name, key, errors);
             }
             Selection::LinkedField(field) => {
                 directives(&field.directives, FIELD, "a field", key, errors);
+                let name = field
+                    .alias
+                    .as_ref()
+                    .map_or(&field.name, |alias| &alias.alias);
+                member(name, key, errors);
                 walk(&field.selections.items, key, errors);
             }
             Selection::InlineFragment(fragment) => {
@@ -114,6 +128,19 @@ fn walk(selections: &[Selection], key: SourceLocationKey, errors: &mut Vec<Diagn
                 directives(&spread.directives, SPREAD, "a fragment spread", key, errors);
             }
         }
+    }
+}
+
+/// An accessor's name that a lens already has for itself.
+fn member(name: &graphql_syntax::Identifier, key: SourceLocationKey, errors: &mut Vec<Diagnostic>) {
+    let text = name.value.lookup();
+    if LENS_MEMBERS.contains(&text) {
+        errors.push(Diagnostic::error(
+            format!(
+                "`{text}` is a member every lens has, so a field of that name would hide it; alias the field"
+            ),
+            Location::new(key, name.span),
+        ));
     }
 }
 

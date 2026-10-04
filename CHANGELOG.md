@@ -294,6 +294,10 @@ are expected and listed without apology.
 - One `invalidate`: `Environment.invalidate()`. `Store.invalidate()`, which
   marked memory stale but left the image's fetch times, so data read back
   from the image counted as fresh, is internal and does both.
+- A linked field named `type`, `self`, `protocol` or `any` gets a nested
+  lens with `Lens` after its name; it emitted `struct Type` or `struct
+  Self`. A field named or aliased `anchor` or `recordID`, which every lens
+  has for itself, is a compile error that asks for an alias.
 - Generated slots are nested per type, `Slots.Character.name`; a type's
   name and a field's ran together, so `A_b.c` and `A.b_c` were both
   `Slots.A_b_c`.
