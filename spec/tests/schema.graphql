@@ -3,8 +3,9 @@
 # lookup by id across types, an interface only some of the union's members
 # implement, mutations with payloads, and a cursor connection
 # of notes on a character with the mutations that edit it, a subscription,
-# the `@defer` directive and a `@semanticNonNull` field, and the scalars the
-# tokenizer fixture (`spec/tokenizer/`) reads. Documents.swift compiles
+# the `@defer` directive and a `@semanticNonNull` field, the scalars the
+# tokenizer fixture (`spec/tokenizer/`) reads, and a type and fields named as
+# the generated code names its own. Documents.swift compiles
 # against it unchanged; every document here would also be valid against the
 # public schema except those that use the additions.
 
@@ -33,6 +34,7 @@ type Query {
   search(name: String!): [SearchResult]
   namesake(name: String!): Named
   tokenizer: Tokenizer
+  types: Types
 }
 
 type Mutation {
@@ -82,6 +84,13 @@ type Tokenizer {
   flags: [Boolean]
   json: JSON
   jsons: [JSON]
+}
+
+"""A type and fields named as the generated code names its own."""
+type Types {
+  Type: String
+  Protocol: String
+  Baton: String
 }
 
 type Character implements Node & Named {

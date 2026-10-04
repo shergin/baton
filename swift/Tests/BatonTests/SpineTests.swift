@@ -48,6 +48,17 @@ struct SpineTests {
         #expect(data.character?.name == "Rick Sanchez")
     }
 
+    @Test("a type named Types with fields named Type, Protocol and Baton compiles, and each field reads its own value")
+    func namesTheGeneratedCodeUses() throws {
+        let store = Store()
+        let query = TestNames()
+        store.commit(try Ingest.normalize(fixture("names-1"), plan: TestNames.plan.resolve(query.variables)))
+        let types = try #require(TestNames.Data(anchor: Anchor(record: store.root, variables: query.variables, store: store)).types)
+        #expect(types.`Type` == "not a metatype")
+        #expect(types.`Protocol` == "not a protocol")
+        #expect(types.Baton == "not the module")
+    }
+
     @Test("a character already in the store renders in the first body of its detail")
     func firstBodyFromCache() throws {
         let environment = Environment(transport: SilentTransport())

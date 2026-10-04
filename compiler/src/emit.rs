@@ -61,13 +61,12 @@ impl SlotRef {
             .any(|part| matches!(part, KeyPart::Variable(_)))
     }
 
-    /// `Character_name`, or `Query_characters_1a2b3c` when the key has arguments.
     /// The slot's name among its type's: `name`, or `characters_1a2b3c` when
     /// the key has arguments. Slots are nested per type, so a type's name
     /// and a field's never run together into another pair's.
     fn member(&self) -> String {
         if !self.has_arguments {
-            return escape(&self.field);
+            return slot_name(&self.field);
         }
         let digest = format!("{:x}", md5::compute(self.template.as_bytes()));
         format!("{}_{}", self.field, &digest[..6])
@@ -75,7 +74,7 @@ impl SlotRef {
 
     /// The constant's path in one of the shared enums: `Slots.Character.name`.
     fn path(&self, family: &str) -> String {
-        format!("{family}.{}.{}", escape(&self.type_name), self.member())
+        format!("{family}.{}.{}", slot_name(&self.type_name), self.member())
     }
 
     /// The Swift expression that yields the slot.
@@ -295,8 +294,10 @@ impl Emitter {
                 "    static let {type_name} = Baton.Registry.type(\"{interned}\")"
             );
         }
+        // Inside `Types` the members are named bare: a schema type named
+        // `Types` is a member that hides the enum's own name.
         for (condition, types) in &self.possible_sets {
-            let members: Vec<String> = types.iter().map(|name| format!("Types.{name}")).collect();
+            let members: Vec<&str> = types.iter().map(String::as_str).collect();
             let _ = writeln!(
                 output,
                 "    /// The types that satisfy `... on {condition}`.\n    static let {condition}_possible: Set<Baton.TypeID> = [{}]",
@@ -315,7 +316,7 @@ impl Emitter {
                 let _ = writeln!(
                     output,
                     "    nonisolated enum {} {{",
-                    escape(&slot.type_name)
+                    slot_name(&slot.type_name)
                 );
                 current = Some(&slot.type_name);
             }
@@ -363,7 +364,7 @@ impl Emitter {
                     let _ = writeln!(
                         output,
                         "    nonisolated enum {} {{",
-                        escape(&slot.type_name)
+                        slot_name(&slot.type_name)
                     );
                     current = Some(&slot.type_name);
                 }
@@ -3035,6 +3036,19 @@ fn lower_camel(text: &str) -> String {
         Some(first) => first.to_lowercase().collect::<String>() + characters.as_str(),
         None => String::new(),
     }
+}
+
+/// A type's or a field's name in `Slots` and `AbstractSlots`. Swift reads
+/// `Type` and `Protocol` after a dot as metatypes, and a scope or a member
+/// named `Types` or `Baton` hides the enum or the module the slots are built
+/// from, so these names take an underscore. One of them followed by
+/// underscores takes one more, so no two names meet.
+fn slot_name(name: &str) -> String {
+    const HIDDEN: [&str; 4] = ["Type", "Protocol", "Types", "Baton"];
+    if HIDDEN.contains(&name.trim_end_matches('_')) {
+        return format!("{name}_");
+    }
+    escape(name)
 }
 
 /// Escapes a property name that is a Swift keyword.

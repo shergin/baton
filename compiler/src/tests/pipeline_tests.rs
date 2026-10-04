@@ -338,3 +338,27 @@ fn a_linked_field_named_like_a_swift_type_gets_a_lens_of_another_name() {
     assert!(file.contains("public struct SelfLens: Baton.Lens"));
     assert!(!file.contains("struct Type:"));
 }
+
+#[test]
+fn a_slot_name_swift_would_misread_takes_an_underscore_and_meets_no_other() {
+    let sdl = "type Query { types: Types } type Types { Type: String, Type_: String, Baton: String, name: String }";
+    let compiled = compile(
+        sdl,
+        "schema.graphql",
+        &[document("query Probe { types { Type Type_ Baton name } }")],
+        &Config::default(),
+    )
+    .unwrap_or_else(|errors| panic!("{errors:?}"));
+    let shared = crate::emit::emit(&compiled.plan).shared;
+    assert!(
+        shared.contains(concat!(
+            "    nonisolated enum Types_ {\n",
+            "        static let Baton_ = Baton.Registry.slot(Types.Types, \"Baton\")\n",
+            "        static let Type_ = Baton.Registry.slot(Types.Types, \"Type\")\n",
+            "        static let Type__ = Baton.Registry.slot(Types.Types, \"Type_\")\n",
+            "        static let name = Baton.Registry.slot(Types.Types, \"name\")\n",
+            "    }"
+        )),
+        "{shared}"
+    );
+}
