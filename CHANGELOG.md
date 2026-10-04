@@ -515,6 +515,13 @@ are expected and listed without apology.
   once among the uncaught ones. Its first error is placed on every field
   the part would have filled, and was counted once for each such field
   under no `@catch`, so a part of two of them listed it twice.
+- A spread alone under an aliased `@catch`, `... @alias(as: "x") @catch {
+  ...F }`, compiles whatever the fragment's error policy and reads the
+  field errors in the fragment: a failure under `RESULT`, nil under `NULL`.
+  It called `F.caught`, which only a fragment with `@throwOnFieldError` had,
+  so the generated code did not compile for any other fragment, and under
+  `@catch(to: NULL)` such a fragment's accessor threw instead of reading
+  nil.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

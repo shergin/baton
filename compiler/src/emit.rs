@@ -128,6 +128,9 @@ struct Emitter {
     fragment_conditions: BTreeMap<String, FragmentCondition>,
     /// Fragments spread with `@defer` somewhere: their lenses get `isPresent`.
     deferred_fragments: BTreeSet<String>,
+    /// Fragments spread alone under `@catch` somewhere: their lenses get
+    /// `fieldErrors`, which the catch reads.
+    caught_fragments: BTreeSet<String>,
     /// The possible types of each abstract type condition tested as a set.
     possible_sets: BTreeMap<String, Vec<String>>,
     /// The schema's root types the store knows by another name.
@@ -147,12 +150,21 @@ struct Context<'a> {
     throws: bool,
     /// Inside a `@catch` field or aliased inline fragment.
     within_catch: bool,
+    /// In a fragment a `@catch` spreads: its lenses scan for field errors
+    /// for the catch to read, while their types keep the fragment's own
+    /// policy, as the fragment is one type wherever it is spread.
+    caught_spread: bool,
 }
 
 impl Context<'_> {
     /// Semantic non-null types apply, and lenses scan for field errors.
     fn handles_errors(&self) -> bool {
         self.throws || self.within_catch
+    }
+
+    /// Lenses scan for field errors: under an error policy, or for a catch.
+    fn scans_errors(&self) -> bool {
+        self.handles_errors() || self.caught_spread
     }
 }
 
@@ -171,11 +183,14 @@ struct Nested {
 
 pub fn emit(plan: &Plan) -> Output {
     let mut deferred_fragments = BTreeSet::new();
+    let mut caught_fragments = BTreeSet::new();
     for fragment in &plan.fragments {
         collect_deferred(&fragment.reader, &mut deferred_fragments);
+        collect_caught(&fragment.reader, &mut caught_fragments);
     }
     for operation in &plan.operations {
         collect_deferred(&operation.reader, &mut deferred_fragments);
+        collect_caught(&operation.reader, &mut caught_fragments);
     }
     let mut emitter = Emitter {
         slots: BTreeSet::new(),
@@ -214,6 +229,7 @@ pub fn emit(plan: &Plan) -> Output {
             })
             .collect(),
         deferred_fragments,
+        caught_fragments,
         possible_sets: BTreeMap::new(),
         root_names: plan.root_names.clone(),
         schema_digest: plan.schema_digest.clone(),
@@ -268,6 +284,38 @@ fn collect_deferred(selections: &[SelectionPlan], into: &mut BTreeSet<String>) {
             | SelectionPlan::Condition {
                 selections: child, ..
             } => collect_deferred(child, into),
+            _ => {}
+        }
+    }
+}
+
+/// The fragments spread alone under an aliased or deferred `@catch`,
+/// anywhere in a selection tree: the spread's accessor reads their field
+/// errors.
+fn collect_caught(selections: &[SelectionPlan], into: &mut BTreeSet<String>) {
+    for selection in selections {
+        match selection {
+            SelectionPlan::Inline {
+                alias,
+                deferred,
+                catch,
+                selections: child,
+                ..
+            } => {
+                if let (Some(_), [SelectionPlan::Spread { fragment, .. }]) =
+                    (catch, child.as_slice())
+                    && (alias.is_some() || deferred.is_some())
+                {
+                    into.insert(fragment.clone());
+                }
+                collect_caught(child, into);
+            }
+            SelectionPlan::Linked {
+                selections: child, ..
+            }
+            | SelectionPlan::Condition {
+                selections: child, ..
+            } => collect_caught(child, into),
             _ => {}
         }
     }
@@ -393,6 +441,7 @@ impl Emitter {
             arguments: &fragment.arguments,
             throws: fragment.throws_on_field_error,
             within_catch: false,
+            caught_spread: self.caught_fragments.contains(&fragment.name),
         };
         self.lens_struct(
             &mut output,
@@ -530,6 +579,7 @@ impl Emitter {
             arguments: &operation.variables,
             throws: operation.throws_on_field_error,
             within_catch: false,
+            caught_spread: false,
         };
         self.lens_struct(
             &mut output,
@@ -630,7 +680,7 @@ impl Emitter {
         if bubbles {
             self.satisfied_function(output, type_name, type_is_abstract, &members, &inner);
         }
-        if context.handles_errors() {
+        if context.scans_errors() {
             self.field_errors_function(output, type_name, type_is_abstract, &members, &inner);
         }
         if is_fragment_root && self.deferred_fragments.contains(name) {
@@ -1713,7 +1763,8 @@ impl Emitter {
     /// the default, else null. The accessor is optional when the type may not
     /// match, the spread is deferred, or the fragment's required fields can
     /// null it; it throws when the fragment has `@throwOnFieldError`; it is a
-    /// `Result` under `@catch`.
+    /// `Result` of the fragment's field errors under `@catch`, and nil when
+    /// the fragment has any under `@catch(to: NULL)`.
     #[allow(clippy::too_many_arguments)]
     fn spread_accessor(
         &mut self,
@@ -1796,10 +1847,18 @@ impl Emitter {
         if flags.bubbles {
             guards.push(format!("{fragment}.satisfied({anchor})"));
         }
+        let catch_to = spread.catch.map(|catch| catch.to.as_str());
+        let catches = catch_to == Some("RESULT");
+        // `to: NULL` reads a fragment with field errors as nil, and then
+        // never throws them.
+        let nulls = catch_to == Some("NULL");
+        if nulls {
+            guards.push(format!("{fragment}.fieldErrors({anchor}).isEmpty"));
+        }
+        let throws = flags.throws && !nulls;
         let accessor = escape(spread.accessor);
         let optional = !guards.is_empty();
-        let catches = spread.catch.is_some_and(|catch| catch.to == "RESULT");
-        let (result_type, effect) = match (catches, flags.throws) {
+        let (result_type, effect) = match (catches, throws) {
             (true, _) if optional => (format!("Result<{fragment}?, Baton.FieldErrors>"), ""),
             (true, _) => (format!("Result<{fragment}, Baton.FieldErrors>"), ""),
             (false, true) if optional => (format!("{fragment}?"), " get throws"),
@@ -1807,19 +1866,21 @@ impl Emitter {
             (false, false) if optional => (format!("{fragment}?"), ""),
             (false, false) => (fragment.to_string(), ""),
         };
+        // A catch reads the errors through what every lens has,
+        // `fieldErrors` and `init(anchor:)`: only a fragment with an error
+        // policy of its own has `caught`.
         let make = if catches {
-            if optional {
-                format!("{fragment}.caught({anchor}).map {{ Optional($0) }}")
-            } else {
-                format!("{fragment}.caught({anchor})")
-            }
-        } else if flags.throws {
-            format!("try {fragment}.throwing({anchor})")
+            None
+        } else if throws {
+            Some(format!("try {fragment}.throwing({anchor})"))
         } else {
-            format!("{fragment}(anchor: {anchor})")
+            Some(format!("{fragment}(anchor: {anchor})"))
         };
         let miss = if catches { ".success(nil)" } else { "nil" };
-        if bound.is_none() && guards.is_empty() {
+        if let Some(make) = &make
+            && bound.is_none()
+            && guards.is_empty()
+        {
             if effect.is_empty() {
                 let _ = writeln!(
                     output,
@@ -1853,7 +1914,21 @@ impl Emitter {
                 guards.join(", ")
             );
         }
-        let _ = writeln!(output, "{body_indent}return {make}");
+        match &make {
+            Some(make) => {
+                let _ = writeln!(output, "{body_indent}return {make}");
+            }
+            None => {
+                let _ = writeln!(
+                    output,
+                    "{body_indent}let errors = {fragment}.fieldErrors({anchor})"
+                );
+                let _ = writeln!(
+                    output,
+                    "{body_indent}return errors.isEmpty ? .success({fragment}(anchor: {anchor})) : .failure(Baton.FieldErrors(errors))"
+                );
+            }
+        }
         if !effect.is_empty() {
             let _ = writeln!(output, "{indent}    }}");
         }
@@ -2990,8 +3065,9 @@ const RESERVED_TYPE_NAMES: [&str; 16] = [
     "Slots",
     "AbstractSlots",
     "Sites",
-    // What the accessors return: a `@catch` field's `Result`, a caught
-    // spread's `Optional`, and the scalars.
+    // What the accessors return: a `@catch` field's `Result`, the
+    // `Optional` every optional accessor's type stands for, and the
+    // scalars.
     "Result",
     "Optional",
     "String",

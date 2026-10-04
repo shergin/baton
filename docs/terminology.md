@@ -60,7 +60,8 @@ empty path.
 whose errors the view handles. Here: RESULT makes the accessor a
 `Result<T, FieldErrors>` whose failure holds the field's error and every
 error below it, THROW-required nulls included; NULL keeps the optional type
-and reads errors as null.
+and reads errors as null. On an aliased spread the errors are those in the
+fragment's own selection, whatever the fragment's policy.
 
 **Throw on field error.** Relay: `@throwOnFieldError` on a fragment or
 operation, the policy under which `@semanticNonNull` fields are typed
