@@ -693,6 +693,14 @@ are expected and listed without apology.
   expressions, as `row(anchor: anchor)` and `row.satisfied(anchor)`, which
   the member hid; it now builds the lens as `.init(anchor:)` and calls the
   fragment's checks through a local alias of its type.
+- `refetch()`, and a connection's `loadNext` and `loadPrevious`, compile
+  where a field is named like the fragment or its refetch query, in the
+  fragment's lens or in the connection's. They named both in expressions,
+  as `anchor.refetch(TestNotesPaginationQuery.self,
+  TestNotes_character.refetchable)`, which the field hid; `refetch()` now
+  reads the descriptor as `Self.refetchable`, and the query, and in a
+  connection the fragment, are named through local aliases of their
+  types.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

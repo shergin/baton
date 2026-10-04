@@ -57,6 +57,8 @@ nonisolated enum Slots {
     nonisolated enum Character {
         static let __TestDeferredNotes_notes_connection = Baton.Registry.slot(Types.Character, "__TestDeferredNotes_notes_connection")
         static let __TestEdgesNames_notes_connection = Baton.Registry.slot(Types.Character, "__TestEdgesNames_notes_connection")
+        static let __TestHiddenNotes_notes_connection = Baton.Registry.slot(Types.Character, "__TestHiddenNotes_notes_connection")
+        static let __TestHiddenRecentNotes_notes_connection = Baton.Registry.slot(Types.Character, "__TestHiddenRecentNotes_notes_connection")
         static let __TestNotes_notes_connection = Baton.Registry.slot(Types.Character, "__TestNotes_notes_connection")
         static let __TestRecentNotes_notes_connection = Baton.Registry.slot(Types.Character, "__TestRecentNotes_notes_connection")
         static let __TestTwoPages_notes_connection = Baton.Registry.slot(Types.Character, "__TestTwoPages_notes_connection")
@@ -226,6 +228,10 @@ nonisolated enum Slots {
 /// The spreads with `@arguments`, where an owner binds a fragment's scope once.
 nonisolated enum Sites {
     static let TestDeferredNotesPaginationQuery_testDeferredNotes = Baton.ArgumentSite()
+    static let TestHiddenNotesPaginationQuery_testHiddenNotes = Baton.ArgumentSite()
+    static let TestHiddenNotesQuery_testHiddenNotes = Baton.ArgumentSite()
+    static let TestHiddenRecentNotesPaginationQuery_testHiddenRecentNotes = Baton.ArgumentSite()
+    static let TestHiddenRecentNotesQuery_testHiddenRecentNotes = Baton.ArgumentSite()
     static let TestNotesPaginationQuery_testNotes = Baton.ArgumentSite()
     static let TestNotesQuery_testNotes = Baton.ArgumentSite()
     static let TestNotesSizedQuery_testNotes = Baton.ArgumentSite()

@@ -1,0 +1,1 @@
+{"data":{"character":{"notes":{"TestHiddenRecentNotes_character":5,"TestHiddenRecentNotesPaginationQuery":5,"edges":[{"node":{"id":"n4","text":"Avoid the Citadel","__typename":"Note"},"cursor":"c4"},{"node":{"id":"n5","text":"Pickle Rick","__typename":"Note"},"cursor":"c5"}],"pageInfo":{"hasPreviousPage":true,"startCursor":"c4"}},"id":"1"}}}

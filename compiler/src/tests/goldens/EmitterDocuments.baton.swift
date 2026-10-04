@@ -157,7 +157,10 @@ nonisolated public struct TestProgramNames_character: Baton.Lens {
     /// How the fragment is fetched again: `TestProgramNamesRefetchQuery` with the lens's variables.
     @_spi(Generated) public static let refetchable: Baton.Refetch = .init(variables: ["id"], identifier: "id", first: nil, after: nil, last: nil, before: nil)
     /// Fetches the fragment again through `TestProgramNamesRefetchQuery` with its current variables; the records update in place.
-    @MainActor public func refetch() async throws { try await anchor.refetch(TestProgramNamesRefetchQuery.self, TestProgramNames_character.refetchable) }
+    @MainActor public func refetch() async throws {
+        typealias Query = TestProgramNamesRefetchQuery
+        try await anchor.refetch(Query.self, Self.refetchable)
+    }
 
     nonisolated public struct TestProgramNamesRefetchQueryLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
