@@ -240,6 +240,14 @@ are expected and listed without apology.
   schema is discarded. The version is the app's to pass, because generated
   constants are made on first use and nothing has made one when the file
   opens.
+- A deferred fragment the image holds only half reads absent, and its
+  operation fetches. A record read from the image holds every cell of its
+  row, a deferred fragment's link among them, while the records behind it
+  may be gone, and the check passes over deferred fields: the fragment
+  read present and empty. The deferred fields are now checked apart, in
+  memory and then in the image; one whose records are not whole is
+  cleared, and a store-or-network attach fetches while the initial part
+  renders.
 - An image that lost a batch, written in vain or dropped while the file
   could not open, is discarded at the next open; it served rows older
   than memory had known, a deleted record among them.

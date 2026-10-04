@@ -823,6 +823,44 @@ public final class Store {
         return found ? .image : .miss
     }
 
+    /// Whether every deferred part of a selection the check found is whole,
+    /// in memory or, through the check, in the image. The check passes over
+    /// deferred fields, while a record read from the image holds every cell
+    /// of its row, a deferred fragment's link among them, with nothing
+    /// behind it: such a field is cleared, so its fragment reads absent
+    /// rather than empty, and the answer is false, so the operation fetches.
+    func deferredPartsHold(_ selection: ResolvedSelection, at record: Record? = nil) -> Bool {
+        var whole = true
+        deferredParts(selection, at: record ?? root, &whole)
+        return whole
+    }
+
+    private func deferredParts(_ selection: ResolvedSelection, at record: Record, _ whole: inout Bool) {
+        let fields = selection.isAbstract ? selection.variant(for: record.type).fields : selection.fields
+        for field in fields where !field.isTypename {
+            let value = record.peek(field.slot)
+            guard case .linked(let child, _, _, _) = field.kind else {
+                if field.deferred != nil, case .missing = value { whole = false }
+                continue
+            }
+            var targets: [Record] = []
+            switch value {
+            case .ref(let target) where !target.deleted: targets = [target]
+            case .refs(let list): targets = list.compactMap { $0 }.filter { !$0.deleted }
+            case .missing: if field.deferred != nil { whole = false }
+            default: break
+            }
+            guard field.deferred != nil else {
+                for target in targets { deferredParts(child, at: target, &whole) }
+                continue
+            }
+            if targets.contains(where: { check(child, at: $0) == .miss }) {
+                record.write(field.slot, .missing)
+                whole = false
+            }
+        }
+    }
+
     /// Where the availability check found the selection's data.
     public enum Answer: Sendable {
         /// In memory, every record of it put there by a response.

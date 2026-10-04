@@ -268,6 +268,9 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
         }
         let answer = store.check(resolved)
         let complete = answer != .miss
+        // The deferred parts the store holds half are cleared and fetched;
+        // the initial part renders meanwhile.
+        let partial = complete && Op.hasDeferred && !store.deferredPartsHold(resolved)
         if complete { takeAge(hydrated: answer == .image) }
         if complete {
             switch phase {
@@ -286,7 +289,7 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
                 phase = .failed(MissingDataError(operationName: Op.name))
             }
         case .storeOrNetwork:
-            if !complete || isStale { fetch() }
+            if !complete || partial || isStale { fetch() }
         case .storeAndNetwork, .networkOnly:
             fetch()
         }

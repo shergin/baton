@@ -349,6 +349,29 @@ struct PersistenceTests {
         #expect(throws: NotStored.self) { try stored(Fixture(page: 1), in: launch()) }
     }
 
+    @Test("a deferred fragment whose records the image lacks reads absent, not empty, and its operation fetches")
+    func deferredDataInTheImage() async throws {
+        let first = launch(DeliveryTests.OpenParts([fixture("character-deferred-1"), fixture("character-deferred-2")]))
+        let fetched = first.handle(for: TestProfileQuery(id: "1"), fetchPolicy: .networkOnly)
+        fetched.retain()
+        await until { first.store.existing("Episode:2") != nil && fetched.fetchTime != nil }
+        fetched.release()
+        await finish(first)
+        // The episodes' rows are gone, as after an image that dropped them.
+        sql("DELETE FROM records WHERE key LIKE 'Episode:%'")
+
+        let transport = RecordedTransport { _ in fixture("character-deferred-1") }
+        let second = launch(transport)
+        let handle = second.handle(for: TestProfileQuery(id: "1"), fetchPolicy: .storeOrNetwork)
+        guard case .ready(let data) = handle.phase else {
+            Issue.record("the initial part renders from the image, got \(handle.phase)")
+            return
+        }
+        #expect(data.character?.testAppearances == nil, "the fragment reads absent, not empty")
+        await until { transport.requestCount == 1 }
+        await finish(second)
+    }
+
     @Test("records whose rows wait to be written survive a collection, so a check right behind a commit finds them")
     func unwrittenRecordsStay() async throws {
         let environment = launch()
