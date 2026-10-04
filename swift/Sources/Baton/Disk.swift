@@ -271,9 +271,28 @@ final class Disk: @unchecked Sendable {
         close()
     }
 
-    /// Deletes the file, for a sign-out; the next work opens a new one.
+    /// Deletes the file for a sign-out when it is an image, and leaves a
+    /// database of another kind alone; the next work opens a new one.
     func erase() {
+        if foreign { return }
+        // A file the connection does not hold open is told by its
+        // application id first: it may never have been opened.
+        if db == nil, !holdsAnImage() { return }
         discard()
+    }
+
+    /// Whether the file at the path is an image, by its application id:
+    /// false when there is no file, or none SQLite can read.
+    private func holdsAnImage() -> Bool {
+        var handle: OpaquePointer?
+        defer { sqlite3_close_v2(handle) }
+        // Read and write, without create: a read-only connection cannot
+        // open a WAL file whose shared memory file is gone.
+        guard sqlite3_open_v2(path, &handle, SQLITE_OPEN_READWRITE | SQLITE_OPEN_NOMUTEX, nil) == SQLITE_OK else { return false }
+        var statement: OpaquePointer?
+        guard sqlite3_prepare_v2(handle, "PRAGMA application_id", -1, &statement, nil) == SQLITE_OK else { return false }
+        defer { sqlite3_finalize(statement) }
+        return sqlite3_step(statement) == SQLITE_ROW && sqlite3_column_int64(statement, 0) == Disk.applicationID
     }
 
     /// Deletes the file and its journal: an image that cannot be read is a

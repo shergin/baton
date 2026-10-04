@@ -720,6 +720,34 @@ struct PersistenceTests {
         sqlite3_close(db)
     }
 
+    @Test("removeAll deletes an image whether or not its file is open, and leaves a database of another kind at its path, told apart by an open or not")
+    func removeAllDeletesOnlyAnImage() async throws {
+        try await seed(launch())
+        // Closed, as by a launch that has finished with it.
+        let closed = Persistence(url: image.url)
+        await closed.close()
+        closed.removeAll()
+        #expect(!FileManager.default.fileExists(atPath: image.url.path))
+
+        var db: OpaquePointer?
+        #expect(sqlite3_open(image.url.path, &db) == SQLITE_OK)
+        #expect(sqlite3_exec(db, "CREATE TABLE notes(text); INSERT INTO notes VALUES('mine')", nil, nil, nil) == SQLITE_OK)
+        sqlite3_close(db)
+        let opened = Persistence(url: image.url)
+        await opened.flush()
+        opened.removeAll()
+        // Whether a new image's first open or its removal takes the file
+        // first is a race; a few rounds give the removal its turn.
+        for _ in 0..<12 {
+            let fresh = Persistence(url: image.url)
+            fresh.removeAll()
+            await fresh.flush()
+        }
+        #expect(sqlite3_open_v2(image.url.path, &db, SQLITE_OPEN_READONLY, nil) == SQLITE_OK)
+        #expect(sqlite3_exec(db, "SELECT text FROM notes", nil, nil, nil) == SQLITE_OK, "the table is still there")
+        sqlite3_close(db)
+    }
+
     @Test("a file damaged between a commit and a check is a miss, not a crash")
     func damagedUnderAnOpenConnection() async throws {
         // Whether the check or the writer meets the damage first is a race;

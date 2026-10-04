@@ -106,10 +106,11 @@ public final class Persistence: Sendable {
 
     /// Deletes the image, for a sign-out: the work queued before it is
     /// dropped and the file removed, names and argument values with it, so
-    /// nothing of the session survives a failed write. Records in memory are
-    /// untouched; what the store commits afterwards starts a new file. A
-    /// sign-out releases the old environment's handles, as its views going
-    /// away does, removes the image, and makes a new environment.
+    /// nothing of the session survives a failed write. A database of another
+    /// kind at the path is left alone. Records in memory are untouched; what
+    /// the store commits afterwards starts a new file. A sign-out releases
+    /// the old environment's handles, as its views going away does, removes
+    /// the image, and makes a new environment.
     public func removeAll() {
         ages.withLock { ages in
             ages.times.removeAll()
