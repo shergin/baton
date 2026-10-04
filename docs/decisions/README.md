@@ -27,3 +27,4 @@ principle, the proof belongs here.
 - [The availability check and collection run on the main actor](the-check-and-collection-run-on-the-main-actor.md)
 - [The environment is the session](the-environment-is-the-session.md)
 - [An image belongs to one store](an-image-belongs-to-one-store.md)
+- [The store owns roots and ages](the-store-owns-roots-and-ages.md)

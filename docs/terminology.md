@@ -222,14 +222,23 @@ environment.* Relay's words. An operation whose handle is alive retains its
 records; a released root waits in a buffer (default ten) before its records
 become collectable. A completed mutation's payload is a root apart from the
 buffer, one per operation value (its name and variables) and as many as the
-buffer holds, so mutations push no released query out.
+buffer holds, so mutations push no released query out. The environment
+holds the roots, the buffer and the collector today; the store holding them
+is *(planned)*, with one way to keep records alive: a *retention*, a
+selection with the record it starts from or a set of records, which
+`retain()` returns as a token whose end releases. See
+[the decision](decisions/the-store-owns-roots-and-ages.md).
 
 **Invalidation, TTL.** *Composition: store, operation value, environment.*
 Relay's and Apollo's shared words. `Environment.invalidate()` marks every
 fetched operation stale and refetches the retained ones;
 `queryCacheExpiration` does the same by age. Stale data stays readable. An
 invalidation also forgets the image's fetch times, so it outlives the
-launch.
+launch. A handle stamps its operation's age after its own fetch today; the
+age kept by the store, stamped by the commit of every response and
+persisted as the image's fetch time, is *(planned)*, and so is the rule
+that data with no known age is stale wherever an expiration applies. See
+[the decision](decisions/the-store-owns-roots-and-ages.md).
 
 **Persistence, image.** *Concept: store.* Baton's words; Relay's store lives
 in memory. The image is the store's records in one SQLite file, written
