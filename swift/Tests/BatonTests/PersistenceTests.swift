@@ -850,16 +850,25 @@ struct PersistenceTests {
     /// The image's path spelled the other way: through `/private`, where
     /// macOS keeps `/var` and `/tmp`, or without it. Foundation's
     /// standardized path drops `/private` only once the file exists.
-    var otherSpelling: URL {
-        let path = image.url.path
+    var otherSpelling: URL { Self.otherSpelling(of: image.url) }
+
+    nonisolated static func otherSpelling(of url: URL) -> URL {
+        let path = url.path
         return URL(fileURLWithPath: path.hasPrefix("/private/") ? String(path.dropFirst("/private".count)) : "/private" + path)
+    }
+
+    /// A file of its own for an exit test, made in the child process: the
+    /// testing library of the oldest supported Xcode takes no capture list
+    /// in an exit test's closure.
+    nonisolated static func childImage() -> URL {
+        FileManager.default.temporaryDirectory.appending(path: "baton-claim-\(UUID().uuidString).sqlite")
     }
 
     #if DEBUG
     @Test("a second image made on a file another image in the process holds stops a debug build where it is made")
     func aSecondImageStopsADebugBuild() async {
-        // The child process gets the path by value; the macro needs its type.
-        await #expect(processExitsWith: .failure) { [url = image.url as URL] in
+        await #expect(processExitsWith: .failure) {
+            let url = Self.childImage()
             let first = Persistence(url: url)
             let second = Persistence(url: url)
             withExtendedLifetime((first, second)) {}
@@ -868,12 +877,14 @@ struct PersistenceTests {
 
     @Test("a second image made on the file under another spelling of its path stops a debug build, before the file exists and after")
     func aSecondSpellingStopsADebugBuild() async {
-        await #expect(processExitsWith: .failure) { [url = image.url as URL, other = otherSpelling as URL] in
+        await #expect(processExitsWith: .failure) {
+            let url = Self.childImage()
             let first = Persistence(url: url)
-            let second = Persistence(url: other)
+            let second = Persistence(url: Self.otherSpelling(of: url))
             withExtendedLifetime((first, second)) {}
         }
-        await #expect(processExitsWith: .failure) { [other = otherSpelling as URL] in
+        await #expect(processExitsWith: .failure) {
+            let other = Self.otherSpelling(of: Self.childImage())
             let first = Persistence(url: other)
             await first.flush()
             let second = Persistence(url: other)
