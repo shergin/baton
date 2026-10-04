@@ -240,6 +240,11 @@ are expected and listed without apology.
   schema is discarded. The version is the app's to pass, because generated
   constants are made on first use and nothing has made one when the file
   opens.
+- `removeAll()` deletes the image's file. It queued deletes that a failed
+  open dropped and a failed batch rolled back, and it kept the interned
+  names, which hold argument values; work queued before it is dropped
+  too. A sign-out releases the old environment's handles, removes the
+  image and makes a new environment.
 - `Persistence.close()` writes what is queued and closes the file, so a new
   environment can take the image over, as at a sign-out.
 - Opening the image scans nothing. The rows no launch has read since the

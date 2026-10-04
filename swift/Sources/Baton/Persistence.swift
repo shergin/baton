@@ -43,7 +43,6 @@ public final class Persistence: Sendable {
         /// Rows a read found carrying an older generation.
         case used(records: [String], root: [String])
         case invalidate
-        case removeAll
     }
 
     private struct Pending: Sendable {
@@ -96,14 +95,19 @@ public final class Persistence: Sendable {
         }.value
     }
 
-    /// Empties the image, for a sign-out. Records in memory are untouched;
-    /// what the store commits afterwards is written as usual.
+    /// Deletes the image, for a sign-out: the work queued before it is
+    /// dropped and the file removed, names and argument values with it, so
+    /// nothing of the session survives a failed write. Records in memory are
+    /// untouched; what the store commits afterwards starts a new file. A
+    /// sign-out releases the old environment's handles, as its views going
+    /// away does, removes the image, and makes a new environment.
     public func removeAll() {
         ages.withLock { ages in
             ages.times.removeAll()
             ages.cleared = true
         }
-        enqueue(.removeAll)
+        pending.withLock { $0.work.removeAll() }
+        disk.withLock { $0.erase() }
     }
 
     // MARK: From the main actor

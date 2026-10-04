@@ -249,6 +249,11 @@ final class Disk: @unchecked Sendable {
         types.removeAll()
     }
 
+    /// Deletes the file, for a sign-out; the next work opens a new one.
+    func erase() {
+        discard()
+    }
+
     /// Deletes the file and its journal: an image that cannot be read is a
     /// miss, never a migration.
     private func discard() {
@@ -433,8 +438,6 @@ final class Disk: @unchecked Sendable {
                 for field in root { good = use(prepared.useRoot, field) && good }
             case .invalidate:
                 good = (try? exec("DELETE FROM fetches")) != nil && good
-            case .removeAll:
-                good = (try? exec("DELETE FROM records; DELETE FROM root; DELETE FROM fetches")) != nil && good
             }
         }
         for id in unwritten { good = put(name: id, prepared) && good }

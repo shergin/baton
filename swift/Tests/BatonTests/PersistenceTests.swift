@@ -335,7 +335,7 @@ struct PersistenceTests {
         #expect(throws: NotStored.self) { try stored(Fixture(page: 1), in: launch()) }
     }
 
-    @Test("an unreadable image is a miss: garbage, another version and an emptied image start over")
+    @Test("an unreadable image is a miss: garbage, another version and a removed image start over")
     func unreadableIsAMiss() async throws {
         try Data(repeating: 0x42, count: 8192).write(to: image.url)
         let first = launch()
@@ -350,10 +350,13 @@ struct PersistenceTests {
         #expect(throws: NotStored.self) { try stored(Fixture(page: 1), in: upgraded) }
         try await seed(upgraded)
 
-        // A sign-out empties the image; memory keeps what it had.
+        // A sign-out deletes the image, and the work queued before it with
+        // it; memory keeps what it had.
         let leaving = launch(version: "2")
         _ = try stored(Fixture(page: 1), in: leaving)
+        leaving.store.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables)))
         leaving.store.persistence?.removeAll()
+        #expect(!FileManager.default.fileExists(atPath: image.url.path), "the file is gone, names and all")
         await finish(leaving)
         _ = try stored(Fixture(page: 1), in: leaving)
         #expect(throws: NotStored.self) { try stored(Fixture(page: 1), in: launch(version: "2")) }
