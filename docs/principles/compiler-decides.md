@@ -72,5 +72,6 @@ artifact bundle, with `baton.json` beside the target or the package. Each
 source that declares GraphQL, a Swift file or a `.graphql` or `.gql` file,
 writes one output named by its path in the target (`Screens/Home.swift`
 writes `Screens_Home.baton.swift`), and the module's types, slots and sites
-go to one shared `Baton.baton.swift`. A document with an error writes
-nothing. This section may rot; the rest must not.
+go to one shared `Baton.baton.swift`, so a `Baton.swift` at the target's
+root may not declare GraphQL. A document with an error writes nothing. This
+section may rot; the rest must not.

@@ -386,9 +386,12 @@ are expected and listed without apology.
   documents compiled and their lenses were never written. Outputs are named
   by the source's path in the target, so `Thing.swift` and `Thing.graphql`,
   or two files of one name in two directories, no longer write one file;
-  `batonc generate --out` names them the same way. A document with an error
-  writes nothing, where every output was overwritten with a stub, and a
-  file holding GraphQL that no output is named for is an error.
+  `batonc generate --out` names them the same way. A `Baton.swift` at the
+  target's root that declares GraphQL, whose output would be the shared
+  `Baton.baton.swift`, is an error naming it; the shared file overwrote its
+  output, or the build failed on two producers of one file. A document with
+  an error writes nothing, where every output was overwritten with a stub,
+  and a file holding GraphQL that no output is named for is an error.
 - Each `batonc` command takes only its own options, and any other is an
   error naming the ones it takes: `--schem x` was ignored, and the schema
   then came from wherever else it could.

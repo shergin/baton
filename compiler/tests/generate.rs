@@ -124,6 +124,34 @@ fn two_sources_that_would_write_one_output_are_an_error() {
 }
 
 #[test]
+fn a_source_that_would_write_the_shared_file_is_an_error() {
+    let directory = workspace("shared");
+    write(&directory, "Baton.swift", QUERY);
+    let named = generate(&directory, &["--out", "out", "Baton.swift"]);
+    assert!(!named.status.success());
+    let stderr = String::from_utf8_lossy(&named.stderr);
+    assert!(
+        stderr.contains("`Baton.swift` would write the shared `out/Baton.baton.swift`; rename it"),
+        "{stderr}"
+    );
+    assert!(!directory.join("out").exists());
+
+    let declared = generate(
+        &directory,
+        &[
+            "--emit",
+            "Baton.swift=out/Baton.baton.swift",
+            "--shared",
+            "out/Baton.baton.swift",
+            "Baton.swift",
+        ],
+    );
+    assert!(!declared.status.success());
+    assert!(String::from_utf8_lossy(&declared.stderr).contains("would write the shared"));
+    assert!(!directory.join("out").exists());
+}
+
+#[test]
 fn an_option_the_command_does_not_take_is_an_error() {
     let directory = workspace("options");
     write(&directory, "Home.swift", QUERY);

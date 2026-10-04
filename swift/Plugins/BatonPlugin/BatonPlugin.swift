@@ -47,6 +47,13 @@ struct BatonPlugin: BuildToolPlugin {
             arguments.append(source.path(percentEncoded: false))
             guard source.pathExtension != "swift" || declaresGraphQL(source) else { continue }
             let output = outputDirectory.appending(path: outputName(source, root: root))
+            // SwiftPM refuses two producers of one file without naming the
+            // source, so the one whose output is the shared file is named here.
+            guard output != shared else {
+                let path = source.path(percentEncoded: false)
+                Diagnostics.error("Baton: `\(path)` would write the shared `\(shared.lastPathComponent)`; rename it", file: path, line: nil)
+                return []
+            }
             outputs.append(output)
             arguments += ["--emit", "\(source.path(percentEncoded: false))=\(output.path(percentEncoded: false))"]
         }
