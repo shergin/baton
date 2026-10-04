@@ -122,7 +122,10 @@ the request the environment shares among equal fetches. Here:
 and shared by equal values: its phase, the fetch in flight,
 `isRefreshing`, `fetchTime`, and its place among the store's roots while
 retained or in the release buffer. `SubscriptionHandle` is the same for a
-subscription: the stream held open, its events, its last error.
+subscription: the stream held open, its events, its last error. Relay also
+calls the code behind `@connection` and the edge directives handles; here
+"handle" is only the operation handle, and an edge directive in a plan is
+an [edit](#lists).
 
 **Phase.** The state of a resolved operation: loading, ready (with
 `isRefreshing`), or failed. Always synchronously readable; previous data
@@ -340,12 +343,13 @@ on the connection record (`__isLoadingNext`, `__isLoadingPrevious`).
 `@prependEdge`, `@appendNode`, `@prependNode` (with `edgeTypeName`),
 `@deleteEdge`, `@deleteRecord`. Here: the same, on mutation payload fields,
 applied as commit edits inside the transaction, so optimistic responses carry
-them and revert them. Inserted edges are copied into records the connection
-owns, numbered by Relay's `__connection_next_edge_index`. A commit edits a
-connection by the slots its plans resolved, which the registry keeps under
-the connection's type, so it looks no key up by name; a record no
-connection field made, or an edge of another type than the connection's,
-is left alone.
+them and revert them. A plan spells each as an `Edit` on its field, which
+the ingest turns into the change set's `ChangeSet.Edit`. Inserted edges are
+copied into records the connection owns, numbered by Relay's
+`__connection_next_edge_index`. A commit edits a connection by the slots its
+plans resolved, which the registry keeps under the connection's type, so it
+looks no key up by name; a record no connection field made, or an edge of
+another type than the connection's, is left alone.
 
 **Page.** A list fetched by page number or offset, as the sample API does. Not
 a connection; composed in the UI from plain operations until the watch list

@@ -7,8 +7,7 @@ use crate::decide::{
     self, Guard, NormalizationField, NormalizationKind, NormalizationSelection, SlotRef,
 };
 use crate::pipeline::{
-    ArgumentValuePlan, ConnectionPlan, ConstantPlan, HandlePlan, LookupPlan, StorageKeyPlan,
-    TypeKind,
+    ArgumentValuePlan, ConnectionPlan, ConstantPlan, EditPlan, LookupPlan, StorageKeyPlan, TypeKind,
 };
 
 /// Writes a `Baton.Selection(...)` expression for the normalization plan:
@@ -60,10 +59,10 @@ fn plan_fields(output: &mut String, type_name: &str, fields: &[NormalizationFiel
     for field in fields {
         let _ = write!(output, "\n{pad}    ");
         let slot = plan_key(type_name, &field.key);
-        let handle_argument = field
-            .handle
+        let edit_argument = field
+            .edit
             .as_ref()
-            .map(|handle| format!(", handle: {}", handle_expression(handle)))
+            .map(|edit| format!(", edit: {}", edit_expression(edit)))
             .unwrap_or_default();
         let deferred_argument = field
             .deferred
@@ -83,7 +82,7 @@ fn plan_fields(output: &mut String, type_name: &str, fields: &[NormalizationFiel
                 };
                 let _ = write!(
                     output,
-                    ".scalar({}, key: {slot}, kind: .{kind}, list: {list}{handle_argument}{deferred_argument}{caught_argument}{guards_argument}),",
+                    ".scalar({}, key: {slot}, kind: .{kind}, list: {list}{edit_argument}{deferred_argument}{caught_argument}{guards_argument}),",
                     swift_literal(&field.response_key)
                 );
             }
@@ -111,7 +110,7 @@ fn plan_fields(output: &mut String, type_name: &str, fields: &[NormalizationFiel
                     .unwrap_or_default();
                 let _ = write!(
                     output,
-                    ".linked({}, key: {slot}, plural: {plural}{lookup_argument}{connection_argument}{handle_argument}{deferred_argument}{caught_argument}{guards_argument}, selection: ",
+                    ".linked({}, key: {slot}, plural: {plural}{lookup_argument}{connection_argument}{edit_argument}{deferred_argument}{caught_argument}{guards_argument}, selection: ",
                     swift_literal(&field.response_key)
                 );
                 selection_plan(output, selection, depth + 1);
@@ -188,8 +187,8 @@ fn connection_expression(
 }
 
 /// The plan's description of an edge directive.
-fn handle_expression(handle: &HandlePlan) -> String {
-    let connections = match &handle.connections {
+fn edit_expression(edit: &EditPlan) -> String {
+    let connections = match &edit.connections {
         Some(ArgumentValuePlan::Variable(name)) => {
             format!(", connections: .variable({})", swift_literal(name))
         }
@@ -215,13 +214,13 @@ fn handle_expression(handle: &HandlePlan) -> String {
         }
         None => String::new(),
     };
-    let edge_type = match &handle.edge_type_name {
+    let edge_type = match &edit.edge_type_name {
         Some(name) => format!(", edgeType: Types.{name}"),
         None => String::new(),
     };
     format!(
-        "Baton.Handle(kind: .{}{connections}{edge_type})",
-        handle.kind.name()
+        "Baton.Edit(kind: .{}{connections}{edge_type})",
+        edit.kind.name()
     )
 }
 

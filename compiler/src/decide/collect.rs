@@ -146,9 +146,9 @@ impl Shared {
             for field in &variant.fields {
                 self.slots.insert(SlotRef::new(slot_type, &field.key));
                 if let Some(edge_type) = field
-                    .handle
+                    .edit
                     .as_ref()
-                    .and_then(|handle| handle.edge_type_name.as_ref())
+                    .and_then(|edit| edit.edge_type_name.as_ref())
                 {
                     self.types.insert(edge_type.clone());
                 }

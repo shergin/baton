@@ -265,19 +265,20 @@ pub struct ConnectionPlan {
     pub before: Option<ArgumentValuePlan>,
 }
 
-/// An edge directive on a mutation payload field, as Relay's handle.
+/// An edge directive on a mutation payload field: the edit the commit makes
+/// with the field's records, which Relay runs as a handle.
 #[derive(Debug, Clone, PartialEq, serde::Serialize)]
-pub struct HandlePlan {
-    pub kind: HandleKind,
+pub struct EditPlan {
+    pub kind: EditKind,
     pub connections: Option<ArgumentValuePlan>,
     pub edge_type_name: Option<String>,
 }
 
-/// The edge directives, by the names of Relay's handles, which the
-/// runtime's cases share.
+/// The edge directives, by the names of the handles Relay runs them as,
+/// which the runtime's cases share.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
-pub enum HandleKind {
+pub enum EditKind {
     AppendEdge,
     PrependEdge,
     AppendNode,
@@ -286,17 +287,17 @@ pub enum HandleKind {
     DeleteRecord,
 }
 
-impl HandleKind {
-    /// The kind of Relay's handle `name`; `None` for a handle that is not an
-    /// edge directive.
-    fn of(name: &str) -> Option<HandleKind> {
+impl EditKind {
+    /// The edit Relay's handle `name` makes; `None` for a handle that is not
+    /// an edge directive.
+    fn of(name: &str) -> Option<EditKind> {
         Some(match name {
-            "appendEdge" => HandleKind::AppendEdge,
-            "prependEdge" => HandleKind::PrependEdge,
-            "appendNode" => HandleKind::AppendNode,
-            "prependNode" => HandleKind::PrependNode,
-            "deleteEdge" => HandleKind::DeleteEdge,
-            "deleteRecord" => HandleKind::DeleteRecord,
+            "appendEdge" => EditKind::AppendEdge,
+            "prependEdge" => EditKind::PrependEdge,
+            "appendNode" => EditKind::AppendNode,
+            "prependNode" => EditKind::PrependNode,
+            "deleteEdge" => EditKind::DeleteEdge,
+            "deleteRecord" => EditKind::DeleteRecord,
             _ => return None,
         })
     }
@@ -304,12 +305,12 @@ impl HandleKind {
     /// Relay's name for the handle, which the runtime's case shares.
     pub fn name(self) -> &'static str {
         match self {
-            HandleKind::AppendEdge => "appendEdge",
-            HandleKind::PrependEdge => "prependEdge",
-            HandleKind::AppendNode => "appendNode",
-            HandleKind::PrependNode => "prependNode",
-            HandleKind::DeleteEdge => "deleteEdge",
-            HandleKind::DeleteRecord => "deleteRecord",
+            EditKind::AppendEdge => "appendEdge",
+            EditKind::PrependEdge => "prependEdge",
+            EditKind::AppendNode => "appendNode",
+            EditKind::PrependNode => "prependNode",
+            EditKind::DeleteEdge => "deleteEdge",
+            EditKind::DeleteRecord => "deleteRecord",
         }
     }
 }
@@ -366,7 +367,7 @@ pub enum SelectionPlan {
         semantic_non_null: bool,
         list: bool,
         storage_key: StorageKeyPlan,
-        handle: Option<HandlePlan>,
+        edit: Option<EditPlan>,
         required: Option<RequiredPlan>,
         catch: Option<CatchPlan>,
         /// Whether the field or an ancestor carries `@catch`, so an error on
@@ -393,7 +394,7 @@ pub enum SelectionPlan {
         storage_key: StorageKeyPlan,
         lookup: Option<LookupPlan>,
         connection: Option<ConnectionPlan>,
-        handle: Option<HandlePlan>,
+        edit: Option<EditPlan>,
         required: Option<RequiredPlan>,
         catch: Option<CatchPlan>,
         caught: bool,
@@ -715,7 +716,7 @@ fn validate(program: &Program, project_config: &ProjectConfig) -> Result<(), Vec
 
 /// Which program a selection set comes from. The reader reads a connection
 /// through Relay's handle key and carries the required and catch metadata; the
-/// normalization writes the server field, carries the handle beside it, and
+/// normalization writes the server field, carries the edit beside it, and
 /// keeps the raw `@catch` for the error accounting.
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Side {
@@ -1083,14 +1084,14 @@ impl Lowering<'_> {
 
     /// The edge directive Relay attached to a field as its handle; none for
     /// a connection's handle, which `connection` reads.
-    fn handle(&self, directives: &[graphql_ir::Directive]) -> Option<HandlePlan> {
+    fn edit(&self, directives: &[graphql_ir::Directive]) -> Option<EditPlan> {
         let directive = extract_handle_field_directives(directives).next()?;
         let values = extract_values_from_handle_field_directive(directive);
         let name = values.handle.lookup();
         if name == "connection" {
             return None;
         }
-        let Some(kind) = HandleKind::of(name) else {
+        let Some(kind) = EditKind::of(name) else {
             self.internal(
                 &format!("Relay attached the handle `{name}`, which is no edge directive"),
                 directive.name.location,
@@ -1114,7 +1115,7 @@ impl Lowering<'_> {
                 }
                 Some(value)
             });
-        Some(HandlePlan {
+        Some(EditPlan {
             kind,
             connections,
             edge_type_name: arguments
@@ -1225,7 +1226,7 @@ impl Lowering<'_> {
                         semantic_non_null: self.semantic_non_null(definition),
                         list: definition.type_.is_list(),
                         storage_key: storage_key(definition.name.item.lookup(), &field.arguments),
-                        handle: self.handle(&field.directives),
+                        edit: self.edit(&field.directives),
                         required: self.required(&field.directives),
                         catch: self.catch(&field.directives),
                         caught: field_caught,
@@ -1273,7 +1274,7 @@ impl Lowering<'_> {
                                 value,
                             })
                         });
-                    let handle = self.handle(&field.directives);
+                    let edit = self.edit(&field.directives);
                     let mut connection = None;
                     let mut field_storage_key = storage_key(name, &field.arguments);
                     let connection_handle = extract_handle_field_directives(&field.directives)
@@ -1342,7 +1343,7 @@ impl Lowering<'_> {
                         storage_key: field_storage_key,
                         lookup,
                         connection,
-                        handle,
+                        edit,
                         required: self.required(&field.directives),
                         catch: self.catch(&field.directives),
                         caught: field_caught,

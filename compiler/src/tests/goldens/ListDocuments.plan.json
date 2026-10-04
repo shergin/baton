@@ -84,7 +84,7 @@
             "after": null,
             "before": null
           },
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -111,7 +111,7 @@
               },
               "lookup": null,
               "connection": null,
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false,
@@ -138,7 +138,7 @@
                   },
                   "lookup": null,
                   "connection": null,
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false,
@@ -158,7 +158,7 @@
                         "name": "id",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -195,7 +195,7 @@
                         "name": "__typename",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -216,7 +216,7 @@
                     "name": "cursor",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -244,7 +244,7 @@
               },
               "lookup": null,
               "connection": null,
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false,
@@ -264,7 +264,7 @@
                     "name": "endCursor",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -283,7 +283,7 @@
                     "name": "hasNextPage",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -306,7 +306,7 @@
             "name": "id",
             "arguments": []
           },
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false
@@ -341,7 +341,7 @@
             "name": "text",
             "arguments": []
           },
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false
@@ -415,7 +415,7 @@
             "name": "name",
             "arguments": []
           },
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false
@@ -451,7 +451,7 @@
             "after": null,
             "before": null
           },
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -471,7 +471,7 @@
                 "name": "totalCount",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -497,7 +497,7 @@
               },
               "lookup": null,
               "connection": null,
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false,
@@ -524,7 +524,7 @@
                   },
                   "lookup": null,
                   "connection": null,
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false,
@@ -544,7 +544,7 @@
                         "name": "id",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -563,7 +563,7 @@
                         "name": "text",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -582,7 +582,7 @@
                         "name": "__typename",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -603,7 +603,7 @@
                     "name": "cursor",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -631,7 +631,7 @@
               },
               "lookup": null,
               "connection": null,
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false,
@@ -651,7 +651,7 @@
                     "name": "endCursor",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -670,7 +670,7 @@
                     "name": "hasNextPage",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -693,7 +693,7 @@
             "name": "id",
             "arguments": []
           },
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false
@@ -784,7 +784,7 @@
             "after": null,
             "before": null
           },
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -811,7 +811,7 @@
               },
               "lookup": null,
               "connection": null,
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false,
@@ -838,7 +838,7 @@
                   },
                   "lookup": null,
                   "connection": null,
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false,
@@ -858,7 +858,7 @@
                         "name": "id",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -877,7 +877,7 @@
                         "name": "text",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -896,7 +896,7 @@
                         "name": "__typename",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -917,7 +917,7 @@
                     "name": "cursor",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -945,7 +945,7 @@
               },
               "lookup": null,
               "connection": null,
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false,
@@ -965,7 +965,7 @@
                     "name": "hasPreviousPage",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -984,7 +984,7 @@
                     "name": "startCursor",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -1007,7 +1007,7 @@
             "name": "id",
             "arguments": []
           },
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false
@@ -1079,7 +1079,7 @@
           },
           "lookup": null,
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -1106,7 +1106,7 @@
               },
               "lookup": null,
               "connection": null,
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false,
@@ -1126,7 +1126,7 @@
                     "name": "cursor",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -1152,7 +1152,7 @@
                   },
                   "lookup": null,
                   "connection": null,
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false,
@@ -1172,7 +1172,7 @@
                         "name": "id",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -1191,7 +1191,7 @@
                         "name": "text",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -1225,7 +1225,7 @@
           },
           "lookup": null,
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -1252,7 +1252,7 @@
               },
               "lookup": null,
               "connection": null,
-              "handle": {
+              "edit": {
                 "kind": "appendEdge",
                 "connections": {
                   "kind": "variable",
@@ -1279,7 +1279,7 @@
                     "name": "cursor",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -1305,7 +1305,7 @@
                   },
                   "lookup": null,
                   "connection": null,
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false,
@@ -1325,7 +1325,7 @@
                         "name": "id",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -1344,7 +1344,7 @@
                         "name": "text",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -1420,7 +1420,7 @@
           },
           "lookup": null,
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -1447,7 +1447,7 @@
               },
               "lookup": null,
               "connection": null,
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false,
@@ -1467,7 +1467,7 @@
                     "name": "cursor",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -1493,7 +1493,7 @@
                   },
                   "lookup": null,
                   "connection": null,
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false,
@@ -1513,7 +1513,7 @@
                         "name": "id",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -1532,7 +1532,7 @@
                         "name": "text",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -1566,7 +1566,7 @@
           },
           "lookup": null,
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -1593,7 +1593,7 @@
               },
               "lookup": null,
               "connection": null,
-              "handle": {
+              "edit": {
                 "kind": "prependEdge",
                 "connections": {
                   "kind": "variable",
@@ -1620,7 +1620,7 @@
                     "name": "cursor",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -1646,7 +1646,7 @@
                   },
                   "lookup": null,
                   "connection": null,
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false,
@@ -1666,7 +1666,7 @@
                         "name": "id",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -1685,7 +1685,7 @@
                         "name": "text",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -1761,7 +1761,7 @@
           },
           "lookup": null,
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -1788,7 +1788,7 @@
               },
               "lookup": null,
               "connection": null,
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false,
@@ -1808,7 +1808,7 @@
                     "name": "id",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -1827,7 +1827,7 @@
                     "name": "text",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -1859,7 +1859,7 @@
           },
           "lookup": null,
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -1886,7 +1886,7 @@
               },
               "lookup": null,
               "connection": null,
-              "handle": {
+              "edit": {
                 "kind": "appendNode",
                 "connections": {
                   "kind": "variable",
@@ -1913,7 +1913,7 @@
                     "name": "id",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -1932,7 +1932,7 @@
                     "name": "text",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -2006,7 +2006,7 @@
           },
           "lookup": null,
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -2033,7 +2033,7 @@
               },
               "lookup": null,
               "connection": null,
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false,
@@ -2053,7 +2053,7 @@
                     "name": "id",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -2072,7 +2072,7 @@
                     "name": "text",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -2104,7 +2104,7 @@
           },
           "lookup": null,
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -2131,7 +2131,7 @@
               },
               "lookup": null,
               "connection": null,
-              "handle": {
+              "edit": {
                 "kind": "prependNode",
                 "connections": {
                   "kind": "variable",
@@ -2158,7 +2158,7 @@
                     "name": "id",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -2177,7 +2177,7 @@
                     "name": "text",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -2251,7 +2251,7 @@
           },
           "lookup": null,
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -2278,7 +2278,7 @@
               },
               "lookup": null,
               "connection": null,
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false,
@@ -2298,7 +2298,7 @@
                     "name": "id",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -2317,7 +2317,7 @@
                     "name": "text",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -2349,7 +2349,7 @@
           },
           "lookup": null,
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -2376,7 +2376,7 @@
               },
               "lookup": null,
               "connection": null,
-              "handle": {
+              "edit": {
                 "kind": "appendNode",
                 "connections": {
                   "kind": "variable",
@@ -2403,7 +2403,7 @@
                     "name": "id",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -2422,7 +2422,7 @@
                     "name": "text",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -2496,7 +2496,7 @@
             }
           },
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -2567,7 +2567,7 @@
             }
           },
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -2587,7 +2587,7 @@
                 "name": "name",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -2606,7 +2606,7 @@
                 "name": "status",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -2625,7 +2625,7 @@
                 "name": "image",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -2644,7 +2644,7 @@
                 "name": "id",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -2743,7 +2743,7 @@
             }
           },
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -2819,7 +2819,7 @@
             }
           },
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -2839,7 +2839,7 @@
                 "name": "__typename",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -2858,7 +2858,7 @@
                 "name": "id",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -2927,7 +2927,7 @@
                     },
                     "before": null
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false,
@@ -2954,7 +2954,7 @@
                       },
                       "lookup": null,
                       "connection": null,
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false,
@@ -2981,7 +2981,7 @@
                           },
                           "lookup": null,
                           "connection": null,
-                          "handle": null,
+                          "edit": null,
                           "required": null,
                           "catch": null,
                           "caught": false,
@@ -3001,7 +3001,7 @@
                                 "name": "id",
                                 "arguments": []
                               },
-                              "handle": null,
+                              "edit": null,
                               "required": null,
                               "catch": null,
                               "caught": false
@@ -3030,7 +3030,7 @@
                                     "name": "text",
                                     "arguments": []
                                   },
-                                  "handle": null,
+                                  "edit": null,
                                   "required": null,
                                   "catch": null,
                                   "caught": false
@@ -3051,7 +3051,7 @@
                                 "name": "__typename",
                                 "arguments": []
                               },
-                              "handle": null,
+                              "edit": null,
                               "required": null,
                               "catch": null,
                               "caught": false
@@ -3072,7 +3072,7 @@
                             "name": "cursor",
                             "arguments": []
                           },
-                          "handle": null,
+                          "edit": null,
                           "required": null,
                           "catch": null,
                           "caught": false
@@ -3100,7 +3100,7 @@
                       },
                       "lookup": null,
                       "connection": null,
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false,
@@ -3120,7 +3120,7 @@
                             "name": "endCursor",
                             "arguments": []
                           },
-                          "handle": null,
+                          "edit": null,
                           "required": null,
                           "catch": null,
                           "caught": false
@@ -3139,7 +3139,7 @@
                             "name": "hasNextPage",
                             "arguments": []
                           },
-                          "handle": null,
+                          "edit": null,
                           "required": null,
                           "catch": null,
                           "caught": false
@@ -3199,7 +3199,7 @@
           },
           "lookup": null,
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -3219,7 +3219,7 @@
                 "name": "removedNoteId",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -3249,7 +3249,7 @@
           },
           "lookup": null,
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -3269,7 +3269,7 @@
                 "name": "removedNoteId",
                 "arguments": []
               },
-              "handle": {
+              "edit": {
                 "kind": "deleteRecord",
                 "connections": null,
                 "edge_type_name": null
@@ -3372,7 +3372,7 @@
             }
           },
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -3448,7 +3448,7 @@
             }
           },
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -3468,7 +3468,7 @@
                 "name": "__typename",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -3487,7 +3487,7 @@
                 "name": "id",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -3521,7 +3521,7 @@
                     "name": "name",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -3575,7 +3575,7 @@
                     },
                     "before": null
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false,
@@ -3595,7 +3595,7 @@
                         "name": "totalCount",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -3621,7 +3621,7 @@
                       },
                       "lookup": null,
                       "connection": null,
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false,
@@ -3648,7 +3648,7 @@
                           },
                           "lookup": null,
                           "connection": null,
-                          "handle": null,
+                          "edit": null,
                           "required": null,
                           "catch": null,
                           "caught": false,
@@ -3668,7 +3668,7 @@
                                 "name": "id",
                                 "arguments": []
                               },
-                              "handle": null,
+                              "edit": null,
                               "required": null,
                               "catch": null,
                               "caught": false
@@ -3687,7 +3687,7 @@
                                 "name": "text",
                                 "arguments": []
                               },
-                              "handle": null,
+                              "edit": null,
                               "required": null,
                               "catch": null,
                               "caught": false
@@ -3706,7 +3706,7 @@
                                 "name": "__typename",
                                 "arguments": []
                               },
-                              "handle": null,
+                              "edit": null,
                               "required": null,
                               "catch": null,
                               "caught": false
@@ -3727,7 +3727,7 @@
                             "name": "cursor",
                             "arguments": []
                           },
-                          "handle": null,
+                          "edit": null,
                           "required": null,
                           "catch": null,
                           "caught": false
@@ -3755,7 +3755,7 @@
                       },
                       "lookup": null,
                       "connection": null,
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false,
@@ -3775,7 +3775,7 @@
                             "name": "endCursor",
                             "arguments": []
                           },
-                          "handle": null,
+                          "edit": null,
                           "required": null,
                           "catch": null,
                           "caught": false
@@ -3794,7 +3794,7 @@
                             "name": "hasNextPage",
                             "arguments": []
                           },
-                          "handle": null,
+                          "edit": null,
                           "required": null,
                           "catch": null,
                           "caught": false
@@ -3872,7 +3872,7 @@
             }
           },
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -3927,7 +3927,7 @@
             }
           },
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -3947,7 +3947,7 @@
                 "name": "name",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -4003,7 +4003,7 @@
                 "after": null,
                 "before": null
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false,
@@ -4023,7 +4023,7 @@
                     "name": "totalCount",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -4049,7 +4049,7 @@
                   },
                   "lookup": null,
                   "connection": null,
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false,
@@ -4076,7 +4076,7 @@
                       },
                       "lookup": null,
                       "connection": null,
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false,
@@ -4096,7 +4096,7 @@
                             "name": "id",
                             "arguments": []
                           },
-                          "handle": null,
+                          "edit": null,
                           "required": null,
                           "catch": null,
                           "caught": false
@@ -4115,7 +4115,7 @@
                             "name": "text",
                             "arguments": []
                           },
-                          "handle": null,
+                          "edit": null,
                           "required": null,
                           "catch": null,
                           "caught": false
@@ -4134,7 +4134,7 @@
                             "name": "__typename",
                             "arguments": []
                           },
-                          "handle": null,
+                          "edit": null,
                           "required": null,
                           "catch": null,
                           "caught": false
@@ -4155,7 +4155,7 @@
                         "name": "cursor",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -4183,7 +4183,7 @@
                   },
                   "lookup": null,
                   "connection": null,
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false,
@@ -4203,7 +4203,7 @@
                         "name": "endCursor",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -4222,7 +4222,7 @@
                         "name": "hasNextPage",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -4245,7 +4245,7 @@
                 "name": "id",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -4326,7 +4326,7 @@
             }
           },
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -4389,7 +4389,7 @@
             }
           },
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -4409,7 +4409,7 @@
                 "name": "name",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -4462,7 +4462,7 @@
                 "after": null,
                 "before": null
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false,
@@ -4482,7 +4482,7 @@
                     "name": "totalCount",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -4508,7 +4508,7 @@
                   },
                   "lookup": null,
                   "connection": null,
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false,
@@ -4535,7 +4535,7 @@
                       },
                       "lookup": null,
                       "connection": null,
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false,
@@ -4555,7 +4555,7 @@
                             "name": "id",
                             "arguments": []
                           },
-                          "handle": null,
+                          "edit": null,
                           "required": null,
                           "catch": null,
                           "caught": false
@@ -4574,7 +4574,7 @@
                             "name": "text",
                             "arguments": []
                           },
-                          "handle": null,
+                          "edit": null,
                           "required": null,
                           "catch": null,
                           "caught": false
@@ -4593,7 +4593,7 @@
                             "name": "__typename",
                             "arguments": []
                           },
-                          "handle": null,
+                          "edit": null,
                           "required": null,
                           "catch": null,
                           "caught": false
@@ -4614,7 +4614,7 @@
                         "name": "cursor",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -4642,7 +4642,7 @@
                   },
                   "lookup": null,
                   "connection": null,
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false,
@@ -4662,7 +4662,7 @@
                         "name": "endCursor",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -4681,7 +4681,7 @@
                         "name": "hasNextPage",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -4704,7 +4704,7 @@
                 "name": "id",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -4803,7 +4803,7 @@
             }
           },
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -4879,7 +4879,7 @@
             }
           },
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -4899,7 +4899,7 @@
                 "name": "__typename",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -4918,7 +4918,7 @@
                 "name": "id",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -4987,7 +4987,7 @@
                       "value": "cursor"
                     }
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false,
@@ -5014,7 +5014,7 @@
                       },
                       "lookup": null,
                       "connection": null,
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false,
@@ -5041,7 +5041,7 @@
                           },
                           "lookup": null,
                           "connection": null,
-                          "handle": null,
+                          "edit": null,
                           "required": null,
                           "catch": null,
                           "caught": false,
@@ -5061,7 +5061,7 @@
                                 "name": "id",
                                 "arguments": []
                               },
-                              "handle": null,
+                              "edit": null,
                               "required": null,
                               "catch": null,
                               "caught": false
@@ -5080,7 +5080,7 @@
                                 "name": "text",
                                 "arguments": []
                               },
-                              "handle": null,
+                              "edit": null,
                               "required": null,
                               "catch": null,
                               "caught": false
@@ -5099,7 +5099,7 @@
                                 "name": "__typename",
                                 "arguments": []
                               },
-                              "handle": null,
+                              "edit": null,
                               "required": null,
                               "catch": null,
                               "caught": false
@@ -5120,7 +5120,7 @@
                             "name": "cursor",
                             "arguments": []
                           },
-                          "handle": null,
+                          "edit": null,
                           "required": null,
                           "catch": null,
                           "caught": false
@@ -5148,7 +5148,7 @@
                       },
                       "lookup": null,
                       "connection": null,
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false,
@@ -5168,7 +5168,7 @@
                             "name": "hasPreviousPage",
                             "arguments": []
                           },
-                          "handle": null,
+                          "edit": null,
                           "required": null,
                           "catch": null,
                           "caught": false
@@ -5187,7 +5187,7 @@
                             "name": "startCursor",
                             "arguments": []
                           },
-                          "handle": null,
+                          "edit": null,
                           "required": null,
                           "catch": null,
                           "caught": false
@@ -5265,7 +5265,7 @@
             }
           },
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -5320,7 +5320,7 @@
             }
           },
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -5377,7 +5377,7 @@
                 "after": null,
                 "before": null
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false,
@@ -5404,7 +5404,7 @@
                   },
                   "lookup": null,
                   "connection": null,
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false,
@@ -5431,7 +5431,7 @@
                       },
                       "lookup": null,
                       "connection": null,
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false,
@@ -5451,7 +5451,7 @@
                             "name": "id",
                             "arguments": []
                           },
-                          "handle": null,
+                          "edit": null,
                           "required": null,
                           "catch": null,
                           "caught": false
@@ -5470,7 +5470,7 @@
                             "name": "text",
                             "arguments": []
                           },
-                          "handle": null,
+                          "edit": null,
                           "required": null,
                           "catch": null,
                           "caught": false
@@ -5489,7 +5489,7 @@
                             "name": "__typename",
                             "arguments": []
                           },
-                          "handle": null,
+                          "edit": null,
                           "required": null,
                           "catch": null,
                           "caught": false
@@ -5510,7 +5510,7 @@
                         "name": "cursor",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -5538,7 +5538,7 @@
                   },
                   "lookup": null,
                   "connection": null,
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false,
@@ -5558,7 +5558,7 @@
                         "name": "hasPreviousPage",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -5577,7 +5577,7 @@
                         "name": "startCursor",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -5600,7 +5600,7 @@
                 "name": "id",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -5663,7 +5663,7 @@
           },
           "lookup": null,
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -5683,7 +5683,7 @@
                 "name": "removedNoteId",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -5702,7 +5702,7 @@
                 "name": "removedNoteId",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -5732,7 +5732,7 @@
           },
           "lookup": null,
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -5752,7 +5752,7 @@
                 "name": "removedNoteId",
                 "arguments": []
               },
-              "handle": {
+              "edit": {
                 "kind": "deleteEdge",
                 "connections": {
                   "kind": "variable",
@@ -5778,7 +5778,7 @@
                 "name": "removedNoteId",
                 "arguments": []
               },
-              "handle": {
+              "edit": {
                 "kind": "deleteRecord",
                 "connections": null,
                 "edge_type_name": null
@@ -5854,7 +5854,7 @@
             }
           },
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -5874,7 +5874,7 @@
                 "name": "id",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -5910,7 +5910,7 @@
                 "after": null,
                 "before": null
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false,
@@ -5937,7 +5937,7 @@
                   },
                   "lookup": null,
                   "connection": null,
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false,
@@ -5964,7 +5964,7 @@
                       },
                       "lookup": null,
                       "connection": null,
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false,
@@ -5984,7 +5984,7 @@
                             "name": "id",
                             "arguments": []
                           },
-                          "handle": null,
+                          "edit": null,
                           "required": null,
                           "catch": null,
                           "caught": false
@@ -6003,7 +6003,7 @@
                             "name": "text",
                             "arguments": []
                           },
-                          "handle": null,
+                          "edit": null,
                           "required": null,
                           "catch": null,
                           "caught": false
@@ -6022,7 +6022,7 @@
                             "name": "__typename",
                             "arguments": []
                           },
-                          "handle": null,
+                          "edit": null,
                           "required": null,
                           "catch": null,
                           "caught": false
@@ -6043,7 +6043,7 @@
                         "name": "cursor",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -6071,7 +6071,7 @@
                   },
                   "lookup": null,
                   "connection": null,
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false,
@@ -6091,7 +6091,7 @@
                         "name": "endCursor",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -6110,7 +6110,7 @@
                         "name": "hasNextPage",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -6166,7 +6166,7 @@
             }
           },
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -6218,7 +6218,7 @@
                     "after": null,
                     "before": null
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false,
@@ -6245,7 +6245,7 @@
                       },
                       "lookup": null,
                       "connection": null,
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false,
@@ -6272,7 +6272,7 @@
                           },
                           "lookup": null,
                           "connection": null,
-                          "handle": null,
+                          "edit": null,
                           "required": null,
                           "catch": null,
                           "caught": false,
@@ -6292,7 +6292,7 @@
                                 "name": "id",
                                 "arguments": []
                               },
-                              "handle": null,
+                              "edit": null,
                               "required": null,
                               "catch": null,
                               "caught": false
@@ -6311,7 +6311,7 @@
                                 "name": "text",
                                 "arguments": []
                               },
-                              "handle": null,
+                              "edit": null,
                               "required": null,
                               "catch": null,
                               "caught": false
@@ -6330,7 +6330,7 @@
                                 "name": "__typename",
                                 "arguments": []
                               },
-                              "handle": null,
+                              "edit": null,
                               "required": null,
                               "catch": null,
                               "caught": false
@@ -6351,7 +6351,7 @@
                             "name": "cursor",
                             "arguments": []
                           },
-                          "handle": null,
+                          "edit": null,
                           "required": null,
                           "catch": null,
                           "caught": false
@@ -6379,7 +6379,7 @@
                       },
                       "lookup": null,
                       "connection": null,
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false,
@@ -6399,7 +6399,7 @@
                             "name": "endCursor",
                             "arguments": []
                           },
-                          "handle": null,
+                          "edit": null,
                           "required": null,
                           "catch": null,
                           "caught": false
@@ -6418,7 +6418,7 @@
                             "name": "hasNextPage",
                             "arguments": []
                           },
-                          "handle": null,
+                          "edit": null,
                           "required": null,
                           "catch": null,
                           "caught": false
@@ -6472,7 +6472,7 @@
             }
           },
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -6492,7 +6492,7 @@
                 "name": "id",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -6539,7 +6539,7 @@
                 "after": null,
                 "before": null
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false,
@@ -6566,7 +6566,7 @@
                   },
                   "lookup": null,
                   "connection": null,
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false,
@@ -6593,7 +6593,7 @@
                       },
                       "lookup": null,
                       "connection": null,
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false,
@@ -6613,7 +6613,7 @@
                             "name": "id",
                             "arguments": []
                           },
-                          "handle": null,
+                          "edit": null,
                           "required": null,
                           "catch": null,
                           "caught": false
@@ -6632,7 +6632,7 @@
                             "name": "text",
                             "arguments": []
                           },
-                          "handle": null,
+                          "edit": null,
                           "required": null,
                           "catch": null,
                           "caught": false
@@ -6651,7 +6651,7 @@
                             "name": "__typename",
                             "arguments": []
                           },
-                          "handle": null,
+                          "edit": null,
                           "required": null,
                           "catch": null,
                           "caught": false
@@ -6672,7 +6672,7 @@
                         "name": "cursor",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -6700,7 +6700,7 @@
                   },
                   "lookup": null,
                   "connection": null,
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false,
@@ -6720,7 +6720,7 @@
                         "name": "endCursor",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -6739,7 +6739,7 @@
                         "name": "hasNextPage",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -6795,7 +6795,7 @@
             }
           },
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -6815,7 +6815,7 @@
                 "name": "__typename",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -6893,7 +6893,7 @@
                     },
                     "before": null
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false,
@@ -6920,7 +6920,7 @@
                       },
                       "lookup": null,
                       "connection": null,
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false,
@@ -6947,7 +6947,7 @@
                           },
                           "lookup": null,
                           "connection": null,
-                          "handle": null,
+                          "edit": null,
                           "required": null,
                           "catch": null,
                           "caught": false,
@@ -6967,7 +6967,7 @@
                                 "name": "id",
                                 "arguments": []
                               },
-                              "handle": null,
+                              "edit": null,
                               "required": null,
                               "catch": null,
                               "caught": false
@@ -6986,7 +6986,7 @@
                                 "name": "text",
                                 "arguments": []
                               },
-                              "handle": null,
+                              "edit": null,
                               "required": null,
                               "catch": null,
                               "caught": false
@@ -7005,7 +7005,7 @@
                                 "name": "__typename",
                                 "arguments": []
                               },
-                              "handle": null,
+                              "edit": null,
                               "required": null,
                               "catch": null,
                               "caught": false
@@ -7026,7 +7026,7 @@
                             "name": "cursor",
                             "arguments": []
                           },
-                          "handle": null,
+                          "edit": null,
                           "required": null,
                           "catch": null,
                           "caught": false
@@ -7054,7 +7054,7 @@
                       },
                       "lookup": null,
                       "connection": null,
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false,
@@ -7074,7 +7074,7 @@
                             "name": "endCursor",
                             "arguments": []
                           },
-                          "handle": null,
+                          "edit": null,
                           "required": null,
                           "catch": null,
                           "caught": false
@@ -7093,7 +7093,7 @@
                             "name": "hasNextPage",
                             "arguments": []
                           },
-                          "handle": null,
+                          "edit": null,
                           "required": null,
                           "catch": null,
                           "caught": false
@@ -7118,7 +7118,7 @@
                 "name": "id",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false

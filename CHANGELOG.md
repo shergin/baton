@@ -541,6 +541,11 @@ are expected and listed without apology.
   variable of that name. The value's initializer, `variables` and `hash`
   read the instance itself in its place, and the generated code did not
   compile.
+- A plan's edge directive is an `Edit`, as the change set's
+  `ChangeSet.Edit` it becomes, so "handle" means only the operation handle.
+  Breaking for a plan built by hand: `Handle` is `Edit`, `ResolvedHandle`
+  is `ResolvedEdit`, the `handle` properties of `PlanField` and
+  `ResolvedField` are `edit`, and `.scalar` and `.linked` take `edit:`.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

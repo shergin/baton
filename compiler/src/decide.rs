@@ -30,7 +30,7 @@ pub use reader::{
 
 use crate::names::{DuplicateName, Reserved};
 use crate::pipeline::{
-    ConnectionPlan, HandlePlan, LookupPlan, Plan, SelectionPlan, StorageKeyPlan, TypeKind,
+    ConnectionPlan, EditPlan, LookupPlan, Plan, SelectionPlan, StorageKeyPlan, TypeKind,
 };
 
 /// Everything the emitters print, in the plan's order.
@@ -139,7 +139,7 @@ pub struct NormalizationField {
     pub deferred: Option<String>,
     /// Whether an error on the field is handled by a `@catch`.
     pub caught: bool,
-    pub handle: Option<HandlePlan>,
+    pub edit: Option<EditPlan>,
     pub kind: NormalizationKind,
 }
 
@@ -377,7 +377,7 @@ fn field(
 ) -> NormalizationField {
     let guards = any(members.iter().map(|member| member.guard.clone()).collect());
     let caught = members.iter().all(|member| caught(member.selection));
-    let handle = members.iter().find_map(|member| handle(member.selection));
+    let edit = members.iter().find_map(|member| edit(member.selection));
     match members[0].selection {
         SelectionPlan::Scalar {
             storage_key,
@@ -390,7 +390,7 @@ fn field(
             guards,
             deferred,
             caught,
-            handle,
+            edit,
             kind: NormalizationKind::Scalar {
                 base_kind: *base_kind,
                 list: *list,
@@ -424,7 +424,7 @@ fn field(
                 guards,
                 deferred,
                 caught,
-                handle,
+                edit,
                 kind: NormalizationKind::Linked {
                     plural: *plural,
                     lookup: lookup.clone(),
@@ -489,11 +489,9 @@ fn caught(selection: &SelectionPlan) -> bool {
     }
 }
 
-fn handle(selection: &SelectionPlan) -> Option<HandlePlan> {
+fn edit(selection: &SelectionPlan) -> Option<EditPlan> {
     match selection {
-        SelectionPlan::Scalar { handle, .. } | SelectionPlan::Linked { handle, .. } => {
-            handle.clone()
-        }
+        SelectionPlan::Scalar { edit, .. } | SelectionPlan::Linked { edit, .. } => edit.clone(),
         _ => None,
     }
 }

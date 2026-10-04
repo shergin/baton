@@ -35,7 +35,7 @@
           },
           "lookup": null,
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -55,7 +55,7 @@
                 "name": "name",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -74,7 +74,7 @@
                 "name": "air_date",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -111,7 +111,7 @@
             "name": "name",
             "arguments": []
           },
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false
@@ -146,7 +146,7 @@
             "name": "name",
             "arguments": []
           },
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false
@@ -172,7 +172,7 @@
           },
           "lookup": null,
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": {
             "action": "NONE",
             "path": "origin"
@@ -195,7 +195,7 @@
                 "name": "name",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -216,7 +216,7 @@
             "name": "status",
             "arguments": []
           },
-          "handle": null,
+          "edit": null,
           "required": {
             "action": "LOG",
             "path": "status"
@@ -238,7 +238,7 @@
             "name": "image",
             "arguments": []
           },
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": {
             "to": "RESULT"
@@ -266,7 +266,7 @@
           },
           "lookup": null,
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": {
             "to": "RESULT"
@@ -288,7 +288,7 @@
                 "name": "name",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": true
@@ -307,7 +307,7 @@
                 "name": "dimension",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": true
@@ -328,7 +328,7 @@
             "name": "gender",
             "arguments": []
           },
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": {
             "to": "NULL"
@@ -365,7 +365,7 @@
             "name": "species",
             "arguments": []
           },
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false
@@ -384,7 +384,7 @@
             "name": "type",
             "arguments": []
           },
-          "handle": null,
+          "edit": null,
           "required": {
             "action": "THROW",
             "path": "type"
@@ -458,7 +458,7 @@
           },
           "lookup": null,
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -485,7 +485,7 @@
               },
               "lookup": null,
               "connection": null,
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false,
@@ -505,7 +505,7 @@
                     "name": "cursor",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -531,7 +531,7 @@
                   },
                   "lookup": null,
                   "connection": null,
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false,
@@ -551,7 +551,7 @@
                         "name": "id",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -570,7 +570,7 @@
                         "name": "text",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -612,7 +612,7 @@
           },
           "lookup": null,
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -639,7 +639,7 @@
               },
               "lookup": null,
               "connection": null,
-              "handle": {
+              "edit": {
                 "kind": "appendEdge",
                 "connections": {
                   "kind": "variable",
@@ -666,7 +666,7 @@
                     "name": "cursor",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -692,7 +692,7 @@
                   },
                   "lookup": null,
                   "connection": null,
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false,
@@ -712,7 +712,7 @@
                         "name": "id",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -731,7 +731,7 @@
                         "name": "text",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -807,7 +807,7 @@
             }
           },
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -827,7 +827,7 @@
                 "name": "name",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -875,7 +875,7 @@
             }
           },
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -895,7 +895,7 @@
                 "name": "name",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -914,7 +914,7 @@
                 "name": "id",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -986,7 +986,7 @@
             }
           },
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -1006,7 +1006,7 @@
                 "name": "name",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -1032,7 +1032,7 @@
               },
               "lookup": null,
               "connection": null,
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false,
@@ -1052,7 +1052,7 @@
                     "name": "id",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -1120,7 +1120,7 @@
             }
           },
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -1140,7 +1140,7 @@
                 "name": "name",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -1166,7 +1166,7 @@
               },
               "lookup": null,
               "connection": null,
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false,
@@ -1186,7 +1186,7 @@
                     "name": "id",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -1224,7 +1224,7 @@
                   },
                   "lookup": null,
                   "connection": null,
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false,
@@ -1244,7 +1244,7 @@
                         "name": "name",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -1263,7 +1263,7 @@
                         "name": "air_date",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -1282,7 +1282,7 @@
                         "name": "id",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -1305,7 +1305,7 @@
                 "name": "id",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -1377,7 +1377,7 @@
             }
           },
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -1472,7 +1472,7 @@
             }
           },
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -1492,7 +1492,7 @@
                 "name": "name",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -1518,7 +1518,7 @@
               },
               "lookup": null,
               "connection": null,
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false,
@@ -1538,7 +1538,7 @@
                     "name": "name",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -1557,7 +1557,7 @@
                     "name": "id",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -1578,7 +1578,7 @@
                 "name": "status",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -1597,7 +1597,7 @@
                 "name": "image",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": true
@@ -1623,7 +1623,7 @@
               },
               "lookup": null,
               "connection": null,
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": true,
@@ -1643,7 +1643,7 @@
                     "name": "name",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": true
@@ -1662,7 +1662,7 @@
                     "name": "dimension",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": true
@@ -1681,7 +1681,7 @@
                     "name": "id",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": true
@@ -1702,7 +1702,7 @@
                 "name": "gender",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": true
@@ -1721,7 +1721,7 @@
                 "name": "species",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -1740,7 +1740,7 @@
                 "name": "type",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -1776,7 +1776,7 @@
                   },
                   "lookup": null,
                   "connection": null,
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false,
@@ -1796,7 +1796,7 @@
                         "name": "name",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -1815,7 +1815,7 @@
                         "name": "air_date",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -1834,7 +1834,7 @@
                         "name": "id",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -1857,7 +1857,7 @@
                 "name": "id",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -1919,7 +1919,7 @@
           },
           "lookup": null,
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -1946,7 +1946,7 @@
               },
               "lookup": null,
               "connection": null,
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false,
@@ -1966,7 +1966,7 @@
                     "name": "id",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -1985,7 +1985,7 @@
                     "name": "name",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -2004,7 +2004,7 @@
                     "name": "status",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": {
                     "action": "NONE",
                     "path": "characters.results.status"
@@ -2047,7 +2047,7 @@
           },
           "lookup": null,
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -2074,7 +2074,7 @@
               },
               "lookup": null,
               "connection": null,
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false,
@@ -2094,7 +2094,7 @@
                     "name": "id",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -2113,7 +2113,7 @@
                     "name": "name",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -2132,7 +2132,7 @@
                     "name": "status",
                     "arguments": []
                   },
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false
@@ -2206,7 +2206,7 @@
             }
           },
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -2226,7 +2226,7 @@
                 "name": "id",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -2245,7 +2245,7 @@
                 "name": "name",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -2311,7 +2311,7 @@
             }
           },
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -2331,7 +2331,7 @@
                 "name": "id",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -2350,7 +2350,7 @@
                 "name": "name",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -2386,7 +2386,7 @@
                   },
                   "lookup": null,
                   "connection": null,
-                  "handle": null,
+                  "edit": null,
                   "required": null,
                   "catch": null,
                   "caught": false,
@@ -2406,7 +2406,7 @@
                         "name": "name",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -2425,7 +2425,7 @@
                         "name": "air_date",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -2444,7 +2444,7 @@
                         "name": "id",
                         "arguments": []
                       },
-                      "handle": null,
+                      "edit": null,
                       "required": null,
                       "catch": null,
                       "caught": false
@@ -2520,7 +2520,7 @@
             }
           },
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -2540,7 +2540,7 @@
                 "name": "name",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -2559,7 +2559,7 @@
                 "name": "species",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -2607,7 +2607,7 @@
             }
           },
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -2627,7 +2627,7 @@
                 "name": "name",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -2646,7 +2646,7 @@
                 "name": "species",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -2665,7 +2665,7 @@
                 "name": "id",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -2737,7 +2737,7 @@
             }
           },
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -2757,7 +2757,7 @@
                 "name": "species",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -2811,7 +2811,7 @@
             }
           },
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -2831,7 +2831,7 @@
                 "name": "species",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -2850,7 +2850,7 @@
                 "name": "name",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -2869,7 +2869,7 @@
                 "name": "id",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false

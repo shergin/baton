@@ -36,7 +36,7 @@
           },
           "lookup": null,
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -56,7 +56,7 @@
                 "name": "Type",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -75,7 +75,7 @@
                 "name": "Protocol",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -94,7 +94,7 @@
                 "name": "Baton",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -124,7 +124,7 @@
           },
           "lookup": null,
           "connection": null,
-          "handle": null,
+          "edit": null,
           "required": null,
           "catch": null,
           "caught": false,
@@ -144,7 +144,7 @@
                 "name": "Type",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -163,7 +163,7 @@
                 "name": "Protocol",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false
@@ -182,7 +182,7 @@
                 "name": "Baton",
                 "arguments": []
               },
-              "handle": null,
+              "edit": null,
               "required": null,
               "catch": null,
               "caught": false

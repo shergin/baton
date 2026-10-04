@@ -237,7 +237,7 @@ mutation TestAddNote(
 
     public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
             .linked("addNote", key: .fixed(Slots.Mutation.addNote), plural: false, selection: Baton.Selection(type: Types.AddNotePayload, hasID: false, abstract: false, fields: [
-                .linked("noteEdge", key: .fixed(Slots.AddNotePayload.noteEdge), plural: false, handle: Baton.Handle(kind: .appendEdge, connections: .variable("connections")), selection: Baton.Selection(type: Types.NoteEdge, hasID: false, abstract: false, fields: [
+                .linked("noteEdge", key: .fixed(Slots.AddNotePayload.noteEdge), plural: false, edit: Baton.Edit(kind: .appendEdge, connections: .variable("connections")), selection: Baton.Selection(type: Types.NoteEdge, hasID: false, abstract: false, fields: [
                     .scalar("cursor", key: .fixed(Slots.NoteEdge.cursor), kind: .string, list: false),
                     .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
                         .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
@@ -393,7 +393,7 @@ mutation TestAddNoteFirst(
 
     public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
             .linked("addNote", key: .fixed(Slots.Mutation.addNote), plural: false, selection: Baton.Selection(type: Types.AddNotePayload, hasID: false, abstract: false, fields: [
-                .linked("noteEdge", key: .fixed(Slots.AddNotePayload.noteEdge), plural: false, handle: Baton.Handle(kind: .prependEdge, connections: .variable("connections")), selection: Baton.Selection(type: Types.NoteEdge, hasID: false, abstract: false, fields: [
+                .linked("noteEdge", key: .fixed(Slots.AddNotePayload.noteEdge), plural: false, edit: Baton.Edit(kind: .prependEdge, connections: .variable("connections")), selection: Baton.Selection(type: Types.NoteEdge, hasID: false, abstract: false, fields: [
                     .scalar("cursor", key: .fixed(Slots.NoteEdge.cursor), kind: .string, list: false),
                     .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
                         .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
@@ -546,7 +546,7 @@ mutation TestAddNoteNode(
 
     public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
             .linked("addNote", key: .fixed(Slots.Mutation.addNote), plural: false, selection: Baton.Selection(type: Types.AddNotePayload, hasID: false, abstract: false, fields: [
-                .linked("note", key: .fixed(Slots.AddNotePayload.note), plural: false, handle: Baton.Handle(kind: .appendNode, connections: .variable("connections"), edgeType: Types.NoteEdge), selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("note", key: .fixed(Slots.AddNotePayload.note), plural: false, edit: Baton.Edit(kind: .appendNode, connections: .variable("connections"), edgeType: Types.NoteEdge), selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                     .scalar("text", key: .fixed(Slots.Note.text), kind: .string, list: false),
                 ])),
@@ -672,7 +672,7 @@ mutation TestAddNoteNodeFirst(
 
     public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
             .linked("addNote", key: .fixed(Slots.Mutation.addNote), plural: false, selection: Baton.Selection(type: Types.AddNotePayload, hasID: false, abstract: false, fields: [
-                .linked("note", key: .fixed(Slots.AddNotePayload.note), plural: false, handle: Baton.Handle(kind: .prependNode, connections: .variable("connections"), edgeType: Types.NoteEdge), selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("note", key: .fixed(Slots.AddNotePayload.note), plural: false, edit: Baton.Edit(kind: .prependNode, connections: .variable("connections"), edgeType: Types.NoteEdge), selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                     .scalar("text", key: .fixed(Slots.Note.text), kind: .string, list: false),
                 ])),
@@ -798,7 +798,7 @@ mutation TestAddNoteNodeOfAnotherType(
 
     public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
             .linked("addNote", key: .fixed(Slots.Mutation.addNote), plural: false, selection: Baton.Selection(type: Types.AddNotePayload, hasID: false, abstract: false, fields: [
-                .linked("note", key: .fixed(Slots.AddNotePayload.note), plural: false, handle: Baton.Handle(kind: .appendNode, connections: .variable("connections"), edgeType: Types.PageInfo), selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("note", key: .fixed(Slots.AddNotePayload.note), plural: false, edit: Baton.Edit(kind: .appendNode, connections: .variable("connections"), edgeType: Types.PageInfo), selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                     .scalar("text", key: .fixed(Slots.Note.text), kind: .string, list: false),
                 ])),
@@ -1090,7 +1090,7 @@ mutation TestDeleteNote(
 
     public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
             .linked("removeNote", key: .fixed(Slots.Mutation.removeNote), plural: false, selection: Baton.Selection(type: Types.RemoveNotePayload, hasID: false, abstract: false, fields: [
-                .scalar("removedNoteId", key: .fixed(Slots.RemoveNotePayload.removedNoteId), kind: .string, list: false, handle: Baton.Handle(kind: .deleteRecord)),
+                .scalar("removedNoteId", key: .fixed(Slots.RemoveNotePayload.removedNoteId), kind: .string, list: false, edit: Baton.Edit(kind: .deleteRecord)),
             ])),
         ]))
 
@@ -1683,8 +1683,8 @@ mutation TestRemoveNote(
 
     public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
             .linked("removeNote", key: .fixed(Slots.Mutation.removeNote), plural: false, selection: Baton.Selection(type: Types.RemoveNotePayload, hasID: false, abstract: false, fields: [
-                .scalar("removedNoteId", key: .fixed(Slots.RemoveNotePayload.removedNoteId), kind: .string, list: false, handle: Baton.Handle(kind: .deleteEdge, connections: .variable("connections"))),
-                .scalar("deleted", key: .fixed(Slots.RemoveNotePayload.removedNoteId), kind: .string, list: false, handle: Baton.Handle(kind: .deleteRecord)),
+                .scalar("removedNoteId", key: .fixed(Slots.RemoveNotePayload.removedNoteId), kind: .string, list: false, edit: Baton.Edit(kind: .deleteEdge, connections: .variable("connections"))),
+                .scalar("deleted", key: .fixed(Slots.RemoveNotePayload.removedNoteId), kind: .string, list: false, edit: Baton.Edit(kind: .deleteRecord)),
             ])),
         ]))
 
