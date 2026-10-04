@@ -56,8 +56,7 @@ struct LifetimeTests {
     @Test("a screen left and re-entered within the buffer makes no request")
     func reentryWithinTheBuffer() async {
         let transport = transport()
-        let environment = Environment(transport: transport)
-        environment.releaseBufferSize = 2
+        let environment = Environment(transport: transport, releaseBufferSize: 2)
 
         let first = environment.handle(for: TestList(page: 1), fetchPolicy: .storeOrNetwork)
         first.retain()
@@ -92,8 +91,7 @@ struct LifetimeTests {
 
     @Test("collection removes records no root reaches and keeps shared ones")
     func collection() async {
-        let environment = Environment(transport: transport())
-        environment.releaseBufferSize = 0
+        let environment = Environment(transport: transport(), releaseBufferSize: 0)
 
         let page1 = environment.handle(for: TestList(page: 1))
         page1.retain()
@@ -193,7 +191,7 @@ struct LifetimeTests {
         let morty = TestRow_character(anchor: Anchor(record: try #require(store.existing("Character:2")), variables: .none, store: store))
 
         // Ready from the store, with the attach's fetch in flight.
-        let handle = environment.handle(for: TestList(page: 1))
+        let handle = environment.handle(for: TestList(page: 1), fetchPolicy: .storeAndNetwork)
         handle.retain()
         await until { transport.pending >= 1 }
         #expect(handle.isRefreshing)
@@ -214,7 +212,7 @@ struct LifetimeTests {
         #expect(handle.isRefreshing, "the refetch is still in flight")
 
         // Another attach finds that fetch and starts none of its own.
-        _ = environment.handle(for: TestList(page: 1))
+        _ = environment.handle(for: TestList(page: 1), fetchPolicy: .storeAndNetwork)
         for _ in 0..<100 { await Task.yield() }
         #expect(transport.pending == 1)
 
@@ -331,13 +329,13 @@ struct LifetimeTests {
     func preloadServesTheFirstAttach() async {
         let transport = transport()
         let environment = Environment(transport: transport)
-        let preloaded = environment.preload(TestList(page: 1))
+        let preloaded = environment.preload(TestList(page: 1), fetchPolicy: .storeAndNetwork)
         await preloaded.settle()
-        let attached = environment.handle(for: TestList(page: 1))
+        let attached = environment.handle(for: TestList(page: 1), fetchPolicy: .storeAndNetwork)
         #expect(attached === preloaded)
         await attached.settle()
         #expect(transport.requestCount == 1, "the attach after a finished preload makes no request")
-        _ = environment.handle(for: TestList(page: 1))
+        _ = environment.handle(for: TestList(page: 1), fetchPolicy: .storeAndNetwork)
         await attached.settle()
         #expect(transport.requestCount == 2, "the next attach follows its policy")
     }
@@ -376,8 +374,7 @@ struct LifetimeTests {
 
     @Test("a view's storage retains its handle while the view lives and releases it when the view goes away")
     func storageLifetime() async throws {
-        let environment = Environment(transport: SilentTransport())
-        environment.releaseBufferSize = 0
+        let environment = Environment(transport: SilentTransport(), releaseBufferSize: 0)
         environment.store.reportMissing = nil
         environment.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
         // The renderer installs the view's state, runs the storage's update
@@ -448,8 +445,7 @@ struct LifetimeTests {
     @Test("a view whose environment is replaced resolves its operation again in the new one")
     func storageFollowsTheEnvironment() async throws {
         func environment() throws -> Baton.Environment {
-            let environment = Baton.Environment(transport: SilentTransport())
-            environment.releaseBufferSize = 0
+            let environment = Baton.Environment(transport: SilentTransport(), releaseBufferSize: 0)
             environment.store.reportMissing = nil
             environment.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
             return environment

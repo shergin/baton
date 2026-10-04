@@ -267,8 +267,8 @@ renders. Here: `preload(operationValue)`; the destination's handle dedupes
 against it.
 
 **Fetch policy.** Relay's four, as `@Query("…", fetchPolicy:)`:
-`storeOrNetwork`, `storeAndNetwork` (default), `networkOnly`, `storeOnly`;
-decided on attach over the availability check and staleness.
+`storeOrNetwork` (`FetchPolicy.default`), `storeAndNetwork`, `networkOnly`,
+`storeOnly`; decided on attach over the availability check and staleness.
 
 **Lookup.** Baton's word for a root field configured in `baton.json` as
 returning an entity by one of its arguments, so a cached entity satisfies the

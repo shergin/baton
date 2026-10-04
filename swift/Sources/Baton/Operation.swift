@@ -12,6 +12,11 @@ public enum FetchPolicy: Sendable {
     case networkOnly
     /// Never fetch; fail when the store cannot answer.
     case storeOnly
+
+    /// The policy an operation runs under unless it names one: the store
+    /// answers when it can, and the network when it cannot or the data is
+    /// stale, as Relay's queries do by default.
+    public static let `default`: FetchPolicy = .storeOrNetwork
 }
 
 /// An operation value: the variables of one operation, `Hashable` by them.
@@ -421,7 +426,7 @@ public struct OperationStorage<Op: Query>: DynamicProperty {
         }
     }
 
-    public init(_ value: Op, fetchPolicy: FetchPolicy = .storeAndNetwork) {
+    public init(_ value: Op, fetchPolicy: FetchPolicy = .default) {
         self.value = value
         self.fetchPolicy = fetchPolicy
     }

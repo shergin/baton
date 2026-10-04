@@ -26,10 +26,10 @@ struct PersistenceTests {
     /// An environment over the image, as a launch of the app makes one. A
     /// test runs its launches one after another, as a device does, and ends
     /// each with `finish`.
-    func launch(_ transport: any Transport = SilentTransport(), version: String = "", sizeLimit: Int = 64 << 20) -> Environment {
+    func launch(_ transport: any Transport = SilentTransport(), version: String = "", sizeLimit: Int = 64 << 20, releaseBufferSize: Int = 10) -> Environment {
         let store = Store(persistence: Persistence(url: image.url, version: version, sizeLimit: sizeLimit))
         store.reportMissing = nil
-        return Environment(transport: transport, store: store)
+        return Environment(transport: transport, store: store, releaseBufferSize: releaseBufferSize)
     }
 
     /// Waits until the launch has written what it owes the image.
@@ -303,9 +303,8 @@ struct PersistenceTests {
 
     @Test("records the collector swept are read again from the image when a screen comes back")
     func sweptRecordsComeBack() async throws {
-        let environment = launch()
+        let environment = launch(releaseBufferSize: 0)
         try await seed(environment)
-        environment.releaseBufferSize = 0
         let handle = environment.handle(for: Fixture(page: 1), fetchPolicy: .storeOnly)
         handle.retain()
         handle.release()

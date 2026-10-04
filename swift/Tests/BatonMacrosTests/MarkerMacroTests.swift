@@ -50,7 +50,7 @@ struct MarkerMacroTests {
                 var screen: Screen {
                     @storageRestrictions(initializes: _screen)
                     init(initialValue) {
-                        _screen = Baton.OperationStorage(initialValue, fetchPolicy: .storeAndNetwork)
+                        _screen = Baton.OperationStorage(initialValue, fetchPolicy: .default)
                     }
                     get {
                         _screen.resolved

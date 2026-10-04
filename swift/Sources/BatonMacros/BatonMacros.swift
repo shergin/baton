@@ -30,7 +30,7 @@ public struct QueryMacro: AccessorMacro, PeerMacro {
         in context: some MacroExpansionContext
     ) throws -> [AccessorDeclSyntax] {
         let (name, _) = try requireTypedProperty(declaration, attribute: node)
-        let policy = labeledArgument("fetchPolicy", of: node) ?? ".storeAndNetwork"
+        let policy = labeledArgument("fetchPolicy", of: node) ?? ".default"
         return [
             """
             @storageRestrictions(initializes: _\(raw: name))

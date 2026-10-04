@@ -763,8 +763,7 @@ func scrollBench(data: Data) async throws {
         guard case .int(let page)? = request.variables["page"] else { return nil }
         return pages[page - 1]
     }
-    let environment = Environment(transport: transport)
-    environment.releaseBufferSize = 10
+    let environment = Environment(transport: transport, releaseBufferSize: 10)
     var baseline = 0
     var report: [String] = []
     var collectionCost: [Double] = []

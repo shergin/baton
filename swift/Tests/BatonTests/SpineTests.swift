@@ -45,7 +45,7 @@ struct SpineTests {
 
         // The detail's root field `character(id: "1")` was never fetched; the
         // check binds its lookup to the cached entity, synchronously.
-        let cached = environment.handle(for: TestHeaderQuery(id: "1"))
+        let cached = environment.handle(for: TestHeaderQuery(id: "1"), fetchPolicy: .storeAndNetwork)
         guard case .ready(let data) = cached.phase else {
             Issue.record("expected .ready on creation, got \(cached.phase)")
             return

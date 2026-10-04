@@ -12,7 +12,7 @@ public final class Environment {
     public let subscriptions: (any SubscriptionTransport)?
 
     /// How many released operations keep their data alive, oldest out first.
-    public var releaseBufferSize = 10
+    public let releaseBufferSize: Int
     /// How long a fetched response stays fresh; `nil` means forever.
     public var queryCacheExpiration: Duration?
     /// The `onError` behaviour asked of the server, when set.
@@ -27,10 +27,11 @@ public final class Environment {
     /// How many collections have run; for tests and benchmarks.
     public private(set) var collections = 0
 
-    public init(transport: any Transport, subscriptions: (any SubscriptionTransport)? = nil, store: Store = Store()) {
+    public init(transport: any Transport, subscriptions: (any SubscriptionTransport)? = nil, store: Store = Store(), releaseBufferSize: Int = 10) {
         self.store = store
         self.transport = transport
         self.subscriptions = subscriptions
+        self.releaseBufferSize = releaseBufferSize
         store.environment = self
         #if DEBUG
         requiredFieldMissing = { record, path in
@@ -41,13 +42,13 @@ public final class Environment {
 
     /// An environment over HTTP. With `persistence`, the store keeps an image
     /// on disk and a launch renders from it before the network answers.
-    public convenience init(url: URL, headers: [String: String] = [:], subscriptions: (any SubscriptionTransport)? = nil, persistence: Persistence? = nil) {
-        self.init(transport: URLSessionTransport(url: url, headers: headers), subscriptions: subscriptions, store: Store(persistence: persistence))
+    public convenience init(url: URL, headers: [String: String] = [:], subscriptions: (any SubscriptionTransport)? = nil, persistence: Persistence? = nil, releaseBufferSize: Int = 10) {
+        self.init(transport: URLSessionTransport(url: url, headers: headers), subscriptions: subscriptions, store: Store(persistence: persistence), releaseBufferSize: releaseBufferSize)
     }
 
     /// The handle for an operation value, shared by every view that holds an
     /// equal value. The policy is applied on every attach.
-    public func handle<Op: Query>(for operation: Op, fetchPolicy: FetchPolicy = .storeAndNetwork) -> OperationHandle<Op> {
+    public func handle<Op: Query>(for operation: Op, fetchPolicy: FetchPolicy = .default) -> OperationHandle<Op> {
         let key = AnyHashable(operation)
         let handle: OperationHandle<Op>
         if let existing = handles[key] as? OperationHandle<Op> {
@@ -75,7 +76,7 @@ public final class Environment {
     /// buffer for a view to attach, and that attach makes no request of its
     /// own.
     @discardableResult
-    public func preload<Op: Query>(_ operation: Op, fetchPolicy: FetchPolicy = .storeAndNetwork) -> OperationHandle<Op> {
+    public func preload<Op: Query>(_ operation: Op, fetchPolicy: FetchPolicy = .default) -> OperationHandle<Op> {
         let handle = handle(for: operation, fetchPolicy: fetchPolicy)
         // Only a fetch the preload made can serve the first attach.
         handle.preloaded = handle.isFetching

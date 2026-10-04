@@ -9,7 +9,7 @@ public macro Fragment(_ document: StaticString) = #externalMacro(module: "BatonM
 /// fetch policy decides what the store may answer and when the network is asked.
 @attached(accessor, names: named(init), named(get))
 @attached(peer, names: prefixed(_))
-public macro Query(_ document: StaticString, fetchPolicy: FetchPolicy = .storeAndNetwork) = #externalMacro(module: "BatonMacros", type: "QueryMacro")
+public macro Query(_ document: StaticString, fetchPolicy: FetchPolicy = .default) = #externalMacro(module: "BatonMacros", type: "QueryMacro")
 
 /// Marks a mutation and carries its GraphQL. The property's type is the
 /// operation's `Action`; calling it commits the mutation.

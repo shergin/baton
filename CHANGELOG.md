@@ -235,6 +235,12 @@ are expected and listed without apology.
   the whole response, and reads a part without headers. It scans the
   chunks it is given rather than a byte at a time: 978 KB of 20 parts in
   16 KB chunks parse in 0.50 ms against 14.6 ms.
+- The default fetch policy is `FetchPolicy.default`, `.storeOrNetwork`, as
+  Relay's queries default to: the store answers when it can. It was
+  `.storeAndNetwork`, spelled in five places, so every attach of every
+  screen made a request. Breaking for code that relied on that default:
+  name `.storeAndNetwork`. `Environment.releaseBufferSize` is set at init
+  and fixed after.
 - The data a mutation returns stays readable. Nothing kept its payload
   alive, so after the next collection it read nil; the completed mutation
   now waits in the release buffer as a released query does, and its data
