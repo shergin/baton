@@ -323,6 +323,16 @@ miss, so nothing heals it.
 **Schema.** *Concept: schema.* GraphQL: the SDL. Here: a checked-in file
 plus identity configuration; introspection download is a CLI command.
 
+**Custom scalar.** *Composition: schema, lens.* GraphQL: a scalar the
+schema declares beside the built-in five. Here: stored as its text, exactly
+as the server wrote it, and read as a `String`. A mapping to a Swift type
+at the lens, under Relay's key `customScalarTypes`, is *(planned)*: the
+accessor converts on read and is optional unless `@required`, `@catch` or
+`@throwOnFieldError` covers it, because the schema promises the text and
+not the conversion. A value that does not convert is reported as
+unexpected and never reads as a zero value. See
+[the decision](decisions/a-mapped-scalar-is-a-fallible-read.md).
+
 **Plan.** *Concept: plan.* Baton's word for the normalization artifact: the
 data a response is decoded by and a store is written from, one per
 operation, emitted by the compiler and interpreted by the runtime. Relay's
