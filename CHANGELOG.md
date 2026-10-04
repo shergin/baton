@@ -495,6 +495,57 @@ are expected and listed without apology.
   and the README said collection and all normalization ran off it; a
   decision record now says why they do not, with the numbers that would
   move the check and collection.
+- A view's storage releases its handle as SwiftUI drops the view's state,
+  on the main actor. It released it from a task started for each
+  teardown, so the handle stayed retained, and a root, until the task ran.
+- A request with nothing to send it fails with `EnvironmentError`, which
+  says what is missing: a view's environment, a lens's, the one that made a
+  handle and is gone, or a subscription transport. It failed with a
+  `TransportError` whose status code was 0 and whose description read as
+  an HTTP status.
+- An operation whose root a `@required` field bubbled to fails with a
+  `RequiredFieldError` that names it in `operationName`, with an empty
+  path, and says the root bubbled. Its path was the operation's name, so
+  the error described a null field of that name.
+- A preloaded operation is settled on its first attach. When the preload's
+  fetch had finished with fresh data, the attach returned before reading
+  the phase again, so a commit that put a field error or a null into the
+  selection while the handle waited for a view left it ready.
+- A deferred part the server could not deliver lists each of its errors
+  once among the uncaught ones. Its first error is placed on every field
+  the part would have filled, and was counted once for each such field
+  under no `@catch`, so a part of two of them listed it twice.
+- A spread alone under an aliased `@catch`, `... @alias(as: "x") @catch {
+  ...F }`, compiles whatever the fragment's error policy and reads the
+  field errors in the fragment: a failure under `RESULT`, nil under `NULL`.
+  It called `F.caught`, which only a fragment with `@throwOnFieldError` had,
+  so the generated code did not compile for any other fragment, and under
+  `@catch(to: NULL)` such a fragment's accessor threw instead of reading
+  nil.
+- Every name the generated code declares comes from one allocator per
+  scope, which knows the names the scope spells unqualified and the
+  program's fragments and operations, and a name the document spells never
+  moves. A field aliased `asCharacter` beside `... on Character` declared
+  `asCharacter` and `AsCharacter` twice; the condition's accessor and lens
+  take the next number, `asCharacter2` and `AsCharacter2`. A field named
+  like a fragment or an operation the lens names, such as
+  `testNotes_character`, got a lens that hid it; the lens takes `Lens` after
+  the name. A spread's accessor named like a field takes the fragment's
+  whole name. A connection's `nodes` read `Edges.Node` whatever names those
+  lenses took. An optimistic builder for a payload field named `type`,
+  `self`, `string` or `sendable` was `struct Type`, hid `String` or
+  conformed to itself; it takes `Response` after the name. A name a scope
+  would still declare twice is an internal error naming both declarations,
+  where the Swift did not compile.
+- A variable named `self` is a parameter, a property and a request
+  variable of that name. The value's initializer, `variables` and `hash`
+  read the instance itself in its place, and the generated code did not
+  compile.
+- A plan's edge directive is an `Edit`, as the change set's
+  `ChangeSet.Edit` it becomes, so "handle" means only the operation handle.
+  Breaking for a plan built by hand: `Handle` is `Edit`, `ResolvedHandle`
+  is `ResolvedEdit`, the `handle` properties of `PlanField` and
+  `ResolvedField` are `edit`, and `.scalar` and `.linked` take `edit:`.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

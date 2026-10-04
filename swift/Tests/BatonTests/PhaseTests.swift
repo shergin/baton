@@ -36,6 +36,24 @@ struct PhaseTests {
         handle.release()
     }
 
+    @Test("a root a @required field bubbled to fails with an error that names the operation and says the root bubbled, with no field path")
+    func bubbledRootDescribesItself() async throws {
+        let environment = Environment(transport: RecordedTransport([TestRequiredOrigin.name: fixture("required-origin-1-null")]))
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestRequiredOrigin(id: "1"))
+        handle.retain()
+        await settled(handle)
+        guard case .failed(let error as RequiredFieldError) = handle.phase else {
+            Issue.record("expected the required origin to fail the operation, got \(handle.phase)")
+            return
+        }
+        #expect(error.operationName == TestRequiredOrigin.name)
+        #expect(error.path == "")
+        #expect(error.description == "TestRequiredOrigin: a @required field is null and bubbled to the root")
+        #expect(RequiredFieldError(path: "character.origin").description == "the @required field character.origin is null")
+        handle.release()
+    }
+
     @Test("a bubbling failure is not assigned again when an unrelated commit evaluates it to the same @required path")
     func bubblingFailureIsNotReassigned() async throws {
         let environment = Environment(transport: RecordedTransport([TestRequiredOrigin.name: fixture("required-origin-1-null")]))
@@ -212,13 +230,48 @@ struct PhaseTests {
         environment.store.reportMissing = nil
         let preloaded = environment.preload(TestList(page: 1))
         await settled(preloaded)
-        #expect(transport.requests.count == 1)
+        #expect(transport.requestCount == 1)
         environment.invalidate()
         let handle = environment.handle(for: TestList(page: 1), fetchPolicy: .storeOrNetwork)
-        await until { transport.requests.count == 2 }
-        #expect(transport.requests.count == 2, "the data went stale after the preload")
+        await until { transport.requestCount == 2 }
+        #expect(transport.requestCount == 2, "the data went stale after the preload")
         handle.retain()
         handle.release()
+    }
+
+    @Test("a preload's fresh data serves the first attach by the commits since: one that put a field error or a null into its selection fails it")
+    func preloadSettlesOnTheFirstAttach() async throws {
+        let transport = RecordedTransport([TestStrictQuery.name: fixture("character-name-shown"), TestRequiredOrigin.name: fixture("required-origin-1")])
+        let environment = Environment(transport: transport)
+        environment.store.reportMissing = nil
+        let strict = environment.preload(TestStrictQuery(id: "1"))
+        let bubbling = environment.preload(TestRequiredOrigin(id: "1"))
+        await strict.settle()
+        await bubbling.settle()
+        guard case .ready = strict.phase, case .ready = bubbling.phase else {
+            Issue.record("expected both preloads ready, got \(strict.phase) and \(bubbling.phase)")
+            return
+        }
+        // Parked, the preloaded handles are settled by no commit before
+        // their first attach.
+        environment.store.commit(try Ingest.normalize(fixture("character-name-hidden"), plan: TestStrictQuery.plan.resolve(TestStrictQuery(id: "1").variables)))
+        environment.store.commit(try Ingest.normalize(fixture("required-origin-1-null"), plan: TestRequiredOrigin.plan.resolve(TestRequiredOrigin(id: "1").variables)))
+
+        let attached = environment.handle(for: TestStrictQuery(id: "1"))
+        #expect(attached === strict)
+        if case .failed(let error as FieldErrors) = attached.phase {
+            #expect(error.errors.map(\.message) == ["name hidden"])
+        } else {
+            Issue.record("expected the committed error, got \(attached.phase)")
+        }
+        let bubbled = environment.handle(for: TestRequiredOrigin(id: "1"))
+        #expect(bubbled === bubbling)
+        if case .failed(let error) = bubbled.phase {
+            #expect(error is RequiredFieldError)
+        } else {
+            Issue.record("expected the required origin to fail the operation, got \(bubbled.phase)")
+        }
+        #expect(transport.requestCount == 2, "the preloads' fetches served the attaches")
     }
 
     @Test("a preload that sent nothing serves no attach: a later networkOnly attach fetches")
@@ -230,12 +283,12 @@ struct PhaseTests {
         first.retain()
         await settled(first)
         first.release()
-        #expect(transport.requests.count == 1)
+        #expect(transport.requestCount == 1)
         _ = environment.preload(TestList(page: 1), fetchPolicy: .storeOrNetwork)
-        #expect(transport.requests.count == 1, "the store had the data, fresh")
+        #expect(transport.requestCount == 1, "the store had the data, fresh")
         _ = environment.handle(for: TestList(page: 1), fetchPolicy: .networkOnly)
-        await until { transport.requests.count == 2 }
-        #expect(transport.requests.count == 2)
+        await until { transport.requestCount == 2 }
+        #expect(transport.requestCount == 2)
     }
 
     @Test("a parked handle that failed on a field error is ready when attached again after the error cleared")

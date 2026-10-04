@@ -74,6 +74,31 @@ nonisolated public struct TestLoggedNotes_character: Baton.Lens {
     }
 }
 
+/// Lens for `fragment TestOriginAndEpisode_character on Character`.
+nonisolated public struct TestOriginAndEpisode_character: Baton.Lens {
+    public let anchor: Baton.Anchor
+    public init(anchor: Baton.Anchor) { self.anchor = anchor }
+    public static let typeName = "Character"
+    @MainActor public var origin: Origin? { anchor.linked(Slots.Character.origin).map(Origin.init(anchor:)) }
+    @MainActor public var episode: Baton.List<Episode> { anchor.requiredList(Slots.Character.episode) }
+    /// Whether the deferred part that carries this fragment has arrived.
+    @MainActor public static func isPresent(_ anchor: Baton.Anchor) -> Bool { anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.episode) }
+
+    nonisolated public struct Origin: Baton.Lens {
+        public let anchor: Baton.Anchor
+        public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Location"
+        @MainActor public var name: String? { anchor.string(Slots.Location.name) }
+    }
+
+    nonisolated public struct Episode: Baton.Lens {
+        public let anchor: Baton.Anchor
+        public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Episode"
+        @MainActor public var name: String? { anchor.string(Slots.Episode.name) }
+    }
+}
+
 /// Lens for `fragment TestThrowingOrigin_character on Character`.
 nonisolated public struct TestThrowingOrigin_character: Baton.Lens {
     public let anchor: Baton.Anchor
@@ -1491,6 +1516,88 @@ query TestThrowingNode(
                     let errors = fieldErrors(anchor)
                     return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(Baton.FieldErrors(errors))
                 }
+            }
+        }
+    }
+}
+
+/// Operation value for `query TestTwoFieldPartQuery`.
+nonisolated public struct TestTwoFieldPartQuery: Baton.Query {
+    public var id: String
+    public var resolution: Baton.OperationHandle<Self>? = nil
+
+    public init(id: String) {
+        self.id = id
+    }
+
+    public static let name = "TestTwoFieldPartQuery"
+    public static let persistedID = "0ba7fc850677d55161d5265c797e6747"
+    public static let hasDeferred = true
+    public static let text = #"""
+query TestTwoFieldPartQuery(
+  $id: ID!
+) {
+  character(id: $id) {
+    id
+    name
+    ...TestOriginAndEpisode_character @defer(label: "TestTwoFieldPartQuery$defer$TestOriginAndEpisode_character")
+  }
+}
+
+fragment TestOriginAndEpisode_character on Character {
+  origin {
+    name
+    id
+  }
+  episode {
+    name
+    id
+  }
+}
+"""#
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["id": Baton.Variable(id)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+
+    public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
+            .linked("character", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+                .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
+                .linked("origin", key: .fixed(Slots.Character.origin), plural: false, deferred: "TestTwoFieldPartQuery$defer$TestOriginAndEpisode_character", selection: Baton.Selection(type: Types.Location, hasID: true, abstract: false, fields: [
+                    .scalar("name", key: .fixed(Slots.Location.name), kind: .string, list: false),
+                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
+                ])),
+                .linked("episode", key: .fixed(Slots.Character.episode), plural: true, deferred: "TestTwoFieldPartQuery$defer$TestOriginAndEpisode_character", selection: Baton.Selection(type: Types.Episode, hasID: true, abstract: false, fields: [
+                    .scalar("name", key: .fixed(Slots.Episode.name), kind: .string, list: false),
+                    .scalar("id", key: .fixed(Slots.Episode.id), kind: .string, list: false),
+                ])),
+            ])),
+        ]))
+
+    nonisolated public struct Data: Baton.Lens {
+        public let anchor: Baton.Anchor
+        public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Query"
+        @MainActor public var character: Character? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(Character.init(anchor:)) }
+
+        nonisolated public struct Character: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Character"
+            @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+            @MainActor public var name: String? { anchor.string(Slots.Character.name) }
+            @MainActor public var testOriginAndEpisode: TestOriginAndEpisode_character? {
+                guard TestOriginAndEpisode_character.isPresent(anchor) else { return nil }
+                return TestOriginAndEpisode_character(anchor: anchor)
             }
         }
     }

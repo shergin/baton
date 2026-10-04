@@ -1,0 +1,745 @@
+{
+  "fragments": [],
+  "operations": [
+    {
+      "name": "TestKeys",
+      "source": "swift/Tests/BatonTests/KeyDocuments.swift",
+      "document": 0,
+      "kind": "query",
+      "root_type": "Query",
+      "variables": [
+        {
+          "name": "id",
+          "type_name": "ID!",
+          "base_type": "ID",
+          "base_kind": "id",
+          "non_null": true,
+          "list": false,
+          "default_value": null
+        },
+        {
+          "name": "name",
+          "type_name": "String",
+          "base_type": "String",
+          "base_kind": "string",
+          "non_null": false,
+          "list": false,
+          "default_value": null
+        }
+      ],
+      "text": "query TestKeys(\n  $id: ID!\n  $name: String\n) {\n  search(name: \"$0.00\") {\n    __typename\n    ... on Node {\n      __isNode: __typename\n      id\n    }\n  }\n  character(id: \"a,b\") {\n    name\n    id\n  }\n  charactersByIds(ids: [$id, \"2\"]) {\n    name\n    id\n  }\n  characters(filter: {status: \"Alive\", name: $name}) {\n    info {\n      count\n    }\n  }\n}",
+      "id": "620898ed47f113ee21ff882045dcf004",
+      "throws_on_field_error": false,
+      "bubbles": false,
+      "has_deferred": false,
+      "error_behavior": null,
+      "reader": [
+        {
+          "kind": "linked",
+          "name": "search",
+          "alias": null,
+          "type_name": "[SearchResult]",
+          "base_type": "SearchResult",
+          "base_kind": "union",
+          "non_null": false,
+          "semantic_non_null": false,
+          "plural": true,
+          "has_id": true,
+          "is_abstract": true,
+          "possible_types": [
+            "Character",
+            "Episode",
+            "Location"
+          ],
+          "storage_key": {
+            "name": "search",
+            "arguments": [
+              {
+                "name": "name",
+                "value": {
+                  "kind": "constant",
+                  "value": {
+                    "kind": "string",
+                    "value": "$0.00"
+                  }
+                }
+              }
+            ]
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "__typename",
+              "alias": null,
+              "type_name": "String!",
+              "base_type": "String",
+              "base_kind": "string",
+              "non_null": true,
+              "semantic_non_null": false,
+              "list": false,
+              "storage_key": {
+                "name": "__typename",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            }
+          ]
+        },
+        {
+          "kind": "linked",
+          "name": "character",
+          "alias": null,
+          "type_name": "Character",
+          "base_type": "Character",
+          "base_kind": "object",
+          "non_null": false,
+          "semantic_non_null": false,
+          "plural": false,
+          "has_id": true,
+          "is_abstract": false,
+          "possible_types": [
+            "Character"
+          ],
+          "storage_key": {
+            "name": "character",
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "constant",
+                  "value": {
+                    "kind": "string",
+                    "value": "a,b"
+                  }
+                }
+              }
+            ]
+          },
+          "lookup": {
+            "type_name": "Character",
+            "possible_types": [
+              "Character"
+            ],
+            "argument": "id",
+            "value": {
+              "kind": "constant",
+              "value": {
+                "kind": "string",
+                "value": "a,b"
+              }
+            }
+          },
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "name",
+              "alias": null,
+              "type_name": "String",
+              "base_type": "String",
+              "base_kind": "string",
+              "non_null": false,
+              "semantic_non_null": false,
+              "list": false,
+              "storage_key": {
+                "name": "name",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            }
+          ]
+        },
+        {
+          "kind": "linked",
+          "name": "charactersByIds",
+          "alias": null,
+          "type_name": "[Character]",
+          "base_type": "Character",
+          "base_kind": "object",
+          "non_null": false,
+          "semantic_non_null": false,
+          "plural": true,
+          "has_id": true,
+          "is_abstract": false,
+          "possible_types": [
+            "Character"
+          ],
+          "storage_key": {
+            "name": "charactersByIds",
+            "arguments": [
+              {
+                "name": "ids",
+                "value": {
+                  "kind": "list",
+                  "value": [
+                    {
+                      "kind": "variable",
+                      "value": "id"
+                    },
+                    {
+                      "kind": "constant",
+                      "value": {
+                        "kind": "string",
+                        "value": "2"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "name",
+              "alias": null,
+              "type_name": "String",
+              "base_type": "String",
+              "base_kind": "string",
+              "non_null": false,
+              "semantic_non_null": false,
+              "list": false,
+              "storage_key": {
+                "name": "name",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            }
+          ]
+        },
+        {
+          "kind": "linked",
+          "name": "characters",
+          "alias": null,
+          "type_name": "Characters",
+          "base_type": "Characters",
+          "base_kind": "object",
+          "non_null": false,
+          "semantic_non_null": false,
+          "plural": false,
+          "has_id": false,
+          "is_abstract": false,
+          "possible_types": [
+            "Characters"
+          ],
+          "storage_key": {
+            "name": "characters",
+            "arguments": [
+              {
+                "name": "filter",
+                "value": {
+                  "kind": "object",
+                  "value": [
+                    [
+                      "status",
+                      {
+                        "kind": "constant",
+                        "value": {
+                          "kind": "string",
+                          "value": "Alive"
+                        }
+                      }
+                    ],
+                    [
+                      "name",
+                      {
+                        "kind": "variable",
+                        "value": "name"
+                      }
+                    ]
+                  ]
+                }
+              }
+            ]
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "linked",
+              "name": "info",
+              "alias": null,
+              "type_name": "Info",
+              "base_type": "Info",
+              "base_kind": "object",
+              "non_null": false,
+              "semantic_non_null": false,
+              "plural": false,
+              "has_id": false,
+              "is_abstract": false,
+              "possible_types": [
+                "Info"
+              ],
+              "storage_key": {
+                "name": "info",
+                "arguments": []
+              },
+              "lookup": null,
+              "connection": null,
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "count",
+                  "alias": null,
+                  "type_name": "Int",
+                  "base_type": "Int",
+                  "base_kind": "int",
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "list": false,
+                  "storage_key": {
+                    "name": "count",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "normalization": [
+        {
+          "kind": "linked",
+          "name": "search",
+          "alias": null,
+          "type_name": "[SearchResult]",
+          "base_type": "SearchResult",
+          "base_kind": "union",
+          "non_null": false,
+          "semantic_non_null": false,
+          "plural": true,
+          "has_id": true,
+          "is_abstract": true,
+          "possible_types": [
+            "Character",
+            "Episode",
+            "Location"
+          ],
+          "storage_key": {
+            "name": "search",
+            "arguments": [
+              {
+                "name": "name",
+                "value": {
+                  "kind": "constant",
+                  "value": {
+                    "kind": "string",
+                    "value": "$0.00"
+                  }
+                }
+              }
+            ]
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "__typename",
+              "alias": null,
+              "type_name": "String!",
+              "base_type": "String",
+              "base_kind": "string",
+              "non_null": true,
+              "semantic_non_null": false,
+              "list": false,
+              "storage_key": {
+                "name": "__typename",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "inline",
+              "type_condition": "Node",
+              "condition_types": [
+                "Character",
+                "Episode",
+                "Location",
+                "Note"
+              ],
+              "condition_class": {
+                "kind": "always"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "__typename",
+                  "alias": "__isNode",
+                  "type_name": "String!",
+                  "base_type": "String",
+                  "base_kind": "string",
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "list": false,
+                  "storage_key": {
+                    "name": "__typename",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type_name": "ID",
+                  "base_type": "ID",
+                  "base_kind": "id",
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "list": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "linked",
+          "name": "character",
+          "alias": null,
+          "type_name": "Character",
+          "base_type": "Character",
+          "base_kind": "object",
+          "non_null": false,
+          "semantic_non_null": false,
+          "plural": false,
+          "has_id": true,
+          "is_abstract": false,
+          "possible_types": [
+            "Character"
+          ],
+          "storage_key": {
+            "name": "character",
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "constant",
+                  "value": {
+                    "kind": "string",
+                    "value": "a,b"
+                  }
+                }
+              }
+            ]
+          },
+          "lookup": {
+            "type_name": "Character",
+            "possible_types": [
+              "Character"
+            ],
+            "argument": "id",
+            "value": {
+              "kind": "constant",
+              "value": {
+                "kind": "string",
+                "value": "a,b"
+              }
+            }
+          },
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "name",
+              "alias": null,
+              "type_name": "String",
+              "base_type": "String",
+              "base_kind": "string",
+              "non_null": false,
+              "semantic_non_null": false,
+              "list": false,
+              "storage_key": {
+                "name": "name",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "id",
+              "alias": null,
+              "type_name": "ID",
+              "base_type": "ID",
+              "base_kind": "id",
+              "non_null": false,
+              "semantic_non_null": false,
+              "list": false,
+              "storage_key": {
+                "name": "id",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            }
+          ]
+        },
+        {
+          "kind": "linked",
+          "name": "charactersByIds",
+          "alias": null,
+          "type_name": "[Character]",
+          "base_type": "Character",
+          "base_kind": "object",
+          "non_null": false,
+          "semantic_non_null": false,
+          "plural": true,
+          "has_id": true,
+          "is_abstract": false,
+          "possible_types": [
+            "Character"
+          ],
+          "storage_key": {
+            "name": "charactersByIds",
+            "arguments": [
+              {
+                "name": "ids",
+                "value": {
+                  "kind": "list",
+                  "value": [
+                    {
+                      "kind": "variable",
+                      "value": "id"
+                    },
+                    {
+                      "kind": "constant",
+                      "value": {
+                        "kind": "string",
+                        "value": "2"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "name",
+              "alias": null,
+              "type_name": "String",
+              "base_type": "String",
+              "base_kind": "string",
+              "non_null": false,
+              "semantic_non_null": false,
+              "list": false,
+              "storage_key": {
+                "name": "name",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "id",
+              "alias": null,
+              "type_name": "ID",
+              "base_type": "ID",
+              "base_kind": "id",
+              "non_null": false,
+              "semantic_non_null": false,
+              "list": false,
+              "storage_key": {
+                "name": "id",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            }
+          ]
+        },
+        {
+          "kind": "linked",
+          "name": "characters",
+          "alias": null,
+          "type_name": "Characters",
+          "base_type": "Characters",
+          "base_kind": "object",
+          "non_null": false,
+          "semantic_non_null": false,
+          "plural": false,
+          "has_id": false,
+          "is_abstract": false,
+          "possible_types": [
+            "Characters"
+          ],
+          "storage_key": {
+            "name": "characters",
+            "arguments": [
+              {
+                "name": "filter",
+                "value": {
+                  "kind": "object",
+                  "value": [
+                    [
+                      "status",
+                      {
+                        "kind": "constant",
+                        "value": {
+                          "kind": "string",
+                          "value": "Alive"
+                        }
+                      }
+                    ],
+                    [
+                      "name",
+                      {
+                        "kind": "variable",
+                        "value": "name"
+                      }
+                    ]
+                  ]
+                }
+              }
+            ]
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "linked",
+              "name": "info",
+              "alias": null,
+              "type_name": "Info",
+              "base_type": "Info",
+              "base_kind": "object",
+              "non_null": false,
+              "semantic_non_null": false,
+              "plural": false,
+              "has_id": false,
+              "is_abstract": false,
+              "possible_types": [
+                "Info"
+              ],
+              "storage_key": {
+                "name": "info",
+                "arguments": []
+              },
+              "lookup": null,
+              "connection": null,
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "count",
+                  "alias": null,
+                  "type_name": "Int",
+                  "base_type": "Int",
+                  "base_kind": "int",
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "list": false,
+                  "storage_key": {
+                    "name": "count",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

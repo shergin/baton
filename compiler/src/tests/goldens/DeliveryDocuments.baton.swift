@@ -151,7 +151,7 @@ subscription TestNoteAdded(
 
     public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Subscription, hasID: false, abstract: false, fields: [
             .linked("noteAdded", key: .dynamic(Slots.Subscription.noteAdded_5f458b), plural: false, selection: Baton.Selection(type: Types.NoteAddedPayload, hasID: false, abstract: false, fields: [
-                .linked("noteEdge", key: .fixed(Slots.NoteAddedPayload.noteEdge), plural: false, handle: Baton.Handle(kind: .appendEdge, connections: .variable("connections")), selection: Baton.Selection(type: Types.NoteEdge, hasID: false, abstract: false, fields: [
+                .linked("noteEdge", key: .fixed(Slots.NoteAddedPayload.noteEdge), plural: false, edit: Baton.Edit(kind: .appendEdge, connections: .variable("connections")), selection: Baton.Selection(type: Types.NoteEdge, hasID: false, abstract: false, fields: [
                     .scalar("cursor", key: .fixed(Slots.NoteEdge.cursor), kind: .string, list: false),
                     .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
                         .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),

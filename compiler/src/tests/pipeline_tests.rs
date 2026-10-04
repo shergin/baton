@@ -151,7 +151,9 @@ fn a_root_type_the_schema_names_otherwise_is_interned_by_the_store_root_name() {
         &Config::default(),
     )
     .unwrap_or_else(|errors| panic!("{errors:?}"));
-    let shared = crate::emit::emit(&compiled.plan).shared;
+    let shared = crate::emit::emit(&compiled.plan)
+        .expect("the plan emits")
+        .shared;
     assert!(shared.contains("static let QueryRoot = Baton.Registry.type(\"Query\")"));
     assert!(shared.contains("static let mutation_root = Baton.Registry.type(\"Mutation\")"));
     assert!(
@@ -262,7 +264,7 @@ fn on_error_null_sends_the_value_and_types_non_null_fields_by_their_semantic_nul
         .unwrap_or_else(|errors| panic!("{errors:?}"));
     let operation = &compiled.plan.operations[0];
     assert_eq!(operation.error_behavior.as_deref(), Some("null"));
-    let output = crate::emit::emit(&compiled.plan);
+    let output = crate::emit::emit(&compiled.plan).expect("the plan emits");
     let file = output
         .files
         .values()
@@ -276,7 +278,7 @@ fn on_error_null_sends_the_value_and_types_non_null_fields_by_their_semantic_nul
 
     let plain = compile(&sdl, &path, &[document(text)], &Config::default())
         .unwrap_or_else(|errors| panic!("{errors:?}"));
-    let plain_file = crate::emit::emit(&plain.plan);
+    let plain_file = crate::emit::emit(&plain.plan).expect("the plan emits");
     let plain_file = plain_file
         .files
         .values()
@@ -309,7 +311,9 @@ fn slots_are_nested_per_type_so_a_type_and_a_field_never_run_together() {
         &Config::default(),
     )
     .unwrap_or_else(|errors| panic!("{errors:?}"));
-    let shared = crate::emit::emit(&compiled.plan).shared;
+    let shared = crate::emit::emit(&compiled.plan)
+        .expect("the plan emits")
+        .shared;
     assert!(shared.contains(
         "    nonisolated enum A {\n        static let b_c = Baton.Registry.slot(Types.A, \"b_c\")\n    }"
     ));
@@ -328,7 +332,7 @@ fn a_linked_field_named_like_a_swift_type_gets_a_lens_of_another_name() {
         &Config::default(),
     )
     .unwrap_or_else(|errors| panic!("{errors:?}"));
-    let output = crate::emit::emit(&compiled.plan);
+    let output = crate::emit::emit(&compiled.plan).expect("the plan emits");
     let file = output
         .files
         .values()
@@ -349,7 +353,9 @@ fn a_slot_name_swift_would_misread_takes_an_underscore_and_meets_no_other() {
         &Config::default(),
     )
     .unwrap_or_else(|errors| panic!("{errors:?}"));
-    let shared = crate::emit::emit(&compiled.plan).shared;
+    let shared = crate::emit::emit(&compiled.plan)
+        .expect("the plan emits")
+        .shared;
     assert!(
         shared.contains(concat!(
             "    nonisolated enum Types_ {\n",

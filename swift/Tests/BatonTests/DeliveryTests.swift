@@ -6,18 +6,6 @@ import Testing
 @MainActor
 @Suite("Delivery", .timeLimit(.minutes(1)))
 struct DeliveryTests {
-    /// Answers every request with the same response.
-    final class OneResponse: Transport, @unchecked Sendable {
-        let response: Data
-        var requests: [Request] = []
-        init(_ response: Data) { self.response = response }
-
-        func execute(_ request: Request) async throws -> Data {
-            requests.append(request)
-            return response
-        }
-    }
-
     /// Streams the first part at once and the second when told.
     final class GatedParts: Transport, @unchecked Sendable {
         let first: Data
@@ -101,7 +89,7 @@ struct DeliveryTests {
 
     @Test("field errors land beside the field: a plain read sees null, @catch sees the error, @catch(to: NULL) sees nil, and a cached read agrees")
     func fieldErrors() async throws {
-        let environment = Environment(transport: OneResponse(fixture("character-errors")))
+        let environment = Environment(transport: RecordedTransport([TestProfileQuery.name: fixture("character-errors")]))
         environment.store.reportMissing = nil
         let handle = environment.handle(for: TestProfileQuery(id: "1"))
         handle.retain()
@@ -137,7 +125,7 @@ struct DeliveryTests {
 
     @Test("a payload that answers an errored field clears the error and notifies the field")
     func errorsClear() async throws {
-        let environment = Environment(transport: OneResponse(fixture("character-errors")))
+        let environment = Environment(transport: RecordedTransport([TestProfileQuery.name: fixture("character-errors")]))
         environment.store.reportMissing = nil
         _ = try await environment.fetch(TestProfileQuery.self, variables: TestProfileQuery(id: "1").variables)
         let character = try #require(try profile(environment).testProfile)
@@ -155,7 +143,7 @@ struct DeliveryTests {
 
     @Test("a payload that answers an errored field with the same value and no error clears the error; the same error again notifies nothing")
     func errorsClearWithoutAValueChange() async throws {
-        let environment = Environment(transport: OneResponse(fixture("character-errors")))
+        let environment = Environment(transport: RecordedTransport([TestProfileQuery.name: fixture("character-errors")]))
         environment.store.reportMissing = nil
         _ = try await environment.fetch(TestProfileQuery.self, variables: TestProfileQuery(id: "1").variables)
         let character = try #require(try profile(environment).testProfile)
@@ -267,7 +255,7 @@ struct DeliveryTests {
         #expect(strict.species == "Human")
 
         // An operation with @throwOnFieldError fails on an uncaught error inside its selection.
-        let failing = Environment(transport: OneResponse(fixture("character-name-hidden")))
+        let failing = Environment(transport: RecordedTransport([TestStrictQuery.name: fixture("character-name-hidden")]))
         failing.store.reportMissing = nil
         let handle = failing.handle(for: TestStrictQuery(id: "1"))
         handle.retain()
@@ -280,7 +268,7 @@ struct DeliveryTests {
         #expect(failing.store.existing("Character:1") != nil, "the data is in the store regardless")
 
         // The same error under @catch does not fail an operation without the directive.
-        let caught = Environment(transport: OneResponse(fixture("character-errors")))
+        let caught = Environment(transport: RecordedTransport([TestProfileQuery.name: fixture("character-errors")]))
         caught.store.reportMissing = nil
         let plain = caught.handle(for: TestProfileQuery(id: "1"))
         plain.retain()
@@ -293,7 +281,7 @@ struct DeliveryTests {
 
     @Test("a @throwOnFieldError operation fails when a later commit puts an error in its selection, and recovers when one clears it")
     func throwingPhaseFollowsCommits() async throws {
-        let environment = Environment(transport: OneResponse(fixture("character-deferred-1")))
+        let environment = Environment(transport: RecordedTransport([TestStrictQuery.name: fixture("character-deferred-1")]))
         environment.store.reportMissing = nil
         let handle = environment.handle(for: TestStrictQuery(id: "1"))
         handle.retain()
@@ -336,7 +324,7 @@ struct DeliveryTests {
 
     @Test("a response with errors and no data fails the fetch with the messages")
     func requestErrors() async throws {
-        let environment = Environment(transport: OneResponse(fixture("not-authorized")))
+        let environment = Environment(transport: RecordedTransport([TestProfileQuery.name: fixture("not-authorized")]))
         let handle = environment.handle(for: TestProfileQuery(id: "1"))
         handle.retain()
         await handle.settle()
@@ -349,7 +337,8 @@ struct DeliveryTests {
 
     @Test("onError is sent as the operation names it, and not at all when baton.json names none")
     func errorBehavior() async throws {
-        let transport = OneResponse(fixture("character-deferred-1"))
+        let response = fixture("character-deferred-1")
+        let transport = RecordedTransport([TestStrictQuery.name: response, TestNullsOnError.name: response])
         let environment = Environment(transport: transport)
         _ = try await environment.fetch(TestStrictQuery.self, variables: TestStrictQuery(id: "1").variables)
         _ = try await environment.fetch(TestNullsOnError.self, variables: TestNullsOnError(id: "1").variables)
@@ -548,7 +537,7 @@ struct DeliveryTests {
     @Test("a subscription's events commit at the subscription root and append through @appendEdge")
     func subscription() async throws {
         let events = Events()
-        let environment = Environment(transport: ListTests.PagingTransport(), subscriptions: events)
+        let environment = Environment(transport: notesTransport(), subscriptions: events)
         environment.store.reportMissing = nil
         let handle = environment.handle(for: TestNotesQuery(id: "1"))
         handle.retain()

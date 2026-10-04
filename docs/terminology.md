@@ -53,13 +53,15 @@ accessor that produces the lens produces nil when a required field in it is
 null (a generated `satisfied` checks), and LOG reports the path through
 `Environment.requiredFieldMissing`. THROW makes the field's accessor
 `get throws`, raising `RequiredFieldError`. A root that bubbles fails the
-operation.
+operation with a `RequiredFieldError` that names the operation and has an
+empty path.
 
 **Catch.** Relay: `@catch(to: RESULT | NULL)`, a field or aliased spread
 whose errors the view handles. Here: RESULT makes the accessor a
 `Result<T, FieldErrors>` whose failure holds the field's error and every
 error below it, THROW-required nulls included; NULL keeps the optional type
-and reads errors as null.
+and reads errors as null. On an aliased spread the errors are those in the
+fragment's own selection, whatever the fragment's policy.
 
 **Throw on field error.** Relay: `@throwOnFieldError` on a fragment or
 operation, the policy under which `@semanticNonNull` fields are typed
@@ -74,7 +76,11 @@ non-null fields read non-optional under either, and inside `@catch`.
 may deliver in a later part. Here: the spread's accessor is optional and nil
 until the fragment's fields are present (a generated `isPresent`); the plan
 marks the deferred fields with the label, the availability check does not
-wait for them, and each part is normalized at the record its path names.
+wait for them, and each part is normalized at the record its path names. A
+separate check of the deferred parts makes a `storeOrNetwork` attach fetch
+the parts the store holds only half or not at all: a part held half is
+cleared, so its fragment reads absent rather than empty, and the rest of
+the operation renders meanwhile.
 
 **Variables.** GraphQL: an operation's parameters. Here: the stored
 properties of an [operation value](#generated).
@@ -116,7 +122,10 @@ the request the environment shares among equal fetches. Here:
 and shared by equal values: its phase, the fetch in flight,
 `isRefreshing`, `fetchTime`, and its place among the store's roots while
 retained or in the release buffer. `SubscriptionHandle` is the same for a
-subscription: the stream held open, its events, its last error.
+subscription: the stream held open, its events, its last error. Relay also
+calls the code behind `@connection` and the edge directives handles; here
+"handle" is only the operation handle, and an edge directive in a plan is
+an [edit](#lists).
 
 **Phase.** The state of a resolved operation: loading, ready (with
 `isRefreshing`), or failed. Always synchronously readable; previous data
@@ -260,6 +269,9 @@ plans, ids.
 **Environment.** Relay's word for store plus network plus configuration.
 Here the same, injected through SwiftUI's environment as `\.baton`. Chosen
 over "client" (Apollo's word) by [Relay's words](principles/relays-words.md).
+A request with nothing to send it fails with `EnvironmentError`, which says
+what is missing: the view's environment, the lens's, the one that made a
+handle and is gone, or the subscription transport.
 
 **Transport.** The protocol behind which HTTP and multipart incremental
 delivery live: `execute` answers once, `stream` yields the parts of a
@@ -331,12 +343,13 @@ on the connection record (`__isLoadingNext`, `__isLoadingPrevious`).
 `@prependEdge`, `@appendNode`, `@prependNode` (with `edgeTypeName`),
 `@deleteEdge`, `@deleteRecord`. Here: the same, on mutation payload fields,
 applied as commit edits inside the transaction, so optimistic responses carry
-them and revert them. Inserted edges are copied into records the connection
-owns, numbered by Relay's `__connection_next_edge_index`. A commit edits a
-connection by the slots its plans resolved, which the registry keeps under
-the connection's type, so it looks no key up by name; a record no
-connection field made, or an edge of another type than the connection's,
-is left alone.
+them and revert them. A plan spells each as an `Edit` on its field, which
+the ingest turns into the change set's `ChangeSet.Edit`. Inserted edges are
+copied into records the connection owns, numbered by Relay's
+`__connection_next_edge_index`. A commit edits a connection by the slots its
+plans resolved, which the registry keeps under the connection's type, so it
+looks no key up by name; a record no connection field made, or an edge of
+another type than the connection's, is left alone.
 
 **Page.** A list fetched by page number or offset, as the sample API does. Not
 a connection; composed in the UI from plain operations until the watch list

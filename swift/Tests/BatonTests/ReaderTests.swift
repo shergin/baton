@@ -116,6 +116,22 @@ struct ReaderTests {
         #expect(character.error(Registry.slot(character.type, "episode"))?.message == "appearances unavailable", "the field keeps the first error")
     }
 
+    @Test("a deferred spread the server could not deliver reports each error it sent once, however many fields under no @catch hold the first", arguments: [
+        ("character-deferred-2-failed", ["appearances unavailable"]),
+        ("character-deferred-2-failed-twice", ["appearances unavailable", "episodes timed out"]),
+    ])
+    func failedPartOfTwoFields(_ failed: String, _ sent: [String]) async throws {
+        let parts = [fixture("two-field-part-1"), fixture(failed)]
+        let environment = Environment(transport: DeliveryTests.OpenParts(parts))
+        environment.store.reportMissing = nil
+        let uncaught = try await environment.fetch(TestTwoFieldPartQuery.self, variables: TestTwoFieldPartQuery(id: "1").variables)
+        #expect(uncaught.map(\.message) == sent)
+        let character = try #require(environment.store.existing("Character:1"))
+        for field in ["origin", "episode"] {
+            #expect(character.error(Registry.slot(character.type, field))?.message == "appearances unavailable", "\(field) holds the first error")
+        }
+    }
+
     @Test("a deferred spread the server could not deliver at a record of a type it selects nothing on leaves every error it sent unplaced")
     func failedPartWithoutFields() async throws {
         let parts = [fixture("node-deferred-episode-1"), fixture("character-deferred-2-failed")]

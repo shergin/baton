@@ -160,7 +160,7 @@ struct PersistenceTests {
 
     @Test("field errors survive a launch: @catch reads the error the first launch received")
     func fieldErrorsSurvive() async throws {
-        let first = launch(DeliveryTests.OneResponse(fixture("character-errors")))
+        let first = launch(RecordedTransport([TestProfileQuery.name: fixture("character-errors")]))
         let fetched = first.handle(for: TestProfileQuery(id: "1"))
         fetched.retain()
         await fetched.settle()
@@ -183,7 +183,7 @@ struct PersistenceTests {
 
     @Test("a connection's merged pages and a deletion survive a launch, and the loading flag does not")
     func connectionsSurvive() async throws {
-        let first = launch(ListTests.PagingTransport())
+        let first = launch(notesTransport())
         let fetched = first.handle(for: TestNotesQuery(id: "1"))
         fetched.retain()
         await fetched.settle()

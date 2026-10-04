@@ -136,9 +136,10 @@ public enum ConnectionMode: Sendable, Equatable {
     case prepend(before: String?)
 }
 
-/// An edge directive on a mutation payload field, as Relay's handle: what to
-/// do with the field's records once the payload is in the store.
-public struct Handle: Sendable {
+/// An edge directive on a mutation payload field: the edit to make with the
+/// field's records once the payload is in the store, which the change set
+/// carries as a `ChangeSet.Edit`.
+public struct Edit: Sendable {
     public enum Kind: Sendable {
         case appendEdge, prependEdge, appendNode, prependNode, deleteEdge, deleteRecord
     }
@@ -207,7 +208,7 @@ public struct PlanField: Sendable {
     public let responseKey: String
     public let key: StorageKey
     public let kind: Kind
-    public let handle: Handle?
+    public let edit: Edit?
     /// The `@defer` label of the part that carries the field, when deferred.
     public let deferred: String?
     /// Whether the field or an ancestor carries `@catch`, so an error on it
@@ -221,14 +222,14 @@ public struct PlanField: Sendable {
     let keyBytes: [UInt8]
     let fixedStorageKey: String?
     /// Whether resolving the field reads a variable: its key, its guards, its
-    /// lookup, its connection or its handle, or a field below it.
+    /// lookup, its connection or its edit, or a field below it.
     let readsVariables: Bool
 
-    init(responseKey: String, key: StorageKey, kind: Kind, handle: Handle?, deferred: String?, caught: Bool, guards: [[Guard]]) {
+    init(responseKey: String, key: StorageKey, kind: Kind, edit: Edit?, deferred: String?, caught: Bool, guards: [[Guard]]) {
         self.responseKey = responseKey
         self.key = key
         self.kind = kind
-        self.handle = handle
+        self.edit = edit
         self.deferred = deferred
         self.caught = caught
         self.guards = guards
@@ -238,7 +239,7 @@ public struct PlanField: Sendable {
         case .fixed(let slot): fixedStorageKey = slot.storageKey
         case .dynamic: fixedStorageKey = nil; readsVariables = true
         }
-        if case .variable? = handle?.connections { readsVariables = true }
+        if case .variable? = edit?.connections { readsVariables = true }
         if case .linked(let selection, _, let lookup, let connection) = kind {
             if selection.readsVariables { readsVariables = true }
             if case .variable? = lookup?.key { readsVariables = true }
@@ -247,12 +248,12 @@ public struct PlanField: Sendable {
         self.readsVariables = readsVariables
     }
 
-    public static func scalar(_ responseKey: String, key: StorageKey, kind: ScalarKind, list: Bool, handle: Handle? = nil, deferred: String? = nil, caught: Bool = false, guards: [[Guard]] = []) -> PlanField {
-        PlanField(responseKey: responseKey, key: key, kind: .scalar(kind, list: list), handle: handle, deferred: deferred, caught: caught, guards: guards)
+    public static func scalar(_ responseKey: String, key: StorageKey, kind: ScalarKind, list: Bool, edit: Edit? = nil, deferred: String? = nil, caught: Bool = false, guards: [[Guard]] = []) -> PlanField {
+        PlanField(responseKey: responseKey, key: key, kind: .scalar(kind, list: list), edit: edit, deferred: deferred, caught: caught, guards: guards)
     }
 
-    public static func linked(_ responseKey: String, key: StorageKey, plural: Bool, lookup: Lookup? = nil, connection: ConnectionPlan? = nil, handle: Handle? = nil, deferred: String? = nil, caught: Bool = false, guards: [[Guard]] = [], selection: Selection) -> PlanField {
-        PlanField(responseKey: responseKey, key: key, kind: .linked(selection, plural: plural, lookup: lookup, connection: connection), handle: handle, deferred: deferred, caught: caught, guards: guards)
+    public static func linked(_ responseKey: String, key: StorageKey, plural: Bool, lookup: Lookup? = nil, connection: ConnectionPlan? = nil, edit: Edit? = nil, deferred: String? = nil, caught: Bool = false, guards: [[Guard]] = [], selection: Selection) -> PlanField {
+        PlanField(responseKey: responseKey, key: key, kind: .linked(selection, plural: plural, lookup: lookup, connection: connection), edit: edit, deferred: deferred, caught: caught, guards: guards)
     }
 
     /// Whether the variables select the field.
@@ -360,11 +361,11 @@ public final class Selection: Sendable {
             storageKey: storageKey,
             slot: Selection.slot(field.key, storageKey, on: type),
             kind: kind,
-            handle: field.handle.map { handle in
-                ResolvedHandle(
-                    kind: handle.kind,
-                    connections: Selection.connections(handle.connections, variables),
-                    edgeType: handle.edgeType
+            edit: field.edit.map { edit in
+                ResolvedEdit(
+                    kind: edit.kind,
+                    connections: Selection.connections(edit.connections, variables),
+                    edgeType: edit.edgeType
                 )
             },
             deferred: field.deferred,
@@ -410,8 +411,8 @@ public final class Selection: Sendable {
         return .replace
     }
 
-    /// The connection ids a handle names, from its variable or constant list.
-    private static func connections(_ connections: Handle.Connections?, _ variables: Variables) -> [String] {
+    /// The connection ids an edit names, from its variable or constant list.
+    private static func connections(_ connections: Edit.Connections?, _ variables: Variables) -> [String] {
         switch connections {
         case .none: return []
         case .literal(let keys): return keys
@@ -451,13 +452,13 @@ public final class ResolvedConnection: Sendable {
     }
 }
 
-/// A handle with its connection ids bound.
-public final class ResolvedHandle: Sendable {
-    public let kind: Handle.Kind
+/// An edit with its connection ids bound.
+public final class ResolvedEdit: Sendable {
+    public let kind: Edit.Kind
     public let connections: [String]
     public let edgeType: TypeID?
 
-    init(kind: Handle.Kind, connections: [String], edgeType: TypeID?) {
+    init(kind: Edit.Kind, connections: [String], edgeType: TypeID?) {
         self.kind = kind
         self.connections = connections
         self.edgeType = edgeType
@@ -554,20 +555,20 @@ public struct ResolvedField: Sendable {
     /// The slot on the variant's concrete type.
     public let slot: Slot
     public let kind: Kind
-    public let handle: ResolvedHandle?
+    public let edit: ResolvedEdit?
     /// The `@defer` label of the part that carries the field; the availability
     /// check does not wait for it.
     public let deferred: String?
     public let caught: Bool
     let isTypename: Bool
 
-    init(responseKey: String, keyBytes: [UInt8], storageKey: String, slot: Slot, kind: Kind, handle: ResolvedHandle?, deferred: String?, caught: Bool) {
+    init(responseKey: String, keyBytes: [UInt8], storageKey: String, slot: Slot, kind: Kind, edit: ResolvedEdit?, deferred: String?, caught: Bool) {
         self.responseKey = responseKey
         self.keyBytes = keyBytes
         self.storageKey = storageKey
         self.slot = slot
         self.kind = kind
-        self.handle = handle
+        self.edit = edit
         self.deferred = deferred
         self.caught = caught
         isTypename = responseKey == "__typename"
@@ -575,7 +576,7 @@ public struct ResolvedField: Sendable {
 
     /// The same field as the incremental part delivers it: no longer deferred.
     func undeferred() -> ResolvedField {
-        ResolvedField(responseKey: responseKey, keyBytes: keyBytes, storageKey: storageKey, slot: slot, kind: kind, handle: handle, deferred: nil, caught: caught)
+        ResolvedField(responseKey: responseKey, keyBytes: keyBytes, storageKey: storageKey, slot: slot, kind: kind, edit: edit, deferred: nil, caught: caught)
     }
 
     /// The same field on another concrete type: its slot, and its
@@ -589,6 +590,6 @@ public struct ResolvedField: Sendable {
                 ResolvedConnection(storageKey: connection.storageKey, slot: Registry.slot(type, connection.storageKey), slots: connection.slots, mode: connection.mode)
             })
         }
-        return ResolvedField(responseKey: responseKey, keyBytes: keyBytes, storageKey: storageKey, slot: Registry.slot(type, storageKey), kind: kind, handle: handle, deferred: deferred, caught: caught)
+        return ResolvedField(responseKey: responseKey, keyBytes: keyBytes, storageKey: storageKey, slot: Registry.slot(type, storageKey), kind: kind, edit: edit, deferred: deferred, caught: caught)
     }
 }

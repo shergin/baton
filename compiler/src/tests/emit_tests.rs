@@ -1,13 +1,14 @@
-//! Golden tests for the Swift emitter. The documents of the Swift test target
-//! go through the whole pipeline, as the build plugin runs it, and the
-//! generated files are compared byte for byte with `goldens/`. Those documents
-//! exist to exercise every directive the runtime's tests prove, so they cover
-//! every shape the emitter writes, and a change to the emitter shows up here
-//! as a diff to review.
+//! Golden tests for the Swift emitter and the plan. The documents of the
+//! Swift test target go through the whole pipeline, as the build plugin runs
+//! it, and the generated files are compared byte for byte with `goldens/`,
+//! and the plan `batonc plan` prints for each file's documents with
+//! `plans/`, beside them and out of the Swift target that compiles the
+//! goldens. Those
+//! documents exist to exercise every directive the runtime's tests prove, so
+//! they cover every shape the lowering and the emitter write, and a change to
+//! either shows up here as a diff to review.
 //!
 //! After an intended change, `BATON_BLESS=1 cargo test` rewrites the goldens.
-//! Beside them, the names the emitter keeps nested lenses off are tested
-//! one by one.
 
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
@@ -16,17 +17,27 @@ use super::*;
 use crate::config::Config;
 use crate::{diagnostics, documents, pipeline};
 
+fn repository() -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .expect("the compiler sits one level below the repository root")
+        .to_path_buf()
+}
+
+/// The Swift goldens, which a Swift test target compiles.
 fn goldens() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("src/tests/goldens")
 }
 
-/// Compiles the Swift test target and returns the generated files by output
-/// name, the shared file among them.
-fn emit_swift_tests() -> BTreeMap<String, String> {
-    let target = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .parent()
-        .expect("the compiler sits one level below the repository root")
-        .join("swift/Tests/BatonTests");
+/// The plan goldens.
+fn plans() -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("src/tests/plans")
+}
+
+/// The plan of the Swift test target, its sources named from the
+/// repository's root as `batonc plan` run there names them.
+fn compile_swift_tests() -> Plan {
+    let target = repository().join("swift/Tests/BatonTests");
     let config_path = target.join("baton.json");
     let config = Config::load(&config_path).expect("the test target has a baton.json");
     let schema_path = config.schema_path(&config_path);
@@ -54,31 +65,94 @@ fn emit_swift_tests() -> BTreeMap<String, String> {
                 rendered.join("\n")
             )
         });
+    let mut plan = compiled.plan;
+    let root = repository();
+    let relative = |source: &mut String| {
+        if let Ok(path) = Path::new(source.as_str()).strip_prefix(&root) {
+            *source = path.to_string_lossy().into_owned();
+        }
+    };
+    for fragment in &mut plan.fragments {
+        relative(&mut fragment.source);
+    }
+    for operation in &mut plan.operations {
+        relative(&mut operation.source);
+    }
+    plan
+}
 
-    let output = emit(&compiled.plan);
+/// The output name for `source` with `extension` after its stem.
+fn golden_name(source: &str, extension: &str) -> String {
+    let stem = Path::new(source)
+        .file_stem()
+        .and_then(|stem| stem.to_str())
+        .expect("a source file has a name");
+    format!("{stem}{extension}")
+}
+
+/// Compiles the Swift test target and returns the generated files by output
+/// name, the shared file among them.
+fn emit_swift_tests() -> BTreeMap<String, String> {
+    let plan = compile_swift_tests();
+    let output = emit(&plan).unwrap_or_else(|duplicates| {
+        let messages: Vec<String> = duplicates.iter().map(ToString::to_string).collect();
+        panic!(
+            "the test documents emit names twice:\n{}",
+            messages.join("\n")
+        )
+    });
     let mut files: BTreeMap<String, String> = output
         .files
         .into_iter()
-        .map(|(source, text)| {
-            let stem = Path::new(&source)
-                .file_stem()
-                .and_then(|stem| stem.to_str())
-                .expect("a source file has a name");
-            (format!("{stem}.baton.swift"), text)
-        })
+        .map(|(source, text)| (golden_name(&source, ".baton.swift"), text))
         .collect();
     files.insert("Baton.baton.swift".to_string(), output.shared);
     files
 }
 
-/// The names of the goldens on disk.
-fn golden_names(directory: &Path) -> Vec<String> {
+/// The plan of the Swift test target as `batonc plan` prints it, one file's
+/// documents to a golden.
+fn plan_swift_tests() -> BTreeMap<String, String> {
+    let plan = compile_swift_tests();
+    let mut by_source: BTreeMap<String, Plan> = BTreeMap::new();
+    for fragment in &plan.fragments {
+        by_source
+            .entry(golden_name(&fragment.source, ".plan.json"))
+            .or_insert_with(|| Plan {
+                root_names: plan.root_names.clone(),
+                ..Plan::default()
+            })
+            .fragments
+            .push(fragment.clone());
+    }
+    for operation in &plan.operations {
+        by_source
+            .entry(golden_name(&operation.source, ".plan.json"))
+            .or_insert_with(|| Plan {
+                root_names: plan.root_names.clone(),
+                ..Plan::default()
+            })
+            .operations
+            .push(operation.clone());
+    }
+    by_source
+        .into_iter()
+        .map(|(name, plan)| {
+            let json = serde_json::to_string_pretty(&plan).expect("a plan serializes");
+            (name, format!("{json}\n"))
+        })
+        .collect()
+}
+
+/// The names of the goldens on disk that end with `extension`.
+fn golden_names(directory: &Path, extension: &str) -> Vec<String> {
     let Ok(entries) = std::fs::read_dir(directory) else {
         return Vec::new();
     };
     let mut names: Vec<String> = entries
         .filter_map(|entry| entry.ok())
         .filter_map(|entry| entry.file_name().into_string().ok())
+        .filter(|name| name.ends_with(extension))
         .collect();
     names.sort();
     names
@@ -103,30 +177,24 @@ fn first_difference(golden: &str, emitted: &str) -> String {
     }
 }
 
-/// Replaces the goldens with what the emitter writes now.
-fn bless(directory: &Path, emitted: &BTreeMap<String, String>) {
-    std::fs::create_dir_all(directory).expect("the goldens directory can be created");
-    for name in golden_names(directory) {
-        if !emitted.contains_key(&name) {
-            std::fs::remove_file(directory.join(&name)).expect("a stale golden can be removed");
-        }
-    }
-    for (name, text) in emitted {
-        std::fs::write(directory.join(name), text).expect("a golden can be written");
-    }
-}
-
-#[test]
-fn the_swift_emitter_reproduces_its_goldens_byte_for_byte() {
-    let emitted = emit_swift_tests();
-    let directory = goldens();
+/// Compares the goldens in `directory` that end with `extension` with what
+/// is written now, or under `BATON_BLESS` replaces them.
+fn check_goldens(directory: PathBuf, emitted: &BTreeMap<String, String>, extension: &str) {
     if std::env::var_os("BATON_BLESS").is_some() {
-        bless(&directory, &emitted);
+        std::fs::create_dir_all(&directory).expect("the goldens directory can be created");
+        for name in golden_names(&directory, extension) {
+            if !emitted.contains_key(&name) {
+                std::fs::remove_file(directory.join(&name)).expect("a stale golden can be removed");
+            }
+        }
+        for (name, text) in emitted {
+            std::fs::write(directory.join(name), text).expect("a golden can be written");
+        }
         return;
     }
 
     let mut problems: Vec<String> = Vec::new();
-    for (name, text) in &emitted {
+    for (name, text) in emitted {
         match std::fs::read_to_string(directory.join(name)) {
             Ok(golden) if &golden == text => {}
             Ok(golden) => problems.push(format!(
@@ -136,9 +204,9 @@ fn the_swift_emitter_reproduces_its_goldens_byte_for_byte() {
             Err(_) => problems.push(format!("{name} has no golden")),
         }
     }
-    for name in golden_names(&directory) {
+    for name in golden_names(&directory, extension) {
         if !emitted.contains_key(&name) {
-            problems.push(format!("{name} is a golden nothing emits any more"));
+            problems.push(format!("{name} is a golden nothing writes any more"));
         }
     }
     assert!(
@@ -149,39 +217,53 @@ fn the_swift_emitter_reproduces_its_goldens_byte_for_byte() {
 }
 
 #[test]
+fn the_swift_emitter_reproduces_its_goldens_byte_for_byte() {
+    check_goldens(goldens(), &emit_swift_tests(), ".baton.swift");
+}
+
+#[test]
+fn the_plan_reproduces_its_goldens_byte_for_byte() {
+    check_goldens(plans(), &plan_swift_tests(), ".plan.json");
+}
+
+#[test]
 fn compiling_the_same_sources_twice_emits_the_same_bytes() {
     assert!(
         emit_swift_tests() == emit_swift_tests(),
         "two compilations of the same sources emitted different bytes"
     );
+    assert!(
+        plan_swift_tests() == plan_swift_tests(),
+        "two compilations of the same sources planned different bytes"
+    );
 }
 
 #[test]
-fn a_nested_lens_is_never_named_like_what_a_lens_spells_unqualified_or_a_swift_keyword() {
-    // Spelled out rather than read from the list, so that a name dropped
-    // from it fails here.
-    let reserved = [
-        "Type",
-        "Self",
-        "Protocol",
-        "Any",
-        "MainActor",
-        "Baton",
-        "Types",
-        "Slots",
-        "AbstractSlots",
-        "Sites",
-        "Result",
-        "Optional",
-        "String",
-        "Int",
-        "Double",
-        "Bool",
-    ];
-    for name in reserved {
-        assert_eq!(nested_type_name(&lower_camel(name)), format!("{name}Lens"));
-        assert_eq!(nested_type_name(name), format!("{name}Lens"));
-    }
-    assert_eq!(nested_type_name("owner"), "Owner");
-    assert_eq!(nested_type_name("typesLens"), "TypesLens");
+fn a_name_a_scope_would_declare_twice_is_an_internal_error_naming_both() {
+    let schema = repository().join("spec/tests/schema.graphql");
+    let sdl = std::fs::read_to_string(&schema).expect("the test schema is readable");
+    let document = crate::documents::Document {
+        path: PathBuf::from("Probe.swift"),
+        index: 0,
+        start: crate::swift::Position { line: 1, column: 1 },
+        text: "query Probe($variables: ID!) { character(id: $variables) { id } }".to_string(),
+        embedded: None,
+    };
+    let compiled = pipeline::compile(
+        &sdl,
+        &schema.to_string_lossy(),
+        &[document],
+        &Config::default(),
+    )
+    .unwrap_or_else(|_| panic!("the probe compiles"));
+    let Err(duplicates) = emit(&compiled.plan) else {
+        panic!("a variable named like the operation's own `variables` emits");
+    };
+    let messages: Vec<String> = duplicates.iter().map(ToString::to_string).collect();
+    assert_eq!(
+        messages,
+        [
+            "internal error: `Probe` would declare `variables` twice, as the variable `$variables` and as the operation's variables; please report it"
+        ]
+    );
 }

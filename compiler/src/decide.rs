@@ -1,15 +1,100 @@
 //! The decide pass: what the emitters print, decided from the lowered plan.
 //!
+//! The emitters only print: every name, nullability, read form, guard,
+//! check, binding and type set is settled here, and one pass then collects
+//! what the shared file declares from what was decided, so nothing is
+//! collected as a side effect of formatting.
+//!
 //! A normalization selection becomes one list of fields per group of concrete
 //! types that read the same fields, plus a list for any other type, and each
 //! field carries the `@include` and `@skip` conditions it is fetched under as
 //! guards. The runtime settles the guards once per set of variables and the
 //! variant once per record, then walks plain lists: nothing tests a type
-//! condition or a condition per field.
+//! condition or a condition per field. A lens becomes a `ReaderPlan`
+//! (`reader`), an operation an `OperationValue` with its optimistic
+//! builders (`operation`).
 
-use crate::pipeline::{
-    ConnectionPlan, HandlePlan, LookupPlan, SelectionPlan, StorageKeyPlan, TypeKind,
+mod collect;
+mod keys;
+mod operation;
+mod reader;
+
+pub use collect::Shared;
+pub use keys::{KeyPart, SlotRef, constant_json};
+pub use operation::{BuilderPlan, BuilderValue, OperationValue, VariableValue};
+pub use reader::{
+    Accessor, AliasGuard, AliasedRead, BoundArgument, ConditionRead, ConnectionMembers, ErrorCheck,
+    ErrorLine, Guarded, LinkedForm, LinkedRead, Read, ReaderPlan, RefetchMembers, SatisfiedCheck,
+    ScalarForm, ScalarRead, SlotAccess, SpreadForm, SpreadGuard, SpreadRead, TypeTest,
 };
+
+use crate::names::{DuplicateName, Reserved};
+use crate::pipeline::{
+    ConnectionPlan, EditPlan, LookupPlan, Plan, SelectionPlan, StorageKeyPlan, TypeKind,
+};
+
+/// Everything the emitters print, in the plan's order.
+#[derive(Debug, Clone, PartialEq)]
+pub struct Program {
+    pub fragments: Vec<FragmentLens>,
+    pub operations: Vec<OperationValue>,
+    pub shared: Shared,
+}
+
+/// A fragment's lens and where it was declared.
+#[derive(Debug, Clone, PartialEq)]
+pub struct FragmentLens {
+    pub name: String,
+    /// The file the fragment was declared in.
+    pub source: String,
+    pub type_condition: String,
+    pub lens: ReaderPlan,
+}
+
+/// Decides everything the emitters print for `plan`, or returns the names
+/// some scope would declare twice. The fragments are decided before the
+/// operations and each lens before the lenses nested in it, the order that
+/// numbers argument sites.
+pub fn program(plan: &Plan) -> Result<Program, Vec<DuplicateName>> {
+    let mut readers = reader::Readers::new(plan);
+    let builder_names = Reserved::builders();
+    let mut duplicates = Vec::new();
+    let fragments = plan
+        .fragments
+        .iter()
+        .map(|fragment| FragmentLens {
+            name: fragment.name.clone(),
+            source: fragment.source.clone(),
+            type_condition: fragment.type_condition.clone(),
+            lens: readers.fragment(fragment),
+        })
+        .collect();
+    let operations = plan
+        .operations
+        .iter()
+        .map(|operation| {
+            operation::operation(operation, &mut readers, &builder_names, &mut duplicates)
+        })
+        .collect();
+    let mut program = Program {
+        fragments,
+        operations,
+        shared: Shared::default(),
+    };
+    program.shared = Shared::collect(plan, &program);
+    let mut all = std::mem::take(&mut readers.duplicates);
+    all.extend(duplicates);
+    all.extend(program.shared.duplicates(plan));
+    debug_assert_eq!(
+        program.shared.sites, readers.sites,
+        "the collected sites are the ones the lenses allocated"
+    );
+    if all.is_empty() {
+        Ok(program)
+    } else {
+        Err(all)
+    }
+}
 
 /// A selection set on one type, as the normalization walks it.
 #[derive(Debug, Clone, PartialEq)]
@@ -32,6 +117,17 @@ pub struct NormalizationVariant {
     pub fields: Vec<NormalizationField>,
 }
 
+impl NormalizationVariant {
+    /// The type whose slots the variant's fields name: a variant of one type
+    /// names that type's, which the runtime then takes as they are.
+    pub fn slot_type<'a>(&'a self, selection: &'a NormalizationSelection) -> &'a str {
+        match self.types.as_deref() {
+            Some([only]) => only,
+            _ => &selection.type_name,
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct NormalizationField {
     pub response_key: String,
@@ -43,7 +139,7 @@ pub struct NormalizationField {
     pub deferred: Option<String>,
     /// Whether an error on the field is handled by a `@catch`.
     pub caught: bool,
-    pub handle: Option<HandlePlan>,
+    pub edit: Option<EditPlan>,
     pub kind: NormalizationKind,
 }
 
@@ -281,7 +377,7 @@ fn field(
 ) -> NormalizationField {
     let guards = any(members.iter().map(|member| member.guard.clone()).collect());
     let caught = members.iter().all(|member| caught(member.selection));
-    let handle = members.iter().find_map(|member| handle(member.selection));
+    let edit = members.iter().find_map(|member| edit(member.selection));
     match members[0].selection {
         SelectionPlan::Scalar {
             storage_key,
@@ -294,7 +390,7 @@ fn field(
             guards,
             deferred,
             caught,
-            handle,
+            edit,
             kind: NormalizationKind::Scalar {
                 base_kind: *base_kind,
                 list: *list,
@@ -328,7 +424,7 @@ fn field(
                 guards,
                 deferred,
                 caught,
-                handle,
+                edit,
                 kind: NormalizationKind::Linked {
                     plural: *plural,
                     lookup: lookup.clone(),
@@ -393,11 +489,9 @@ fn caught(selection: &SelectionPlan) -> bool {
     }
 }
 
-fn handle(selection: &SelectionPlan) -> Option<HandlePlan> {
+fn edit(selection: &SelectionPlan) -> Option<EditPlan> {
     match selection {
-        SelectionPlan::Scalar { handle, .. } | SelectionPlan::Linked { handle, .. } => {
-            handle.clone()
-        }
+        SelectionPlan::Scalar { edit, .. } | SelectionPlan::Linked { edit, .. } => edit.clone(),
         _ => None,
     }
 }

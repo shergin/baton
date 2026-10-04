@@ -156,4 +156,19 @@ struct ReaderDocuments {
         }
         """)
     var uncaughtPart: TestUncaughtPartQuery
+
+    @Fragment("""
+        fragment TestOriginAndEpisode_character on Character {
+          origin { name }
+          episode { name }
+        }
+        """)
+    var originAndEpisode: TestOriginAndEpisode_character
+
+    @Query("""
+        query TestTwoFieldPartQuery($id: ID!) {
+          character(id: $id) { id name ...TestOriginAndEpisode_character @defer }
+        }
+        """)
+    var twoFieldPart: TestTwoFieldPartQuery
 }

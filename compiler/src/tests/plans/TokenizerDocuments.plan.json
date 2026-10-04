@@ -1,0 +1,499 @@
+{
+  "fragments": [],
+  "operations": [
+    {
+      "name": "TestTokenizerQuery",
+      "source": "swift/Tests/BatonTests/TokenizerDocuments.swift",
+      "document": 0,
+      "kind": "query",
+      "root_type": "Query",
+      "variables": [],
+      "text": "query TestTokenizerQuery {\n  tokenizer {\n    id\n    text\n    strings\n    count\n    counts\n    ratio\n    ratios\n    flag\n    flags\n    json\n    jsons\n  }\n}",
+      "id": "69704a29c1f5d9c37d6359e8993cc0bc",
+      "throws_on_field_error": false,
+      "bubbles": false,
+      "has_deferred": false,
+      "error_behavior": null,
+      "reader": [
+        {
+          "kind": "linked",
+          "name": "tokenizer",
+          "alias": null,
+          "type_name": "Tokenizer",
+          "base_type": "Tokenizer",
+          "base_kind": "object",
+          "non_null": false,
+          "semantic_non_null": false,
+          "plural": false,
+          "has_id": true,
+          "is_abstract": false,
+          "possible_types": [
+            "Tokenizer"
+          ],
+          "storage_key": {
+            "name": "tokenizer",
+            "arguments": []
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "id",
+              "alias": null,
+              "type_name": "ID",
+              "base_type": "ID",
+              "base_kind": "id",
+              "non_null": false,
+              "semantic_non_null": false,
+              "list": false,
+              "storage_key": {
+                "name": "id",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "text",
+              "alias": null,
+              "type_name": "String",
+              "base_type": "String",
+              "base_kind": "string",
+              "non_null": false,
+              "semantic_non_null": false,
+              "list": false,
+              "storage_key": {
+                "name": "text",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "strings",
+              "alias": null,
+              "type_name": "[String]",
+              "base_type": "String",
+              "base_kind": "string",
+              "non_null": false,
+              "semantic_non_null": false,
+              "list": true,
+              "storage_key": {
+                "name": "strings",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "count",
+              "alias": null,
+              "type_name": "Int",
+              "base_type": "Int",
+              "base_kind": "int",
+              "non_null": false,
+              "semantic_non_null": false,
+              "list": false,
+              "storage_key": {
+                "name": "count",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "counts",
+              "alias": null,
+              "type_name": "[Int]",
+              "base_type": "Int",
+              "base_kind": "int",
+              "non_null": false,
+              "semantic_non_null": false,
+              "list": true,
+              "storage_key": {
+                "name": "counts",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "ratio",
+              "alias": null,
+              "type_name": "Float",
+              "base_type": "Float",
+              "base_kind": "float",
+              "non_null": false,
+              "semantic_non_null": false,
+              "list": false,
+              "storage_key": {
+                "name": "ratio",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "ratios",
+              "alias": null,
+              "type_name": "[Float]",
+              "base_type": "Float",
+              "base_kind": "float",
+              "non_null": false,
+              "semantic_non_null": false,
+              "list": true,
+              "storage_key": {
+                "name": "ratios",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "flag",
+              "alias": null,
+              "type_name": "Boolean",
+              "base_type": "Boolean",
+              "base_kind": "boolean",
+              "non_null": false,
+              "semantic_non_null": false,
+              "list": false,
+              "storage_key": {
+                "name": "flag",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "flags",
+              "alias": null,
+              "type_name": "[Boolean]",
+              "base_type": "Boolean",
+              "base_kind": "boolean",
+              "non_null": false,
+              "semantic_non_null": false,
+              "list": true,
+              "storage_key": {
+                "name": "flags",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "json",
+              "alias": null,
+              "type_name": "JSON",
+              "base_type": "JSON",
+              "base_kind": "custom_scalar",
+              "non_null": false,
+              "semantic_non_null": false,
+              "list": false,
+              "storage_key": {
+                "name": "json",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "jsons",
+              "alias": null,
+              "type_name": "[JSON]",
+              "base_type": "JSON",
+              "base_kind": "custom_scalar",
+              "non_null": false,
+              "semantic_non_null": false,
+              "list": true,
+              "storage_key": {
+                "name": "jsons",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            }
+          ]
+        }
+      ],
+      "normalization": [
+        {
+          "kind": "linked",
+          "name": "tokenizer",
+          "alias": null,
+          "type_name": "Tokenizer",
+          "base_type": "Tokenizer",
+          "base_kind": "object",
+          "non_null": false,
+          "semantic_non_null": false,
+          "plural": false,
+          "has_id": true,
+          "is_abstract": false,
+          "possible_types": [
+            "Tokenizer"
+          ],
+          "storage_key": {
+            "name": "tokenizer",
+            "arguments": []
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "id",
+              "alias": null,
+              "type_name": "ID",
+              "base_type": "ID",
+              "base_kind": "id",
+              "non_null": false,
+              "semantic_non_null": false,
+              "list": false,
+              "storage_key": {
+                "name": "id",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "text",
+              "alias": null,
+              "type_name": "String",
+              "base_type": "String",
+              "base_kind": "string",
+              "non_null": false,
+              "semantic_non_null": false,
+              "list": false,
+              "storage_key": {
+                "name": "text",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "strings",
+              "alias": null,
+              "type_name": "[String]",
+              "base_type": "String",
+              "base_kind": "string",
+              "non_null": false,
+              "semantic_non_null": false,
+              "list": true,
+              "storage_key": {
+                "name": "strings",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "count",
+              "alias": null,
+              "type_name": "Int",
+              "base_type": "Int",
+              "base_kind": "int",
+              "non_null": false,
+              "semantic_non_null": false,
+              "list": false,
+              "storage_key": {
+                "name": "count",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "counts",
+              "alias": null,
+              "type_name": "[Int]",
+              "base_type": "Int",
+              "base_kind": "int",
+              "non_null": false,
+              "semantic_non_null": false,
+              "list": true,
+              "storage_key": {
+                "name": "counts",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "ratio",
+              "alias": null,
+              "type_name": "Float",
+              "base_type": "Float",
+              "base_kind": "float",
+              "non_null": false,
+              "semantic_non_null": false,
+              "list": false,
+              "storage_key": {
+                "name": "ratio",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "ratios",
+              "alias": null,
+              "type_name": "[Float]",
+              "base_type": "Float",
+              "base_kind": "float",
+              "non_null": false,
+              "semantic_non_null": false,
+              "list": true,
+              "storage_key": {
+                "name": "ratios",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "flag",
+              "alias": null,
+              "type_name": "Boolean",
+              "base_type": "Boolean",
+              "base_kind": "boolean",
+              "non_null": false,
+              "semantic_non_null": false,
+              "list": false,
+              "storage_key": {
+                "name": "flag",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "flags",
+              "alias": null,
+              "type_name": "[Boolean]",
+              "base_type": "Boolean",
+              "base_kind": "boolean",
+              "non_null": false,
+              "semantic_non_null": false,
+              "list": true,
+              "storage_key": {
+                "name": "flags",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "json",
+              "alias": null,
+              "type_name": "JSON",
+              "base_type": "JSON",
+              "base_kind": "custom_scalar",
+              "non_null": false,
+              "semantic_non_null": false,
+              "list": false,
+              "storage_key": {
+                "name": "json",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "jsons",
+              "alias": null,
+              "type_name": "[JSON]",
+              "base_type": "JSON",
+              "base_kind": "custom_scalar",
+              "non_null": false,
+              "semantic_non_null": false,
+              "list": true,
+              "storage_key": {
+                "name": "jsons",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

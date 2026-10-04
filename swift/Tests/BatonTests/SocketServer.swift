@@ -1,4 +1,3 @@
-import Baton
 import Foundation
 import Network
 
@@ -108,8 +107,11 @@ final class SocketServer: @unchecked Sendable {
                 return
             }
             guard let data else { return }
-            if let frame = try? Ingest.frame(data), let type = frame.type {
-                lock.withLock { received.append((type, frame.id)) }
+            // Parsed with `JSONSerialization` rather than the transport's own
+            // frame reader, so a fault in that reader shows instead of being
+            // read the same way on both ends.
+            if let frame = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any], let type = frame["type"] as? String {
+                lock.withLock { received.append((type, frame["id"] as? String)) }
                 if type == "connection_init", acknowledges { acknowledge() }
             }
             receive(on: connection)

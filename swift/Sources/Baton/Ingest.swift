@@ -61,8 +61,8 @@ public struct ChangeSet: Sendable {
     /// Errors the response carried without a path, or with one that names
     /// no field it selected: nothing in the store holds them.
     public internal(set) var unplacedErrors: [FieldError] = []
-    /// The errors after the first of an announced part the server could not
-    /// deliver, when a field it would have filled is under no `@catch`. They
+    /// The errors of an announced part the server could not deliver, when a
+    /// field it would have filled is under no `@catch`, each once. They
     /// belong to the part's fields, which hold one error each, the first.
     var failedPartErrors: [FieldError] = []
     /// The parts the first part of an incremental response announces, and
@@ -156,10 +156,14 @@ public struct ChangeSet: Sendable {
         return nil
     }
 
-    /// The field errors no `@catch` handles, placed or not; they fail a
-    /// `@throwOnFieldError` operation.
+    /// The field errors no `@catch` handles, placed or not, each once; they
+    /// fail a `@throwOnFieldError` operation.
     public var uncaughtFieldErrors: [FieldError] {
-        fieldErrors.filter { !$0.caught }.map(\.error) + failedPartErrors + unplacedErrors
+        // A failed part's change set holds that part alone, and its entries
+        // repeat the first error on every field the part would have filled;
+        // its errors are counted from `failedPartErrors` instead, once each.
+        guard failedPartErrors.isEmpty else { return failedPartErrors + unplacedErrors }
+        return fieldErrors.filter { !$0.caught }.map(\.error) + unplacedErrors
     }
 
     @inline(__always)
@@ -320,8 +324,7 @@ public enum Ingest {
     /// on the fields the part would have filled, so a `@catch` there reads
     /// them. A field holds one error, the first. The errors are caught when
     /// every one of those fields is under `@catch`, whatever their number;
-    /// otherwise the first counts through the fields under none, and the
-    /// rest count beside them.
+    /// otherwise each counts once, however many fields are under none.
     nonisolated static func failed(_ plan: ResolvedSelection, key: String, type: TypeID, entity: Bool, at path: [PathSegment], errors: [ResponseError]) -> ChangeSet {
         var changes = ChangeSet(bytes: [])
         let record = changes.record(for: key, type: type, entity: entity)
@@ -337,11 +340,11 @@ public enum Ingest {
         for field in fields {
             changes.fieldErrors.append(ChangeSet.FieldErrorEntry(record: record, slot: field.slot, error: first, caught: field.caught))
         }
-        // The rest are not unplaced, which would fail a handle whose
-        // operation spreads the part's fragment: an error inside a spread is
-        // the fragment's to weigh.
+        // They are not unplaced, which would fail a handle whose operation
+        // spreads the part's fragment: an error inside a spread is the
+        // fragment's to weigh.
         if !fields.allSatisfy(\.caught) {
-            changes.failedPartErrors = Array(rendered.dropFirst())
+            changes.failedPartErrors = rendered
         }
         return changes
     }
@@ -683,7 +686,7 @@ public enum Ingest {
                             let value = try scalarValue(scalar)
                             changes.scalars.append(value)
                             items += 1
-                            if let handle = field.handle { deletion(handle, value) }
+                            if let edit = field.edit { deletion(edit, value) }
                         }
                         scratch[depth].append((matched, .list(start: start, count: Int32(items))))
                         continue
@@ -694,7 +697,7 @@ public enum Ingest {
                         record = changes.record(for: variant.typeName + ":" + Ingest.materialize(base: base, Int(start), Int(end), escaped), type: concreteType, entity: true)
                     }
                     scratch[depth].append((matched, value))
-                    if let handle = field.handle { deletion(handle, value) }
+                    if let edit = field.edit { deletion(edit, value) }
                 case .linked(let child, let plural, _, let connection):
                     if peek() == 0x6E {
                         try literal("null")
@@ -724,8 +727,8 @@ public enum Ingest {
                         let start = Int32(changes.refs.count)
                         changes.refs.append(contentsOf: linked[depth])
                         scratch[depth].append((matched, .refs(start: start, count: Int32(linked[depth].count))))
-                        if let handle = field.handle {
-                            for target in linked[depth] where target >= 0 { insertion(handle, target) }
+                        if let edit = field.edit {
+                            for target in linked[depth] where target >= 0 { insertion(edit, target) }
                         }
                     } else {
                         let childRecord = try object(plan: child, parent: record, storageKey: field.storageKey, listIndex: nil, depth: depth + 1, fixedRecord: nil)
@@ -737,7 +740,7 @@ public enum Ingest {
                             extra[depth].append((connection.storageKey, connection.slot, .ref(connectionRecord)))
                             changes.edits.append(.merge(connection: connectionRecord, page: childRecord, slots: connection.slots, mode: connection.mode))
                         }
-                        if let handle = field.handle { insertion(handle, childRecord) }
+                        if let edit = field.edit { insertion(edit, childRecord) }
                     }
                 }
             }
@@ -754,19 +757,19 @@ public enum Ingest {
         }
 
         /// Records the edit an edge directive asks for on a linked field's record.
-        mutating func insertion(_ handle: ResolvedHandle, _ target: Int32) {
-            switch handle.kind {
+        mutating func insertion(_ edit: ResolvedEdit, _ target: Int32) {
+            switch edit.kind {
             case .appendEdge:
-                changes.edits.append(.insertEdge(edge: target, connections: handle.connections, prepend: false))
+                changes.edits.append(.insertEdge(edge: target, connections: edit.connections, prepend: false))
             case .prependEdge:
-                changes.edits.append(.insertEdge(edge: target, connections: handle.connections, prepend: true))
+                changes.edits.append(.insertEdge(edge: target, connections: edit.connections, prepend: true))
             case .appendNode:
-                if let edgeType = handle.edgeType {
-                    changes.edits.append(.insertNode(node: target, edgeType: edgeType, connections: handle.connections, prepend: false))
+                if let edgeType = edit.edgeType {
+                    changes.edits.append(.insertNode(node: target, edgeType: edgeType, connections: edit.connections, prepend: false))
                 }
             case .prependNode:
-                if let edgeType = handle.edgeType {
-                    changes.edits.append(.insertNode(node: target, edgeType: edgeType, connections: handle.connections, prepend: true))
+                if let edgeType = edit.edgeType {
+                    changes.edits.append(.insertNode(node: target, edgeType: edgeType, connections: edit.connections, prepend: true))
                 }
             case .deleteEdge, .deleteRecord:
                 return
@@ -774,14 +777,14 @@ public enum Ingest {
         }
 
         /// Records the edit a delete directive asks for on an id value.
-        mutating func deletion(_ handle: ResolvedHandle, _ value: ChangeSet.RawValue) {
+        mutating func deletion(_ edit: ResolvedEdit, _ value: ChangeSet.RawValue) {
             guard case .string(let start, let end, let escaped) = value else { return }
             let id = Ingest.materialize(base: base, Int(start), Int(end), escaped)
-            switch handle.kind {
+            switch edit.kind {
             case .deleteRecord:
                 changes.edits.append(.deleteRecord(id: id))
             case .deleteEdge:
-                changes.edits.append(.deleteEdge(id: id, connections: handle.connections))
+                changes.edits.append(.deleteEdge(id: id, connections: edit.connections))
             default:
                 return
             }
