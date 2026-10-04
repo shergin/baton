@@ -576,6 +576,10 @@ are expected and listed without apology.
   recorded for the operation, describes itself by what went wrong; it
   read `HTTP 0: ...`. Its `statusCode` is still 0, now documented as no
   response.
+- `isRefreshing` is true while an operation that failed on field errors or
+  a `@required` null, with its data in the store, fetches again. It was set
+  only behind ready data, so a view showing that data and the failure did
+  not see the refetch.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

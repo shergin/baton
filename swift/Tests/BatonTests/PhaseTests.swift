@@ -128,6 +128,41 @@ struct PhaseTests {
         handle.release()
     }
 
+    /// Fails `handle` on its first response, refetches it, and returns
+    /// whether it was refreshing while the refetch waited for the transport.
+    func refreshingWhileItRefetches<Op: Baton.Query>(_ handle: OperationHandle<Op>, failingOn failure: Data, answeredBy answer: Data, through gate: GatedTransport) async -> Bool {
+        handle.retain()
+        defer { handle.release() }
+        await until { gate.pending == 1 }
+        gate.respond(failure)
+        await settled(handle)
+        guard case .failed = handle.phase else {
+            Issue.record("expected a failure with its data in the store, got \(handle.phase)")
+            return false
+        }
+        #expect(!handle.isRefreshing)
+        let refetch = Task { try await handle.refetch() }
+        await until { gate.pending == 1 }
+        let refreshing = handle.isRefreshing
+        gate.respond(answer)
+        try? await refetch.value
+        #expect(!handle.isRefreshing)
+        return refreshing
+    }
+
+    @Test("a refetch of an operation failed with its data in the store, on a field error or on a @required null, is refreshing until its response lands")
+    func aFailureWithDataRefreshes() async throws {
+        let strict = GatedTransport()
+        let environment = Environment(transport: strict)
+        environment.store.reportMissing = nil
+        #expect(await refreshingWhileItRefetches(environment.handle(for: TestStrictQuery(id: "1")), failingOn: fixture("character-name-hidden"), answeredBy: fixture("character-name-shown"), through: strict))
+
+        let required = GatedTransport()
+        let bubbling = Environment(transport: required)
+        bubbling.store.reportMissing = nil
+        #expect(await refreshingWhileItRefetches(bubbling.handle(for: TestRequiredOrigin(id: "1")), failingOn: fixture("required-origin-1-null"), answeredBy: fixture("required-origin-1"), through: required))
+    }
+
     @Test("a field error failure whose refetch fails at the transport keeps its failure, and a commit that answers the field makes it ready")
     func failedRefetchKeepsAFieldErrorFailure() async throws {
         let attempts = Attempts()

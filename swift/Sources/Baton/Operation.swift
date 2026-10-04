@@ -328,7 +328,14 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
             }
             return
         }
-        if case .ready = phase { isRefreshing = true }
+        // A view shows data while it refreshes: ready data, or the data a
+        // failure on field errors or a `@required` null has in the store.
+        switch phase {
+        case .ready, .failed(is FieldErrors), .failed(is RequiredFieldError):
+            isRefreshing = true
+        case .loading, .failed:
+            break
+        }
         task = Task { [weak self] in
             guard let self, let environment else { return nil }
             var failure: (any Error)?
