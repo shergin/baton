@@ -8,7 +8,7 @@ use super::lens::lens;
 use super::plan::selection_plan;
 use super::swift::parameter;
 use crate::decide::{OperationValue, VariableValue};
-use crate::names::escape;
+use crate::names::{call_label, escape};
 use crate::pipeline::OperationKind;
 
 pub(super) fn operation_text(operation: &OperationValue) -> String {
@@ -148,7 +148,7 @@ pub(super) fn operation_text(operation: &OperationValue) -> String {
         let arguments: Vec<String> = operation
             .variables
             .iter()
-            .map(|variable| format!("{}: {}", escape(&variable.name), variable.local))
+            .map(|variable| format!("{}: {}", call_label(&variable.name), variable.local))
             .collect();
         let _ = writeln!(
             output,

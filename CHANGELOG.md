@@ -546,6 +546,10 @@ are expected and listed without apology.
   Breaking for a plan built by hand: `Handle` is `Edit`, `ResolvedHandle`
   is `ResolvedEdit`, the `handle` properties of `PlanField` and
   `ResolvedField` are `edit`, and `.scalar` and `.linked` take `edit:`.
+- A mutation's action passes a variable named like a Swift keyword, such
+  as `$self`, by its bare label: Swift warns about an escaped label at a
+  call site, and a build that treats warnings as errors refused the
+  generated code.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 
