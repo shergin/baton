@@ -144,3 +144,13 @@ fn a_name_declared_twice_is_reported_with_both_declarations() {
         ]
     );
 }
+
+#[test]
+fn a_call_site_label_is_escaped_only_where_swift_requires_it() {
+    assert_eq!(call_label("self"), "self");
+    assert_eq!(call_label("where"), "where");
+    assert_eq!(call_label("in"), "in");
+    assert_eq!(call_label("inout"), "`inout`");
+    assert_eq!(call_label("var"), "`var`");
+    assert_eq!(call_label("let"), "`let`");
+}

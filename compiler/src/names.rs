@@ -290,6 +290,17 @@ pub fn slot_name(name: &str) -> String {
     escape(name)
 }
 
+/// An argument label at a call site. Swift takes every keyword there
+/// without backticks but `inout`, `var` and `let`, and warns about an
+/// escaped one, which a build with warnings as errors refuses.
+pub fn call_label(name: &str) -> String {
+    if matches!(name, "inout" | "var" | "let") {
+        format!("`{name}`")
+    } else {
+        name.to_string()
+    }
+}
+
 /// Escapes a property name that is a Swift keyword.
 pub fn escape(name: &str) -> String {
     const KEYWORDS: &[&str] = &[

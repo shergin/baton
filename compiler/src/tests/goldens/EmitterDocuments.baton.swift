@@ -468,7 +468,7 @@ extension Baton.MutationAction where Op == TestBuilderNames {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
     public func callAsFunction(id: String, favorite: Bool, `self` selfValue: String, optimistic: TestBuilderNames.OptimisticResponse? = nil) async throws -> TestBuilderNames.Data {
-        try await commit(TestBuilderNames(id: id, favorite: favorite, `self`: selfValue), optimistic: optimistic?.variable)
+        try await commit(TestBuilderNames(id: id, favorite: favorite, self: selfValue), optimistic: optimistic?.variable)
     }
 }
 
