@@ -164,6 +164,13 @@ struct WriteTests {
         #expect(favorited.setFavorite?.character?.favorite == true)
     }
 
+    @Test("a mutation that only spreads a fragment on the mutation type reads its payload through the fragment")
+    func mutationFragmentReadsThePayload() async throws {
+        let environment = Environment(transport: RecordedTransport([TestRenameThroughFragment.name: fixture("rename-1")]))
+        let data = try await environment.mutate(TestRenameThroughFragment(id: "1", name: "Rick Prime"))
+        #expect(data.testRenamePayload.rename?.character?.name == "Rick Prime")
+    }
+
     @Test("a mutation whose caller stops waiting still commits the payload the server sends")
     func mutationOutlivesItsCaller() async throws {
         let transport = CancellableGate()

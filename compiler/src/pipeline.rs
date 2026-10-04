@@ -807,7 +807,7 @@ fn document_index(location: common::Location) -> usize {
 
 impl Lowering<'_> {
     fn fragment(&self, fragment: &FragmentDefinition) -> FragmentPlan {
-        FragmentPlan {
+        let mut plan = FragmentPlan {
             name: fragment.name.item.0.lookup().to_string(),
             source: fragment.name.location.source_location().path().to_string(),
             document: document_index(fragment.name.location),
@@ -834,7 +834,14 @@ impl Lowering<'_> {
                 Side::Reader,
                 false,
             ),
+        };
+        // A fragment on the mutation type is only ever read at the mutation
+        // root, whose fields the mutation writes by response key: it reads
+        // them by the same keys.
+        if self.schema.mutation_type() == Some(fragment.type_condition) {
+            key_by_response(&mut plan.reader);
         }
+        plan
     }
 
     /// The `@refetchable` metadata Relay attached: the generated query's name

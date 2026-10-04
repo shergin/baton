@@ -458,6 +458,10 @@ are expected and listed without apology.
   count as uncaught now only when a field the part would have filled is
   under no `@catch`; a part with no field on its record's type leaves them
   all unplaced, where it dropped the first.
+- A fragment on the mutation type reads the payload. Its fields kept their
+  arguments in their keys while the mutation wrote them without, so a
+  mutation that spread it read nil; they are keyed as the mutation's own
+  root fields are.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

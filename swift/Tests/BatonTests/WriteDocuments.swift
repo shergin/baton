@@ -1,7 +1,8 @@
 import Baton
 
 /// The documents behind the write-side tests, against the test schema: a
-/// mutation with a payload, a union, and a lookup by id across types.
+/// mutation with a payload, one that reads it through a fragment on the
+/// mutation type, a union, and a lookup by id across types.
 @MainActor
 struct WriteDocuments {
     @Fragment("""
@@ -30,6 +31,22 @@ struct WriteDocuments {
         }
         """)
     var rename: TestRename.Action
+
+    @Fragment("""
+        fragment TestRenamePayload_mutation on Mutation {
+          rename(id: $id, name: $name) {
+            character { id name }
+          }
+        }
+        """)
+    var renamePayload: TestRenamePayload_mutation
+
+    @Mutation("""
+        mutation TestRenameThroughFragment($id: ID!, $name: String!) {
+          ...TestRenamePayload_mutation
+        }
+        """)
+    var renameThroughFragment: TestRenameThroughFragment.Action
 
     @Query("""
         query TestSearch($name: String!) {

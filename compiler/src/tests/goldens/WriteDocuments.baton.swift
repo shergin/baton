@@ -11,6 +11,29 @@ nonisolated public struct TestFavorite_character: Baton.Lens {
     @MainActor public var favorite: Bool? { anchor.bool(Slots.Character.favorite) }
 }
 
+/// Lens for `fragment TestRenamePayload_mutation on Mutation`.
+nonisolated public struct TestRenamePayload_mutation: Baton.Lens {
+    public let anchor: Baton.Anchor
+    public init(anchor: Baton.Anchor) { self.anchor = anchor }
+    public static let typeName = "Mutation"
+    @MainActor public var rename: Rename? { anchor.linked(Slots.Mutation.rename).map(Rename.init(anchor:)) }
+
+    nonisolated public struct Rename: Baton.Lens {
+        public let anchor: Baton.Anchor
+        public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "FavoritePayload"
+        @MainActor public var character: Character? { anchor.linked(Slots.FavoritePayload.character).map(Character.init(anchor:)) }
+
+        nonisolated public struct Character: Baton.Lens {
+            public let anchor: Baton.Anchor
+            public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Character"
+            @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+            @MainActor public var name: String? { anchor.string(Slots.Character.name) }
+        }
+    }
+}
+
 /// Operation value for `query TestNode`.
 nonisolated public struct TestNode: Baton.Query {
     public var id: String
@@ -219,6 +242,118 @@ extension Baton.MutationAction where Op == TestRename {
     @MainActor @discardableResult
     public func callAsFunction(id: String, name: String, optimistic: TestRename.OptimisticResponse? = nil) async throws -> TestRename.Data {
         try await commit(TestRename(id: id, name: name), optimistic: optimistic?.variable)
+    }
+}
+
+/// Operation value for `mutation TestRenameThroughFragment`.
+nonisolated public struct TestRenameThroughFragment: Baton.Mutation {
+    public var id: String
+    public var name: String
+
+    public init(id: String, name: String) {
+        self.id = id
+        self.name = name
+    }
+
+    public static let name = "TestRenameThroughFragment"
+    public static let persistedID = "9e2e336fcd7c22f650f9acdf7c7f81e4"
+    public static let text = #"""
+mutation TestRenameThroughFragment(
+  $id: ID!
+  $name: String!
+) {
+  ...TestRenamePayload_mutation
+}
+
+fragment TestRenamePayload_mutation on Mutation {
+  rename(id: $id, name: $name) {
+    character {
+      id
+      name
+    }
+  }
+}
+"""#
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["id": Baton.Variable(id), "name": Baton.Variable(name)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.id == rhs.id && lhs.name == rhs.name
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+        hasher.combine(name)
+    }
+
+    public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
+            .linked("rename", key: .fixed(Slots.Mutation.rename), plural: false, selection: Baton.Selection(type: Types.FavoritePayload, hasID: false, abstract: false, fields: [
+                .linked("character", key: .fixed(Slots.FavoritePayload.character), plural: false, selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                    .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+                    .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
+                ])),
+            ])),
+        ]))
+
+    nonisolated public struct Data: Baton.Lens {
+        public let anchor: Baton.Anchor
+        public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Mutation"
+        @MainActor public var testRenamePayload: TestRenamePayload_mutation { TestRenamePayload_mutation(anchor: anchor) }
+    }
+
+    public typealias Action = Baton.MutationAction<Self>
+
+    /// A partial response to show before the server answers; absent fields leave the store untouched.
+    nonisolated public struct OptimisticResponse: Sendable {
+        public var rename: Rename?
+        public init(rename: Rename? = nil) {
+            self.rename = rename
+        }
+        public var variable: Baton.Variable {
+            var fields: [String: Baton.Variable] = [:]
+            if let rename { fields["rename"] = rename.variable }
+            return .object(fields)
+        }
+
+        /// A partial response to show before the server answers; absent fields leave the store untouched.
+        nonisolated public struct Rename: Sendable {
+            public var character: Character?
+            public init(character: Character? = nil) {
+                self.character = character
+            }
+            public var variable: Baton.Variable {
+                var fields: [String: Baton.Variable] = [:]
+                if let character { fields["character"] = character.variable }
+                return .object(fields)
+            }
+
+            /// A partial response to show before the server answers; absent fields leave the store untouched.
+            nonisolated public struct Character: Sendable {
+                public var id: String?
+                public var name: String?
+                public init(id: String? = nil, name: String? = nil) {
+                    self.id = id
+                    self.name = name
+                }
+                public var variable: Baton.Variable {
+                    var fields: [String: Baton.Variable] = [:]
+                    if let id { fields["id"] = Baton.Variable(id) }
+                    if let name { fields["name"] = Baton.Variable(name) }
+                    return .object(fields)
+                }
+            }
+        }
+    }
+}
+
+extension Baton.MutationAction where Op == TestRenameThroughFragment {
+    /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
+    @MainActor @discardableResult
+    public func callAsFunction(id: String, name: String, optimistic: TestRenameThroughFragment.OptimisticResponse? = nil) async throws -> TestRenameThroughFragment.Data {
+        try await commit(TestRenameThroughFragment(id: id, name: name), optimistic: optimistic?.variable)
     }
 }
 
