@@ -332,11 +332,13 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
         }
         // A view shows data while it refreshes: ready data, or the data a
         // failure on field errors or a `@required` null has in the store.
+        // Behind loading or any other failure nothing shows, though the
+        // fetch this one replaces may have started behind data.
         switch phase {
         case .ready, .failed(is FieldErrors), .failed(is RequiredFieldError):
             isRefreshing = true
         case .loading, .failed:
-            break
+            isRefreshing = false
         }
         task = Task { [weak self] in
             guard let self, let environment else { return nil }

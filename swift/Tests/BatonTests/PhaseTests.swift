@@ -248,6 +248,45 @@ struct PhaseTests {
         }
     }
 
+    @Test("a fetch that starts behind loading is not refreshing, though the fetch it replaced started behind ready data")
+    func aFetchBehindLoadingIsNotRefreshing() async throws {
+        let gate = GatedTransport()
+        let environment = Environment(transport: gate)
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestList(page: 1))
+        handle.retain()
+        await until { gate.pending == 1 }
+        gate.respond(fixtureData)
+        await settled(handle)
+        let first = Task { try? await handle.refetch() }
+        await until { gate.pending == 1 }
+        #expect(handle.isRefreshing)
+
+        // A view that waits for its own response attaches while no one
+        // shows the handle, which then shows loading, and refetches.
+        handle.release()
+        let waiting = environment.handle(for: TestList(page: 1), fetchPolicy: .networkOnly)
+        #expect(waiting === handle)
+        waiting.retain()
+        defer { waiting.release() }
+        guard case .loading = handle.phase else {
+            Issue.record("expected loading until its own response, got \(handle.phase)")
+            return
+        }
+        let second = Task { try? await handle.refetch() }
+        await until { gate.pending == 2 }
+        #expect(!handle.isRefreshing, "nothing shows behind loading")
+        gate.respond(fixtureData)
+        gate.respond(fixtureData)
+        await first.value
+        await second.value
+        guard case .ready = handle.phase else {
+            Issue.record("expected ready, got \(handle.phase)")
+            return
+        }
+        #expect(!handle.isRefreshing)
+    }
+
     @Test("a field error failure whose refetch fails at the transport keeps its failure, and a commit that answers the field makes it ready")
     func failedRefetchKeepsAFieldErrorFailure() async throws {
         let attempts = Attempts()
