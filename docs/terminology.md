@@ -218,6 +218,11 @@ met as, and its text one slot. A field read through an interface or union
 reads an *abstract slot*: its key's slot on each concrete type, resolved on
 that type's first read. See
 [Slots are numbered by the process](decisions/slots-are-numbered-by-the-process.md).
+The process's table keeps a session's keys with arguments for its own life
+today. Numbering them by their store, so that they are dropped at its end
+and freed by its collector, is *(planned)*, and its mechanism waits for a
+spike: see
+[Keys a session produces belong to its store](decisions/session-keys-belong-to-the-store.md).
 
 **Invalidation channel.** *Concept: record.* Baton's word; Relay tells a
 fragment's subscribers when a record it read changes. Here: the Observation
