@@ -387,7 +387,7 @@ pub(super) fn argument_expression(value: &ArgumentValuePlan) -> String {
             ".list([{}])",
             items
                 .iter()
-                .map(|item| format!("{} ?? .null", argument_expression(item)))
+                .map(argument_element)
                 .collect::<Vec<_>>()
                 .join(", ")
         ),
@@ -396,13 +396,23 @@ pub(super) fn argument_expression(value: &ArgumentValuePlan) -> String {
             fields
                 .iter()
                 .map(|(name, field)| format!(
-                    "{}: {} ?? .null",
+                    "{}: {}",
                     swift_literal(name),
-                    argument_expression(field)
+                    argument_element(field)
                 ))
                 .collect::<Vec<_>>()
                 .join(", ")
         ),
+    }
+}
+
+/// An item of a list or a field of an object a spread argument holds. A
+/// variable the parent's scope lacks is null there; anything else is a
+/// value already, which Swift would warn to see defaulted.
+fn argument_element(value: &ArgumentValuePlan) -> String {
+    match value {
+        ArgumentValuePlan::Variable(_) => format!("{} ?? .null", argument_expression(value)),
+        _ => argument_expression(value),
     }
 }
 

@@ -226,6 +226,18 @@ struct ReaderTests {
         #expect(first.testNotes.anchor.owner !== second.testNotes.anchor.owner)
     }
 
+    @Test("a spread's list and input object with a variable inside bind the keys the same arguments written in place wrote")
+    func spreadArgumentsHoldingVariables() throws {
+        let store = Store()
+        store.reportMissing = nil
+        let keys = TestKeys(id: "7", name: "Rick")
+        store.commit(try Ingest.normalize(fixture("keys-1"), plan: TestKeys.plan.resolve(keys.variables)))
+        let query = TestSpreadKeys(id: "7", name: "Rick")
+        let data = TestSpreadKeys.Data(anchor: Anchor(record: store.root, variables: query.variables, store: store))
+        #expect(data.testKeyArguments.charactersByIds?.map(\.name) == ["Rick Sanchez", "Morty Smith"])
+        #expect(data.testKeyArguments.characters?.info?.count == 1)
+    }
+
     @Test("a field error inside a type condition counts for an operation that throws when the record satisfies the condition")
     func errorInsideATypeCondition() throws {
         let store = Store()

@@ -715,6 +715,11 @@ are expected and listed without apology.
   closure that binds them returned a dictionary whose type Swift inferred
   from the literal, which took twice as long with each argument, and Swift
   gave up on it at sixteen; the closure now states its type.
+- A spread argument that is a list or an input object holding a variable
+  beside a constant, as `@arguments(ids: [$id, "2"])`, compiles. The
+  binding defaulted every item to null, `.string("2") ?? .null`, which
+  Swift warns about, and a build that treats warnings as errors refused the
+  generated code; only a variable, which the scope may lack, is defaulted.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 
