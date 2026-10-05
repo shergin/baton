@@ -422,15 +422,7 @@ fn defects() -> Vec<Defect> {
 /// Defects of a name that hides another the same document chose, outside
 /// the table of positions: each with its document, what the Swift written
 /// for it holds, and what Swift 6.3.3 says.
-const RELATED_DEFECTS: [(&str, &[&str], &str); 1] = [
-    // The spread of a fragment named from an underscore takes the empty
-    // text before it as its accessor's name.
-    (
-        "fragment _hidden on Character { name } query Probe { character(id: 1) { ..._hidden } }",
-        &["@MainActor public var : _hidden { .init(anchor: anchor) }"],
-        "expected pattern",
-    ),
-];
+const RELATED_DEFECTS: [(&str, &[&str], &str); 0] = [];
 
 // The names the corpus gives each position, from its plan.
 

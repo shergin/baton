@@ -346,7 +346,8 @@ fn collect_spreads<'a>(selections: &'a [SelectionPlan], type_name: &str, into: &
 }
 
 /// Default spread accessor names: the fragment's owner prefix in lower camel
-/// case, falling back to the whole name when two spreads would collide.
+/// case, falling back to the whole name when two spreads would collide, and
+/// for a name from an underscore, which has no prefix.
 pub(super) fn spread_accessor_names(
     selections: &[SelectionPlan],
     type_name: &str,
@@ -355,7 +356,10 @@ pub(super) fn spread_accessor_names(
     collect_spreads(selections, type_name, &mut fragments);
     let mut by_prefix: BTreeMap<String, Vec<&str>> = BTreeMap::new();
     for fragment in &fragments {
-        let prefix = fragment.split('_').next().unwrap_or(fragment);
+        let prefix = match fragment.split('_').next() {
+            Some(prefix) if !prefix.is_empty() => prefix,
+            _ => fragment,
+        };
         by_prefix
             .entry(lower_camel(prefix))
             .or_default()

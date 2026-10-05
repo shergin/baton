@@ -770,6 +770,10 @@ are expected and listed without apology.
   name's place. It extends `Favorite.Action`, so the mutation is named
   once, where only types are looked up, and its body writes `Op.Data` and
   `self.commit(.init(Favorite: Favorite))`.
+- The spread of a fragment named from an underscore, as `..._hidden`,
+  compiles. Its accessor took the owner's prefix before the first
+  underscore, which is empty, and declared `var : _hidden`; it takes the
+  fragment's whole name, `_hidden`.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 
