@@ -1,12 +1,12 @@
 //! Swift as every printer writes it: the pieces that carry a rule, and the
 //! literals.
 //!
-//! A name a document chose is escaped where its declaration is made. A type
-//! is a structure, so no printer asks a string whether it is optional. The
-//! runtime's module is named by one function for each position it can
-//! stand in. A type a member could hide from an expression is named
-//! through an alias its body declares. A computed property says whether it
-//! throws and what it reads under, and is laid out in one place.
+//! A name a document chose is escaped where its declaration or its type is
+//! made. A type is a structure, so no printer asks a string whether it is
+//! optional. The runtime's module is named by one function for each
+//! position it can stand in. A type a member could hide from an expression
+//! is named through an alias its body declares. A computed property says
+//! whether it throws and what it reads under, and is laid out in one place.
 
 use std::fmt;
 
@@ -21,8 +21,13 @@ pub(super) const RUNTIME: &str = "Baton";
 /// A type as Swift writes it.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(super) enum SwiftType {
-    /// A type by its name: a lens, a scalar, `Self`.
+    /// A type by its name, as Swift spells it: a lens, a builder, an
+    /// operation, a scalar.
     Named(String),
+    /// The type a declaration is in: `Self`.
+    Own,
+    /// A type nested in another, as `Edges.Node`.
+    Nested(Box<SwiftType>, String),
     Optional(Box<SwiftType>),
     /// A `Result` whose failure is the runtime's field errors: what a
     /// `@catch` reads as.
@@ -33,8 +38,21 @@ pub(super) enum SwiftType {
 }
 
 impl SwiftType {
-    pub(super) fn named(name: impl Into<String>) -> SwiftType {
-        SwiftType::Named(name.into())
+    /// The type `name`, escaped where Swift would read the name as a
+    /// keyword: a document can name a fragment or an operation `class`.
+    pub(super) fn named(name: &str) -> SwiftType {
+        SwiftType::Named(escape(name))
+    }
+
+    /// The type a declaration is in, which a type position reads as Swift's
+    /// `Self` whatever a member is named.
+    pub(super) fn own() -> SwiftType {
+        SwiftType::Own
+    }
+
+    /// The type named `name` nested in this one.
+    pub(super) fn nested(self, name: &str) -> SwiftType {
+        SwiftType::Nested(Box::new(self), escape(name))
     }
 
     /// A type of the runtime, qualified by its module. A type is the one
@@ -74,6 +92,8 @@ impl fmt::Display for SwiftType {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             SwiftType::Named(name) => formatter.write_str(name),
+            SwiftType::Own => formatter.write_str("Self"),
+            SwiftType::Nested(outer, name) => write!(formatter, "{outer}.{name}"),
             SwiftType::Optional(wrapped) => write!(formatter, "{wrapped}?"),
             SwiftType::Caught(success) => {
                 write!(
@@ -154,7 +174,7 @@ pub(super) fn runtime_value(name: &str) -> String {
 /// like one of them would refer to itself or to another alias.
 pub(super) struct LocalAlias {
     name: &'static str,
-    target: String,
+    target: SwiftType,
 }
 
 /// The names a body gives a fragment's type: one more than the types a
@@ -183,7 +203,7 @@ impl LocalAlias {
             .expect("an alias has more candidates than the types a body aliases");
         LocalAlias {
             name,
-            target: target.to_string(),
+            target: SwiftType::named(target),
         }
     }
 

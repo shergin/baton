@@ -17,7 +17,10 @@ pub(super) fn builder(writer: &mut Writer, builder: &BuilderPlan) {
         "A partial response to show before the server answers; absent fields leave the store untouched.",
     );
     writer.block(
-        format!("nonisolated public struct {}: Sendable", builder.name),
+        format!(
+            "nonisolated public struct {}: Sendable",
+            SwiftType::named(&builder.name)
+        ),
         |writer| {
             let collected = &builder.collected;
             let mut parameters: Vec<String> = Vec::new();

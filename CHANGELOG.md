@@ -754,6 +754,12 @@ are expected and listed without apology.
   fragment's `refetch()` and a connection's members do, a field named
   `Self` in that lens or in one around it, or a variable of that name, is
   an error at the name.
+- A fragment, a query, a subscription or a refetch query named like a
+  Swift keyword, as `fragment class` or `@refetchable(queryName: "each")`,
+  compiles. Its name was written bare wherever it stood for a type,
+  `public struct class` or `typealias Query = each`; a type a document
+  names is escaped wherever the generated code spells it, as a property
+  is.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 
