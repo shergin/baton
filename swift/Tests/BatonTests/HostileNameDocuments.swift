@@ -625,7 +625,7 @@ struct HostileNameDocuments {
           $rethrows: ID!, $fallthrough: ID!, $precedencegroup: ID!, $_: ID!,
           # Swift's contextual keywords that start an expression or a type.
           $async: ID!, $borrowing: ID!, $consume: ID!, $consuming: ID!, $copy: ID!, $discard: ID!,
-          $each: ID!, $isolated: ID!, $sending: ID!, $then: ID!, $unsafe: ID!,
+          $each: ID!, $isolated: ID!, $sending: ID!, $then: ID!, $unsafe: ID!, $await: ID!,
           # What every lens declares, and what a refetchable fragment and a connection add.
           $anchor: ID!, $recordID: ID!, $typeName: ID!, $satisfied: ID!, $missingRequiredField: ID!,
           $fieldErrors: ID!, $isPresent: ID!, $throwing: ID!, $caught: ID!, $refetchable: ID!,
@@ -659,7 +659,7 @@ struct HostileNameDocuments {
             $rethrows, $fallthrough, $precedencegroup, $_,
             # Swift's contextual keywords that start an expression or a type.
             $async, $borrowing, $consume, $consuming, $copy, $discard, $each, $isolated, $sending,
-            $then, $unsafe,
+            $then, $unsafe, $await,
             # What every lens declares, and what a refetchable fragment and a connection add.
             $anchor, $recordID, $typeName, $satisfied, $missingRequiredField, $fieldErrors, $isPresent,
             $throwing, $caught, $refetchable, $refetch, $connection, $nodes, $hasNext, $hasPrevious,
@@ -703,7 +703,7 @@ struct HostileNameDocuments {
           # Swift's contextual keywords that start an expression or a type.
           $async: Boolean!, $borrowing: Boolean!, $consume: Boolean!, $consuming: Boolean!,
           $copy: Boolean!, $discard: Boolean!, $each: Boolean!, $isolated: Boolean!, $sending: Boolean!,
-          $then: Boolean!, $unsafe: Boolean!,
+          $then: Boolean!, $unsafe: Boolean!, $await: Boolean!,
           # What every lens declares, and what a refetchable fragment and a connection add.
           $anchor: Boolean!, $recordID: Boolean!, $typeName: Boolean!, $satisfied: Boolean!,
           $missingRequiredField: Boolean!, $fieldErrors: Boolean!, $isPresent: Boolean!,
@@ -769,7 +769,7 @@ struct HostileNameDocuments {
               ... @include(if: $copy) { name } ... @include(if: $discard) { name }
               ... @include(if: $each) { name } ... @include(if: $isolated) { name }
               ... @include(if: $sending) { name } ... @include(if: $then) { name }
-              ... @include(if: $unsafe) { name }
+              ... @include(if: $unsafe) { name } ... @include(if: $await) { name }
               # What every lens declares, and what a refetchable fragment and a connection add.
               ... @include(if: $anchor) { name } ... @include(if: $recordID) { name }
               ... @include(if: $typeName) { name } ... @include(if: $satisfied) { name }
@@ -839,7 +839,7 @@ struct HostileNameDocuments {
           # Swift's contextual keywords that start an expression or a type.
           $async: Boolean!, $borrowing: Boolean!, $consume: Boolean!, $consuming: Boolean!,
           $copy: Boolean!, $discard: Boolean!, $each: Boolean!, $isolated: Boolean!, $sending: Boolean!,
-          $then: Boolean!, $unsafe: Boolean!,
+          $then: Boolean!, $unsafe: Boolean!, $await: Boolean!,
           # What every lens declares, and what a refetchable fragment and a connection add.
           $anchor: Boolean!, $recordID: Boolean!, $typeName: Boolean!, $satisfied: Boolean!,
           $missingRequiredField: Boolean!, $fieldErrors: Boolean!, $isPresent: Boolean!,
@@ -906,7 +906,7 @@ struct HostileNameDocuments {
               ... @include(if: $copy) { cursor } ... @include(if: $discard) { cursor }
               ... @include(if: $each) { cursor } ... @include(if: $isolated) { cursor }
               ... @include(if: $sending) { cursor } ... @include(if: $then) { cursor }
-              ... @include(if: $unsafe) { cursor }
+              ... @include(if: $unsafe) { cursor } ... @include(if: $await) { cursor }
               # What every lens declares, and what a refetchable fragment and a connection add.
               ... @include(if: $anchor) { cursor } ... @include(if: $recordID) { cursor }
               ... @include(if: $typeName) { cursor } ... @include(if: $satisfied) { cursor }
@@ -1035,6 +1035,7 @@ struct HostileNameDocuments {
           sending: {type: "Boolean", defaultValue: true},
           then: {type: "Boolean", defaultValue: true},
           unsafe: {type: "Boolean", defaultValue: true},
+          await: {type: "Boolean", defaultValue: true},
           # What every lens declares, and what a refetchable fragment and a connection add.
           anchor: {type: "Boolean", defaultValue: true},
           recordID: {type: "Boolean", defaultValue: true},
@@ -1150,7 +1151,7 @@ struct HostileNameDocuments {
           ... @include(if: $copy) { name } ... @include(if: $discard) { name }
           ... @include(if: $each) { name } ... @include(if: $isolated) { name }
           ... @include(if: $sending) { name } ... @include(if: $then) { name }
-          ... @include(if: $unsafe) { name }
+          ... @include(if: $unsafe) { name } ... @include(if: $await) { name }
           # What every lens declares, and what a refetchable fragment and a connection add.
           ... @include(if: $anchor) { name } ... @include(if: $recordID) { name }
           ... @include(if: $typeName) { name } ... @include(if: $satisfied) { name }
@@ -1217,7 +1218,7 @@ struct HostileNameDocuments {
               rethrows: name fallthrough: name precedencegroup: name _: name
               # Swift's contextual keywords that start an expression or a type.
               async: name borrowing: name consume: name consuming: name copy: name discard: name
-              each: name isolated: name sending: name then: name unsafe: name
+              each: name isolated: name sending: name then: name unsafe: name await: name
               # What every lens declares, and what a refetchable fragment and a connection add.
               typeName: name satisfied: name missingRequiredField: name fieldErrors: name
               isPresent: name throwing: name caught: name refetchable: name refetch: name
@@ -1262,7 +1263,7 @@ struct HostileNameDocuments {
             # Swift's contextual keywords that start an expression or a type.
             async: note { id } borrowing: note { id } consume: note { id } consuming: note { id }
             copy: note { id } discard: note { id } each: note { id } isolated: note { id }
-            sending: note { id } then: note { id } unsafe: note { id }
+            sending: note { id } then: note { id } unsafe: note { id } await: note { id }
             # What every lens declares, and what a refetchable fragment and a connection add.
             typeName: note { id } satisfied: note { id } missingRequiredField: note { id }
             fieldErrors: note { id } isPresent: note { id } throwing: note { id } caught: note { id }
