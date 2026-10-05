@@ -14,20 +14,23 @@
 //! (`reader`), an operation an `OperationValue` with its optimistic
 //! builders (`operation`).
 
+mod checks;
 mod collect;
 mod keys;
+mod lens;
+mod members;
 mod operation;
 mod reader;
 
 pub use collect::Shared;
 pub use keys::{KeyPart, SlotRef, constant_json};
-pub use operation::{BuilderPlan, BuilderValue, OperationValue, VariableBase, VariableValue};
-pub use reader::{
+pub use lens::{
     Accessor, AliasGuard, AliasedRead, BoundArgument, ConditionRead, ConnectionMembers, ErrorCheck,
     ErrorLine, Guarded, LinkedForm, LinkedRead, LoadMore, Primitive, Read, ReaderPlan,
     RefetchMembers, SatisfiedCheck, ScalarForm, ScalarRead, ScalarShape, SlotAccess, SpreadForm,
     SpreadGuard, SpreadRead, TypeTest,
 };
+pub use operation::{BuilderPlan, BuilderValue, OperationValue, VariableBase, VariableValue};
 
 use crate::names::{NameError, Reserved, Written};
 use crate::pipeline::{

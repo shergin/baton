@@ -111,9 +111,16 @@ fn emit_swift_tests() -> BTreeMap<String, String> {
 }
 
 /// The plan of the Swift test target as `batonc plan` prints it, one file's
-/// documents to a golden.
+/// documents to a golden. The hostile-name corpus has none: the plan holds
+/// a name as a string, so its documents add no shape to the lowering, and
+/// their plan, an entry for every name in every position, would outweigh
+/// every other plan golden together.
 fn plan_swift_tests() -> BTreeMap<String, String> {
-    let plan = compile_swift_tests();
+    let mut plan = compile_swift_tests();
+    plan.fragments
+        .retain(|fragment| fragment.source != hostile_names::CORPUS);
+    plan.operations
+        .retain(|operation| operation.source != hostile_names::CORPUS);
     let mut by_source: BTreeMap<String, Plan> = BTreeMap::new();
     for fragment in &plan.fragments {
         by_source
@@ -282,3 +289,6 @@ fn the_shared_enums_a_lens_is_decided_to_spell_are_the_ones_its_text_spells() {
         check_shared_enums(&operation.data);
     }
 }
+
+#[path = "hostile_name_tests.rs"]
+mod hostile_names;

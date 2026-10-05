@@ -6,7 +6,7 @@
 use std::collections::{BTreeMap, BTreeSet};
 
 use super::keys::SlotRef;
-use super::reader::{
+use super::lens::{
     AliasGuard, ErrorCheck, ErrorLine, Read, ReaderPlan, SatisfiedCheck, SlotAccess, SpreadGuard,
     TypeTest,
 };
