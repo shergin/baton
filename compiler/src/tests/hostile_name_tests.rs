@@ -28,10 +28,6 @@ use crate::{diagnostics, emit, pipeline};
 /// The corpus, as the plan names its source.
 pub(super) const CORPUS: &str = "swift/Tests/BatonTests/HostileNameDocuments.swift";
 
-/// Swift's keywords that `escape` does not list. Swift refuses each as the
-/// name of a declaration unless it is escaped.
-const UNLISTED_KEYWORDS: [&str; 4] = ["rethrows", "fallthrough", "precedencegroup", "_"];
-
 /// Swift's contextual keywords that start an expression or a type, where
 /// the generated code puts a document's name: a value, a type, a
 /// parameter. The others introduce or modify a declaration, name an
@@ -119,6 +115,8 @@ const QUERY_NAME: &str = "a query's name";
 const MUTATION_NAME: &str = "a mutation's name";
 const SUBSCRIPTION_NAME: &str = "a subscription's name";
 const REFETCH_QUERY_NAME: &str = "a refetch query's name";
+const QUERY_SPREAD: &str = "the name of a fragment a query spreads";
+const MUTATION_SPREAD: &str = "the name of a fragment a mutation spreads";
 
 /// A position a document's name can take, and what the compiler makes of a
 /// hostile name there.
@@ -141,42 +139,23 @@ struct Position {
     remedy: &'static str,
     /// The names the position refuses, each with what it clashes with in
     /// the generated Swift.
-    refused: &'static [(&'static str, &'static str)],
+    refused: Vec<(&'static str, &'static str)>,
 }
 
 /// Names a position accepts though the Swift written for them does not
 /// compile, as Swift 6.3.3 says with warnings as errors: defects of the
 /// compiler, kept here until each is fixed, when its names move to the
 /// corpus or to the refusals.
+#[allow(dead_code, reason = "no defect is known; the table waits for the next")]
 struct Defect {
     positions: &'static [&'static str],
-    names: Names,
+    names: &'static [&'static str],
     /// What the Swift written for a position's probe holds, with `HOSTILE`
     /// for the name: the line Swift refuses, and the declaration that makes
     /// it refuse it when that is another.
     writes: &'static [&'static str],
     /// What Swift says of the line.
     swift: &'static str,
-}
-
-/// The names of a defect.
-enum Names {
-    These(&'static [&'static str]),
-    /// The keywords `escape` lists but the first, and the second besides.
-    KeywordsBut(&'static [&'static str], &'static [&'static str]),
-}
-
-impl Names {
-    fn resolve(&self) -> Vec<String> {
-        match self {
-            Names::These(names) => names.iter().map(|name| name.to_string()).collect(),
-            Names::KeywordsBut(except, besides) => escaped_keywords()
-                .into_iter()
-                .filter(|keyword| !except.contains(&keyword.as_str()))
-                .chain(besides.iter().map(|name| name.to_string()))
-                .collect(),
-        }
-    }
 }
 
 /// The names a scope of the generated Swift declares, and how a refusal
@@ -191,12 +170,24 @@ const VARIABLE: (&str, &str) = ("variable", "the optimistic response's `variable
 const VARIABLES: (&str, &str) = ("variables", "the operation's `variables`");
 const RESOLUTION: (&str, &str) = ("resolution", "the operation's `resolution`");
 const DATA: (&str, &str) = ("Data", "the operation's root lens `Data`");
+const ACTION: (&str, &str) = ("Action", "the mutation's `Action`");
+const OPTIMISTIC_RESPONSE: (&str, &str) =
+    ("OptimisticResponse", "the mutation's `OptimisticResponse`");
+const HASH_VALUE: (&str, &str) = ("hashValue", "the `hashValue` every operation value has");
+const PHASE: (&str, &str) = ("phase", "the `phase` every query value has");
+const IS_REFRESHING: (&str, &str) = ("isRefreshing", "the `isRefreshing` every query value has");
+const IS_STALE: (&str, &str) = ("isStale", "the `isStale` every query value has");
+const SUBSCRIPTION_HANDLE: (&str, &str) = (
+    "subscription",
+    "the `subscription` every subscription value has",
+);
 const MODULE: (&str, &str) = ("Baton", "the runtime's module `Baton`");
+const SELF: (&str, &str) = ("Self", "Swift's keyword `Self`");
 
 /// What the module's top level refuses a fragment's or an operation's name.
 const TOP_LEVEL: [(&str, &str); 15] = [
     ("Any", "Swift's keyword `Any`"),
-    ("Self", "Swift's keyword `Self`"),
+    SELF,
     ("Swift", "the standard library's module `Swift`"),
     ("MainActor", "the standard library's `MainActor`"),
     ("Result", "the standard library's `Result`"),
@@ -213,41 +204,44 @@ const TOP_LEVEL: [(&str, &str); 15] = [
 ];
 
 fn positions() -> Vec<Position> {
-    let field = |name, corpus, probe, refused| Position {
+    type Refused = &'static [(&'static str, &'static str)];
+    let field = |name, corpus, probe, refused: Refused| Position {
         name,
         corpus: Some(corpus),
         probe,
         at: "HOSTILE:",
         what: "the field `HOSTILE`",
         remedy: "choose another alias",
-        refused,
+        refused: refused.to_vec(),
     };
-    let selection = |name, corpus, probe, refused| Position {
+    let selection = |name, corpus, probe, refused: Refused| Position {
         name,
         corpus: Some(corpus),
         probe,
         at: "\"HOSTILE\"",
         what: "the selection aliased `HOSTILE`",
         remedy: "choose another alias",
-        refused,
+        refused: refused.to_vec(),
     };
-    let variable = |name, corpus, probe, at, refused| Position {
+    let variable = |name, corpus, probe, at, refused: Refused| Position {
         name,
         corpus: Some(corpus),
         probe,
         at,
         what: "the variable `$HOSTILE`",
         remedy: "rename the variable",
-        refused,
+        refused: refused.to_vec(),
     };
-    let top_level = |name, probe, at, what, remedy| Position {
+    // A fragment's or an operation's name, which the module's top level
+    // refuses, and the types of an operation that spreads the fragment.
+    let top_level = |name, probe, at, what, remedy, nested: Refused| Position {
         name,
         corpus: None,
         probe,
         at,
         what,
         remedy,
-        refused: &TOP_LEVEL,
+        refused: [&TOP_LEVEL[..], nested].concat(),
     };
     vec![
         field(
@@ -278,7 +272,7 @@ fn positions() -> Vec<Position> {
             BODIES,
             bodies_names,
             r#"fragment ProbeBound_character on Character @argumentDefinitions(flag: {type: "Boolean!", defaultValue: true}) { name @include(if: $flag) origin @required(action: NONE) { id } } fragment ProbeDeferred_character on Character { name } fragment ProbeCaught_character on Character { name } fragment Probe_character on Character @refetchable(queryName: "ProbeRefetchQuery") @throwOnFieldError { HOSTILE: name species @required(action: THROW) origin @required(action: NONE) { name @required(action: NONE) } ...ProbeBound_character @arguments(flag: false) ...ProbeDeferred_character @defer ... @alias(as: "caughtSpread") @catch { ...ProbeCaught_character } }"#,
-            &[ANCHOR, RECORD_ID, TYPES, SLOTS, SITES],
+            &[ANCHOR, RECORD_ID, TYPES, SLOTS, SITES, SELF],
         ),
         field(
             CONNECTION,
@@ -294,6 +288,7 @@ fn positions() -> Vec<Position> {
                 ("connectionID", "the connection's `connectionID`"),
                 TYPES,
                 SLOTS,
+                SELF,
             ],
         ),
         field(
@@ -313,7 +308,18 @@ fn positions() -> Vec<Position> {
             query_variable_names,
             "query Probe($HOSTILE: ID!) @throwOnFieldError { charactersByIds(ids: [$HOSTILE]) { id } }",
             "$HOSTILE",
-            &[VARIABLES, RESOLUTION, DATA, TYPES, SLOTS, MODULE],
+            &[
+                VARIABLES,
+                RESOLUTION,
+                HASH_VALUE,
+                PHASE,
+                IS_REFRESHING,
+                IS_STALE,
+                DATA,
+                TYPES,
+                SLOTS,
+                MODULE,
+            ],
         ),
         variable(
             MUTATION_VARIABLE,
@@ -323,9 +329,10 @@ fn positions() -> Vec<Position> {
             &[
                 ("optimistic", "the action's parameter `optimistic`"),
                 VARIABLES,
+                HASH_VALUE,
                 DATA,
-                ("Action", "the mutation's `Action`"),
-                ("OptimisticResponse", "the mutation's `OptimisticResponse`"),
+                ACTION,
+                OPTIMISTIC_RESPONSE,
                 TYPES,
                 SLOTS,
                 MODULE,
@@ -336,14 +343,35 @@ fn positions() -> Vec<Position> {
             subscription_variable_names,
             r#"subscription Probe($HOSTILE: Boolean!) { noteAdded(characterId: "1") @catch { noteEdge { node { id } ... @include(if: $HOSTILE) { cursor } } } }"#,
             "$HOSTILE",
-            &[VARIABLES, RESOLUTION, DATA, TYPES, SLOTS, MODULE],
+            &[
+                VARIABLES,
+                RESOLUTION,
+                HASH_VALUE,
+                SUBSCRIPTION_HANDLE,
+                DATA,
+                TYPES,
+                SLOTS,
+                MODULE,
+            ],
         ),
         variable(
             FRAGMENT_ARGUMENT,
             fragment_argument_names,
             r#"fragment Probe_character on Character @argumentDefinitions(HOSTILE: {type: "Boolean", defaultValue: true}) @refetchable(queryName: "ProbeRefetchQuery") { ... @include(if: $HOSTILE) { name } }"#,
             "HOSTILE:",
-            &[VARIABLES, RESOLUTION, DATA, TYPES, SLOTS, SITES, MODULE],
+            &[
+                VARIABLES,
+                RESOLUTION,
+                HASH_VALUE,
+                PHASE,
+                IS_REFRESHING,
+                IS_STALE,
+                DATA,
+                TYPES,
+                SLOTS,
+                SITES,
+                MODULE,
+            ],
         ),
         field(
             PAYLOAD_SCALAR,
@@ -363,6 +391,7 @@ fn positions() -> Vec<Position> {
             HOSTILE,
             "the fragment `HOSTILE`",
             "rename the fragment",
+            &[],
         ),
         top_level(
             QUERY_NAME,
@@ -370,6 +399,7 @@ fn positions() -> Vec<Position> {
             HOSTILE,
             "the query `HOSTILE`",
             "rename the query",
+            &[],
         ),
         top_level(
             MUTATION_NAME,
@@ -377,6 +407,7 @@ fn positions() -> Vec<Position> {
             HOSTILE,
             "the mutation `HOSTILE`",
             "rename the mutation",
+            &[],
         ),
         top_level(
             SUBSCRIPTION_NAME,
@@ -384,6 +415,7 @@ fn positions() -> Vec<Position> {
             HOSTILE,
             "the subscription `HOSTILE`",
             "rename the subscription",
+            &[],
         ),
         top_level(
             REFETCH_QUERY_NAME,
@@ -391,222 +423,35 @@ fn positions() -> Vec<Position> {
             "Probe_character",
             "the refetch query `HOSTILE`",
             "name it otherwise in `@refetchable(queryName:)`",
+            &[],
+        ),
+        top_level(
+            QUERY_SPREAD,
+            "fragment HOSTILE on Character { name } query Probe { character(id: 1) { ...HOSTILE } }",
+            HOSTILE,
+            "the fragment `HOSTILE`",
+            "rename the fragment",
+            &[DATA],
+        ),
+        top_level(
+            MUTATION_SPREAD,
+            r#"fragment HOSTILE on Character { name } mutation Probe { setFavorite(id: "1", favorite: true) { character { ...HOSTILE } } }"#,
+            HOSTILE,
+            "the fragment `HOSTILE`",
+            "rename the fragment",
+            &[DATA, ACTION, OPTIMISTIC_RESPONSE],
         ),
     ]
 }
 
 fn defects() -> Vec<Defect> {
-    const ACCESSORS: &[&str] = &[
-        SCALAR,
-        LINKED,
-        SELECTION,
-        SPREAD,
-        BODIES,
-        CONNECTION,
-        REQUIRED,
-        ABSTRACT,
-        PAYLOAD_SCALAR,
-        PAYLOAD_LINKED,
-    ];
-    const VARIABLES: &[&str] = &[
-        QUERY_VARIABLE,
-        MUTATION_VARIABLE,
-        SUBSCRIPTION_VARIABLE,
-        FRAGMENT_ARGUMENT,
-    ];
-    const UNLISTED: &[&str] = &["rethrows", "fallthrough", "precedencegroup"];
-    vec![
-        // `escape` does not know these keywords.
-        Defect {
-            positions: ACCESSORS,
-            names: Names::These(UNLISTED),
-            writes: &["@MainActor public var HOSTILE: "],
-            swift: "keyword 'rethrows' cannot be used as an identifier here",
-        },
-        Defect {
-            positions: ACCESSORS,
-            names: Names::These(&["_"]),
-            writes: &["@MainActor public var _: "],
-            swift: "getter/setter can only be defined for a single variable",
-        },
-        Defect {
-            positions: VARIABLES,
-            names: Names::These(UNLISTED),
-            writes: &["    public var HOSTILE: "],
-            swift: "keyword 'rethrows' cannot be used as an identifier here",
-        },
-        Defect {
-            positions: VARIABLES,
-            names: Names::These(&["_"]),
-            writes: &["    public var _: "],
-            swift: "property declaration does not bind any variables",
-        },
-        // A member named `Self` hides Swift's `Self` from the expressions
-        // of its lens and of every lens nested in it.
-        Defect {
-            positions: &[BODIES],
-            names: Names::These(&["Self"]),
-            writes: &[
-                "@MainActor public var `Self`: ",
-                ".success(Self(anchor: anchor))",
-                "try await anchor.refetch(Query.self, Self.refetchable)",
-            ],
-            swift: "instance member 'Self' cannot be used on type 'Probe_character'",
-        },
-        Defect {
-            positions: &[CONNECTION],
-            names: Names::These(&["Self"]),
-            writes: &[
-                "@MainActor public var `Self`: ",
-                "anchor.nodes(Self.connection)",
-            ],
-            swift: "value of type 'Int' has no member 'connection'",
-        },
-        // And a variable named `Self` hides it from the lenses nested in its
-        // operation.
-        Defect {
-            positions: &[QUERY_VARIABLE, MUTATION_VARIABLE, SUBSCRIPTION_VARIABLE],
-            names: Names::These(&["Self"]),
-            writes: &["    public var `Self`: ", ".success(Self(anchor: anchor))"],
-            swift: "instance member 'Self' of type 'Probe' cannot be used on instance of nested type 'Probe.Data'",
-        },
-        // An initializer's parameter named `await` reads as the keyword.
-        Defect {
-            positions: VARIABLES,
-            names: Names::These(&["await"]),
-            writes: &["self.await = await"],
-            swift: "expected expression after 'await'",
-        },
-        Defect {
-            positions: &[PAYLOAD_SCALAR, PAYLOAD_LINKED],
-            names: Names::These(&["await"]),
-            writes: &["if let await {"],
-            swift: "expected expression after 'await'",
-        },
-        // A variable's property hides the `hashValue` of `Hashable`.
-        Defect {
-            positions: VARIABLES,
-            names: Names::These(&["hashValue"]),
-            writes: &["public var hashValue: ", "Baton.Variable(self.hashValue)"],
-            swift: "ambiguous use of 'hashValue'",
-        },
-        // `call_label` escapes these, which Swift takes bare.
-        Defect {
-            positions: &[MUTATION_VARIABLE],
-            names: Names::These(&["var", "let"]),
-            writes: &["Probe(`HOSTILE`: `HOSTILE`)"],
-            swift: "keyword 'var' does not need to be escaped in argument list",
-        },
-        // A builder's field named like the dictionary its `variable` fills.
-        Defect {
-            positions: &[PAYLOAD_SCALAR, PAYLOAD_LINKED],
-            names: Names::These(&["fields"]),
-            writes: &[
-                "var fields: [String: Baton.Variable] = [:]",
-                "if let fields { fields[\"fields\"]",
-            ],
-            swift: "cannot assign through subscript: 'fields' is a 'let' constant",
-        },
-        // The name of a fragment or an operation is written unescaped.
-        Defect {
-            positions: &[FRAGMENT_NAME, QUERY_NAME, SUBSCRIPTION_NAME],
-            names: Names::KeywordsBut(
-                &["Type", "Protocol", "Any", "Self", "open", "some", "any"],
-                &["rethrows", "fallthrough", "precedencegroup", "_"],
-            ),
-            writes: &["public struct HOSTILE: "],
-            swift: "keyword 'class' cannot be used as an identifier here",
-        },
-        Defect {
-            positions: &[MUTATION_NAME],
-            names: Names::KeywordsBut(
-                &["Type", "Protocol", "Any", "Self", "open", "some", "any"],
-                &["rethrows", "fallthrough", "precedencegroup", "_"],
-            ),
-            writes: &["public struct HOSTILE: ", "where Op == HOSTILE {"],
-            swift: "keyword 'class' cannot be used as an identifier here",
-        },
-        Defect {
-            positions: &[REFETCH_QUERY_NAME],
-            names: Names::KeywordsBut(
-                &["Type", "Protocol", "Any", "Self", "open"],
-                &["rethrows", "fallthrough", "precedencegroup", "each"],
-            ),
-            writes: &["typealias Query = HOSTILE"],
-            swift: "expected type in type alias declaration",
-        },
-        Defect {
-            positions: &[REFETCH_QUERY_NAME],
-            names: Names::These(&["_"]),
-            writes: &["public struct _: "],
-            swift: "keyword '_' cannot be used as an identifier here",
-        },
-        // A mutation's action spells its name as a type where a keyword or
-        // one of its own names takes the place of the type.
-        Defect {
-            positions: &[MUTATION_NAME],
-            names: Names::These(&["some", "any", "each"]),
-            writes: &["where Op == HOSTILE {"],
-            swift: "expected type",
-        },
-        Defect {
-            positions: &[MUTATION_NAME],
-            names: Names::These(&["async"]),
-            writes: &["async throws -> async.Data {"],
-            swift: "'async' has already been specified",
-        },
-        Defect {
-            positions: &[MUTATION_NAME],
-            names: Names::These(&["await"]),
-            writes: &["async throws -> await.Data {"],
-            swift: "expected async specifier; did you mean 'async'?",
-        },
-        Defect {
-            positions: &[MUTATION_NAME],
-            names: Names::These(&["Op"]),
-            writes: &["where Op == Op {"],
-            swift: "'OptimisticResponse' is not a member type of type 'Op'",
-        },
-        Defect {
-            positions: &[MUTATION_NAME],
-            names: Names::These(&["callAsFunction"]),
-            writes: &["try await self.commit(callAsFunction(), optimistic:"],
-            swift: "cannot convert value of type 'callAsFunction.Data' to expected argument type 'callAsFunction'",
-        },
-        Defect {
-            positions: &[MUTATION_NAME],
-            names: Names::These(&["commit"]),
-            writes: &["try await self.commit(commit(), optimistic:"],
-            swift: "use of 'commit' refers to instance method rather than struct 'commit' in module",
-        },
-        Defect {
-            positions: &[MUTATION_NAME],
-            names: Names::These(&["optimistic"]),
-            writes: &["try await self.commit(optimistic(), optimistic:"],
-            swift: "cannot call value of non-function type 'optimistic.OptimisticResponse?'",
-        },
-    ]
+    Vec::new()
 }
 
 /// Defects of a name that hides another the same document chose, outside
 /// the table of positions: each with its document, what the Swift written
 /// for it holds, and what Swift 6.3.3 says.
-const RELATED_DEFECTS: [(&str, &[&str], &str); 2] = [
-    // A variable of a mutation named like the mutation takes the place of
-    // its type in the action's call.
-    (
-        r#"mutation Favorite($Favorite: ID!) { setFavorite(id: $Favorite, favorite: true) { character { id } } }"#,
-        &["try await self.commit(Favorite(Favorite: Favorite), optimistic:"],
-        "cannot call value of non-function type 'String'",
-    ),
-    // The spread of a fragment named from an underscore takes the empty
-    // text before it as its accessor's name.
-    (
-        "fragment _hidden on Character { name } query Probe { character(id: 1) { ..._hidden } }",
-        &["@MainActor public var : _hidden { .init(anchor: anchor) }"],
-        "expected pattern",
-    ),
-];
+const RELATED_DEFECTS: [(&str, &[&str], &str); 0] = [];
 
 // The names the corpus gives each position, from its plan.
 
@@ -733,17 +578,10 @@ fn subscription_variable_names(plan: &Plan) -> Vec<String> {
 }
 
 fn fragment_argument_names(plan: &Plan) -> Vec<String> {
-    plan.fragments
+    fragment(plan, "HostileArguments_character")
+        .arguments
         .iter()
-        .filter(|fragment| {
-            fragment.name.starts_with("HostileArguments") && fragment.name.ends_with("_character")
-        })
-        .flat_map(|fragment| {
-            fragment
-                .arguments
-                .iter()
-                .map(|argument| argument.name.clone())
-        })
+        .map(|argument| argument.name.clone())
         .collect()
 }
 
@@ -863,10 +701,6 @@ fn listed(names: &[&str]) -> Vec<String> {
 fn hostile_names() -> Vec<(String, &'static str)> {
     let sources = [
         (escaped_keywords(), "a keyword `escape` lists"),
-        (
-            listed(&UNLISTED_KEYWORDS),
-            "a keyword `escape` does not list",
-        ),
         (listed(&CONTEXTUAL_KEYWORDS), "a contextual keyword"),
         (
             listed(&RESERVED_TYPE_NAMES),
@@ -965,9 +799,9 @@ fn every_hostile_name_is_in_the_corpus_or_refused_or_a_known_defect_in_every_pos
         let known: Vec<String> = defects
             .iter()
             .filter(|defect| defect.positions.contains(&position.name))
-            .flat_map(|defect| defect.names.resolve())
+            .flat_map(|defect| defect.names.iter().map(|name| name.to_string()))
             .collect();
-        for (name, _) in position.refused {
+        for (name, _) in &position.refused {
             if !names.iter().any(|(known, _)| known == name) {
                 problems.push(format!(
                     "{}: `{name}` is refused but is no hostile name",
@@ -1012,7 +846,7 @@ fn every_hostile_name_is_in_the_corpus_or_refused_or_a_known_defect_in_every_pos
 fn a_refused_name_is_an_error_at_the_name_that_says_what_it_clashes_with_and_what_to_do() {
     let mut problems = Vec::new();
     for position in positions() {
-        for (name, clashes) in position.refused {
+        for (name, clashes) in &position.refused {
             let probe = position.probe.replace(HOSTILE, name);
             let at = position.at.replace(HOSTILE, name);
             let column = probe
@@ -1049,7 +883,7 @@ fn a_top_level_name_neither_refused_nor_a_defect_is_accepted() {
         let known: Vec<String> = defects
             .iter()
             .filter(|defect| defect.positions.contains(&position.name))
-            .flat_map(|defect| defect.names.resolve())
+            .flat_map(|defect| defect.names.iter().map(|name| name.to_string()))
             .collect();
         let accepted: Vec<&str> = names
             .iter()
@@ -1084,7 +918,7 @@ fn a_known_defect_is_still_accepted_and_still_writes_the_swift_recorded_for_it()
                 .iter()
                 .find(|position| position.name == *name)
                 .unwrap_or_else(|| panic!("a defect names the unknown position `{name}`"));
-            let names = defect.names.resolve();
+            let names = defect.names;
             // The names of a position make one program, and each writes its
             // own lines.
             let program: Vec<String> = names

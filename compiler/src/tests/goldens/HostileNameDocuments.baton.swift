@@ -61,16 +61,20 @@ nonisolated public struct HostileAbstract_node: Baton.Lens {
     @MainActor public var `protocol`: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
     @MainActor public var `some`: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
     @MainActor public var `any`: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
+    @MainActor public var `rethrows`: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
+    @MainActor public var `fallthrough`: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
+    @MainActor public var `precedencegroup`: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
+    @MainActor public var `_`: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
     @MainActor public var async: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
-    @MainActor public var await: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
-    @MainActor public var borrowing: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
+    @MainActor public var `await`: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
+    @MainActor public var `borrowing`: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
     @MainActor public var consume: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
-    @MainActor public var consuming: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
+    @MainActor public var `consuming`: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
     @MainActor public var copy: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
     @MainActor public var discard: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
-    @MainActor public var each: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
-    @MainActor public var isolated: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
-    @MainActor public var sending: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
+    @MainActor public var `each`: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
+    @MainActor public var `isolated`: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
+    @MainActor public var `sending`: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
     @MainActor public var then: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
     @MainActor public var unsafe: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
     @MainActor public var typeName: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
@@ -156,226 +160,18 @@ nonisolated public struct HostileAbstract_node: Baton.Lens {
     }
 }
 
-/// Lens for `fragment HostileArguments10_character on Character`.
-nonisolated public struct HostileArguments10_character: Baton.Lens {
+/// Lens for `fragment HostileArguments_character on Character`.
+nonisolated public struct HostileArguments_character: Baton.Lens {
     @_spi(Generated) public let anchor: Baton.Anchor
     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
     public static let typeName = "Character"
-    @MainActor public var name: String? { (anchor.selects("count", true) || anchor.selects("fields", true) || anchor.selects("lhs", true) || anchor.selects("rhs", true) || anchor.selects("hasher", true) || anchor.selects("optimistic", true) || anchor.selects("selfValue", true) || anchor.selects("Fragment", true) || anchor.selects("Spread", true) || anchor.selects("Owner", true)) ? anchor.string(Slots.Character.name) : nil }
+    @MainActor public var name: String? { (anchor.selects("Type", true) || anchor.selects("Protocol", true) || anchor.selects("Any", true) || anchor.selects("self", true) || anchor.selects("Self", true) || anchor.selects("init", true) || anchor.selects("deinit", true) || anchor.selects("subscript", true) || anchor.selects("class", true) || anchor.selects("struct", true) || anchor.selects("enum", true) || anchor.selects("func", true) || anchor.selects("var", true) || anchor.selects("let", true) || anchor.selects("import", true) || anchor.selects("extension", true) || anchor.selects("operator", true) || anchor.selects("static", true) || anchor.selects("default", true) || anchor.selects("case", true) || anchor.selects("switch", true) || anchor.selects("if", true) || anchor.selects("else", true) || anchor.selects("for", true) || anchor.selects("in", true) || anchor.selects("while", true) || anchor.selects("repeat", true) || anchor.selects("return", true) || anchor.selects("break", true) || anchor.selects("continue", true) || anchor.selects("where", true) || anchor.selects("is", true) || anchor.selects("as", true) || anchor.selects("try", true) || anchor.selects("throw", true) || anchor.selects("throws", true) || anchor.selects("guard", true) || anchor.selects("defer", true) || anchor.selects("do", true) || anchor.selects("catch", true) || anchor.selects("true", true) || anchor.selects("false", true) || anchor.selects("nil", true) || anchor.selects("super", true) || anchor.selects("internal", true) || anchor.selects("private", true) || anchor.selects("public", true) || anchor.selects("fileprivate", true) || anchor.selects("open", true) || anchor.selects("inout", true) || anchor.selects("typealias", true) || anchor.selects("associatedtype", true) || anchor.selects("protocol", true) || anchor.selects("some", true) || anchor.selects("any", true) || anchor.selects("rethrows", true) || anchor.selects("fallthrough", true) || anchor.selects("precedencegroup", true) || anchor.selects("_", true) || anchor.selects("async", true) || anchor.selects("borrowing", true) || anchor.selects("consume", true) || anchor.selects("consuming", true) || anchor.selects("copy", true) || anchor.selects("discard", true) || anchor.selects("each", true) || anchor.selects("isolated", true) || anchor.selects("sending", true) || anchor.selects("then", true) || anchor.selects("unsafe", true) || anchor.selects("await", true) || anchor.selects("anchor", true) || anchor.selects("recordID", true) || anchor.selects("typeName", true) || anchor.selects("satisfied", true) || anchor.selects("missingRequiredField", true) || anchor.selects("fieldErrors", true) || anchor.selects("isPresent", true) || anchor.selects("throwing", true) || anchor.selects("caught", true) || anchor.selects("refetchable", true) || anchor.selects("refetch", true) || anchor.selects("connection", true) || anchor.selects("nodes", true) || anchor.selects("hasNext", true) || anchor.selects("hasPrevious", true) || anchor.selects("isLoadingNext", true) || anchor.selects("isLoadingPrevious", true) || anchor.selects("connectionID", true) || anchor.selects("loadNext", true) || anchor.selects("loadPrevious", true) || anchor.selects("bound", true) || anchor.selects("errors", true) || anchor.selects("child", true) || anchor.selects("missing", true) || anchor.selects("count", true) || anchor.selects("fields", true) || anchor.selects("lhs", true) || anchor.selects("rhs", true) || anchor.selects("hasher", true) || anchor.selects("optimistic", true) || anchor.selects("selfValue", true) || anchor.selects("Fragment", true) || anchor.selects("Spread", true) || anchor.selects("Owner", true) || anchor.selects("Query", true) || anchor.selects("Operation", true) || anchor.selects("RefetchQuery", true) || anchor.selects("name", true) || anchor.selects("persistedID", true) || anchor.selects("text", true) || anchor.selects("plan", true) || anchor.selects("errorBehavior", true) || anchor.selects("throwsOnFieldError", true) || anchor.selects("bubbles", true) || anchor.selects("hasDeferred", true) || anchor.selects("Action", true) || anchor.selects("OptimisticResponse", true) || anchor.selects("hash", true) || anchor.selects("commit", true) || anchor.selects("callAsFunction", true) || anchor.selects("Op", true) || anchor.selects("variable", true) || anchor.selects("retry", true) || anchor.selects("subscription", true) || anchor.selects("AbstractSlots", true) || anchor.selects("schemaDigest", true) || anchor.selects("Swift", true) || anchor.selects("Set", true) || anchor.selects("Result", true) || anchor.selects("Optional", true) || anchor.selects("String", true) || anchor.selects("Int", true) || anchor.selects("Double", true) || anchor.selects("Bool", true) || anchor.selects("MainActor", true) || anchor.selects("Hasher", true) || anchor.selects("Sendable", true)) ? anchor.string(Slots.Character.name) : nil }
     @MainActor public var id: String? { anchor.string(Slots.Character.id) }
-    /// How the fragment is fetched again: `HostileArguments10RefetchQuery` with the lens's variables.
-    @_spi(Generated) public static let refetchable: Baton.Refetch = .init(variables: ["Fragment", "Owner", "Spread", "count", "fields", "hasher", "lhs", "optimistic", "rhs", "selfValue", "id"], identifier: "id", first: nil, after: nil, last: nil, before: nil)
-    /// Fetches the fragment again through `HostileArguments10RefetchQuery` with its current variables; the records update in place.
+    /// How the fragment is fetched again: `HostileArgumentsRefetchQuery` with the lens's variables.
+    @_spi(Generated) public static let refetchable: Baton.Refetch = .init(variables: ["AbstractSlots", "Action", "Any", "Bool", "Double", "Fragment", "Hasher", "Int", "MainActor", "Op", "Operation", "OptimisticResponse", "Optional", "Owner", "Protocol", "Query", "RefetchQuery", "Result", "Self", "Sendable", "Set", "Spread", "String", "Swift", "Type", "_", "anchor", "any", "as", "associatedtype", "async", "await", "borrowing", "bound", "break", "bubbles", "callAsFunction", "case", "catch", "caught", "child", "class", "commit", "connection", "connectionID", "consume", "consuming", "continue", "copy", "count", "default", "defer", "deinit", "discard", "do", "each", "else", "enum", "errorBehavior", "errors", "extension", "fallthrough", "false", "fieldErrors", "fields", "fileprivate", "for", "func", "guard", "hasDeferred", "hasNext", "hasPrevious", "hash", "hasher", "if", "import", "in", "init", "inout", "internal", "is", "isLoadingNext", "isLoadingPrevious", "isPresent", "isolated", "let", "lhs", "loadNext", "loadPrevious", "missing", "missingRequiredField", "name", "nil", "nodes", "open", "operator", "optimistic", "persistedID", "plan", "precedencegroup", "private", "protocol", "public", "recordID", "refetch", "refetchable", "repeat", "rethrows", "retry", "return", "rhs", "satisfied", "schemaDigest", "self", "selfValue", "sending", "some", "static", "struct", "subscript", "subscription", "super", "switch", "text", "then", "throw", "throwing", "throws", "throwsOnFieldError", "true", "try", "typeName", "typealias", "unsafe", "var", "variable", "where", "while", "id"], identifier: "id", first: nil, after: nil, last: nil, before: nil)
+    /// Fetches the fragment again through `HostileArgumentsRefetchQuery` with its current variables; the records update in place.
     @MainActor public func refetch() async throws {
-        typealias Query = HostileArguments10RefetchQuery
-        try await anchor.refetch(Query.self, Self.refetchable)
-    }
-}
-
-/// Lens for `fragment HostileArguments11_character on Character`.
-nonisolated public struct HostileArguments11_character: Baton.Lens {
-    @_spi(Generated) public let anchor: Baton.Anchor
-    @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
-    @MainActor public var name: String? { (anchor.selects("Query", true) || anchor.selects("Operation", true) || anchor.selects("RefetchQuery", true) || anchor.selects("name", true) || anchor.selects("persistedID", true) || anchor.selects("text", true) || anchor.selects("plan", true) || anchor.selects("errorBehavior", true) || anchor.selects("throwsOnFieldError", true) || anchor.selects("bubbles", true)) ? anchor.string(Slots.Character.name) : nil }
-    @MainActor public var id: String? { anchor.string(Slots.Character.id) }
-    /// How the fragment is fetched again: `HostileArguments11RefetchQuery` with the lens's variables.
-    @_spi(Generated) public static let refetchable: Baton.Refetch = .init(variables: ["Operation", "Query", "RefetchQuery", "bubbles", "errorBehavior", "name", "persistedID", "plan", "text", "throwsOnFieldError", "id"], identifier: "id", first: nil, after: nil, last: nil, before: nil)
-    /// Fetches the fragment again through `HostileArguments11RefetchQuery` with its current variables; the records update in place.
-    @MainActor public func refetch() async throws {
-        typealias Query = HostileArguments11RefetchQuery
-        try await anchor.refetch(Query.self, Self.refetchable)
-    }
-}
-
-/// Lens for `fragment HostileArguments12_character on Character`.
-nonisolated public struct HostileArguments12_character: Baton.Lens {
-    @_spi(Generated) public let anchor: Baton.Anchor
-    @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
-    @MainActor public var name: String? { (anchor.selects("hasDeferred", true) || anchor.selects("Action", true) || anchor.selects("OptimisticResponse", true) || anchor.selects("hash", true) || anchor.selects("commit", true) || anchor.selects("callAsFunction", true) || anchor.selects("Op", true) || anchor.selects("variable", true) || anchor.selects("phase", true) || anchor.selects("isRefreshing", true)) ? anchor.string(Slots.Character.name) : nil }
-    @MainActor public var id: String? { anchor.string(Slots.Character.id) }
-    /// How the fragment is fetched again: `HostileArguments12RefetchQuery` with the lens's variables.
-    @_spi(Generated) public static let refetchable: Baton.Refetch = .init(variables: ["Action", "Op", "OptimisticResponse", "callAsFunction", "commit", "hasDeferred", "hash", "isRefreshing", "phase", "variable", "id"], identifier: "id", first: nil, after: nil, last: nil, before: nil)
-    /// Fetches the fragment again through `HostileArguments12RefetchQuery` with its current variables; the records update in place.
-    @MainActor public func refetch() async throws {
-        typealias Query = HostileArguments12RefetchQuery
-        try await anchor.refetch(Query.self, Self.refetchable)
-    }
-}
-
-/// Lens for `fragment HostileArguments13_character on Character`.
-nonisolated public struct HostileArguments13_character: Baton.Lens {
-    @_spi(Generated) public let anchor: Baton.Anchor
-    @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
-    @MainActor public var name: String? { (anchor.selects("isStale", true) || anchor.selects("retry", true) || anchor.selects("subscription", true) || anchor.selects("AbstractSlots", true) || anchor.selects("schemaDigest", true) || anchor.selects("Swift", true) || anchor.selects("Set", true) || anchor.selects("Result", true) || anchor.selects("Optional", true) || anchor.selects("String", true)) ? anchor.string(Slots.Character.name) : nil }
-    @MainActor public var id: String? { anchor.string(Slots.Character.id) }
-    /// How the fragment is fetched again: `HostileArguments13RefetchQuery` with the lens's variables.
-    @_spi(Generated) public static let refetchable: Baton.Refetch = .init(variables: ["AbstractSlots", "Optional", "Result", "Set", "String", "Swift", "isStale", "retry", "schemaDigest", "subscription", "id"], identifier: "id", first: nil, after: nil, last: nil, before: nil)
-    /// Fetches the fragment again through `HostileArguments13RefetchQuery` with its current variables; the records update in place.
-    @MainActor public func refetch() async throws {
-        typealias Query = HostileArguments13RefetchQuery
-        try await anchor.refetch(Query.self, Self.refetchable)
-    }
-}
-
-/// Lens for `fragment HostileArguments14_character on Character`.
-nonisolated public struct HostileArguments14_character: Baton.Lens {
-    @_spi(Generated) public let anchor: Baton.Anchor
-    @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
-    @MainActor public var name: String? { (anchor.selects("Int", true) || anchor.selects("Double", true) || anchor.selects("Bool", true) || anchor.selects("MainActor", true) || anchor.selects("Hasher", true) || anchor.selects("Sendable", true)) ? anchor.string(Slots.Character.name) : nil }
-    @MainActor public var id: String? { anchor.string(Slots.Character.id) }
-    /// How the fragment is fetched again: `HostileArguments14RefetchQuery` with the lens's variables.
-    @_spi(Generated) public static let refetchable: Baton.Refetch = .init(variables: ["Bool", "Double", "Hasher", "Int", "MainActor", "Sendable", "id"], identifier: "id", first: nil, after: nil, last: nil, before: nil)
-    /// Fetches the fragment again through `HostileArguments14RefetchQuery` with its current variables; the records update in place.
-    @MainActor public func refetch() async throws {
-        typealias Query = HostileArguments14RefetchQuery
-        try await anchor.refetch(Query.self, Self.refetchable)
-    }
-}
-
-/// Lens for `fragment HostileArguments1_character on Character`.
-nonisolated public struct HostileArguments1_character: Baton.Lens {
-    @_spi(Generated) public let anchor: Baton.Anchor
-    @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
-    @MainActor public var name: String? { (anchor.selects("Type", true) || anchor.selects("Protocol", true) || anchor.selects("Any", true) || anchor.selects("self", true) || anchor.selects("Self", true) || anchor.selects("init", true) || anchor.selects("deinit", true) || anchor.selects("subscript", true) || anchor.selects("class", true) || anchor.selects("struct", true)) ? anchor.string(Slots.Character.name) : nil }
-    @MainActor public var id: String? { anchor.string(Slots.Character.id) }
-    /// How the fragment is fetched again: `HostileArguments1RefetchQuery` with the lens's variables.
-    @_spi(Generated) public static let refetchable: Baton.Refetch = .init(variables: ["Any", "Protocol", "Self", "Type", "class", "deinit", "init", "self", "struct", "subscript", "id"], identifier: "id", first: nil, after: nil, last: nil, before: nil)
-    /// Fetches the fragment again through `HostileArguments1RefetchQuery` with its current variables; the records update in place.
-    @MainActor public func refetch() async throws {
-        typealias Query = HostileArguments1RefetchQuery
-        try await anchor.refetch(Query.self, Self.refetchable)
-    }
-}
-
-/// Lens for `fragment HostileArguments2_character on Character`.
-nonisolated public struct HostileArguments2_character: Baton.Lens {
-    @_spi(Generated) public let anchor: Baton.Anchor
-    @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
-    @MainActor public var name: String? { (anchor.selects("enum", true) || anchor.selects("func", true) || anchor.selects("var", true) || anchor.selects("let", true) || anchor.selects("import", true) || anchor.selects("extension", true) || anchor.selects("operator", true) || anchor.selects("static", true) || anchor.selects("default", true) || anchor.selects("case", true)) ? anchor.string(Slots.Character.name) : nil }
-    @MainActor public var id: String? { anchor.string(Slots.Character.id) }
-    /// How the fragment is fetched again: `HostileArguments2RefetchQuery` with the lens's variables.
-    @_spi(Generated) public static let refetchable: Baton.Refetch = .init(variables: ["case", "default", "enum", "extension", "func", "import", "let", "operator", "static", "var", "id"], identifier: "id", first: nil, after: nil, last: nil, before: nil)
-    /// Fetches the fragment again through `HostileArguments2RefetchQuery` with its current variables; the records update in place.
-    @MainActor public func refetch() async throws {
-        typealias Query = HostileArguments2RefetchQuery
-        try await anchor.refetch(Query.self, Self.refetchable)
-    }
-}
-
-/// Lens for `fragment HostileArguments3_character on Character`.
-nonisolated public struct HostileArguments3_character: Baton.Lens {
-    @_spi(Generated) public let anchor: Baton.Anchor
-    @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
-    @MainActor public var name: String? { (anchor.selects("switch", true) || anchor.selects("if", true) || anchor.selects("else", true) || anchor.selects("for", true) || anchor.selects("in", true) || anchor.selects("while", true) || anchor.selects("repeat", true) || anchor.selects("return", true) || anchor.selects("break", true) || anchor.selects("continue", true)) ? anchor.string(Slots.Character.name) : nil }
-    @MainActor public var id: String? { anchor.string(Slots.Character.id) }
-    /// How the fragment is fetched again: `HostileArguments3RefetchQuery` with the lens's variables.
-    @_spi(Generated) public static let refetchable: Baton.Refetch = .init(variables: ["break", "continue", "else", "for", "if", "in", "repeat", "return", "switch", "while", "id"], identifier: "id", first: nil, after: nil, last: nil, before: nil)
-    /// Fetches the fragment again through `HostileArguments3RefetchQuery` with its current variables; the records update in place.
-    @MainActor public func refetch() async throws {
-        typealias Query = HostileArguments3RefetchQuery
-        try await anchor.refetch(Query.self, Self.refetchable)
-    }
-}
-
-/// Lens for `fragment HostileArguments4_character on Character`.
-nonisolated public struct HostileArguments4_character: Baton.Lens {
-    @_spi(Generated) public let anchor: Baton.Anchor
-    @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
-    @MainActor public var name: String? { (anchor.selects("where", true) || anchor.selects("is", true) || anchor.selects("as", true) || anchor.selects("try", true) || anchor.selects("throw", true) || anchor.selects("throws", true) || anchor.selects("guard", true) || anchor.selects("defer", true) || anchor.selects("do", true) || anchor.selects("catch", true)) ? anchor.string(Slots.Character.name) : nil }
-    @MainActor public var id: String? { anchor.string(Slots.Character.id) }
-    /// How the fragment is fetched again: `HostileArguments4RefetchQuery` with the lens's variables.
-    @_spi(Generated) public static let refetchable: Baton.Refetch = .init(variables: ["as", "catch", "defer", "do", "guard", "is", "throw", "throws", "try", "where", "id"], identifier: "id", first: nil, after: nil, last: nil, before: nil)
-    /// Fetches the fragment again through `HostileArguments4RefetchQuery` with its current variables; the records update in place.
-    @MainActor public func refetch() async throws {
-        typealias Query = HostileArguments4RefetchQuery
-        try await anchor.refetch(Query.self, Self.refetchable)
-    }
-}
-
-/// Lens for `fragment HostileArguments5_character on Character`.
-nonisolated public struct HostileArguments5_character: Baton.Lens {
-    @_spi(Generated) public let anchor: Baton.Anchor
-    @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
-    @MainActor public var name: String? { (anchor.selects("true", true) || anchor.selects("false", true) || anchor.selects("nil", true) || anchor.selects("super", true) || anchor.selects("internal", true) || anchor.selects("private", true) || anchor.selects("public", true) || anchor.selects("fileprivate", true) || anchor.selects("open", true) || anchor.selects("inout", true)) ? anchor.string(Slots.Character.name) : nil }
-    @MainActor public var id: String? { anchor.string(Slots.Character.id) }
-    /// How the fragment is fetched again: `HostileArguments5RefetchQuery` with the lens's variables.
-    @_spi(Generated) public static let refetchable: Baton.Refetch = .init(variables: ["false", "fileprivate", "inout", "internal", "nil", "open", "private", "public", "super", "true", "id"], identifier: "id", first: nil, after: nil, last: nil, before: nil)
-    /// Fetches the fragment again through `HostileArguments5RefetchQuery` with its current variables; the records update in place.
-    @MainActor public func refetch() async throws {
-        typealias Query = HostileArguments5RefetchQuery
-        try await anchor.refetch(Query.self, Self.refetchable)
-    }
-}
-
-/// Lens for `fragment HostileArguments6_character on Character`.
-nonisolated public struct HostileArguments6_character: Baton.Lens {
-    @_spi(Generated) public let anchor: Baton.Anchor
-    @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
-    @MainActor public var name: String? { (anchor.selects("typealias", true) || anchor.selects("associatedtype", true) || anchor.selects("protocol", true) || anchor.selects("some", true) || anchor.selects("any", true) || anchor.selects("async", true) || anchor.selects("borrowing", true) || anchor.selects("consume", true) || anchor.selects("consuming", true) || anchor.selects("copy", true)) ? anchor.string(Slots.Character.name) : nil }
-    @MainActor public var id: String? { anchor.string(Slots.Character.id) }
-    /// How the fragment is fetched again: `HostileArguments6RefetchQuery` with the lens's variables.
-    @_spi(Generated) public static let refetchable: Baton.Refetch = .init(variables: ["any", "associatedtype", "async", "borrowing", "consume", "consuming", "copy", "protocol", "some", "typealias", "id"], identifier: "id", first: nil, after: nil, last: nil, before: nil)
-    /// Fetches the fragment again through `HostileArguments6RefetchQuery` with its current variables; the records update in place.
-    @MainActor public func refetch() async throws {
-        typealias Query = HostileArguments6RefetchQuery
-        try await anchor.refetch(Query.self, Self.refetchable)
-    }
-}
-
-/// Lens for `fragment HostileArguments7_character on Character`.
-nonisolated public struct HostileArguments7_character: Baton.Lens {
-    @_spi(Generated) public let anchor: Baton.Anchor
-    @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
-    @MainActor public var name: String? { (anchor.selects("discard", true) || anchor.selects("each", true) || anchor.selects("isolated", true) || anchor.selects("sending", true) || anchor.selects("then", true) || anchor.selects("unsafe", true) || anchor.selects("anchor", true) || anchor.selects("recordID", true) || anchor.selects("typeName", true) || anchor.selects("satisfied", true)) ? anchor.string(Slots.Character.name) : nil }
-    @MainActor public var id: String? { anchor.string(Slots.Character.id) }
-    /// How the fragment is fetched again: `HostileArguments7RefetchQuery` with the lens's variables.
-    @_spi(Generated) public static let refetchable: Baton.Refetch = .init(variables: ["anchor", "discard", "each", "isolated", "recordID", "satisfied", "sending", "then", "typeName", "unsafe", "id"], identifier: "id", first: nil, after: nil, last: nil, before: nil)
-    /// Fetches the fragment again through `HostileArguments7RefetchQuery` with its current variables; the records update in place.
-    @MainActor public func refetch() async throws {
-        typealias Query = HostileArguments7RefetchQuery
-        try await anchor.refetch(Query.self, Self.refetchable)
-    }
-}
-
-/// Lens for `fragment HostileArguments8_character on Character`.
-nonisolated public struct HostileArguments8_character: Baton.Lens {
-    @_spi(Generated) public let anchor: Baton.Anchor
-    @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
-    @MainActor public var name: String? { (anchor.selects("missingRequiredField", true) || anchor.selects("fieldErrors", true) || anchor.selects("isPresent", true) || anchor.selects("throwing", true) || anchor.selects("caught", true) || anchor.selects("refetchable", true) || anchor.selects("refetch", true) || anchor.selects("connection", true) || anchor.selects("nodes", true) || anchor.selects("hasNext", true)) ? anchor.string(Slots.Character.name) : nil }
-    @MainActor public var id: String? { anchor.string(Slots.Character.id) }
-    /// How the fragment is fetched again: `HostileArguments8RefetchQuery` with the lens's variables.
-    @_spi(Generated) public static let refetchable: Baton.Refetch = .init(variables: ["caught", "connection", "fieldErrors", "hasNext", "isPresent", "missingRequiredField", "nodes", "refetch", "refetchable", "throwing", "id"], identifier: "id", first: nil, after: nil, last: nil, before: nil)
-    /// Fetches the fragment again through `HostileArguments8RefetchQuery` with its current variables; the records update in place.
-    @MainActor public func refetch() async throws {
-        typealias Query = HostileArguments8RefetchQuery
-        try await anchor.refetch(Query.self, Self.refetchable)
-    }
-}
-
-/// Lens for `fragment HostileArguments9_character on Character`.
-nonisolated public struct HostileArguments9_character: Baton.Lens {
-    @_spi(Generated) public let anchor: Baton.Anchor
-    @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
-    @MainActor public var name: String? { (anchor.selects("hasPrevious", true) || anchor.selects("isLoadingNext", true) || anchor.selects("isLoadingPrevious", true) || anchor.selects("connectionID", true) || anchor.selects("loadNext", true) || anchor.selects("loadPrevious", true) || anchor.selects("bound", true) || anchor.selects("errors", true) || anchor.selects("child", true) || anchor.selects("missing", true)) ? anchor.string(Slots.Character.name) : nil }
-    @MainActor public var id: String? { anchor.string(Slots.Character.id) }
-    /// How the fragment is fetched again: `HostileArguments9RefetchQuery` with the lens's variables.
-    @_spi(Generated) public static let refetchable: Baton.Refetch = .init(variables: ["bound", "child", "connectionID", "errors", "hasPrevious", "isLoadingNext", "isLoadingPrevious", "loadNext", "loadPrevious", "missing", "id"], identifier: "id", first: nil, after: nil, last: nil, before: nil)
-    /// Fetches the fragment again through `HostileArguments9RefetchQuery` with its current variables; the records update in place.
-    @MainActor public func refetch() async throws {
-        typealias Query = HostileArguments9RefetchQuery
+        typealias Query = HostileArgumentsRefetchQuery
         try await anchor.refetch(Query.self, Self.refetchable)
     }
 }
@@ -439,16 +235,20 @@ nonisolated public struct HostileBodies_character: Baton.Lens {
     @MainActor public var `protocol`: String? { anchor.string(Slots.Character.name) }
     @MainActor public var `some`: String? { anchor.string(Slots.Character.name) }
     @MainActor public var `any`: String? { anchor.string(Slots.Character.name) }
+    @MainActor public var `rethrows`: String? { anchor.string(Slots.Character.name) }
+    @MainActor public var `fallthrough`: String? { anchor.string(Slots.Character.name) }
+    @MainActor public var `precedencegroup`: String? { anchor.string(Slots.Character.name) }
+    @MainActor public var `_`: String? { anchor.string(Slots.Character.name) }
     @MainActor public var async: String? { anchor.string(Slots.Character.name) }
-    @MainActor public var await: String? { anchor.string(Slots.Character.name) }
-    @MainActor public var borrowing: String? { anchor.string(Slots.Character.name) }
+    @MainActor public var `await`: String? { anchor.string(Slots.Character.name) }
+    @MainActor public var `borrowing`: String? { anchor.string(Slots.Character.name) }
     @MainActor public var consume: String? { anchor.string(Slots.Character.name) }
-    @MainActor public var consuming: String? { anchor.string(Slots.Character.name) }
+    @MainActor public var `consuming`: String? { anchor.string(Slots.Character.name) }
     @MainActor public var copy: String? { anchor.string(Slots.Character.name) }
     @MainActor public var discard: String? { anchor.string(Slots.Character.name) }
-    @MainActor public var each: String? { anchor.string(Slots.Character.name) }
-    @MainActor public var isolated: String? { anchor.string(Slots.Character.name) }
-    @MainActor public var sending: String? { anchor.string(Slots.Character.name) }
+    @MainActor public var `each`: String? { anchor.string(Slots.Character.name) }
+    @MainActor public var `isolated`: String? { anchor.string(Slots.Character.name) }
+    @MainActor public var `sending`: String? { anchor.string(Slots.Character.name) }
     @MainActor public var then: String? { anchor.string(Slots.Character.name) }
     @MainActor public var unsafe: String? { anchor.string(Slots.Character.name) }
     @MainActor public var typeName: String? { anchor.string(Slots.Character.name) }
@@ -528,7 +328,7 @@ nonisolated public struct HostileBodies_character: Baton.Lens {
     @MainActor public var origin: Origin { Origin(anchor: anchor.requiredLinked(Slots.Character.origin, type: Types.Location)) }
     @MainActor public var hostileBound: HostileBound_character? {
         typealias Fragment = HostileBound_character
-        let bound = anchor.binding(Sites.HostileBodies_character_hostileBound) { ["flag": .bool(false)] }
+        let bound = anchor.binding(Sites.HostileBodies_character_hostileBound) { () -> [String: Baton.Variable?] in ["flag": .bool(false)] }
         guard Fragment.satisfied(bound) else { return nil }
         return .init(anchor: bound)
     }
@@ -697,6 +497,10 @@ nonisolated public struct HostileBodies_character: Baton.Lens {
         anchor.collectError(Slots.Character.name, into: &errors)
         anchor.collectError(Slots.Character.name, into: &errors)
         anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
         anchor.collectError(Slots.Character.species, into: &errors)
         anchor.collectRequired(Slots.Character.species, path: "species", into: &errors)
         anchor.collectErrors(Slots.Character.origin, within: Origin.fieldErrors, into: &errors)
@@ -708,7 +512,7 @@ nonisolated public struct HostileBodies_character: Baton.Lens {
     /// The lens, or the field errors in it as a `Result`.
     @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
         let errors = fieldErrors(anchor)
-        return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+        return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
     }
 
     nonisolated public struct Origin: Baton.Lens {
@@ -732,7 +536,7 @@ nonisolated public struct HostileBodies_character: Baton.Lens {
         /// The lens, or the field errors in it as a `Result`.
         @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
             let errors = fieldErrors(anchor)
-            return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
         }
     }
 }
@@ -777,7 +581,7 @@ nonisolated public struct HostileCaught_character: Baton.Lens {
     /// The lens, or the field errors in it as a `Result`.
     @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
         let errors = fieldErrors(anchor)
-        return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+        return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
     }
 }
 
@@ -903,16 +707,20 @@ nonisolated public struct HostileConnection_character: Baton.Lens {
         @MainActor public var `protocol`: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
         @MainActor public var `some`: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
         @MainActor public var `any`: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
+        @MainActor public var `rethrows`: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
+        @MainActor public var `fallthrough`: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
+        @MainActor public var `precedencegroup`: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
+        @MainActor public var `_`: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
         @MainActor public var async: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
-        @MainActor public var await: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
-        @MainActor public var borrowing: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
+        @MainActor public var `await`: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
+        @MainActor public var `borrowing`: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
         @MainActor public var consume: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
-        @MainActor public var consuming: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
+        @MainActor public var `consuming`: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
         @MainActor public var copy: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
         @MainActor public var discard: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
-        @MainActor public var each: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
-        @MainActor public var isolated: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
-        @MainActor public var sending: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
+        @MainActor public var `each`: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
+        @MainActor public var `isolated`: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
+        @MainActor public var `sending`: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
         @MainActor public var then: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
         @MainActor public var unsafe: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
         @MainActor public var typeName: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
@@ -1098,16 +906,20 @@ nonisolated public struct HostileLinks_character: Baton.Lens {
     @MainActor public var `protocol`: ProtocolLens2? { anchor.linked(Slots.Character.origin).map(ProtocolLens2.init(anchor:)) }
     @MainActor public var `some`: Some? { anchor.linked(Slots.Character.origin).map(Some.init(anchor:)) }
     @MainActor public var `any`: AnyLens2? { anchor.linked(Slots.Character.origin).map(AnyLens2.init(anchor:)) }
+    @MainActor public var `rethrows`: Rethrows? { anchor.linked(Slots.Character.origin).map(Rethrows.init(anchor:)) }
+    @MainActor public var `fallthrough`: Fallthrough? { anchor.linked(Slots.Character.origin).map(Fallthrough.init(anchor:)) }
+    @MainActor public var `precedencegroup`: Precedencegroup? { anchor.linked(Slots.Character.origin).map(Precedencegroup.init(anchor:)) }
+    @MainActor public var `_`: _2? { anchor.linked(Slots.Character.origin).map(_2.init(anchor:)) }
     @MainActor public var async: Async? { anchor.linked(Slots.Character.origin).map(Async.init(anchor:)) }
-    @MainActor public var await: Await? { anchor.linked(Slots.Character.origin).map(Await.init(anchor:)) }
-    @MainActor public var borrowing: Borrowing? { anchor.linked(Slots.Character.origin).map(Borrowing.init(anchor:)) }
+    @MainActor public var `await`: Await? { anchor.linked(Slots.Character.origin).map(Await.init(anchor:)) }
+    @MainActor public var `borrowing`: Borrowing? { anchor.linked(Slots.Character.origin).map(Borrowing.init(anchor:)) }
     @MainActor public var consume: Consume? { anchor.linked(Slots.Character.origin).map(Consume.init(anchor:)) }
-    @MainActor public var consuming: Consuming? { anchor.linked(Slots.Character.origin).map(Consuming.init(anchor:)) }
+    @MainActor public var `consuming`: Consuming? { anchor.linked(Slots.Character.origin).map(Consuming.init(anchor:)) }
     @MainActor public var copy: Copy? { anchor.linked(Slots.Character.origin).map(Copy.init(anchor:)) }
     @MainActor public var discard: Discard? { anchor.linked(Slots.Character.origin).map(Discard.init(anchor:)) }
-    @MainActor public var each: Each? { anchor.linked(Slots.Character.origin).map(Each.init(anchor:)) }
-    @MainActor public var isolated: Isolated? { anchor.linked(Slots.Character.origin).map(Isolated.init(anchor:)) }
-    @MainActor public var sending: Sending? { anchor.linked(Slots.Character.origin).map(Sending.init(anchor:)) }
+    @MainActor public var `each`: Each? { anchor.linked(Slots.Character.origin).map(Each.init(anchor:)) }
+    @MainActor public var `isolated`: Isolated? { anchor.linked(Slots.Character.origin).map(Isolated.init(anchor:)) }
+    @MainActor public var `sending`: Sending? { anchor.linked(Slots.Character.origin).map(Sending.init(anchor:)) }
     @MainActor public var then: Then? { anchor.linked(Slots.Character.origin).map(Then.init(anchor:)) }
     @MainActor public var unsafe: Unsafe? { anchor.linked(Slots.Character.origin).map(Unsafe.init(anchor:)) }
     @MainActor public var typeName: TypeName? { anchor.linked(Slots.Character.origin).map(TypeName.init(anchor:)) }
@@ -1565,6 +1377,34 @@ nonisolated public struct HostileLinks_character: Baton.Lens {
     }
 
     nonisolated public struct AnyLens2: Baton.Lens {
+        @_spi(Generated) public let anchor: Baton.Anchor
+        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Location"
+        @MainActor public var id: String? { anchor.string(Slots.Location.id) }
+    }
+
+    nonisolated public struct Rethrows: Baton.Lens {
+        @_spi(Generated) public let anchor: Baton.Anchor
+        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Location"
+        @MainActor public var id: String? { anchor.string(Slots.Location.id) }
+    }
+
+    nonisolated public struct Fallthrough: Baton.Lens {
+        @_spi(Generated) public let anchor: Baton.Anchor
+        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Location"
+        @MainActor public var id: String? { anchor.string(Slots.Location.id) }
+    }
+
+    nonisolated public struct Precedencegroup: Baton.Lens {
+        @_spi(Generated) public let anchor: Baton.Anchor
+        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Location"
+        @MainActor public var id: String? { anchor.string(Slots.Location.id) }
+    }
+
+    nonisolated public struct _2: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Location"
@@ -2241,16 +2081,20 @@ nonisolated public struct HostileScalars_character: Baton.Lens {
     @MainActor public var `protocol`: String? { anchor.string(Slots.Character.name) }
     @MainActor public var `some`: String? { anchor.string(Slots.Character.name) }
     @MainActor public var `any`: String? { anchor.string(Slots.Character.name) }
+    @MainActor public var `rethrows`: String? { anchor.string(Slots.Character.name) }
+    @MainActor public var `fallthrough`: String? { anchor.string(Slots.Character.name) }
+    @MainActor public var `precedencegroup`: String? { anchor.string(Slots.Character.name) }
+    @MainActor public var `_`: String? { anchor.string(Slots.Character.name) }
     @MainActor public var async: String? { anchor.string(Slots.Character.name) }
-    @MainActor public var await: String? { anchor.string(Slots.Character.name) }
-    @MainActor public var borrowing: String? { anchor.string(Slots.Character.name) }
+    @MainActor public var `await`: String? { anchor.string(Slots.Character.name) }
+    @MainActor public var `borrowing`: String? { anchor.string(Slots.Character.name) }
     @MainActor public var consume: String? { anchor.string(Slots.Character.name) }
-    @MainActor public var consuming: String? { anchor.string(Slots.Character.name) }
+    @MainActor public var `consuming`: String? { anchor.string(Slots.Character.name) }
     @MainActor public var copy: String? { anchor.string(Slots.Character.name) }
     @MainActor public var discard: String? { anchor.string(Slots.Character.name) }
-    @MainActor public var each: String? { anchor.string(Slots.Character.name) }
-    @MainActor public var isolated: String? { anchor.string(Slots.Character.name) }
-    @MainActor public var sending: String? { anchor.string(Slots.Character.name) }
+    @MainActor public var `each`: String? { anchor.string(Slots.Character.name) }
+    @MainActor public var `isolated`: String? { anchor.string(Slots.Character.name) }
+    @MainActor public var `sending`: String? { anchor.string(Slots.Character.name) }
     @MainActor public var then: String? { anchor.string(Slots.Character.name) }
     @MainActor public var unsafe: String? { anchor.string(Slots.Character.name) }
     @MainActor public var typeName: String? { anchor.string(Slots.Character.name) }
@@ -2390,16 +2234,20 @@ nonisolated public struct HostileSelections_character: Baton.Lens {
     @MainActor public var `protocol`: ProtocolLens2 { ProtocolLens2(anchor: anchor) }
     @MainActor public var `some`: Some { Some(anchor: anchor) }
     @MainActor public var `any`: AnyLens2 { AnyLens2(anchor: anchor) }
+    @MainActor public var `rethrows`: Rethrows { Rethrows(anchor: anchor) }
+    @MainActor public var `fallthrough`: Fallthrough { Fallthrough(anchor: anchor) }
+    @MainActor public var `precedencegroup`: Precedencegroup { Precedencegroup(anchor: anchor) }
+    @MainActor public var `_`: _2 { _2(anchor: anchor) }
     @MainActor public var async: Async { Async(anchor: anchor) }
-    @MainActor public var await: Await { Await(anchor: anchor) }
-    @MainActor public var borrowing: Borrowing { Borrowing(anchor: anchor) }
+    @MainActor public var `await`: Await { Await(anchor: anchor) }
+    @MainActor public var `borrowing`: Borrowing { Borrowing(anchor: anchor) }
     @MainActor public var consume: Consume { Consume(anchor: anchor) }
-    @MainActor public var consuming: Consuming { Consuming(anchor: anchor) }
+    @MainActor public var `consuming`: Consuming { Consuming(anchor: anchor) }
     @MainActor public var copy: Copy { Copy(anchor: anchor) }
     @MainActor public var discard: Discard { Discard(anchor: anchor) }
-    @MainActor public var each: Each { Each(anchor: anchor) }
-    @MainActor public var isolated: Isolated { Isolated(anchor: anchor) }
-    @MainActor public var sending: Sending { Sending(anchor: anchor) }
+    @MainActor public var `each`: Each { Each(anchor: anchor) }
+    @MainActor public var `isolated`: Isolated { Isolated(anchor: anchor) }
+    @MainActor public var `sending`: Sending { Sending(anchor: anchor) }
     @MainActor public var then: Then { Then(anchor: anchor) }
     @MainActor public var unsafe: Unsafe { Unsafe(anchor: anchor) }
     @MainActor public var typeName: TypeName { TypeName(anchor: anchor) }
@@ -2857,6 +2705,34 @@ nonisolated public struct HostileSelections_character: Baton.Lens {
     }
 
     nonisolated public struct AnyLens2: Baton.Lens {
+        @_spi(Generated) public let anchor: Baton.Anchor
+        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Character"
+        @MainActor public var name: String? { anchor.string(Slots.Character.name) }
+    }
+
+    nonisolated public struct Rethrows: Baton.Lens {
+        @_spi(Generated) public let anchor: Baton.Anchor
+        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Character"
+        @MainActor public var name: String? { anchor.string(Slots.Character.name) }
+    }
+
+    nonisolated public struct Fallthrough: Baton.Lens {
+        @_spi(Generated) public let anchor: Baton.Anchor
+        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Character"
+        @MainActor public var name: String? { anchor.string(Slots.Character.name) }
+    }
+
+    nonisolated public struct Precedencegroup: Baton.Lens {
+        @_spi(Generated) public let anchor: Baton.Anchor
+        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Character"
+        @MainActor public var name: String? { anchor.string(Slots.Character.name) }
+    }
+
+    nonisolated public struct _2: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Character"
@@ -3541,16 +3417,20 @@ nonisolated public struct HostileSpreads_character: Baton.Lens {
     @MainActor public var `protocol`: HostileSpreadTarget_character { .init(anchor: anchor) }
     @MainActor public var `some`: HostileSpreadTarget_character { .init(anchor: anchor) }
     @MainActor public var `any`: HostileSpreadTarget_character { .init(anchor: anchor) }
+    @MainActor public var `rethrows`: HostileSpreadTarget_character { .init(anchor: anchor) }
+    @MainActor public var `fallthrough`: HostileSpreadTarget_character { .init(anchor: anchor) }
+    @MainActor public var `precedencegroup`: HostileSpreadTarget_character { .init(anchor: anchor) }
+    @MainActor public var `_`: HostileSpreadTarget_character { .init(anchor: anchor) }
     @MainActor public var async: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var await: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var borrowing: HostileSpreadTarget_character { .init(anchor: anchor) }
+    @MainActor public var `await`: HostileSpreadTarget_character { .init(anchor: anchor) }
+    @MainActor public var `borrowing`: HostileSpreadTarget_character { .init(anchor: anchor) }
     @MainActor public var consume: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var consuming: HostileSpreadTarget_character { .init(anchor: anchor) }
+    @MainActor public var `consuming`: HostileSpreadTarget_character { .init(anchor: anchor) }
     @MainActor public var copy: HostileSpreadTarget_character { .init(anchor: anchor) }
     @MainActor public var discard: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var each: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var isolated: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var sending: HostileSpreadTarget_character { .init(anchor: anchor) }
+    @MainActor public var `each`: HostileSpreadTarget_character { .init(anchor: anchor) }
+    @MainActor public var `isolated`: HostileSpreadTarget_character { .init(anchor: anchor) }
+    @MainActor public var `sending`: HostileSpreadTarget_character { .init(anchor: anchor) }
     @MainActor public var then: HostileSpreadTarget_character { .init(anchor: anchor) }
     @MainActor public var unsafe: HostileSpreadTarget_character { .init(anchor: anchor) }
     @MainActor public var typeName: HostileSpreadTarget_character { .init(anchor: anchor) }
@@ -3631,59 +3511,546 @@ nonisolated public struct HostileSpreads_character: Baton.Lens {
     @MainActor public var Sendable: HostileSpreadTarget_character { .init(anchor: anchor) }
 }
 
-/// Operation value for `query HostileArguments10RefetchQuery`.
-nonisolated public struct HostileArguments10RefetchQuery: Baton.Query {
+/// Lens for `fragment _hostileHidden on Character`.
+nonisolated public struct _hostileHidden: Baton.Lens {
+    @_spi(Generated) public let anchor: Baton.Anchor
+    @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+    public static let typeName = "Character"
+    @MainActor public var name: String? { anchor.string(Slots.Character.name) }
+}
+
+/// Operation value for `query HostileArgumentsRefetchQuery`.
+nonisolated public struct HostileArgumentsRefetchQuery: Baton.Query {
+    public var AbstractSlots: Bool?
+    public var Action: Bool?
+    public var `Any`: Bool?
+    public var Bool: Bool?
+    public var Double: Bool?
     public var Fragment: Bool?
+    public var Hasher: Bool?
+    public var Int: Bool?
+    public var MainActor: Bool?
+    public var Op: Bool?
+    public var Operation: Bool?
+    public var OptimisticResponse: Bool?
+    public var Optional: Bool?
     public var Owner: Bool?
+    public var `Protocol`: Bool?
+    public var Query: Bool?
+    public var RefetchQuery: Bool?
+    public var Result: Bool?
+    public var `Self`: Bool?
+    public var Sendable: Bool?
+    public var Set: Bool?
     public var Spread: Bool?
+    public var String: Bool?
+    public var Swift: Bool?
+    public var `Type`: Bool?
+    public var `_`: Bool?
+    public var anchor: Bool?
+    public var `any`: Bool?
+    public var `as`: Bool?
+    public var `associatedtype`: Bool?
+    public var async: Bool?
+    public var `await`: Bool?
+    public var `borrowing`: Bool?
+    public var bound: Bool?
+    public var `break`: Bool?
+    public var bubbles: Bool?
+    public var callAsFunction: Bool?
+    public var `case`: Bool?
+    public var `catch`: Bool?
+    public var caught: Bool?
+    public var child: Bool?
+    public var `class`: Bool?
+    public var commit: Bool?
+    public var connection: Bool?
+    public var connectionID: Bool?
+    public var consume: Bool?
+    public var `consuming`: Bool?
+    public var `continue`: Bool?
+    public var copy: Bool?
     public var count: Bool?
+    public var `default`: Bool?
+    public var `defer`: Bool?
+    public var `deinit`: Bool?
+    public var discard: Bool?
+    public var `do`: Bool?
+    public var `each`: Bool?
+    public var `else`: Bool?
+    public var `enum`: Bool?
+    public var errorBehavior: Bool?
+    public var errors: Bool?
+    public var `extension`: Bool?
+    public var `fallthrough`: Bool?
+    public var `false`: Bool?
+    public var fieldErrors: Bool?
     public var fields: Bool?
+    public var `fileprivate`: Bool?
+    public var `for`: Bool?
+    public var `func`: Bool?
+    public var `guard`: Bool?
+    public var hasDeferred: Bool?
+    public var hasNext: Bool?
+    public var hasPrevious: Bool?
+    public var hash: Bool?
     public var hasher: Bool?
+    public var `if`: Bool?
+    public var `import`: Bool?
+    public var `in`: Bool?
+    public var `init`: Bool?
+    public var `inout`: Bool?
+    public var `internal`: Bool?
+    public var `is`: Bool?
+    public var isLoadingNext: Bool?
+    public var isLoadingPrevious: Bool?
+    public var isPresent: Bool?
+    public var `isolated`: Bool?
+    public var `let`: Bool?
     public var lhs: Bool?
+    public var loadNext: Bool?
+    public var loadPrevious: Bool?
+    public var missing: Bool?
+    public var missingRequiredField: Bool?
+    public var name: Bool?
+    public var `nil`: Bool?
+    public var nodes: Bool?
+    public var `open`: Bool?
+    public var `operator`: Bool?
     public var optimistic: Bool?
+    public var persistedID: Bool?
+    public var plan: Bool?
+    public var `precedencegroup`: Bool?
+    public var `private`: Bool?
+    public var `protocol`: Bool?
+    public var `public`: Bool?
+    public var recordID: Bool?
+    public var refetch: Bool?
+    public var refetchable: Bool?
+    public var `repeat`: Bool?
+    public var `rethrows`: Bool?
+    public var retry: Bool?
+    public var `return`: Bool?
     public var rhs: Bool?
+    public var satisfied: Bool?
+    public var schemaDigest: Bool?
+    public var `self`: Bool?
     public var selfValue: Bool?
+    public var `sending`: Bool?
+    public var `some`: Bool?
+    public var `static`: Bool?
+    public var `struct`: Bool?
+    public var `subscript`: Bool?
+    public var subscription: Bool?
+    public var `super`: Bool?
+    public var `switch`: Bool?
+    public var text: Bool?
+    public var then: Bool?
+    public var `throw`: Bool?
+    public var throwing: Bool?
+    public var `throws`: Bool?
+    public var throwsOnFieldError: Bool?
+    public var `true`: Bool?
+    public var `try`: Bool?
+    public var typeName: Bool?
+    public var `typealias`: Bool?
+    public var unsafe: Bool?
+    public var `var`: Bool?
+    public var variable: Bool?
+    public var `where`: Bool?
+    public var `while`: Bool?
     public var id: String
     public var resolution: Baton.OperationHandle<Self>? = nil
 
-    public init(Fragment: Bool? = nil, Owner: Bool? = nil, Spread: Bool? = nil, count: Bool? = nil, fields: Bool? = nil, hasher: Bool? = nil, lhs: Bool? = nil, optimistic: Bool? = nil, rhs: Bool? = nil, selfValue: Bool? = nil, id: String) {
+    public init(AbstractSlots: Bool? = nil, Action: Bool? = nil, `Any`: Bool? = nil, Bool: Bool? = nil, Double: Bool? = nil, Fragment: Bool? = nil, Hasher: Bool? = nil, Int: Bool? = nil, MainActor: Bool? = nil, Op: Bool? = nil, Operation: Bool? = nil, OptimisticResponse: Bool? = nil, Optional: Bool? = nil, Owner: Bool? = nil, `Protocol`: Bool? = nil, Query: Bool? = nil, RefetchQuery: Bool? = nil, Result: Bool? = nil, `Self`: Bool? = nil, Sendable: Bool? = nil, Set: Bool? = nil, Spread: Bool? = nil, String: Bool? = nil, Swift: Bool? = nil, `Type`: Bool? = nil, `_`: Bool? = nil, anchor: Bool? = nil, `any`: Bool? = nil, `as`: Bool? = nil, `associatedtype`: Bool? = nil, async: Bool? = nil, `await`: Bool? = nil, `borrowing`: Bool? = nil, bound: Bool? = nil, `break`: Bool? = nil, bubbles: Bool? = nil, callAsFunction: Bool? = nil, `case`: Bool? = nil, `catch`: Bool? = nil, caught: Bool? = nil, child: Bool? = nil, `class`: Bool? = nil, commit: Bool? = nil, connection: Bool? = nil, connectionID: Bool? = nil, consume: Bool? = nil, `consuming`: Bool? = nil, `continue`: Bool? = nil, copy: Bool? = nil, count: Bool? = nil, `default`: Bool? = nil, `defer`: Bool? = nil, `deinit`: Bool? = nil, discard: Bool? = nil, `do`: Bool? = nil, `each`: Bool? = nil, `else`: Bool? = nil, `enum`: Bool? = nil, errorBehavior: Bool? = nil, errors: Bool? = nil, `extension`: Bool? = nil, `fallthrough`: Bool? = nil, `false`: Bool? = nil, fieldErrors: Bool? = nil, fields: Bool? = nil, `fileprivate`: Bool? = nil, `for`: Bool? = nil, `func`: Bool? = nil, `guard`: Bool? = nil, hasDeferred: Bool? = nil, hasNext: Bool? = nil, hasPrevious: Bool? = nil, hash: Bool? = nil, hasher: Bool? = nil, `if`: Bool? = nil, `import`: Bool? = nil, `in`: Bool? = nil, `init`: Bool? = nil, `inout`: Bool? = nil, `internal`: Bool? = nil, `is`: Bool? = nil, isLoadingNext: Bool? = nil, isLoadingPrevious: Bool? = nil, isPresent: Bool? = nil, `isolated`: Bool? = nil, `let`: Bool? = nil, lhs: Bool? = nil, loadNext: Bool? = nil, loadPrevious: Bool? = nil, missing: Bool? = nil, missingRequiredField: Bool? = nil, name: Bool? = nil, `nil`: Bool? = nil, nodes: Bool? = nil, `open`: Bool? = nil, `operator`: Bool? = nil, optimistic: Bool? = nil, persistedID: Bool? = nil, plan: Bool? = nil, `precedencegroup`: Bool? = nil, `private`: Bool? = nil, `protocol`: Bool? = nil, `public`: Bool? = nil, recordID: Bool? = nil, refetch: Bool? = nil, refetchable: Bool? = nil, `repeat`: Bool? = nil, `rethrows`: Bool? = nil, retry: Bool? = nil, `return`: Bool? = nil, rhs: Bool? = nil, satisfied: Bool? = nil, schemaDigest: Bool? = nil, `self` selfValue2: Bool? = nil, selfValue: Bool? = nil, `sending`: Bool? = nil, `some`: Bool? = nil, `static`: Bool? = nil, `struct`: Bool? = nil, `subscript`: Bool? = nil, subscription: Bool? = nil, `super`: Bool? = nil, `switch`: Bool? = nil, text: Bool? = nil, then: Bool? = nil, `throw`: Bool? = nil, throwing: Bool? = nil, `throws`: Bool? = nil, throwsOnFieldError: Bool? = nil, `true`: Bool? = nil, `try`: Bool? = nil, typeName: Bool? = nil, `typealias`: Bool? = nil, unsafe: Bool? = nil, `var`: Bool? = nil, variable: Bool? = nil, `where`: Bool? = nil, `while`: Bool? = nil, id: String) {
+        self.AbstractSlots = AbstractSlots
+        self.Action = Action
+        self.`Any` = `Any`
+        self.Bool = Bool
+        self.Double = Double
         self.Fragment = Fragment
+        self.Hasher = Hasher
+        self.Int = Int
+        self.MainActor = MainActor
+        self.Op = Op
+        self.Operation = Operation
+        self.OptimisticResponse = OptimisticResponse
+        self.Optional = Optional
         self.Owner = Owner
+        self.`Protocol` = `Protocol`
+        self.Query = Query
+        self.RefetchQuery = RefetchQuery
+        self.Result = Result
+        self.`Self` = `Self`
+        self.Sendable = Sendable
+        self.Set = Set
         self.Spread = Spread
+        self.String = String
+        self.Swift = Swift
+        self.`Type` = `Type`
+        self.`_` = `_`
+        self.anchor = anchor
+        self.`any` = `any`
+        self.`as` = `as`
+        self.`associatedtype` = `associatedtype`
+        self.async = async
+        self.`await` = `await`
+        self.`borrowing` = `borrowing`
+        self.bound = bound
+        self.`break` = `break`
+        self.bubbles = bubbles
+        self.callAsFunction = callAsFunction
+        self.`case` = `case`
+        self.`catch` = `catch`
+        self.caught = caught
+        self.child = child
+        self.`class` = `class`
+        self.commit = commit
+        self.connection = connection
+        self.connectionID = connectionID
+        self.consume = consume
+        self.`consuming` = `consuming`
+        self.`continue` = `continue`
+        self.copy = copy
         self.count = count
+        self.`default` = `default`
+        self.`defer` = `defer`
+        self.`deinit` = `deinit`
+        self.discard = discard
+        self.`do` = `do`
+        self.`each` = `each`
+        self.`else` = `else`
+        self.`enum` = `enum`
+        self.errorBehavior = errorBehavior
+        self.errors = errors
+        self.`extension` = `extension`
+        self.`fallthrough` = `fallthrough`
+        self.`false` = `false`
+        self.fieldErrors = fieldErrors
         self.fields = fields
+        self.`fileprivate` = `fileprivate`
+        self.`for` = `for`
+        self.`func` = `func`
+        self.`guard` = `guard`
+        self.hasDeferred = hasDeferred
+        self.hasNext = hasNext
+        self.hasPrevious = hasPrevious
+        self.hash = hash
         self.hasher = hasher
+        self.`if` = `if`
+        self.`import` = `import`
+        self.`in` = `in`
+        self.`init` = `init`
+        self.`inout` = `inout`
+        self.`internal` = `internal`
+        self.`is` = `is`
+        self.isLoadingNext = isLoadingNext
+        self.isLoadingPrevious = isLoadingPrevious
+        self.isPresent = isPresent
+        self.`isolated` = `isolated`
+        self.`let` = `let`
         self.lhs = lhs
+        self.loadNext = loadNext
+        self.loadPrevious = loadPrevious
+        self.missing = missing
+        self.missingRequiredField = missingRequiredField
+        self.name = name
+        self.`nil` = `nil`
+        self.nodes = nodes
+        self.`open` = `open`
+        self.`operator` = `operator`
         self.optimistic = optimistic
+        self.persistedID = persistedID
+        self.plan = plan
+        self.`precedencegroup` = `precedencegroup`
+        self.`private` = `private`
+        self.`protocol` = `protocol`
+        self.`public` = `public`
+        self.recordID = recordID
+        self.refetch = refetch
+        self.refetchable = refetchable
+        self.`repeat` = `repeat`
+        self.`rethrows` = `rethrows`
+        self.retry = retry
+        self.`return` = `return`
         self.rhs = rhs
+        self.satisfied = satisfied
+        self.schemaDigest = schemaDigest
+        self.`self` = selfValue2
         self.selfValue = selfValue
+        self.`sending` = `sending`
+        self.`some` = `some`
+        self.`static` = `static`
+        self.`struct` = `struct`
+        self.`subscript` = `subscript`
+        self.subscription = subscription
+        self.`super` = `super`
+        self.`switch` = `switch`
+        self.text = text
+        self.then = then
+        self.`throw` = `throw`
+        self.throwing = throwing
+        self.`throws` = `throws`
+        self.throwsOnFieldError = throwsOnFieldError
+        self.`true` = `true`
+        self.`try` = `try`
+        self.typeName = typeName
+        self.`typealias` = `typealias`
+        self.unsafe = unsafe
+        self.`var` = `var`
+        self.variable = variable
+        self.`where` = `where`
+        self.`while` = `while`
         self.id = id
     }
 
-    public static let name = "HostileArguments10RefetchQuery"
-    public static let persistedID = "67e7a95075a1fab9081fe5c2698cf636"
+    public static let name = "HostileArgumentsRefetchQuery"
+    public static let persistedID = "22f13f08da3d40a6b57b339b62982a35"
     public static let text = #"""
-query HostileArguments10RefetchQuery(
+query HostileArgumentsRefetchQuery(
+  $AbstractSlots: Boolean = true
+  $Action: Boolean = true
+  $Any: Boolean = true
+  $Bool: Boolean = true
+  $Double: Boolean = true
   $Fragment: Boolean = true
+  $Hasher: Boolean = true
+  $Int: Boolean = true
+  $MainActor: Boolean = true
+  $Op: Boolean = true
+  $Operation: Boolean = true
+  $OptimisticResponse: Boolean = true
+  $Optional: Boolean = true
   $Owner: Boolean = true
+  $Protocol: Boolean = true
+  $Query: Boolean = true
+  $RefetchQuery: Boolean = true
+  $Result: Boolean = true
+  $Self: Boolean = true
+  $Sendable: Boolean = true
+  $Set: Boolean = true
   $Spread: Boolean = true
+  $String: Boolean = true
+  $Swift: Boolean = true
+  $Type: Boolean = true
+  $_: Boolean = true
+  $anchor: Boolean = true
+  $any: Boolean = true
+  $as: Boolean = true
+  $associatedtype: Boolean = true
+  $async: Boolean = true
+  $await: Boolean = true
+  $borrowing: Boolean = true
+  $bound: Boolean = true
+  $break: Boolean = true
+  $bubbles: Boolean = true
+  $callAsFunction: Boolean = true
+  $case: Boolean = true
+  $catch: Boolean = true
+  $caught: Boolean = true
+  $child: Boolean = true
+  $class: Boolean = true
+  $commit: Boolean = true
+  $connection: Boolean = true
+  $connectionID: Boolean = true
+  $consume: Boolean = true
+  $consuming: Boolean = true
+  $continue: Boolean = true
+  $copy: Boolean = true
   $count: Boolean = true
+  $default: Boolean = true
+  $defer: Boolean = true
+  $deinit: Boolean = true
+  $discard: Boolean = true
+  $do: Boolean = true
+  $each: Boolean = true
+  $else: Boolean = true
+  $enum: Boolean = true
+  $errorBehavior: Boolean = true
+  $errors: Boolean = true
+  $extension: Boolean = true
+  $fallthrough: Boolean = true
+  $false: Boolean = true
+  $fieldErrors: Boolean = true
   $fields: Boolean = true
+  $fileprivate: Boolean = true
+  $for: Boolean = true
+  $func: Boolean = true
+  $guard: Boolean = true
+  $hasDeferred: Boolean = true
+  $hasNext: Boolean = true
+  $hasPrevious: Boolean = true
+  $hash: Boolean = true
   $hasher: Boolean = true
+  $if: Boolean = true
+  $import: Boolean = true
+  $in: Boolean = true
+  $init: Boolean = true
+  $inout: Boolean = true
+  $internal: Boolean = true
+  $is: Boolean = true
+  $isLoadingNext: Boolean = true
+  $isLoadingPrevious: Boolean = true
+  $isPresent: Boolean = true
+  $isolated: Boolean = true
+  $let: Boolean = true
   $lhs: Boolean = true
+  $loadNext: Boolean = true
+  $loadPrevious: Boolean = true
+  $missing: Boolean = true
+  $missingRequiredField: Boolean = true
+  $name: Boolean = true
+  $nil: Boolean = true
+  $nodes: Boolean = true
+  $open: Boolean = true
+  $operator: Boolean = true
   $optimistic: Boolean = true
+  $persistedID: Boolean = true
+  $plan: Boolean = true
+  $precedencegroup: Boolean = true
+  $private: Boolean = true
+  $protocol: Boolean = true
+  $public: Boolean = true
+  $recordID: Boolean = true
+  $refetch: Boolean = true
+  $refetchable: Boolean = true
+  $repeat: Boolean = true
+  $rethrows: Boolean = true
+  $retry: Boolean = true
+  $return: Boolean = true
   $rhs: Boolean = true
+  $satisfied: Boolean = true
+  $schemaDigest: Boolean = true
+  $self: Boolean = true
   $selfValue: Boolean = true
+  $sending: Boolean = true
+  $some: Boolean = true
+  $static: Boolean = true
+  $struct: Boolean = true
+  $subscript: Boolean = true
+  $subscription: Boolean = true
+  $super: Boolean = true
+  $switch: Boolean = true
+  $text: Boolean = true
+  $then: Boolean = true
+  $throw: Boolean = true
+  $throwing: Boolean = true
+  $throws: Boolean = true
+  $throwsOnFieldError: Boolean = true
+  $true: Boolean = true
+  $try: Boolean = true
+  $typeName: Boolean = true
+  $typealias: Boolean = true
+  $unsafe: Boolean = true
+  $var: Boolean = true
+  $variable: Boolean = true
+  $where: Boolean = true
+  $while: Boolean = true
   $id: ID!
 ) {
   node(id: $id) {
     __typename
-    ...HostileArguments10_character_12qej0
+    ...HostileArguments_character_3EYoy6
     id
   }
 }
 
-fragment HostileArguments10_character_12qej0 on Character {
+fragment HostileArguments_character_3EYoy6 on Character {
+  name @include(if: $Type)
+  name @include(if: $Protocol)
+  name @include(if: $Any)
+  name @include(if: $self)
+  name @include(if: $Self)
+  name @include(if: $init)
+  name @include(if: $deinit)
+  name @include(if: $subscript)
+  name @include(if: $class)
+  name @include(if: $struct)
+  name @include(if: $enum)
+  name @include(if: $func)
+  name @include(if: $var)
+  name @include(if: $let)
+  name @include(if: $import)
+  name @include(if: $extension)
+  name @include(if: $operator)
+  name @include(if: $static)
+  name @include(if: $default)
+  name @include(if: $case)
+  name @include(if: $switch)
+  name @include(if: $if)
+  name @include(if: $else)
+  name @include(if: $for)
+  name @include(if: $in)
+  name @include(if: $while)
+  name @include(if: $repeat)
+  name @include(if: $return)
+  name @include(if: $break)
+  name @include(if: $continue)
+  name @include(if: $where)
+  name @include(if: $is)
+  name @include(if: $as)
+  name @include(if: $try)
+  name @include(if: $throw)
+  name @include(if: $throws)
+  name @include(if: $guard)
+  name @include(if: $defer)
+  name @include(if: $do)
+  name @include(if: $catch)
+  name @include(if: $true)
+  name @include(if: $false)
+  name @include(if: $nil)
+  name @include(if: $super)
+  name @include(if: $internal)
+  name @include(if: $private)
+  name @include(if: $public)
+  name @include(if: $fileprivate)
+  name @include(if: $open)
+  name @include(if: $inout)
+  name @include(if: $typealias)
+  name @include(if: $associatedtype)
+  name @include(if: $protocol)
+  name @include(if: $some)
+  name @include(if: $any)
+  name @include(if: $rethrows)
+  name @include(if: $fallthrough)
+  name @include(if: $precedencegroup)
+  name @include(if: $_)
+  name @include(if: $async)
+  name @include(if: $borrowing)
+  name @include(if: $consume)
+  name @include(if: $consuming)
+  name @include(if: $copy)
+  name @include(if: $discard)
+  name @include(if: $each)
+  name @include(if: $isolated)
+  name @include(if: $sending)
+  name @include(if: $then)
+  name @include(if: $unsafe)
+  name @include(if: $await)
+  name @include(if: $anchor)
+  name @include(if: $recordID)
+  name @include(if: $typeName)
+  name @include(if: $satisfied)
+  name @include(if: $missingRequiredField)
+  name @include(if: $fieldErrors)
+  name @include(if: $isPresent)
+  name @include(if: $throwing)
+  name @include(if: $caught)
+  name @include(if: $refetchable)
+  name @include(if: $refetch)
+  name @include(if: $connection)
+  name @include(if: $nodes)
+  name @include(if: $hasNext)
+  name @include(if: $hasPrevious)
+  name @include(if: $isLoadingNext)
+  name @include(if: $isLoadingPrevious)
+  name @include(if: $connectionID)
+  name @include(if: $loadNext)
+  name @include(if: $loadPrevious)
+  name @include(if: $bound)
+  name @include(if: $errors)
+  name @include(if: $child)
+  name @include(if: $missing)
   name @include(if: $count)
   name @include(if: $fields)
   name @include(if: $lhs)
@@ -3694,118 +4061,6 @@ fragment HostileArguments10_character_12qej0 on Character {
   name @include(if: $Fragment)
   name @include(if: $Spread)
   name @include(if: $Owner)
-  id
-}
-"""#
-
-    public var variables: Baton.Variables {
-        Baton.Variables(["Fragment": Baton.Variable(self.Fragment), "Owner": Baton.Variable(self.Owner), "Spread": Baton.Variable(self.Spread), "count": Baton.Variable(self.count), "fields": Baton.Variable(self.fields), "hasher": Baton.Variable(self.hasher), "lhs": Baton.Variable(self.lhs), "optimistic": Baton.Variable(self.optimistic), "rhs": Baton.Variable(self.rhs), "selfValue": Baton.Variable(self.selfValue), "id": Baton.Variable(self.id)])
-    }
-
-    public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.Fragment == rhs.Fragment && lhs.Owner == rhs.Owner && lhs.Spread == rhs.Spread && lhs.count == rhs.count && lhs.fields == rhs.fields && lhs.hasher == rhs.hasher && lhs.lhs == rhs.lhs && lhs.optimistic == rhs.optimistic && lhs.rhs == rhs.rhs && lhs.selfValue == rhs.selfValue && lhs.id == rhs.id
-    }
-
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(self.Fragment)
-        hasher.combine(self.Owner)
-        hasher.combine(self.Spread)
-        hasher.combine(self.count)
-        hasher.combine(self.fields)
-        hasher.combine(self.hasher)
-        hasher.combine(self.lhs)
-        hasher.combine(self.optimistic)
-        hasher.combine(self.rhs)
-        hasher.combine(self.selfValue)
-        hasher.combine(self.id)
-    }
-
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, hasID: true, abstract: true, variants: [
-                .init(types: [Types.Character], fields: [
-                    .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false, guards: [[.init("count", passing: true)], [.init("fields", passing: true)], [.init("lhs", passing: true)], [.init("rhs", passing: true)], [.init("hasher", passing: true)], [.init("optimistic", passing: true)], [.init("selfValue", passing: true)], [.init("Fragment", passing: true)], [.init("Spread", passing: true)], [.init("Owner", passing: true)]]),
-                ]),
-                .init(types: nil, fields: [
-                    .scalar("__typename", key: .fixed(Slots.Node.__typename), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                ]),
-            ])),
-        ]))
-
-    nonisolated public struct Data: Baton.Lens {
-        @_spi(Generated) public let anchor: Baton.Anchor
-        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
-        @MainActor public var node: Node? { anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08)).map(Node.init(anchor:)) }
-
-        nonisolated public struct Node: Baton.Lens {
-            @_spi(Generated) public let anchor: Baton.Anchor
-            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Node"
-            @MainActor public var hostileArguments10: HostileArguments10_character? {
-                let bound = anchor.binding(Sites.HostileArguments10RefetchQuery_hostileArguments10) { ["count": anchor.variables["count"], "fields": anchor.variables["fields"], "lhs": anchor.variables["lhs"], "rhs": anchor.variables["rhs"], "hasher": anchor.variables["hasher"], "optimistic": anchor.variables["optimistic"], "selfValue": anchor.variables["selfValue"], "Fragment": anchor.variables["Fragment"], "Spread": anchor.variables["Spread"], "Owner": anchor.variables["Owner"]] }
-                guard anchor.record.is(Types.Character) else { return nil }
-                return .init(anchor: bound)
-            }
-        }
-    }
-}
-
-/// Operation value for `query HostileArguments11RefetchQuery`.
-nonisolated public struct HostileArguments11RefetchQuery: Baton.Query {
-    public var Operation: Bool?
-    public var Query: Bool?
-    public var RefetchQuery: Bool?
-    public var bubbles: Bool?
-    public var errorBehavior: Bool?
-    public var name: Bool?
-    public var persistedID: Bool?
-    public var plan: Bool?
-    public var text: Bool?
-    public var throwsOnFieldError: Bool?
-    public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
-
-    public init(Operation: Bool? = nil, Query: Bool? = nil, RefetchQuery: Bool? = nil, bubbles: Bool? = nil, errorBehavior: Bool? = nil, name: Bool? = nil, persistedID: Bool? = nil, plan: Bool? = nil, text: Bool? = nil, throwsOnFieldError: Bool? = nil, id: String) {
-        self.Operation = Operation
-        self.Query = Query
-        self.RefetchQuery = RefetchQuery
-        self.bubbles = bubbles
-        self.errorBehavior = errorBehavior
-        self.name = name
-        self.persistedID = persistedID
-        self.plan = plan
-        self.text = text
-        self.throwsOnFieldError = throwsOnFieldError
-        self.id = id
-    }
-
-    public static let name = "HostileArguments11RefetchQuery"
-    public static let persistedID = "c0e815559c97e081a33bf79b950920c6"
-    public static let text = #"""
-query HostileArguments11RefetchQuery(
-  $Operation: Boolean = true
-  $Query: Boolean = true
-  $RefetchQuery: Boolean = true
-  $bubbles: Boolean = true
-  $errorBehavior: Boolean = true
-  $name: Boolean = true
-  $persistedID: Boolean = true
-  $plan: Boolean = true
-  $text: Boolean = true
-  $throwsOnFieldError: Boolean = true
-  $id: ID!
-) {
-  node(id: $id) {
-    __typename
-    ...HostileArguments11_character_1kwg1T
-    id
-  }
-}
-
-fragment HostileArguments11_character_1kwg1T on Character {
   name @include(if: $Query)
   name @include(if: $Operation)
   name @include(if: $RefetchQuery)
@@ -3816,118 +4071,6 @@ fragment HostileArguments11_character_1kwg1T on Character {
   name @include(if: $errorBehavior)
   name @include(if: $throwsOnFieldError)
   name @include(if: $bubbles)
-  id
-}
-"""#
-
-    public var variables: Baton.Variables {
-        Baton.Variables(["Operation": Baton.Variable(self.Operation), "Query": Baton.Variable(self.Query), "RefetchQuery": Baton.Variable(self.RefetchQuery), "bubbles": Baton.Variable(self.bubbles), "errorBehavior": Baton.Variable(self.errorBehavior), "name": Baton.Variable(self.name), "persistedID": Baton.Variable(self.persistedID), "plan": Baton.Variable(self.plan), "text": Baton.Variable(self.text), "throwsOnFieldError": Baton.Variable(self.throwsOnFieldError), "id": Baton.Variable(self.id)])
-    }
-
-    public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.Operation == rhs.Operation && lhs.Query == rhs.Query && lhs.RefetchQuery == rhs.RefetchQuery && lhs.bubbles == rhs.bubbles && lhs.errorBehavior == rhs.errorBehavior && lhs.name == rhs.name && lhs.persistedID == rhs.persistedID && lhs.plan == rhs.plan && lhs.text == rhs.text && lhs.throwsOnFieldError == rhs.throwsOnFieldError && lhs.id == rhs.id
-    }
-
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(self.Operation)
-        hasher.combine(self.Query)
-        hasher.combine(self.RefetchQuery)
-        hasher.combine(self.bubbles)
-        hasher.combine(self.errorBehavior)
-        hasher.combine(self.name)
-        hasher.combine(self.persistedID)
-        hasher.combine(self.plan)
-        hasher.combine(self.text)
-        hasher.combine(self.throwsOnFieldError)
-        hasher.combine(self.id)
-    }
-
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, hasID: true, abstract: true, variants: [
-                .init(types: [Types.Character], fields: [
-                    .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false, guards: [[.init("Query", passing: true)], [.init("Operation", passing: true)], [.init("RefetchQuery", passing: true)], [.init("name", passing: true)], [.init("persistedID", passing: true)], [.init("text", passing: true)], [.init("plan", passing: true)], [.init("errorBehavior", passing: true)], [.init("throwsOnFieldError", passing: true)], [.init("bubbles", passing: true)]]),
-                ]),
-                .init(types: nil, fields: [
-                    .scalar("__typename", key: .fixed(Slots.Node.__typename), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                ]),
-            ])),
-        ]))
-
-    nonisolated public struct Data: Baton.Lens {
-        @_spi(Generated) public let anchor: Baton.Anchor
-        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
-        @MainActor public var node: Node? { anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08)).map(Node.init(anchor:)) }
-
-        nonisolated public struct Node: Baton.Lens {
-            @_spi(Generated) public let anchor: Baton.Anchor
-            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Node"
-            @MainActor public var hostileArguments11: HostileArguments11_character? {
-                let bound = anchor.binding(Sites.HostileArguments11RefetchQuery_hostileArguments11) { ["Query": anchor.variables["Query"], "Operation": anchor.variables["Operation"], "RefetchQuery": anchor.variables["RefetchQuery"], "name": anchor.variables["name"], "persistedID": anchor.variables["persistedID"], "text": anchor.variables["text"], "plan": anchor.variables["plan"], "errorBehavior": anchor.variables["errorBehavior"], "throwsOnFieldError": anchor.variables["throwsOnFieldError"], "bubbles": anchor.variables["bubbles"]] }
-                guard anchor.record.is(Types.Character) else { return nil }
-                return .init(anchor: bound)
-            }
-        }
-    }
-}
-
-/// Operation value for `query HostileArguments12RefetchQuery`.
-nonisolated public struct HostileArguments12RefetchQuery: Baton.Query {
-    public var Action: Bool?
-    public var Op: Bool?
-    public var OptimisticResponse: Bool?
-    public var callAsFunction: Bool?
-    public var commit: Bool?
-    public var hasDeferred: Bool?
-    public var hash: Bool?
-    public var isRefreshing: Bool?
-    public var phase: Bool?
-    public var variable: Bool?
-    public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
-
-    public init(Action: Bool? = nil, Op: Bool? = nil, OptimisticResponse: Bool? = nil, callAsFunction: Bool? = nil, commit: Bool? = nil, hasDeferred: Bool? = nil, hash: Bool? = nil, isRefreshing: Bool? = nil, phase: Bool? = nil, variable: Bool? = nil, id: String) {
-        self.Action = Action
-        self.Op = Op
-        self.OptimisticResponse = OptimisticResponse
-        self.callAsFunction = callAsFunction
-        self.commit = commit
-        self.hasDeferred = hasDeferred
-        self.hash = hash
-        self.isRefreshing = isRefreshing
-        self.phase = phase
-        self.variable = variable
-        self.id = id
-    }
-
-    public static let name = "HostileArguments12RefetchQuery"
-    public static let persistedID = "37f4c40e48da363d6a9e885033195f7b"
-    public static let text = #"""
-query HostileArguments12RefetchQuery(
-  $Action: Boolean = true
-  $Op: Boolean = true
-  $OptimisticResponse: Boolean = true
-  $callAsFunction: Boolean = true
-  $commit: Boolean = true
-  $hasDeferred: Boolean = true
-  $hash: Boolean = true
-  $isRefreshing: Boolean = true
-  $phase: Boolean = true
-  $variable: Boolean = true
-  $id: ID!
-) {
-  node(id: $id) {
-    __typename
-    ...HostileArguments12_character_ETSxN
-    id
-  }
-}
-
-fragment HostileArguments12_character_ETSxN on Character {
   name @include(if: $hasDeferred)
   name @include(if: $Action)
   name @include(if: $OptimisticResponse)
@@ -3936,121 +4079,6 @@ fragment HostileArguments12_character_ETSxN on Character {
   name @include(if: $callAsFunction)
   name @include(if: $Op)
   name @include(if: $variable)
-  name @include(if: $phase)
-  name @include(if: $isRefreshing)
-  id
-}
-"""#
-
-    public var variables: Baton.Variables {
-        Baton.Variables(["Action": Baton.Variable(self.Action), "Op": Baton.Variable(self.Op), "OptimisticResponse": Baton.Variable(self.OptimisticResponse), "callAsFunction": Baton.Variable(self.callAsFunction), "commit": Baton.Variable(self.commit), "hasDeferred": Baton.Variable(self.hasDeferred), "hash": Baton.Variable(self.hash), "isRefreshing": Baton.Variable(self.isRefreshing), "phase": Baton.Variable(self.phase), "variable": Baton.Variable(self.variable), "id": Baton.Variable(self.id)])
-    }
-
-    public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.Action == rhs.Action && lhs.Op == rhs.Op && lhs.OptimisticResponse == rhs.OptimisticResponse && lhs.callAsFunction == rhs.callAsFunction && lhs.commit == rhs.commit && lhs.hasDeferred == rhs.hasDeferred && lhs.hash == rhs.hash && lhs.isRefreshing == rhs.isRefreshing && lhs.phase == rhs.phase && lhs.variable == rhs.variable && lhs.id == rhs.id
-    }
-
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(self.Action)
-        hasher.combine(self.Op)
-        hasher.combine(self.OptimisticResponse)
-        hasher.combine(self.callAsFunction)
-        hasher.combine(self.commit)
-        hasher.combine(self.hasDeferred)
-        hasher.combine(self.hash)
-        hasher.combine(self.isRefreshing)
-        hasher.combine(self.phase)
-        hasher.combine(self.variable)
-        hasher.combine(self.id)
-    }
-
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, hasID: true, abstract: true, variants: [
-                .init(types: [Types.Character], fields: [
-                    .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false, guards: [[.init("hasDeferred", passing: true)], [.init("Action", passing: true)], [.init("OptimisticResponse", passing: true)], [.init("hash", passing: true)], [.init("commit", passing: true)], [.init("callAsFunction", passing: true)], [.init("Op", passing: true)], [.init("variable", passing: true)], [.init("phase", passing: true)], [.init("isRefreshing", passing: true)]]),
-                ]),
-                .init(types: nil, fields: [
-                    .scalar("__typename", key: .fixed(Slots.Node.__typename), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                ]),
-            ])),
-        ]))
-
-    nonisolated public struct Data: Baton.Lens {
-        @_spi(Generated) public let anchor: Baton.Anchor
-        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
-        @MainActor public var node: Node? { anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08)).map(Node.init(anchor:)) }
-
-        nonisolated public struct Node: Baton.Lens {
-            @_spi(Generated) public let anchor: Baton.Anchor
-            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Node"
-            @MainActor public var hostileArguments12: HostileArguments12_character? {
-                let bound = anchor.binding(Sites.HostileArguments12RefetchQuery_hostileArguments12) { ["hasDeferred": anchor.variables["hasDeferred"], "Action": anchor.variables["Action"], "OptimisticResponse": anchor.variables["OptimisticResponse"], "hash": anchor.variables["hash"], "commit": anchor.variables["commit"], "callAsFunction": anchor.variables["callAsFunction"], "Op": anchor.variables["Op"], "variable": anchor.variables["variable"], "phase": anchor.variables["phase"], "isRefreshing": anchor.variables["isRefreshing"]] }
-                guard anchor.record.is(Types.Character) else { return nil }
-                return .init(anchor: bound)
-            }
-        }
-    }
-}
-
-/// Operation value for `query HostileArguments13RefetchQuery`.
-nonisolated public struct HostileArguments13RefetchQuery: Baton.Query {
-    public var AbstractSlots: Bool?
-    public var Optional: Bool?
-    public var Result: Bool?
-    public var Set: Bool?
-    public var String: Bool?
-    public var Swift: Bool?
-    public var isStale: Bool?
-    public var retry: Bool?
-    public var schemaDigest: Bool?
-    public var subscription: Bool?
-    public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
-
-    public init(AbstractSlots: Bool? = nil, Optional: Bool? = nil, Result: Bool? = nil, Set: Bool? = nil, String: Bool? = nil, Swift: Bool? = nil, isStale: Bool? = nil, retry: Bool? = nil, schemaDigest: Bool? = nil, subscription: Bool? = nil, id: String) {
-        self.AbstractSlots = AbstractSlots
-        self.Optional = Optional
-        self.Result = Result
-        self.Set = Set
-        self.String = String
-        self.Swift = Swift
-        self.isStale = isStale
-        self.retry = retry
-        self.schemaDigest = schemaDigest
-        self.subscription = subscription
-        self.id = id
-    }
-
-    public static let name = "HostileArguments13RefetchQuery"
-    public static let persistedID = "8ca7709e0d6cb678d225ff00260f9b26"
-    public static let text = #"""
-query HostileArguments13RefetchQuery(
-  $AbstractSlots: Boolean = true
-  $Optional: Boolean = true
-  $Result: Boolean = true
-  $Set: Boolean = true
-  $String: Boolean = true
-  $Swift: Boolean = true
-  $isStale: Boolean = true
-  $retry: Boolean = true
-  $schemaDigest: Boolean = true
-  $subscription: Boolean = true
-  $id: ID!
-) {
-  node(id: $id) {
-    __typename
-    ...HostileArguments13_character_sLKEq
-    id
-  }
-}
-
-fragment HostileArguments13_character_sLKEq on Character {
-  name @include(if: $isStale)
   name @include(if: $retry)
   name @include(if: $subscription)
   name @include(if: $AbstractSlots)
@@ -4060,106 +4088,6 @@ fragment HostileArguments13_character_sLKEq on Character {
   name @include(if: $Result)
   name @include(if: $Optional)
   name @include(if: $String)
-  id
-}
-"""#
-
-    public var variables: Baton.Variables {
-        Baton.Variables(["AbstractSlots": Baton.Variable(self.AbstractSlots), "Optional": Baton.Variable(self.Optional), "Result": Baton.Variable(self.Result), "Set": Baton.Variable(self.Set), "String": Baton.Variable(self.String), "Swift": Baton.Variable(self.Swift), "isStale": Baton.Variable(self.isStale), "retry": Baton.Variable(self.retry), "schemaDigest": Baton.Variable(self.schemaDigest), "subscription": Baton.Variable(self.subscription), "id": Baton.Variable(self.id)])
-    }
-
-    public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.AbstractSlots == rhs.AbstractSlots && lhs.Optional == rhs.Optional && lhs.Result == rhs.Result && lhs.Set == rhs.Set && lhs.String == rhs.String && lhs.Swift == rhs.Swift && lhs.isStale == rhs.isStale && lhs.retry == rhs.retry && lhs.schemaDigest == rhs.schemaDigest && lhs.subscription == rhs.subscription && lhs.id == rhs.id
-    }
-
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(self.AbstractSlots)
-        hasher.combine(self.Optional)
-        hasher.combine(self.Result)
-        hasher.combine(self.Set)
-        hasher.combine(self.String)
-        hasher.combine(self.Swift)
-        hasher.combine(self.isStale)
-        hasher.combine(self.retry)
-        hasher.combine(self.schemaDigest)
-        hasher.combine(self.subscription)
-        hasher.combine(self.id)
-    }
-
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, hasID: true, abstract: true, variants: [
-                .init(types: [Types.Character], fields: [
-                    .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false, guards: [[.init("isStale", passing: true)], [.init("retry", passing: true)], [.init("subscription", passing: true)], [.init("AbstractSlots", passing: true)], [.init("schemaDigest", passing: true)], [.init("Swift", passing: true)], [.init("Set", passing: true)], [.init("Result", passing: true)], [.init("Optional", passing: true)], [.init("String", passing: true)]]),
-                ]),
-                .init(types: nil, fields: [
-                    .scalar("__typename", key: .fixed(Slots.Node.__typename), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                ]),
-            ])),
-        ]))
-
-    nonisolated public struct Data: Baton.Lens {
-        @_spi(Generated) public let anchor: Baton.Anchor
-        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
-        @MainActor public var node: Node? { anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08)).map(Node.init(anchor:)) }
-
-        nonisolated public struct Node: Baton.Lens {
-            @_spi(Generated) public let anchor: Baton.Anchor
-            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Node"
-            @MainActor public var hostileArguments13: HostileArguments13_character? {
-                let bound = anchor.binding(Sites.HostileArguments13RefetchQuery_hostileArguments13) { ["isStale": anchor.variables["isStale"], "retry": anchor.variables["retry"], "subscription": anchor.variables["subscription"], "AbstractSlots": anchor.variables["AbstractSlots"], "schemaDigest": anchor.variables["schemaDigest"], "Swift": anchor.variables["Swift"], "Set": anchor.variables["Set"], "Result": anchor.variables["Result"], "Optional": anchor.variables["Optional"], "String": anchor.variables["String"]] }
-                guard anchor.record.is(Types.Character) else { return nil }
-                return .init(anchor: bound)
-            }
-        }
-    }
-}
-
-/// Operation value for `query HostileArguments14RefetchQuery`.
-nonisolated public struct HostileArguments14RefetchQuery: Baton.Query {
-    public var Bool: Bool?
-    public var Double: Bool?
-    public var Hasher: Bool?
-    public var Int: Bool?
-    public var MainActor: Bool?
-    public var Sendable: Bool?
-    public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
-
-    public init(Bool: Bool? = nil, Double: Bool? = nil, Hasher: Bool? = nil, Int: Bool? = nil, MainActor: Bool? = nil, Sendable: Bool? = nil, id: String) {
-        self.Bool = Bool
-        self.Double = Double
-        self.Hasher = Hasher
-        self.Int = Int
-        self.MainActor = MainActor
-        self.Sendable = Sendable
-        self.id = id
-    }
-
-    public static let name = "HostileArguments14RefetchQuery"
-    public static let persistedID = "4c07d243e8b18ee9b41858796bec9631"
-    public static let text = #"""
-query HostileArguments14RefetchQuery(
-  $Bool: Boolean = true
-  $Double: Boolean = true
-  $Hasher: Boolean = true
-  $Int: Boolean = true
-  $MainActor: Boolean = true
-  $Sendable: Boolean = true
-  $id: ID!
-) {
-  node(id: $id) {
-    __typename
-    ...HostileArguments14_character_3zIdz3
-    id
-  }
-}
-
-fragment HostileArguments14_character_3zIdz3 on Character {
   name @include(if: $Int)
   name @include(if: $Double)
   name @include(if: $Bool)
@@ -4171,385 +4099,151 @@ fragment HostileArguments14_character_3zIdz3 on Character {
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["Bool": Baton.Variable(self.Bool), "Double": Baton.Variable(self.Double), "Hasher": Baton.Variable(self.Hasher), "Int": Baton.Variable(self.Int), "MainActor": Baton.Variable(self.MainActor), "Sendable": Baton.Variable(self.Sendable), "id": Baton.Variable(self.id)])
+        Baton.Variables(["AbstractSlots": Baton.Variable(self.AbstractSlots), "Action": Baton.Variable(self.Action), "Any": Baton.Variable(self.`Any`), "Bool": Baton.Variable(self.Bool), "Double": Baton.Variable(self.Double), "Fragment": Baton.Variable(self.Fragment), "Hasher": Baton.Variable(self.Hasher), "Int": Baton.Variable(self.Int), "MainActor": Baton.Variable(self.MainActor), "Op": Baton.Variable(self.Op), "Operation": Baton.Variable(self.Operation), "OptimisticResponse": Baton.Variable(self.OptimisticResponse), "Optional": Baton.Variable(self.Optional), "Owner": Baton.Variable(self.Owner), "Protocol": Baton.Variable(self.`Protocol`), "Query": Baton.Variable(self.Query), "RefetchQuery": Baton.Variable(self.RefetchQuery), "Result": Baton.Variable(self.Result), "Self": Baton.Variable(self.`Self`), "Sendable": Baton.Variable(self.Sendable), "Set": Baton.Variable(self.Set), "Spread": Baton.Variable(self.Spread), "String": Baton.Variable(self.String), "Swift": Baton.Variable(self.Swift), "Type": Baton.Variable(self.`Type`), "_": Baton.Variable(self.`_`), "anchor": Baton.Variable(self.anchor), "any": Baton.Variable(self.`any`), "as": Baton.Variable(self.`as`), "associatedtype": Baton.Variable(self.`associatedtype`), "async": Baton.Variable(self.async), "await": Baton.Variable(self.`await`), "borrowing": Baton.Variable(self.`borrowing`), "bound": Baton.Variable(self.bound), "break": Baton.Variable(self.`break`), "bubbles": Baton.Variable(self.bubbles), "callAsFunction": Baton.Variable(self.callAsFunction), "case": Baton.Variable(self.`case`), "catch": Baton.Variable(self.`catch`), "caught": Baton.Variable(self.caught), "child": Baton.Variable(self.child), "class": Baton.Variable(self.`class`), "commit": Baton.Variable(self.commit), "connection": Baton.Variable(self.connection), "connectionID": Baton.Variable(self.connectionID), "consume": Baton.Variable(self.consume), "consuming": Baton.Variable(self.`consuming`), "continue": Baton.Variable(self.`continue`), "copy": Baton.Variable(self.copy), "count": Baton.Variable(self.count), "default": Baton.Variable(self.`default`), "defer": Baton.Variable(self.`defer`), "deinit": Baton.Variable(self.`deinit`), "discard": Baton.Variable(self.discard), "do": Baton.Variable(self.`do`), "each": Baton.Variable(self.`each`), "else": Baton.Variable(self.`else`), "enum": Baton.Variable(self.`enum`), "errorBehavior": Baton.Variable(self.errorBehavior), "errors": Baton.Variable(self.errors), "extension": Baton.Variable(self.`extension`), "fallthrough": Baton.Variable(self.`fallthrough`), "false": Baton.Variable(self.`false`), "fieldErrors": Baton.Variable(self.fieldErrors), "fields": Baton.Variable(self.fields), "fileprivate": Baton.Variable(self.`fileprivate`), "for": Baton.Variable(self.`for`), "func": Baton.Variable(self.`func`), "guard": Baton.Variable(self.`guard`), "hasDeferred": Baton.Variable(self.hasDeferred), "hasNext": Baton.Variable(self.hasNext), "hasPrevious": Baton.Variable(self.hasPrevious), "hash": Baton.Variable(self.hash), "hasher": Baton.Variable(self.hasher), "if": Baton.Variable(self.`if`), "import": Baton.Variable(self.`import`), "in": Baton.Variable(self.`in`), "init": Baton.Variable(self.`init`), "inout": Baton.Variable(self.`inout`), "internal": Baton.Variable(self.`internal`), "is": Baton.Variable(self.`is`), "isLoadingNext": Baton.Variable(self.isLoadingNext), "isLoadingPrevious": Baton.Variable(self.isLoadingPrevious), "isPresent": Baton.Variable(self.isPresent), "isolated": Baton.Variable(self.`isolated`), "let": Baton.Variable(self.`let`), "lhs": Baton.Variable(self.lhs), "loadNext": Baton.Variable(self.loadNext), "loadPrevious": Baton.Variable(self.loadPrevious), "missing": Baton.Variable(self.missing), "missingRequiredField": Baton.Variable(self.missingRequiredField), "name": Baton.Variable(self.name), "nil": Baton.Variable(self.`nil`), "nodes": Baton.Variable(self.nodes), "open": Baton.Variable(self.`open`), "operator": Baton.Variable(self.`operator`), "optimistic": Baton.Variable(self.optimistic), "persistedID": Baton.Variable(self.persistedID), "plan": Baton.Variable(self.plan), "precedencegroup": Baton.Variable(self.`precedencegroup`), "private": Baton.Variable(self.`private`), "protocol": Baton.Variable(self.`protocol`), "public": Baton.Variable(self.`public`), "recordID": Baton.Variable(self.recordID), "refetch": Baton.Variable(self.refetch), "refetchable": Baton.Variable(self.refetchable), "repeat": Baton.Variable(self.`repeat`), "rethrows": Baton.Variable(self.`rethrows`), "retry": Baton.Variable(self.retry), "return": Baton.Variable(self.`return`), "rhs": Baton.Variable(self.rhs), "satisfied": Baton.Variable(self.satisfied), "schemaDigest": Baton.Variable(self.schemaDigest), "self": Baton.Variable(self.`self`), "selfValue": Baton.Variable(self.selfValue), "sending": Baton.Variable(self.`sending`), "some": Baton.Variable(self.`some`), "static": Baton.Variable(self.`static`), "struct": Baton.Variable(self.`struct`), "subscript": Baton.Variable(self.`subscript`), "subscription": Baton.Variable(self.subscription), "super": Baton.Variable(self.`super`), "switch": Baton.Variable(self.`switch`), "text": Baton.Variable(self.text), "then": Baton.Variable(self.then), "throw": Baton.Variable(self.`throw`), "throwing": Baton.Variable(self.throwing), "throws": Baton.Variable(self.`throws`), "throwsOnFieldError": Baton.Variable(self.throwsOnFieldError), "true": Baton.Variable(self.`true`), "try": Baton.Variable(self.`try`), "typeName": Baton.Variable(self.typeName), "typealias": Baton.Variable(self.`typealias`), "unsafe": Baton.Variable(self.unsafe), "var": Baton.Variable(self.`var`), "variable": Baton.Variable(self.variable), "where": Baton.Variable(self.`where`), "while": Baton.Variable(self.`while`), "id": Baton.Variable(self.id)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.Bool == rhs.Bool && lhs.Double == rhs.Double && lhs.Hasher == rhs.Hasher && lhs.Int == rhs.Int && lhs.MainActor == rhs.MainActor && lhs.Sendable == rhs.Sendable && lhs.id == rhs.id
+        lhs.AbstractSlots == rhs.AbstractSlots && lhs.Action == rhs.Action && lhs.`Any` == rhs.`Any` && lhs.Bool == rhs.Bool && lhs.Double == rhs.Double && lhs.Fragment == rhs.Fragment && lhs.Hasher == rhs.Hasher && lhs.Int == rhs.Int && lhs.MainActor == rhs.MainActor && lhs.Op == rhs.Op && lhs.Operation == rhs.Operation && lhs.OptimisticResponse == rhs.OptimisticResponse && lhs.Optional == rhs.Optional && lhs.Owner == rhs.Owner && lhs.`Protocol` == rhs.`Protocol` && lhs.Query == rhs.Query && lhs.RefetchQuery == rhs.RefetchQuery && lhs.Result == rhs.Result && lhs.`Self` == rhs.`Self` && lhs.Sendable == rhs.Sendable && lhs.Set == rhs.Set && lhs.Spread == rhs.Spread && lhs.String == rhs.String && lhs.Swift == rhs.Swift && lhs.`Type` == rhs.`Type` && lhs.`_` == rhs.`_` && lhs.anchor == rhs.anchor && lhs.`any` == rhs.`any` && lhs.`as` == rhs.`as` && lhs.`associatedtype` == rhs.`associatedtype` && lhs.async == rhs.async && lhs.`await` == rhs.`await` && lhs.`borrowing` == rhs.`borrowing` && lhs.bound == rhs.bound && lhs.`break` == rhs.`break` && lhs.bubbles == rhs.bubbles && lhs.callAsFunction == rhs.callAsFunction && lhs.`case` == rhs.`case` && lhs.`catch` == rhs.`catch` && lhs.caught == rhs.caught && lhs.child == rhs.child && lhs.`class` == rhs.`class` && lhs.commit == rhs.commit && lhs.connection == rhs.connection && lhs.connectionID == rhs.connectionID && lhs.consume == rhs.consume && lhs.`consuming` == rhs.`consuming` && lhs.`continue` == rhs.`continue` && lhs.copy == rhs.copy && lhs.count == rhs.count && lhs.`default` == rhs.`default` && lhs.`defer` == rhs.`defer` && lhs.`deinit` == rhs.`deinit` && lhs.discard == rhs.discard && lhs.`do` == rhs.`do` && lhs.`each` == rhs.`each` && lhs.`else` == rhs.`else` && lhs.`enum` == rhs.`enum` && lhs.errorBehavior == rhs.errorBehavior && lhs.errors == rhs.errors && lhs.`extension` == rhs.`extension` && lhs.`fallthrough` == rhs.`fallthrough` && lhs.`false` == rhs.`false` && lhs.fieldErrors == rhs.fieldErrors && lhs.fields == rhs.fields && lhs.`fileprivate` == rhs.`fileprivate` && lhs.`for` == rhs.`for` && lhs.`func` == rhs.`func` && lhs.`guard` == rhs.`guard` && lhs.hasDeferred == rhs.hasDeferred && lhs.hasNext == rhs.hasNext && lhs.hasPrevious == rhs.hasPrevious && lhs.hash == rhs.hash && lhs.hasher == rhs.hasher && lhs.`if` == rhs.`if` && lhs.`import` == rhs.`import` && lhs.`in` == rhs.`in` && lhs.`init` == rhs.`init` && lhs.`inout` == rhs.`inout` && lhs.`internal` == rhs.`internal` && lhs.`is` == rhs.`is` && lhs.isLoadingNext == rhs.isLoadingNext && lhs.isLoadingPrevious == rhs.isLoadingPrevious && lhs.isPresent == rhs.isPresent && lhs.`isolated` == rhs.`isolated` && lhs.`let` == rhs.`let` && lhs.lhs == rhs.lhs && lhs.loadNext == rhs.loadNext && lhs.loadPrevious == rhs.loadPrevious && lhs.missing == rhs.missing && lhs.missingRequiredField == rhs.missingRequiredField && lhs.name == rhs.name && lhs.`nil` == rhs.`nil` && lhs.nodes == rhs.nodes && lhs.`open` == rhs.`open` && lhs.`operator` == rhs.`operator` && lhs.optimistic == rhs.optimistic && lhs.persistedID == rhs.persistedID && lhs.plan == rhs.plan && lhs.`precedencegroup` == rhs.`precedencegroup` && lhs.`private` == rhs.`private` && lhs.`protocol` == rhs.`protocol` && lhs.`public` == rhs.`public` && lhs.recordID == rhs.recordID && lhs.refetch == rhs.refetch && lhs.refetchable == rhs.refetchable && lhs.`repeat` == rhs.`repeat` && lhs.`rethrows` == rhs.`rethrows` && lhs.retry == rhs.retry && lhs.`return` == rhs.`return` && lhs.rhs == rhs.rhs && lhs.satisfied == rhs.satisfied && lhs.schemaDigest == rhs.schemaDigest && lhs.`self` == rhs.`self` && lhs.selfValue == rhs.selfValue && lhs.`sending` == rhs.`sending` && lhs.`some` == rhs.`some` && lhs.`static` == rhs.`static` && lhs.`struct` == rhs.`struct` && lhs.`subscript` == rhs.`subscript` && lhs.subscription == rhs.subscription && lhs.`super` == rhs.`super` && lhs.`switch` == rhs.`switch` && lhs.text == rhs.text && lhs.then == rhs.then && lhs.`throw` == rhs.`throw` && lhs.throwing == rhs.throwing && lhs.`throws` == rhs.`throws` && lhs.throwsOnFieldError == rhs.throwsOnFieldError && lhs.`true` == rhs.`true` && lhs.`try` == rhs.`try` && lhs.typeName == rhs.typeName && lhs.`typealias` == rhs.`typealias` && lhs.unsafe == rhs.unsafe && lhs.`var` == rhs.`var` && lhs.variable == rhs.variable && lhs.`where` == rhs.`where` && lhs.`while` == rhs.`while` && lhs.id == rhs.id
     }
 
     public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.AbstractSlots)
+        hasher.combine(self.Action)
+        hasher.combine(self.`Any`)
         hasher.combine(self.Bool)
         hasher.combine(self.Double)
+        hasher.combine(self.Fragment)
         hasher.combine(self.Hasher)
         hasher.combine(self.Int)
         hasher.combine(self.MainActor)
-        hasher.combine(self.Sendable)
-        hasher.combine(self.id)
-    }
-
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, hasID: true, abstract: true, variants: [
-                .init(types: [Types.Character], fields: [
-                    .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false, guards: [[.init("Int", passing: true)], [.init("Double", passing: true)], [.init("Bool", passing: true)], [.init("MainActor", passing: true)], [.init("Hasher", passing: true)], [.init("Sendable", passing: true)]]),
-                ]),
-                .init(types: nil, fields: [
-                    .scalar("__typename", key: .fixed(Slots.Node.__typename), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                ]),
-            ])),
-        ]))
-
-    nonisolated public struct Data: Baton.Lens {
-        @_spi(Generated) public let anchor: Baton.Anchor
-        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
-        @MainActor public var node: Node? { anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08)).map(Node.init(anchor:)) }
-
-        nonisolated public struct Node: Baton.Lens {
-            @_spi(Generated) public let anchor: Baton.Anchor
-            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Node"
-            @MainActor public var hostileArguments14: HostileArguments14_character? {
-                let bound = anchor.binding(Sites.HostileArguments14RefetchQuery_hostileArguments14) { ["Int": anchor.variables["Int"], "Double": anchor.variables["Double"], "Bool": anchor.variables["Bool"], "MainActor": anchor.variables["MainActor"], "Hasher": anchor.variables["Hasher"], "Sendable": anchor.variables["Sendable"]] }
-                guard anchor.record.is(Types.Character) else { return nil }
-                return .init(anchor: bound)
-            }
-        }
-    }
-}
-
-/// Operation value for `query HostileArguments1RefetchQuery`.
-nonisolated public struct HostileArguments1RefetchQuery: Baton.Query {
-    public var `Any`: Bool?
-    public var `Protocol`: Bool?
-    public var `Self`: Bool?
-    public var `Type`: Bool?
-    public var `class`: Bool?
-    public var `deinit`: Bool?
-    public var `init`: Bool?
-    public var `self`: Bool?
-    public var `struct`: Bool?
-    public var `subscript`: Bool?
-    public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
-
-    public init(`Any`: Bool? = nil, `Protocol`: Bool? = nil, `Self`: Bool? = nil, `Type`: Bool? = nil, `class`: Bool? = nil, `deinit`: Bool? = nil, `init`: Bool? = nil, `self` selfValue: Bool? = nil, `struct`: Bool? = nil, `subscript`: Bool? = nil, id: String) {
-        self.`Any` = `Any`
-        self.`Protocol` = `Protocol`
-        self.`Self` = `Self`
-        self.`Type` = `Type`
-        self.`class` = `class`
-        self.`deinit` = `deinit`
-        self.`init` = `init`
-        self.`self` = selfValue
-        self.`struct` = `struct`
-        self.`subscript` = `subscript`
-        self.id = id
-    }
-
-    public static let name = "HostileArguments1RefetchQuery"
-    public static let persistedID = "ed6710e395fc2e0f392418b90399a108"
-    public static let text = #"""
-query HostileArguments1RefetchQuery(
-  $Any: Boolean = true
-  $Protocol: Boolean = true
-  $Self: Boolean = true
-  $Type: Boolean = true
-  $class: Boolean = true
-  $deinit: Boolean = true
-  $init: Boolean = true
-  $self: Boolean = true
-  $struct: Boolean = true
-  $subscript: Boolean = true
-  $id: ID!
-) {
-  node(id: $id) {
-    __typename
-    ...HostileArguments1_character_o9WYc
-    id
-  }
-}
-
-fragment HostileArguments1_character_o9WYc on Character {
-  name @include(if: $Type)
-  name @include(if: $Protocol)
-  name @include(if: $Any)
-  name @include(if: $self)
-  name @include(if: $Self)
-  name @include(if: $init)
-  name @include(if: $deinit)
-  name @include(if: $subscript)
-  name @include(if: $class)
-  name @include(if: $struct)
-  id
-}
-"""#
-
-    public var variables: Baton.Variables {
-        Baton.Variables(["Any": Baton.Variable(self.`Any`), "Protocol": Baton.Variable(self.`Protocol`), "Self": Baton.Variable(self.`Self`), "Type": Baton.Variable(self.`Type`), "class": Baton.Variable(self.`class`), "deinit": Baton.Variable(self.`deinit`), "init": Baton.Variable(self.`init`), "self": Baton.Variable(self.`self`), "struct": Baton.Variable(self.`struct`), "subscript": Baton.Variable(self.`subscript`), "id": Baton.Variable(self.id)])
-    }
-
-    public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.`Any` == rhs.`Any` && lhs.`Protocol` == rhs.`Protocol` && lhs.`Self` == rhs.`Self` && lhs.`Type` == rhs.`Type` && lhs.`class` == rhs.`class` && lhs.`deinit` == rhs.`deinit` && lhs.`init` == rhs.`init` && lhs.`self` == rhs.`self` && lhs.`struct` == rhs.`struct` && lhs.`subscript` == rhs.`subscript` && lhs.id == rhs.id
-    }
-
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(self.`Any`)
+        hasher.combine(self.Op)
+        hasher.combine(self.Operation)
+        hasher.combine(self.OptimisticResponse)
+        hasher.combine(self.Optional)
+        hasher.combine(self.Owner)
         hasher.combine(self.`Protocol`)
+        hasher.combine(self.Query)
+        hasher.combine(self.RefetchQuery)
+        hasher.combine(self.Result)
         hasher.combine(self.`Self`)
+        hasher.combine(self.Sendable)
+        hasher.combine(self.Set)
+        hasher.combine(self.Spread)
+        hasher.combine(self.String)
+        hasher.combine(self.Swift)
         hasher.combine(self.`Type`)
+        hasher.combine(self.`_`)
+        hasher.combine(self.anchor)
+        hasher.combine(self.`any`)
+        hasher.combine(self.`as`)
+        hasher.combine(self.`associatedtype`)
+        hasher.combine(self.async)
+        hasher.combine(self.`await`)
+        hasher.combine(self.`borrowing`)
+        hasher.combine(self.bound)
+        hasher.combine(self.`break`)
+        hasher.combine(self.bubbles)
+        hasher.combine(self.callAsFunction)
+        hasher.combine(self.`case`)
+        hasher.combine(self.`catch`)
+        hasher.combine(self.caught)
+        hasher.combine(self.child)
         hasher.combine(self.`class`)
+        hasher.combine(self.commit)
+        hasher.combine(self.connection)
+        hasher.combine(self.connectionID)
+        hasher.combine(self.consume)
+        hasher.combine(self.`consuming`)
+        hasher.combine(self.`continue`)
+        hasher.combine(self.copy)
+        hasher.combine(self.count)
+        hasher.combine(self.`default`)
+        hasher.combine(self.`defer`)
         hasher.combine(self.`deinit`)
+        hasher.combine(self.discard)
+        hasher.combine(self.`do`)
+        hasher.combine(self.`each`)
+        hasher.combine(self.`else`)
+        hasher.combine(self.`enum`)
+        hasher.combine(self.errorBehavior)
+        hasher.combine(self.errors)
+        hasher.combine(self.`extension`)
+        hasher.combine(self.`fallthrough`)
+        hasher.combine(self.`false`)
+        hasher.combine(self.fieldErrors)
+        hasher.combine(self.fields)
+        hasher.combine(self.`fileprivate`)
+        hasher.combine(self.`for`)
+        hasher.combine(self.`func`)
+        hasher.combine(self.`guard`)
+        hasher.combine(self.hasDeferred)
+        hasher.combine(self.hasNext)
+        hasher.combine(self.hasPrevious)
+        hasher.combine(self.hash)
+        hasher.combine(self.hasher)
+        hasher.combine(self.`if`)
+        hasher.combine(self.`import`)
+        hasher.combine(self.`in`)
         hasher.combine(self.`init`)
+        hasher.combine(self.`inout`)
+        hasher.combine(self.`internal`)
+        hasher.combine(self.`is`)
+        hasher.combine(self.isLoadingNext)
+        hasher.combine(self.isLoadingPrevious)
+        hasher.combine(self.isPresent)
+        hasher.combine(self.`isolated`)
+        hasher.combine(self.`let`)
+        hasher.combine(self.lhs)
+        hasher.combine(self.loadNext)
+        hasher.combine(self.loadPrevious)
+        hasher.combine(self.missing)
+        hasher.combine(self.missingRequiredField)
+        hasher.combine(self.name)
+        hasher.combine(self.`nil`)
+        hasher.combine(self.nodes)
+        hasher.combine(self.`open`)
+        hasher.combine(self.`operator`)
+        hasher.combine(self.optimistic)
+        hasher.combine(self.persistedID)
+        hasher.combine(self.plan)
+        hasher.combine(self.`precedencegroup`)
+        hasher.combine(self.`private`)
+        hasher.combine(self.`protocol`)
+        hasher.combine(self.`public`)
+        hasher.combine(self.recordID)
+        hasher.combine(self.refetch)
+        hasher.combine(self.refetchable)
+        hasher.combine(self.`repeat`)
+        hasher.combine(self.`rethrows`)
+        hasher.combine(self.retry)
+        hasher.combine(self.`return`)
+        hasher.combine(self.rhs)
+        hasher.combine(self.satisfied)
+        hasher.combine(self.schemaDigest)
         hasher.combine(self.`self`)
+        hasher.combine(self.selfValue)
+        hasher.combine(self.`sending`)
+        hasher.combine(self.`some`)
+        hasher.combine(self.`static`)
         hasher.combine(self.`struct`)
         hasher.combine(self.`subscript`)
-        hasher.combine(self.id)
-    }
-
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, hasID: true, abstract: true, variants: [
-                .init(types: [Types.Character], fields: [
-                    .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false, guards: [[.init("Type", passing: true)], [.init("Protocol", passing: true)], [.init("Any", passing: true)], [.init("self", passing: true)], [.init("Self", passing: true)], [.init("init", passing: true)], [.init("deinit", passing: true)], [.init("subscript", passing: true)], [.init("class", passing: true)], [.init("struct", passing: true)]]),
-                ]),
-                .init(types: nil, fields: [
-                    .scalar("__typename", key: .fixed(Slots.Node.__typename), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                ]),
-            ])),
-        ]))
-
-    nonisolated public struct Data: Baton.Lens {
-        @_spi(Generated) public let anchor: Baton.Anchor
-        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
-        @MainActor public var node: Node? { anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08)).map(Node.init(anchor:)) }
-
-        nonisolated public struct Node: Baton.Lens {
-            @_spi(Generated) public let anchor: Baton.Anchor
-            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Node"
-            @MainActor public var hostileArguments1: HostileArguments1_character? {
-                let bound = anchor.binding(Sites.HostileArguments1RefetchQuery_hostileArguments1) { ["Type": anchor.variables["Type"], "Protocol": anchor.variables["Protocol"], "Any": anchor.variables["Any"], "self": anchor.variables["self"], "Self": anchor.variables["Self"], "init": anchor.variables["init"], "deinit": anchor.variables["deinit"], "subscript": anchor.variables["subscript"], "class": anchor.variables["class"], "struct": anchor.variables["struct"]] }
-                guard anchor.record.is(Types.Character) else { return nil }
-                return .init(anchor: bound)
-            }
-        }
-    }
-}
-
-/// Operation value for `query HostileArguments2RefetchQuery`.
-nonisolated public struct HostileArguments2RefetchQuery: Baton.Query {
-    public var `case`: Bool?
-    public var `default`: Bool?
-    public var `enum`: Bool?
-    public var `extension`: Bool?
-    public var `func`: Bool?
-    public var `import`: Bool?
-    public var `let`: Bool?
-    public var `operator`: Bool?
-    public var `static`: Bool?
-    public var `var`: Bool?
-    public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
-
-    public init(`case`: Bool? = nil, `default`: Bool? = nil, `enum`: Bool? = nil, `extension`: Bool? = nil, `func`: Bool? = nil, `import`: Bool? = nil, `let`: Bool? = nil, `operator`: Bool? = nil, `static`: Bool? = nil, `var`: Bool? = nil, id: String) {
-        self.`case` = `case`
-        self.`default` = `default`
-        self.`enum` = `enum`
-        self.`extension` = `extension`
-        self.`func` = `func`
-        self.`import` = `import`
-        self.`let` = `let`
-        self.`operator` = `operator`
-        self.`static` = `static`
-        self.`var` = `var`
-        self.id = id
-    }
-
-    public static let name = "HostileArguments2RefetchQuery"
-    public static let persistedID = "a0f61b632ac836cb41f00b70c6480d14"
-    public static let text = #"""
-query HostileArguments2RefetchQuery(
-  $case: Boolean = true
-  $default: Boolean = true
-  $enum: Boolean = true
-  $extension: Boolean = true
-  $func: Boolean = true
-  $import: Boolean = true
-  $let: Boolean = true
-  $operator: Boolean = true
-  $static: Boolean = true
-  $var: Boolean = true
-  $id: ID!
-) {
-  node(id: $id) {
-    __typename
-    ...HostileArguments2_character_11K7LX
-    id
-  }
-}
-
-fragment HostileArguments2_character_11K7LX on Character {
-  name @include(if: $enum)
-  name @include(if: $func)
-  name @include(if: $var)
-  name @include(if: $let)
-  name @include(if: $import)
-  name @include(if: $extension)
-  name @include(if: $operator)
-  name @include(if: $static)
-  name @include(if: $default)
-  name @include(if: $case)
-  id
-}
-"""#
-
-    public var variables: Baton.Variables {
-        Baton.Variables(["case": Baton.Variable(self.`case`), "default": Baton.Variable(self.`default`), "enum": Baton.Variable(self.`enum`), "extension": Baton.Variable(self.`extension`), "func": Baton.Variable(self.`func`), "import": Baton.Variable(self.`import`), "let": Baton.Variable(self.`let`), "operator": Baton.Variable(self.`operator`), "static": Baton.Variable(self.`static`), "var": Baton.Variable(self.`var`), "id": Baton.Variable(self.id)])
-    }
-
-    public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.`case` == rhs.`case` && lhs.`default` == rhs.`default` && lhs.`enum` == rhs.`enum` && lhs.`extension` == rhs.`extension` && lhs.`func` == rhs.`func` && lhs.`import` == rhs.`import` && lhs.`let` == rhs.`let` && lhs.`operator` == rhs.`operator` && lhs.`static` == rhs.`static` && lhs.`var` == rhs.`var` && lhs.id == rhs.id
-    }
-
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(self.`case`)
-        hasher.combine(self.`default`)
-        hasher.combine(self.`enum`)
-        hasher.combine(self.`extension`)
-        hasher.combine(self.`func`)
-        hasher.combine(self.`import`)
-        hasher.combine(self.`let`)
-        hasher.combine(self.`operator`)
-        hasher.combine(self.`static`)
-        hasher.combine(self.`var`)
-        hasher.combine(self.id)
-    }
-
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, hasID: true, abstract: true, variants: [
-                .init(types: [Types.Character], fields: [
-                    .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false, guards: [[.init("enum", passing: true)], [.init("func", passing: true)], [.init("var", passing: true)], [.init("let", passing: true)], [.init("import", passing: true)], [.init("extension", passing: true)], [.init("operator", passing: true)], [.init("static", passing: true)], [.init("default", passing: true)], [.init("case", passing: true)]]),
-                ]),
-                .init(types: nil, fields: [
-                    .scalar("__typename", key: .fixed(Slots.Node.__typename), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                ]),
-            ])),
-        ]))
-
-    nonisolated public struct Data: Baton.Lens {
-        @_spi(Generated) public let anchor: Baton.Anchor
-        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
-        @MainActor public var node: Node? { anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08)).map(Node.init(anchor:)) }
-
-        nonisolated public struct Node: Baton.Lens {
-            @_spi(Generated) public let anchor: Baton.Anchor
-            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Node"
-            @MainActor public var hostileArguments2: HostileArguments2_character? {
-                let bound = anchor.binding(Sites.HostileArguments2RefetchQuery_hostileArguments2) { ["enum": anchor.variables["enum"], "func": anchor.variables["func"], "var": anchor.variables["var"], "let": anchor.variables["let"], "import": anchor.variables["import"], "extension": anchor.variables["extension"], "operator": anchor.variables["operator"], "static": anchor.variables["static"], "default": anchor.variables["default"], "case": anchor.variables["case"]] }
-                guard anchor.record.is(Types.Character) else { return nil }
-                return .init(anchor: bound)
-            }
-        }
-    }
-}
-
-/// Operation value for `query HostileArguments3RefetchQuery`.
-nonisolated public struct HostileArguments3RefetchQuery: Baton.Query {
-    public var `break`: Bool?
-    public var `continue`: Bool?
-    public var `else`: Bool?
-    public var `for`: Bool?
-    public var `if`: Bool?
-    public var `in`: Bool?
-    public var `repeat`: Bool?
-    public var `return`: Bool?
-    public var `switch`: Bool?
-    public var `while`: Bool?
-    public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
-
-    public init(`break`: Bool? = nil, `continue`: Bool? = nil, `else`: Bool? = nil, `for`: Bool? = nil, `if`: Bool? = nil, `in`: Bool? = nil, `repeat`: Bool? = nil, `return`: Bool? = nil, `switch`: Bool? = nil, `while`: Bool? = nil, id: String) {
-        self.`break` = `break`
-        self.`continue` = `continue`
-        self.`else` = `else`
-        self.`for` = `for`
-        self.`if` = `if`
-        self.`in` = `in`
-        self.`repeat` = `repeat`
-        self.`return` = `return`
-        self.`switch` = `switch`
-        self.`while` = `while`
-        self.id = id
-    }
-
-    public static let name = "HostileArguments3RefetchQuery"
-    public static let persistedID = "0fa35a22fef99098a42de67c4e48dc89"
-    public static let text = #"""
-query HostileArguments3RefetchQuery(
-  $break: Boolean = true
-  $continue: Boolean = true
-  $else: Boolean = true
-  $for: Boolean = true
-  $if: Boolean = true
-  $in: Boolean = true
-  $repeat: Boolean = true
-  $return: Boolean = true
-  $switch: Boolean = true
-  $while: Boolean = true
-  $id: ID!
-) {
-  node(id: $id) {
-    __typename
-    ...HostileArguments3_character_2kcTYj
-    id
-  }
-}
-
-fragment HostileArguments3_character_2kcTYj on Character {
-  name @include(if: $switch)
-  name @include(if: $if)
-  name @include(if: $else)
-  name @include(if: $for)
-  name @include(if: $in)
-  name @include(if: $while)
-  name @include(if: $repeat)
-  name @include(if: $return)
-  name @include(if: $break)
-  name @include(if: $continue)
-  id
-}
-"""#
-
-    public var variables: Baton.Variables {
-        Baton.Variables(["break": Baton.Variable(self.`break`), "continue": Baton.Variable(self.`continue`), "else": Baton.Variable(self.`else`), "for": Baton.Variable(self.`for`), "if": Baton.Variable(self.`if`), "in": Baton.Variable(self.`in`), "repeat": Baton.Variable(self.`repeat`), "return": Baton.Variable(self.`return`), "switch": Baton.Variable(self.`switch`), "while": Baton.Variable(self.`while`), "id": Baton.Variable(self.id)])
-    }
-
-    public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.`break` == rhs.`break` && lhs.`continue` == rhs.`continue` && lhs.`else` == rhs.`else` && lhs.`for` == rhs.`for` && lhs.`if` == rhs.`if` && lhs.`in` == rhs.`in` && lhs.`repeat` == rhs.`repeat` && lhs.`return` == rhs.`return` && lhs.`switch` == rhs.`switch` && lhs.`while` == rhs.`while` && lhs.id == rhs.id
-    }
-
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(self.`break`)
-        hasher.combine(self.`continue`)
-        hasher.combine(self.`else`)
-        hasher.combine(self.`for`)
-        hasher.combine(self.`if`)
-        hasher.combine(self.`in`)
-        hasher.combine(self.`repeat`)
-        hasher.combine(self.`return`)
+        hasher.combine(self.subscription)
+        hasher.combine(self.`super`)
         hasher.combine(self.`switch`)
+        hasher.combine(self.text)
+        hasher.combine(self.then)
+        hasher.combine(self.`throw`)
+        hasher.combine(self.throwing)
+        hasher.combine(self.`throws`)
+        hasher.combine(self.throwsOnFieldError)
+        hasher.combine(self.`true`)
+        hasher.combine(self.`try`)
+        hasher.combine(self.typeName)
+        hasher.combine(self.`typealias`)
+        hasher.combine(self.unsafe)
+        hasher.combine(self.`var`)
+        hasher.combine(self.variable)
+        hasher.combine(self.`where`)
         hasher.combine(self.`while`)
         hasher.combine(self.id)
     }
@@ -4559,7 +4253,7 @@ fragment HostileArguments3_character_2kcTYj on Character {
                 .init(types: [Types.Character], fields: [
                     .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
                     .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false, guards: [[.init("switch", passing: true)], [.init("if", passing: true)], [.init("else", passing: true)], [.init("for", passing: true)], [.init("in", passing: true)], [.init("while", passing: true)], [.init("repeat", passing: true)], [.init("return", passing: true)], [.init("break", passing: true)], [.init("continue", passing: true)]]),
+                    .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false, guards: [[.init("Type", passing: true)], [.init("Protocol", passing: true)], [.init("Any", passing: true)], [.init("self", passing: true)], [.init("Self", passing: true)], [.init("init", passing: true)], [.init("deinit", passing: true)], [.init("subscript", passing: true)], [.init("class", passing: true)], [.init("struct", passing: true)], [.init("enum", passing: true)], [.init("func", passing: true)], [.init("var", passing: true)], [.init("let", passing: true)], [.init("import", passing: true)], [.init("extension", passing: true)], [.init("operator", passing: true)], [.init("static", passing: true)], [.init("default", passing: true)], [.init("case", passing: true)], [.init("switch", passing: true)], [.init("if", passing: true)], [.init("else", passing: true)], [.init("for", passing: true)], [.init("in", passing: true)], [.init("while", passing: true)], [.init("repeat", passing: true)], [.init("return", passing: true)], [.init("break", passing: true)], [.init("continue", passing: true)], [.init("where", passing: true)], [.init("is", passing: true)], [.init("as", passing: true)], [.init("try", passing: true)], [.init("throw", passing: true)], [.init("throws", passing: true)], [.init("guard", passing: true)], [.init("defer", passing: true)], [.init("do", passing: true)], [.init("catch", passing: true)], [.init("true", passing: true)], [.init("false", passing: true)], [.init("nil", passing: true)], [.init("super", passing: true)], [.init("internal", passing: true)], [.init("private", passing: true)], [.init("public", passing: true)], [.init("fileprivate", passing: true)], [.init("open", passing: true)], [.init("inout", passing: true)], [.init("typealias", passing: true)], [.init("associatedtype", passing: true)], [.init("protocol", passing: true)], [.init("some", passing: true)], [.init("any", passing: true)], [.init("rethrows", passing: true)], [.init("fallthrough", passing: true)], [.init("precedencegroup", passing: true)], [.init("_", passing: true)], [.init("async", passing: true)], [.init("borrowing", passing: true)], [.init("consume", passing: true)], [.init("consuming", passing: true)], [.init("copy", passing: true)], [.init("discard", passing: true)], [.init("each", passing: true)], [.init("isolated", passing: true)], [.init("sending", passing: true)], [.init("then", passing: true)], [.init("unsafe", passing: true)], [.init("await", passing: true)], [.init("anchor", passing: true)], [.init("recordID", passing: true)], [.init("typeName", passing: true)], [.init("satisfied", passing: true)], [.init("missingRequiredField", passing: true)], [.init("fieldErrors", passing: true)], [.init("isPresent", passing: true)], [.init("throwing", passing: true)], [.init("caught", passing: true)], [.init("refetchable", passing: true)], [.init("refetch", passing: true)], [.init("connection", passing: true)], [.init("nodes", passing: true)], [.init("hasNext", passing: true)], [.init("hasPrevious", passing: true)], [.init("isLoadingNext", passing: true)], [.init("isLoadingPrevious", passing: true)], [.init("connectionID", passing: true)], [.init("loadNext", passing: true)], [.init("loadPrevious", passing: true)], [.init("bound", passing: true)], [.init("errors", passing: true)], [.init("child", passing: true)], [.init("missing", passing: true)], [.init("count", passing: true)], [.init("fields", passing: true)], [.init("lhs", passing: true)], [.init("rhs", passing: true)], [.init("hasher", passing: true)], [.init("optimistic", passing: true)], [.init("selfValue", passing: true)], [.init("Fragment", passing: true)], [.init("Spread", passing: true)], [.init("Owner", passing: true)], [.init("Query", passing: true)], [.init("Operation", passing: true)], [.init("RefetchQuery", passing: true)], [.init("name", passing: true)], [.init("persistedID", passing: true)], [.init("text", passing: true)], [.init("plan", passing: true)], [.init("errorBehavior", passing: true)], [.init("throwsOnFieldError", passing: true)], [.init("bubbles", passing: true)], [.init("hasDeferred", passing: true)], [.init("Action", passing: true)], [.init("OptimisticResponse", passing: true)], [.init("hash", passing: true)], [.init("commit", passing: true)], [.init("callAsFunction", passing: true)], [.init("Op", passing: true)], [.init("variable", passing: true)], [.init("retry", passing: true)], [.init("subscription", passing: true)], [.init("AbstractSlots", passing: true)], [.init("schemaDigest", passing: true)], [.init("Swift", passing: true)], [.init("Set", passing: true)], [.init("Result", passing: true)], [.init("Optional", passing: true)], [.init("String", passing: true)], [.init("Int", passing: true)], [.init("Double", passing: true)], [.init("Bool", passing: true)], [.init("MainActor", passing: true)], [.init("Hasher", passing: true)], [.init("Sendable", passing: true)]]),
                 ]),
                 .init(types: nil, fields: [
                     .scalar("__typename", key: .fixed(Slots.Node.__typename), kind: .string, list: false),
@@ -4578,740 +4272,8 @@ fragment HostileArguments3_character_2kcTYj on Character {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Node"
-            @MainActor public var hostileArguments3: HostileArguments3_character? {
-                let bound = anchor.binding(Sites.HostileArguments3RefetchQuery_hostileArguments3) { ["switch": anchor.variables["switch"], "if": anchor.variables["if"], "else": anchor.variables["else"], "for": anchor.variables["for"], "in": anchor.variables["in"], "while": anchor.variables["while"], "repeat": anchor.variables["repeat"], "return": anchor.variables["return"], "break": anchor.variables["break"], "continue": anchor.variables["continue"]] }
-                guard anchor.record.is(Types.Character) else { return nil }
-                return .init(anchor: bound)
-            }
-        }
-    }
-}
-
-/// Operation value for `query HostileArguments4RefetchQuery`.
-nonisolated public struct HostileArguments4RefetchQuery: Baton.Query {
-    public var `as`: Bool?
-    public var `catch`: Bool?
-    public var `defer`: Bool?
-    public var `do`: Bool?
-    public var `guard`: Bool?
-    public var `is`: Bool?
-    public var `throw`: Bool?
-    public var `throws`: Bool?
-    public var `try`: Bool?
-    public var `where`: Bool?
-    public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
-
-    public init(`as`: Bool? = nil, `catch`: Bool? = nil, `defer`: Bool? = nil, `do`: Bool? = nil, `guard`: Bool? = nil, `is`: Bool? = nil, `throw`: Bool? = nil, `throws`: Bool? = nil, `try`: Bool? = nil, `where`: Bool? = nil, id: String) {
-        self.`as` = `as`
-        self.`catch` = `catch`
-        self.`defer` = `defer`
-        self.`do` = `do`
-        self.`guard` = `guard`
-        self.`is` = `is`
-        self.`throw` = `throw`
-        self.`throws` = `throws`
-        self.`try` = `try`
-        self.`where` = `where`
-        self.id = id
-    }
-
-    public static let name = "HostileArguments4RefetchQuery"
-    public static let persistedID = "08ab73beb4deba4987d5ac1375bdee3e"
-    public static let text = #"""
-query HostileArguments4RefetchQuery(
-  $as: Boolean = true
-  $catch: Boolean = true
-  $defer: Boolean = true
-  $do: Boolean = true
-  $guard: Boolean = true
-  $is: Boolean = true
-  $throw: Boolean = true
-  $throws: Boolean = true
-  $try: Boolean = true
-  $where: Boolean = true
-  $id: ID!
-) {
-  node(id: $id) {
-    __typename
-    ...HostileArguments4_character_2J6UfP
-    id
-  }
-}
-
-fragment HostileArguments4_character_2J6UfP on Character {
-  name @include(if: $where)
-  name @include(if: $is)
-  name @include(if: $as)
-  name @include(if: $try)
-  name @include(if: $throw)
-  name @include(if: $throws)
-  name @include(if: $guard)
-  name @include(if: $defer)
-  name @include(if: $do)
-  name @include(if: $catch)
-  id
-}
-"""#
-
-    public var variables: Baton.Variables {
-        Baton.Variables(["as": Baton.Variable(self.`as`), "catch": Baton.Variable(self.`catch`), "defer": Baton.Variable(self.`defer`), "do": Baton.Variable(self.`do`), "guard": Baton.Variable(self.`guard`), "is": Baton.Variable(self.`is`), "throw": Baton.Variable(self.`throw`), "throws": Baton.Variable(self.`throws`), "try": Baton.Variable(self.`try`), "where": Baton.Variable(self.`where`), "id": Baton.Variable(self.id)])
-    }
-
-    public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.`as` == rhs.`as` && lhs.`catch` == rhs.`catch` && lhs.`defer` == rhs.`defer` && lhs.`do` == rhs.`do` && lhs.`guard` == rhs.`guard` && lhs.`is` == rhs.`is` && lhs.`throw` == rhs.`throw` && lhs.`throws` == rhs.`throws` && lhs.`try` == rhs.`try` && lhs.`where` == rhs.`where` && lhs.id == rhs.id
-    }
-
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(self.`as`)
-        hasher.combine(self.`catch`)
-        hasher.combine(self.`defer`)
-        hasher.combine(self.`do`)
-        hasher.combine(self.`guard`)
-        hasher.combine(self.`is`)
-        hasher.combine(self.`throw`)
-        hasher.combine(self.`throws`)
-        hasher.combine(self.`try`)
-        hasher.combine(self.`where`)
-        hasher.combine(self.id)
-    }
-
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, hasID: true, abstract: true, variants: [
-                .init(types: [Types.Character], fields: [
-                    .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false, guards: [[.init("where", passing: true)], [.init("is", passing: true)], [.init("as", passing: true)], [.init("try", passing: true)], [.init("throw", passing: true)], [.init("throws", passing: true)], [.init("guard", passing: true)], [.init("defer", passing: true)], [.init("do", passing: true)], [.init("catch", passing: true)]]),
-                ]),
-                .init(types: nil, fields: [
-                    .scalar("__typename", key: .fixed(Slots.Node.__typename), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                ]),
-            ])),
-        ]))
-
-    nonisolated public struct Data: Baton.Lens {
-        @_spi(Generated) public let anchor: Baton.Anchor
-        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
-        @MainActor public var node: Node? { anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08)).map(Node.init(anchor:)) }
-
-        nonisolated public struct Node: Baton.Lens {
-            @_spi(Generated) public let anchor: Baton.Anchor
-            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Node"
-            @MainActor public var hostileArguments4: HostileArguments4_character? {
-                let bound = anchor.binding(Sites.HostileArguments4RefetchQuery_hostileArguments4) { ["where": anchor.variables["where"], "is": anchor.variables["is"], "as": anchor.variables["as"], "try": anchor.variables["try"], "throw": anchor.variables["throw"], "throws": anchor.variables["throws"], "guard": anchor.variables["guard"], "defer": anchor.variables["defer"], "do": anchor.variables["do"], "catch": anchor.variables["catch"]] }
-                guard anchor.record.is(Types.Character) else { return nil }
-                return .init(anchor: bound)
-            }
-        }
-    }
-}
-
-/// Operation value for `query HostileArguments5RefetchQuery`.
-nonisolated public struct HostileArguments5RefetchQuery: Baton.Query {
-    public var `false`: Bool?
-    public var `fileprivate`: Bool?
-    public var `inout`: Bool?
-    public var `internal`: Bool?
-    public var `nil`: Bool?
-    public var `open`: Bool?
-    public var `private`: Bool?
-    public var `public`: Bool?
-    public var `super`: Bool?
-    public var `true`: Bool?
-    public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
-
-    public init(`false`: Bool? = nil, `fileprivate`: Bool? = nil, `inout`: Bool? = nil, `internal`: Bool? = nil, `nil`: Bool? = nil, `open`: Bool? = nil, `private`: Bool? = nil, `public`: Bool? = nil, `super`: Bool? = nil, `true`: Bool? = nil, id: String) {
-        self.`false` = `false`
-        self.`fileprivate` = `fileprivate`
-        self.`inout` = `inout`
-        self.`internal` = `internal`
-        self.`nil` = `nil`
-        self.`open` = `open`
-        self.`private` = `private`
-        self.`public` = `public`
-        self.`super` = `super`
-        self.`true` = `true`
-        self.id = id
-    }
-
-    public static let name = "HostileArguments5RefetchQuery"
-    public static let persistedID = "d62b4a438096b8535f010cbb5f0ced36"
-    public static let text = #"""
-query HostileArguments5RefetchQuery(
-  $false: Boolean = true
-  $fileprivate: Boolean = true
-  $inout: Boolean = true
-  $internal: Boolean = true
-  $nil: Boolean = true
-  $open: Boolean = true
-  $private: Boolean = true
-  $public: Boolean = true
-  $super: Boolean = true
-  $true: Boolean = true
-  $id: ID!
-) {
-  node(id: $id) {
-    __typename
-    ...HostileArguments5_character_3dQiuA
-    id
-  }
-}
-
-fragment HostileArguments5_character_3dQiuA on Character {
-  name @include(if: $true)
-  name @include(if: $false)
-  name @include(if: $nil)
-  name @include(if: $super)
-  name @include(if: $internal)
-  name @include(if: $private)
-  name @include(if: $public)
-  name @include(if: $fileprivate)
-  name @include(if: $open)
-  name @include(if: $inout)
-  id
-}
-"""#
-
-    public var variables: Baton.Variables {
-        Baton.Variables(["false": Baton.Variable(self.`false`), "fileprivate": Baton.Variable(self.`fileprivate`), "inout": Baton.Variable(self.`inout`), "internal": Baton.Variable(self.`internal`), "nil": Baton.Variable(self.`nil`), "open": Baton.Variable(self.`open`), "private": Baton.Variable(self.`private`), "public": Baton.Variable(self.`public`), "super": Baton.Variable(self.`super`), "true": Baton.Variable(self.`true`), "id": Baton.Variable(self.id)])
-    }
-
-    public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.`false` == rhs.`false` && lhs.`fileprivate` == rhs.`fileprivate` && lhs.`inout` == rhs.`inout` && lhs.`internal` == rhs.`internal` && lhs.`nil` == rhs.`nil` && lhs.`open` == rhs.`open` && lhs.`private` == rhs.`private` && lhs.`public` == rhs.`public` && lhs.`super` == rhs.`super` && lhs.`true` == rhs.`true` && lhs.id == rhs.id
-    }
-
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(self.`false`)
-        hasher.combine(self.`fileprivate`)
-        hasher.combine(self.`inout`)
-        hasher.combine(self.`internal`)
-        hasher.combine(self.`nil`)
-        hasher.combine(self.`open`)
-        hasher.combine(self.`private`)
-        hasher.combine(self.`public`)
-        hasher.combine(self.`super`)
-        hasher.combine(self.`true`)
-        hasher.combine(self.id)
-    }
-
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, hasID: true, abstract: true, variants: [
-                .init(types: [Types.Character], fields: [
-                    .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false, guards: [[.init("true", passing: true)], [.init("false", passing: true)], [.init("nil", passing: true)], [.init("super", passing: true)], [.init("internal", passing: true)], [.init("private", passing: true)], [.init("public", passing: true)], [.init("fileprivate", passing: true)], [.init("open", passing: true)], [.init("inout", passing: true)]]),
-                ]),
-                .init(types: nil, fields: [
-                    .scalar("__typename", key: .fixed(Slots.Node.__typename), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                ]),
-            ])),
-        ]))
-
-    nonisolated public struct Data: Baton.Lens {
-        @_spi(Generated) public let anchor: Baton.Anchor
-        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
-        @MainActor public var node: Node? { anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08)).map(Node.init(anchor:)) }
-
-        nonisolated public struct Node: Baton.Lens {
-            @_spi(Generated) public let anchor: Baton.Anchor
-            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Node"
-            @MainActor public var hostileArguments5: HostileArguments5_character? {
-                let bound = anchor.binding(Sites.HostileArguments5RefetchQuery_hostileArguments5) { ["true": anchor.variables["true"], "false": anchor.variables["false"], "nil": anchor.variables["nil"], "super": anchor.variables["super"], "internal": anchor.variables["internal"], "private": anchor.variables["private"], "public": anchor.variables["public"], "fileprivate": anchor.variables["fileprivate"], "open": anchor.variables["open"], "inout": anchor.variables["inout"]] }
-                guard anchor.record.is(Types.Character) else { return nil }
-                return .init(anchor: bound)
-            }
-        }
-    }
-}
-
-/// Operation value for `query HostileArguments6RefetchQuery`.
-nonisolated public struct HostileArguments6RefetchQuery: Baton.Query {
-    public var `any`: Bool?
-    public var `associatedtype`: Bool?
-    public var async: Bool?
-    public var borrowing: Bool?
-    public var consume: Bool?
-    public var consuming: Bool?
-    public var copy: Bool?
-    public var `protocol`: Bool?
-    public var `some`: Bool?
-    public var `typealias`: Bool?
-    public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
-
-    public init(`any`: Bool? = nil, `associatedtype`: Bool? = nil, async: Bool? = nil, borrowing: Bool? = nil, consume: Bool? = nil, consuming: Bool? = nil, copy: Bool? = nil, `protocol`: Bool? = nil, `some`: Bool? = nil, `typealias`: Bool? = nil, id: String) {
-        self.`any` = `any`
-        self.`associatedtype` = `associatedtype`
-        self.async = async
-        self.borrowing = borrowing
-        self.consume = consume
-        self.consuming = consuming
-        self.copy = copy
-        self.`protocol` = `protocol`
-        self.`some` = `some`
-        self.`typealias` = `typealias`
-        self.id = id
-    }
-
-    public static let name = "HostileArguments6RefetchQuery"
-    public static let persistedID = "49ed707bcddc50592129d53fd105d93a"
-    public static let text = #"""
-query HostileArguments6RefetchQuery(
-  $any: Boolean = true
-  $associatedtype: Boolean = true
-  $async: Boolean = true
-  $borrowing: Boolean = true
-  $consume: Boolean = true
-  $consuming: Boolean = true
-  $copy: Boolean = true
-  $protocol: Boolean = true
-  $some: Boolean = true
-  $typealias: Boolean = true
-  $id: ID!
-) {
-  node(id: $id) {
-    __typename
-    ...HostileArguments6_character_4jcwnW
-    id
-  }
-}
-
-fragment HostileArguments6_character_4jcwnW on Character {
-  name @include(if: $typealias)
-  name @include(if: $associatedtype)
-  name @include(if: $protocol)
-  name @include(if: $some)
-  name @include(if: $any)
-  name @include(if: $async)
-  name @include(if: $borrowing)
-  name @include(if: $consume)
-  name @include(if: $consuming)
-  name @include(if: $copy)
-  id
-}
-"""#
-
-    public var variables: Baton.Variables {
-        Baton.Variables(["any": Baton.Variable(self.`any`), "associatedtype": Baton.Variable(self.`associatedtype`), "async": Baton.Variable(self.async), "borrowing": Baton.Variable(self.borrowing), "consume": Baton.Variable(self.consume), "consuming": Baton.Variable(self.consuming), "copy": Baton.Variable(self.copy), "protocol": Baton.Variable(self.`protocol`), "some": Baton.Variable(self.`some`), "typealias": Baton.Variable(self.`typealias`), "id": Baton.Variable(self.id)])
-    }
-
-    public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.`any` == rhs.`any` && lhs.`associatedtype` == rhs.`associatedtype` && lhs.async == rhs.async && lhs.borrowing == rhs.borrowing && lhs.consume == rhs.consume && lhs.consuming == rhs.consuming && lhs.copy == rhs.copy && lhs.`protocol` == rhs.`protocol` && lhs.`some` == rhs.`some` && lhs.`typealias` == rhs.`typealias` && lhs.id == rhs.id
-    }
-
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(self.`any`)
-        hasher.combine(self.`associatedtype`)
-        hasher.combine(self.async)
-        hasher.combine(self.borrowing)
-        hasher.combine(self.consume)
-        hasher.combine(self.consuming)
-        hasher.combine(self.copy)
-        hasher.combine(self.`protocol`)
-        hasher.combine(self.`some`)
-        hasher.combine(self.`typealias`)
-        hasher.combine(self.id)
-    }
-
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, hasID: true, abstract: true, variants: [
-                .init(types: [Types.Character], fields: [
-                    .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false, guards: [[.init("typealias", passing: true)], [.init("associatedtype", passing: true)], [.init("protocol", passing: true)], [.init("some", passing: true)], [.init("any", passing: true)], [.init("async", passing: true)], [.init("borrowing", passing: true)], [.init("consume", passing: true)], [.init("consuming", passing: true)], [.init("copy", passing: true)]]),
-                ]),
-                .init(types: nil, fields: [
-                    .scalar("__typename", key: .fixed(Slots.Node.__typename), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                ]),
-            ])),
-        ]))
-
-    nonisolated public struct Data: Baton.Lens {
-        @_spi(Generated) public let anchor: Baton.Anchor
-        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
-        @MainActor public var node: Node? { anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08)).map(Node.init(anchor:)) }
-
-        nonisolated public struct Node: Baton.Lens {
-            @_spi(Generated) public let anchor: Baton.Anchor
-            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Node"
-            @MainActor public var hostileArguments6: HostileArguments6_character? {
-                let bound = anchor.binding(Sites.HostileArguments6RefetchQuery_hostileArguments6) { ["typealias": anchor.variables["typealias"], "associatedtype": anchor.variables["associatedtype"], "protocol": anchor.variables["protocol"], "some": anchor.variables["some"], "any": anchor.variables["any"], "async": anchor.variables["async"], "borrowing": anchor.variables["borrowing"], "consume": anchor.variables["consume"], "consuming": anchor.variables["consuming"], "copy": anchor.variables["copy"]] }
-                guard anchor.record.is(Types.Character) else { return nil }
-                return .init(anchor: bound)
-            }
-        }
-    }
-}
-
-/// Operation value for `query HostileArguments7RefetchQuery`.
-nonisolated public struct HostileArguments7RefetchQuery: Baton.Query {
-    public var anchor: Bool?
-    public var discard: Bool?
-    public var each: Bool?
-    public var isolated: Bool?
-    public var recordID: Bool?
-    public var satisfied: Bool?
-    public var sending: Bool?
-    public var then: Bool?
-    public var typeName: Bool?
-    public var unsafe: Bool?
-    public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
-
-    public init(anchor: Bool? = nil, discard: Bool? = nil, each: Bool? = nil, isolated: Bool? = nil, recordID: Bool? = nil, satisfied: Bool? = nil, sending: Bool? = nil, then: Bool? = nil, typeName: Bool? = nil, unsafe: Bool? = nil, id: String) {
-        self.anchor = anchor
-        self.discard = discard
-        self.each = each
-        self.isolated = isolated
-        self.recordID = recordID
-        self.satisfied = satisfied
-        self.sending = sending
-        self.then = then
-        self.typeName = typeName
-        self.unsafe = unsafe
-        self.id = id
-    }
-
-    public static let name = "HostileArguments7RefetchQuery"
-    public static let persistedID = "befdcd1b9e461f7d6ef50bb60be2cc47"
-    public static let text = #"""
-query HostileArguments7RefetchQuery(
-  $anchor: Boolean = true
-  $discard: Boolean = true
-  $each: Boolean = true
-  $isolated: Boolean = true
-  $recordID: Boolean = true
-  $satisfied: Boolean = true
-  $sending: Boolean = true
-  $then: Boolean = true
-  $typeName: Boolean = true
-  $unsafe: Boolean = true
-  $id: ID!
-) {
-  node(id: $id) {
-    __typename
-    ...HostileArguments7_character_1MdgrG
-    id
-  }
-}
-
-fragment HostileArguments7_character_1MdgrG on Character {
-  name @include(if: $discard)
-  name @include(if: $each)
-  name @include(if: $isolated)
-  name @include(if: $sending)
-  name @include(if: $then)
-  name @include(if: $unsafe)
-  name @include(if: $anchor)
-  name @include(if: $recordID)
-  name @include(if: $typeName)
-  name @include(if: $satisfied)
-  id
-}
-"""#
-
-    public var variables: Baton.Variables {
-        Baton.Variables(["anchor": Baton.Variable(self.anchor), "discard": Baton.Variable(self.discard), "each": Baton.Variable(self.each), "isolated": Baton.Variable(self.isolated), "recordID": Baton.Variable(self.recordID), "satisfied": Baton.Variable(self.satisfied), "sending": Baton.Variable(self.sending), "then": Baton.Variable(self.then), "typeName": Baton.Variable(self.typeName), "unsafe": Baton.Variable(self.unsafe), "id": Baton.Variable(self.id)])
-    }
-
-    public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.anchor == rhs.anchor && lhs.discard == rhs.discard && lhs.each == rhs.each && lhs.isolated == rhs.isolated && lhs.recordID == rhs.recordID && lhs.satisfied == rhs.satisfied && lhs.sending == rhs.sending && lhs.then == rhs.then && lhs.typeName == rhs.typeName && lhs.unsafe == rhs.unsafe && lhs.id == rhs.id
-    }
-
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(self.anchor)
-        hasher.combine(self.discard)
-        hasher.combine(self.each)
-        hasher.combine(self.isolated)
-        hasher.combine(self.recordID)
-        hasher.combine(self.satisfied)
-        hasher.combine(self.sending)
-        hasher.combine(self.then)
-        hasher.combine(self.typeName)
-        hasher.combine(self.unsafe)
-        hasher.combine(self.id)
-    }
-
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, hasID: true, abstract: true, variants: [
-                .init(types: [Types.Character], fields: [
-                    .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false, guards: [[.init("discard", passing: true)], [.init("each", passing: true)], [.init("isolated", passing: true)], [.init("sending", passing: true)], [.init("then", passing: true)], [.init("unsafe", passing: true)], [.init("anchor", passing: true)], [.init("recordID", passing: true)], [.init("typeName", passing: true)], [.init("satisfied", passing: true)]]),
-                ]),
-                .init(types: nil, fields: [
-                    .scalar("__typename", key: .fixed(Slots.Node.__typename), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                ]),
-            ])),
-        ]))
-
-    nonisolated public struct Data: Baton.Lens {
-        @_spi(Generated) public let anchor: Baton.Anchor
-        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
-        @MainActor public var node: Node? { anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08)).map(Node.init(anchor:)) }
-
-        nonisolated public struct Node: Baton.Lens {
-            @_spi(Generated) public let anchor: Baton.Anchor
-            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Node"
-            @MainActor public var hostileArguments7: HostileArguments7_character? {
-                let bound = anchor.binding(Sites.HostileArguments7RefetchQuery_hostileArguments7) { ["discard": anchor.variables["discard"], "each": anchor.variables["each"], "isolated": anchor.variables["isolated"], "sending": anchor.variables["sending"], "then": anchor.variables["then"], "unsafe": anchor.variables["unsafe"], "anchor": anchor.variables["anchor"], "recordID": anchor.variables["recordID"], "typeName": anchor.variables["typeName"], "satisfied": anchor.variables["satisfied"]] }
-                guard anchor.record.is(Types.Character) else { return nil }
-                return .init(anchor: bound)
-            }
-        }
-    }
-}
-
-/// Operation value for `query HostileArguments8RefetchQuery`.
-nonisolated public struct HostileArguments8RefetchQuery: Baton.Query {
-    public var caught: Bool?
-    public var connection: Bool?
-    public var fieldErrors: Bool?
-    public var hasNext: Bool?
-    public var isPresent: Bool?
-    public var missingRequiredField: Bool?
-    public var nodes: Bool?
-    public var refetch: Bool?
-    public var refetchable: Bool?
-    public var throwing: Bool?
-    public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
-
-    public init(caught: Bool? = nil, connection: Bool? = nil, fieldErrors: Bool? = nil, hasNext: Bool? = nil, isPresent: Bool? = nil, missingRequiredField: Bool? = nil, nodes: Bool? = nil, refetch: Bool? = nil, refetchable: Bool? = nil, throwing: Bool? = nil, id: String) {
-        self.caught = caught
-        self.connection = connection
-        self.fieldErrors = fieldErrors
-        self.hasNext = hasNext
-        self.isPresent = isPresent
-        self.missingRequiredField = missingRequiredField
-        self.nodes = nodes
-        self.refetch = refetch
-        self.refetchable = refetchable
-        self.throwing = throwing
-        self.id = id
-    }
-
-    public static let name = "HostileArguments8RefetchQuery"
-    public static let persistedID = "f9083b4d075f1bc0b254a9bde5c0a367"
-    public static let text = #"""
-query HostileArguments8RefetchQuery(
-  $caught: Boolean = true
-  $connection: Boolean = true
-  $fieldErrors: Boolean = true
-  $hasNext: Boolean = true
-  $isPresent: Boolean = true
-  $missingRequiredField: Boolean = true
-  $nodes: Boolean = true
-  $refetch: Boolean = true
-  $refetchable: Boolean = true
-  $throwing: Boolean = true
-  $id: ID!
-) {
-  node(id: $id) {
-    __typename
-    ...HostileArguments8_character_2EcPkz
-    id
-  }
-}
-
-fragment HostileArguments8_character_2EcPkz on Character {
-  name @include(if: $missingRequiredField)
-  name @include(if: $fieldErrors)
-  name @include(if: $isPresent)
-  name @include(if: $throwing)
-  name @include(if: $caught)
-  name @include(if: $refetchable)
-  name @include(if: $refetch)
-  name @include(if: $connection)
-  name @include(if: $nodes)
-  name @include(if: $hasNext)
-  id
-}
-"""#
-
-    public var variables: Baton.Variables {
-        Baton.Variables(["caught": Baton.Variable(self.caught), "connection": Baton.Variable(self.connection), "fieldErrors": Baton.Variable(self.fieldErrors), "hasNext": Baton.Variable(self.hasNext), "isPresent": Baton.Variable(self.isPresent), "missingRequiredField": Baton.Variable(self.missingRequiredField), "nodes": Baton.Variable(self.nodes), "refetch": Baton.Variable(self.refetch), "refetchable": Baton.Variable(self.refetchable), "throwing": Baton.Variable(self.throwing), "id": Baton.Variable(self.id)])
-    }
-
-    public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.caught == rhs.caught && lhs.connection == rhs.connection && lhs.fieldErrors == rhs.fieldErrors && lhs.hasNext == rhs.hasNext && lhs.isPresent == rhs.isPresent && lhs.missingRequiredField == rhs.missingRequiredField && lhs.nodes == rhs.nodes && lhs.refetch == rhs.refetch && lhs.refetchable == rhs.refetchable && lhs.throwing == rhs.throwing && lhs.id == rhs.id
-    }
-
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(self.caught)
-        hasher.combine(self.connection)
-        hasher.combine(self.fieldErrors)
-        hasher.combine(self.hasNext)
-        hasher.combine(self.isPresent)
-        hasher.combine(self.missingRequiredField)
-        hasher.combine(self.nodes)
-        hasher.combine(self.refetch)
-        hasher.combine(self.refetchable)
-        hasher.combine(self.throwing)
-        hasher.combine(self.id)
-    }
-
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, hasID: true, abstract: true, variants: [
-                .init(types: [Types.Character], fields: [
-                    .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false, guards: [[.init("missingRequiredField", passing: true)], [.init("fieldErrors", passing: true)], [.init("isPresent", passing: true)], [.init("throwing", passing: true)], [.init("caught", passing: true)], [.init("refetchable", passing: true)], [.init("refetch", passing: true)], [.init("connection", passing: true)], [.init("nodes", passing: true)], [.init("hasNext", passing: true)]]),
-                ]),
-                .init(types: nil, fields: [
-                    .scalar("__typename", key: .fixed(Slots.Node.__typename), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                ]),
-            ])),
-        ]))
-
-    nonisolated public struct Data: Baton.Lens {
-        @_spi(Generated) public let anchor: Baton.Anchor
-        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
-        @MainActor public var node: Node? { anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08)).map(Node.init(anchor:)) }
-
-        nonisolated public struct Node: Baton.Lens {
-            @_spi(Generated) public let anchor: Baton.Anchor
-            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Node"
-            @MainActor public var hostileArguments8: HostileArguments8_character? {
-                let bound = anchor.binding(Sites.HostileArguments8RefetchQuery_hostileArguments8) { ["missingRequiredField": anchor.variables["missingRequiredField"], "fieldErrors": anchor.variables["fieldErrors"], "isPresent": anchor.variables["isPresent"], "throwing": anchor.variables["throwing"], "caught": anchor.variables["caught"], "refetchable": anchor.variables["refetchable"], "refetch": anchor.variables["refetch"], "connection": anchor.variables["connection"], "nodes": anchor.variables["nodes"], "hasNext": anchor.variables["hasNext"]] }
-                guard anchor.record.is(Types.Character) else { return nil }
-                return .init(anchor: bound)
-            }
-        }
-    }
-}
-
-/// Operation value for `query HostileArguments9RefetchQuery`.
-nonisolated public struct HostileArguments9RefetchQuery: Baton.Query {
-    public var bound: Bool?
-    public var child: Bool?
-    public var connectionID: Bool?
-    public var errors: Bool?
-    public var hasPrevious: Bool?
-    public var isLoadingNext: Bool?
-    public var isLoadingPrevious: Bool?
-    public var loadNext: Bool?
-    public var loadPrevious: Bool?
-    public var missing: Bool?
-    public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
-
-    public init(bound: Bool? = nil, child: Bool? = nil, connectionID: Bool? = nil, errors: Bool? = nil, hasPrevious: Bool? = nil, isLoadingNext: Bool? = nil, isLoadingPrevious: Bool? = nil, loadNext: Bool? = nil, loadPrevious: Bool? = nil, missing: Bool? = nil, id: String) {
-        self.bound = bound
-        self.child = child
-        self.connectionID = connectionID
-        self.errors = errors
-        self.hasPrevious = hasPrevious
-        self.isLoadingNext = isLoadingNext
-        self.isLoadingPrevious = isLoadingPrevious
-        self.loadNext = loadNext
-        self.loadPrevious = loadPrevious
-        self.missing = missing
-        self.id = id
-    }
-
-    public static let name = "HostileArguments9RefetchQuery"
-    public static let persistedID = "2b6fdef45dd82f4b6ab80abc02a235ce"
-    public static let text = #"""
-query HostileArguments9RefetchQuery(
-  $bound: Boolean = true
-  $child: Boolean = true
-  $connectionID: Boolean = true
-  $errors: Boolean = true
-  $hasPrevious: Boolean = true
-  $isLoadingNext: Boolean = true
-  $isLoadingPrevious: Boolean = true
-  $loadNext: Boolean = true
-  $loadPrevious: Boolean = true
-  $missing: Boolean = true
-  $id: ID!
-) {
-  node(id: $id) {
-    __typename
-    ...HostileArguments9_character_48qwXb
-    id
-  }
-}
-
-fragment HostileArguments9_character_48qwXb on Character {
-  name @include(if: $hasPrevious)
-  name @include(if: $isLoadingNext)
-  name @include(if: $isLoadingPrevious)
-  name @include(if: $connectionID)
-  name @include(if: $loadNext)
-  name @include(if: $loadPrevious)
-  name @include(if: $bound)
-  name @include(if: $errors)
-  name @include(if: $child)
-  name @include(if: $missing)
-  id
-}
-"""#
-
-    public var variables: Baton.Variables {
-        Baton.Variables(["bound": Baton.Variable(self.bound), "child": Baton.Variable(self.child), "connectionID": Baton.Variable(self.connectionID), "errors": Baton.Variable(self.errors), "hasPrevious": Baton.Variable(self.hasPrevious), "isLoadingNext": Baton.Variable(self.isLoadingNext), "isLoadingPrevious": Baton.Variable(self.isLoadingPrevious), "loadNext": Baton.Variable(self.loadNext), "loadPrevious": Baton.Variable(self.loadPrevious), "missing": Baton.Variable(self.missing), "id": Baton.Variable(self.id)])
-    }
-
-    public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.bound == rhs.bound && lhs.child == rhs.child && lhs.connectionID == rhs.connectionID && lhs.errors == rhs.errors && lhs.hasPrevious == rhs.hasPrevious && lhs.isLoadingNext == rhs.isLoadingNext && lhs.isLoadingPrevious == rhs.isLoadingPrevious && lhs.loadNext == rhs.loadNext && lhs.loadPrevious == rhs.loadPrevious && lhs.missing == rhs.missing && lhs.id == rhs.id
-    }
-
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(self.bound)
-        hasher.combine(self.child)
-        hasher.combine(self.connectionID)
-        hasher.combine(self.errors)
-        hasher.combine(self.hasPrevious)
-        hasher.combine(self.isLoadingNext)
-        hasher.combine(self.isLoadingPrevious)
-        hasher.combine(self.loadNext)
-        hasher.combine(self.loadPrevious)
-        hasher.combine(self.missing)
-        hasher.combine(self.id)
-    }
-
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, hasID: true, abstract: true, variants: [
-                .init(types: [Types.Character], fields: [
-                    .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false, guards: [[.init("hasPrevious", passing: true)], [.init("isLoadingNext", passing: true)], [.init("isLoadingPrevious", passing: true)], [.init("connectionID", passing: true)], [.init("loadNext", passing: true)], [.init("loadPrevious", passing: true)], [.init("bound", passing: true)], [.init("errors", passing: true)], [.init("child", passing: true)], [.init("missing", passing: true)]]),
-                ]),
-                .init(types: nil, fields: [
-                    .scalar("__typename", key: .fixed(Slots.Node.__typename), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                ]),
-            ])),
-        ]))
-
-    nonisolated public struct Data: Baton.Lens {
-        @_spi(Generated) public let anchor: Baton.Anchor
-        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
-        @MainActor public var node: Node? { anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08)).map(Node.init(anchor:)) }
-
-        nonisolated public struct Node: Baton.Lens {
-            @_spi(Generated) public let anchor: Baton.Anchor
-            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Node"
-            @MainActor public var hostileArguments9: HostileArguments9_character? {
-                let bound = anchor.binding(Sites.HostileArguments9RefetchQuery_hostileArguments9) { ["hasPrevious": anchor.variables["hasPrevious"], "isLoadingNext": anchor.variables["isLoadingNext"], "isLoadingPrevious": anchor.variables["isLoadingPrevious"], "connectionID": anchor.variables["connectionID"], "loadNext": anchor.variables["loadNext"], "loadPrevious": anchor.variables["loadPrevious"], "bound": anchor.variables["bound"], "errors": anchor.variables["errors"], "child": anchor.variables["child"], "missing": anchor.variables["missing"]] }
+            @MainActor public var hostileArguments: HostileArguments_character? {
+                let bound = anchor.binding(Sites.HostileArgumentsRefetchQuery_hostileArguments) { () -> [String: Baton.Variable?] in ["Type": anchor.variables["Type"], "Protocol": anchor.variables["Protocol"], "Any": anchor.variables["Any"], "self": anchor.variables["self"], "Self": anchor.variables["Self"], "init": anchor.variables["init"], "deinit": anchor.variables["deinit"], "subscript": anchor.variables["subscript"], "class": anchor.variables["class"], "struct": anchor.variables["struct"], "enum": anchor.variables["enum"], "func": anchor.variables["func"], "var": anchor.variables["var"], "let": anchor.variables["let"], "import": anchor.variables["import"], "extension": anchor.variables["extension"], "operator": anchor.variables["operator"], "static": anchor.variables["static"], "default": anchor.variables["default"], "case": anchor.variables["case"], "switch": anchor.variables["switch"], "if": anchor.variables["if"], "else": anchor.variables["else"], "for": anchor.variables["for"], "in": anchor.variables["in"], "while": anchor.variables["while"], "repeat": anchor.variables["repeat"], "return": anchor.variables["return"], "break": anchor.variables["break"], "continue": anchor.variables["continue"], "where": anchor.variables["where"], "is": anchor.variables["is"], "as": anchor.variables["as"], "try": anchor.variables["try"], "throw": anchor.variables["throw"], "throws": anchor.variables["throws"], "guard": anchor.variables["guard"], "defer": anchor.variables["defer"], "do": anchor.variables["do"], "catch": anchor.variables["catch"], "true": anchor.variables["true"], "false": anchor.variables["false"], "nil": anchor.variables["nil"], "super": anchor.variables["super"], "internal": anchor.variables["internal"], "private": anchor.variables["private"], "public": anchor.variables["public"], "fileprivate": anchor.variables["fileprivate"], "open": anchor.variables["open"], "inout": anchor.variables["inout"], "typealias": anchor.variables["typealias"], "associatedtype": anchor.variables["associatedtype"], "protocol": anchor.variables["protocol"], "some": anchor.variables["some"], "any": anchor.variables["any"], "rethrows": anchor.variables["rethrows"], "fallthrough": anchor.variables["fallthrough"], "precedencegroup": anchor.variables["precedencegroup"], "_": anchor.variables["_"], "async": anchor.variables["async"], "borrowing": anchor.variables["borrowing"], "consume": anchor.variables["consume"], "consuming": anchor.variables["consuming"], "copy": anchor.variables["copy"], "discard": anchor.variables["discard"], "each": anchor.variables["each"], "isolated": anchor.variables["isolated"], "sending": anchor.variables["sending"], "then": anchor.variables["then"], "unsafe": anchor.variables["unsafe"], "await": anchor.variables["await"], "anchor": anchor.variables["anchor"], "recordID": anchor.variables["recordID"], "typeName": anchor.variables["typeName"], "satisfied": anchor.variables["satisfied"], "missingRequiredField": anchor.variables["missingRequiredField"], "fieldErrors": anchor.variables["fieldErrors"], "isPresent": anchor.variables["isPresent"], "throwing": anchor.variables["throwing"], "caught": anchor.variables["caught"], "refetchable": anchor.variables["refetchable"], "refetch": anchor.variables["refetch"], "connection": anchor.variables["connection"], "nodes": anchor.variables["nodes"], "hasNext": anchor.variables["hasNext"], "hasPrevious": anchor.variables["hasPrevious"], "isLoadingNext": anchor.variables["isLoadingNext"], "isLoadingPrevious": anchor.variables["isLoadingPrevious"], "connectionID": anchor.variables["connectionID"], "loadNext": anchor.variables["loadNext"], "loadPrevious": anchor.variables["loadPrevious"], "bound": anchor.variables["bound"], "errors": anchor.variables["errors"], "child": anchor.variables["child"], "missing": anchor.variables["missing"], "count": anchor.variables["count"], "fields": anchor.variables["fields"], "lhs": anchor.variables["lhs"], "rhs": anchor.variables["rhs"], "hasher": anchor.variables["hasher"], "optimistic": anchor.variables["optimistic"], "selfValue": anchor.variables["selfValue"], "Fragment": anchor.variables["Fragment"], "Spread": anchor.variables["Spread"], "Owner": anchor.variables["Owner"], "Query": anchor.variables["Query"], "Operation": anchor.variables["Operation"], "RefetchQuery": anchor.variables["RefetchQuery"], "name": anchor.variables["name"], "persistedID": anchor.variables["persistedID"], "text": anchor.variables["text"], "plan": anchor.variables["plan"], "errorBehavior": anchor.variables["errorBehavior"], "throwsOnFieldError": anchor.variables["throwsOnFieldError"], "bubbles": anchor.variables["bubbles"], "hasDeferred": anchor.variables["hasDeferred"], "Action": anchor.variables["Action"], "OptimisticResponse": anchor.variables["OptimisticResponse"], "hash": anchor.variables["hash"], "commit": anchor.variables["commit"], "callAsFunction": anchor.variables["callAsFunction"], "Op": anchor.variables["Op"], "variable": anchor.variables["variable"], "retry": anchor.variables["retry"], "subscription": anchor.variables["subscription"], "AbstractSlots": anchor.variables["AbstractSlots"], "schemaDigest": anchor.variables["schemaDigest"], "Swift": anchor.variables["Swift"], "Set": anchor.variables["Set"], "Result": anchor.variables["Result"], "Optional": anchor.variables["Optional"], "String": anchor.variables["String"], "Int": anchor.variables["Int"], "Double": anchor.variables["Double"], "Bool": anchor.variables["Bool"], "MainActor": anchor.variables["MainActor"], "Hasher": anchor.variables["Hasher"], "Sendable": anchor.variables["Sendable"]] }
                 guard anchor.record.is(Types.Character) else { return nil }
                 return .init(anchor: bound)
             }
@@ -5329,7 +4291,7 @@ nonisolated public struct HostileBodiesRefetchQuery: Baton.Query {
     }
 
     public static let name = "HostileBodiesRefetchQuery"
-    public static let persistedID = "a9b1f8b70c3d2c97bef9500fd056cf3e"
+    public static let persistedID = "bf6b59f15553a36b68fb19fd831ef2aa"
     @_spi(Generated) public static let hasDeferred = true
     public static let text = #"""
 query HostileBodiesRefetchQuery(
@@ -5397,6 +4359,10 @@ fragment HostileBodies_character on Character {
   protocol: name
   some: name
   any: name
+  rethrows: name
+  fallthrough: name
+  precedencegroup: name
+  _: name
   async: name
   await: name
   borrowing: name
@@ -5579,6 +4545,10 @@ fragment HostileDeferred_character on Character {
                     .scalar("protocol", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("some", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("any", key: .fixed(Slots.Character.name), kind: .string, list: false),
+                    .scalar("rethrows", key: .fixed(Slots.Character.name), kind: .string, list: false),
+                    .scalar("fallthrough", key: .fixed(Slots.Character.name), kind: .string, list: false),
+                    .scalar("precedencegroup", key: .fixed(Slots.Character.name), kind: .string, list: false),
+                    .scalar("_", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("async", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("await", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("borrowing", key: .fixed(Slots.Character.name), kind: .string, list: false),
@@ -5713,7 +4683,7 @@ nonisolated public struct HostileConnectionRefetchQuery: Baton.Query {
     }
 
     public static let name = "HostileConnectionRefetchQuery"
-    public static let persistedID = "3d5f4cbfc8f364ec23f50535c0f6e7fa"
+    public static let persistedID = "c4831bf2da6a6f3cd76354eaa1556082"
     public static let text = #"""
 query HostileConnectionRefetchQuery(
   $count: Int = 2
@@ -5783,6 +4753,10 @@ fragment HostileConnection_character_1G22uz on Character {
     protocol: totalCount
     some: totalCount
     any: totalCount
+    rethrows: totalCount
+    fallthrough: totalCount
+    precedencegroup: totalCount
+    _: totalCount
     async: totalCount
     await: totalCount
     borrowing: totalCount
@@ -5953,6 +4927,10 @@ fragment HostileConnection_character_1G22uz on Character {
                         .scalar("protocol", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
                         .scalar("some", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
                         .scalar("any", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+                        .scalar("rethrows", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+                        .scalar("fallthrough", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+                        .scalar("precedencegroup", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+                        .scalar("_", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
                         .scalar("async", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
                         .scalar("await", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
                         .scalar("borrowing", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
@@ -6064,10 +5042,65 @@ fragment HostileConnection_character_1G22uz on Character {
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Node"
             @MainActor public var hostileConnection: HostileConnection_character? {
-                let bound = anchor.binding(Sites.HostileConnectionRefetchQuery_hostileConnection) { ["count": anchor.variables["count"], "cursor": anchor.variables["cursor"]] }
+                let bound = anchor.binding(Sites.HostileConnectionRefetchQuery_hostileConnection) { () -> [String: Baton.Variable?] in ["count": anchor.variables["count"], "cursor": anchor.variables["cursor"]] }
                 guard anchor.record.is(Types.Character) else { return nil }
                 return .init(anchor: bound)
             }
+        }
+    }
+}
+
+/// Operation value for `query HostileHidden`.
+nonisolated public struct HostileHidden: Baton.Query {
+    public var resolution: Baton.OperationHandle<Self>? = nil
+
+    public init() {
+    }
+
+    public static let name = "HostileHidden"
+    public static let persistedID = "4f1209329e0caeac39498254e3b0777b"
+    public static let text = #"""
+query HostileHidden {
+  character(id: 1) {
+    ..._hostileHidden
+    id
+  }
+}
+
+fragment _hostileHidden on Character {
+  name
+}
+"""#
+
+    public var variables: Baton.Variables {
+        Baton.Variables([:])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        true
+    }
+
+    public func hash(into hasher: inout Hasher) {
+    }
+
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
+            .linked("character", key: .fixed(Slots.Query.character_c74a1e), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .literal("1")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
+                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            ])),
+        ]))
+
+    nonisolated public struct Data: Baton.Lens {
+        @_spi(Generated) public let anchor: Baton.Anchor
+        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Query"
+        @MainActor public var character: Character? { anchor.linked(Slots.Query.character_c74a1e).map(Character.init(anchor:)) }
+
+        nonisolated public struct Character: Baton.Lens {
+            @_spi(Generated) public let anchor: Baton.Anchor
+            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Character"
+            @MainActor public var _hostileHidden: _hostileHidden { .init(anchor: anchor) }
         }
     }
 }
@@ -6126,17 +5159,25 @@ nonisolated public struct HostileMutationVariables: Baton.Mutation {
     public var `protocol`: Bool
     public var `some`: Bool
     public var `any`: Bool
+    public var `rethrows`: Bool
+    public var `fallthrough`: Bool
+    public var `precedencegroup`: Bool
+    public var `_`: Bool
+    public var `var`: Bool
+    public var `let`: Bool
+    public var `Self`: Bool
     public var async: Bool
-    public var borrowing: Bool
+    public var `borrowing`: Bool
     public var consume: Bool
-    public var consuming: Bool
+    public var `consuming`: Bool
     public var copy: Bool
     public var discard: Bool
-    public var each: Bool
-    public var isolated: Bool
-    public var sending: Bool
+    public var `each`: Bool
+    public var `isolated`: Bool
+    public var `sending`: Bool
     public var then: Bool
     public var unsafe: Bool
+    public var `await`: Bool
     public var anchor: Bool
     public var recordID: Bool
     public var typeName: Bool
@@ -6207,7 +5248,7 @@ nonisolated public struct HostileMutationVariables: Baton.Mutation {
     public var Hasher: Bool
     public var Sendable: Bool
 
-    public init(`Type`: Bool, `Protocol`: Bool, `Any`: Bool, `self` selfValue2: Bool, `init`: Bool, `deinit`: Bool, `subscript`: Bool, `class`: Bool, `struct`: Bool, `enum`: Bool, `func`: Bool, `import`: Bool, `extension`: Bool, `operator`: Bool, `static`: Bool, `default`: Bool, `case`: Bool, `switch`: Bool, `if`: Bool, `else`: Bool, `for`: Bool, `in`: Bool, `while`: Bool, `repeat`: Bool, `return`: Bool, `break`: Bool, `continue`: Bool, `where`: Bool, `is`: Bool, `as`: Bool, `try`: Bool, `throw`: Bool, `throws`: Bool, `guard`: Bool, `defer`: Bool, `do`: Bool, `catch`: Bool, `true`: Bool, `false`: Bool, `nil`: Bool, `super`: Bool, `internal`: Bool, `private`: Bool, `public`: Bool, `fileprivate`: Bool, `open`: Bool, `inout`: Bool, `typealias`: Bool, `associatedtype`: Bool, `protocol`: Bool, `some`: Bool, `any`: Bool, async: Bool, borrowing: Bool, consume: Bool, consuming: Bool, copy: Bool, discard: Bool, each: Bool, isolated: Bool, sending: Bool, then: Bool, unsafe: Bool, anchor: Bool, recordID: Bool, typeName: Bool, satisfied: Bool, missingRequiredField: Bool, fieldErrors: Bool, isPresent: Bool, throwing: Bool, caught: Bool, refetchable: Bool, refetch: Bool, connection: Bool, nodes: Bool, hasNext: Bool, hasPrevious: Bool, isLoadingNext: Bool, isLoadingPrevious: Bool, connectionID: Bool, loadNext: Bool, loadPrevious: Bool, bound: Bool, errors: Bool, child: Bool, missing: Bool, count: Bool, fields: Bool, lhs: Bool, rhs: Bool, hasher: Bool, selfValue: Bool, Fragment: Bool, Spread: Bool, Owner: Bool, Query: Bool, Operation: Bool, RefetchQuery: Bool, resolution: Bool, name: Bool, persistedID: Bool, text: Bool, plan: Bool, errorBehavior: Bool, throwsOnFieldError: Bool, bubbles: Bool, hasDeferred: Bool, hash: Bool, commit: Bool, callAsFunction: Bool, Op: Bool, variable: Bool, phase: Bool, isRefreshing: Bool, isStale: Bool, retry: Bool, subscription: Bool, Sites: Bool, AbstractSlots: Bool, schemaDigest: Bool, Swift: Bool, Set: Bool, Result: Bool, Optional: Bool, String: Bool, Int: Bool, Double: Bool, Bool: Bool, MainActor: Bool, Hasher: Bool, Sendable: Bool) {
+    public init(`Type`: Bool, `Protocol`: Bool, `Any`: Bool, `self` selfValue2: Bool, `init`: Bool, `deinit`: Bool, `subscript`: Bool, `class`: Bool, `struct`: Bool, `enum`: Bool, `func`: Bool, `import`: Bool, `extension`: Bool, `operator`: Bool, `static`: Bool, `default`: Bool, `case`: Bool, `switch`: Bool, `if`: Bool, `else`: Bool, `for`: Bool, `in`: Bool, `while`: Bool, `repeat`: Bool, `return`: Bool, `break`: Bool, `continue`: Bool, `where`: Bool, `is`: Bool, `as`: Bool, `try`: Bool, `throw`: Bool, `throws`: Bool, `guard`: Bool, `defer`: Bool, `do`: Bool, `catch`: Bool, `true`: Bool, `false`: Bool, `nil`: Bool, `super`: Bool, `internal`: Bool, `private`: Bool, `public`: Bool, `fileprivate`: Bool, `open`: Bool, `inout`: Bool, `typealias`: Bool, `associatedtype`: Bool, `protocol`: Bool, `some`: Bool, `any`: Bool, `rethrows`: Bool, `fallthrough`: Bool, `precedencegroup`: Bool, `_`: Bool, `var`: Bool, `let`: Bool, `Self`: Bool, async: Bool, `borrowing`: Bool, consume: Bool, `consuming`: Bool, copy: Bool, discard: Bool, `each`: Bool, `isolated`: Bool, `sending`: Bool, then: Bool, unsafe: Bool, `await`: Bool, anchor: Bool, recordID: Bool, typeName: Bool, satisfied: Bool, missingRequiredField: Bool, fieldErrors: Bool, isPresent: Bool, throwing: Bool, caught: Bool, refetchable: Bool, refetch: Bool, connection: Bool, nodes: Bool, hasNext: Bool, hasPrevious: Bool, isLoadingNext: Bool, isLoadingPrevious: Bool, connectionID: Bool, loadNext: Bool, loadPrevious: Bool, bound: Bool, errors: Bool, child: Bool, missing: Bool, count: Bool, fields: Bool, lhs: Bool, rhs: Bool, hasher: Bool, selfValue: Bool, Fragment: Bool, Spread: Bool, Owner: Bool, Query: Bool, Operation: Bool, RefetchQuery: Bool, resolution: Bool, name: Bool, persistedID: Bool, text: Bool, plan: Bool, errorBehavior: Bool, throwsOnFieldError: Bool, bubbles: Bool, hasDeferred: Bool, hash: Bool, commit: Bool, callAsFunction: Bool, Op: Bool, variable: Bool, phase: Bool, isRefreshing: Bool, isStale: Bool, retry: Bool, subscription: Bool, Sites: Bool, AbstractSlots: Bool, schemaDigest: Bool, Swift: Bool, Set: Bool, Result: Bool, Optional: Bool, String: Bool, Int: Bool, Double: Bool, Bool: Bool, MainActor: Bool, Hasher: Bool, Sendable: Bool) {
         self.`Type` = `Type`
         self.`Protocol` = `Protocol`
         self.`Any` = `Any`
@@ -6260,17 +5301,25 @@ nonisolated public struct HostileMutationVariables: Baton.Mutation {
         self.`protocol` = `protocol`
         self.`some` = `some`
         self.`any` = `any`
+        self.`rethrows` = `rethrows`
+        self.`fallthrough` = `fallthrough`
+        self.`precedencegroup` = `precedencegroup`
+        self.`_` = `_`
+        self.`var` = `var`
+        self.`let` = `let`
+        self.`Self` = `Self`
         self.async = async
-        self.borrowing = borrowing
+        self.`borrowing` = `borrowing`
         self.consume = consume
-        self.consuming = consuming
+        self.`consuming` = `consuming`
         self.copy = copy
         self.discard = discard
-        self.each = each
-        self.isolated = isolated
-        self.sending = sending
+        self.`each` = `each`
+        self.`isolated` = `isolated`
+        self.`sending` = `sending`
         self.then = then
         self.unsafe = unsafe
+        self.`await` = `await`
         self.anchor = anchor
         self.recordID = recordID
         self.typeName = typeName
@@ -6343,7 +5392,7 @@ nonisolated public struct HostileMutationVariables: Baton.Mutation {
     }
 
     public static let name = "HostileMutationVariables"
-    public static let persistedID = "bf6fb24b72387dfe6279c2db984cc83e"
+    public static let persistedID = "7563d5077bf4fc01b9b46e2b8fd49b95"
     public static let text = #"""
 mutation HostileMutationVariables(
   $Type: Boolean!
@@ -6398,6 +5447,13 @@ mutation HostileMutationVariables(
   $protocol: Boolean!
   $some: Boolean!
   $any: Boolean!
+  $rethrows: Boolean!
+  $fallthrough: Boolean!
+  $precedencegroup: Boolean!
+  $_: Boolean!
+  $var: Boolean!
+  $let: Boolean!
+  $Self: Boolean!
   $async: Boolean!
   $borrowing: Boolean!
   $consume: Boolean!
@@ -6409,6 +5465,7 @@ mutation HostileMutationVariables(
   $sending: Boolean!
   $then: Boolean!
   $unsafe: Boolean!
+  $await: Boolean!
   $anchor: Boolean!
   $recordID: Boolean!
   $typeName: Boolean!
@@ -6534,6 +5591,13 @@ mutation HostileMutationVariables(
       name @include(if: $protocol)
       name @include(if: $some)
       name @include(if: $any)
+      name @include(if: $rethrows)
+      name @include(if: $fallthrough)
+      name @include(if: $precedencegroup)
+      name @include(if: $_)
+      name @include(if: $var)
+      name @include(if: $let)
+      name @include(if: $Self)
       name @include(if: $async)
       name @include(if: $borrowing)
       name @include(if: $consume)
@@ -6545,6 +5609,7 @@ mutation HostileMutationVariables(
       name @include(if: $sending)
       name @include(if: $then)
       name @include(if: $unsafe)
+      name @include(if: $await)
       name @include(if: $anchor)
       name @include(if: $recordID)
       name @include(if: $typeName)
@@ -6620,11 +5685,11 @@ mutation HostileMutationVariables(
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["Type": Baton.Variable(self.`Type`), "Protocol": Baton.Variable(self.`Protocol`), "Any": Baton.Variable(self.`Any`), "self": Baton.Variable(self.`self`), "init": Baton.Variable(self.`init`), "deinit": Baton.Variable(self.`deinit`), "subscript": Baton.Variable(self.`subscript`), "class": Baton.Variable(self.`class`), "struct": Baton.Variable(self.`struct`), "enum": Baton.Variable(self.`enum`), "func": Baton.Variable(self.`func`), "import": Baton.Variable(self.`import`), "extension": Baton.Variable(self.`extension`), "operator": Baton.Variable(self.`operator`), "static": Baton.Variable(self.`static`), "default": Baton.Variable(self.`default`), "case": Baton.Variable(self.`case`), "switch": Baton.Variable(self.`switch`), "if": Baton.Variable(self.`if`), "else": Baton.Variable(self.`else`), "for": Baton.Variable(self.`for`), "in": Baton.Variable(self.`in`), "while": Baton.Variable(self.`while`), "repeat": Baton.Variable(self.`repeat`), "return": Baton.Variable(self.`return`), "break": Baton.Variable(self.`break`), "continue": Baton.Variable(self.`continue`), "where": Baton.Variable(self.`where`), "is": Baton.Variable(self.`is`), "as": Baton.Variable(self.`as`), "try": Baton.Variable(self.`try`), "throw": Baton.Variable(self.`throw`), "throws": Baton.Variable(self.`throws`), "guard": Baton.Variable(self.`guard`), "defer": Baton.Variable(self.`defer`), "do": Baton.Variable(self.`do`), "catch": Baton.Variable(self.`catch`), "true": Baton.Variable(self.`true`), "false": Baton.Variable(self.`false`), "nil": Baton.Variable(self.`nil`), "super": Baton.Variable(self.`super`), "internal": Baton.Variable(self.`internal`), "private": Baton.Variable(self.`private`), "public": Baton.Variable(self.`public`), "fileprivate": Baton.Variable(self.`fileprivate`), "open": Baton.Variable(self.`open`), "inout": Baton.Variable(self.`inout`), "typealias": Baton.Variable(self.`typealias`), "associatedtype": Baton.Variable(self.`associatedtype`), "protocol": Baton.Variable(self.`protocol`), "some": Baton.Variable(self.`some`), "any": Baton.Variable(self.`any`), "async": Baton.Variable(self.async), "borrowing": Baton.Variable(self.borrowing), "consume": Baton.Variable(self.consume), "consuming": Baton.Variable(self.consuming), "copy": Baton.Variable(self.copy), "discard": Baton.Variable(self.discard), "each": Baton.Variable(self.each), "isolated": Baton.Variable(self.isolated), "sending": Baton.Variable(self.sending), "then": Baton.Variable(self.then), "unsafe": Baton.Variable(self.unsafe), "anchor": Baton.Variable(self.anchor), "recordID": Baton.Variable(self.recordID), "typeName": Baton.Variable(self.typeName), "satisfied": Baton.Variable(self.satisfied), "missingRequiredField": Baton.Variable(self.missingRequiredField), "fieldErrors": Baton.Variable(self.fieldErrors), "isPresent": Baton.Variable(self.isPresent), "throwing": Baton.Variable(self.throwing), "caught": Baton.Variable(self.caught), "refetchable": Baton.Variable(self.refetchable), "refetch": Baton.Variable(self.refetch), "connection": Baton.Variable(self.connection), "nodes": Baton.Variable(self.nodes), "hasNext": Baton.Variable(self.hasNext), "hasPrevious": Baton.Variable(self.hasPrevious), "isLoadingNext": Baton.Variable(self.isLoadingNext), "isLoadingPrevious": Baton.Variable(self.isLoadingPrevious), "connectionID": Baton.Variable(self.connectionID), "loadNext": Baton.Variable(self.loadNext), "loadPrevious": Baton.Variable(self.loadPrevious), "bound": Baton.Variable(self.bound), "errors": Baton.Variable(self.errors), "child": Baton.Variable(self.child), "missing": Baton.Variable(self.missing), "count": Baton.Variable(self.count), "fields": Baton.Variable(self.fields), "lhs": Baton.Variable(self.lhs), "rhs": Baton.Variable(self.rhs), "hasher": Baton.Variable(self.hasher), "selfValue": Baton.Variable(self.selfValue), "Fragment": Baton.Variable(self.Fragment), "Spread": Baton.Variable(self.Spread), "Owner": Baton.Variable(self.Owner), "Query": Baton.Variable(self.Query), "Operation": Baton.Variable(self.Operation), "RefetchQuery": Baton.Variable(self.RefetchQuery), "resolution": Baton.Variable(self.resolution), "name": Baton.Variable(self.name), "persistedID": Baton.Variable(self.persistedID), "text": Baton.Variable(self.text), "plan": Baton.Variable(self.plan), "errorBehavior": Baton.Variable(self.errorBehavior), "throwsOnFieldError": Baton.Variable(self.throwsOnFieldError), "bubbles": Baton.Variable(self.bubbles), "hasDeferred": Baton.Variable(self.hasDeferred), "hash": Baton.Variable(self.hash), "commit": Baton.Variable(self.commit), "callAsFunction": Baton.Variable(self.callAsFunction), "Op": Baton.Variable(self.Op), "variable": Baton.Variable(self.variable), "phase": Baton.Variable(self.phase), "isRefreshing": Baton.Variable(self.isRefreshing), "isStale": Baton.Variable(self.isStale), "retry": Baton.Variable(self.retry), "subscription": Baton.Variable(self.subscription), "Sites": Baton.Variable(self.Sites), "AbstractSlots": Baton.Variable(self.AbstractSlots), "schemaDigest": Baton.Variable(self.schemaDigest), "Swift": Baton.Variable(self.Swift), "Set": Baton.Variable(self.Set), "Result": Baton.Variable(self.Result), "Optional": Baton.Variable(self.Optional), "String": Baton.Variable(self.String), "Int": Baton.Variable(self.Int), "Double": Baton.Variable(self.Double), "Bool": Baton.Variable(self.Bool), "MainActor": Baton.Variable(self.MainActor), "Hasher": Baton.Variable(self.Hasher), "Sendable": Baton.Variable(self.Sendable)])
+        Baton.Variables(["Type": Baton.Variable(self.`Type`), "Protocol": Baton.Variable(self.`Protocol`), "Any": Baton.Variable(self.`Any`), "self": Baton.Variable(self.`self`), "init": Baton.Variable(self.`init`), "deinit": Baton.Variable(self.`deinit`), "subscript": Baton.Variable(self.`subscript`), "class": Baton.Variable(self.`class`), "struct": Baton.Variable(self.`struct`), "enum": Baton.Variable(self.`enum`), "func": Baton.Variable(self.`func`), "import": Baton.Variable(self.`import`), "extension": Baton.Variable(self.`extension`), "operator": Baton.Variable(self.`operator`), "static": Baton.Variable(self.`static`), "default": Baton.Variable(self.`default`), "case": Baton.Variable(self.`case`), "switch": Baton.Variable(self.`switch`), "if": Baton.Variable(self.`if`), "else": Baton.Variable(self.`else`), "for": Baton.Variable(self.`for`), "in": Baton.Variable(self.`in`), "while": Baton.Variable(self.`while`), "repeat": Baton.Variable(self.`repeat`), "return": Baton.Variable(self.`return`), "break": Baton.Variable(self.`break`), "continue": Baton.Variable(self.`continue`), "where": Baton.Variable(self.`where`), "is": Baton.Variable(self.`is`), "as": Baton.Variable(self.`as`), "try": Baton.Variable(self.`try`), "throw": Baton.Variable(self.`throw`), "throws": Baton.Variable(self.`throws`), "guard": Baton.Variable(self.`guard`), "defer": Baton.Variable(self.`defer`), "do": Baton.Variable(self.`do`), "catch": Baton.Variable(self.`catch`), "true": Baton.Variable(self.`true`), "false": Baton.Variable(self.`false`), "nil": Baton.Variable(self.`nil`), "super": Baton.Variable(self.`super`), "internal": Baton.Variable(self.`internal`), "private": Baton.Variable(self.`private`), "public": Baton.Variable(self.`public`), "fileprivate": Baton.Variable(self.`fileprivate`), "open": Baton.Variable(self.`open`), "inout": Baton.Variable(self.`inout`), "typealias": Baton.Variable(self.`typealias`), "associatedtype": Baton.Variable(self.`associatedtype`), "protocol": Baton.Variable(self.`protocol`), "some": Baton.Variable(self.`some`), "any": Baton.Variable(self.`any`), "rethrows": Baton.Variable(self.`rethrows`), "fallthrough": Baton.Variable(self.`fallthrough`), "precedencegroup": Baton.Variable(self.`precedencegroup`), "_": Baton.Variable(self.`_`), "var": Baton.Variable(self.`var`), "let": Baton.Variable(self.`let`), "Self": Baton.Variable(self.`Self`), "async": Baton.Variable(self.async), "borrowing": Baton.Variable(self.`borrowing`), "consume": Baton.Variable(self.consume), "consuming": Baton.Variable(self.`consuming`), "copy": Baton.Variable(self.copy), "discard": Baton.Variable(self.discard), "each": Baton.Variable(self.`each`), "isolated": Baton.Variable(self.`isolated`), "sending": Baton.Variable(self.`sending`), "then": Baton.Variable(self.then), "unsafe": Baton.Variable(self.unsafe), "await": Baton.Variable(self.`await`), "anchor": Baton.Variable(self.anchor), "recordID": Baton.Variable(self.recordID), "typeName": Baton.Variable(self.typeName), "satisfied": Baton.Variable(self.satisfied), "missingRequiredField": Baton.Variable(self.missingRequiredField), "fieldErrors": Baton.Variable(self.fieldErrors), "isPresent": Baton.Variable(self.isPresent), "throwing": Baton.Variable(self.throwing), "caught": Baton.Variable(self.caught), "refetchable": Baton.Variable(self.refetchable), "refetch": Baton.Variable(self.refetch), "connection": Baton.Variable(self.connection), "nodes": Baton.Variable(self.nodes), "hasNext": Baton.Variable(self.hasNext), "hasPrevious": Baton.Variable(self.hasPrevious), "isLoadingNext": Baton.Variable(self.isLoadingNext), "isLoadingPrevious": Baton.Variable(self.isLoadingPrevious), "connectionID": Baton.Variable(self.connectionID), "loadNext": Baton.Variable(self.loadNext), "loadPrevious": Baton.Variable(self.loadPrevious), "bound": Baton.Variable(self.bound), "errors": Baton.Variable(self.errors), "child": Baton.Variable(self.child), "missing": Baton.Variable(self.missing), "count": Baton.Variable(self.count), "fields": Baton.Variable(self.fields), "lhs": Baton.Variable(self.lhs), "rhs": Baton.Variable(self.rhs), "hasher": Baton.Variable(self.hasher), "selfValue": Baton.Variable(self.selfValue), "Fragment": Baton.Variable(self.Fragment), "Spread": Baton.Variable(self.Spread), "Owner": Baton.Variable(self.Owner), "Query": Baton.Variable(self.Query), "Operation": Baton.Variable(self.Operation), "RefetchQuery": Baton.Variable(self.RefetchQuery), "resolution": Baton.Variable(self.resolution), "name": Baton.Variable(self.name), "persistedID": Baton.Variable(self.persistedID), "text": Baton.Variable(self.text), "plan": Baton.Variable(self.plan), "errorBehavior": Baton.Variable(self.errorBehavior), "throwsOnFieldError": Baton.Variable(self.throwsOnFieldError), "bubbles": Baton.Variable(self.bubbles), "hasDeferred": Baton.Variable(self.hasDeferred), "hash": Baton.Variable(self.hash), "commit": Baton.Variable(self.commit), "callAsFunction": Baton.Variable(self.callAsFunction), "Op": Baton.Variable(self.Op), "variable": Baton.Variable(self.variable), "phase": Baton.Variable(self.phase), "isRefreshing": Baton.Variable(self.isRefreshing), "isStale": Baton.Variable(self.isStale), "retry": Baton.Variable(self.retry), "subscription": Baton.Variable(self.subscription), "Sites": Baton.Variable(self.Sites), "AbstractSlots": Baton.Variable(self.AbstractSlots), "schemaDigest": Baton.Variable(self.schemaDigest), "Swift": Baton.Variable(self.Swift), "Set": Baton.Variable(self.Set), "Result": Baton.Variable(self.Result), "Optional": Baton.Variable(self.Optional), "String": Baton.Variable(self.String), "Int": Baton.Variable(self.Int), "Double": Baton.Variable(self.Double), "Bool": Baton.Variable(self.Bool), "MainActor": Baton.Variable(self.MainActor), "Hasher": Baton.Variable(self.Hasher), "Sendable": Baton.Variable(self.Sendable)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.`Type` == rhs.`Type` && lhs.`Protocol` == rhs.`Protocol` && lhs.`Any` == rhs.`Any` && lhs.`self` == rhs.`self` && lhs.`init` == rhs.`init` && lhs.`deinit` == rhs.`deinit` && lhs.`subscript` == rhs.`subscript` && lhs.`class` == rhs.`class` && lhs.`struct` == rhs.`struct` && lhs.`enum` == rhs.`enum` && lhs.`func` == rhs.`func` && lhs.`import` == rhs.`import` && lhs.`extension` == rhs.`extension` && lhs.`operator` == rhs.`operator` && lhs.`static` == rhs.`static` && lhs.`default` == rhs.`default` && lhs.`case` == rhs.`case` && lhs.`switch` == rhs.`switch` && lhs.`if` == rhs.`if` && lhs.`else` == rhs.`else` && lhs.`for` == rhs.`for` && lhs.`in` == rhs.`in` && lhs.`while` == rhs.`while` && lhs.`repeat` == rhs.`repeat` && lhs.`return` == rhs.`return` && lhs.`break` == rhs.`break` && lhs.`continue` == rhs.`continue` && lhs.`where` == rhs.`where` && lhs.`is` == rhs.`is` && lhs.`as` == rhs.`as` && lhs.`try` == rhs.`try` && lhs.`throw` == rhs.`throw` && lhs.`throws` == rhs.`throws` && lhs.`guard` == rhs.`guard` && lhs.`defer` == rhs.`defer` && lhs.`do` == rhs.`do` && lhs.`catch` == rhs.`catch` && lhs.`true` == rhs.`true` && lhs.`false` == rhs.`false` && lhs.`nil` == rhs.`nil` && lhs.`super` == rhs.`super` && lhs.`internal` == rhs.`internal` && lhs.`private` == rhs.`private` && lhs.`public` == rhs.`public` && lhs.`fileprivate` == rhs.`fileprivate` && lhs.`open` == rhs.`open` && lhs.`inout` == rhs.`inout` && lhs.`typealias` == rhs.`typealias` && lhs.`associatedtype` == rhs.`associatedtype` && lhs.`protocol` == rhs.`protocol` && lhs.`some` == rhs.`some` && lhs.`any` == rhs.`any` && lhs.async == rhs.async && lhs.borrowing == rhs.borrowing && lhs.consume == rhs.consume && lhs.consuming == rhs.consuming && lhs.copy == rhs.copy && lhs.discard == rhs.discard && lhs.each == rhs.each && lhs.isolated == rhs.isolated && lhs.sending == rhs.sending && lhs.then == rhs.then && lhs.unsafe == rhs.unsafe && lhs.anchor == rhs.anchor && lhs.recordID == rhs.recordID && lhs.typeName == rhs.typeName && lhs.satisfied == rhs.satisfied && lhs.missingRequiredField == rhs.missingRequiredField && lhs.fieldErrors == rhs.fieldErrors && lhs.isPresent == rhs.isPresent && lhs.throwing == rhs.throwing && lhs.caught == rhs.caught && lhs.refetchable == rhs.refetchable && lhs.refetch == rhs.refetch && lhs.connection == rhs.connection && lhs.nodes == rhs.nodes && lhs.hasNext == rhs.hasNext && lhs.hasPrevious == rhs.hasPrevious && lhs.isLoadingNext == rhs.isLoadingNext && lhs.isLoadingPrevious == rhs.isLoadingPrevious && lhs.connectionID == rhs.connectionID && lhs.loadNext == rhs.loadNext && lhs.loadPrevious == rhs.loadPrevious && lhs.bound == rhs.bound && lhs.errors == rhs.errors && lhs.child == rhs.child && lhs.missing == rhs.missing && lhs.count == rhs.count && lhs.fields == rhs.fields && lhs.lhs == rhs.lhs && lhs.rhs == rhs.rhs && lhs.hasher == rhs.hasher && lhs.selfValue == rhs.selfValue && lhs.Fragment == rhs.Fragment && lhs.Spread == rhs.Spread && lhs.Owner == rhs.Owner && lhs.Query == rhs.Query && lhs.Operation == rhs.Operation && lhs.RefetchQuery == rhs.RefetchQuery && lhs.resolution == rhs.resolution && lhs.name == rhs.name && lhs.persistedID == rhs.persistedID && lhs.text == rhs.text && lhs.plan == rhs.plan && lhs.errorBehavior == rhs.errorBehavior && lhs.throwsOnFieldError == rhs.throwsOnFieldError && lhs.bubbles == rhs.bubbles && lhs.hasDeferred == rhs.hasDeferred && lhs.hash == rhs.hash && lhs.commit == rhs.commit && lhs.callAsFunction == rhs.callAsFunction && lhs.Op == rhs.Op && lhs.variable == rhs.variable && lhs.phase == rhs.phase && lhs.isRefreshing == rhs.isRefreshing && lhs.isStale == rhs.isStale && lhs.retry == rhs.retry && lhs.subscription == rhs.subscription && lhs.Sites == rhs.Sites && lhs.AbstractSlots == rhs.AbstractSlots && lhs.schemaDigest == rhs.schemaDigest && lhs.Swift == rhs.Swift && lhs.Set == rhs.Set && lhs.Result == rhs.Result && lhs.Optional == rhs.Optional && lhs.String == rhs.String && lhs.Int == rhs.Int && lhs.Double == rhs.Double && lhs.Bool == rhs.Bool && lhs.MainActor == rhs.MainActor && lhs.Hasher == rhs.Hasher && lhs.Sendable == rhs.Sendable
+        lhs.`Type` == rhs.`Type` && lhs.`Protocol` == rhs.`Protocol` && lhs.`Any` == rhs.`Any` && lhs.`self` == rhs.`self` && lhs.`init` == rhs.`init` && lhs.`deinit` == rhs.`deinit` && lhs.`subscript` == rhs.`subscript` && lhs.`class` == rhs.`class` && lhs.`struct` == rhs.`struct` && lhs.`enum` == rhs.`enum` && lhs.`func` == rhs.`func` && lhs.`import` == rhs.`import` && lhs.`extension` == rhs.`extension` && lhs.`operator` == rhs.`operator` && lhs.`static` == rhs.`static` && lhs.`default` == rhs.`default` && lhs.`case` == rhs.`case` && lhs.`switch` == rhs.`switch` && lhs.`if` == rhs.`if` && lhs.`else` == rhs.`else` && lhs.`for` == rhs.`for` && lhs.`in` == rhs.`in` && lhs.`while` == rhs.`while` && lhs.`repeat` == rhs.`repeat` && lhs.`return` == rhs.`return` && lhs.`break` == rhs.`break` && lhs.`continue` == rhs.`continue` && lhs.`where` == rhs.`where` && lhs.`is` == rhs.`is` && lhs.`as` == rhs.`as` && lhs.`try` == rhs.`try` && lhs.`throw` == rhs.`throw` && lhs.`throws` == rhs.`throws` && lhs.`guard` == rhs.`guard` && lhs.`defer` == rhs.`defer` && lhs.`do` == rhs.`do` && lhs.`catch` == rhs.`catch` && lhs.`true` == rhs.`true` && lhs.`false` == rhs.`false` && lhs.`nil` == rhs.`nil` && lhs.`super` == rhs.`super` && lhs.`internal` == rhs.`internal` && lhs.`private` == rhs.`private` && lhs.`public` == rhs.`public` && lhs.`fileprivate` == rhs.`fileprivate` && lhs.`open` == rhs.`open` && lhs.`inout` == rhs.`inout` && lhs.`typealias` == rhs.`typealias` && lhs.`associatedtype` == rhs.`associatedtype` && lhs.`protocol` == rhs.`protocol` && lhs.`some` == rhs.`some` && lhs.`any` == rhs.`any` && lhs.`rethrows` == rhs.`rethrows` && lhs.`fallthrough` == rhs.`fallthrough` && lhs.`precedencegroup` == rhs.`precedencegroup` && lhs.`_` == rhs.`_` && lhs.`var` == rhs.`var` && lhs.`let` == rhs.`let` && lhs.`Self` == rhs.`Self` && lhs.async == rhs.async && lhs.`borrowing` == rhs.`borrowing` && lhs.consume == rhs.consume && lhs.`consuming` == rhs.`consuming` && lhs.copy == rhs.copy && lhs.discard == rhs.discard && lhs.`each` == rhs.`each` && lhs.`isolated` == rhs.`isolated` && lhs.`sending` == rhs.`sending` && lhs.then == rhs.then && lhs.unsafe == rhs.unsafe && lhs.`await` == rhs.`await` && lhs.anchor == rhs.anchor && lhs.recordID == rhs.recordID && lhs.typeName == rhs.typeName && lhs.satisfied == rhs.satisfied && lhs.missingRequiredField == rhs.missingRequiredField && lhs.fieldErrors == rhs.fieldErrors && lhs.isPresent == rhs.isPresent && lhs.throwing == rhs.throwing && lhs.caught == rhs.caught && lhs.refetchable == rhs.refetchable && lhs.refetch == rhs.refetch && lhs.connection == rhs.connection && lhs.nodes == rhs.nodes && lhs.hasNext == rhs.hasNext && lhs.hasPrevious == rhs.hasPrevious && lhs.isLoadingNext == rhs.isLoadingNext && lhs.isLoadingPrevious == rhs.isLoadingPrevious && lhs.connectionID == rhs.connectionID && lhs.loadNext == rhs.loadNext && lhs.loadPrevious == rhs.loadPrevious && lhs.bound == rhs.bound && lhs.errors == rhs.errors && lhs.child == rhs.child && lhs.missing == rhs.missing && lhs.count == rhs.count && lhs.fields == rhs.fields && lhs.lhs == rhs.lhs && lhs.rhs == rhs.rhs && lhs.hasher == rhs.hasher && lhs.selfValue == rhs.selfValue && lhs.Fragment == rhs.Fragment && lhs.Spread == rhs.Spread && lhs.Owner == rhs.Owner && lhs.Query == rhs.Query && lhs.Operation == rhs.Operation && lhs.RefetchQuery == rhs.RefetchQuery && lhs.resolution == rhs.resolution && lhs.name == rhs.name && lhs.persistedID == rhs.persistedID && lhs.text == rhs.text && lhs.plan == rhs.plan && lhs.errorBehavior == rhs.errorBehavior && lhs.throwsOnFieldError == rhs.throwsOnFieldError && lhs.bubbles == rhs.bubbles && lhs.hasDeferred == rhs.hasDeferred && lhs.hash == rhs.hash && lhs.commit == rhs.commit && lhs.callAsFunction == rhs.callAsFunction && lhs.Op == rhs.Op && lhs.variable == rhs.variable && lhs.phase == rhs.phase && lhs.isRefreshing == rhs.isRefreshing && lhs.isStale == rhs.isStale && lhs.retry == rhs.retry && lhs.subscription == rhs.subscription && lhs.Sites == rhs.Sites && lhs.AbstractSlots == rhs.AbstractSlots && lhs.schemaDigest == rhs.schemaDigest && lhs.Swift == rhs.Swift && lhs.Set == rhs.Set && lhs.Result == rhs.Result && lhs.Optional == rhs.Optional && lhs.String == rhs.String && lhs.Int == rhs.Int && lhs.Double == rhs.Double && lhs.Bool == rhs.Bool && lhs.MainActor == rhs.MainActor && lhs.Hasher == rhs.Hasher && lhs.Sendable == rhs.Sendable
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -6680,17 +5745,25 @@ mutation HostileMutationVariables(
         hasher.combine(self.`protocol`)
         hasher.combine(self.`some`)
         hasher.combine(self.`any`)
+        hasher.combine(self.`rethrows`)
+        hasher.combine(self.`fallthrough`)
+        hasher.combine(self.`precedencegroup`)
+        hasher.combine(self.`_`)
+        hasher.combine(self.`var`)
+        hasher.combine(self.`let`)
+        hasher.combine(self.`Self`)
         hasher.combine(self.async)
-        hasher.combine(self.borrowing)
+        hasher.combine(self.`borrowing`)
         hasher.combine(self.consume)
-        hasher.combine(self.consuming)
+        hasher.combine(self.`consuming`)
         hasher.combine(self.copy)
         hasher.combine(self.discard)
-        hasher.combine(self.each)
-        hasher.combine(self.isolated)
-        hasher.combine(self.sending)
+        hasher.combine(self.`each`)
+        hasher.combine(self.`isolated`)
+        hasher.combine(self.`sending`)
         hasher.combine(self.then)
         hasher.combine(self.unsafe)
+        hasher.combine(self.`await`)
         hasher.combine(self.anchor)
         hasher.combine(self.recordID)
         hasher.combine(self.typeName)
@@ -6766,7 +5839,7 @@ mutation HostileMutationVariables(
             .linked("setFavorite", key: .fixed(Slots.Mutation.setFavorite), plural: false, caught: true, selection: Baton.Selection(type: Types.FavoritePayload, hasID: false, abstract: false, fields: [
                 .linked("character", key: .fixed(Slots.FavoritePayload.character), plural: false, caught: true, selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false, caught: true),
-                    .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false, caught: true, guards: [[.init("Type", passing: true)], [.init("Protocol", passing: true)], [.init("Any", passing: true)], [.init("self", passing: true)], [.init("init", passing: true)], [.init("deinit", passing: true)], [.init("subscript", passing: true)], [.init("class", passing: true)], [.init("struct", passing: true)], [.init("enum", passing: true)], [.init("func", passing: true)], [.init("import", passing: true)], [.init("extension", passing: true)], [.init("operator", passing: true)], [.init("static", passing: true)], [.init("default", passing: true)], [.init("case", passing: true)], [.init("switch", passing: true)], [.init("if", passing: true)], [.init("else", passing: true)], [.init("for", passing: true)], [.init("in", passing: true)], [.init("while", passing: true)], [.init("repeat", passing: true)], [.init("return", passing: true)], [.init("break", passing: true)], [.init("continue", passing: true)], [.init("where", passing: true)], [.init("is", passing: true)], [.init("as", passing: true)], [.init("try", passing: true)], [.init("throw", passing: true)], [.init("throws", passing: true)], [.init("guard", passing: true)], [.init("defer", passing: true)], [.init("do", passing: true)], [.init("catch", passing: true)], [.init("true", passing: true)], [.init("false", passing: true)], [.init("nil", passing: true)], [.init("super", passing: true)], [.init("internal", passing: true)], [.init("private", passing: true)], [.init("public", passing: true)], [.init("fileprivate", passing: true)], [.init("open", passing: true)], [.init("inout", passing: true)], [.init("typealias", passing: true)], [.init("associatedtype", passing: true)], [.init("protocol", passing: true)], [.init("some", passing: true)], [.init("any", passing: true)], [.init("async", passing: true)], [.init("borrowing", passing: true)], [.init("consume", passing: true)], [.init("consuming", passing: true)], [.init("copy", passing: true)], [.init("discard", passing: true)], [.init("each", passing: true)], [.init("isolated", passing: true)], [.init("sending", passing: true)], [.init("then", passing: true)], [.init("unsafe", passing: true)], [.init("anchor", passing: true)], [.init("recordID", passing: true)], [.init("typeName", passing: true)], [.init("satisfied", passing: true)], [.init("missingRequiredField", passing: true)], [.init("fieldErrors", passing: true)], [.init("isPresent", passing: true)], [.init("throwing", passing: true)], [.init("caught", passing: true)], [.init("refetchable", passing: true)], [.init("refetch", passing: true)], [.init("connection", passing: true)], [.init("nodes", passing: true)], [.init("hasNext", passing: true)], [.init("hasPrevious", passing: true)], [.init("isLoadingNext", passing: true)], [.init("isLoadingPrevious", passing: true)], [.init("connectionID", passing: true)], [.init("loadNext", passing: true)], [.init("loadPrevious", passing: true)], [.init("bound", passing: true)], [.init("errors", passing: true)], [.init("child", passing: true)], [.init("missing", passing: true)], [.init("count", passing: true)], [.init("fields", passing: true)], [.init("lhs", passing: true)], [.init("rhs", passing: true)], [.init("hasher", passing: true)], [.init("selfValue", passing: true)], [.init("Fragment", passing: true)], [.init("Spread", passing: true)], [.init("Owner", passing: true)], [.init("Query", passing: true)], [.init("Operation", passing: true)], [.init("RefetchQuery", passing: true)], [.init("resolution", passing: true)], [.init("name", passing: true)], [.init("persistedID", passing: true)], [.init("text", passing: true)], [.init("plan", passing: true)], [.init("errorBehavior", passing: true)], [.init("throwsOnFieldError", passing: true)], [.init("bubbles", passing: true)], [.init("hasDeferred", passing: true)], [.init("hash", passing: true)], [.init("commit", passing: true)], [.init("callAsFunction", passing: true)], [.init("Op", passing: true)], [.init("variable", passing: true)], [.init("phase", passing: true)], [.init("isRefreshing", passing: true)], [.init("isStale", passing: true)], [.init("retry", passing: true)], [.init("subscription", passing: true)], [.init("Sites", passing: true)], [.init("AbstractSlots", passing: true)], [.init("schemaDigest", passing: true)], [.init("Swift", passing: true)], [.init("Set", passing: true)], [.init("Result", passing: true)], [.init("Optional", passing: true)], [.init("String", passing: true)], [.init("Int", passing: true)], [.init("Double", passing: true)], [.init("Bool", passing: true)], [.init("MainActor", passing: true)], [.init("Hasher", passing: true)], [.init("Sendable", passing: true)]]),
+                    .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false, caught: true, guards: [[.init("Type", passing: true)], [.init("Protocol", passing: true)], [.init("Any", passing: true)], [.init("self", passing: true)], [.init("init", passing: true)], [.init("deinit", passing: true)], [.init("subscript", passing: true)], [.init("class", passing: true)], [.init("struct", passing: true)], [.init("enum", passing: true)], [.init("func", passing: true)], [.init("import", passing: true)], [.init("extension", passing: true)], [.init("operator", passing: true)], [.init("static", passing: true)], [.init("default", passing: true)], [.init("case", passing: true)], [.init("switch", passing: true)], [.init("if", passing: true)], [.init("else", passing: true)], [.init("for", passing: true)], [.init("in", passing: true)], [.init("while", passing: true)], [.init("repeat", passing: true)], [.init("return", passing: true)], [.init("break", passing: true)], [.init("continue", passing: true)], [.init("where", passing: true)], [.init("is", passing: true)], [.init("as", passing: true)], [.init("try", passing: true)], [.init("throw", passing: true)], [.init("throws", passing: true)], [.init("guard", passing: true)], [.init("defer", passing: true)], [.init("do", passing: true)], [.init("catch", passing: true)], [.init("true", passing: true)], [.init("false", passing: true)], [.init("nil", passing: true)], [.init("super", passing: true)], [.init("internal", passing: true)], [.init("private", passing: true)], [.init("public", passing: true)], [.init("fileprivate", passing: true)], [.init("open", passing: true)], [.init("inout", passing: true)], [.init("typealias", passing: true)], [.init("associatedtype", passing: true)], [.init("protocol", passing: true)], [.init("some", passing: true)], [.init("any", passing: true)], [.init("rethrows", passing: true)], [.init("fallthrough", passing: true)], [.init("precedencegroup", passing: true)], [.init("_", passing: true)], [.init("var", passing: true)], [.init("let", passing: true)], [.init("Self", passing: true)], [.init("async", passing: true)], [.init("borrowing", passing: true)], [.init("consume", passing: true)], [.init("consuming", passing: true)], [.init("copy", passing: true)], [.init("discard", passing: true)], [.init("each", passing: true)], [.init("isolated", passing: true)], [.init("sending", passing: true)], [.init("then", passing: true)], [.init("unsafe", passing: true)], [.init("await", passing: true)], [.init("anchor", passing: true)], [.init("recordID", passing: true)], [.init("typeName", passing: true)], [.init("satisfied", passing: true)], [.init("missingRequiredField", passing: true)], [.init("fieldErrors", passing: true)], [.init("isPresent", passing: true)], [.init("throwing", passing: true)], [.init("caught", passing: true)], [.init("refetchable", passing: true)], [.init("refetch", passing: true)], [.init("connection", passing: true)], [.init("nodes", passing: true)], [.init("hasNext", passing: true)], [.init("hasPrevious", passing: true)], [.init("isLoadingNext", passing: true)], [.init("isLoadingPrevious", passing: true)], [.init("connectionID", passing: true)], [.init("loadNext", passing: true)], [.init("loadPrevious", passing: true)], [.init("bound", passing: true)], [.init("errors", passing: true)], [.init("child", passing: true)], [.init("missing", passing: true)], [.init("count", passing: true)], [.init("fields", passing: true)], [.init("lhs", passing: true)], [.init("rhs", passing: true)], [.init("hasher", passing: true)], [.init("selfValue", passing: true)], [.init("Fragment", passing: true)], [.init("Spread", passing: true)], [.init("Owner", passing: true)], [.init("Query", passing: true)], [.init("Operation", passing: true)], [.init("RefetchQuery", passing: true)], [.init("resolution", passing: true)], [.init("name", passing: true)], [.init("persistedID", passing: true)], [.init("text", passing: true)], [.init("plan", passing: true)], [.init("errorBehavior", passing: true)], [.init("throwsOnFieldError", passing: true)], [.init("bubbles", passing: true)], [.init("hasDeferred", passing: true)], [.init("hash", passing: true)], [.init("commit", passing: true)], [.init("callAsFunction", passing: true)], [.init("Op", passing: true)], [.init("variable", passing: true)], [.init("phase", passing: true)], [.init("isRefreshing", passing: true)], [.init("isStale", passing: true)], [.init("retry", passing: true)], [.init("subscription", passing: true)], [.init("Sites", passing: true)], [.init("AbstractSlots", passing: true)], [.init("schemaDigest", passing: true)], [.init("Swift", passing: true)], [.init("Set", passing: true)], [.init("Result", passing: true)], [.init("Optional", passing: true)], [.init("String", passing: true)], [.init("Int", passing: true)], [.init("Double", passing: true)], [.init("Bool", passing: true)], [.init("MainActor", passing: true)], [.init("Hasher", passing: true)], [.init("Sendable", passing: true)]]),
                 ])),
             ])),
         ]))
@@ -6793,7 +5866,7 @@ mutation HostileMutationVariables(
             /// The lens, or the field errors in it as a `Result`.
             @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
                 let errors = fieldErrors(anchor)
-                return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+                return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
             }
 
             nonisolated public struct Character: Baton.Lens {
@@ -6801,12 +5874,12 @@ mutation HostileMutationVariables(
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
                 public static let typeName = "Character"
                 @MainActor public var id: String? { anchor.string(Slots.Character.id) }
-                @MainActor public var name: String? { (anchor.selects("Type", true) || anchor.selects("Protocol", true) || anchor.selects("Any", true) || anchor.selects("self", true) || anchor.selects("init", true) || anchor.selects("deinit", true) || anchor.selects("subscript", true) || anchor.selects("class", true) || anchor.selects("struct", true) || anchor.selects("enum", true) || anchor.selects("func", true) || anchor.selects("import", true) || anchor.selects("extension", true) || anchor.selects("operator", true) || anchor.selects("static", true) || anchor.selects("default", true) || anchor.selects("case", true) || anchor.selects("switch", true) || anchor.selects("if", true) || anchor.selects("else", true) || anchor.selects("for", true) || anchor.selects("in", true) || anchor.selects("while", true) || anchor.selects("repeat", true) || anchor.selects("return", true) || anchor.selects("break", true) || anchor.selects("continue", true) || anchor.selects("where", true) || anchor.selects("is", true) || anchor.selects("as", true) || anchor.selects("try", true) || anchor.selects("throw", true) || anchor.selects("throws", true) || anchor.selects("guard", true) || anchor.selects("defer", true) || anchor.selects("do", true) || anchor.selects("catch", true) || anchor.selects("true", true) || anchor.selects("false", true) || anchor.selects("nil", true) || anchor.selects("super", true) || anchor.selects("internal", true) || anchor.selects("private", true) || anchor.selects("public", true) || anchor.selects("fileprivate", true) || anchor.selects("open", true) || anchor.selects("inout", true) || anchor.selects("typealias", true) || anchor.selects("associatedtype", true) || anchor.selects("protocol", true) || anchor.selects("some", true) || anchor.selects("any", true) || anchor.selects("async", true) || anchor.selects("borrowing", true) || anchor.selects("consume", true) || anchor.selects("consuming", true) || anchor.selects("copy", true) || anchor.selects("discard", true) || anchor.selects("each", true) || anchor.selects("isolated", true) || anchor.selects("sending", true) || anchor.selects("then", true) || anchor.selects("unsafe", true) || anchor.selects("anchor", true) || anchor.selects("recordID", true) || anchor.selects("typeName", true) || anchor.selects("satisfied", true) || anchor.selects("missingRequiredField", true) || anchor.selects("fieldErrors", true) || anchor.selects("isPresent", true) || anchor.selects("throwing", true) || anchor.selects("caught", true) || anchor.selects("refetchable", true) || anchor.selects("refetch", true) || anchor.selects("connection", true) || anchor.selects("nodes", true) || anchor.selects("hasNext", true) || anchor.selects("hasPrevious", true) || anchor.selects("isLoadingNext", true) || anchor.selects("isLoadingPrevious", true) || anchor.selects("connectionID", true) || anchor.selects("loadNext", true) || anchor.selects("loadPrevious", true) || anchor.selects("bound", true) || anchor.selects("errors", true) || anchor.selects("child", true) || anchor.selects("missing", true) || anchor.selects("count", true) || anchor.selects("fields", true) || anchor.selects("lhs", true) || anchor.selects("rhs", true) || anchor.selects("hasher", true) || anchor.selects("selfValue", true) || anchor.selects("Fragment", true) || anchor.selects("Spread", true) || anchor.selects("Owner", true) || anchor.selects("Query", true) || anchor.selects("Operation", true) || anchor.selects("RefetchQuery", true) || anchor.selects("resolution", true) || anchor.selects("name", true) || anchor.selects("persistedID", true) || anchor.selects("text", true) || anchor.selects("plan", true) || anchor.selects("errorBehavior", true) || anchor.selects("throwsOnFieldError", true) || anchor.selects("bubbles", true) || anchor.selects("hasDeferred", true) || anchor.selects("hash", true) || anchor.selects("commit", true) || anchor.selects("callAsFunction", true) || anchor.selects("Op", true) || anchor.selects("variable", true) || anchor.selects("phase", true) || anchor.selects("isRefreshing", true) || anchor.selects("isStale", true) || anchor.selects("retry", true) || anchor.selects("subscription", true) || anchor.selects("Sites", true) || anchor.selects("AbstractSlots", true) || anchor.selects("schemaDigest", true) || anchor.selects("Swift", true) || anchor.selects("Set", true) || anchor.selects("Result", true) || anchor.selects("Optional", true) || anchor.selects("String", true) || anchor.selects("Int", true) || anchor.selects("Double", true) || anchor.selects("Bool", true) || anchor.selects("MainActor", true) || anchor.selects("Hasher", true) || anchor.selects("Sendable", true)) ? anchor.string(Slots.Character.name) : nil }
+                @MainActor public var name: String? { (anchor.selects("Type", true) || anchor.selects("Protocol", true) || anchor.selects("Any", true) || anchor.selects("self", true) || anchor.selects("init", true) || anchor.selects("deinit", true) || anchor.selects("subscript", true) || anchor.selects("class", true) || anchor.selects("struct", true) || anchor.selects("enum", true) || anchor.selects("func", true) || anchor.selects("import", true) || anchor.selects("extension", true) || anchor.selects("operator", true) || anchor.selects("static", true) || anchor.selects("default", true) || anchor.selects("case", true) || anchor.selects("switch", true) || anchor.selects("if", true) || anchor.selects("else", true) || anchor.selects("for", true) || anchor.selects("in", true) || anchor.selects("while", true) || anchor.selects("repeat", true) || anchor.selects("return", true) || anchor.selects("break", true) || anchor.selects("continue", true) || anchor.selects("where", true) || anchor.selects("is", true) || anchor.selects("as", true) || anchor.selects("try", true) || anchor.selects("throw", true) || anchor.selects("throws", true) || anchor.selects("guard", true) || anchor.selects("defer", true) || anchor.selects("do", true) || anchor.selects("catch", true) || anchor.selects("true", true) || anchor.selects("false", true) || anchor.selects("nil", true) || anchor.selects("super", true) || anchor.selects("internal", true) || anchor.selects("private", true) || anchor.selects("public", true) || anchor.selects("fileprivate", true) || anchor.selects("open", true) || anchor.selects("inout", true) || anchor.selects("typealias", true) || anchor.selects("associatedtype", true) || anchor.selects("protocol", true) || anchor.selects("some", true) || anchor.selects("any", true) || anchor.selects("rethrows", true) || anchor.selects("fallthrough", true) || anchor.selects("precedencegroup", true) || anchor.selects("_", true) || anchor.selects("var", true) || anchor.selects("let", true) || anchor.selects("Self", true) || anchor.selects("async", true) || anchor.selects("borrowing", true) || anchor.selects("consume", true) || anchor.selects("consuming", true) || anchor.selects("copy", true) || anchor.selects("discard", true) || anchor.selects("each", true) || anchor.selects("isolated", true) || anchor.selects("sending", true) || anchor.selects("then", true) || anchor.selects("unsafe", true) || anchor.selects("await", true) || anchor.selects("anchor", true) || anchor.selects("recordID", true) || anchor.selects("typeName", true) || anchor.selects("satisfied", true) || anchor.selects("missingRequiredField", true) || anchor.selects("fieldErrors", true) || anchor.selects("isPresent", true) || anchor.selects("throwing", true) || anchor.selects("caught", true) || anchor.selects("refetchable", true) || anchor.selects("refetch", true) || anchor.selects("connection", true) || anchor.selects("nodes", true) || anchor.selects("hasNext", true) || anchor.selects("hasPrevious", true) || anchor.selects("isLoadingNext", true) || anchor.selects("isLoadingPrevious", true) || anchor.selects("connectionID", true) || anchor.selects("loadNext", true) || anchor.selects("loadPrevious", true) || anchor.selects("bound", true) || anchor.selects("errors", true) || anchor.selects("child", true) || anchor.selects("missing", true) || anchor.selects("count", true) || anchor.selects("fields", true) || anchor.selects("lhs", true) || anchor.selects("rhs", true) || anchor.selects("hasher", true) || anchor.selects("selfValue", true) || anchor.selects("Fragment", true) || anchor.selects("Spread", true) || anchor.selects("Owner", true) || anchor.selects("Query", true) || anchor.selects("Operation", true) || anchor.selects("RefetchQuery", true) || anchor.selects("resolution", true) || anchor.selects("name", true) || anchor.selects("persistedID", true) || anchor.selects("text", true) || anchor.selects("plan", true) || anchor.selects("errorBehavior", true) || anchor.selects("throwsOnFieldError", true) || anchor.selects("bubbles", true) || anchor.selects("hasDeferred", true) || anchor.selects("hash", true) || anchor.selects("commit", true) || anchor.selects("callAsFunction", true) || anchor.selects("Op", true) || anchor.selects("variable", true) || anchor.selects("phase", true) || anchor.selects("isRefreshing", true) || anchor.selects("isStale", true) || anchor.selects("retry", true) || anchor.selects("subscription", true) || anchor.selects("Sites", true) || anchor.selects("AbstractSlots", true) || anchor.selects("schemaDigest", true) || anchor.selects("Swift", true) || anchor.selects("Set", true) || anchor.selects("Result", true) || anchor.selects("Optional", true) || anchor.selects("String", true) || anchor.selects("Int", true) || anchor.selects("Double", true) || anchor.selects("Bool", true) || anchor.selects("MainActor", true) || anchor.selects("Hasher", true) || anchor.selects("Sendable", true)) ? anchor.string(Slots.Character.name) : nil }
                 /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
                 @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
                     var errors: [Baton.FieldError] = []
                     anchor.collectError(Slots.Character.id, into: &errors)
-                    if (anchor.selects("Type", true) || anchor.selects("Protocol", true) || anchor.selects("Any", true) || anchor.selects("self", true) || anchor.selects("init", true) || anchor.selects("deinit", true) || anchor.selects("subscript", true) || anchor.selects("class", true) || anchor.selects("struct", true) || anchor.selects("enum", true) || anchor.selects("func", true) || anchor.selects("import", true) || anchor.selects("extension", true) || anchor.selects("operator", true) || anchor.selects("static", true) || anchor.selects("default", true) || anchor.selects("case", true) || anchor.selects("switch", true) || anchor.selects("if", true) || anchor.selects("else", true) || anchor.selects("for", true) || anchor.selects("in", true) || anchor.selects("while", true) || anchor.selects("repeat", true) || anchor.selects("return", true) || anchor.selects("break", true) || anchor.selects("continue", true) || anchor.selects("where", true) || anchor.selects("is", true) || anchor.selects("as", true) || anchor.selects("try", true) || anchor.selects("throw", true) || anchor.selects("throws", true) || anchor.selects("guard", true) || anchor.selects("defer", true) || anchor.selects("do", true) || anchor.selects("catch", true) || anchor.selects("true", true) || anchor.selects("false", true) || anchor.selects("nil", true) || anchor.selects("super", true) || anchor.selects("internal", true) || anchor.selects("private", true) || anchor.selects("public", true) || anchor.selects("fileprivate", true) || anchor.selects("open", true) || anchor.selects("inout", true) || anchor.selects("typealias", true) || anchor.selects("associatedtype", true) || anchor.selects("protocol", true) || anchor.selects("some", true) || anchor.selects("any", true) || anchor.selects("async", true) || anchor.selects("borrowing", true) || anchor.selects("consume", true) || anchor.selects("consuming", true) || anchor.selects("copy", true) || anchor.selects("discard", true) || anchor.selects("each", true) || anchor.selects("isolated", true) || anchor.selects("sending", true) || anchor.selects("then", true) || anchor.selects("unsafe", true) || anchor.selects("anchor", true) || anchor.selects("recordID", true) || anchor.selects("typeName", true) || anchor.selects("satisfied", true) || anchor.selects("missingRequiredField", true) || anchor.selects("fieldErrors", true) || anchor.selects("isPresent", true) || anchor.selects("throwing", true) || anchor.selects("caught", true) || anchor.selects("refetchable", true) || anchor.selects("refetch", true) || anchor.selects("connection", true) || anchor.selects("nodes", true) || anchor.selects("hasNext", true) || anchor.selects("hasPrevious", true) || anchor.selects("isLoadingNext", true) || anchor.selects("isLoadingPrevious", true) || anchor.selects("connectionID", true) || anchor.selects("loadNext", true) || anchor.selects("loadPrevious", true) || anchor.selects("bound", true) || anchor.selects("errors", true) || anchor.selects("child", true) || anchor.selects("missing", true) || anchor.selects("count", true) || anchor.selects("fields", true) || anchor.selects("lhs", true) || anchor.selects("rhs", true) || anchor.selects("hasher", true) || anchor.selects("selfValue", true) || anchor.selects("Fragment", true) || anchor.selects("Spread", true) || anchor.selects("Owner", true) || anchor.selects("Query", true) || anchor.selects("Operation", true) || anchor.selects("RefetchQuery", true) || anchor.selects("resolution", true) || anchor.selects("name", true) || anchor.selects("persistedID", true) || anchor.selects("text", true) || anchor.selects("plan", true) || anchor.selects("errorBehavior", true) || anchor.selects("throwsOnFieldError", true) || anchor.selects("bubbles", true) || anchor.selects("hasDeferred", true) || anchor.selects("hash", true) || anchor.selects("commit", true) || anchor.selects("callAsFunction", true) || anchor.selects("Op", true) || anchor.selects("variable", true) || anchor.selects("phase", true) || anchor.selects("isRefreshing", true) || anchor.selects("isStale", true) || anchor.selects("retry", true) || anchor.selects("subscription", true) || anchor.selects("Sites", true) || anchor.selects("AbstractSlots", true) || anchor.selects("schemaDigest", true) || anchor.selects("Swift", true) || anchor.selects("Set", true) || anchor.selects("Result", true) || anchor.selects("Optional", true) || anchor.selects("String", true) || anchor.selects("Int", true) || anchor.selects("Double", true) || anchor.selects("Bool", true) || anchor.selects("MainActor", true) || anchor.selects("Hasher", true) || anchor.selects("Sendable", true)) {
+                    if (anchor.selects("Type", true) || anchor.selects("Protocol", true) || anchor.selects("Any", true) || anchor.selects("self", true) || anchor.selects("init", true) || anchor.selects("deinit", true) || anchor.selects("subscript", true) || anchor.selects("class", true) || anchor.selects("struct", true) || anchor.selects("enum", true) || anchor.selects("func", true) || anchor.selects("import", true) || anchor.selects("extension", true) || anchor.selects("operator", true) || anchor.selects("static", true) || anchor.selects("default", true) || anchor.selects("case", true) || anchor.selects("switch", true) || anchor.selects("if", true) || anchor.selects("else", true) || anchor.selects("for", true) || anchor.selects("in", true) || anchor.selects("while", true) || anchor.selects("repeat", true) || anchor.selects("return", true) || anchor.selects("break", true) || anchor.selects("continue", true) || anchor.selects("where", true) || anchor.selects("is", true) || anchor.selects("as", true) || anchor.selects("try", true) || anchor.selects("throw", true) || anchor.selects("throws", true) || anchor.selects("guard", true) || anchor.selects("defer", true) || anchor.selects("do", true) || anchor.selects("catch", true) || anchor.selects("true", true) || anchor.selects("false", true) || anchor.selects("nil", true) || anchor.selects("super", true) || anchor.selects("internal", true) || anchor.selects("private", true) || anchor.selects("public", true) || anchor.selects("fileprivate", true) || anchor.selects("open", true) || anchor.selects("inout", true) || anchor.selects("typealias", true) || anchor.selects("associatedtype", true) || anchor.selects("protocol", true) || anchor.selects("some", true) || anchor.selects("any", true) || anchor.selects("rethrows", true) || anchor.selects("fallthrough", true) || anchor.selects("precedencegroup", true) || anchor.selects("_", true) || anchor.selects("var", true) || anchor.selects("let", true) || anchor.selects("Self", true) || anchor.selects("async", true) || anchor.selects("borrowing", true) || anchor.selects("consume", true) || anchor.selects("consuming", true) || anchor.selects("copy", true) || anchor.selects("discard", true) || anchor.selects("each", true) || anchor.selects("isolated", true) || anchor.selects("sending", true) || anchor.selects("then", true) || anchor.selects("unsafe", true) || anchor.selects("await", true) || anchor.selects("anchor", true) || anchor.selects("recordID", true) || anchor.selects("typeName", true) || anchor.selects("satisfied", true) || anchor.selects("missingRequiredField", true) || anchor.selects("fieldErrors", true) || anchor.selects("isPresent", true) || anchor.selects("throwing", true) || anchor.selects("caught", true) || anchor.selects("refetchable", true) || anchor.selects("refetch", true) || anchor.selects("connection", true) || anchor.selects("nodes", true) || anchor.selects("hasNext", true) || anchor.selects("hasPrevious", true) || anchor.selects("isLoadingNext", true) || anchor.selects("isLoadingPrevious", true) || anchor.selects("connectionID", true) || anchor.selects("loadNext", true) || anchor.selects("loadPrevious", true) || anchor.selects("bound", true) || anchor.selects("errors", true) || anchor.selects("child", true) || anchor.selects("missing", true) || anchor.selects("count", true) || anchor.selects("fields", true) || anchor.selects("lhs", true) || anchor.selects("rhs", true) || anchor.selects("hasher", true) || anchor.selects("selfValue", true) || anchor.selects("Fragment", true) || anchor.selects("Spread", true) || anchor.selects("Owner", true) || anchor.selects("Query", true) || anchor.selects("Operation", true) || anchor.selects("RefetchQuery", true) || anchor.selects("resolution", true) || anchor.selects("name", true) || anchor.selects("persistedID", true) || anchor.selects("text", true) || anchor.selects("plan", true) || anchor.selects("errorBehavior", true) || anchor.selects("throwsOnFieldError", true) || anchor.selects("bubbles", true) || anchor.selects("hasDeferred", true) || anchor.selects("hash", true) || anchor.selects("commit", true) || anchor.selects("callAsFunction", true) || anchor.selects("Op", true) || anchor.selects("variable", true) || anchor.selects("phase", true) || anchor.selects("isRefreshing", true) || anchor.selects("isStale", true) || anchor.selects("retry", true) || anchor.selects("subscription", true) || anchor.selects("Sites", true) || anchor.selects("AbstractSlots", true) || anchor.selects("schemaDigest", true) || anchor.selects("Swift", true) || anchor.selects("Set", true) || anchor.selects("Result", true) || anchor.selects("Optional", true) || anchor.selects("String", true) || anchor.selects("Int", true) || anchor.selects("Double", true) || anchor.selects("Bool", true) || anchor.selects("MainActor", true) || anchor.selects("Hasher", true) || anchor.selects("Sendable", true)) {
                         anchor.collectError(Slots.Character.name, into: &errors)
                     }
                     return errors
@@ -6816,7 +5889,7 @@ mutation HostileMutationVariables(
                 /// The lens, or the field errors in it as a `Result`.
                 @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
                     let errors = fieldErrors(anchor)
-                    return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+                    return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
                 }
             }
         }
@@ -6867,11 +5940,124 @@ mutation HostileMutationVariables(
     }
 }
 
-extension Baton.MutationAction where Op == HostileMutationVariables {
+extension HostileMutationVariables.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
-    public func callAsFunction(`Type`: Bool, `Protocol`: Bool, `Any`: Bool, `self` selfValue2: Bool, `init`: Bool, `deinit`: Bool, `subscript`: Bool, `class`: Bool, `struct`: Bool, `enum`: Bool, `func`: Bool, `import`: Bool, `extension`: Bool, `operator`: Bool, `static`: Bool, `default`: Bool, `case`: Bool, `switch`: Bool, `if`: Bool, `else`: Bool, `for`: Bool, `in`: Bool, `while`: Bool, `repeat`: Bool, `return`: Bool, `break`: Bool, `continue`: Bool, `where`: Bool, `is`: Bool, `as`: Bool, `try`: Bool, `throw`: Bool, `throws`: Bool, `guard`: Bool, `defer`: Bool, `do`: Bool, `catch`: Bool, `true`: Bool, `false`: Bool, `nil`: Bool, `super`: Bool, `internal`: Bool, `private`: Bool, `public`: Bool, `fileprivate`: Bool, `open`: Bool, `inout`: Bool, `typealias`: Bool, `associatedtype`: Bool, `protocol`: Bool, `some`: Bool, `any`: Bool, async: Bool, borrowing: Bool, consume: Bool, consuming: Bool, copy: Bool, discard: Bool, each: Bool, isolated: Bool, sending: Bool, then: Bool, unsafe: Bool, anchor: Bool, recordID: Bool, typeName: Bool, satisfied: Bool, missingRequiredField: Bool, fieldErrors: Bool, isPresent: Bool, throwing: Bool, caught: Bool, refetchable: Bool, refetch: Bool, connection: Bool, nodes: Bool, hasNext: Bool, hasPrevious: Bool, isLoadingNext: Bool, isLoadingPrevious: Bool, connectionID: Bool, loadNext: Bool, loadPrevious: Bool, bound: Bool, errors: Bool, child: Bool, missing: Bool, count: Bool, fields: Bool, lhs: Bool, rhs: Bool, hasher: Bool, selfValue: Bool, Fragment: Bool, Spread: Bool, Owner: Bool, Query: Bool, Operation: Bool, RefetchQuery: Bool, resolution: Bool, name: Bool, persistedID: Bool, text: Bool, plan: Bool, errorBehavior: Bool, throwsOnFieldError: Bool, bubbles: Bool, hasDeferred: Bool, hash: Bool, commit: Bool, callAsFunction: Bool, Op: Bool, variable: Bool, phase: Bool, isRefreshing: Bool, isStale: Bool, retry: Bool, subscription: Bool, Sites: Bool, AbstractSlots: Bool, schemaDigest: Bool, Swift: Bool, Set: Bool, Result: Bool, Optional: Bool, String: Bool, Int: Bool, Double: Bool, Bool: Bool, MainActor: Bool, Hasher: Bool, Sendable: Bool, optimistic: HostileMutationVariables.OptimisticResponse? = nil) async throws -> HostileMutationVariables.Data {
-        try await self.commit(HostileMutationVariables(Type: `Type`, Protocol: `Protocol`, Any: `Any`, self: selfValue2, init: `init`, deinit: `deinit`, subscript: `subscript`, class: `class`, struct: `struct`, enum: `enum`, func: `func`, import: `import`, extension: `extension`, operator: `operator`, static: `static`, default: `default`, case: `case`, switch: `switch`, if: `if`, else: `else`, for: `for`, in: `in`, while: `while`, repeat: `repeat`, return: `return`, break: `break`, continue: `continue`, where: `where`, is: `is`, as: `as`, try: `try`, throw: `throw`, throws: `throws`, guard: `guard`, defer: `defer`, do: `do`, catch: `catch`, true: `true`, false: `false`, nil: `nil`, super: `super`, internal: `internal`, private: `private`, public: `public`, fileprivate: `fileprivate`, open: `open`, `inout`: `inout`, typealias: `typealias`, associatedtype: `associatedtype`, protocol: `protocol`, some: `some`, any: `any`, async: async, borrowing: borrowing, consume: consume, consuming: consuming, copy: copy, discard: discard, each: each, isolated: isolated, sending: sending, then: then, unsafe: unsafe, anchor: anchor, recordID: recordID, typeName: typeName, satisfied: satisfied, missingRequiredField: missingRequiredField, fieldErrors: fieldErrors, isPresent: isPresent, throwing: throwing, caught: caught, refetchable: refetchable, refetch: refetch, connection: connection, nodes: nodes, hasNext: hasNext, hasPrevious: hasPrevious, isLoadingNext: isLoadingNext, isLoadingPrevious: isLoadingPrevious, connectionID: connectionID, loadNext: loadNext, loadPrevious: loadPrevious, bound: bound, errors: errors, child: child, missing: missing, count: count, fields: fields, lhs: lhs, rhs: rhs, hasher: hasher, selfValue: selfValue, Fragment: Fragment, Spread: Spread, Owner: Owner, Query: Query, Operation: Operation, RefetchQuery: RefetchQuery, resolution: resolution, name: name, persistedID: persistedID, text: text, plan: plan, errorBehavior: errorBehavior, throwsOnFieldError: throwsOnFieldError, bubbles: bubbles, hasDeferred: hasDeferred, hash: hash, commit: commit, callAsFunction: callAsFunction, Op: Op, variable: variable, phase: phase, isRefreshing: isRefreshing, isStale: isStale, retry: retry, subscription: subscription, Sites: Sites, AbstractSlots: AbstractSlots, schemaDigest: schemaDigest, Swift: Swift, Set: Set, Result: Result, Optional: Optional, String: String, Int: Int, Double: Double, Bool: Bool, MainActor: MainActor, Hasher: Hasher, Sendable: Sendable), optimistic: optimistic?.variable)
+    public func callAsFunction(`Type`: Bool, `Protocol`: Bool, `Any`: Bool, `self` selfValue2: Bool, `init`: Bool, `deinit`: Bool, `subscript`: Bool, `class`: Bool, `struct`: Bool, `enum`: Bool, `func`: Bool, `import`: Bool, `extension`: Bool, `operator`: Bool, `static`: Bool, `default`: Bool, `case`: Bool, `switch`: Bool, `if`: Bool, `else`: Bool, `for`: Bool, `in`: Bool, `while`: Bool, `repeat`: Bool, `return`: Bool, `break`: Bool, `continue`: Bool, `where`: Bool, `is`: Bool, `as`: Bool, `try`: Bool, `throw`: Bool, `throws`: Bool, `guard`: Bool, `defer`: Bool, `do`: Bool, `catch`: Bool, `true`: Bool, `false`: Bool, `nil`: Bool, `super`: Bool, `internal`: Bool, `private`: Bool, `public`: Bool, `fileprivate`: Bool, `open`: Bool, `inout`: Bool, `typealias`: Bool, `associatedtype`: Bool, `protocol`: Bool, `some`: Bool, `any`: Bool, `rethrows`: Bool, `fallthrough`: Bool, `precedencegroup`: Bool, `_`: Bool, `var`: Bool, `let`: Bool, `Self`: Bool, async: Bool, `borrowing`: Bool, consume: Bool, `consuming`: Bool, copy: Bool, discard: Bool, `each`: Bool, `isolated`: Bool, `sending`: Bool, then: Bool, unsafe: Bool, `await`: Bool, anchor: Bool, recordID: Bool, typeName: Bool, satisfied: Bool, missingRequiredField: Bool, fieldErrors: Bool, isPresent: Bool, throwing: Bool, caught: Bool, refetchable: Bool, refetch: Bool, connection: Bool, nodes: Bool, hasNext: Bool, hasPrevious: Bool, isLoadingNext: Bool, isLoadingPrevious: Bool, connectionID: Bool, loadNext: Bool, loadPrevious: Bool, bound: Bool, errors: Bool, child: Bool, missing: Bool, count: Bool, fields: Bool, lhs: Bool, rhs: Bool, hasher: Bool, selfValue: Bool, Fragment: Bool, Spread: Bool, Owner: Bool, Query: Bool, Operation: Bool, RefetchQuery: Bool, resolution: Bool, name: Bool, persistedID: Bool, text: Bool, plan: Bool, errorBehavior: Bool, throwsOnFieldError: Bool, bubbles: Bool, hasDeferred: Bool, hash: Bool, commit: Bool, callAsFunction: Bool, Op: Bool, variable: Bool, phase: Bool, isRefreshing: Bool, isStale: Bool, retry: Bool, subscription: Bool, Sites: Bool, AbstractSlots: Bool, schemaDigest: Bool, Swift: Bool, Set: Bool, Result: Bool, Optional: Bool, String: Bool, Int: Bool, Double: Bool, Bool: Bool, MainActor: Bool, Hasher: Bool, Sendable: Bool, optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
+        try await self.commit(.init(Type: `Type`, Protocol: `Protocol`, Any: `Any`, self: selfValue2, init: `init`, deinit: `deinit`, subscript: `subscript`, class: `class`, struct: `struct`, enum: `enum`, func: `func`, import: `import`, extension: `extension`, operator: `operator`, static: `static`, default: `default`, case: `case`, switch: `switch`, if: `if`, else: `else`, for: `for`, in: `in`, while: `while`, repeat: `repeat`, return: `return`, break: `break`, continue: `continue`, where: `where`, is: `is`, as: `as`, try: `try`, throw: `throw`, throws: `throws`, guard: `guard`, defer: `defer`, do: `do`, catch: `catch`, true: `true`, false: `false`, nil: `nil`, super: `super`, internal: `internal`, private: `private`, public: `public`, fileprivate: `fileprivate`, open: `open`, `inout`: `inout`, typealias: `typealias`, associatedtype: `associatedtype`, protocol: `protocol`, some: `some`, any: `any`, rethrows: `rethrows`, fallthrough: `fallthrough`, precedencegroup: `precedencegroup`, `_`: `_`, var: `var`, let: `let`, Self: `Self`, async: async, borrowing: `borrowing`, consume: consume, consuming: `consuming`, copy: copy, discard: discard, each: `each`, isolated: `isolated`, sending: `sending`, then: then, unsafe: unsafe, await: `await`, anchor: anchor, recordID: recordID, typeName: typeName, satisfied: satisfied, missingRequiredField: missingRequiredField, fieldErrors: fieldErrors, isPresent: isPresent, throwing: throwing, caught: caught, refetchable: refetchable, refetch: refetch, connection: connection, nodes: nodes, hasNext: hasNext, hasPrevious: hasPrevious, isLoadingNext: isLoadingNext, isLoadingPrevious: isLoadingPrevious, connectionID: connectionID, loadNext: loadNext, loadPrevious: loadPrevious, bound: bound, errors: errors, child: child, missing: missing, count: count, fields: fields, lhs: lhs, rhs: rhs, hasher: hasher, selfValue: selfValue, Fragment: Fragment, Spread: Spread, Owner: Owner, Query: Query, Operation: Operation, RefetchQuery: RefetchQuery, resolution: resolution, name: name, persistedID: persistedID, text: text, plan: plan, errorBehavior: errorBehavior, throwsOnFieldError: throwsOnFieldError, bubbles: bubbles, hasDeferred: hasDeferred, hash: hash, commit: commit, callAsFunction: callAsFunction, Op: Op, variable: variable, phase: phase, isRefreshing: isRefreshing, isStale: isStale, retry: retry, subscription: subscription, Sites: Sites, AbstractSlots: AbstractSlots, schemaDigest: schemaDigest, Swift: Swift, Set: Set, Result: Result, Optional: Optional, String: String, Int: Int, Double: Double, Bool: Bool, MainActor: MainActor, Hasher: Hasher, Sendable: Sendable), optimistic: optimistic?.variable)
+    }
+}
+
+/// Operation value for `mutation HostileNamesake`.
+nonisolated public struct HostileNamesake: Baton.Mutation {
+    public var HostileNamesake: String
+
+    public init(HostileNamesake: String) {
+        self.HostileNamesake = HostileNamesake
+    }
+
+    public static let name = "HostileNamesake"
+    public static let persistedID = "6720e169564f4eb88bb00f146055b86c"
+    public static let text = #"""
+mutation HostileNamesake(
+  $HostileNamesake: ID!
+) {
+  setFavorite(id: $HostileNamesake, favorite: true) {
+    character {
+      id
+    }
+  }
+}
+"""#
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["HostileNamesake": Baton.Variable(self.HostileNamesake)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.HostileNamesake == rhs.HostileNamesake
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.HostileNamesake)
+    }
+
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
+            .linked("setFavorite", key: .fixed(Slots.Mutation.setFavorite), plural: false, selection: Baton.Selection(type: Types.FavoritePayload, hasID: false, abstract: false, fields: [
+                .linked("character", key: .fixed(Slots.FavoritePayload.character), plural: false, selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                    .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+                ])),
+            ])),
+        ]))
+
+    nonisolated public struct Data: Baton.Lens {
+        @_spi(Generated) public let anchor: Baton.Anchor
+        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Mutation"
+        @MainActor public var setFavorite: SetFavorite? { anchor.linked(Slots.Mutation.setFavorite).map(SetFavorite.init(anchor:)) }
+
+        nonisolated public struct SetFavorite: Baton.Lens {
+            @_spi(Generated) public let anchor: Baton.Anchor
+            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "FavoritePayload"
+            @MainActor public var character: Character? { anchor.linked(Slots.FavoritePayload.character).map(Character.init(anchor:)) }
+
+            nonisolated public struct Character: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                public static let typeName = "Character"
+                @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+            }
+        }
+    }
+
+    public typealias Action = Baton.MutationAction<Self>
+
+    /// A partial response to show before the server answers; absent fields leave the store untouched.
+    nonisolated public struct OptimisticResponse: Sendable {
+        public var setFavorite: SetFavorite?
+        public init(setFavorite: SetFavorite? = nil) {
+            self.setFavorite = setFavorite
+        }
+        public var variable: Baton.Variable {
+            var fields: [String: Baton.Variable] = [:]
+            if let setFavorite { fields["setFavorite"] = setFavorite.variable }
+            return .object(fields)
+        }
+
+        /// A partial response to show before the server answers; absent fields leave the store untouched.
+        nonisolated public struct SetFavorite: Sendable {
+            public var character: Character?
+            public init(character: Character? = nil) {
+                self.character = character
+            }
+            public var variable: Baton.Variable {
+                var fields: [String: Baton.Variable] = [:]
+                if let character { fields["character"] = character.variable }
+                return .object(fields)
+            }
+
+            /// A partial response to show before the server answers; absent fields leave the store untouched.
+            nonisolated public struct Character: Sendable {
+                public var id: String?
+                public init(id: String? = nil) {
+                    self.id = id
+                }
+                public var variable: Baton.Variable {
+                    var fields: [String: Baton.Variable] = [:]
+                    if let id { fields["id"] = .init(id) }
+                    return .object(fields)
+                }
+            }
+        }
+    }
+}
+
+extension HostileNamesake.Action {
+    /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
+    @MainActor @discardableResult
+    public func callAsFunction(HostileNamesake: String, optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
+        try await self.commit(.init(HostileNamesake: HostileNamesake), optimistic: optimistic?.variable)
     }
 }
 
@@ -6882,7 +6068,7 @@ nonisolated public struct HostilePayload: Baton.Mutation {
     }
 
     public static let name = "HostilePayload"
-    public static let persistedID = "7fc7d4c05b26c2c694b5afa9dcdc0242"
+    public static let persistedID = "6e0cae797de2ed1e1c9b534d5900f348"
     public static let text = #"""
 mutation HostilePayload {
   setFavorite(id: "1", favorite: true) {
@@ -6942,6 +6128,10 @@ mutation HostilePayload {
       protocol: name
       some: name
       any: name
+      rethrows: name
+      fallthrough: name
+      precedencegroup: name
+      _: name
       async: name
       borrowing: name
       consume: name
@@ -6953,6 +6143,7 @@ mutation HostilePayload {
       sending: name
       then: name
       unsafe: name
+      await: name
       typeName: name
       satisfied: name
       missingRequiredField: name
@@ -6987,6 +6178,7 @@ mutation HostilePayload {
       Query: name
       Operation: name
       RefetchQuery: name
+      fields: name
       variables: name
       resolution: name
       name
@@ -7195,6 +6387,18 @@ mutation HostilePayload {
     any: note {
       id
     }
+    rethrows: note {
+      id
+    }
+    fallthrough: note {
+      id
+    }
+    precedencegroup: note {
+      id
+    }
+    _: note {
+      id
+    }
     async: note {
       id
     }
@@ -7226,6 +6430,9 @@ mutation HostilePayload {
       id
     }
     unsafe: note {
+      id
+    }
+    await: note {
       id
     }
     typeName: note {
@@ -7328,6 +6535,9 @@ mutation HostilePayload {
       id
     }
     RefetchQuery: note {
+      id
+    }
+    fields: note {
       id
     }
     variables: note {
@@ -7520,6 +6730,10 @@ mutation HostilePayload {
                     .scalar("protocol", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("some", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("any", key: .fixed(Slots.Character.name), kind: .string, list: false),
+                    .scalar("rethrows", key: .fixed(Slots.Character.name), kind: .string, list: false),
+                    .scalar("fallthrough", key: .fixed(Slots.Character.name), kind: .string, list: false),
+                    .scalar("precedencegroup", key: .fixed(Slots.Character.name), kind: .string, list: false),
+                    .scalar("_", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("async", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("borrowing", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("consume", key: .fixed(Slots.Character.name), kind: .string, list: false),
@@ -7531,6 +6745,7 @@ mutation HostilePayload {
                     .scalar("sending", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("then", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("unsafe", key: .fixed(Slots.Character.name), kind: .string, list: false),
+                    .scalar("await", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("typeName", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("satisfied", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("missingRequiredField", key: .fixed(Slots.Character.name), kind: .string, list: false),
@@ -7565,6 +6780,7 @@ mutation HostilePayload {
                     .scalar("Query", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("Operation", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("RefetchQuery", key: .fixed(Slots.Character.name), kind: .string, list: false),
+                    .scalar("fields", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("variables", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("resolution", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
@@ -7773,6 +6989,18 @@ mutation HostilePayload {
                 .linked("any", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
+                .linked("rethrows", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
+                ])),
+                .linked("fallthrough", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
+                ])),
+                .linked("precedencegroup", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
+                ])),
+                .linked("_", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
+                ])),
                 .linked("async", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
@@ -7804,6 +7032,9 @@ mutation HostilePayload {
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
                 .linked("unsafe", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
+                ])),
+                .linked("await", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
                 .linked("typeName", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
@@ -7906,6 +7137,9 @@ mutation HostilePayload {
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
                 .linked("RefetchQuery", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
+                ])),
+                .linked("fields", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
                 .linked("variables", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
@@ -8100,17 +7334,22 @@ mutation HostilePayload {
                 @MainActor public var `protocol`: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var `some`: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var `any`: String? { anchor.string(Slots.Character.name) }
+                @MainActor public var `rethrows`: String? { anchor.string(Slots.Character.name) }
+                @MainActor public var `fallthrough`: String? { anchor.string(Slots.Character.name) }
+                @MainActor public var `precedencegroup`: String? { anchor.string(Slots.Character.name) }
+                @MainActor public var `_`: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var async: String? { anchor.string(Slots.Character.name) }
-                @MainActor public var borrowing: String? { anchor.string(Slots.Character.name) }
+                @MainActor public var `borrowing`: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var consume: String? { anchor.string(Slots.Character.name) }
-                @MainActor public var consuming: String? { anchor.string(Slots.Character.name) }
+                @MainActor public var `consuming`: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var copy: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var discard: String? { anchor.string(Slots.Character.name) }
-                @MainActor public var each: String? { anchor.string(Slots.Character.name) }
-                @MainActor public var isolated: String? { anchor.string(Slots.Character.name) }
-                @MainActor public var sending: String? { anchor.string(Slots.Character.name) }
+                @MainActor public var `each`: String? { anchor.string(Slots.Character.name) }
+                @MainActor public var `isolated`: String? { anchor.string(Slots.Character.name) }
+                @MainActor public var `sending`: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var then: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var unsafe: String? { anchor.string(Slots.Character.name) }
+                @MainActor public var `await`: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var typeName: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var satisfied: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var missingRequiredField: String? { anchor.string(Slots.Character.name) }
@@ -8145,6 +7384,7 @@ mutation HostilePayload {
                 @MainActor public var Query: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var Operation: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var RefetchQuery: String? { anchor.string(Slots.Character.name) }
+                @MainActor public var fields: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var variables: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var resolution: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var name: String? { anchor.string(Slots.Character.name) }
@@ -8246,17 +7486,22 @@ mutation HostilePayload {
             @MainActor public var `protocol`: ProtocolLens2? { anchor.linked(Slots.AddNotePayload.note).map(ProtocolLens2.init(anchor:)) }
             @MainActor public var `some`: Some? { anchor.linked(Slots.AddNotePayload.note).map(Some.init(anchor:)) }
             @MainActor public var `any`: AnyLens2? { anchor.linked(Slots.AddNotePayload.note).map(AnyLens2.init(anchor:)) }
+            @MainActor public var `rethrows`: Rethrows? { anchor.linked(Slots.AddNotePayload.note).map(Rethrows.init(anchor:)) }
+            @MainActor public var `fallthrough`: Fallthrough? { anchor.linked(Slots.AddNotePayload.note).map(Fallthrough.init(anchor:)) }
+            @MainActor public var `precedencegroup`: Precedencegroup? { anchor.linked(Slots.AddNotePayload.note).map(Precedencegroup.init(anchor:)) }
+            @MainActor public var `_`: _2? { anchor.linked(Slots.AddNotePayload.note).map(_2.init(anchor:)) }
             @MainActor public var async: Async? { anchor.linked(Slots.AddNotePayload.note).map(Async.init(anchor:)) }
-            @MainActor public var borrowing: Borrowing? { anchor.linked(Slots.AddNotePayload.note).map(Borrowing.init(anchor:)) }
+            @MainActor public var `borrowing`: Borrowing? { anchor.linked(Slots.AddNotePayload.note).map(Borrowing.init(anchor:)) }
             @MainActor public var consume: Consume? { anchor.linked(Slots.AddNotePayload.note).map(Consume.init(anchor:)) }
-            @MainActor public var consuming: Consuming? { anchor.linked(Slots.AddNotePayload.note).map(Consuming.init(anchor:)) }
+            @MainActor public var `consuming`: Consuming? { anchor.linked(Slots.AddNotePayload.note).map(Consuming.init(anchor:)) }
             @MainActor public var copy: Copy? { anchor.linked(Slots.AddNotePayload.note).map(Copy.init(anchor:)) }
             @MainActor public var discard: Discard? { anchor.linked(Slots.AddNotePayload.note).map(Discard.init(anchor:)) }
-            @MainActor public var each: Each? { anchor.linked(Slots.AddNotePayload.note).map(Each.init(anchor:)) }
-            @MainActor public var isolated: Isolated? { anchor.linked(Slots.AddNotePayload.note).map(Isolated.init(anchor:)) }
-            @MainActor public var sending: Sending? { anchor.linked(Slots.AddNotePayload.note).map(Sending.init(anchor:)) }
+            @MainActor public var `each`: Each? { anchor.linked(Slots.AddNotePayload.note).map(Each.init(anchor:)) }
+            @MainActor public var `isolated`: Isolated? { anchor.linked(Slots.AddNotePayload.note).map(Isolated.init(anchor:)) }
+            @MainActor public var `sending`: Sending? { anchor.linked(Slots.AddNotePayload.note).map(Sending.init(anchor:)) }
             @MainActor public var then: Then? { anchor.linked(Slots.AddNotePayload.note).map(Then.init(anchor:)) }
             @MainActor public var unsafe: Unsafe? { anchor.linked(Slots.AddNotePayload.note).map(Unsafe.init(anchor:)) }
+            @MainActor public var `await`: Await? { anchor.linked(Slots.AddNotePayload.note).map(Await.init(anchor:)) }
             @MainActor public var typeName: TypeName? { anchor.linked(Slots.AddNotePayload.note).map(TypeName.init(anchor:)) }
             @MainActor public var satisfied: Satisfied? { anchor.linked(Slots.AddNotePayload.note).map(Satisfied.init(anchor:)) }
             @MainActor public var missingRequiredField: MissingRequiredField? { anchor.linked(Slots.AddNotePayload.note).map(MissingRequiredField.init(anchor:)) }
@@ -8291,6 +7536,7 @@ mutation HostilePayload {
             @MainActor public var Query: Query2? { anchor.linked(Slots.AddNotePayload.note).map(Query2.init(anchor:)) }
             @MainActor public var Operation: Operation2? { anchor.linked(Slots.AddNotePayload.note).map(Operation2.init(anchor:)) }
             @MainActor public var RefetchQuery: RefetchQuery2? { anchor.linked(Slots.AddNotePayload.note).map(RefetchQuery2.init(anchor:)) }
+            @MainActor public var fields: Fields? { anchor.linked(Slots.AddNotePayload.note).map(Fields.init(anchor:)) }
             @MainActor public var variables: Variables? { anchor.linked(Slots.AddNotePayload.note).map(Variables.init(anchor:)) }
             @MainActor public var resolution: Resolution? { anchor.linked(Slots.AddNotePayload.note).map(Resolution.init(anchor:)) }
             @MainActor public var name: Name? { anchor.linked(Slots.AddNotePayload.note).map(Name.init(anchor:)) }
@@ -8716,6 +7962,34 @@ mutation HostilePayload {
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
+            nonisolated public struct Rethrows: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                public static let typeName = "Note"
+                @MainActor public var id: String? { anchor.string(Slots.Note.id) }
+            }
+
+            nonisolated public struct Fallthrough: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                public static let typeName = "Note"
+                @MainActor public var id: String? { anchor.string(Slots.Note.id) }
+            }
+
+            nonisolated public struct Precedencegroup: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                public static let typeName = "Note"
+                @MainActor public var id: String? { anchor.string(Slots.Note.id) }
+            }
+
+            nonisolated public struct _2: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                public static let typeName = "Note"
+                @MainActor public var id: String? { anchor.string(Slots.Note.id) }
+            }
+
             nonisolated public struct Async: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
@@ -8787,6 +8061,13 @@ mutation HostilePayload {
             }
 
             nonisolated public struct Unsafe: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                public static let typeName = "Note"
+                @MainActor public var id: String? { anchor.string(Slots.Note.id) }
+            }
+
+            nonisolated public struct Await: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
                 public static let typeName = "Note"
@@ -9025,6 +8306,13 @@ mutation HostilePayload {
             }
 
             nonisolated public struct RefetchQuery2: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                public static let typeName = "Note"
+                @MainActor public var id: String? { anchor.string(Slots.Note.id) }
+            }
+
+            nonisolated public struct Fields: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
                 public static let typeName = "Note"
@@ -9392,17 +8680,22 @@ mutation HostilePayload {
                 public var `protocol`: String?
                 public var `some`: String?
                 public var `any`: String?
+                public var `rethrows`: String?
+                public var `fallthrough`: String?
+                public var `precedencegroup`: String?
+                public var `_`: String?
                 public var async: String?
-                public var borrowing: String?
+                public var `borrowing`: String?
                 public var consume: String?
-                public var consuming: String?
+                public var `consuming`: String?
                 public var copy: String?
                 public var discard: String?
-                public var each: String?
-                public var isolated: String?
-                public var sending: String?
+                public var `each`: String?
+                public var `isolated`: String?
+                public var `sending`: String?
                 public var then: String?
                 public var unsafe: String?
+                public var `await`: String?
                 public var typeName: String?
                 public var satisfied: String?
                 public var missingRequiredField: String?
@@ -9437,6 +8730,7 @@ mutation HostilePayload {
                 public var Query: String?
                 public var Operation: String?
                 public var RefetchQuery: String?
+                public var fields: String?
                 public var variables: String?
                 public var resolution: String?
                 public var name: String?
@@ -9477,7 +8771,7 @@ mutation HostilePayload {
                 public var Hasher: String?
                 public var Sendable: String?
                 public var id: String?
-                public init(`Type`: String? = nil, `Protocol`: String? = nil, `Any`: String? = nil, `self` selfValue2: String? = nil, `Self`: String? = nil, `init`: String? = nil, `deinit`: String? = nil, `subscript`: String? = nil, `class`: String? = nil, `struct`: String? = nil, `enum`: String? = nil, `func`: String? = nil, `var`: String? = nil, `let`: String? = nil, `import`: String? = nil, `extension`: String? = nil, `operator`: String? = nil, `static`: String? = nil, `default`: String? = nil, `case`: String? = nil, `switch`: String? = nil, `if`: String? = nil, `else`: String? = nil, `for`: String? = nil, `in`: String? = nil, `while`: String? = nil, `repeat`: String? = nil, `return`: String? = nil, `break`: String? = nil, `continue`: String? = nil, `where`: String? = nil, `is`: String? = nil, `as`: String? = nil, `try`: String? = nil, `throw`: String? = nil, `throws`: String? = nil, `guard`: String? = nil, `defer`: String? = nil, `do`: String? = nil, `catch`: String? = nil, `true`: String? = nil, `false`: String? = nil, `nil`: String? = nil, `super`: String? = nil, `internal`: String? = nil, `private`: String? = nil, `public`: String? = nil, `fileprivate`: String? = nil, `open`: String? = nil, `inout`: String? = nil, `typealias`: String? = nil, `associatedtype`: String? = nil, `protocol`: String? = nil, `some`: String? = nil, `any`: String? = nil, async: String? = nil, borrowing: String? = nil, consume: String? = nil, consuming: String? = nil, copy: String? = nil, discard: String? = nil, each: String? = nil, isolated: String? = nil, sending: String? = nil, then: String? = nil, unsafe: String? = nil, typeName: String? = nil, satisfied: String? = nil, missingRequiredField: String? = nil, fieldErrors: String? = nil, isPresent: String? = nil, throwing: String? = nil, caught: String? = nil, refetchable: String? = nil, refetch: String? = nil, connection: String? = nil, nodes: String? = nil, hasNext: String? = nil, hasPrevious: String? = nil, isLoadingNext: String? = nil, isLoadingPrevious: String? = nil, connectionID: String? = nil, loadNext: String? = nil, loadPrevious: String? = nil, bound: String? = nil, errors: String? = nil, child: String? = nil, missing: String? = nil, count: String? = nil, lhs: String? = nil, rhs: String? = nil, hasher: String? = nil, optimistic: String? = nil, selfValue: String? = nil, Fragment: String? = nil, Spread: String? = nil, Owner: String? = nil, Query: String? = nil, Operation: String? = nil, RefetchQuery: String? = nil, variables: String? = nil, resolution: String? = nil, name: String? = nil, persistedID: String? = nil, text: String? = nil, plan: String? = nil, errorBehavior: String? = nil, throwsOnFieldError: String? = nil, bubbles: String? = nil, hasDeferred: String? = nil, Data: String? = nil, Action: String? = nil, OptimisticResponse: String? = nil, hash: String? = nil, commit: String? = nil, callAsFunction: String? = nil, Op: String? = nil, hashValue: String? = nil, phase: String? = nil, isRefreshing: String? = nil, isStale: String? = nil, retry: String? = nil, subscription: String? = nil, Types: String? = nil, Sites: String? = nil, AbstractSlots: String? = nil, schemaDigest: String? = nil, Baton: String? = nil, Swift: String? = nil, Set: String? = nil, Result: String? = nil, Optional: String? = nil, String: String? = nil, Int: String? = nil, Double: String? = nil, Bool: String? = nil, MainActor: String? = nil, Hasher: String? = nil, Sendable: String? = nil, id: String? = nil) {
+                public init(`Type`: String? = nil, `Protocol`: String? = nil, `Any`: String? = nil, `self` selfValue2: String? = nil, `Self`: String? = nil, `init`: String? = nil, `deinit`: String? = nil, `subscript`: String? = nil, `class`: String? = nil, `struct`: String? = nil, `enum`: String? = nil, `func`: String? = nil, `var`: String? = nil, `let`: String? = nil, `import`: String? = nil, `extension`: String? = nil, `operator`: String? = nil, `static`: String? = nil, `default`: String? = nil, `case`: String? = nil, `switch`: String? = nil, `if`: String? = nil, `else`: String? = nil, `for`: String? = nil, `in`: String? = nil, `while`: String? = nil, `repeat`: String? = nil, `return`: String? = nil, `break`: String? = nil, `continue`: String? = nil, `where`: String? = nil, `is`: String? = nil, `as`: String? = nil, `try`: String? = nil, `throw`: String? = nil, `throws`: String? = nil, `guard`: String? = nil, `defer`: String? = nil, `do`: String? = nil, `catch`: String? = nil, `true`: String? = nil, `false`: String? = nil, `nil`: String? = nil, `super`: String? = nil, `internal`: String? = nil, `private`: String? = nil, `public`: String? = nil, `fileprivate`: String? = nil, `open`: String? = nil, `inout`: String? = nil, `typealias`: String? = nil, `associatedtype`: String? = nil, `protocol`: String? = nil, `some`: String? = nil, `any`: String? = nil, `rethrows`: String? = nil, `fallthrough`: String? = nil, `precedencegroup`: String? = nil, `_`: String? = nil, async: String? = nil, `borrowing`: String? = nil, consume: String? = nil, `consuming`: String? = nil, copy: String? = nil, discard: String? = nil, `each`: String? = nil, `isolated`: String? = nil, `sending`: String? = nil, then: String? = nil, unsafe: String? = nil, `await`: String? = nil, typeName: String? = nil, satisfied: String? = nil, missingRequiredField: String? = nil, fieldErrors: String? = nil, isPresent: String? = nil, throwing: String? = nil, caught: String? = nil, refetchable: String? = nil, refetch: String? = nil, connection: String? = nil, nodes: String? = nil, hasNext: String? = nil, hasPrevious: String? = nil, isLoadingNext: String? = nil, isLoadingPrevious: String? = nil, connectionID: String? = nil, loadNext: String? = nil, loadPrevious: String? = nil, bound: String? = nil, errors: String? = nil, child: String? = nil, missing: String? = nil, count: String? = nil, lhs: String? = nil, rhs: String? = nil, hasher: String? = nil, optimistic: String? = nil, selfValue: String? = nil, Fragment: String? = nil, Spread: String? = nil, Owner: String? = nil, Query: String? = nil, Operation: String? = nil, RefetchQuery: String? = nil, fields: String? = nil, variables: String? = nil, resolution: String? = nil, name: String? = nil, persistedID: String? = nil, text: String? = nil, plan: String? = nil, errorBehavior: String? = nil, throwsOnFieldError: String? = nil, bubbles: String? = nil, hasDeferred: String? = nil, Data: String? = nil, Action: String? = nil, OptimisticResponse: String? = nil, hash: String? = nil, commit: String? = nil, callAsFunction: String? = nil, Op: String? = nil, hashValue: String? = nil, phase: String? = nil, isRefreshing: String? = nil, isStale: String? = nil, retry: String? = nil, subscription: String? = nil, Types: String? = nil, Sites: String? = nil, AbstractSlots: String? = nil, schemaDigest: String? = nil, Baton: String? = nil, Swift: String? = nil, Set: String? = nil, Result: String? = nil, Optional: String? = nil, String: String? = nil, Int: String? = nil, Double: String? = nil, Bool: String? = nil, MainActor: String? = nil, Hasher: String? = nil, Sendable: String? = nil, id: String? = nil) {
                     self.`Type` = `Type`
                     self.`Protocol` = `Protocol`
                     self.`Any` = `Any`
@@ -9533,17 +8827,22 @@ mutation HostilePayload {
                     self.`protocol` = `protocol`
                     self.`some` = `some`
                     self.`any` = `any`
+                    self.`rethrows` = `rethrows`
+                    self.`fallthrough` = `fallthrough`
+                    self.`precedencegroup` = `precedencegroup`
+                    self.`_` = `_`
                     self.async = async
-                    self.borrowing = borrowing
+                    self.`borrowing` = `borrowing`
                     self.consume = consume
-                    self.consuming = consuming
+                    self.`consuming` = `consuming`
                     self.copy = copy
                     self.discard = discard
-                    self.each = each
-                    self.isolated = isolated
-                    self.sending = sending
+                    self.`each` = `each`
+                    self.`isolated` = `isolated`
+                    self.`sending` = `sending`
                     self.then = then
                     self.unsafe = unsafe
+                    self.`await` = `await`
                     self.typeName = typeName
                     self.satisfied = satisfied
                     self.missingRequiredField = missingRequiredField
@@ -9578,6 +8877,7 @@ mutation HostilePayload {
                     self.Query = Query
                     self.Operation = Operation
                     self.RefetchQuery = RefetchQuery
+                    self.fields = fields
                     self.variables = variables
                     self.resolution = resolution
                     self.name = name
@@ -9620,148 +8920,154 @@ mutation HostilePayload {
                     self.id = id
                 }
                 public var variable: Baton.Variable {
-                    var fields: [String: Baton.Variable] = [:]
-                    if let `Type` { fields["Type"] = .init(`Type`) }
-                    if let `Protocol` { fields["Protocol"] = .init(`Protocol`) }
-                    if let `Any` { fields["Any"] = .init(`Any`) }
-                    if let selfValue2 = self.`self` { fields["self"] = .init(selfValue2) }
-                    if let `Self` { fields["Self"] = .init(`Self`) }
-                    if let `init` { fields["init"] = .init(`init`) }
-                    if let `deinit` { fields["deinit"] = .init(`deinit`) }
-                    if let `subscript` { fields["subscript"] = .init(`subscript`) }
-                    if let `class` { fields["class"] = .init(`class`) }
-                    if let `struct` { fields["struct"] = .init(`struct`) }
-                    if let `enum` { fields["enum"] = .init(`enum`) }
-                    if let `func` { fields["func"] = .init(`func`) }
-                    if let `var` { fields["var"] = .init(`var`) }
-                    if let `let` { fields["let"] = .init(`let`) }
-                    if let `import` { fields["import"] = .init(`import`) }
-                    if let `extension` { fields["extension"] = .init(`extension`) }
-                    if let `operator` { fields["operator"] = .init(`operator`) }
-                    if let `static` { fields["static"] = .init(`static`) }
-                    if let `default` { fields["default"] = .init(`default`) }
-                    if let `case` { fields["case"] = .init(`case`) }
-                    if let `switch` { fields["switch"] = .init(`switch`) }
-                    if let `if` { fields["if"] = .init(`if`) }
-                    if let `else` { fields["else"] = .init(`else`) }
-                    if let `for` { fields["for"] = .init(`for`) }
-                    if let `in` { fields["in"] = .init(`in`) }
-                    if let `while` { fields["while"] = .init(`while`) }
-                    if let `repeat` { fields["repeat"] = .init(`repeat`) }
-                    if let `return` { fields["return"] = .init(`return`) }
-                    if let `break` { fields["break"] = .init(`break`) }
-                    if let `continue` { fields["continue"] = .init(`continue`) }
-                    if let `where` { fields["where"] = .init(`where`) }
-                    if let `is` { fields["is"] = .init(`is`) }
-                    if let `as` { fields["as"] = .init(`as`) }
-                    if let `try` { fields["try"] = .init(`try`) }
-                    if let `throw` { fields["throw"] = .init(`throw`) }
-                    if let `throws` { fields["throws"] = .init(`throws`) }
-                    if let `guard` { fields["guard"] = .init(`guard`) }
-                    if let `defer` { fields["defer"] = .init(`defer`) }
-                    if let `do` { fields["do"] = .init(`do`) }
-                    if let `catch` { fields["catch"] = .init(`catch`) }
-                    if let `true` { fields["true"] = .init(`true`) }
-                    if let `false` { fields["false"] = .init(`false`) }
-                    if let `nil` { fields["nil"] = .init(`nil`) }
-                    if let `super` { fields["super"] = .init(`super`) }
-                    if let `internal` { fields["internal"] = .init(`internal`) }
-                    if let `private` { fields["private"] = .init(`private`) }
-                    if let `public` { fields["public"] = .init(`public`) }
-                    if let `fileprivate` { fields["fileprivate"] = .init(`fileprivate`) }
-                    if let `open` { fields["open"] = .init(`open`) }
-                    if let `inout` { fields["inout"] = .init(`inout`) }
-                    if let `typealias` { fields["typealias"] = .init(`typealias`) }
-                    if let `associatedtype` { fields["associatedtype"] = .init(`associatedtype`) }
-                    if let `protocol` { fields["protocol"] = .init(`protocol`) }
-                    if let `some` { fields["some"] = .init(`some`) }
-                    if let `any` { fields["any"] = .init(`any`) }
-                    if let async { fields["async"] = .init(async) }
-                    if let borrowing { fields["borrowing"] = .init(borrowing) }
-                    if let consume { fields["consume"] = .init(consume) }
-                    if let consuming { fields["consuming"] = .init(consuming) }
-                    if let copy { fields["copy"] = .init(copy) }
-                    if let discard { fields["discard"] = .init(discard) }
-                    if let each { fields["each"] = .init(each) }
-                    if let isolated { fields["isolated"] = .init(isolated) }
-                    if let sending { fields["sending"] = .init(sending) }
-                    if let then { fields["then"] = .init(then) }
-                    if let unsafe { fields["unsafe"] = .init(unsafe) }
-                    if let typeName { fields["typeName"] = .init(typeName) }
-                    if let satisfied { fields["satisfied"] = .init(satisfied) }
-                    if let missingRequiredField { fields["missingRequiredField"] = .init(missingRequiredField) }
-                    if let fieldErrors { fields["fieldErrors"] = .init(fieldErrors) }
-                    if let isPresent { fields["isPresent"] = .init(isPresent) }
-                    if let throwing { fields["throwing"] = .init(throwing) }
-                    if let caught { fields["caught"] = .init(caught) }
-                    if let refetchable { fields["refetchable"] = .init(refetchable) }
-                    if let refetch { fields["refetch"] = .init(refetch) }
-                    if let connection { fields["connection"] = .init(connection) }
-                    if let nodes { fields["nodes"] = .init(nodes) }
-                    if let hasNext { fields["hasNext"] = .init(hasNext) }
-                    if let hasPrevious { fields["hasPrevious"] = .init(hasPrevious) }
-                    if let isLoadingNext { fields["isLoadingNext"] = .init(isLoadingNext) }
-                    if let isLoadingPrevious { fields["isLoadingPrevious"] = .init(isLoadingPrevious) }
-                    if let connectionID { fields["connectionID"] = .init(connectionID) }
-                    if let loadNext { fields["loadNext"] = .init(loadNext) }
-                    if let loadPrevious { fields["loadPrevious"] = .init(loadPrevious) }
-                    if let bound { fields["bound"] = .init(bound) }
-                    if let errors { fields["errors"] = .init(errors) }
-                    if let child { fields["child"] = .init(child) }
-                    if let missing { fields["missing"] = .init(missing) }
-                    if let count { fields["count"] = .init(count) }
-                    if let lhs { fields["lhs"] = .init(lhs) }
-                    if let rhs { fields["rhs"] = .init(rhs) }
-                    if let hasher { fields["hasher"] = .init(hasher) }
-                    if let optimistic { fields["optimistic"] = .init(optimistic) }
-                    if let selfValue { fields["selfValue"] = .init(selfValue) }
-                    if let Fragment { fields["Fragment"] = .init(Fragment) }
-                    if let Spread { fields["Spread"] = .init(Spread) }
-                    if let Owner { fields["Owner"] = .init(Owner) }
-                    if let Query { fields["Query"] = .init(Query) }
-                    if let Operation { fields["Operation"] = .init(Operation) }
-                    if let RefetchQuery { fields["RefetchQuery"] = .init(RefetchQuery) }
-                    if let variables { fields["variables"] = .init(variables) }
-                    if let resolution { fields["resolution"] = .init(resolution) }
-                    if let name { fields["name"] = .init(name) }
-                    if let persistedID { fields["persistedID"] = .init(persistedID) }
-                    if let text { fields["text"] = .init(text) }
-                    if let plan { fields["plan"] = .init(plan) }
-                    if let errorBehavior { fields["errorBehavior"] = .init(errorBehavior) }
-                    if let throwsOnFieldError { fields["throwsOnFieldError"] = .init(throwsOnFieldError) }
-                    if let bubbles { fields["bubbles"] = .init(bubbles) }
-                    if let hasDeferred { fields["hasDeferred"] = .init(hasDeferred) }
-                    if let Data { fields["Data"] = .init(Data) }
-                    if let Action { fields["Action"] = .init(Action) }
-                    if let OptimisticResponse { fields["OptimisticResponse"] = .init(OptimisticResponse) }
-                    if let hash { fields["hash"] = .init(hash) }
-                    if let commit { fields["commit"] = .init(commit) }
-                    if let callAsFunction { fields["callAsFunction"] = .init(callAsFunction) }
-                    if let Op { fields["Op"] = .init(Op) }
-                    if let hashValue { fields["hashValue"] = .init(hashValue) }
-                    if let phase { fields["phase"] = .init(phase) }
-                    if let isRefreshing { fields["isRefreshing"] = .init(isRefreshing) }
-                    if let isStale { fields["isStale"] = .init(isStale) }
-                    if let retry { fields["retry"] = .init(retry) }
-                    if let subscription { fields["subscription"] = .init(subscription) }
-                    if let Types { fields["Types"] = .init(Types) }
-                    if let Sites { fields["Sites"] = .init(Sites) }
-                    if let AbstractSlots { fields["AbstractSlots"] = .init(AbstractSlots) }
-                    if let schemaDigest { fields["schemaDigest"] = .init(schemaDigest) }
-                    if let Baton { fields["Baton"] = .init(Baton) }
-                    if let Swift { fields["Swift"] = .init(Swift) }
-                    if let Set { fields["Set"] = .init(Set) }
-                    if let Result { fields["Result"] = .init(Result) }
-                    if let Optional { fields["Optional"] = .init(Optional) }
-                    if let String { fields["String"] = .init(String) }
-                    if let Int { fields["Int"] = .init(Int) }
-                    if let Double { fields["Double"] = .init(Double) }
-                    if let Bool { fields["Bool"] = .init(Bool) }
-                    if let MainActor { fields["MainActor"] = .init(MainActor) }
-                    if let Hasher { fields["Hasher"] = .init(Hasher) }
-                    if let Sendable { fields["Sendable"] = .init(Sendable) }
-                    if let id { fields["id"] = .init(id) }
-                    return .object(fields)
+                    var fields2: [String: Baton.Variable] = [:]
+                    if let `Type` { fields2["Type"] = .init(`Type`) }
+                    if let `Protocol` { fields2["Protocol"] = .init(`Protocol`) }
+                    if let `Any` { fields2["Any"] = .init(`Any`) }
+                    if let selfValue2 = self.`self` { fields2["self"] = .init(selfValue2) }
+                    if let `Self` { fields2["Self"] = .init(`Self`) }
+                    if let `init` { fields2["init"] = .init(`init`) }
+                    if let `deinit` { fields2["deinit"] = .init(`deinit`) }
+                    if let `subscript` { fields2["subscript"] = .init(`subscript`) }
+                    if let `class` { fields2["class"] = .init(`class`) }
+                    if let `struct` { fields2["struct"] = .init(`struct`) }
+                    if let `enum` { fields2["enum"] = .init(`enum`) }
+                    if let `func` { fields2["func"] = .init(`func`) }
+                    if let `var` { fields2["var"] = .init(`var`) }
+                    if let `let` { fields2["let"] = .init(`let`) }
+                    if let `import` { fields2["import"] = .init(`import`) }
+                    if let `extension` { fields2["extension"] = .init(`extension`) }
+                    if let `operator` { fields2["operator"] = .init(`operator`) }
+                    if let `static` { fields2["static"] = .init(`static`) }
+                    if let `default` { fields2["default"] = .init(`default`) }
+                    if let `case` { fields2["case"] = .init(`case`) }
+                    if let `switch` { fields2["switch"] = .init(`switch`) }
+                    if let `if` { fields2["if"] = .init(`if`) }
+                    if let `else` { fields2["else"] = .init(`else`) }
+                    if let `for` { fields2["for"] = .init(`for`) }
+                    if let `in` { fields2["in"] = .init(`in`) }
+                    if let `while` { fields2["while"] = .init(`while`) }
+                    if let `repeat` { fields2["repeat"] = .init(`repeat`) }
+                    if let `return` { fields2["return"] = .init(`return`) }
+                    if let `break` { fields2["break"] = .init(`break`) }
+                    if let `continue` { fields2["continue"] = .init(`continue`) }
+                    if let `where` { fields2["where"] = .init(`where`) }
+                    if let `is` { fields2["is"] = .init(`is`) }
+                    if let `as` { fields2["as"] = .init(`as`) }
+                    if let `try` { fields2["try"] = .init(`try`) }
+                    if let `throw` { fields2["throw"] = .init(`throw`) }
+                    if let `throws` { fields2["throws"] = .init(`throws`) }
+                    if let `guard` { fields2["guard"] = .init(`guard`) }
+                    if let `defer` { fields2["defer"] = .init(`defer`) }
+                    if let `do` { fields2["do"] = .init(`do`) }
+                    if let `catch` { fields2["catch"] = .init(`catch`) }
+                    if let `true` { fields2["true"] = .init(`true`) }
+                    if let `false` { fields2["false"] = .init(`false`) }
+                    if let `nil` { fields2["nil"] = .init(`nil`) }
+                    if let `super` { fields2["super"] = .init(`super`) }
+                    if let `internal` { fields2["internal"] = .init(`internal`) }
+                    if let `private` { fields2["private"] = .init(`private`) }
+                    if let `public` { fields2["public"] = .init(`public`) }
+                    if let `fileprivate` { fields2["fileprivate"] = .init(`fileprivate`) }
+                    if let `open` { fields2["open"] = .init(`open`) }
+                    if let `inout` { fields2["inout"] = .init(`inout`) }
+                    if let `typealias` { fields2["typealias"] = .init(`typealias`) }
+                    if let `associatedtype` { fields2["associatedtype"] = .init(`associatedtype`) }
+                    if let `protocol` { fields2["protocol"] = .init(`protocol`) }
+                    if let `some` { fields2["some"] = .init(`some`) }
+                    if let `any` { fields2["any"] = .init(`any`) }
+                    if let `rethrows` { fields2["rethrows"] = .init(`rethrows`) }
+                    if let `fallthrough` { fields2["fallthrough"] = .init(`fallthrough`) }
+                    if let `precedencegroup` { fields2["precedencegroup"] = .init(`precedencegroup`) }
+                    if let `_` { fields2["_"] = .init(`_`) }
+                    if let async { fields2["async"] = .init(async) }
+                    if let `borrowing` { fields2["borrowing"] = .init(`borrowing`) }
+                    if let consume { fields2["consume"] = .init(consume) }
+                    if let `consuming` { fields2["consuming"] = .init(`consuming`) }
+                    if let copy { fields2["copy"] = .init(copy) }
+                    if let discard { fields2["discard"] = .init(discard) }
+                    if let `each` { fields2["each"] = .init(`each`) }
+                    if let `isolated` { fields2["isolated"] = .init(`isolated`) }
+                    if let `sending` { fields2["sending"] = .init(`sending`) }
+                    if let then { fields2["then"] = .init(then) }
+                    if let unsafe { fields2["unsafe"] = .init(unsafe) }
+                    if let `await` { fields2["await"] = .init(`await`) }
+                    if let typeName { fields2["typeName"] = .init(typeName) }
+                    if let satisfied { fields2["satisfied"] = .init(satisfied) }
+                    if let missingRequiredField { fields2["missingRequiredField"] = .init(missingRequiredField) }
+                    if let fieldErrors { fields2["fieldErrors"] = .init(fieldErrors) }
+                    if let isPresent { fields2["isPresent"] = .init(isPresent) }
+                    if let throwing { fields2["throwing"] = .init(throwing) }
+                    if let caught { fields2["caught"] = .init(caught) }
+                    if let refetchable { fields2["refetchable"] = .init(refetchable) }
+                    if let refetch { fields2["refetch"] = .init(refetch) }
+                    if let connection { fields2["connection"] = .init(connection) }
+                    if let nodes { fields2["nodes"] = .init(nodes) }
+                    if let hasNext { fields2["hasNext"] = .init(hasNext) }
+                    if let hasPrevious { fields2["hasPrevious"] = .init(hasPrevious) }
+                    if let isLoadingNext { fields2["isLoadingNext"] = .init(isLoadingNext) }
+                    if let isLoadingPrevious { fields2["isLoadingPrevious"] = .init(isLoadingPrevious) }
+                    if let connectionID { fields2["connectionID"] = .init(connectionID) }
+                    if let loadNext { fields2["loadNext"] = .init(loadNext) }
+                    if let loadPrevious { fields2["loadPrevious"] = .init(loadPrevious) }
+                    if let bound { fields2["bound"] = .init(bound) }
+                    if let errors { fields2["errors"] = .init(errors) }
+                    if let child { fields2["child"] = .init(child) }
+                    if let missing { fields2["missing"] = .init(missing) }
+                    if let count { fields2["count"] = .init(count) }
+                    if let lhs { fields2["lhs"] = .init(lhs) }
+                    if let rhs { fields2["rhs"] = .init(rhs) }
+                    if let hasher { fields2["hasher"] = .init(hasher) }
+                    if let optimistic { fields2["optimistic"] = .init(optimistic) }
+                    if let selfValue { fields2["selfValue"] = .init(selfValue) }
+                    if let Fragment { fields2["Fragment"] = .init(Fragment) }
+                    if let Spread { fields2["Spread"] = .init(Spread) }
+                    if let Owner { fields2["Owner"] = .init(Owner) }
+                    if let Query { fields2["Query"] = .init(Query) }
+                    if let Operation { fields2["Operation"] = .init(Operation) }
+                    if let RefetchQuery { fields2["RefetchQuery"] = .init(RefetchQuery) }
+                    if let fields { fields2["fields"] = .init(fields) }
+                    if let variables { fields2["variables"] = .init(variables) }
+                    if let resolution { fields2["resolution"] = .init(resolution) }
+                    if let name { fields2["name"] = .init(name) }
+                    if let persistedID { fields2["persistedID"] = .init(persistedID) }
+                    if let text { fields2["text"] = .init(text) }
+                    if let plan { fields2["plan"] = .init(plan) }
+                    if let errorBehavior { fields2["errorBehavior"] = .init(errorBehavior) }
+                    if let throwsOnFieldError { fields2["throwsOnFieldError"] = .init(throwsOnFieldError) }
+                    if let bubbles { fields2["bubbles"] = .init(bubbles) }
+                    if let hasDeferred { fields2["hasDeferred"] = .init(hasDeferred) }
+                    if let Data { fields2["Data"] = .init(Data) }
+                    if let Action { fields2["Action"] = .init(Action) }
+                    if let OptimisticResponse { fields2["OptimisticResponse"] = .init(OptimisticResponse) }
+                    if let hash { fields2["hash"] = .init(hash) }
+                    if let commit { fields2["commit"] = .init(commit) }
+                    if let callAsFunction { fields2["callAsFunction"] = .init(callAsFunction) }
+                    if let Op { fields2["Op"] = .init(Op) }
+                    if let hashValue { fields2["hashValue"] = .init(hashValue) }
+                    if let phase { fields2["phase"] = .init(phase) }
+                    if let isRefreshing { fields2["isRefreshing"] = .init(isRefreshing) }
+                    if let isStale { fields2["isStale"] = .init(isStale) }
+                    if let retry { fields2["retry"] = .init(retry) }
+                    if let subscription { fields2["subscription"] = .init(subscription) }
+                    if let Types { fields2["Types"] = .init(Types) }
+                    if let Sites { fields2["Sites"] = .init(Sites) }
+                    if let AbstractSlots { fields2["AbstractSlots"] = .init(AbstractSlots) }
+                    if let schemaDigest { fields2["schemaDigest"] = .init(schemaDigest) }
+                    if let Baton { fields2["Baton"] = .init(Baton) }
+                    if let Swift { fields2["Swift"] = .init(Swift) }
+                    if let Set { fields2["Set"] = .init(Set) }
+                    if let Result { fields2["Result"] = .init(Result) }
+                    if let Optional { fields2["Optional"] = .init(Optional) }
+                    if let String { fields2["String"] = .init(String) }
+                    if let Int { fields2["Int"] = .init(Int) }
+                    if let Double { fields2["Double"] = .init(Double) }
+                    if let Bool { fields2["Bool"] = .init(Bool) }
+                    if let MainActor { fields2["MainActor"] = .init(MainActor) }
+                    if let Hasher { fields2["Hasher"] = .init(Hasher) }
+                    if let Sendable { fields2["Sendable"] = .init(Sendable) }
+                    if let id { fields2["id"] = .init(id) }
+                    return .object(fields2)
                 }
             }
         }
@@ -9823,17 +9129,22 @@ mutation HostilePayload {
             public var `protocol`: ProtocolResponse2?
             public var `some`: Some?
             public var `any`: AnyResponse2?
+            public var `rethrows`: Rethrows?
+            public var `fallthrough`: Fallthrough?
+            public var `precedencegroup`: Precedencegroup?
+            public var `_`: _2?
             public var async: Async?
-            public var borrowing: Borrowing?
+            public var `borrowing`: Borrowing?
             public var consume: Consume?
-            public var consuming: Consuming?
+            public var `consuming`: Consuming?
             public var copy: Copy?
             public var discard: Discard?
-            public var each: Each?
-            public var isolated: Isolated?
-            public var sending: Sending?
+            public var `each`: Each?
+            public var `isolated`: Isolated?
+            public var `sending`: Sending?
             public var then: Then?
             public var unsafe: Unsafe?
+            public var `await`: Await?
             public var typeName: TypeName?
             public var satisfied: Satisfied?
             public var missingRequiredField: MissingRequiredField?
@@ -9868,6 +9179,7 @@ mutation HostilePayload {
             public var Query: Query2?
             public var Operation: Operation2?
             public var RefetchQuery: RefetchQuery2?
+            public var fields: Fields?
             public var variables: Variables?
             public var resolution: Resolution?
             public var name: Name?
@@ -9907,7 +9219,7 @@ mutation HostilePayload {
             public var MainActor: MainActor2?
             public var Hasher: Hasher3?
             public var Sendable: SendableResponse?
-            public init(`Type`: TypeResponse? = nil, `Protocol`: ProtocolResponse? = nil, `Any`: AnyResponse? = nil, `self` selfValue2: SelfResponse? = nil, `Self`: SelfResponse2? = nil, `init`: Init? = nil, `deinit`: Deinit? = nil, `subscript`: Subscript? = nil, `class`: Class? = nil, `struct`: Struct? = nil, `enum`: Enum? = nil, `func`: Func? = nil, `var`: Var? = nil, `let`: Let? = nil, `import`: Import? = nil, `extension`: Extension? = nil, `operator`: Operator? = nil, `static`: Static? = nil, `default`: Default? = nil, `case`: Case? = nil, `switch`: Switch? = nil, `if`: If? = nil, `else`: Else? = nil, `for`: For? = nil, `in`: In? = nil, `while`: While? = nil, `repeat`: Repeat? = nil, `return`: Return? = nil, `break`: Break? = nil, `continue`: Continue? = nil, `where`: Where? = nil, `is`: Is? = nil, `as`: As? = nil, `try`: Try? = nil, `throw`: Throw? = nil, `throws`: Throws? = nil, `guard`: Guard? = nil, `defer`: Defer? = nil, `do`: Do? = nil, `catch`: Catch? = nil, `true`: True? = nil, `false`: False? = nil, `nil`: Nil? = nil, `super`: Super? = nil, `internal`: Internal? = nil, `private`: Private? = nil, `public`: Public? = nil, `fileprivate`: Fileprivate? = nil, `open`: Open? = nil, `inout`: Inout? = nil, `typealias`: Typealias? = nil, `associatedtype`: Associatedtype? = nil, `protocol`: ProtocolResponse2? = nil, `some`: Some? = nil, `any`: AnyResponse2? = nil, async: Async? = nil, borrowing: Borrowing? = nil, consume: Consume? = nil, consuming: Consuming? = nil, copy: Copy? = nil, discard: Discard? = nil, each: Each? = nil, isolated: Isolated? = nil, sending: Sending? = nil, then: Then? = nil, unsafe: Unsafe? = nil, typeName: TypeName? = nil, satisfied: Satisfied? = nil, missingRequiredField: MissingRequiredField? = nil, fieldErrors: FieldErrors? = nil, isPresent: IsPresent? = nil, throwing: Throwing? = nil, caught: Caught? = nil, refetchable: Refetchable? = nil, refetch: Refetch? = nil, connection: Connection? = nil, nodes: Nodes? = nil, hasNext: HasNext? = nil, hasPrevious: HasPrevious? = nil, isLoadingNext: IsLoadingNext? = nil, isLoadingPrevious: IsLoadingPrevious? = nil, connectionID: ConnectionID? = nil, loadNext: LoadNext? = nil, loadPrevious: LoadPrevious? = nil, bound: Bound? = nil, errors: Errors? = nil, child: Child? = nil, missing: Missing? = nil, count: Count? = nil, lhs: Lhs? = nil, rhs: Rhs? = nil, hasher: Hasher2? = nil, optimistic: Optimistic? = nil, selfValue: SelfValue? = nil, Fragment: Fragment2? = nil, Spread: Spread2? = nil, Owner: Owner2? = nil, Query: Query2? = nil, Operation: Operation2? = nil, RefetchQuery: RefetchQuery2? = nil, variables: Variables? = nil, resolution: Resolution? = nil, name: Name? = nil, persistedID: PersistedID? = nil, text: Text? = nil, plan: Plan? = nil, errorBehavior: ErrorBehavior? = nil, throwsOnFieldError: ThrowsOnFieldError? = nil, bubbles: Bubbles? = nil, hasDeferred: HasDeferred? = nil, Data: Data2? = nil, Action: Action2? = nil, OptimisticResponse: OptimisticResponse2? = nil, hash: Hash? = nil, commit: Commit? = nil, callAsFunction: CallAsFunction? = nil, Op: Op2? = nil, hashValue: HashValue? = nil, phase: Phase? = nil, isRefreshing: IsRefreshing? = nil, isStale: IsStale? = nil, retry: Retry? = nil, subscription: Subscription? = nil, Types: Types2? = nil, Sites: Sites2? = nil, AbstractSlots: AbstractSlots2? = nil, schemaDigest: SchemaDigest? = nil, Baton: BatonResponse? = nil, Swift: Swift2? = nil, Set: Set2? = nil, Result: Result2? = nil, Optional: Optional2? = nil, String: StringResponse? = nil, Int: IntResponse? = nil, Double: DoubleResponse? = nil, Bool: BoolResponse? = nil, MainActor: MainActor2? = nil, Hasher: Hasher3? = nil, Sendable: SendableResponse? = nil) {
+            public init(`Type`: TypeResponse? = nil, `Protocol`: ProtocolResponse? = nil, `Any`: AnyResponse? = nil, `self` selfValue2: SelfResponse? = nil, `Self`: SelfResponse2? = nil, `init`: Init? = nil, `deinit`: Deinit? = nil, `subscript`: Subscript? = nil, `class`: Class? = nil, `struct`: Struct? = nil, `enum`: Enum? = nil, `func`: Func? = nil, `var`: Var? = nil, `let`: Let? = nil, `import`: Import? = nil, `extension`: Extension? = nil, `operator`: Operator? = nil, `static`: Static? = nil, `default`: Default? = nil, `case`: Case? = nil, `switch`: Switch? = nil, `if`: If? = nil, `else`: Else? = nil, `for`: For? = nil, `in`: In? = nil, `while`: While? = nil, `repeat`: Repeat? = nil, `return`: Return? = nil, `break`: Break? = nil, `continue`: Continue? = nil, `where`: Where? = nil, `is`: Is? = nil, `as`: As? = nil, `try`: Try? = nil, `throw`: Throw? = nil, `throws`: Throws? = nil, `guard`: Guard? = nil, `defer`: Defer? = nil, `do`: Do? = nil, `catch`: Catch? = nil, `true`: True? = nil, `false`: False? = nil, `nil`: Nil? = nil, `super`: Super? = nil, `internal`: Internal? = nil, `private`: Private? = nil, `public`: Public? = nil, `fileprivate`: Fileprivate? = nil, `open`: Open? = nil, `inout`: Inout? = nil, `typealias`: Typealias? = nil, `associatedtype`: Associatedtype? = nil, `protocol`: ProtocolResponse2? = nil, `some`: Some? = nil, `any`: AnyResponse2? = nil, `rethrows`: Rethrows? = nil, `fallthrough`: Fallthrough? = nil, `precedencegroup`: Precedencegroup? = nil, `_`: _2? = nil, async: Async? = nil, `borrowing`: Borrowing? = nil, consume: Consume? = nil, `consuming`: Consuming? = nil, copy: Copy? = nil, discard: Discard? = nil, `each`: Each? = nil, `isolated`: Isolated? = nil, `sending`: Sending? = nil, then: Then? = nil, unsafe: Unsafe? = nil, `await`: Await? = nil, typeName: TypeName? = nil, satisfied: Satisfied? = nil, missingRequiredField: MissingRequiredField? = nil, fieldErrors: FieldErrors? = nil, isPresent: IsPresent? = nil, throwing: Throwing? = nil, caught: Caught? = nil, refetchable: Refetchable? = nil, refetch: Refetch? = nil, connection: Connection? = nil, nodes: Nodes? = nil, hasNext: HasNext? = nil, hasPrevious: HasPrevious? = nil, isLoadingNext: IsLoadingNext? = nil, isLoadingPrevious: IsLoadingPrevious? = nil, connectionID: ConnectionID? = nil, loadNext: LoadNext? = nil, loadPrevious: LoadPrevious? = nil, bound: Bound? = nil, errors: Errors? = nil, child: Child? = nil, missing: Missing? = nil, count: Count? = nil, lhs: Lhs? = nil, rhs: Rhs? = nil, hasher: Hasher2? = nil, optimistic: Optimistic? = nil, selfValue: SelfValue? = nil, Fragment: Fragment2? = nil, Spread: Spread2? = nil, Owner: Owner2? = nil, Query: Query2? = nil, Operation: Operation2? = nil, RefetchQuery: RefetchQuery2? = nil, fields: Fields? = nil, variables: Variables? = nil, resolution: Resolution? = nil, name: Name? = nil, persistedID: PersistedID? = nil, text: Text? = nil, plan: Plan? = nil, errorBehavior: ErrorBehavior? = nil, throwsOnFieldError: ThrowsOnFieldError? = nil, bubbles: Bubbles? = nil, hasDeferred: HasDeferred? = nil, Data: Data2? = nil, Action: Action2? = nil, OptimisticResponse: OptimisticResponse2? = nil, hash: Hash? = nil, commit: Commit? = nil, callAsFunction: CallAsFunction? = nil, Op: Op2? = nil, hashValue: HashValue? = nil, phase: Phase? = nil, isRefreshing: IsRefreshing? = nil, isStale: IsStale? = nil, retry: Retry? = nil, subscription: Subscription? = nil, Types: Types2? = nil, Sites: Sites2? = nil, AbstractSlots: AbstractSlots2? = nil, schemaDigest: SchemaDigest? = nil, Baton: BatonResponse? = nil, Swift: Swift2? = nil, Set: Set2? = nil, Result: Result2? = nil, Optional: Optional2? = nil, String: StringResponse? = nil, Int: IntResponse? = nil, Double: DoubleResponse? = nil, Bool: BoolResponse? = nil, MainActor: MainActor2? = nil, Hasher: Hasher3? = nil, Sendable: SendableResponse? = nil) {
                 self.`Type` = `Type`
                 self.`Protocol` = `Protocol`
                 self.`Any` = `Any`
@@ -9963,17 +9275,22 @@ mutation HostilePayload {
                 self.`protocol` = `protocol`
                 self.`some` = `some`
                 self.`any` = `any`
+                self.`rethrows` = `rethrows`
+                self.`fallthrough` = `fallthrough`
+                self.`precedencegroup` = `precedencegroup`
+                self.`_` = `_`
                 self.async = async
-                self.borrowing = borrowing
+                self.`borrowing` = `borrowing`
                 self.consume = consume
-                self.consuming = consuming
+                self.`consuming` = `consuming`
                 self.copy = copy
                 self.discard = discard
-                self.each = each
-                self.isolated = isolated
-                self.sending = sending
+                self.`each` = `each`
+                self.`isolated` = `isolated`
+                self.`sending` = `sending`
                 self.then = then
                 self.unsafe = unsafe
+                self.`await` = `await`
                 self.typeName = typeName
                 self.satisfied = satisfied
                 self.missingRequiredField = missingRequiredField
@@ -10008,6 +9325,7 @@ mutation HostilePayload {
                 self.Query = Query
                 self.Operation = Operation
                 self.RefetchQuery = RefetchQuery
+                self.fields = fields
                 self.variables = variables
                 self.resolution = resolution
                 self.name = name
@@ -10049,147 +9367,153 @@ mutation HostilePayload {
                 self.Sendable = Sendable
             }
             public var variable: Baton.Variable {
-                var fields: [String: Baton.Variable] = [:]
-                if let `Type` { fields["Type"] = `Type`.variable }
-                if let `Protocol` { fields["Protocol"] = `Protocol`.variable }
-                if let `Any` { fields["Any"] = `Any`.variable }
-                if let selfValue2 = self.`self` { fields["self"] = selfValue2.variable }
-                if let `Self` { fields["Self"] = `Self`.variable }
-                if let `init` { fields["init"] = `init`.variable }
-                if let `deinit` { fields["deinit"] = `deinit`.variable }
-                if let `subscript` { fields["subscript"] = `subscript`.variable }
-                if let `class` { fields["class"] = `class`.variable }
-                if let `struct` { fields["struct"] = `struct`.variable }
-                if let `enum` { fields["enum"] = `enum`.variable }
-                if let `func` { fields["func"] = `func`.variable }
-                if let `var` { fields["var"] = `var`.variable }
-                if let `let` { fields["let"] = `let`.variable }
-                if let `import` { fields["import"] = `import`.variable }
-                if let `extension` { fields["extension"] = `extension`.variable }
-                if let `operator` { fields["operator"] = `operator`.variable }
-                if let `static` { fields["static"] = `static`.variable }
-                if let `default` { fields["default"] = `default`.variable }
-                if let `case` { fields["case"] = `case`.variable }
-                if let `switch` { fields["switch"] = `switch`.variable }
-                if let `if` { fields["if"] = `if`.variable }
-                if let `else` { fields["else"] = `else`.variable }
-                if let `for` { fields["for"] = `for`.variable }
-                if let `in` { fields["in"] = `in`.variable }
-                if let `while` { fields["while"] = `while`.variable }
-                if let `repeat` { fields["repeat"] = `repeat`.variable }
-                if let `return` { fields["return"] = `return`.variable }
-                if let `break` { fields["break"] = `break`.variable }
-                if let `continue` { fields["continue"] = `continue`.variable }
-                if let `where` { fields["where"] = `where`.variable }
-                if let `is` { fields["is"] = `is`.variable }
-                if let `as` { fields["as"] = `as`.variable }
-                if let `try` { fields["try"] = `try`.variable }
-                if let `throw` { fields["throw"] = `throw`.variable }
-                if let `throws` { fields["throws"] = `throws`.variable }
-                if let `guard` { fields["guard"] = `guard`.variable }
-                if let `defer` { fields["defer"] = `defer`.variable }
-                if let `do` { fields["do"] = `do`.variable }
-                if let `catch` { fields["catch"] = `catch`.variable }
-                if let `true` { fields["true"] = `true`.variable }
-                if let `false` { fields["false"] = `false`.variable }
-                if let `nil` { fields["nil"] = `nil`.variable }
-                if let `super` { fields["super"] = `super`.variable }
-                if let `internal` { fields["internal"] = `internal`.variable }
-                if let `private` { fields["private"] = `private`.variable }
-                if let `public` { fields["public"] = `public`.variable }
-                if let `fileprivate` { fields["fileprivate"] = `fileprivate`.variable }
-                if let `open` { fields["open"] = `open`.variable }
-                if let `inout` { fields["inout"] = `inout`.variable }
-                if let `typealias` { fields["typealias"] = `typealias`.variable }
-                if let `associatedtype` { fields["associatedtype"] = `associatedtype`.variable }
-                if let `protocol` { fields["protocol"] = `protocol`.variable }
-                if let `some` { fields["some"] = `some`.variable }
-                if let `any` { fields["any"] = `any`.variable }
-                if let async { fields["async"] = async.variable }
-                if let borrowing { fields["borrowing"] = borrowing.variable }
-                if let consume { fields["consume"] = consume.variable }
-                if let consuming { fields["consuming"] = consuming.variable }
-                if let copy { fields["copy"] = copy.variable }
-                if let discard { fields["discard"] = discard.variable }
-                if let each { fields["each"] = each.variable }
-                if let isolated { fields["isolated"] = isolated.variable }
-                if let sending { fields["sending"] = sending.variable }
-                if let then { fields["then"] = then.variable }
-                if let unsafe { fields["unsafe"] = unsafe.variable }
-                if let typeName { fields["typeName"] = typeName.variable }
-                if let satisfied { fields["satisfied"] = satisfied.variable }
-                if let missingRequiredField { fields["missingRequiredField"] = missingRequiredField.variable }
-                if let fieldErrors { fields["fieldErrors"] = fieldErrors.variable }
-                if let isPresent { fields["isPresent"] = isPresent.variable }
-                if let throwing { fields["throwing"] = throwing.variable }
-                if let caught { fields["caught"] = caught.variable }
-                if let refetchable { fields["refetchable"] = refetchable.variable }
-                if let refetch { fields["refetch"] = refetch.variable }
-                if let connection { fields["connection"] = connection.variable }
-                if let nodes { fields["nodes"] = nodes.variable }
-                if let hasNext { fields["hasNext"] = hasNext.variable }
-                if let hasPrevious { fields["hasPrevious"] = hasPrevious.variable }
-                if let isLoadingNext { fields["isLoadingNext"] = isLoadingNext.variable }
-                if let isLoadingPrevious { fields["isLoadingPrevious"] = isLoadingPrevious.variable }
-                if let connectionID { fields["connectionID"] = connectionID.variable }
-                if let loadNext { fields["loadNext"] = loadNext.variable }
-                if let loadPrevious { fields["loadPrevious"] = loadPrevious.variable }
-                if let bound { fields["bound"] = bound.variable }
-                if let errors { fields["errors"] = errors.variable }
-                if let child { fields["child"] = child.variable }
-                if let missing { fields["missing"] = missing.variable }
-                if let count { fields["count"] = count.variable }
-                if let lhs { fields["lhs"] = lhs.variable }
-                if let rhs { fields["rhs"] = rhs.variable }
-                if let hasher { fields["hasher"] = hasher.variable }
-                if let optimistic { fields["optimistic"] = optimistic.variable }
-                if let selfValue { fields["selfValue"] = selfValue.variable }
-                if let Fragment { fields["Fragment"] = Fragment.variable }
-                if let Spread { fields["Spread"] = Spread.variable }
-                if let Owner { fields["Owner"] = Owner.variable }
-                if let Query { fields["Query"] = Query.variable }
-                if let Operation { fields["Operation"] = Operation.variable }
-                if let RefetchQuery { fields["RefetchQuery"] = RefetchQuery.variable }
-                if let variables { fields["variables"] = variables.variable }
-                if let resolution { fields["resolution"] = resolution.variable }
-                if let name { fields["name"] = name.variable }
-                if let persistedID { fields["persistedID"] = persistedID.variable }
-                if let text { fields["text"] = text.variable }
-                if let plan { fields["plan"] = plan.variable }
-                if let errorBehavior { fields["errorBehavior"] = errorBehavior.variable }
-                if let throwsOnFieldError { fields["throwsOnFieldError"] = throwsOnFieldError.variable }
-                if let bubbles { fields["bubbles"] = bubbles.variable }
-                if let hasDeferred { fields["hasDeferred"] = hasDeferred.variable }
-                if let Data { fields["Data"] = Data.variable }
-                if let Action { fields["Action"] = Action.variable }
-                if let OptimisticResponse { fields["OptimisticResponse"] = OptimisticResponse.variable }
-                if let hash { fields["hash"] = hash.variable }
-                if let commit { fields["commit"] = commit.variable }
-                if let callAsFunction { fields["callAsFunction"] = callAsFunction.variable }
-                if let Op { fields["Op"] = Op.variable }
-                if let hashValue { fields["hashValue"] = hashValue.variable }
-                if let phase { fields["phase"] = phase.variable }
-                if let isRefreshing { fields["isRefreshing"] = isRefreshing.variable }
-                if let isStale { fields["isStale"] = isStale.variable }
-                if let retry { fields["retry"] = retry.variable }
-                if let subscription { fields["subscription"] = subscription.variable }
-                if let Types { fields["Types"] = Types.variable }
-                if let Sites { fields["Sites"] = Sites.variable }
-                if let AbstractSlots { fields["AbstractSlots"] = AbstractSlots.variable }
-                if let schemaDigest { fields["schemaDigest"] = schemaDigest.variable }
-                if let Baton { fields["Baton"] = Baton.variable }
-                if let Swift { fields["Swift"] = Swift.variable }
-                if let Set { fields["Set"] = Set.variable }
-                if let Result { fields["Result"] = Result.variable }
-                if let Optional { fields["Optional"] = Optional.variable }
-                if let String { fields["String"] = String.variable }
-                if let Int { fields["Int"] = Int.variable }
-                if let Double { fields["Double"] = Double.variable }
-                if let Bool { fields["Bool"] = Bool.variable }
-                if let MainActor { fields["MainActor"] = MainActor.variable }
-                if let Hasher { fields["Hasher"] = Hasher.variable }
-                if let Sendable { fields["Sendable"] = Sendable.variable }
-                return .object(fields)
+                var fields2: [String: Baton.Variable] = [:]
+                if let `Type` { fields2["Type"] = `Type`.variable }
+                if let `Protocol` { fields2["Protocol"] = `Protocol`.variable }
+                if let `Any` { fields2["Any"] = `Any`.variable }
+                if let selfValue2 = self.`self` { fields2["self"] = selfValue2.variable }
+                if let `Self` { fields2["Self"] = `Self`.variable }
+                if let `init` { fields2["init"] = `init`.variable }
+                if let `deinit` { fields2["deinit"] = `deinit`.variable }
+                if let `subscript` { fields2["subscript"] = `subscript`.variable }
+                if let `class` { fields2["class"] = `class`.variable }
+                if let `struct` { fields2["struct"] = `struct`.variable }
+                if let `enum` { fields2["enum"] = `enum`.variable }
+                if let `func` { fields2["func"] = `func`.variable }
+                if let `var` { fields2["var"] = `var`.variable }
+                if let `let` { fields2["let"] = `let`.variable }
+                if let `import` { fields2["import"] = `import`.variable }
+                if let `extension` { fields2["extension"] = `extension`.variable }
+                if let `operator` { fields2["operator"] = `operator`.variable }
+                if let `static` { fields2["static"] = `static`.variable }
+                if let `default` { fields2["default"] = `default`.variable }
+                if let `case` { fields2["case"] = `case`.variable }
+                if let `switch` { fields2["switch"] = `switch`.variable }
+                if let `if` { fields2["if"] = `if`.variable }
+                if let `else` { fields2["else"] = `else`.variable }
+                if let `for` { fields2["for"] = `for`.variable }
+                if let `in` { fields2["in"] = `in`.variable }
+                if let `while` { fields2["while"] = `while`.variable }
+                if let `repeat` { fields2["repeat"] = `repeat`.variable }
+                if let `return` { fields2["return"] = `return`.variable }
+                if let `break` { fields2["break"] = `break`.variable }
+                if let `continue` { fields2["continue"] = `continue`.variable }
+                if let `where` { fields2["where"] = `where`.variable }
+                if let `is` { fields2["is"] = `is`.variable }
+                if let `as` { fields2["as"] = `as`.variable }
+                if let `try` { fields2["try"] = `try`.variable }
+                if let `throw` { fields2["throw"] = `throw`.variable }
+                if let `throws` { fields2["throws"] = `throws`.variable }
+                if let `guard` { fields2["guard"] = `guard`.variable }
+                if let `defer` { fields2["defer"] = `defer`.variable }
+                if let `do` { fields2["do"] = `do`.variable }
+                if let `catch` { fields2["catch"] = `catch`.variable }
+                if let `true` { fields2["true"] = `true`.variable }
+                if let `false` { fields2["false"] = `false`.variable }
+                if let `nil` { fields2["nil"] = `nil`.variable }
+                if let `super` { fields2["super"] = `super`.variable }
+                if let `internal` { fields2["internal"] = `internal`.variable }
+                if let `private` { fields2["private"] = `private`.variable }
+                if let `public` { fields2["public"] = `public`.variable }
+                if let `fileprivate` { fields2["fileprivate"] = `fileprivate`.variable }
+                if let `open` { fields2["open"] = `open`.variable }
+                if let `inout` { fields2["inout"] = `inout`.variable }
+                if let `typealias` { fields2["typealias"] = `typealias`.variable }
+                if let `associatedtype` { fields2["associatedtype"] = `associatedtype`.variable }
+                if let `protocol` { fields2["protocol"] = `protocol`.variable }
+                if let `some` { fields2["some"] = `some`.variable }
+                if let `any` { fields2["any"] = `any`.variable }
+                if let `rethrows` { fields2["rethrows"] = `rethrows`.variable }
+                if let `fallthrough` { fields2["fallthrough"] = `fallthrough`.variable }
+                if let `precedencegroup` { fields2["precedencegroup"] = `precedencegroup`.variable }
+                if let `_` { fields2["_"] = `_`.variable }
+                if let async { fields2["async"] = async.variable }
+                if let `borrowing` { fields2["borrowing"] = `borrowing`.variable }
+                if let consume { fields2["consume"] = consume.variable }
+                if let `consuming` { fields2["consuming"] = `consuming`.variable }
+                if let copy { fields2["copy"] = copy.variable }
+                if let discard { fields2["discard"] = discard.variable }
+                if let `each` { fields2["each"] = `each`.variable }
+                if let `isolated` { fields2["isolated"] = `isolated`.variable }
+                if let `sending` { fields2["sending"] = `sending`.variable }
+                if let then { fields2["then"] = then.variable }
+                if let unsafe { fields2["unsafe"] = unsafe.variable }
+                if let `await` { fields2["await"] = `await`.variable }
+                if let typeName { fields2["typeName"] = typeName.variable }
+                if let satisfied { fields2["satisfied"] = satisfied.variable }
+                if let missingRequiredField { fields2["missingRequiredField"] = missingRequiredField.variable }
+                if let fieldErrors { fields2["fieldErrors"] = fieldErrors.variable }
+                if let isPresent { fields2["isPresent"] = isPresent.variable }
+                if let throwing { fields2["throwing"] = throwing.variable }
+                if let caught { fields2["caught"] = caught.variable }
+                if let refetchable { fields2["refetchable"] = refetchable.variable }
+                if let refetch { fields2["refetch"] = refetch.variable }
+                if let connection { fields2["connection"] = connection.variable }
+                if let nodes { fields2["nodes"] = nodes.variable }
+                if let hasNext { fields2["hasNext"] = hasNext.variable }
+                if let hasPrevious { fields2["hasPrevious"] = hasPrevious.variable }
+                if let isLoadingNext { fields2["isLoadingNext"] = isLoadingNext.variable }
+                if let isLoadingPrevious { fields2["isLoadingPrevious"] = isLoadingPrevious.variable }
+                if let connectionID { fields2["connectionID"] = connectionID.variable }
+                if let loadNext { fields2["loadNext"] = loadNext.variable }
+                if let loadPrevious { fields2["loadPrevious"] = loadPrevious.variable }
+                if let bound { fields2["bound"] = bound.variable }
+                if let errors { fields2["errors"] = errors.variable }
+                if let child { fields2["child"] = child.variable }
+                if let missing { fields2["missing"] = missing.variable }
+                if let count { fields2["count"] = count.variable }
+                if let lhs { fields2["lhs"] = lhs.variable }
+                if let rhs { fields2["rhs"] = rhs.variable }
+                if let hasher { fields2["hasher"] = hasher.variable }
+                if let optimistic { fields2["optimistic"] = optimistic.variable }
+                if let selfValue { fields2["selfValue"] = selfValue.variable }
+                if let Fragment { fields2["Fragment"] = Fragment.variable }
+                if let Spread { fields2["Spread"] = Spread.variable }
+                if let Owner { fields2["Owner"] = Owner.variable }
+                if let Query { fields2["Query"] = Query.variable }
+                if let Operation { fields2["Operation"] = Operation.variable }
+                if let RefetchQuery { fields2["RefetchQuery"] = RefetchQuery.variable }
+                if let fields { fields2["fields"] = fields.variable }
+                if let variables { fields2["variables"] = variables.variable }
+                if let resolution { fields2["resolution"] = resolution.variable }
+                if let name { fields2["name"] = name.variable }
+                if let persistedID { fields2["persistedID"] = persistedID.variable }
+                if let text { fields2["text"] = text.variable }
+                if let plan { fields2["plan"] = plan.variable }
+                if let errorBehavior { fields2["errorBehavior"] = errorBehavior.variable }
+                if let throwsOnFieldError { fields2["throwsOnFieldError"] = throwsOnFieldError.variable }
+                if let bubbles { fields2["bubbles"] = bubbles.variable }
+                if let hasDeferred { fields2["hasDeferred"] = hasDeferred.variable }
+                if let Data { fields2["Data"] = Data.variable }
+                if let Action { fields2["Action"] = Action.variable }
+                if let OptimisticResponse { fields2["OptimisticResponse"] = OptimisticResponse.variable }
+                if let hash { fields2["hash"] = hash.variable }
+                if let commit { fields2["commit"] = commit.variable }
+                if let callAsFunction { fields2["callAsFunction"] = callAsFunction.variable }
+                if let Op { fields2["Op"] = Op.variable }
+                if let hashValue { fields2["hashValue"] = hashValue.variable }
+                if let phase { fields2["phase"] = phase.variable }
+                if let isRefreshing { fields2["isRefreshing"] = isRefreshing.variable }
+                if let isStale { fields2["isStale"] = isStale.variable }
+                if let retry { fields2["retry"] = retry.variable }
+                if let subscription { fields2["subscription"] = subscription.variable }
+                if let Types { fields2["Types"] = Types.variable }
+                if let Sites { fields2["Sites"] = Sites.variable }
+                if let AbstractSlots { fields2["AbstractSlots"] = AbstractSlots.variable }
+                if let schemaDigest { fields2["schemaDigest"] = schemaDigest.variable }
+                if let Baton { fields2["Baton"] = Baton.variable }
+                if let Swift { fields2["Swift"] = Swift.variable }
+                if let Set { fields2["Set"] = Set.variable }
+                if let Result { fields2["Result"] = Result.variable }
+                if let Optional { fields2["Optional"] = Optional.variable }
+                if let String { fields2["String"] = String.variable }
+                if let Int { fields2["Int"] = Int.variable }
+                if let Double { fields2["Double"] = Double.variable }
+                if let Bool { fields2["Bool"] = Bool.variable }
+                if let MainActor { fields2["MainActor"] = MainActor.variable }
+                if let Hasher { fields2["Hasher"] = Hasher.variable }
+                if let Sendable { fields2["Sendable"] = Sendable.variable }
+                return .object(fields2)
             }
 
             /// A partial response to show before the server answers; absent fields leave the store untouched.
@@ -10908,6 +10232,58 @@ mutation HostilePayload {
             }
 
             /// A partial response to show before the server answers; absent fields leave the store untouched.
+            nonisolated public struct Rethrows: Sendable {
+                public var id: String?
+                public init(id: String? = nil) {
+                    self.id = id
+                }
+                public var variable: Baton.Variable {
+                    var fields: [String: Baton.Variable] = [:]
+                    if let id { fields["id"] = .init(id) }
+                    return .object(fields)
+                }
+            }
+
+            /// A partial response to show before the server answers; absent fields leave the store untouched.
+            nonisolated public struct Fallthrough: Sendable {
+                public var id: String?
+                public init(id: String? = nil) {
+                    self.id = id
+                }
+                public var variable: Baton.Variable {
+                    var fields: [String: Baton.Variable] = [:]
+                    if let id { fields["id"] = .init(id) }
+                    return .object(fields)
+                }
+            }
+
+            /// A partial response to show before the server answers; absent fields leave the store untouched.
+            nonisolated public struct Precedencegroup: Sendable {
+                public var id: String?
+                public init(id: String? = nil) {
+                    self.id = id
+                }
+                public var variable: Baton.Variable {
+                    var fields: [String: Baton.Variable] = [:]
+                    if let id { fields["id"] = .init(id) }
+                    return .object(fields)
+                }
+            }
+
+            /// A partial response to show before the server answers; absent fields leave the store untouched.
+            nonisolated public struct _2: Sendable {
+                public var id: String?
+                public init(id: String? = nil) {
+                    self.id = id
+                }
+                public var variable: Baton.Variable {
+                    var fields: [String: Baton.Variable] = [:]
+                    if let id { fields["id"] = .init(id) }
+                    return .object(fields)
+                }
+            }
+
+            /// A partial response to show before the server answers; absent fields leave the store untouched.
             nonisolated public struct Async: Sendable {
                 public var id: String?
                 public init(id: String? = nil) {
@@ -11039,6 +10415,19 @@ mutation HostilePayload {
 
             /// A partial response to show before the server answers; absent fields leave the store untouched.
             nonisolated public struct Unsafe: Sendable {
+                public var id: String?
+                public init(id: String? = nil) {
+                    self.id = id
+                }
+                public var variable: Baton.Variable {
+                    var fields: [String: Baton.Variable] = [:]
+                    if let id { fields["id"] = .init(id) }
+                    return .object(fields)
+                }
+            }
+
+            /// A partial response to show before the server answers; absent fields leave the store untouched.
+            nonisolated public struct Await: Sendable {
                 public var id: String?
                 public init(id: String? = nil) {
                     self.id = id
@@ -11481,6 +10870,19 @@ mutation HostilePayload {
 
             /// A partial response to show before the server answers; absent fields leave the store untouched.
             nonisolated public struct RefetchQuery2: Sendable {
+                public var id: String?
+                public init(id: String? = nil) {
+                    self.id = id
+                }
+                public var variable: Baton.Variable {
+                    var fields: [String: Baton.Variable] = [:]
+                    if let id { fields["id"] = .init(id) }
+                    return .object(fields)
+                }
+            }
+
+            /// A partial response to show before the server answers; absent fields leave the store untouched.
+            nonisolated public struct Fields: Sendable {
                 public var id: String?
                 public init(id: String? = nil) {
                     self.id = id
@@ -12002,11 +11404,11 @@ mutation HostilePayload {
     }
 }
 
-extension Baton.MutationAction where Op == HostilePayload {
+extension HostilePayload.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
-    public func callAsFunction(optimistic: HostilePayload.OptimisticResponse? = nil) async throws -> HostilePayload.Data {
-        try await self.commit(HostilePayload(), optimistic: optimistic?.variable)
+    public func callAsFunction(optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
+        try await self.commit(.init(), optimistic: optimistic?.variable)
     }
 }
 
@@ -12018,7 +11420,7 @@ nonisolated public struct HostileRequired: Baton.Query {
     }
 
     public static let name = "HostileRequired"
-    public static let persistedID = "f3c431ab162d1a6c8eb13483c71e1590"
+    public static let persistedID = "a644578536bbc93b4c5d43d38aa1a144"
     @_spi(Generated) public static let bubbles = true
     public static let text = #"""
 query HostileRequired {
@@ -12078,6 +11480,10 @@ query HostileRequired {
     protocol: name
     some: name
     any: name
+    rethrows: name
+    fallthrough: name
+    precedencegroup: name
+    _: name
     async: name
     await: name
     borrowing: name
@@ -12241,6 +11647,10 @@ query HostileRequired {
                 .scalar("protocol", key: .fixed(Slots.Character.name), kind: .string, list: false),
                 .scalar("some", key: .fixed(Slots.Character.name), kind: .string, list: false),
                 .scalar("any", key: .fixed(Slots.Character.name), kind: .string, list: false),
+                .scalar("rethrows", key: .fixed(Slots.Character.name), kind: .string, list: false),
+                .scalar("fallthrough", key: .fixed(Slots.Character.name), kind: .string, list: false),
+                .scalar("precedencegroup", key: .fixed(Slots.Character.name), kind: .string, list: false),
+                .scalar("_", key: .fixed(Slots.Character.name), kind: .string, list: false),
                 .scalar("async", key: .fixed(Slots.Character.name), kind: .string, list: false),
                 .scalar("await", key: .fixed(Slots.Character.name), kind: .string, list: false),
                 .scalar("borrowing", key: .fixed(Slots.Character.name), kind: .string, list: false),
@@ -12411,16 +11821,20 @@ query HostileRequired {
             @MainActor public var `protocol`: String? { anchor.string(Slots.Character.name) }
             @MainActor public var `some`: String? { anchor.string(Slots.Character.name) }
             @MainActor public var `any`: String? { anchor.string(Slots.Character.name) }
+            @MainActor public var `rethrows`: String? { anchor.string(Slots.Character.name) }
+            @MainActor public var `fallthrough`: String? { anchor.string(Slots.Character.name) }
+            @MainActor public var `precedencegroup`: String? { anchor.string(Slots.Character.name) }
+            @MainActor public var `_`: String? { anchor.string(Slots.Character.name) }
             @MainActor public var async: String? { anchor.string(Slots.Character.name) }
-            @MainActor public var await: String? { anchor.string(Slots.Character.name) }
-            @MainActor public var borrowing: String? { anchor.string(Slots.Character.name) }
+            @MainActor public var `await`: String? { anchor.string(Slots.Character.name) }
+            @MainActor public var `borrowing`: String? { anchor.string(Slots.Character.name) }
             @MainActor public var consume: String? { anchor.string(Slots.Character.name) }
-            @MainActor public var consuming: String? { anchor.string(Slots.Character.name) }
+            @MainActor public var `consuming`: String? { anchor.string(Slots.Character.name) }
             @MainActor public var copy: String? { anchor.string(Slots.Character.name) }
             @MainActor public var discard: String? { anchor.string(Slots.Character.name) }
-            @MainActor public var each: String? { anchor.string(Slots.Character.name) }
-            @MainActor public var isolated: String? { anchor.string(Slots.Character.name) }
-            @MainActor public var sending: String? { anchor.string(Slots.Character.name) }
+            @MainActor public var `each`: String? { anchor.string(Slots.Character.name) }
+            @MainActor public var `isolated`: String? { anchor.string(Slots.Character.name) }
+            @MainActor public var `sending`: String? { anchor.string(Slots.Character.name) }
             @MainActor public var then: String? { anchor.string(Slots.Character.name) }
             @MainActor public var unsafe: String? { anchor.string(Slots.Character.name) }
             @MainActor public var typeName: String? { anchor.string(Slots.Character.name) }
@@ -12586,17 +12000,23 @@ nonisolated public struct HostileSubscriptionVariables: Baton.Subscription {
     public var `protocol`: Bool
     public var `some`: Bool
     public var `any`: Bool
+    public var `rethrows`: Bool
+    public var `fallthrough`: Bool
+    public var `precedencegroup`: Bool
+    public var `_`: Bool
+    public var `Self`: Bool
     public var async: Bool
-    public var borrowing: Bool
+    public var `borrowing`: Bool
     public var consume: Bool
-    public var consuming: Bool
+    public var `consuming`: Bool
     public var copy: Bool
     public var discard: Bool
-    public var each: Bool
-    public var isolated: Bool
-    public var sending: Bool
+    public var `each`: Bool
+    public var `isolated`: Bool
+    public var `sending`: Bool
     public var then: Bool
     public var unsafe: Bool
+    public var `await`: Bool
     public var anchor: Bool
     public var recordID: Bool
     public var typeName: Bool
@@ -12653,7 +12073,6 @@ nonisolated public struct HostileSubscriptionVariables: Baton.Subscription {
     public var isRefreshing: Bool
     public var isStale: Bool
     public var retry: Bool
-    public var subscription: Bool
     public var Sites: Bool
     public var AbstractSlots: Bool
     public var schemaDigest: Bool
@@ -12670,7 +12089,7 @@ nonisolated public struct HostileSubscriptionVariables: Baton.Subscription {
     public var Sendable: Bool
     public var resolution: Baton.SubscriptionHandle<Self>? = nil
 
-    public init(`Type`: Bool, `Protocol`: Bool, `Any`: Bool, `self` selfValue2: Bool, `init`: Bool, `deinit`: Bool, `subscript`: Bool, `class`: Bool, `struct`: Bool, `enum`: Bool, `func`: Bool, `var`: Bool, `let`: Bool, `import`: Bool, `extension`: Bool, `operator`: Bool, `static`: Bool, `default`: Bool, `case`: Bool, `switch`: Bool, `if`: Bool, `else`: Bool, `for`: Bool, `in`: Bool, `while`: Bool, `repeat`: Bool, `return`: Bool, `break`: Bool, `continue`: Bool, `where`: Bool, `is`: Bool, `as`: Bool, `try`: Bool, `throw`: Bool, `throws`: Bool, `guard`: Bool, `defer`: Bool, `do`: Bool, `catch`: Bool, `true`: Bool, `false`: Bool, `nil`: Bool, `super`: Bool, `internal`: Bool, `private`: Bool, `public`: Bool, `fileprivate`: Bool, `open`: Bool, `inout`: Bool, `typealias`: Bool, `associatedtype`: Bool, `protocol`: Bool, `some`: Bool, `any`: Bool, async: Bool, borrowing: Bool, consume: Bool, consuming: Bool, copy: Bool, discard: Bool, each: Bool, isolated: Bool, sending: Bool, then: Bool, unsafe: Bool, anchor: Bool, recordID: Bool, typeName: Bool, satisfied: Bool, missingRequiredField: Bool, fieldErrors: Bool, isPresent: Bool, throwing: Bool, caught: Bool, refetchable: Bool, refetch: Bool, connection: Bool, nodes: Bool, hasNext: Bool, hasPrevious: Bool, isLoadingNext: Bool, isLoadingPrevious: Bool, connectionID: Bool, loadNext: Bool, loadPrevious: Bool, bound: Bool, errors: Bool, child: Bool, missing: Bool, count: Bool, fields: Bool, lhs: Bool, rhs: Bool, hasher: Bool, optimistic: Bool, selfValue: Bool, Fragment: Bool, Spread: Bool, Owner: Bool, Query: Bool, Operation: Bool, RefetchQuery: Bool, name: Bool, persistedID: Bool, text: Bool, plan: Bool, errorBehavior: Bool, throwsOnFieldError: Bool, bubbles: Bool, hasDeferred: Bool, Action: Bool, OptimisticResponse: Bool, hash: Bool, commit: Bool, callAsFunction: Bool, Op: Bool, variable: Bool, phase: Bool, isRefreshing: Bool, isStale: Bool, retry: Bool, subscription: Bool, Sites: Bool, AbstractSlots: Bool, schemaDigest: Bool, Swift: Bool, Set: Bool, Result: Bool, Optional: Bool, String: Bool, Int: Bool, Double: Bool, Bool: Bool, MainActor: Bool, Hasher: Bool, Sendable: Bool) {
+    public init(`Type`: Bool, `Protocol`: Bool, `Any`: Bool, `self` selfValue2: Bool, `init`: Bool, `deinit`: Bool, `subscript`: Bool, `class`: Bool, `struct`: Bool, `enum`: Bool, `func`: Bool, `var`: Bool, `let`: Bool, `import`: Bool, `extension`: Bool, `operator`: Bool, `static`: Bool, `default`: Bool, `case`: Bool, `switch`: Bool, `if`: Bool, `else`: Bool, `for`: Bool, `in`: Bool, `while`: Bool, `repeat`: Bool, `return`: Bool, `break`: Bool, `continue`: Bool, `where`: Bool, `is`: Bool, `as`: Bool, `try`: Bool, `throw`: Bool, `throws`: Bool, `guard`: Bool, `defer`: Bool, `do`: Bool, `catch`: Bool, `true`: Bool, `false`: Bool, `nil`: Bool, `super`: Bool, `internal`: Bool, `private`: Bool, `public`: Bool, `fileprivate`: Bool, `open`: Bool, `inout`: Bool, `typealias`: Bool, `associatedtype`: Bool, `protocol`: Bool, `some`: Bool, `any`: Bool, `rethrows`: Bool, `fallthrough`: Bool, `precedencegroup`: Bool, `_`: Bool, `Self`: Bool, async: Bool, `borrowing`: Bool, consume: Bool, `consuming`: Bool, copy: Bool, discard: Bool, `each`: Bool, `isolated`: Bool, `sending`: Bool, then: Bool, unsafe: Bool, `await`: Bool, anchor: Bool, recordID: Bool, typeName: Bool, satisfied: Bool, missingRequiredField: Bool, fieldErrors: Bool, isPresent: Bool, throwing: Bool, caught: Bool, refetchable: Bool, refetch: Bool, connection: Bool, nodes: Bool, hasNext: Bool, hasPrevious: Bool, isLoadingNext: Bool, isLoadingPrevious: Bool, connectionID: Bool, loadNext: Bool, loadPrevious: Bool, bound: Bool, errors: Bool, child: Bool, missing: Bool, count: Bool, fields: Bool, lhs: Bool, rhs: Bool, hasher: Bool, optimistic: Bool, selfValue: Bool, Fragment: Bool, Spread: Bool, Owner: Bool, Query: Bool, Operation: Bool, RefetchQuery: Bool, name: Bool, persistedID: Bool, text: Bool, plan: Bool, errorBehavior: Bool, throwsOnFieldError: Bool, bubbles: Bool, hasDeferred: Bool, Action: Bool, OptimisticResponse: Bool, hash: Bool, commit: Bool, callAsFunction: Bool, Op: Bool, variable: Bool, phase: Bool, isRefreshing: Bool, isStale: Bool, retry: Bool, Sites: Bool, AbstractSlots: Bool, schemaDigest: Bool, Swift: Bool, Set: Bool, Result: Bool, Optional: Bool, String: Bool, Int: Bool, Double: Bool, Bool: Bool, MainActor: Bool, Hasher: Bool, Sendable: Bool) {
         self.`Type` = `Type`
         self.`Protocol` = `Protocol`
         self.`Any` = `Any`
@@ -12725,17 +12144,23 @@ nonisolated public struct HostileSubscriptionVariables: Baton.Subscription {
         self.`protocol` = `protocol`
         self.`some` = `some`
         self.`any` = `any`
+        self.`rethrows` = `rethrows`
+        self.`fallthrough` = `fallthrough`
+        self.`precedencegroup` = `precedencegroup`
+        self.`_` = `_`
+        self.`Self` = `Self`
         self.async = async
-        self.borrowing = borrowing
+        self.`borrowing` = `borrowing`
         self.consume = consume
-        self.consuming = consuming
+        self.`consuming` = `consuming`
         self.copy = copy
         self.discard = discard
-        self.each = each
-        self.isolated = isolated
-        self.sending = sending
+        self.`each` = `each`
+        self.`isolated` = `isolated`
+        self.`sending` = `sending`
         self.then = then
         self.unsafe = unsafe
+        self.`await` = `await`
         self.anchor = anchor
         self.recordID = recordID
         self.typeName = typeName
@@ -12792,7 +12217,6 @@ nonisolated public struct HostileSubscriptionVariables: Baton.Subscription {
         self.isRefreshing = isRefreshing
         self.isStale = isStale
         self.retry = retry
-        self.subscription = subscription
         self.Sites = Sites
         self.AbstractSlots = AbstractSlots
         self.schemaDigest = schemaDigest
@@ -12810,7 +12234,7 @@ nonisolated public struct HostileSubscriptionVariables: Baton.Subscription {
     }
 
     public static let name = "HostileSubscriptionVariables"
-    public static let persistedID = "820f01de704ce677b059f9bfe1cbec2c"
+    public static let persistedID = "e3b1a9006025c41effbd309aebd97a77"
     public static let text = #"""
 subscription HostileSubscriptionVariables(
   $Type: Boolean!
@@ -12867,6 +12291,11 @@ subscription HostileSubscriptionVariables(
   $protocol: Boolean!
   $some: Boolean!
   $any: Boolean!
+  $rethrows: Boolean!
+  $fallthrough: Boolean!
+  $precedencegroup: Boolean!
+  $_: Boolean!
+  $Self: Boolean!
   $async: Boolean!
   $borrowing: Boolean!
   $consume: Boolean!
@@ -12878,6 +12307,7 @@ subscription HostileSubscriptionVariables(
   $sending: Boolean!
   $then: Boolean!
   $unsafe: Boolean!
+  $await: Boolean!
   $anchor: Boolean!
   $recordID: Boolean!
   $typeName: Boolean!
@@ -12934,7 +12364,6 @@ subscription HostileSubscriptionVariables(
   $isRefreshing: Boolean!
   $isStale: Boolean!
   $retry: Boolean!
-  $subscription: Boolean!
   $Sites: Boolean!
   $AbstractSlots: Boolean!
   $schemaDigest: Boolean!
@@ -13009,6 +12438,11 @@ subscription HostileSubscriptionVariables(
       cursor @include(if: $protocol)
       cursor @include(if: $some)
       cursor @include(if: $any)
+      cursor @include(if: $rethrows)
+      cursor @include(if: $fallthrough)
+      cursor @include(if: $precedencegroup)
+      cursor @include(if: $_)
+      cursor @include(if: $Self)
       cursor @include(if: $async)
       cursor @include(if: $borrowing)
       cursor @include(if: $consume)
@@ -13020,6 +12454,7 @@ subscription HostileSubscriptionVariables(
       cursor @include(if: $sending)
       cursor @include(if: $then)
       cursor @include(if: $unsafe)
+      cursor @include(if: $await)
       cursor @include(if: $anchor)
       cursor @include(if: $recordID)
       cursor @include(if: $typeName)
@@ -13076,7 +12511,6 @@ subscription HostileSubscriptionVariables(
       cursor @include(if: $isRefreshing)
       cursor @include(if: $isStale)
       cursor @include(if: $retry)
-      cursor @include(if: $subscription)
       cursor @include(if: $Sites)
       cursor @include(if: $AbstractSlots)
       cursor @include(if: $schemaDigest)
@@ -13097,11 +12531,11 @@ subscription HostileSubscriptionVariables(
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["Type": Baton.Variable(self.`Type`), "Protocol": Baton.Variable(self.`Protocol`), "Any": Baton.Variable(self.`Any`), "self": Baton.Variable(self.`self`), "init": Baton.Variable(self.`init`), "deinit": Baton.Variable(self.`deinit`), "subscript": Baton.Variable(self.`subscript`), "class": Baton.Variable(self.`class`), "struct": Baton.Variable(self.`struct`), "enum": Baton.Variable(self.`enum`), "func": Baton.Variable(self.`func`), "var": Baton.Variable(self.`var`), "let": Baton.Variable(self.`let`), "import": Baton.Variable(self.`import`), "extension": Baton.Variable(self.`extension`), "operator": Baton.Variable(self.`operator`), "static": Baton.Variable(self.`static`), "default": Baton.Variable(self.`default`), "case": Baton.Variable(self.`case`), "switch": Baton.Variable(self.`switch`), "if": Baton.Variable(self.`if`), "else": Baton.Variable(self.`else`), "for": Baton.Variable(self.`for`), "in": Baton.Variable(self.`in`), "while": Baton.Variable(self.`while`), "repeat": Baton.Variable(self.`repeat`), "return": Baton.Variable(self.`return`), "break": Baton.Variable(self.`break`), "continue": Baton.Variable(self.`continue`), "where": Baton.Variable(self.`where`), "is": Baton.Variable(self.`is`), "as": Baton.Variable(self.`as`), "try": Baton.Variable(self.`try`), "throw": Baton.Variable(self.`throw`), "throws": Baton.Variable(self.`throws`), "guard": Baton.Variable(self.`guard`), "defer": Baton.Variable(self.`defer`), "do": Baton.Variable(self.`do`), "catch": Baton.Variable(self.`catch`), "true": Baton.Variable(self.`true`), "false": Baton.Variable(self.`false`), "nil": Baton.Variable(self.`nil`), "super": Baton.Variable(self.`super`), "internal": Baton.Variable(self.`internal`), "private": Baton.Variable(self.`private`), "public": Baton.Variable(self.`public`), "fileprivate": Baton.Variable(self.`fileprivate`), "open": Baton.Variable(self.`open`), "inout": Baton.Variable(self.`inout`), "typealias": Baton.Variable(self.`typealias`), "associatedtype": Baton.Variable(self.`associatedtype`), "protocol": Baton.Variable(self.`protocol`), "some": Baton.Variable(self.`some`), "any": Baton.Variable(self.`any`), "async": Baton.Variable(self.async), "borrowing": Baton.Variable(self.borrowing), "consume": Baton.Variable(self.consume), "consuming": Baton.Variable(self.consuming), "copy": Baton.Variable(self.copy), "discard": Baton.Variable(self.discard), "each": Baton.Variable(self.each), "isolated": Baton.Variable(self.isolated), "sending": Baton.Variable(self.sending), "then": Baton.Variable(self.then), "unsafe": Baton.Variable(self.unsafe), "anchor": Baton.Variable(self.anchor), "recordID": Baton.Variable(self.recordID), "typeName": Baton.Variable(self.typeName), "satisfied": Baton.Variable(self.satisfied), "missingRequiredField": Baton.Variable(self.missingRequiredField), "fieldErrors": Baton.Variable(self.fieldErrors), "isPresent": Baton.Variable(self.isPresent), "throwing": Baton.Variable(self.throwing), "caught": Baton.Variable(self.caught), "refetchable": Baton.Variable(self.refetchable), "refetch": Baton.Variable(self.refetch), "connection": Baton.Variable(self.connection), "nodes": Baton.Variable(self.nodes), "hasNext": Baton.Variable(self.hasNext), "hasPrevious": Baton.Variable(self.hasPrevious), "isLoadingNext": Baton.Variable(self.isLoadingNext), "isLoadingPrevious": Baton.Variable(self.isLoadingPrevious), "connectionID": Baton.Variable(self.connectionID), "loadNext": Baton.Variable(self.loadNext), "loadPrevious": Baton.Variable(self.loadPrevious), "bound": Baton.Variable(self.bound), "errors": Baton.Variable(self.errors), "child": Baton.Variable(self.child), "missing": Baton.Variable(self.missing), "count": Baton.Variable(self.count), "fields": Baton.Variable(self.fields), "lhs": Baton.Variable(self.lhs), "rhs": Baton.Variable(self.rhs), "hasher": Baton.Variable(self.hasher), "optimistic": Baton.Variable(self.optimistic), "selfValue": Baton.Variable(self.selfValue), "Fragment": Baton.Variable(self.Fragment), "Spread": Baton.Variable(self.Spread), "Owner": Baton.Variable(self.Owner), "Query": Baton.Variable(self.Query), "Operation": Baton.Variable(self.Operation), "RefetchQuery": Baton.Variable(self.RefetchQuery), "name": Baton.Variable(self.name), "persistedID": Baton.Variable(self.persistedID), "text": Baton.Variable(self.text), "plan": Baton.Variable(self.plan), "errorBehavior": Baton.Variable(self.errorBehavior), "throwsOnFieldError": Baton.Variable(self.throwsOnFieldError), "bubbles": Baton.Variable(self.bubbles), "hasDeferred": Baton.Variable(self.hasDeferred), "Action": Baton.Variable(self.Action), "OptimisticResponse": Baton.Variable(self.OptimisticResponse), "hash": Baton.Variable(self.hash), "commit": Baton.Variable(self.commit), "callAsFunction": Baton.Variable(self.callAsFunction), "Op": Baton.Variable(self.Op), "variable": Baton.Variable(self.variable), "phase": Baton.Variable(self.phase), "isRefreshing": Baton.Variable(self.isRefreshing), "isStale": Baton.Variable(self.isStale), "retry": Baton.Variable(self.retry), "subscription": Baton.Variable(self.subscription), "Sites": Baton.Variable(self.Sites), "AbstractSlots": Baton.Variable(self.AbstractSlots), "schemaDigest": Baton.Variable(self.schemaDigest), "Swift": Baton.Variable(self.Swift), "Set": Baton.Variable(self.Set), "Result": Baton.Variable(self.Result), "Optional": Baton.Variable(self.Optional), "String": Baton.Variable(self.String), "Int": Baton.Variable(self.Int), "Double": Baton.Variable(self.Double), "Bool": Baton.Variable(self.Bool), "MainActor": Baton.Variable(self.MainActor), "Hasher": Baton.Variable(self.Hasher), "Sendable": Baton.Variable(self.Sendable)])
+        Baton.Variables(["Type": Baton.Variable(self.`Type`), "Protocol": Baton.Variable(self.`Protocol`), "Any": Baton.Variable(self.`Any`), "self": Baton.Variable(self.`self`), "init": Baton.Variable(self.`init`), "deinit": Baton.Variable(self.`deinit`), "subscript": Baton.Variable(self.`subscript`), "class": Baton.Variable(self.`class`), "struct": Baton.Variable(self.`struct`), "enum": Baton.Variable(self.`enum`), "func": Baton.Variable(self.`func`), "var": Baton.Variable(self.`var`), "let": Baton.Variable(self.`let`), "import": Baton.Variable(self.`import`), "extension": Baton.Variable(self.`extension`), "operator": Baton.Variable(self.`operator`), "static": Baton.Variable(self.`static`), "default": Baton.Variable(self.`default`), "case": Baton.Variable(self.`case`), "switch": Baton.Variable(self.`switch`), "if": Baton.Variable(self.`if`), "else": Baton.Variable(self.`else`), "for": Baton.Variable(self.`for`), "in": Baton.Variable(self.`in`), "while": Baton.Variable(self.`while`), "repeat": Baton.Variable(self.`repeat`), "return": Baton.Variable(self.`return`), "break": Baton.Variable(self.`break`), "continue": Baton.Variable(self.`continue`), "where": Baton.Variable(self.`where`), "is": Baton.Variable(self.`is`), "as": Baton.Variable(self.`as`), "try": Baton.Variable(self.`try`), "throw": Baton.Variable(self.`throw`), "throws": Baton.Variable(self.`throws`), "guard": Baton.Variable(self.`guard`), "defer": Baton.Variable(self.`defer`), "do": Baton.Variable(self.`do`), "catch": Baton.Variable(self.`catch`), "true": Baton.Variable(self.`true`), "false": Baton.Variable(self.`false`), "nil": Baton.Variable(self.`nil`), "super": Baton.Variable(self.`super`), "internal": Baton.Variable(self.`internal`), "private": Baton.Variable(self.`private`), "public": Baton.Variable(self.`public`), "fileprivate": Baton.Variable(self.`fileprivate`), "open": Baton.Variable(self.`open`), "inout": Baton.Variable(self.`inout`), "typealias": Baton.Variable(self.`typealias`), "associatedtype": Baton.Variable(self.`associatedtype`), "protocol": Baton.Variable(self.`protocol`), "some": Baton.Variable(self.`some`), "any": Baton.Variable(self.`any`), "rethrows": Baton.Variable(self.`rethrows`), "fallthrough": Baton.Variable(self.`fallthrough`), "precedencegroup": Baton.Variable(self.`precedencegroup`), "_": Baton.Variable(self.`_`), "Self": Baton.Variable(self.`Self`), "async": Baton.Variable(self.async), "borrowing": Baton.Variable(self.`borrowing`), "consume": Baton.Variable(self.consume), "consuming": Baton.Variable(self.`consuming`), "copy": Baton.Variable(self.copy), "discard": Baton.Variable(self.discard), "each": Baton.Variable(self.`each`), "isolated": Baton.Variable(self.`isolated`), "sending": Baton.Variable(self.`sending`), "then": Baton.Variable(self.then), "unsafe": Baton.Variable(self.unsafe), "await": Baton.Variable(self.`await`), "anchor": Baton.Variable(self.anchor), "recordID": Baton.Variable(self.recordID), "typeName": Baton.Variable(self.typeName), "satisfied": Baton.Variable(self.satisfied), "missingRequiredField": Baton.Variable(self.missingRequiredField), "fieldErrors": Baton.Variable(self.fieldErrors), "isPresent": Baton.Variable(self.isPresent), "throwing": Baton.Variable(self.throwing), "caught": Baton.Variable(self.caught), "refetchable": Baton.Variable(self.refetchable), "refetch": Baton.Variable(self.refetch), "connection": Baton.Variable(self.connection), "nodes": Baton.Variable(self.nodes), "hasNext": Baton.Variable(self.hasNext), "hasPrevious": Baton.Variable(self.hasPrevious), "isLoadingNext": Baton.Variable(self.isLoadingNext), "isLoadingPrevious": Baton.Variable(self.isLoadingPrevious), "connectionID": Baton.Variable(self.connectionID), "loadNext": Baton.Variable(self.loadNext), "loadPrevious": Baton.Variable(self.loadPrevious), "bound": Baton.Variable(self.bound), "errors": Baton.Variable(self.errors), "child": Baton.Variable(self.child), "missing": Baton.Variable(self.missing), "count": Baton.Variable(self.count), "fields": Baton.Variable(self.fields), "lhs": Baton.Variable(self.lhs), "rhs": Baton.Variable(self.rhs), "hasher": Baton.Variable(self.hasher), "optimistic": Baton.Variable(self.optimistic), "selfValue": Baton.Variable(self.selfValue), "Fragment": Baton.Variable(self.Fragment), "Spread": Baton.Variable(self.Spread), "Owner": Baton.Variable(self.Owner), "Query": Baton.Variable(self.Query), "Operation": Baton.Variable(self.Operation), "RefetchQuery": Baton.Variable(self.RefetchQuery), "name": Baton.Variable(self.name), "persistedID": Baton.Variable(self.persistedID), "text": Baton.Variable(self.text), "plan": Baton.Variable(self.plan), "errorBehavior": Baton.Variable(self.errorBehavior), "throwsOnFieldError": Baton.Variable(self.throwsOnFieldError), "bubbles": Baton.Variable(self.bubbles), "hasDeferred": Baton.Variable(self.hasDeferred), "Action": Baton.Variable(self.Action), "OptimisticResponse": Baton.Variable(self.OptimisticResponse), "hash": Baton.Variable(self.hash), "commit": Baton.Variable(self.commit), "callAsFunction": Baton.Variable(self.callAsFunction), "Op": Baton.Variable(self.Op), "variable": Baton.Variable(self.variable), "phase": Baton.Variable(self.phase), "isRefreshing": Baton.Variable(self.isRefreshing), "isStale": Baton.Variable(self.isStale), "retry": Baton.Variable(self.retry), "Sites": Baton.Variable(self.Sites), "AbstractSlots": Baton.Variable(self.AbstractSlots), "schemaDigest": Baton.Variable(self.schemaDigest), "Swift": Baton.Variable(self.Swift), "Set": Baton.Variable(self.Set), "Result": Baton.Variable(self.Result), "Optional": Baton.Variable(self.Optional), "String": Baton.Variable(self.String), "Int": Baton.Variable(self.Int), "Double": Baton.Variable(self.Double), "Bool": Baton.Variable(self.Bool), "MainActor": Baton.Variable(self.MainActor), "Hasher": Baton.Variable(self.Hasher), "Sendable": Baton.Variable(self.Sendable)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.`Type` == rhs.`Type` && lhs.`Protocol` == rhs.`Protocol` && lhs.`Any` == rhs.`Any` && lhs.`self` == rhs.`self` && lhs.`init` == rhs.`init` && lhs.`deinit` == rhs.`deinit` && lhs.`subscript` == rhs.`subscript` && lhs.`class` == rhs.`class` && lhs.`struct` == rhs.`struct` && lhs.`enum` == rhs.`enum` && lhs.`func` == rhs.`func` && lhs.`var` == rhs.`var` && lhs.`let` == rhs.`let` && lhs.`import` == rhs.`import` && lhs.`extension` == rhs.`extension` && lhs.`operator` == rhs.`operator` && lhs.`static` == rhs.`static` && lhs.`default` == rhs.`default` && lhs.`case` == rhs.`case` && lhs.`switch` == rhs.`switch` && lhs.`if` == rhs.`if` && lhs.`else` == rhs.`else` && lhs.`for` == rhs.`for` && lhs.`in` == rhs.`in` && lhs.`while` == rhs.`while` && lhs.`repeat` == rhs.`repeat` && lhs.`return` == rhs.`return` && lhs.`break` == rhs.`break` && lhs.`continue` == rhs.`continue` && lhs.`where` == rhs.`where` && lhs.`is` == rhs.`is` && lhs.`as` == rhs.`as` && lhs.`try` == rhs.`try` && lhs.`throw` == rhs.`throw` && lhs.`throws` == rhs.`throws` && lhs.`guard` == rhs.`guard` && lhs.`defer` == rhs.`defer` && lhs.`do` == rhs.`do` && lhs.`catch` == rhs.`catch` && lhs.`true` == rhs.`true` && lhs.`false` == rhs.`false` && lhs.`nil` == rhs.`nil` && lhs.`super` == rhs.`super` && lhs.`internal` == rhs.`internal` && lhs.`private` == rhs.`private` && lhs.`public` == rhs.`public` && lhs.`fileprivate` == rhs.`fileprivate` && lhs.`open` == rhs.`open` && lhs.`inout` == rhs.`inout` && lhs.`typealias` == rhs.`typealias` && lhs.`associatedtype` == rhs.`associatedtype` && lhs.`protocol` == rhs.`protocol` && lhs.`some` == rhs.`some` && lhs.`any` == rhs.`any` && lhs.async == rhs.async && lhs.borrowing == rhs.borrowing && lhs.consume == rhs.consume && lhs.consuming == rhs.consuming && lhs.copy == rhs.copy && lhs.discard == rhs.discard && lhs.each == rhs.each && lhs.isolated == rhs.isolated && lhs.sending == rhs.sending && lhs.then == rhs.then && lhs.unsafe == rhs.unsafe && lhs.anchor == rhs.anchor && lhs.recordID == rhs.recordID && lhs.typeName == rhs.typeName && lhs.satisfied == rhs.satisfied && lhs.missingRequiredField == rhs.missingRequiredField && lhs.fieldErrors == rhs.fieldErrors && lhs.isPresent == rhs.isPresent && lhs.throwing == rhs.throwing && lhs.caught == rhs.caught && lhs.refetchable == rhs.refetchable && lhs.refetch == rhs.refetch && lhs.connection == rhs.connection && lhs.nodes == rhs.nodes && lhs.hasNext == rhs.hasNext && lhs.hasPrevious == rhs.hasPrevious && lhs.isLoadingNext == rhs.isLoadingNext && lhs.isLoadingPrevious == rhs.isLoadingPrevious && lhs.connectionID == rhs.connectionID && lhs.loadNext == rhs.loadNext && lhs.loadPrevious == rhs.loadPrevious && lhs.bound == rhs.bound && lhs.errors == rhs.errors && lhs.child == rhs.child && lhs.missing == rhs.missing && lhs.count == rhs.count && lhs.fields == rhs.fields && lhs.lhs == rhs.lhs && lhs.rhs == rhs.rhs && lhs.hasher == rhs.hasher && lhs.optimistic == rhs.optimistic && lhs.selfValue == rhs.selfValue && lhs.Fragment == rhs.Fragment && lhs.Spread == rhs.Spread && lhs.Owner == rhs.Owner && lhs.Query == rhs.Query && lhs.Operation == rhs.Operation && lhs.RefetchQuery == rhs.RefetchQuery && lhs.name == rhs.name && lhs.persistedID == rhs.persistedID && lhs.text == rhs.text && lhs.plan == rhs.plan && lhs.errorBehavior == rhs.errorBehavior && lhs.throwsOnFieldError == rhs.throwsOnFieldError && lhs.bubbles == rhs.bubbles && lhs.hasDeferred == rhs.hasDeferred && lhs.Action == rhs.Action && lhs.OptimisticResponse == rhs.OptimisticResponse && lhs.hash == rhs.hash && lhs.commit == rhs.commit && lhs.callAsFunction == rhs.callAsFunction && lhs.Op == rhs.Op && lhs.variable == rhs.variable && lhs.phase == rhs.phase && lhs.isRefreshing == rhs.isRefreshing && lhs.isStale == rhs.isStale && lhs.retry == rhs.retry && lhs.subscription == rhs.subscription && lhs.Sites == rhs.Sites && lhs.AbstractSlots == rhs.AbstractSlots && lhs.schemaDigest == rhs.schemaDigest && lhs.Swift == rhs.Swift && lhs.Set == rhs.Set && lhs.Result == rhs.Result && lhs.Optional == rhs.Optional && lhs.String == rhs.String && lhs.Int == rhs.Int && lhs.Double == rhs.Double && lhs.Bool == rhs.Bool && lhs.MainActor == rhs.MainActor && lhs.Hasher == rhs.Hasher && lhs.Sendable == rhs.Sendable
+        lhs.`Type` == rhs.`Type` && lhs.`Protocol` == rhs.`Protocol` && lhs.`Any` == rhs.`Any` && lhs.`self` == rhs.`self` && lhs.`init` == rhs.`init` && lhs.`deinit` == rhs.`deinit` && lhs.`subscript` == rhs.`subscript` && lhs.`class` == rhs.`class` && lhs.`struct` == rhs.`struct` && lhs.`enum` == rhs.`enum` && lhs.`func` == rhs.`func` && lhs.`var` == rhs.`var` && lhs.`let` == rhs.`let` && lhs.`import` == rhs.`import` && lhs.`extension` == rhs.`extension` && lhs.`operator` == rhs.`operator` && lhs.`static` == rhs.`static` && lhs.`default` == rhs.`default` && lhs.`case` == rhs.`case` && lhs.`switch` == rhs.`switch` && lhs.`if` == rhs.`if` && lhs.`else` == rhs.`else` && lhs.`for` == rhs.`for` && lhs.`in` == rhs.`in` && lhs.`while` == rhs.`while` && lhs.`repeat` == rhs.`repeat` && lhs.`return` == rhs.`return` && lhs.`break` == rhs.`break` && lhs.`continue` == rhs.`continue` && lhs.`where` == rhs.`where` && lhs.`is` == rhs.`is` && lhs.`as` == rhs.`as` && lhs.`try` == rhs.`try` && lhs.`throw` == rhs.`throw` && lhs.`throws` == rhs.`throws` && lhs.`guard` == rhs.`guard` && lhs.`defer` == rhs.`defer` && lhs.`do` == rhs.`do` && lhs.`catch` == rhs.`catch` && lhs.`true` == rhs.`true` && lhs.`false` == rhs.`false` && lhs.`nil` == rhs.`nil` && lhs.`super` == rhs.`super` && lhs.`internal` == rhs.`internal` && lhs.`private` == rhs.`private` && lhs.`public` == rhs.`public` && lhs.`fileprivate` == rhs.`fileprivate` && lhs.`open` == rhs.`open` && lhs.`inout` == rhs.`inout` && lhs.`typealias` == rhs.`typealias` && lhs.`associatedtype` == rhs.`associatedtype` && lhs.`protocol` == rhs.`protocol` && lhs.`some` == rhs.`some` && lhs.`any` == rhs.`any` && lhs.`rethrows` == rhs.`rethrows` && lhs.`fallthrough` == rhs.`fallthrough` && lhs.`precedencegroup` == rhs.`precedencegroup` && lhs.`_` == rhs.`_` && lhs.`Self` == rhs.`Self` && lhs.async == rhs.async && lhs.`borrowing` == rhs.`borrowing` && lhs.consume == rhs.consume && lhs.`consuming` == rhs.`consuming` && lhs.copy == rhs.copy && lhs.discard == rhs.discard && lhs.`each` == rhs.`each` && lhs.`isolated` == rhs.`isolated` && lhs.`sending` == rhs.`sending` && lhs.then == rhs.then && lhs.unsafe == rhs.unsafe && lhs.`await` == rhs.`await` && lhs.anchor == rhs.anchor && lhs.recordID == rhs.recordID && lhs.typeName == rhs.typeName && lhs.satisfied == rhs.satisfied && lhs.missingRequiredField == rhs.missingRequiredField && lhs.fieldErrors == rhs.fieldErrors && lhs.isPresent == rhs.isPresent && lhs.throwing == rhs.throwing && lhs.caught == rhs.caught && lhs.refetchable == rhs.refetchable && lhs.refetch == rhs.refetch && lhs.connection == rhs.connection && lhs.nodes == rhs.nodes && lhs.hasNext == rhs.hasNext && lhs.hasPrevious == rhs.hasPrevious && lhs.isLoadingNext == rhs.isLoadingNext && lhs.isLoadingPrevious == rhs.isLoadingPrevious && lhs.connectionID == rhs.connectionID && lhs.loadNext == rhs.loadNext && lhs.loadPrevious == rhs.loadPrevious && lhs.bound == rhs.bound && lhs.errors == rhs.errors && lhs.child == rhs.child && lhs.missing == rhs.missing && lhs.count == rhs.count && lhs.fields == rhs.fields && lhs.lhs == rhs.lhs && lhs.rhs == rhs.rhs && lhs.hasher == rhs.hasher && lhs.optimistic == rhs.optimistic && lhs.selfValue == rhs.selfValue && lhs.Fragment == rhs.Fragment && lhs.Spread == rhs.Spread && lhs.Owner == rhs.Owner && lhs.Query == rhs.Query && lhs.Operation == rhs.Operation && lhs.RefetchQuery == rhs.RefetchQuery && lhs.name == rhs.name && lhs.persistedID == rhs.persistedID && lhs.text == rhs.text && lhs.plan == rhs.plan && lhs.errorBehavior == rhs.errorBehavior && lhs.throwsOnFieldError == rhs.throwsOnFieldError && lhs.bubbles == rhs.bubbles && lhs.hasDeferred == rhs.hasDeferred && lhs.Action == rhs.Action && lhs.OptimisticResponse == rhs.OptimisticResponse && lhs.hash == rhs.hash && lhs.commit == rhs.commit && lhs.callAsFunction == rhs.callAsFunction && lhs.Op == rhs.Op && lhs.variable == rhs.variable && lhs.phase == rhs.phase && lhs.isRefreshing == rhs.isRefreshing && lhs.isStale == rhs.isStale && lhs.retry == rhs.retry && lhs.Sites == rhs.Sites && lhs.AbstractSlots == rhs.AbstractSlots && lhs.schemaDigest == rhs.schemaDigest && lhs.Swift == rhs.Swift && lhs.Set == rhs.Set && lhs.Result == rhs.Result && lhs.Optional == rhs.Optional && lhs.String == rhs.String && lhs.Int == rhs.Int && lhs.Double == rhs.Double && lhs.Bool == rhs.Bool && lhs.MainActor == rhs.MainActor && lhs.Hasher == rhs.Hasher && lhs.Sendable == rhs.Sendable
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -13159,17 +12593,23 @@ subscription HostileSubscriptionVariables(
         hasher.combine(self.`protocol`)
         hasher.combine(self.`some`)
         hasher.combine(self.`any`)
+        hasher.combine(self.`rethrows`)
+        hasher.combine(self.`fallthrough`)
+        hasher.combine(self.`precedencegroup`)
+        hasher.combine(self.`_`)
+        hasher.combine(self.`Self`)
         hasher.combine(self.async)
-        hasher.combine(self.borrowing)
+        hasher.combine(self.`borrowing`)
         hasher.combine(self.consume)
-        hasher.combine(self.consuming)
+        hasher.combine(self.`consuming`)
         hasher.combine(self.copy)
         hasher.combine(self.discard)
-        hasher.combine(self.each)
-        hasher.combine(self.isolated)
-        hasher.combine(self.sending)
+        hasher.combine(self.`each`)
+        hasher.combine(self.`isolated`)
+        hasher.combine(self.`sending`)
         hasher.combine(self.then)
         hasher.combine(self.unsafe)
+        hasher.combine(self.`await`)
         hasher.combine(self.anchor)
         hasher.combine(self.recordID)
         hasher.combine(self.typeName)
@@ -13226,7 +12666,6 @@ subscription HostileSubscriptionVariables(
         hasher.combine(self.isRefreshing)
         hasher.combine(self.isStale)
         hasher.combine(self.retry)
-        hasher.combine(self.subscription)
         hasher.combine(self.Sites)
         hasher.combine(self.AbstractSlots)
         hasher.combine(self.schemaDigest)
@@ -13249,7 +12688,7 @@ subscription HostileSubscriptionVariables(
                     .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, caught: true, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
                         .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false, caught: true),
                     ])),
-                    .scalar("cursor", key: .fixed(Slots.NoteEdge.cursor), kind: .string, list: false, caught: true, guards: [[.init("Type", passing: true)], [.init("Protocol", passing: true)], [.init("Any", passing: true)], [.init("self", passing: true)], [.init("init", passing: true)], [.init("deinit", passing: true)], [.init("subscript", passing: true)], [.init("class", passing: true)], [.init("struct", passing: true)], [.init("enum", passing: true)], [.init("func", passing: true)], [.init("var", passing: true)], [.init("let", passing: true)], [.init("import", passing: true)], [.init("extension", passing: true)], [.init("operator", passing: true)], [.init("static", passing: true)], [.init("default", passing: true)], [.init("case", passing: true)], [.init("switch", passing: true)], [.init("if", passing: true)], [.init("else", passing: true)], [.init("for", passing: true)], [.init("in", passing: true)], [.init("while", passing: true)], [.init("repeat", passing: true)], [.init("return", passing: true)], [.init("break", passing: true)], [.init("continue", passing: true)], [.init("where", passing: true)], [.init("is", passing: true)], [.init("as", passing: true)], [.init("try", passing: true)], [.init("throw", passing: true)], [.init("throws", passing: true)], [.init("guard", passing: true)], [.init("defer", passing: true)], [.init("do", passing: true)], [.init("catch", passing: true)], [.init("true", passing: true)], [.init("false", passing: true)], [.init("nil", passing: true)], [.init("super", passing: true)], [.init("internal", passing: true)], [.init("private", passing: true)], [.init("public", passing: true)], [.init("fileprivate", passing: true)], [.init("open", passing: true)], [.init("inout", passing: true)], [.init("typealias", passing: true)], [.init("associatedtype", passing: true)], [.init("protocol", passing: true)], [.init("some", passing: true)], [.init("any", passing: true)], [.init("async", passing: true)], [.init("borrowing", passing: true)], [.init("consume", passing: true)], [.init("consuming", passing: true)], [.init("copy", passing: true)], [.init("discard", passing: true)], [.init("each", passing: true)], [.init("isolated", passing: true)], [.init("sending", passing: true)], [.init("then", passing: true)], [.init("unsafe", passing: true)], [.init("anchor", passing: true)], [.init("recordID", passing: true)], [.init("typeName", passing: true)], [.init("satisfied", passing: true)], [.init("missingRequiredField", passing: true)], [.init("fieldErrors", passing: true)], [.init("isPresent", passing: true)], [.init("throwing", passing: true)], [.init("caught", passing: true)], [.init("refetchable", passing: true)], [.init("refetch", passing: true)], [.init("connection", passing: true)], [.init("nodes", passing: true)], [.init("hasNext", passing: true)], [.init("hasPrevious", passing: true)], [.init("isLoadingNext", passing: true)], [.init("isLoadingPrevious", passing: true)], [.init("connectionID", passing: true)], [.init("loadNext", passing: true)], [.init("loadPrevious", passing: true)], [.init("bound", passing: true)], [.init("errors", passing: true)], [.init("child", passing: true)], [.init("missing", passing: true)], [.init("count", passing: true)], [.init("fields", passing: true)], [.init("lhs", passing: true)], [.init("rhs", passing: true)], [.init("hasher", passing: true)], [.init("optimistic", passing: true)], [.init("selfValue", passing: true)], [.init("Fragment", passing: true)], [.init("Spread", passing: true)], [.init("Owner", passing: true)], [.init("Query", passing: true)], [.init("Operation", passing: true)], [.init("RefetchQuery", passing: true)], [.init("name", passing: true)], [.init("persistedID", passing: true)], [.init("text", passing: true)], [.init("plan", passing: true)], [.init("errorBehavior", passing: true)], [.init("throwsOnFieldError", passing: true)], [.init("bubbles", passing: true)], [.init("hasDeferred", passing: true)], [.init("Action", passing: true)], [.init("OptimisticResponse", passing: true)], [.init("hash", passing: true)], [.init("commit", passing: true)], [.init("callAsFunction", passing: true)], [.init("Op", passing: true)], [.init("variable", passing: true)], [.init("phase", passing: true)], [.init("isRefreshing", passing: true)], [.init("isStale", passing: true)], [.init("retry", passing: true)], [.init("subscription", passing: true)], [.init("Sites", passing: true)], [.init("AbstractSlots", passing: true)], [.init("schemaDigest", passing: true)], [.init("Swift", passing: true)], [.init("Set", passing: true)], [.init("Result", passing: true)], [.init("Optional", passing: true)], [.init("String", passing: true)], [.init("Int", passing: true)], [.init("Double", passing: true)], [.init("Bool", passing: true)], [.init("MainActor", passing: true)], [.init("Hasher", passing: true)], [.init("Sendable", passing: true)]]),
+                    .scalar("cursor", key: .fixed(Slots.NoteEdge.cursor), kind: .string, list: false, caught: true, guards: [[.init("Type", passing: true)], [.init("Protocol", passing: true)], [.init("Any", passing: true)], [.init("self", passing: true)], [.init("init", passing: true)], [.init("deinit", passing: true)], [.init("subscript", passing: true)], [.init("class", passing: true)], [.init("struct", passing: true)], [.init("enum", passing: true)], [.init("func", passing: true)], [.init("var", passing: true)], [.init("let", passing: true)], [.init("import", passing: true)], [.init("extension", passing: true)], [.init("operator", passing: true)], [.init("static", passing: true)], [.init("default", passing: true)], [.init("case", passing: true)], [.init("switch", passing: true)], [.init("if", passing: true)], [.init("else", passing: true)], [.init("for", passing: true)], [.init("in", passing: true)], [.init("while", passing: true)], [.init("repeat", passing: true)], [.init("return", passing: true)], [.init("break", passing: true)], [.init("continue", passing: true)], [.init("where", passing: true)], [.init("is", passing: true)], [.init("as", passing: true)], [.init("try", passing: true)], [.init("throw", passing: true)], [.init("throws", passing: true)], [.init("guard", passing: true)], [.init("defer", passing: true)], [.init("do", passing: true)], [.init("catch", passing: true)], [.init("true", passing: true)], [.init("false", passing: true)], [.init("nil", passing: true)], [.init("super", passing: true)], [.init("internal", passing: true)], [.init("private", passing: true)], [.init("public", passing: true)], [.init("fileprivate", passing: true)], [.init("open", passing: true)], [.init("inout", passing: true)], [.init("typealias", passing: true)], [.init("associatedtype", passing: true)], [.init("protocol", passing: true)], [.init("some", passing: true)], [.init("any", passing: true)], [.init("rethrows", passing: true)], [.init("fallthrough", passing: true)], [.init("precedencegroup", passing: true)], [.init("_", passing: true)], [.init("Self", passing: true)], [.init("async", passing: true)], [.init("borrowing", passing: true)], [.init("consume", passing: true)], [.init("consuming", passing: true)], [.init("copy", passing: true)], [.init("discard", passing: true)], [.init("each", passing: true)], [.init("isolated", passing: true)], [.init("sending", passing: true)], [.init("then", passing: true)], [.init("unsafe", passing: true)], [.init("await", passing: true)], [.init("anchor", passing: true)], [.init("recordID", passing: true)], [.init("typeName", passing: true)], [.init("satisfied", passing: true)], [.init("missingRequiredField", passing: true)], [.init("fieldErrors", passing: true)], [.init("isPresent", passing: true)], [.init("throwing", passing: true)], [.init("caught", passing: true)], [.init("refetchable", passing: true)], [.init("refetch", passing: true)], [.init("connection", passing: true)], [.init("nodes", passing: true)], [.init("hasNext", passing: true)], [.init("hasPrevious", passing: true)], [.init("isLoadingNext", passing: true)], [.init("isLoadingPrevious", passing: true)], [.init("connectionID", passing: true)], [.init("loadNext", passing: true)], [.init("loadPrevious", passing: true)], [.init("bound", passing: true)], [.init("errors", passing: true)], [.init("child", passing: true)], [.init("missing", passing: true)], [.init("count", passing: true)], [.init("fields", passing: true)], [.init("lhs", passing: true)], [.init("rhs", passing: true)], [.init("hasher", passing: true)], [.init("optimistic", passing: true)], [.init("selfValue", passing: true)], [.init("Fragment", passing: true)], [.init("Spread", passing: true)], [.init("Owner", passing: true)], [.init("Query", passing: true)], [.init("Operation", passing: true)], [.init("RefetchQuery", passing: true)], [.init("name", passing: true)], [.init("persistedID", passing: true)], [.init("text", passing: true)], [.init("plan", passing: true)], [.init("errorBehavior", passing: true)], [.init("throwsOnFieldError", passing: true)], [.init("bubbles", passing: true)], [.init("hasDeferred", passing: true)], [.init("Action", passing: true)], [.init("OptimisticResponse", passing: true)], [.init("hash", passing: true)], [.init("commit", passing: true)], [.init("callAsFunction", passing: true)], [.init("Op", passing: true)], [.init("variable", passing: true)], [.init("phase", passing: true)], [.init("isRefreshing", passing: true)], [.init("isStale", passing: true)], [.init("retry", passing: true)], [.init("Sites", passing: true)], [.init("AbstractSlots", passing: true)], [.init("schemaDigest", passing: true)], [.init("Swift", passing: true)], [.init("Set", passing: true)], [.init("Result", passing: true)], [.init("Optional", passing: true)], [.init("String", passing: true)], [.init("Int", passing: true)], [.init("Double", passing: true)], [.init("Bool", passing: true)], [.init("MainActor", passing: true)], [.init("Hasher", passing: true)], [.init("Sendable", passing: true)]]),
                 ])),
             ])),
         ]))
@@ -13276,7 +12715,7 @@ subscription HostileSubscriptionVariables(
             /// The lens, or the field errors in it as a `Result`.
             @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
                 let errors = fieldErrors(anchor)
-                return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+                return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
             }
 
             nonisolated public struct NoteEdge: Baton.Lens {
@@ -13284,12 +12723,12 @@ subscription HostileSubscriptionVariables(
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
                 public static let typeName = "NoteEdge"
                 @MainActor public var node: Node? { anchor.linked(Slots.NoteEdge.node).map(Node.init(anchor:)) }
-                @MainActor public var cursor: String? { (anchor.selects("Type", true) || anchor.selects("Protocol", true) || anchor.selects("Any", true) || anchor.selects("self", true) || anchor.selects("init", true) || anchor.selects("deinit", true) || anchor.selects("subscript", true) || anchor.selects("class", true) || anchor.selects("struct", true) || anchor.selects("enum", true) || anchor.selects("func", true) || anchor.selects("var", true) || anchor.selects("let", true) || anchor.selects("import", true) || anchor.selects("extension", true) || anchor.selects("operator", true) || anchor.selects("static", true) || anchor.selects("default", true) || anchor.selects("case", true) || anchor.selects("switch", true) || anchor.selects("if", true) || anchor.selects("else", true) || anchor.selects("for", true) || anchor.selects("in", true) || anchor.selects("while", true) || anchor.selects("repeat", true) || anchor.selects("return", true) || anchor.selects("break", true) || anchor.selects("continue", true) || anchor.selects("where", true) || anchor.selects("is", true) || anchor.selects("as", true) || anchor.selects("try", true) || anchor.selects("throw", true) || anchor.selects("throws", true) || anchor.selects("guard", true) || anchor.selects("defer", true) || anchor.selects("do", true) || anchor.selects("catch", true) || anchor.selects("true", true) || anchor.selects("false", true) || anchor.selects("nil", true) || anchor.selects("super", true) || anchor.selects("internal", true) || anchor.selects("private", true) || anchor.selects("public", true) || anchor.selects("fileprivate", true) || anchor.selects("open", true) || anchor.selects("inout", true) || anchor.selects("typealias", true) || anchor.selects("associatedtype", true) || anchor.selects("protocol", true) || anchor.selects("some", true) || anchor.selects("any", true) || anchor.selects("async", true) || anchor.selects("borrowing", true) || anchor.selects("consume", true) || anchor.selects("consuming", true) || anchor.selects("copy", true) || anchor.selects("discard", true) || anchor.selects("each", true) || anchor.selects("isolated", true) || anchor.selects("sending", true) || anchor.selects("then", true) || anchor.selects("unsafe", true) || anchor.selects("anchor", true) || anchor.selects("recordID", true) || anchor.selects("typeName", true) || anchor.selects("satisfied", true) || anchor.selects("missingRequiredField", true) || anchor.selects("fieldErrors", true) || anchor.selects("isPresent", true) || anchor.selects("throwing", true) || anchor.selects("caught", true) || anchor.selects("refetchable", true) || anchor.selects("refetch", true) || anchor.selects("connection", true) || anchor.selects("nodes", true) || anchor.selects("hasNext", true) || anchor.selects("hasPrevious", true) || anchor.selects("isLoadingNext", true) || anchor.selects("isLoadingPrevious", true) || anchor.selects("connectionID", true) || anchor.selects("loadNext", true) || anchor.selects("loadPrevious", true) || anchor.selects("bound", true) || anchor.selects("errors", true) || anchor.selects("child", true) || anchor.selects("missing", true) || anchor.selects("count", true) || anchor.selects("fields", true) || anchor.selects("lhs", true) || anchor.selects("rhs", true) || anchor.selects("hasher", true) || anchor.selects("optimistic", true) || anchor.selects("selfValue", true) || anchor.selects("Fragment", true) || anchor.selects("Spread", true) || anchor.selects("Owner", true) || anchor.selects("Query", true) || anchor.selects("Operation", true) || anchor.selects("RefetchQuery", true) || anchor.selects("name", true) || anchor.selects("persistedID", true) || anchor.selects("text", true) || anchor.selects("plan", true) || anchor.selects("errorBehavior", true) || anchor.selects("throwsOnFieldError", true) || anchor.selects("bubbles", true) || anchor.selects("hasDeferred", true) || anchor.selects("Action", true) || anchor.selects("OptimisticResponse", true) || anchor.selects("hash", true) || anchor.selects("commit", true) || anchor.selects("callAsFunction", true) || anchor.selects("Op", true) || anchor.selects("variable", true) || anchor.selects("phase", true) || anchor.selects("isRefreshing", true) || anchor.selects("isStale", true) || anchor.selects("retry", true) || anchor.selects("subscription", true) || anchor.selects("Sites", true) || anchor.selects("AbstractSlots", true) || anchor.selects("schemaDigest", true) || anchor.selects("Swift", true) || anchor.selects("Set", true) || anchor.selects("Result", true) || anchor.selects("Optional", true) || anchor.selects("String", true) || anchor.selects("Int", true) || anchor.selects("Double", true) || anchor.selects("Bool", true) || anchor.selects("MainActor", true) || anchor.selects("Hasher", true) || anchor.selects("Sendable", true)) ? anchor.requiredString(Slots.NoteEdge.cursor) : nil }
+                @MainActor public var cursor: String? { (anchor.selects("Type", true) || anchor.selects("Protocol", true) || anchor.selects("Any", true) || anchor.selects("self", true) || anchor.selects("init", true) || anchor.selects("deinit", true) || anchor.selects("subscript", true) || anchor.selects("class", true) || anchor.selects("struct", true) || anchor.selects("enum", true) || anchor.selects("func", true) || anchor.selects("var", true) || anchor.selects("let", true) || anchor.selects("import", true) || anchor.selects("extension", true) || anchor.selects("operator", true) || anchor.selects("static", true) || anchor.selects("default", true) || anchor.selects("case", true) || anchor.selects("switch", true) || anchor.selects("if", true) || anchor.selects("else", true) || anchor.selects("for", true) || anchor.selects("in", true) || anchor.selects("while", true) || anchor.selects("repeat", true) || anchor.selects("return", true) || anchor.selects("break", true) || anchor.selects("continue", true) || anchor.selects("where", true) || anchor.selects("is", true) || anchor.selects("as", true) || anchor.selects("try", true) || anchor.selects("throw", true) || anchor.selects("throws", true) || anchor.selects("guard", true) || anchor.selects("defer", true) || anchor.selects("do", true) || anchor.selects("catch", true) || anchor.selects("true", true) || anchor.selects("false", true) || anchor.selects("nil", true) || anchor.selects("super", true) || anchor.selects("internal", true) || anchor.selects("private", true) || anchor.selects("public", true) || anchor.selects("fileprivate", true) || anchor.selects("open", true) || anchor.selects("inout", true) || anchor.selects("typealias", true) || anchor.selects("associatedtype", true) || anchor.selects("protocol", true) || anchor.selects("some", true) || anchor.selects("any", true) || anchor.selects("rethrows", true) || anchor.selects("fallthrough", true) || anchor.selects("precedencegroup", true) || anchor.selects("_", true) || anchor.selects("Self", true) || anchor.selects("async", true) || anchor.selects("borrowing", true) || anchor.selects("consume", true) || anchor.selects("consuming", true) || anchor.selects("copy", true) || anchor.selects("discard", true) || anchor.selects("each", true) || anchor.selects("isolated", true) || anchor.selects("sending", true) || anchor.selects("then", true) || anchor.selects("unsafe", true) || anchor.selects("await", true) || anchor.selects("anchor", true) || anchor.selects("recordID", true) || anchor.selects("typeName", true) || anchor.selects("satisfied", true) || anchor.selects("missingRequiredField", true) || anchor.selects("fieldErrors", true) || anchor.selects("isPresent", true) || anchor.selects("throwing", true) || anchor.selects("caught", true) || anchor.selects("refetchable", true) || anchor.selects("refetch", true) || anchor.selects("connection", true) || anchor.selects("nodes", true) || anchor.selects("hasNext", true) || anchor.selects("hasPrevious", true) || anchor.selects("isLoadingNext", true) || anchor.selects("isLoadingPrevious", true) || anchor.selects("connectionID", true) || anchor.selects("loadNext", true) || anchor.selects("loadPrevious", true) || anchor.selects("bound", true) || anchor.selects("errors", true) || anchor.selects("child", true) || anchor.selects("missing", true) || anchor.selects("count", true) || anchor.selects("fields", true) || anchor.selects("lhs", true) || anchor.selects("rhs", true) || anchor.selects("hasher", true) || anchor.selects("optimistic", true) || anchor.selects("selfValue", true) || anchor.selects("Fragment", true) || anchor.selects("Spread", true) || anchor.selects("Owner", true) || anchor.selects("Query", true) || anchor.selects("Operation", true) || anchor.selects("RefetchQuery", true) || anchor.selects("name", true) || anchor.selects("persistedID", true) || anchor.selects("text", true) || anchor.selects("plan", true) || anchor.selects("errorBehavior", true) || anchor.selects("throwsOnFieldError", true) || anchor.selects("bubbles", true) || anchor.selects("hasDeferred", true) || anchor.selects("Action", true) || anchor.selects("OptimisticResponse", true) || anchor.selects("hash", true) || anchor.selects("commit", true) || anchor.selects("callAsFunction", true) || anchor.selects("Op", true) || anchor.selects("variable", true) || anchor.selects("phase", true) || anchor.selects("isRefreshing", true) || anchor.selects("isStale", true) || anchor.selects("retry", true) || anchor.selects("Sites", true) || anchor.selects("AbstractSlots", true) || anchor.selects("schemaDigest", true) || anchor.selects("Swift", true) || anchor.selects("Set", true) || anchor.selects("Result", true) || anchor.selects("Optional", true) || anchor.selects("String", true) || anchor.selects("Int", true) || anchor.selects("Double", true) || anchor.selects("Bool", true) || anchor.selects("MainActor", true) || anchor.selects("Hasher", true) || anchor.selects("Sendable", true)) ? anchor.requiredString(Slots.NoteEdge.cursor) : nil }
                 /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
                 @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
                     var errors: [Baton.FieldError] = []
                     anchor.collectErrors(Slots.NoteEdge.node, within: Node.fieldErrors, into: &errors)
-                    if (anchor.selects("Type", true) || anchor.selects("Protocol", true) || anchor.selects("Any", true) || anchor.selects("self", true) || anchor.selects("init", true) || anchor.selects("deinit", true) || anchor.selects("subscript", true) || anchor.selects("class", true) || anchor.selects("struct", true) || anchor.selects("enum", true) || anchor.selects("func", true) || anchor.selects("var", true) || anchor.selects("let", true) || anchor.selects("import", true) || anchor.selects("extension", true) || anchor.selects("operator", true) || anchor.selects("static", true) || anchor.selects("default", true) || anchor.selects("case", true) || anchor.selects("switch", true) || anchor.selects("if", true) || anchor.selects("else", true) || anchor.selects("for", true) || anchor.selects("in", true) || anchor.selects("while", true) || anchor.selects("repeat", true) || anchor.selects("return", true) || anchor.selects("break", true) || anchor.selects("continue", true) || anchor.selects("where", true) || anchor.selects("is", true) || anchor.selects("as", true) || anchor.selects("try", true) || anchor.selects("throw", true) || anchor.selects("throws", true) || anchor.selects("guard", true) || anchor.selects("defer", true) || anchor.selects("do", true) || anchor.selects("catch", true) || anchor.selects("true", true) || anchor.selects("false", true) || anchor.selects("nil", true) || anchor.selects("super", true) || anchor.selects("internal", true) || anchor.selects("private", true) || anchor.selects("public", true) || anchor.selects("fileprivate", true) || anchor.selects("open", true) || anchor.selects("inout", true) || anchor.selects("typealias", true) || anchor.selects("associatedtype", true) || anchor.selects("protocol", true) || anchor.selects("some", true) || anchor.selects("any", true) || anchor.selects("async", true) || anchor.selects("borrowing", true) || anchor.selects("consume", true) || anchor.selects("consuming", true) || anchor.selects("copy", true) || anchor.selects("discard", true) || anchor.selects("each", true) || anchor.selects("isolated", true) || anchor.selects("sending", true) || anchor.selects("then", true) || anchor.selects("unsafe", true) || anchor.selects("anchor", true) || anchor.selects("recordID", true) || anchor.selects("typeName", true) || anchor.selects("satisfied", true) || anchor.selects("missingRequiredField", true) || anchor.selects("fieldErrors", true) || anchor.selects("isPresent", true) || anchor.selects("throwing", true) || anchor.selects("caught", true) || anchor.selects("refetchable", true) || anchor.selects("refetch", true) || anchor.selects("connection", true) || anchor.selects("nodes", true) || anchor.selects("hasNext", true) || anchor.selects("hasPrevious", true) || anchor.selects("isLoadingNext", true) || anchor.selects("isLoadingPrevious", true) || anchor.selects("connectionID", true) || anchor.selects("loadNext", true) || anchor.selects("loadPrevious", true) || anchor.selects("bound", true) || anchor.selects("errors", true) || anchor.selects("child", true) || anchor.selects("missing", true) || anchor.selects("count", true) || anchor.selects("fields", true) || anchor.selects("lhs", true) || anchor.selects("rhs", true) || anchor.selects("hasher", true) || anchor.selects("optimistic", true) || anchor.selects("selfValue", true) || anchor.selects("Fragment", true) || anchor.selects("Spread", true) || anchor.selects("Owner", true) || anchor.selects("Query", true) || anchor.selects("Operation", true) || anchor.selects("RefetchQuery", true) || anchor.selects("name", true) || anchor.selects("persistedID", true) || anchor.selects("text", true) || anchor.selects("plan", true) || anchor.selects("errorBehavior", true) || anchor.selects("throwsOnFieldError", true) || anchor.selects("bubbles", true) || anchor.selects("hasDeferred", true) || anchor.selects("Action", true) || anchor.selects("OptimisticResponse", true) || anchor.selects("hash", true) || anchor.selects("commit", true) || anchor.selects("callAsFunction", true) || anchor.selects("Op", true) || anchor.selects("variable", true) || anchor.selects("phase", true) || anchor.selects("isRefreshing", true) || anchor.selects("isStale", true) || anchor.selects("retry", true) || anchor.selects("subscription", true) || anchor.selects("Sites", true) || anchor.selects("AbstractSlots", true) || anchor.selects("schemaDigest", true) || anchor.selects("Swift", true) || anchor.selects("Set", true) || anchor.selects("Result", true) || anchor.selects("Optional", true) || anchor.selects("String", true) || anchor.selects("Int", true) || anchor.selects("Double", true) || anchor.selects("Bool", true) || anchor.selects("MainActor", true) || anchor.selects("Hasher", true) || anchor.selects("Sendable", true)) {
+                    if (anchor.selects("Type", true) || anchor.selects("Protocol", true) || anchor.selects("Any", true) || anchor.selects("self", true) || anchor.selects("init", true) || anchor.selects("deinit", true) || anchor.selects("subscript", true) || anchor.selects("class", true) || anchor.selects("struct", true) || anchor.selects("enum", true) || anchor.selects("func", true) || anchor.selects("var", true) || anchor.selects("let", true) || anchor.selects("import", true) || anchor.selects("extension", true) || anchor.selects("operator", true) || anchor.selects("static", true) || anchor.selects("default", true) || anchor.selects("case", true) || anchor.selects("switch", true) || anchor.selects("if", true) || anchor.selects("else", true) || anchor.selects("for", true) || anchor.selects("in", true) || anchor.selects("while", true) || anchor.selects("repeat", true) || anchor.selects("return", true) || anchor.selects("break", true) || anchor.selects("continue", true) || anchor.selects("where", true) || anchor.selects("is", true) || anchor.selects("as", true) || anchor.selects("try", true) || anchor.selects("throw", true) || anchor.selects("throws", true) || anchor.selects("guard", true) || anchor.selects("defer", true) || anchor.selects("do", true) || anchor.selects("catch", true) || anchor.selects("true", true) || anchor.selects("false", true) || anchor.selects("nil", true) || anchor.selects("super", true) || anchor.selects("internal", true) || anchor.selects("private", true) || anchor.selects("public", true) || anchor.selects("fileprivate", true) || anchor.selects("open", true) || anchor.selects("inout", true) || anchor.selects("typealias", true) || anchor.selects("associatedtype", true) || anchor.selects("protocol", true) || anchor.selects("some", true) || anchor.selects("any", true) || anchor.selects("rethrows", true) || anchor.selects("fallthrough", true) || anchor.selects("precedencegroup", true) || anchor.selects("_", true) || anchor.selects("Self", true) || anchor.selects("async", true) || anchor.selects("borrowing", true) || anchor.selects("consume", true) || anchor.selects("consuming", true) || anchor.selects("copy", true) || anchor.selects("discard", true) || anchor.selects("each", true) || anchor.selects("isolated", true) || anchor.selects("sending", true) || anchor.selects("then", true) || anchor.selects("unsafe", true) || anchor.selects("await", true) || anchor.selects("anchor", true) || anchor.selects("recordID", true) || anchor.selects("typeName", true) || anchor.selects("satisfied", true) || anchor.selects("missingRequiredField", true) || anchor.selects("fieldErrors", true) || anchor.selects("isPresent", true) || anchor.selects("throwing", true) || anchor.selects("caught", true) || anchor.selects("refetchable", true) || anchor.selects("refetch", true) || anchor.selects("connection", true) || anchor.selects("nodes", true) || anchor.selects("hasNext", true) || anchor.selects("hasPrevious", true) || anchor.selects("isLoadingNext", true) || anchor.selects("isLoadingPrevious", true) || anchor.selects("connectionID", true) || anchor.selects("loadNext", true) || anchor.selects("loadPrevious", true) || anchor.selects("bound", true) || anchor.selects("errors", true) || anchor.selects("child", true) || anchor.selects("missing", true) || anchor.selects("count", true) || anchor.selects("fields", true) || anchor.selects("lhs", true) || anchor.selects("rhs", true) || anchor.selects("hasher", true) || anchor.selects("optimistic", true) || anchor.selects("selfValue", true) || anchor.selects("Fragment", true) || anchor.selects("Spread", true) || anchor.selects("Owner", true) || anchor.selects("Query", true) || anchor.selects("Operation", true) || anchor.selects("RefetchQuery", true) || anchor.selects("name", true) || anchor.selects("persistedID", true) || anchor.selects("text", true) || anchor.selects("plan", true) || anchor.selects("errorBehavior", true) || anchor.selects("throwsOnFieldError", true) || anchor.selects("bubbles", true) || anchor.selects("hasDeferred", true) || anchor.selects("Action", true) || anchor.selects("OptimisticResponse", true) || anchor.selects("hash", true) || anchor.selects("commit", true) || anchor.selects("callAsFunction", true) || anchor.selects("Op", true) || anchor.selects("variable", true) || anchor.selects("phase", true) || anchor.selects("isRefreshing", true) || anchor.selects("isStale", true) || anchor.selects("retry", true) || anchor.selects("Sites", true) || anchor.selects("AbstractSlots", true) || anchor.selects("schemaDigest", true) || anchor.selects("Swift", true) || anchor.selects("Set", true) || anchor.selects("Result", true) || anchor.selects("Optional", true) || anchor.selects("String", true) || anchor.selects("Int", true) || anchor.selects("Double", true) || anchor.selects("Bool", true) || anchor.selects("MainActor", true) || anchor.selects("Hasher", true) || anchor.selects("Sendable", true)) {
                         anchor.collectError(Slots.NoteEdge.cursor, into: &errors)
                     }
                     return errors
@@ -13299,7 +12738,7 @@ subscription HostileSubscriptionVariables(
                 /// The lens, or the field errors in it as a `Result`.
                 @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
                     let errors = fieldErrors(anchor)
-                    return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+                    return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
                 }
 
                 nonisolated public struct Node: Baton.Lens {
@@ -13318,7 +12757,7 @@ subscription HostileSubscriptionVariables(
                     /// The lens, or the field errors in it as a `Result`.
                     @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
                         let errors = fieldErrors(anchor)
-                        return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+                        return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
                     }
                 }
             }
@@ -13382,17 +12821,23 @@ nonisolated public struct HostileVariables: Baton.Query {
     public var `protocol`: String
     public var `some`: String
     public var `any`: String
+    public var `rethrows`: String
+    public var `fallthrough`: String
+    public var `precedencegroup`: String
+    public var `_`: String
+    public var `Self`: String
     public var async: String
-    public var borrowing: String
+    public var `borrowing`: String
     public var consume: String
-    public var consuming: String
+    public var `consuming`: String
     public var copy: String
     public var discard: String
-    public var each: String
-    public var isolated: String
-    public var sending: String
+    public var `each`: String
+    public var `isolated`: String
+    public var `sending`: String
     public var then: String
     public var unsafe: String
+    public var `await`: String
     public var anchor: String
     public var recordID: String
     public var typeName: String
@@ -13445,9 +12890,6 @@ nonisolated public struct HostileVariables: Baton.Query {
     public var callAsFunction: String
     public var Op: String
     public var variable: String
-    public var phase: String
-    public var isRefreshing: String
-    public var isStale: String
     public var retry: String
     public var subscription: String
     public var Sites: String
@@ -13466,7 +12908,7 @@ nonisolated public struct HostileVariables: Baton.Query {
     public var Sendable: String
     public var resolution: Baton.OperationHandle<Self>? = nil
 
-    public init(`Type`: String, `Protocol`: String, `Any`: String, `self` selfValue2: String, `init`: String, `deinit`: String, `subscript`: String, `class`: String, `struct`: String, `enum`: String, `func`: String, `var`: String, `let`: String, `import`: String, `extension`: String, `operator`: String, `static`: String, `default`: String, `case`: String, `switch`: String, `if`: String, `else`: String, `for`: String, `in`: String, `while`: String, `repeat`: String, `return`: String, `break`: String, `continue`: String, `where`: String, `is`: String, `as`: String, `try`: String, `throw`: String, `throws`: String, `guard`: String, `defer`: String, `do`: String, `catch`: String, `true`: String, `false`: String, `nil`: String, `super`: String, `internal`: String, `private`: String, `public`: String, `fileprivate`: String, `open`: String, `inout`: String, `typealias`: String, `associatedtype`: String, `protocol`: String, `some`: String, `any`: String, async: String, borrowing: String, consume: String, consuming: String, copy: String, discard: String, each: String, isolated: String, sending: String, then: String, unsafe: String, anchor: String, recordID: String, typeName: String, satisfied: String, missingRequiredField: String, fieldErrors: String, isPresent: String, throwing: String, caught: String, refetchable: String, refetch: String, connection: String, nodes: String, hasNext: String, hasPrevious: String, isLoadingNext: String, isLoadingPrevious: String, connectionID: String, loadNext: String, loadPrevious: String, bound: String, errors: String, child: String, missing: String, count: String, fields: String, lhs: String, rhs: String, hasher: String, optimistic: String, selfValue: String, Fragment: String, Spread: String, Owner: String, Query: String, Operation: String, RefetchQuery: String, name: String, persistedID: String, text: String, plan: String, errorBehavior: String, throwsOnFieldError: String, bubbles: String, hasDeferred: String, Action: String, OptimisticResponse: String, hash: String, commit: String, callAsFunction: String, Op: String, variable: String, phase: String, isRefreshing: String, isStale: String, retry: String, subscription: String, Sites: String, AbstractSlots: String, schemaDigest: String, Swift: String, Set: String, Result: String, Optional: String, String: String, Int: String, Double: String, Bool: String, MainActor: String, Hasher: String, Sendable: String) {
+    public init(`Type`: String, `Protocol`: String, `Any`: String, `self` selfValue2: String, `init`: String, `deinit`: String, `subscript`: String, `class`: String, `struct`: String, `enum`: String, `func`: String, `var`: String, `let`: String, `import`: String, `extension`: String, `operator`: String, `static`: String, `default`: String, `case`: String, `switch`: String, `if`: String, `else`: String, `for`: String, `in`: String, `while`: String, `repeat`: String, `return`: String, `break`: String, `continue`: String, `where`: String, `is`: String, `as`: String, `try`: String, `throw`: String, `throws`: String, `guard`: String, `defer`: String, `do`: String, `catch`: String, `true`: String, `false`: String, `nil`: String, `super`: String, `internal`: String, `private`: String, `public`: String, `fileprivate`: String, `open`: String, `inout`: String, `typealias`: String, `associatedtype`: String, `protocol`: String, `some`: String, `any`: String, `rethrows`: String, `fallthrough`: String, `precedencegroup`: String, `_`: String, `Self`: String, async: String, `borrowing`: String, consume: String, `consuming`: String, copy: String, discard: String, `each`: String, `isolated`: String, `sending`: String, then: String, unsafe: String, `await`: String, anchor: String, recordID: String, typeName: String, satisfied: String, missingRequiredField: String, fieldErrors: String, isPresent: String, throwing: String, caught: String, refetchable: String, refetch: String, connection: String, nodes: String, hasNext: String, hasPrevious: String, isLoadingNext: String, isLoadingPrevious: String, connectionID: String, loadNext: String, loadPrevious: String, bound: String, errors: String, child: String, missing: String, count: String, fields: String, lhs: String, rhs: String, hasher: String, optimistic: String, selfValue: String, Fragment: String, Spread: String, Owner: String, Query: String, Operation: String, RefetchQuery: String, name: String, persistedID: String, text: String, plan: String, errorBehavior: String, throwsOnFieldError: String, bubbles: String, hasDeferred: String, Action: String, OptimisticResponse: String, hash: String, commit: String, callAsFunction: String, Op: String, variable: String, retry: String, subscription: String, Sites: String, AbstractSlots: String, schemaDigest: String, Swift: String, Set: String, Result: String, Optional: String, String: String, Int: String, Double: String, Bool: String, MainActor: String, Hasher: String, Sendable: String) {
         self.`Type` = `Type`
         self.`Protocol` = `Protocol`
         self.`Any` = `Any`
@@ -13521,17 +12963,23 @@ nonisolated public struct HostileVariables: Baton.Query {
         self.`protocol` = `protocol`
         self.`some` = `some`
         self.`any` = `any`
+        self.`rethrows` = `rethrows`
+        self.`fallthrough` = `fallthrough`
+        self.`precedencegroup` = `precedencegroup`
+        self.`_` = `_`
+        self.`Self` = `Self`
         self.async = async
-        self.borrowing = borrowing
+        self.`borrowing` = `borrowing`
         self.consume = consume
-        self.consuming = consuming
+        self.`consuming` = `consuming`
         self.copy = copy
         self.discard = discard
-        self.each = each
-        self.isolated = isolated
-        self.sending = sending
+        self.`each` = `each`
+        self.`isolated` = `isolated`
+        self.`sending` = `sending`
         self.then = then
         self.unsafe = unsafe
+        self.`await` = `await`
         self.anchor = anchor
         self.recordID = recordID
         self.typeName = typeName
@@ -13584,9 +13032,6 @@ nonisolated public struct HostileVariables: Baton.Query {
         self.callAsFunction = callAsFunction
         self.Op = Op
         self.variable = variable
-        self.phase = phase
-        self.isRefreshing = isRefreshing
-        self.isStale = isStale
         self.retry = retry
         self.subscription = subscription
         self.Sites = Sites
@@ -13606,7 +13051,7 @@ nonisolated public struct HostileVariables: Baton.Query {
     }
 
     public static let name = "HostileVariables"
-    public static let persistedID = "ee2a5b009034a69f8f937602a73389ab"
+    public static let persistedID = "18678c6fd66c34b0160413a66a9cdd80"
     @_spi(Generated) public static let throwsOnFieldError = true
     public static let text = #"""
 query HostileVariables(
@@ -13664,6 +13109,11 @@ query HostileVariables(
   $protocol: ID!
   $some: ID!
   $any: ID!
+  $rethrows: ID!
+  $fallthrough: ID!
+  $precedencegroup: ID!
+  $_: ID!
+  $Self: ID!
   $async: ID!
   $borrowing: ID!
   $consume: ID!
@@ -13675,6 +13125,7 @@ query HostileVariables(
   $sending: ID!
   $then: ID!
   $unsafe: ID!
+  $await: ID!
   $anchor: ID!
   $recordID: ID!
   $typeName: ID!
@@ -13727,9 +13178,6 @@ query HostileVariables(
   $callAsFunction: ID!
   $Op: ID!
   $variable: ID!
-  $phase: ID!
-  $isRefreshing: ID!
-  $isStale: ID!
   $retry: ID!
   $subscription: ID!
   $Sites: ID!
@@ -13747,18 +13195,18 @@ query HostileVariables(
   $Hasher: ID!
   $Sendable: ID!
 ) {
-  charactersByIds(ids: [$Type, $Protocol, $Any, $self, $init, $deinit, $subscript, $class, $struct, $enum, $func, $var, $let, $import, $extension, $operator, $static, $default, $case, $switch, $if, $else, $for, $in, $while, $repeat, $return, $break, $continue, $where, $is, $as, $try, $throw, $throws, $guard, $defer, $do, $catch, $true, $false, $nil, $super, $internal, $private, $public, $fileprivate, $open, $inout, $typealias, $associatedtype, $protocol, $some, $any, $async, $borrowing, $consume, $consuming, $copy, $discard, $each, $isolated, $sending, $then, $unsafe, $anchor, $recordID, $typeName, $satisfied, $missingRequiredField, $fieldErrors, $isPresent, $throwing, $caught, $refetchable, $refetch, $connection, $nodes, $hasNext, $hasPrevious, $isLoadingNext, $isLoadingPrevious, $connectionID, $loadNext, $loadPrevious, $bound, $errors, $child, $missing, $count, $fields, $lhs, $rhs, $hasher, $optimistic, $selfValue, $Fragment, $Spread, $Owner, $Query, $Operation, $RefetchQuery, $name, $persistedID, $text, $plan, $errorBehavior, $throwsOnFieldError, $bubbles, $hasDeferred, $Action, $OptimisticResponse, $hash, $commit, $callAsFunction, $Op, $variable, $phase, $isRefreshing, $isStale, $retry, $subscription, $Sites, $AbstractSlots, $schemaDigest, $Swift, $Set, $Result, $Optional, $String, $Int, $Double, $Bool, $MainActor, $Hasher, $Sendable]) {
+  charactersByIds(ids: [$Type, $Protocol, $Any, $self, $init, $deinit, $subscript, $class, $struct, $enum, $func, $var, $let, $import, $extension, $operator, $static, $default, $case, $switch, $if, $else, $for, $in, $while, $repeat, $return, $break, $continue, $where, $is, $as, $try, $throw, $throws, $guard, $defer, $do, $catch, $true, $false, $nil, $super, $internal, $private, $public, $fileprivate, $open, $inout, $typealias, $associatedtype, $protocol, $some, $any, $rethrows, $fallthrough, $precedencegroup, $_, $Self, $async, $borrowing, $consume, $consuming, $copy, $discard, $each, $isolated, $sending, $then, $unsafe, $await, $anchor, $recordID, $typeName, $satisfied, $missingRequiredField, $fieldErrors, $isPresent, $throwing, $caught, $refetchable, $refetch, $connection, $nodes, $hasNext, $hasPrevious, $isLoadingNext, $isLoadingPrevious, $connectionID, $loadNext, $loadPrevious, $bound, $errors, $child, $missing, $count, $fields, $lhs, $rhs, $hasher, $optimistic, $selfValue, $Fragment, $Spread, $Owner, $Query, $Operation, $RefetchQuery, $name, $persistedID, $text, $plan, $errorBehavior, $throwsOnFieldError, $bubbles, $hasDeferred, $Action, $OptimisticResponse, $hash, $commit, $callAsFunction, $Op, $variable, $retry, $subscription, $Sites, $AbstractSlots, $schemaDigest, $Swift, $Set, $Result, $Optional, $String, $Int, $Double, $Bool, $MainActor, $Hasher, $Sendable]) {
     id
   }
 }
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["Type": Baton.Variable(self.`Type`), "Protocol": Baton.Variable(self.`Protocol`), "Any": Baton.Variable(self.`Any`), "self": Baton.Variable(self.`self`), "init": Baton.Variable(self.`init`), "deinit": Baton.Variable(self.`deinit`), "subscript": Baton.Variable(self.`subscript`), "class": Baton.Variable(self.`class`), "struct": Baton.Variable(self.`struct`), "enum": Baton.Variable(self.`enum`), "func": Baton.Variable(self.`func`), "var": Baton.Variable(self.`var`), "let": Baton.Variable(self.`let`), "import": Baton.Variable(self.`import`), "extension": Baton.Variable(self.`extension`), "operator": Baton.Variable(self.`operator`), "static": Baton.Variable(self.`static`), "default": Baton.Variable(self.`default`), "case": Baton.Variable(self.`case`), "switch": Baton.Variable(self.`switch`), "if": Baton.Variable(self.`if`), "else": Baton.Variable(self.`else`), "for": Baton.Variable(self.`for`), "in": Baton.Variable(self.`in`), "while": Baton.Variable(self.`while`), "repeat": Baton.Variable(self.`repeat`), "return": Baton.Variable(self.`return`), "break": Baton.Variable(self.`break`), "continue": Baton.Variable(self.`continue`), "where": Baton.Variable(self.`where`), "is": Baton.Variable(self.`is`), "as": Baton.Variable(self.`as`), "try": Baton.Variable(self.`try`), "throw": Baton.Variable(self.`throw`), "throws": Baton.Variable(self.`throws`), "guard": Baton.Variable(self.`guard`), "defer": Baton.Variable(self.`defer`), "do": Baton.Variable(self.`do`), "catch": Baton.Variable(self.`catch`), "true": Baton.Variable(self.`true`), "false": Baton.Variable(self.`false`), "nil": Baton.Variable(self.`nil`), "super": Baton.Variable(self.`super`), "internal": Baton.Variable(self.`internal`), "private": Baton.Variable(self.`private`), "public": Baton.Variable(self.`public`), "fileprivate": Baton.Variable(self.`fileprivate`), "open": Baton.Variable(self.`open`), "inout": Baton.Variable(self.`inout`), "typealias": Baton.Variable(self.`typealias`), "associatedtype": Baton.Variable(self.`associatedtype`), "protocol": Baton.Variable(self.`protocol`), "some": Baton.Variable(self.`some`), "any": Baton.Variable(self.`any`), "async": Baton.Variable(self.async), "borrowing": Baton.Variable(self.borrowing), "consume": Baton.Variable(self.consume), "consuming": Baton.Variable(self.consuming), "copy": Baton.Variable(self.copy), "discard": Baton.Variable(self.discard), "each": Baton.Variable(self.each), "isolated": Baton.Variable(self.isolated), "sending": Baton.Variable(self.sending), "then": Baton.Variable(self.then), "unsafe": Baton.Variable(self.unsafe), "anchor": Baton.Variable(self.anchor), "recordID": Baton.Variable(self.recordID), "typeName": Baton.Variable(self.typeName), "satisfied": Baton.Variable(self.satisfied), "missingRequiredField": Baton.Variable(self.missingRequiredField), "fieldErrors": Baton.Variable(self.fieldErrors), "isPresent": Baton.Variable(self.isPresent), "throwing": Baton.Variable(self.throwing), "caught": Baton.Variable(self.caught), "refetchable": Baton.Variable(self.refetchable), "refetch": Baton.Variable(self.refetch), "connection": Baton.Variable(self.connection), "nodes": Baton.Variable(self.nodes), "hasNext": Baton.Variable(self.hasNext), "hasPrevious": Baton.Variable(self.hasPrevious), "isLoadingNext": Baton.Variable(self.isLoadingNext), "isLoadingPrevious": Baton.Variable(self.isLoadingPrevious), "connectionID": Baton.Variable(self.connectionID), "loadNext": Baton.Variable(self.loadNext), "loadPrevious": Baton.Variable(self.loadPrevious), "bound": Baton.Variable(self.bound), "errors": Baton.Variable(self.errors), "child": Baton.Variable(self.child), "missing": Baton.Variable(self.missing), "count": Baton.Variable(self.count), "fields": Baton.Variable(self.fields), "lhs": Baton.Variable(self.lhs), "rhs": Baton.Variable(self.rhs), "hasher": Baton.Variable(self.hasher), "optimistic": Baton.Variable(self.optimistic), "selfValue": Baton.Variable(self.selfValue), "Fragment": Baton.Variable(self.Fragment), "Spread": Baton.Variable(self.Spread), "Owner": Baton.Variable(self.Owner), "Query": Baton.Variable(self.Query), "Operation": Baton.Variable(self.Operation), "RefetchQuery": Baton.Variable(self.RefetchQuery), "name": Baton.Variable(self.name), "persistedID": Baton.Variable(self.persistedID), "text": Baton.Variable(self.text), "plan": Baton.Variable(self.plan), "errorBehavior": Baton.Variable(self.errorBehavior), "throwsOnFieldError": Baton.Variable(self.throwsOnFieldError), "bubbles": Baton.Variable(self.bubbles), "hasDeferred": Baton.Variable(self.hasDeferred), "Action": Baton.Variable(self.Action), "OptimisticResponse": Baton.Variable(self.OptimisticResponse), "hash": Baton.Variable(self.hash), "commit": Baton.Variable(self.commit), "callAsFunction": Baton.Variable(self.callAsFunction), "Op": Baton.Variable(self.Op), "variable": Baton.Variable(self.variable), "phase": Baton.Variable(self.phase), "isRefreshing": Baton.Variable(self.isRefreshing), "isStale": Baton.Variable(self.isStale), "retry": Baton.Variable(self.retry), "subscription": Baton.Variable(self.subscription), "Sites": Baton.Variable(self.Sites), "AbstractSlots": Baton.Variable(self.AbstractSlots), "schemaDigest": Baton.Variable(self.schemaDigest), "Swift": Baton.Variable(self.Swift), "Set": Baton.Variable(self.Set), "Result": Baton.Variable(self.Result), "Optional": Baton.Variable(self.Optional), "String": Baton.Variable(self.String), "Int": Baton.Variable(self.Int), "Double": Baton.Variable(self.Double), "Bool": Baton.Variable(self.Bool), "MainActor": Baton.Variable(self.MainActor), "Hasher": Baton.Variable(self.Hasher), "Sendable": Baton.Variable(self.Sendable)])
+        Baton.Variables(["Type": Baton.Variable(self.`Type`), "Protocol": Baton.Variable(self.`Protocol`), "Any": Baton.Variable(self.`Any`), "self": Baton.Variable(self.`self`), "init": Baton.Variable(self.`init`), "deinit": Baton.Variable(self.`deinit`), "subscript": Baton.Variable(self.`subscript`), "class": Baton.Variable(self.`class`), "struct": Baton.Variable(self.`struct`), "enum": Baton.Variable(self.`enum`), "func": Baton.Variable(self.`func`), "var": Baton.Variable(self.`var`), "let": Baton.Variable(self.`let`), "import": Baton.Variable(self.`import`), "extension": Baton.Variable(self.`extension`), "operator": Baton.Variable(self.`operator`), "static": Baton.Variable(self.`static`), "default": Baton.Variable(self.`default`), "case": Baton.Variable(self.`case`), "switch": Baton.Variable(self.`switch`), "if": Baton.Variable(self.`if`), "else": Baton.Variable(self.`else`), "for": Baton.Variable(self.`for`), "in": Baton.Variable(self.`in`), "while": Baton.Variable(self.`while`), "repeat": Baton.Variable(self.`repeat`), "return": Baton.Variable(self.`return`), "break": Baton.Variable(self.`break`), "continue": Baton.Variable(self.`continue`), "where": Baton.Variable(self.`where`), "is": Baton.Variable(self.`is`), "as": Baton.Variable(self.`as`), "try": Baton.Variable(self.`try`), "throw": Baton.Variable(self.`throw`), "throws": Baton.Variable(self.`throws`), "guard": Baton.Variable(self.`guard`), "defer": Baton.Variable(self.`defer`), "do": Baton.Variable(self.`do`), "catch": Baton.Variable(self.`catch`), "true": Baton.Variable(self.`true`), "false": Baton.Variable(self.`false`), "nil": Baton.Variable(self.`nil`), "super": Baton.Variable(self.`super`), "internal": Baton.Variable(self.`internal`), "private": Baton.Variable(self.`private`), "public": Baton.Variable(self.`public`), "fileprivate": Baton.Variable(self.`fileprivate`), "open": Baton.Variable(self.`open`), "inout": Baton.Variable(self.`inout`), "typealias": Baton.Variable(self.`typealias`), "associatedtype": Baton.Variable(self.`associatedtype`), "protocol": Baton.Variable(self.`protocol`), "some": Baton.Variable(self.`some`), "any": Baton.Variable(self.`any`), "rethrows": Baton.Variable(self.`rethrows`), "fallthrough": Baton.Variable(self.`fallthrough`), "precedencegroup": Baton.Variable(self.`precedencegroup`), "_": Baton.Variable(self.`_`), "Self": Baton.Variable(self.`Self`), "async": Baton.Variable(self.async), "borrowing": Baton.Variable(self.`borrowing`), "consume": Baton.Variable(self.consume), "consuming": Baton.Variable(self.`consuming`), "copy": Baton.Variable(self.copy), "discard": Baton.Variable(self.discard), "each": Baton.Variable(self.`each`), "isolated": Baton.Variable(self.`isolated`), "sending": Baton.Variable(self.`sending`), "then": Baton.Variable(self.then), "unsafe": Baton.Variable(self.unsafe), "await": Baton.Variable(self.`await`), "anchor": Baton.Variable(self.anchor), "recordID": Baton.Variable(self.recordID), "typeName": Baton.Variable(self.typeName), "satisfied": Baton.Variable(self.satisfied), "missingRequiredField": Baton.Variable(self.missingRequiredField), "fieldErrors": Baton.Variable(self.fieldErrors), "isPresent": Baton.Variable(self.isPresent), "throwing": Baton.Variable(self.throwing), "caught": Baton.Variable(self.caught), "refetchable": Baton.Variable(self.refetchable), "refetch": Baton.Variable(self.refetch), "connection": Baton.Variable(self.connection), "nodes": Baton.Variable(self.nodes), "hasNext": Baton.Variable(self.hasNext), "hasPrevious": Baton.Variable(self.hasPrevious), "isLoadingNext": Baton.Variable(self.isLoadingNext), "isLoadingPrevious": Baton.Variable(self.isLoadingPrevious), "connectionID": Baton.Variable(self.connectionID), "loadNext": Baton.Variable(self.loadNext), "loadPrevious": Baton.Variable(self.loadPrevious), "bound": Baton.Variable(self.bound), "errors": Baton.Variable(self.errors), "child": Baton.Variable(self.child), "missing": Baton.Variable(self.missing), "count": Baton.Variable(self.count), "fields": Baton.Variable(self.fields), "lhs": Baton.Variable(self.lhs), "rhs": Baton.Variable(self.rhs), "hasher": Baton.Variable(self.hasher), "optimistic": Baton.Variable(self.optimistic), "selfValue": Baton.Variable(self.selfValue), "Fragment": Baton.Variable(self.Fragment), "Spread": Baton.Variable(self.Spread), "Owner": Baton.Variable(self.Owner), "Query": Baton.Variable(self.Query), "Operation": Baton.Variable(self.Operation), "RefetchQuery": Baton.Variable(self.RefetchQuery), "name": Baton.Variable(self.name), "persistedID": Baton.Variable(self.persistedID), "text": Baton.Variable(self.text), "plan": Baton.Variable(self.plan), "errorBehavior": Baton.Variable(self.errorBehavior), "throwsOnFieldError": Baton.Variable(self.throwsOnFieldError), "bubbles": Baton.Variable(self.bubbles), "hasDeferred": Baton.Variable(self.hasDeferred), "Action": Baton.Variable(self.Action), "OptimisticResponse": Baton.Variable(self.OptimisticResponse), "hash": Baton.Variable(self.hash), "commit": Baton.Variable(self.commit), "callAsFunction": Baton.Variable(self.callAsFunction), "Op": Baton.Variable(self.Op), "variable": Baton.Variable(self.variable), "retry": Baton.Variable(self.retry), "subscription": Baton.Variable(self.subscription), "Sites": Baton.Variable(self.Sites), "AbstractSlots": Baton.Variable(self.AbstractSlots), "schemaDigest": Baton.Variable(self.schemaDigest), "Swift": Baton.Variable(self.Swift), "Set": Baton.Variable(self.Set), "Result": Baton.Variable(self.Result), "Optional": Baton.Variable(self.Optional), "String": Baton.Variable(self.String), "Int": Baton.Variable(self.Int), "Double": Baton.Variable(self.Double), "Bool": Baton.Variable(self.Bool), "MainActor": Baton.Variable(self.MainActor), "Hasher": Baton.Variable(self.Hasher), "Sendable": Baton.Variable(self.Sendable)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.`Type` == rhs.`Type` && lhs.`Protocol` == rhs.`Protocol` && lhs.`Any` == rhs.`Any` && lhs.`self` == rhs.`self` && lhs.`init` == rhs.`init` && lhs.`deinit` == rhs.`deinit` && lhs.`subscript` == rhs.`subscript` && lhs.`class` == rhs.`class` && lhs.`struct` == rhs.`struct` && lhs.`enum` == rhs.`enum` && lhs.`func` == rhs.`func` && lhs.`var` == rhs.`var` && lhs.`let` == rhs.`let` && lhs.`import` == rhs.`import` && lhs.`extension` == rhs.`extension` && lhs.`operator` == rhs.`operator` && lhs.`static` == rhs.`static` && lhs.`default` == rhs.`default` && lhs.`case` == rhs.`case` && lhs.`switch` == rhs.`switch` && lhs.`if` == rhs.`if` && lhs.`else` == rhs.`else` && lhs.`for` == rhs.`for` && lhs.`in` == rhs.`in` && lhs.`while` == rhs.`while` && lhs.`repeat` == rhs.`repeat` && lhs.`return` == rhs.`return` && lhs.`break` == rhs.`break` && lhs.`continue` == rhs.`continue` && lhs.`where` == rhs.`where` && lhs.`is` == rhs.`is` && lhs.`as` == rhs.`as` && lhs.`try` == rhs.`try` && lhs.`throw` == rhs.`throw` && lhs.`throws` == rhs.`throws` && lhs.`guard` == rhs.`guard` && lhs.`defer` == rhs.`defer` && lhs.`do` == rhs.`do` && lhs.`catch` == rhs.`catch` && lhs.`true` == rhs.`true` && lhs.`false` == rhs.`false` && lhs.`nil` == rhs.`nil` && lhs.`super` == rhs.`super` && lhs.`internal` == rhs.`internal` && lhs.`private` == rhs.`private` && lhs.`public` == rhs.`public` && lhs.`fileprivate` == rhs.`fileprivate` && lhs.`open` == rhs.`open` && lhs.`inout` == rhs.`inout` && lhs.`typealias` == rhs.`typealias` && lhs.`associatedtype` == rhs.`associatedtype` && lhs.`protocol` == rhs.`protocol` && lhs.`some` == rhs.`some` && lhs.`any` == rhs.`any` && lhs.async == rhs.async && lhs.borrowing == rhs.borrowing && lhs.consume == rhs.consume && lhs.consuming == rhs.consuming && lhs.copy == rhs.copy && lhs.discard == rhs.discard && lhs.each == rhs.each && lhs.isolated == rhs.isolated && lhs.sending == rhs.sending && lhs.then == rhs.then && lhs.unsafe == rhs.unsafe && lhs.anchor == rhs.anchor && lhs.recordID == rhs.recordID && lhs.typeName == rhs.typeName && lhs.satisfied == rhs.satisfied && lhs.missingRequiredField == rhs.missingRequiredField && lhs.fieldErrors == rhs.fieldErrors && lhs.isPresent == rhs.isPresent && lhs.throwing == rhs.throwing && lhs.caught == rhs.caught && lhs.refetchable == rhs.refetchable && lhs.refetch == rhs.refetch && lhs.connection == rhs.connection && lhs.nodes == rhs.nodes && lhs.hasNext == rhs.hasNext && lhs.hasPrevious == rhs.hasPrevious && lhs.isLoadingNext == rhs.isLoadingNext && lhs.isLoadingPrevious == rhs.isLoadingPrevious && lhs.connectionID == rhs.connectionID && lhs.loadNext == rhs.loadNext && lhs.loadPrevious == rhs.loadPrevious && lhs.bound == rhs.bound && lhs.errors == rhs.errors && lhs.child == rhs.child && lhs.missing == rhs.missing && lhs.count == rhs.count && lhs.fields == rhs.fields && lhs.lhs == rhs.lhs && lhs.rhs == rhs.rhs && lhs.hasher == rhs.hasher && lhs.optimistic == rhs.optimistic && lhs.selfValue == rhs.selfValue && lhs.Fragment == rhs.Fragment && lhs.Spread == rhs.Spread && lhs.Owner == rhs.Owner && lhs.Query == rhs.Query && lhs.Operation == rhs.Operation && lhs.RefetchQuery == rhs.RefetchQuery && lhs.name == rhs.name && lhs.persistedID == rhs.persistedID && lhs.text == rhs.text && lhs.plan == rhs.plan && lhs.errorBehavior == rhs.errorBehavior && lhs.throwsOnFieldError == rhs.throwsOnFieldError && lhs.bubbles == rhs.bubbles && lhs.hasDeferred == rhs.hasDeferred && lhs.Action == rhs.Action && lhs.OptimisticResponse == rhs.OptimisticResponse && lhs.hash == rhs.hash && lhs.commit == rhs.commit && lhs.callAsFunction == rhs.callAsFunction && lhs.Op == rhs.Op && lhs.variable == rhs.variable && lhs.phase == rhs.phase && lhs.isRefreshing == rhs.isRefreshing && lhs.isStale == rhs.isStale && lhs.retry == rhs.retry && lhs.subscription == rhs.subscription && lhs.Sites == rhs.Sites && lhs.AbstractSlots == rhs.AbstractSlots && lhs.schemaDigest == rhs.schemaDigest && lhs.Swift == rhs.Swift && lhs.Set == rhs.Set && lhs.Result == rhs.Result && lhs.Optional == rhs.Optional && lhs.String == rhs.String && lhs.Int == rhs.Int && lhs.Double == rhs.Double && lhs.Bool == rhs.Bool && lhs.MainActor == rhs.MainActor && lhs.Hasher == rhs.Hasher && lhs.Sendable == rhs.Sendable
+        lhs.`Type` == rhs.`Type` && lhs.`Protocol` == rhs.`Protocol` && lhs.`Any` == rhs.`Any` && lhs.`self` == rhs.`self` && lhs.`init` == rhs.`init` && lhs.`deinit` == rhs.`deinit` && lhs.`subscript` == rhs.`subscript` && lhs.`class` == rhs.`class` && lhs.`struct` == rhs.`struct` && lhs.`enum` == rhs.`enum` && lhs.`func` == rhs.`func` && lhs.`var` == rhs.`var` && lhs.`let` == rhs.`let` && lhs.`import` == rhs.`import` && lhs.`extension` == rhs.`extension` && lhs.`operator` == rhs.`operator` && lhs.`static` == rhs.`static` && lhs.`default` == rhs.`default` && lhs.`case` == rhs.`case` && lhs.`switch` == rhs.`switch` && lhs.`if` == rhs.`if` && lhs.`else` == rhs.`else` && lhs.`for` == rhs.`for` && lhs.`in` == rhs.`in` && lhs.`while` == rhs.`while` && lhs.`repeat` == rhs.`repeat` && lhs.`return` == rhs.`return` && lhs.`break` == rhs.`break` && lhs.`continue` == rhs.`continue` && lhs.`where` == rhs.`where` && lhs.`is` == rhs.`is` && lhs.`as` == rhs.`as` && lhs.`try` == rhs.`try` && lhs.`throw` == rhs.`throw` && lhs.`throws` == rhs.`throws` && lhs.`guard` == rhs.`guard` && lhs.`defer` == rhs.`defer` && lhs.`do` == rhs.`do` && lhs.`catch` == rhs.`catch` && lhs.`true` == rhs.`true` && lhs.`false` == rhs.`false` && lhs.`nil` == rhs.`nil` && lhs.`super` == rhs.`super` && lhs.`internal` == rhs.`internal` && lhs.`private` == rhs.`private` && lhs.`public` == rhs.`public` && lhs.`fileprivate` == rhs.`fileprivate` && lhs.`open` == rhs.`open` && lhs.`inout` == rhs.`inout` && lhs.`typealias` == rhs.`typealias` && lhs.`associatedtype` == rhs.`associatedtype` && lhs.`protocol` == rhs.`protocol` && lhs.`some` == rhs.`some` && lhs.`any` == rhs.`any` && lhs.`rethrows` == rhs.`rethrows` && lhs.`fallthrough` == rhs.`fallthrough` && lhs.`precedencegroup` == rhs.`precedencegroup` && lhs.`_` == rhs.`_` && lhs.`Self` == rhs.`Self` && lhs.async == rhs.async && lhs.`borrowing` == rhs.`borrowing` && lhs.consume == rhs.consume && lhs.`consuming` == rhs.`consuming` && lhs.copy == rhs.copy && lhs.discard == rhs.discard && lhs.`each` == rhs.`each` && lhs.`isolated` == rhs.`isolated` && lhs.`sending` == rhs.`sending` && lhs.then == rhs.then && lhs.unsafe == rhs.unsafe && lhs.`await` == rhs.`await` && lhs.anchor == rhs.anchor && lhs.recordID == rhs.recordID && lhs.typeName == rhs.typeName && lhs.satisfied == rhs.satisfied && lhs.missingRequiredField == rhs.missingRequiredField && lhs.fieldErrors == rhs.fieldErrors && lhs.isPresent == rhs.isPresent && lhs.throwing == rhs.throwing && lhs.caught == rhs.caught && lhs.refetchable == rhs.refetchable && lhs.refetch == rhs.refetch && lhs.connection == rhs.connection && lhs.nodes == rhs.nodes && lhs.hasNext == rhs.hasNext && lhs.hasPrevious == rhs.hasPrevious && lhs.isLoadingNext == rhs.isLoadingNext && lhs.isLoadingPrevious == rhs.isLoadingPrevious && lhs.connectionID == rhs.connectionID && lhs.loadNext == rhs.loadNext && lhs.loadPrevious == rhs.loadPrevious && lhs.bound == rhs.bound && lhs.errors == rhs.errors && lhs.child == rhs.child && lhs.missing == rhs.missing && lhs.count == rhs.count && lhs.fields == rhs.fields && lhs.lhs == rhs.lhs && lhs.rhs == rhs.rhs && lhs.hasher == rhs.hasher && lhs.optimistic == rhs.optimistic && lhs.selfValue == rhs.selfValue && lhs.Fragment == rhs.Fragment && lhs.Spread == rhs.Spread && lhs.Owner == rhs.Owner && lhs.Query == rhs.Query && lhs.Operation == rhs.Operation && lhs.RefetchQuery == rhs.RefetchQuery && lhs.name == rhs.name && lhs.persistedID == rhs.persistedID && lhs.text == rhs.text && lhs.plan == rhs.plan && lhs.errorBehavior == rhs.errorBehavior && lhs.throwsOnFieldError == rhs.throwsOnFieldError && lhs.bubbles == rhs.bubbles && lhs.hasDeferred == rhs.hasDeferred && lhs.Action == rhs.Action && lhs.OptimisticResponse == rhs.OptimisticResponse && lhs.hash == rhs.hash && lhs.commit == rhs.commit && lhs.callAsFunction == rhs.callAsFunction && lhs.Op == rhs.Op && lhs.variable == rhs.variable && lhs.retry == rhs.retry && lhs.subscription == rhs.subscription && lhs.Sites == rhs.Sites && lhs.AbstractSlots == rhs.AbstractSlots && lhs.schemaDigest == rhs.schemaDigest && lhs.Swift == rhs.Swift && lhs.Set == rhs.Set && lhs.Result == rhs.Result && lhs.Optional == rhs.Optional && lhs.String == rhs.String && lhs.Int == rhs.Int && lhs.Double == rhs.Double && lhs.Bool == rhs.Bool && lhs.MainActor == rhs.MainActor && lhs.Hasher == rhs.Hasher && lhs.Sendable == rhs.Sendable
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -13816,17 +13264,23 @@ query HostileVariables(
         hasher.combine(self.`protocol`)
         hasher.combine(self.`some`)
         hasher.combine(self.`any`)
+        hasher.combine(self.`rethrows`)
+        hasher.combine(self.`fallthrough`)
+        hasher.combine(self.`precedencegroup`)
+        hasher.combine(self.`_`)
+        hasher.combine(self.`Self`)
         hasher.combine(self.async)
-        hasher.combine(self.borrowing)
+        hasher.combine(self.`borrowing`)
         hasher.combine(self.consume)
-        hasher.combine(self.consuming)
+        hasher.combine(self.`consuming`)
         hasher.combine(self.copy)
         hasher.combine(self.discard)
-        hasher.combine(self.each)
-        hasher.combine(self.isolated)
-        hasher.combine(self.sending)
+        hasher.combine(self.`each`)
+        hasher.combine(self.`isolated`)
+        hasher.combine(self.`sending`)
         hasher.combine(self.then)
         hasher.combine(self.unsafe)
+        hasher.combine(self.`await`)
         hasher.combine(self.anchor)
         hasher.combine(self.recordID)
         hasher.combine(self.typeName)
@@ -13879,9 +13333,6 @@ query HostileVariables(
         hasher.combine(self.callAsFunction)
         hasher.combine(self.Op)
         hasher.combine(self.variable)
-        hasher.combine(self.phase)
-        hasher.combine(self.isRefreshing)
-        hasher.combine(self.isStale)
         hasher.combine(self.retry)
         hasher.combine(self.subscription)
         hasher.combine(self.Sites)
@@ -13901,7 +13352,7 @@ query HostileVariables(
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("charactersByIds", key: .dynamic(Slots.Query.charactersByIds_dbd7fc), plural: true, selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+            .linked("charactersByIds", key: .dynamic(Slots.Query.charactersByIds_bb65a3), plural: true, selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
                 .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
             ])),
         ]))
@@ -13910,11 +13361,11 @@ query HostileVariables(
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Query"
-        @MainActor public var charactersByIds: Baton.List<CharactersByIds>? { anchor.list(anchor.owner.slot(Slots.Query.charactersByIds_dbd7fc)) }
+        @MainActor public var charactersByIds: Baton.List<CharactersByIds>? { anchor.list(anchor.owner.slot(Slots.Query.charactersByIds_bb65a3)) }
         /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
         @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
             var errors: [Baton.FieldError] = []
-            anchor.collectErrors(list: anchor.owner.slot(Slots.Query.charactersByIds_dbd7fc), within: CharactersByIds.fieldErrors, into: &errors)
+            anchor.collectErrors(list: anchor.owner.slot(Slots.Query.charactersByIds_bb65a3), within: CharactersByIds.fieldErrors, into: &errors)
             return errors
         }
         /// The lens, or the field errors in it as a thrown `FieldErrors`.
@@ -13922,7 +13373,7 @@ query HostileVariables(
         /// The lens, or the field errors in it as a `Result`.
         @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
             let errors = fieldErrors(anchor)
-            return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
         }
 
         nonisolated public struct CharactersByIds: Baton.Lens {
@@ -13941,7 +13392,7 @@ query HostileVariables(
             /// The lens, or the field errors in it as a `Result`.
             @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
                 let errors = fieldErrors(anchor)
-                return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+                return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
             }
         }
     }

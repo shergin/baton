@@ -26,7 +26,7 @@ nonisolated public struct TestCaughtAppearances_character: Baton.Lens {
         /// The lens, or the field errors in it as a `Result`.
         @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
             let errors = fieldErrors(anchor)
-            return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
         }
     }
 }
@@ -114,7 +114,7 @@ nonisolated public struct TestThrowingOrigin_character: Baton.Lens {
     /// The lens, or the field errors in it as a `Result`.
     @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
         let errors = fieldErrors(anchor)
-        return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+        return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
     }
 
     nonisolated public struct Origin: Baton.Lens {
@@ -133,7 +133,7 @@ nonisolated public struct TestThrowingOrigin_character: Baton.Lens {
         /// The lens, or the field errors in it as a `Result`.
         @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
             let errors = fieldErrors(anchor)
-            return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
         }
     }
 }
@@ -214,7 +214,7 @@ query TestCaughtEpisodes(
                 /// The lens, or the field errors in it as a `Result`.
                 @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
                     let errors = fieldErrors(anchor)
-                    return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+                    return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
                 }
             }
         }
@@ -292,7 +292,7 @@ fragment TestCaughtAppearances_character on Character {
         /// The lens, or the field errors in it as a `Result`.
         @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
             let errors = fieldErrors(anchor)
-            return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
         }
 
         nonisolated public struct Character: Baton.Lens {
@@ -318,7 +318,7 @@ fragment TestCaughtAppearances_character on Character {
             /// The lens, or the field errors in it as a `Result`.
             @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
                 let errors = fieldErrors(anchor)
-                return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+                return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
             }
         }
     }
@@ -390,7 +390,7 @@ query TestCollidingErrors(
         /// The lens, or the field errors in it as a `Result`.
         @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
             let errors = fieldErrors(anchor)
-            return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
         }
 
         nonisolated public struct TypesLens: Baton.Lens {
@@ -409,7 +409,7 @@ query TestCollidingErrors(
             /// The lens, or the field errors in it as a `Result`.
             @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
                 let errors = fieldErrors(anchor)
-                return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+                return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
             }
         }
 
@@ -431,7 +431,7 @@ query TestCollidingErrors(
             /// The lens, or the field errors in it as a `Result`.
             @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
                 let errors = fieldErrors(anchor)
-                return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+                return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
             }
         }
     }
@@ -956,7 +956,7 @@ fragment TestNotes_character_35kO5h on Character {
             public static let typeName = "Character"
             @MainActor public var id: String? { anchor.string(Slots.Character.id) }
             @MainActor public var testNotes: TestNotes_character {
-                let bound = anchor.binding(Sites.TestReservedNames_testNotes) { ["count": .int(1), "cursor": .null] }
+                let bound = anchor.binding(Sites.TestReservedNames_testNotes) { () -> [String: Baton.Variable?] in ["count": .int(1), "cursor": .null] }
                 return .init(anchor: bound)
             }
         }
@@ -1041,7 +1041,7 @@ query TestStrictEpisodes(
         /// The lens, or the field errors in it as a `Result`.
         @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
             let errors = fieldErrors(anchor)
-            return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
         }
 
         nonisolated public struct Character: Baton.Lens {
@@ -1062,7 +1062,7 @@ query TestStrictEpisodes(
             /// The lens, or the field errors in it as a `Result`.
             @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
                 let errors = fieldErrors(anchor)
-                return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+                return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
             }
 
             nonisolated public struct Episode: Baton.Lens {
@@ -1083,7 +1083,7 @@ query TestStrictEpisodes(
                 /// The lens, or the field errors in it as a `Result`.
                 @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
                     let errors = fieldErrors(anchor)
-                    return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+                    return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
                 }
             }
         }
@@ -1154,7 +1154,7 @@ query TestStrictOrigin(
         /// The lens, or the field errors in it as a `Result`.
         @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
             let errors = fieldErrors(anchor)
-            return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
         }
 
         nonisolated public struct Character: Baton.Lens {
@@ -1175,7 +1175,7 @@ query TestStrictOrigin(
             /// The lens, or the field errors in it as a `Result`.
             @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
                 let errors = fieldErrors(anchor)
-                return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+                return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
             }
 
             nonisolated public struct Origin: Baton.Lens {
@@ -1196,7 +1196,7 @@ query TestStrictOrigin(
                 /// The lens, or the field errors in it as a `Result`.
                 @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
                     let errors = fieldErrors(anchor)
-                    return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+                    return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
                 }
             }
         }
@@ -1482,7 +1482,7 @@ query TestSwiftNames(
             /// The lens, or the field errors in it as a `Result`.
             @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
                 let errors = fieldErrors(anchor)
-                return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+                return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
             }
         }
 
@@ -1572,7 +1572,7 @@ query TestThrowingNode(
         /// The lens, or the field errors in it as a `Result`.
         @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
             let errors = fieldErrors(anchor)
-            return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
         }
 
         nonisolated public struct Node: Baton.Lens {
@@ -1593,7 +1593,7 @@ query TestThrowingNode(
             /// The lens, or the field errors in it as a `Result`.
             @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
                 let errors = fieldErrors(anchor)
-                return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+                return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
             }
 
             nonisolated public struct AsCharacter: Baton.Lens {
@@ -1612,7 +1612,7 @@ query TestThrowingNode(
                 /// The lens, or the field errors in it as a `Result`.
                 @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
                     let errors = fieldErrors(anchor)
-                    return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+                    return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
                 }
             }
         }
@@ -1841,7 +1841,7 @@ fragment TestNotes_character_41grAF on Character {
             @MainActor public var id: String? { anchor.string(Slots.Character.id) }
             @MainActor public var name: String? { anchor.string(Slots.Character.name) }
             @MainActor public var testNotes: TestNotes_character {
-                let bound = anchor.binding(Sites.TestTwoScopes_testNotes) { ["count": .int(1), "cursor": .null] }
+                let bound = anchor.binding(Sites.TestTwoScopes_testNotes) { () -> [String: Baton.Variable?] in ["count": .int(1), "cursor": .null] }
                 return .init(anchor: bound)
             }
         }
@@ -1853,7 +1853,7 @@ fragment TestNotes_character_41grAF on Character {
             @MainActor public var id: String? { anchor.string(Slots.Character.id) }
             @MainActor public var name: String? { anchor.string(Slots.Character.name) }
             @MainActor public var testNotes: TestNotes_character {
-                let bound = anchor.binding(Sites.TestTwoScopes_testNotes_2) { ["count": .int(3), "cursor": .null] }
+                let bound = anchor.binding(Sites.TestTwoScopes_testNotes_2) { () -> [String: Baton.Variable?] in ["count": .int(3), "cursor": .null] }
                 return .init(anchor: bound)
             }
         }
@@ -1933,7 +1933,7 @@ fragment TestAppearances_character on Character {
         /// The lens, or the field errors in it as a `Result`.
         @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
             let errors = fieldErrors(anchor)
-            return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
         }
 
         nonisolated public struct Character: Baton.Lens {
@@ -1959,7 +1959,7 @@ fragment TestAppearances_character on Character {
             /// The lens, or the field errors in it as a `Result`.
             @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
                 let errors = fieldErrors(anchor)
-                return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+                return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
             }
         }
     }

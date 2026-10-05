@@ -17,8 +17,12 @@ pub(super) fn builder(writer: &mut Writer, builder: &BuilderPlan) {
         "A partial response to show before the server answers; absent fields leave the store untouched.",
     );
     writer.block(
-        format!("nonisolated public struct {}: Sendable", builder.name),
+        format!(
+            "nonisolated public struct {}: Sendable",
+            SwiftType::named(&builder.name)
+        ),
         |writer| {
+            let collected = &builder.collected;
             let mut parameters: Vec<String> = Vec::new();
             let mut assignments: Vec<String> = Vec::new();
             let mut renders: Vec<String> = Vec::new();
@@ -54,15 +58,15 @@ pub(super) fn builder(writer: &mut Writer, builder: &BuilderPlan) {
                 };
                 renders.push(match &field.value {
                     BuilderValue::Scalar { .. } => {
-                        format!("if let {bind} {{ fields[{key}] = .init({local}) }}")
+                        format!("if let {bind} {{ {collected}[{key}] = .init({local}) }}")
                     }
                     BuilderValue::Object { plural: true, .. } => {
                         format!(
-                            "if let {bind} {{ fields[{key}] = .list({local}.map(\\.variable)) }}"
+                            "if let {bind} {{ {collected}[{key}] = .list({local}.map(\\.variable)) }}"
                         )
                     }
                     BuilderValue::Object { plural: false, .. } => {
-                        format!("if let {bind} {{ fields[{key}] = {local}.variable }}")
+                        format!("if let {bind} {{ {collected}[{key}] = {local}.variable }}")
                     }
                 });
             }
@@ -75,11 +79,11 @@ pub(super) fn builder(writer: &mut Writer, builder: &BuilderPlan) {
                 },
             );
             writer.block(format!("public var variable: {variable}"), |writer| {
-                writer.line(format!("var fields: [String: {variable}] = [:]"));
+                writer.line(format!("var {collected}: [String: {variable}] = [:]"));
                 for render in &renders {
                     writer.line(render);
                 }
-                writer.line("return .object(fields)");
+                writer.line(format!("return .object({collected})"));
             });
             for child in &builder.nested {
                 writer.blank();

@@ -414,17 +414,20 @@ fn underscored(name: &str, hidden: &[&str]) -> String {
 }
 
 /// An argument label at a call site. Swift takes every keyword there
-/// without backticks but `inout`, `var` and `let`, and warns about an
-/// escaped one, which a build with warnings as errors refuses.
+/// without backticks but `inout`, reads a bare `_` as no label at all, and
+/// warns about any other escaped one, `var` and `let` among them, which a
+/// build with warnings as errors refuses. Swift 6.2, the oldest the
+/// package supports, reads labels the same way.
 pub fn call_label(name: &str) -> String {
-    if matches!(name, "inout" | "var" | "let") {
+    if matches!(name, "inout" | "_") {
         format!("`{name}`")
     } else {
         name.to_string()
     }
 }
 
-/// Escapes a property name that is a Swift keyword.
+/// Escapes a name that Swift would read as a keyword where the generated
+/// code declares or reads it.
 pub fn escape(name: &str) -> String {
     const KEYWORDS: &[&str] = &[
         "Type",
@@ -482,6 +485,21 @@ pub fn escape(name: &str) -> String {
         "protocol",
         "some",
         "any",
+        "rethrows",
+        "fallthrough",
+        "precedencegroup",
+        "_",
+        // A contextual keyword that starts an expression, where a name is
+        // read: `self.await = await` awaits nothing.
+        "await",
+        // Ones that start a type, where a fragment or an operation is
+        // named: `typealias Query = each` expects a pack, and
+        // `typealias Fragment = borrowing` the type it borrows.
+        "each",
+        "borrowing",
+        "consuming",
+        "isolated",
+        "sending",
     ];
     if KEYWORDS.contains(&name) {
         format!("`{name}`")

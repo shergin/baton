@@ -18,7 +18,7 @@ nonisolated public struct Fragment: Baton.Lens {
     /// The lens, or the field errors in it as a `Result`.
     @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
         let errors = fieldErrors(anchor)
-        return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+        return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
     }
 }
 
@@ -41,7 +41,7 @@ nonisolated public struct TestCaughtProfile_character: Baton.Lens {
     /// The lens, or the field errors in it as a `Result`.
     @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
         let errors = fieldErrors(anchor)
-        return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+        return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
     }
 
     nonisolated public struct Origin: Baton.Lens {
@@ -60,7 +60,7 @@ nonisolated public struct TestCaughtProfile_character: Baton.Lens {
         /// The lens, or the field errors in it as a `Result`.
         @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
             let errors = fieldErrors(anchor)
-            return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
         }
     }
 }
@@ -82,7 +82,7 @@ nonisolated public struct TestCaughtStrict_character: Baton.Lens {
     /// The lens, or the field errors in it as a `Result`.
     @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
         let errors = fieldErrors(anchor)
-        return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+        return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
     }
 }
 
@@ -504,11 +504,11 @@ mutation TestBuilderNames(
     }
 }
 
-extension Baton.MutationAction where Op == TestBuilderNames {
+extension TestBuilderNames.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
-    public func callAsFunction(id: String, favorite: Bool, `self` selfValue: String, optimistic: TestBuilderNames.OptimisticResponse? = nil) async throws -> TestBuilderNames.Data {
-        try await self.commit(TestBuilderNames(id: id, favorite: favorite, self: selfValue), optimistic: optimistic?.variable)
+    public func callAsFunction(id: String, favorite: Bool, `self` selfValue: String, optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
+        try await self.commit(.init(id: id, favorite: favorite, self: selfValue), optimistic: optimistic?.variable)
     }
 }
 
@@ -759,11 +759,11 @@ mutation TestCommitVariable(
     }
 }
 
-extension Baton.MutationAction where Op == TestCommitVariable {
+extension TestCommitVariable.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
-    public func callAsFunction(commit: String, optimistic: TestCommitVariable.OptimisticResponse? = nil) async throws -> TestCommitVariable.Data {
-        try await self.commit(TestCommitVariable(commit: commit), optimistic: optimistic?.variable)
+    public func callAsFunction(commit: String, optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
+        try await self.commit(.init(commit: commit), optimistic: optimistic?.variable)
     }
 }
 
@@ -1324,11 +1324,11 @@ mutation TestListPayload {
     }
 }
 
-extension Baton.MutationAction where Op == TestListPayload {
+extension TestListPayload.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
-    public func callAsFunction(optimistic: TestListPayload.OptimisticResponse? = nil) async throws -> TestListPayload.Data {
-        try await self.commit(TestListPayload(), optimistic: optimistic?.variable)
+    public func callAsFunction(optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
+        try await self.commit(.init(), optimistic: optimistic?.variable)
     }
 }
 
@@ -1520,11 +1520,11 @@ mutation TestModuleNamedPayload(
     }
 }
 
-extension Baton.MutationAction where Op == TestModuleNamedPayload {
+extension TestModuleNamedPayload.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
-    public func callAsFunction(id: String, optimistic: TestModuleNamedPayload.OptimisticResponse? = nil) async throws -> TestModuleNamedPayload.Data {
-        try await self.commit(TestModuleNamedPayload(id: id), optimistic: optimistic?.variable)
+    public func callAsFunction(id: String, optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
+        try await self.commit(.init(id: id), optimistic: optimistic?.variable)
     }
 }
 

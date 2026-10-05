@@ -496,11 +496,11 @@ mutation TestAddNote(
     }
 }
 
-extension Baton.MutationAction where Op == TestAddNote {
+extension TestAddNote.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
-    public func callAsFunction(characterId: String, text: String, connections: [String], optimistic: TestAddNote.OptimisticResponse? = nil) async throws -> TestAddNote.Data {
-        try await self.commit(TestAddNote(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
+    public func callAsFunction(characterId: String, text: String, connections: [String], optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
+        try await self.commit(.init(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
     }
 }
 
@@ -652,11 +652,11 @@ mutation TestAddNoteFirst(
     }
 }
 
-extension Baton.MutationAction where Op == TestAddNoteFirst {
+extension TestAddNoteFirst.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
-    public func callAsFunction(characterId: String, text: String, connections: [String], optimistic: TestAddNoteFirst.OptimisticResponse? = nil) async throws -> TestAddNoteFirst.Data {
-        try await self.commit(TestAddNoteFirst(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
+    public func callAsFunction(characterId: String, text: String, connections: [String], optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
+        try await self.commit(.init(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
     }
 }
 
@@ -778,11 +778,11 @@ mutation TestAddNoteNode(
     }
 }
 
-extension Baton.MutationAction where Op == TestAddNoteNode {
+extension TestAddNoteNode.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
-    public func callAsFunction(characterId: String, text: String, connections: [String], optimistic: TestAddNoteNode.OptimisticResponse? = nil) async throws -> TestAddNoteNode.Data {
-        try await self.commit(TestAddNoteNode(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
+    public func callAsFunction(characterId: String, text: String, connections: [String], optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
+        try await self.commit(.init(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
     }
 }
 
@@ -904,11 +904,11 @@ mutation TestAddNoteNodeFirst(
     }
 }
 
-extension Baton.MutationAction where Op == TestAddNoteNodeFirst {
+extension TestAddNoteNodeFirst.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
-    public func callAsFunction(characterId: String, text: String, connections: [String], optimistic: TestAddNoteNodeFirst.OptimisticResponse? = nil) async throws -> TestAddNoteNodeFirst.Data {
-        try await self.commit(TestAddNoteNodeFirst(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
+    public func callAsFunction(characterId: String, text: String, connections: [String], optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
+        try await self.commit(.init(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
     }
 }
 
@@ -1030,11 +1030,11 @@ mutation TestAddNoteNodeOfAnotherType(
     }
 }
 
-extension Baton.MutationAction where Op == TestAddNoteNodeOfAnotherType {
+extension TestAddNoteNodeOfAnotherType.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
-    public func callAsFunction(characterId: String, text: String, connections: [String], optimistic: TestAddNoteNodeOfAnotherType.OptimisticResponse? = nil) async throws -> TestAddNoteNodeOfAnotherType.Data {
-        try await self.commit(TestAddNoteNodeOfAnotherType(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
+    public func callAsFunction(characterId: String, text: String, connections: [String], optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
+        try await self.commit(.init(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
     }
 }
 
@@ -1206,7 +1206,7 @@ fragment TestNoteText_note on Note {
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Node"
             @MainActor public var testDeferredNotes: TestDeferredNotes_character? {
-                let bound = anchor.binding(Sites.TestDeferredNotesPaginationQuery_testDeferredNotes) { ["count": anchor.variables["count"], "cursor": anchor.variables["cursor"]] }
+                let bound = anchor.binding(Sites.TestDeferredNotesPaginationQuery_testDeferredNotes) { () -> [String: Baton.Variable?] in ["count": anchor.variables["count"], "cursor": anchor.variables["cursor"]] }
                 guard anchor.record.is(Types.Character) else { return nil }
                 return .init(anchor: bound)
             }
@@ -1295,11 +1295,11 @@ mutation TestDeleteNote(
     }
 }
 
-extension Baton.MutationAction where Op == TestDeleteNote {
+extension TestDeleteNote.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
-    public func callAsFunction(id: String, optimistic: TestDeleteNote.OptimisticResponse? = nil) async throws -> TestDeleteNote.Data {
-        try await self.commit(TestDeleteNote(id: id), optimistic: optimistic?.variable)
+    public func callAsFunction(id: String, optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
+        try await self.commit(.init(id: id), optimistic: optimistic?.variable)
     }
 }
 
@@ -1410,7 +1410,7 @@ fragment TestHiddenNotes_character_1G22uz on Character {
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Node"
             @MainActor public var testHiddenNotes: TestHiddenNotes_character? {
-                let bound = anchor.binding(Sites.TestHiddenNotesPaginationQuery_testHiddenNotes) { ["count": anchor.variables["count"], "cursor": anchor.variables["cursor"]] }
+                let bound = anchor.binding(Sites.TestHiddenNotesPaginationQuery_testHiddenNotes) { () -> [String: Baton.Variable?] in ["count": anchor.variables["count"], "cursor": anchor.variables["cursor"]] }
                 guard anchor.record.is(Types.Character) else { return nil }
                 return .init(anchor: bound)
             }
@@ -1509,7 +1509,7 @@ fragment TestHiddenNotes_character on Character {
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Character"
             @MainActor public var testHiddenNotes: TestHiddenNotes_character {
-                let bound = anchor.binding(Sites.TestHiddenNotesQuery_testHiddenNotes) { ["count": .int(2), "cursor": .null] }
+                let bound = anchor.binding(Sites.TestHiddenNotesQuery_testHiddenNotes) { () -> [String: Baton.Variable?] in ["count": .int(2), "cursor": .null] }
                 return .init(anchor: bound)
             }
         }
@@ -1619,7 +1619,7 @@ fragment TestHiddenRecentNotes_character_1G22uz on Character {
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Node"
             @MainActor public var testHiddenRecentNotes: TestHiddenRecentNotes_character? {
-                let bound = anchor.binding(Sites.TestHiddenRecentNotesPaginationQuery_testHiddenRecentNotes) { ["count": anchor.variables["count"], "cursor": anchor.variables["cursor"]] }
+                let bound = anchor.binding(Sites.TestHiddenRecentNotesPaginationQuery_testHiddenRecentNotes) { () -> [String: Baton.Variable?] in ["count": anchor.variables["count"], "cursor": anchor.variables["cursor"]] }
                 guard anchor.record.is(Types.Character) else { return nil }
                 return .init(anchor: bound)
             }
@@ -1714,7 +1714,7 @@ fragment TestHiddenRecentNotes_character on Character {
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Character"
             @MainActor public var testHiddenRecentNotes: TestHiddenRecentNotes_character {
-                let bound = anchor.binding(Sites.TestHiddenRecentNotesQuery_testHiddenRecentNotes) { ["count": .int(2), "cursor": .null] }
+                let bound = anchor.binding(Sites.TestHiddenRecentNotesQuery_testHiddenRecentNotes) { () -> [String: Baton.Variable?] in ["count": .int(2), "cursor": .null] }
                 return .init(anchor: bound)
             }
         }
@@ -1824,7 +1824,7 @@ fragment TestNotes_character_1G22uz on Character {
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Node"
             @MainActor public var testNotes: TestNotes_character? {
-                let bound = anchor.binding(Sites.TestNotesPaginationQuery_testNotes) { ["count": anchor.variables["count"], "cursor": anchor.variables["cursor"]] }
+                let bound = anchor.binding(Sites.TestNotesPaginationQuery_testNotes) { () -> [String: Baton.Variable?] in ["count": anchor.variables["count"], "cursor": anchor.variables["cursor"]] }
                 guard anchor.record.is(Types.Character) else { return nil }
                 return .init(anchor: bound)
             }
@@ -1919,7 +1919,7 @@ fragment TestNotes_character on Character {
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Character"
             @MainActor public var testNotes: TestNotes_character {
-                let bound = anchor.binding(Sites.TestNotesQuery_testNotes) { ["count": .int(2), "cursor": .null] }
+                let bound = anchor.binding(Sites.TestNotesQuery_testNotes) { () -> [String: Baton.Variable?] in ["count": .int(2), "cursor": .null] }
                 return .init(anchor: bound)
             }
         }
@@ -2017,7 +2017,7 @@ fragment TestNotes_character_2H9PL on Character {
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Character"
             @MainActor public var testNotes: TestNotes_character {
-                let bound = anchor.binding(Sites.TestNotesSizedQuery_testNotes) { ["count": anchor.variables["size"], "cursor": .null] }
+                let bound = anchor.binding(Sites.TestNotesSizedQuery_testNotes) { () -> [String: Baton.Variable?] in ["count": anchor.variables["size"], "cursor": .null] }
                 return .init(anchor: bound)
             }
         }
@@ -2123,7 +2123,7 @@ fragment TestRecentNotes_character_1G22uz on Character {
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Node"
             @MainActor public var testRecentNotes: TestRecentNotes_character? {
-                let bound = anchor.binding(Sites.TestRecentNotesPaginationQuery_testRecentNotes) { ["count": anchor.variables["count"], "cursor": anchor.variables["cursor"]] }
+                let bound = anchor.binding(Sites.TestRecentNotesPaginationQuery_testRecentNotes) { () -> [String: Baton.Variable?] in ["count": anchor.variables["count"], "cursor": anchor.variables["cursor"]] }
                 guard anchor.record.is(Types.Character) else { return nil }
                 return .init(anchor: bound)
             }
@@ -2214,7 +2214,7 @@ fragment TestRecentNotes_character on Character {
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Character"
             @MainActor public var testRecentNotes: TestRecentNotes_character {
-                let bound = anchor.binding(Sites.TestRecentNotesQuery_testRecentNotes) { ["count": .int(2), "cursor": .null] }
+                let bound = anchor.binding(Sites.TestRecentNotesQuery_testRecentNotes) { () -> [String: Baton.Variable?] in ["count": .int(2), "cursor": .null] }
                 return .init(anchor: bound)
             }
         }
@@ -2311,11 +2311,11 @@ mutation TestRemoveNote(
     }
 }
 
-extension Baton.MutationAction where Op == TestRemoveNote {
+extension TestRemoveNote.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
-    public func callAsFunction(id: String, connections: [String], optimistic: TestRemoveNote.OptimisticResponse? = nil) async throws -> TestRemoveNote.Data {
-        try await self.commit(TestRemoveNote(id: id, connections: connections), optimistic: optimistic?.variable)
+    public func callAsFunction(id: String, connections: [String], optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
+        try await self.commit(.init(id: id, connections: connections), optimistic: optimistic?.variable)
     }
 }
 

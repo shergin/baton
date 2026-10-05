@@ -245,12 +245,21 @@ fn compiling_the_same_sources_twice_emits_the_same_bytes() {
     );
 }
 
-/// The shared enums `text` names unqualified: each before a dot, with no
-/// identifier or dot before it.
-fn spelled_enums(text: &str) -> BTreeSet<&'static str> {
+/// The names `text` spells unqualified that a member could hide: a shared
+/// enum before a dot, and `Self` before a dot or a parenthesis, where it is
+/// an expression; each with no identifier or dot before it.
+fn spelled_hideable_names(text: &str) -> BTreeSet<&'static str> {
     let mut names = BTreeSet::new();
-    for name in ["Types", "Slots", "AbstractSlots", "Sites"] {
-        for (index, _) in text.match_indices(&format!("{name}.")) {
+    let spellings = [
+        ("Types", "Types."),
+        ("Slots", "Slots."),
+        ("AbstractSlots", "AbstractSlots."),
+        ("Sites", "Sites."),
+        ("Self", "Self."),
+        ("Self", "Self("),
+    ];
+    for (name, spelling) in spellings {
+        for (index, _) in text.match_indices(spelling) {
             let before = text[..index].chars().next_back();
             if !before.is_some_and(|character| {
                 character.is_alphanumeric() || character == '_' || character == '.'
@@ -263,30 +272,30 @@ fn spelled_enums(text: &str) -> BTreeSet<&'static str> {
 }
 
 /// Checks `lens` and every lens nested in it against its printed text.
-fn check_shared_enums(lens: &crate::decide::ReaderPlan) {
+fn check_hideable_names(lens: &crate::decide::ReaderPlan) {
     let mut writer = super::writer::Writer::new();
     super::lens::lens(&mut writer, lens);
     let text = writer.finish();
     assert_eq!(
-        lens.shared_enums(),
-        spelled_enums(&text),
-        "the lens `{}` spells other shared enums than decided:\n{text}",
+        lens.hideable_names(),
+        spelled_hideable_names(&text),
+        "the lens `{}` spells other names a member could hide than decided:\n{text}",
         lens.name
     );
     for child in &lens.nested {
-        check_shared_enums(child);
+        check_hideable_names(child);
     }
 }
 
 #[test]
-fn the_shared_enums_a_lens_is_decided_to_spell_are_the_ones_its_text_spells() {
+fn the_names_a_lens_is_decided_to_spell_that_a_member_could_hide_are_the_ones_its_text_spells() {
     let program = crate::decide::program(&compile_swift_tests())
         .unwrap_or_else(|errors| panic!("the test documents emit: {errors:?}"));
     for fragment in &program.fragments {
-        check_shared_enums(&fragment.lens);
+        check_hideable_names(&fragment.lens);
     }
     for operation in &program.operations {
-        check_shared_enums(&operation.data);
+        check_hideable_names(&operation.data);
     }
 }
 

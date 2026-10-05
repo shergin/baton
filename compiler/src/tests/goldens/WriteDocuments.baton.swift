@@ -237,11 +237,11 @@ mutation TestRename(
     }
 }
 
-extension Baton.MutationAction where Op == TestRename {
+extension TestRename.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
-    public func callAsFunction(id: String, name: String, optimistic: TestRename.OptimisticResponse? = nil) async throws -> TestRename.Data {
-        try await self.commit(TestRename(id: id, name: name), optimistic: optimistic?.variable)
+    public func callAsFunction(id: String, name: String, optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
+        try await self.commit(.init(id: id, name: name), optimistic: optimistic?.variable)
     }
 }
 
@@ -349,11 +349,11 @@ fragment TestRenamePayload_mutation on Mutation {
     }
 }
 
-extension Baton.MutationAction where Op == TestRenameThroughFragment {
+extension TestRenameThroughFragment.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
-    public func callAsFunction(id: String, name: String, optimistic: TestRenameThroughFragment.OptimisticResponse? = nil) async throws -> TestRenameThroughFragment.Data {
-        try await self.commit(TestRenameThroughFragment(id: id, name: name), optimistic: optimistic?.variable)
+    public func callAsFunction(id: String, name: String, optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
+        try await self.commit(.init(id: id, name: name), optimistic: optimistic?.variable)
     }
 }
 
@@ -512,11 +512,11 @@ mutation TestRenameWithOrigin(
     }
 }
 
-extension Baton.MutationAction where Op == TestRenameWithOrigin {
+extension TestRenameWithOrigin.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
-    public func callAsFunction(id: String, name: String, withOrigin: Bool, optimistic: TestRenameWithOrigin.OptimisticResponse? = nil) async throws -> TestRenameWithOrigin.Data {
-        try await self.commit(TestRenameWithOrigin(id: id, name: name, withOrigin: withOrigin), optimistic: optimistic?.variable)
+    public func callAsFunction(id: String, name: String, withOrigin: Bool, optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
+        try await self.commit(.init(id: id, name: name, withOrigin: withOrigin), optimistic: optimistic?.variable)
     }
 }
 
@@ -835,11 +835,11 @@ mutation TestSetFavorite(
     }
 }
 
-extension Baton.MutationAction where Op == TestSetFavorite {
+extension TestSetFavorite.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
-    public func callAsFunction(id: String, favorite: Bool, optimistic: TestSetFavorite.OptimisticResponse? = nil) async throws -> TestSetFavorite.Data {
-        try await self.commit(TestSetFavorite(id: id, favorite: favorite), optimistic: optimistic?.variable)
+    public func callAsFunction(id: String, favorite: Bool, optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
+        try await self.commit(.init(id: id, favorite: favorite), optimistic: optimistic?.variable)
     }
 }
 

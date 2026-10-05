@@ -710,6 +710,76 @@ are expected and listed without apology.
 - A variable that is a list of input objects, such as
   `$filters: [FilterCharacter!]!`, compiles: `Variable` has an initializer
   from a list of variables, which the operation value's `variables` calls.
+- A spread that binds sixteen or more of a fragment's arguments compiles,
+  and so does the refetch query of a fragment that declares as many. The
+  closure that binds them returned a dictionary whose type Swift inferred
+  from the literal, which took twice as long with each argument, and Swift
+  gave up on it at sixteen; the closure now states its type.
+- A spread argument that is a list or an input object holding a variable
+  beside a constant, as `@arguments(ids: [$id, "2"])`, compiles. The
+  binding defaulted every item to null, `.string("2") ?? .null`, which
+  Swift warns about, and a build that treats warnings as errors refused the
+  generated code; only a variable, which the scope may lack, is defaulted.
+- A field, a selection, an argument or a variable named `rethrows`,
+  `fallthrough`, `precedencegroup` or `_` is escaped as Swift's other
+  keywords are; the generated code declared `public var rethrows` and
+  `var _`, which Swift refuses. A mutation's action passes a variable
+  named `$_` by an escaped label, since Swift reads a bare `_:` as no label.
+- A variable, or a field of a mutation's payload, named `await` compiles.
+  Its value was read bare, as in `self.await = await` and `if let await`,
+  where Swift reads the keyword; it is escaped wherever it is declared or
+  read.
+- A mutation's variable named `$var` or `$let` compiles in a build that
+  treats warnings as errors. Its action passed it by an escaped label,
+  which Swift, 6.2 as much as 6.3, warns needs no backticks; at a call site
+  only `inout` and `_` take them.
+- A variable named `hashValue`, or `phase`, `isRefreshing` or `isStale` in
+  a query, a refetchable fragment's arguments among them, or `subscription`
+  in a subscription, is an error at the variable that asks to rename it.
+  Each became a property of the value that took the place of the one the
+  runtime gives every such value: `isStale` read the variable where a view
+  meant the handle's state, without a word when both were `Bool`, and
+  `hashValue` stood beside `Hashable`'s, so the generated code did not
+  compile. Swift tells `refetch()` and `retry()` from a property by the
+  call, so variables of those names still compile.
+- A mutation's payload field named `fields` compiles. Its optimistic
+  builder collected the response in a local `fields`, which `if let fields`
+  hid; the local takes a name none of the builder's fields binds,
+  `fields2`.
+- A field or a variable named `Self` compiles beside `@throwOnFieldError`
+  and `@catch`. The `caught` check they give a lens built the lens as
+  `Self(anchor:)`, which the member hid from that lens and from every lens
+  nested in it; it builds it as `.init(anchor:)`. Where a body still
+  reaches a lens's own static member through `Self`, as a refetchable
+  fragment's `refetch()` and a connection's members do, a field named
+  `Self` in that lens or in one around it, or a variable of that name, is
+  an error at the name.
+- A fragment, a query, a subscription or a refetch query named like a
+  Swift keyword, as `fragment class` or `@refetchable(queryName: "each")`,
+  compiles. Its name was written bare wherever it stood for a type,
+  `public struct class` or `typealias Query = each`; a type a document
+  names is escaped wherever the generated code spells it, as a property
+  is.
+- A mutation named like a Swift keyword, or like what its action declares
+  or calls (`Op`, `callAsFunction`, `commit` or `optimistic`), compiles,
+  and so does a mutation with a variable named like it, as
+  `mutation Favorite($Favorite: ID!)`. The action extended
+  `MutationAction where Op == Favorite` and spelled the mutation in its
+  signature and its call, `Favorite(Favorite: Favorite)`, where the
+  parameter, the action's own members or its type parameter took the
+  name's place. It extends `Favorite.Action`, so the mutation is named
+  once, where only types are looked up, and its body writes `Op.Data` and
+  `self.commit(.init(Favorite: Favorite))`.
+- The spread of a fragment named from an underscore, as `..._hidden`,
+  compiles. Its accessor took the owner's prefix before the first
+  underscore, which is empty, and declared `var : _hidden`; it takes the
+  fragment's whole name, `_hidden`.
+- A fragment named `Data` is an error at its name where an operation
+  spreads it, and so is one named `Action` or `OptimisticResponse` where a
+  mutation does. Inside the operation value those names are its own types,
+  so the spread's accessor read the fragment as the operation's root lens,
+  which compiled and returned the wrong lens, or as the mutation's action
+  or builder, which did not compile.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 
