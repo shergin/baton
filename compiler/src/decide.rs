@@ -77,7 +77,13 @@ pub fn program(plan: &Plan) -> Result<Program, Vec<NameError>> {
         .operations
         .iter()
         .map(|operation| {
-            operation::operation(operation, &mut readers, &builder_names, &mut duplicates)
+            operation::operation(
+                operation,
+                &plan.fragments,
+                &mut readers,
+                &builder_names,
+                &mut duplicates,
+            )
         })
         .collect();
     let mut program = Program {
