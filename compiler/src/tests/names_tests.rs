@@ -221,4 +221,7 @@ fn a_call_site_label_is_escaped_only_where_swift_requires_it() {
     assert_eq!(call_label("inout"), "`inout`");
     assert_eq!(call_label("var"), "`var`");
     assert_eq!(call_label("let"), "`let`");
+    // A bare `_` is no label: the argument would go to an unlabelled
+    // parameter.
+    assert_eq!(call_label("_"), "`_`");
 }

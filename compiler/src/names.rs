@@ -414,10 +414,11 @@ fn underscored(name: &str, hidden: &[&str]) -> String {
 }
 
 /// An argument label at a call site. Swift takes every keyword there
-/// without backticks but `inout`, `var` and `let`, and warns about an
-/// escaped one, which a build with warnings as errors refuses.
+/// without backticks but `inout`, `var` and `let`, reads a bare `_` as no
+/// label at all, and warns about any other escaped one, which a build with
+/// warnings as errors refuses.
 pub fn call_label(name: &str) -> String {
-    if matches!(name, "inout" | "var" | "let") {
+    if matches!(name, "inout" | "var" | "let" | "_") {
         format!("`{name}`")
     } else {
         name.to_string()
@@ -482,6 +483,10 @@ pub fn escape(name: &str) -> String {
         "protocol",
         "some",
         "any",
+        "rethrows",
+        "fallthrough",
+        "precedencegroup",
+        "_",
     ];
     if KEYWORDS.contains(&name) {
         format!("`{name}`")

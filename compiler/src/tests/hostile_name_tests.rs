@@ -28,10 +28,6 @@ use crate::{diagnostics, emit, pipeline};
 /// The corpus, as the plan names its source.
 pub(super) const CORPUS: &str = "swift/Tests/BatonTests/HostileNameDocuments.swift";
 
-/// Swift's keywords that `escape` does not list. Swift refuses each as the
-/// name of a declaration unless it is escaped.
-const UNLISTED_KEYWORDS: [&str; 4] = ["rethrows", "fallthrough", "precedencegroup", "_"];
-
 /// Swift's contextual keywords that start an expression or a type, where
 /// the generated code puts a document's name: a value, a type, a
 /// parameter. The others introduce or modify a declaration, name an
@@ -396,51 +392,13 @@ fn positions() -> Vec<Position> {
 }
 
 fn defects() -> Vec<Defect> {
-    const ACCESSORS: &[&str] = &[
-        SCALAR,
-        LINKED,
-        SELECTION,
-        SPREAD,
-        BODIES,
-        CONNECTION,
-        REQUIRED,
-        ABSTRACT,
-        PAYLOAD_SCALAR,
-        PAYLOAD_LINKED,
-    ];
     const VARIABLES: &[&str] = &[
         QUERY_VARIABLE,
         MUTATION_VARIABLE,
         SUBSCRIPTION_VARIABLE,
         FRAGMENT_ARGUMENT,
     ];
-    const UNLISTED: &[&str] = &["rethrows", "fallthrough", "precedencegroup"];
     vec![
-        // `escape` does not know these keywords.
-        Defect {
-            positions: ACCESSORS,
-            names: Names::These(UNLISTED),
-            writes: &["@MainActor public var HOSTILE: "],
-            swift: "keyword 'rethrows' cannot be used as an identifier here",
-        },
-        Defect {
-            positions: ACCESSORS,
-            names: Names::These(&["_"]),
-            writes: &["@MainActor public var _: "],
-            swift: "getter/setter can only be defined for a single variable",
-        },
-        Defect {
-            positions: VARIABLES,
-            names: Names::These(UNLISTED),
-            writes: &["    public var HOSTILE: "],
-            swift: "keyword 'rethrows' cannot be used as an identifier here",
-        },
-        Defect {
-            positions: VARIABLES,
-            names: Names::These(&["_"]),
-            writes: &["    public var _: "],
-            swift: "property declaration does not bind any variables",
-        },
         // A member named `Self` hides Swift's `Self` from the expressions
         // of its lens and of every lens nested in it.
         Defect {
@@ -512,7 +470,7 @@ fn defects() -> Vec<Defect> {
             positions: &[FRAGMENT_NAME, QUERY_NAME, SUBSCRIPTION_NAME],
             names: Names::KeywordsBut(
                 &["Type", "Protocol", "Any", "Self", "open", "some", "any"],
-                &["rethrows", "fallthrough", "precedencegroup", "_"],
+                &[],
             ),
             writes: &["public struct HOSTILE: "],
             swift: "keyword 'class' cannot be used as an identifier here",
@@ -521,25 +479,16 @@ fn defects() -> Vec<Defect> {
             positions: &[MUTATION_NAME],
             names: Names::KeywordsBut(
                 &["Type", "Protocol", "Any", "Self", "open", "some", "any"],
-                &["rethrows", "fallthrough", "precedencegroup", "_"],
+                &[],
             ),
             writes: &["public struct HOSTILE: ", "where Op == HOSTILE {"],
             swift: "keyword 'class' cannot be used as an identifier here",
         },
         Defect {
             positions: &[REFETCH_QUERY_NAME],
-            names: Names::KeywordsBut(
-                &["Type", "Protocol", "Any", "Self", "open"],
-                &["rethrows", "fallthrough", "precedencegroup", "each"],
-            ),
+            names: Names::KeywordsBut(&["Type", "Protocol", "Any", "Self", "open"], &["each"]),
             writes: &["typealias Query = HOSTILE"],
             swift: "expected type in type alias declaration",
-        },
-        Defect {
-            positions: &[REFETCH_QUERY_NAME],
-            names: Names::These(&["_"]),
-            writes: &["public struct _: "],
-            swift: "keyword '_' cannot be used as an identifier here",
         },
         // A mutation's action spells its name as a type where a keyword or
         // one of its own names takes the place of the type.
@@ -856,10 +805,6 @@ fn listed(names: &[&str]) -> Vec<String> {
 fn hostile_names() -> Vec<(String, &'static str)> {
     let sources = [
         (escaped_keywords(), "a keyword `escape` lists"),
-        (
-            listed(&UNLISTED_KEYWORDS),
-            "a keyword `escape` does not list",
-        ),
         (listed(&CONTEXTUAL_KEYWORDS), "a contextual keyword"),
         (
             listed(&RESERVED_TYPE_NAMES),
