@@ -369,3 +369,25 @@ fn a_check_is_a_static_function_of_the_anchor_that_throws_only_when_asked() {
         "@_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors>"
     );
 }
+
+#[test]
+fn a_spread_argument_defaults_to_null_only_the_variables_inside_a_list_or_an_object() {
+    let variable = |name: &str| ArgumentValuePlan::Variable(name.to_string());
+    let text = |text: &str| ArgumentValuePlan::Constant(ConstantPlan::String(text.to_string()));
+    assert_eq!(argument_expression(&variable("id")), "anchor.variables[\"id\"]");
+    assert_eq!(
+        argument_expression(&ArgumentValuePlan::List(vec![variable("id"), text("2")])),
+        ".list([anchor.variables[\"id\"] ?? .null, .string(\"2\")])"
+    );
+    assert_eq!(
+        argument_expression(&ArgumentValuePlan::Object(vec![
+            ("status".to_string(), text("Alive")),
+            ("name".to_string(), variable("name")),
+            (
+                "ids".to_string(),
+                ArgumentValuePlan::List(vec![variable("id")])
+            ),
+        ])),
+        ".object([\"status\": .string(\"Alive\"), \"name\": anchor.variables[\"name\"] ?? .null, \"ids\": .list([anchor.variables[\"id\"] ?? .null])])"
+    );
+}
