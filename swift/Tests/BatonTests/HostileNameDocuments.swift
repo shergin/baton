@@ -700,6 +700,7 @@ struct HostileNameDocuments {
           $fileprivate: Boolean!, $open: Boolean!, $inout: Boolean!, $typealias: Boolean!,
           $associatedtype: Boolean!, $protocol: Boolean!, $some: Boolean!, $any: Boolean!,
           $rethrows: Boolean!, $fallthrough: Boolean!, $precedencegroup: Boolean!, $_: Boolean!,
+          $var: Boolean!, $let: Boolean!,
           # Swift's contextual keywords that start an expression or a type.
           $async: Boolean!, $borrowing: Boolean!, $consume: Boolean!, $consuming: Boolean!,
           $copy: Boolean!, $discard: Boolean!, $each: Boolean!, $isolated: Boolean!, $sending: Boolean!,
@@ -763,6 +764,7 @@ struct HostileNameDocuments {
               ... @include(if: $some) { name } ... @include(if: $any) { name }
               ... @include(if: $rethrows) { name } ... @include(if: $fallthrough) { name }
               ... @include(if: $precedencegroup) { name } ... @include(if: $_) { name }
+              ... @include(if: $var) { name } ... @include(if: $let) { name }
               # Swift's contextual keywords that start an expression or a type.
               ... @include(if: $async) { name } ... @include(if: $borrowing) { name }
               ... @include(if: $consume) { name } ... @include(if: $consuming) { name }

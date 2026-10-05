@@ -435,13 +435,6 @@ fn defects() -> Vec<Defect> {
             writes: &["public var hashValue: ", "Baton.Variable(self.hashValue)"],
             swift: "ambiguous use of 'hashValue'",
         },
-        // `call_label` escapes these, which Swift takes bare.
-        Defect {
-            positions: &[MUTATION_VARIABLE],
-            names: Names::These(&["var", "let"]),
-            writes: &["Probe(`HOSTILE`: `HOSTILE`)"],
-            swift: "keyword 'var' does not need to be escaped in argument list",
-        },
         // A builder's field named like the dictionary its `variable` fills.
         Defect {
             positions: &[PAYLOAD_SCALAR, PAYLOAD_LINKED],
