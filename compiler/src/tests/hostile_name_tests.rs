@@ -146,33 +146,13 @@ struct Position {
 /// corpus or to the refusals.
 struct Defect {
     positions: &'static [&'static str],
-    names: Names,
+    names: &'static [&'static str],
     /// What the Swift written for a position's probe holds, with `HOSTILE`
     /// for the name: the line Swift refuses, and the declaration that makes
     /// it refuse it when that is another.
     writes: &'static [&'static str],
     /// What Swift says of the line.
     swift: &'static str,
-}
-
-/// The names of a defect.
-enum Names {
-    These(&'static [&'static str]),
-    /// The keywords `escape` lists but the first, and the second besides.
-    KeywordsBut(&'static [&'static str], &'static [&'static str]),
-}
-
-impl Names {
-    fn resolve(&self) -> Vec<String> {
-        match self {
-            Names::These(names) => names.iter().map(|name| name.to_string()).collect(),
-            Names::KeywordsBut(except, besides) => escaped_keywords()
-                .into_iter()
-                .filter(|keyword| !except.contains(&keyword.as_str()))
-                .chain(besides.iter().map(|name| name.to_string()))
-                .collect(),
-        }
-    }
 }
 
 /// The names a scope of the generated Swift declares, and how a refusal
@@ -436,72 +416,42 @@ fn positions() -> Vec<Position> {
 
 fn defects() -> Vec<Defect> {
     vec![
-        // The name of a fragment or an operation is written unescaped.
-        Defect {
-            positions: &[FRAGMENT_NAME, QUERY_NAME, SUBSCRIPTION_NAME],
-            names: Names::KeywordsBut(
-                &["Type", "Protocol", "Any", "Self", "open", "some", "any"],
-                &[],
-            ),
-            writes: &["public struct HOSTILE: "],
-            swift: "keyword 'class' cannot be used as an identifier here",
-        },
+        // A mutation's action spells its name where a keyword or one of its
+        // own names takes the place of the type.
         Defect {
             positions: &[MUTATION_NAME],
-            names: Names::KeywordsBut(
-                &["Type", "Protocol", "Any", "Self", "open", "some", "any"],
-                &[],
-            ),
-            writes: &["public struct HOSTILE: ", "where Op == HOSTILE {"],
-            swift: "keyword 'class' cannot be used as an identifier here",
-        },
-        Defect {
-            positions: &[REFETCH_QUERY_NAME],
-            names: Names::KeywordsBut(&["Type", "Protocol", "Any", "Self", "open"], &["each"]),
-            writes: &["typealias Query = HOSTILE"],
-            swift: "expected type in type alias declaration",
-        },
-        // A mutation's action spells its name as a type where a keyword or
-        // one of its own names takes the place of the type.
-        Defect {
-            positions: &[MUTATION_NAME],
-            names: Names::These(&["some", "any", "each"]),
-            writes: &["where Op == HOSTILE {"],
-            swift: "expected type",
-        },
-        Defect {
-            positions: &[MUTATION_NAME],
-            names: Names::These(&["async"]),
+            names: &["async"],
             writes: &["async throws -> async.Data {"],
             swift: "'async' has already been specified",
         },
+        // In an expression `self` is the instance, escaped or not.
         Defect {
             positions: &[MUTATION_NAME],
-            names: Names::These(&["await"]),
-            writes: &["async throws -> await.Data {"],
-            swift: "expected async specifier; did you mean 'async'?",
+            names: &["self"],
+            writes: &["try await self.commit(`self`(), optimistic:"],
+            swift: "cannot convert value of type '`self`.Data' to expected argument type '`self`'",
         },
         Defect {
             positions: &[MUTATION_NAME],
-            names: Names::These(&["Op"]),
+            names: &["Op"],
             writes: &["where Op == Op {"],
             swift: "'OptimisticResponse' is not a member type of type 'Op'",
         },
         Defect {
             positions: &[MUTATION_NAME],
-            names: Names::These(&["callAsFunction"]),
+            names: &["callAsFunction"],
             writes: &["try await self.commit(callAsFunction(), optimistic:"],
             swift: "cannot convert value of type 'callAsFunction.Data' to expected argument type 'callAsFunction'",
         },
         Defect {
             positions: &[MUTATION_NAME],
-            names: Names::These(&["commit"]),
+            names: &["commit"],
             writes: &["try await self.commit(commit(), optimistic:"],
             swift: "use of 'commit' refers to instance method rather than struct 'commit' in module",
         },
         Defect {
             positions: &[MUTATION_NAME],
-            names: Names::These(&["optimistic"]),
+            names: &["optimistic"],
             writes: &["try await self.commit(optimistic(), optimistic:"],
             swift: "cannot call value of non-function type 'optimistic.OptimisticResponse?'",
         },
@@ -874,7 +824,7 @@ fn every_hostile_name_is_in_the_corpus_or_refused_or_a_known_defect_in_every_pos
         let known: Vec<String> = defects
             .iter()
             .filter(|defect| defect.positions.contains(&position.name))
-            .flat_map(|defect| defect.names.resolve())
+            .flat_map(|defect| defect.names.iter().map(|name| name.to_string()))
             .collect();
         for (name, _) in position.refused {
             if !names.iter().any(|(known, _)| known == name) {
@@ -958,7 +908,7 @@ fn a_top_level_name_neither_refused_nor_a_defect_is_accepted() {
         let known: Vec<String> = defects
             .iter()
             .filter(|defect| defect.positions.contains(&position.name))
-            .flat_map(|defect| defect.names.resolve())
+            .flat_map(|defect| defect.names.iter().map(|name| name.to_string()))
             .collect();
         let accepted: Vec<&str> = names
             .iter()
@@ -993,7 +943,7 @@ fn a_known_defect_is_still_accepted_and_still_writes_the_swift_recorded_for_it()
                 .iter()
                 .find(|position| position.name == *name)
                 .unwrap_or_else(|| panic!("a defect names the unknown position `{name}`"));
-            let names = defect.names.resolve();
+            let names = defect.names;
             // The names of a position make one program, and each writes its
             // own lines.
             let program: Vec<String> = names

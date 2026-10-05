@@ -39,7 +39,7 @@ pub(super) fn lens(writer: &mut Writer, lens: &ReaderPlan) {
     let anchor = SwiftType::runtime("Anchor");
     let head = format!(
         "nonisolated public struct {}: {}",
-        lens.name,
+        SwiftType::named(&lens.name),
         SwiftType::runtime("Lens")
     );
     writer.block(head, |writer| {
@@ -132,8 +132,8 @@ fn scalar_accessor(writer: &mut Writer, name: &str, read: &ScalarRead, condition
 /// singular or plural.
 fn linked_accessor(writer: &mut Writer, name: &str, read: &LinkedRead, condition: Option<&str>) {
     let slot = slot_expression(&read.slot);
-    let nested = &read.lens;
-    let lens = SwiftType::named(nested);
+    let lens = SwiftType::named(&read.lens);
+    let nested = lens.to_string();
     let base_type = &read.base_type;
     let keep = if read.bubbles {
         format!(", keep: {nested}.satisfied")
@@ -327,7 +327,8 @@ fn spread_accessor(writer: &mut Writer, name: &str, read: &SpreadRead) {
 /// An aliased selection's accessor: its nested lens, optional under its
 /// guards, a `Result` under `@catch`.
 fn aliased_accessor(writer: &mut Writer, name: &str, read: &AliasedRead) {
-    let nested = &read.lens;
+    let lens = SwiftType::named(&read.lens);
+    let nested = lens.to_string();
     let guards: Vec<String> = read
         .guards
         .iter()
@@ -340,7 +341,6 @@ fn aliased_accessor(writer: &mut Writer, name: &str, read: &AliasedRead) {
         })
         .collect();
     let condition = (!guards.is_empty()).then(|| guards.join(" && "));
-    let lens = SwiftType::named(nested);
     let (swift_type, expression) = if read.caught {
         (lens.caught(), format!("{nested}.caught(anchor)"))
     } else {
@@ -357,17 +357,14 @@ fn condition_accessor(
     read: &ConditionRead,
     condition: Option<&str>,
 ) {
-    let nested = &read.lens;
+    let lens = SwiftType::named(&read.lens);
     let test = type_test(&read.test);
     let test = match condition {
         Some(condition) => format!("{condition} && {test}"),
         None => test,
     };
-    Computed::new(name, SwiftType::named(nested)).reads(
-        writer,
-        &format!("{nested}(anchor: anchor)"),
-        Some(&test),
-    );
+    let expression = format!("{lens}(anchor: anchor)");
+    Computed::new(name, lens).reads(writer, &expression, Some(&test));
 }
 
 /// The `@refetchable` surface of a fragment lens: the descriptor of its
@@ -425,14 +422,14 @@ fn connection_members(writer: &mut Writer, connection: &ConnectionMembers) {
         type_reference(&connection.page_info_type)
     ));
     if let Some(nodes) = &connection.nodes {
-        let (edges, node) = (&nodes.edges, &nodes.node);
+        let node = SwiftType::named(&nodes.edges).nested(&nodes.node);
         let keep = if nodes.keep {
-            format!(", keep: {edges}.{node}.satisfied")
+            format!(", keep: {node}.satisfied")
         } else {
             String::new()
         };
         writer.doc("The edges' nodes, in order, without nulls.");
-        Computed::new("nodes", SwiftType::named(format!("{edges}.{node}")).array()).reads(
+        Computed::new("nodes", node.array()).reads(
             writer,
             &format!("anchor.nodes(Self.connection{keep})"),
             None,
@@ -529,8 +526,9 @@ fn satisfied_function(writer: &mut Writer, entries: &[Guarded<Option<SatisfiedCh
                     log,
                 }) => {
                     writer.line(format!(
-                        "guard let child = anchor.linked({}), {lens}.satisfied(child) else {{ return anchor.requiredMissing(path: {}, log: {log}) }}",
+                        "guard let child = anchor.linked({}), {}.satisfied(child) else {{ return anchor.requiredMissing(path: {}, log: {log}) }}",
                         slot_expression(slot),
+                        SwiftType::named(lens),
                         swift_literal(path)
                     ));
                 }
@@ -582,7 +580,8 @@ fn missing_required_function(writer: &mut Writer, entries: &[Guarded<Option<Sati
                         slot_expression(slot)
                     ));
                     writer.line(format!(
-                        "if let missing = {lens}.missingRequiredField(child) {{ {report}return missing }}"
+                        "if let missing = {}.missingRequiredField(child) {{ {report}return missing }}",
+                        SwiftType::named(lens)
                     ));
                 }
                 None => {}
@@ -597,7 +596,7 @@ fn missing_required_function(writer: &mut Writer, entries: &[Guarded<Option<Sati
 /// `@required(action: THROW)` fields that are null.
 fn field_errors_function(writer: &mut Writer, checks: &[ErrorCheck]) {
     let errors = SwiftType::runtime("FieldError").array();
-    let this = || SwiftType::named("Self");
+    let this = SwiftType::own;
     writer.doc("The field errors in this selection, for `@catch` and `@throwOnFieldError`.");
     writer.block(check_head("fieldErrors", &errors, false), |writer| {
         writer.line(format!("var errors: {errors} = []"));
@@ -610,7 +609,8 @@ fn field_errors_function(writer: &mut Writer, checks: &[ErrorCheck]) {
                         None => test,
                     };
                     writer.line(format!(
-                        "if {test} {{ errors.append(contentsOf: {lens}.fieldErrors(anchor)) }}"
+                        "if {test} {{ errors.append(contentsOf: {}.fieldErrors(anchor)) }}",
+                        SwiftType::named(lens)
                     ));
                 }
                 ErrorCheck::Member(lines) => {
@@ -649,14 +649,16 @@ fn error_line(writer: &mut Writer, line: &ErrorLine) {
         }
         ErrorLine::Linked { slot, lens } => {
             writer.line(format!(
-                "anchor.collectErrors({}, within: {lens}.fieldErrors, into: &errors)",
-                slot_expression(slot)
+                "anchor.collectErrors({}, within: {}.fieldErrors, into: &errors)",
+                slot_expression(slot),
+                SwiftType::named(lens)
             ));
         }
         ErrorLine::List { slot, lens } => {
             writer.line(format!(
-                "anchor.collectErrors(list: {}, within: {lens}.fieldErrors, into: &errors)",
-                slot_expression(slot)
+                "anchor.collectErrors(list: {}, within: {}.fieldErrors, into: &errors)",
+                slot_expression(slot),
+                SwiftType::named(lens)
             ));
         }
         ErrorLine::Required { slot, path } => {
@@ -668,7 +670,8 @@ fn error_line(writer: &mut Writer, line: &ErrorLine) {
         }
         ErrorLine::Nested(lens) => {
             writer.line(format!(
-                "errors.append(contentsOf: {lens}.fieldErrors(anchor))"
+                "errors.append(contentsOf: {}.fieldErrors(anchor))",
+                SwiftType::named(lens)
             ));
         }
     }

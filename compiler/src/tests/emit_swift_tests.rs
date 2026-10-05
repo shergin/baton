@@ -94,6 +94,27 @@ fn a_type_prints_as_swift_writes_it_however_it_is_nested() {
 }
 
 #[test]
+fn a_type_a_document_named_like_a_swift_keyword_is_spelled_in_backticks() {
+    assert_eq!(SwiftType::named("class").to_string(), "`class`");
+    assert_eq!(SwiftType::named("each").optional().to_string(), "`each`?");
+    assert_eq!(SwiftType::named("Friends").to_string(), "Friends");
+    assert_eq!(
+        SwiftType::named("Edges").nested("Node").array().to_string(),
+        "[Edges.Node]"
+    );
+    assert_eq!(
+        SwiftType::named("some").nested("_").to_string(),
+        "`some`.`_`"
+    );
+    // The type a declaration is in is Swift's `Self`, never an identifier
+    // of that name.
+    assert_eq!(
+        SwiftType::own().caught().to_string(),
+        "Result<Self, Baton.FieldErrors>"
+    );
+}
+
+#[test]
 fn the_runtime_is_named_by_its_module_in_a_type_and_in_an_expression() {
     assert_eq!(SwiftType::runtime("Anchor").to_string(), "Baton.Anchor");
     assert_eq!(
@@ -334,6 +355,14 @@ fn a_query_alias_is_never_named_like_a_type_its_body_aliases() {
 }
 
 #[test]
+fn a_local_alias_names_a_type_named_like_a_swift_keyword_in_backticks() {
+    let query = LocalAlias::query("class", &["class"]);
+    let mut writer = Writer::new();
+    query.declare(&mut writer);
+    assert_eq!(writer.finish(), "typealias Query = `class`\n");
+}
+
+#[test]
 fn a_local_alias_is_declared_at_the_depth_of_the_body_it_opens() {
     let query = LocalAlias::query("TestNotesRefetchQuery", &["TestNotesRefetchQuery"]);
     let mut writer = Writer::new();
@@ -361,11 +390,11 @@ fn a_check_is_a_static_function_of_the_anchor_that_throws_only_when_asked() {
         "@_spi(Generated) @MainActor public static func satisfied(_ anchor: Baton.Anchor) -> Bool"
     );
     assert_eq!(
-        check_head("throwing", &SwiftType::named("Self"), true),
+        check_head("throwing", &SwiftType::own(), true),
         "@_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self"
     );
     assert_eq!(
-        check_head("caught", &SwiftType::named("Self").caught(), false),
+        check_head("caught", &SwiftType::own().caught(), false),
         "@_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors>"
     );
 }

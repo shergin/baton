@@ -492,6 +492,14 @@ pub fn escape(name: &str) -> String {
         // A contextual keyword that starts an expression, where a name is
         // read: `self.await = await` awaits nothing.
         "await",
+        // Ones that start a type, where a fragment or an operation is
+        // named: `typealias Query = each` expects a pack, and
+        // `typealias Fragment = borrowing` the type it borrows.
+        "each",
+        "borrowing",
+        "consuming",
+        "isolated",
+        "sending",
     ];
     if KEYWORDS.contains(&name) {
         format!("`{name}`")

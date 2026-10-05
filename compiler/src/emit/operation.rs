@@ -32,7 +32,7 @@ pub(super) fn operation_text(operation: &OperationValue) -> String {
     };
     let head = format!(
         "nonisolated public struct {}: {}",
-        operation.name,
+        SwiftType::named(&operation.name),
         SwiftType::runtime(protocol)
     );
     writer.block(head, |writer| value_members(writer, operation, resolution));
@@ -174,7 +174,7 @@ fn value_members(writer: &mut Writer, operation: &OperationValue, resolution: Op
 /// A mutation's action as a function: one labelled parameter per variable
 /// and the optimistic response.
 fn action(writer: &mut Writer, operation: &OperationValue) {
-    let name = &operation.name;
+    let name = SwiftType::named(&operation.name);
     let parameters = parameter_list(&operation.variables);
     let separator = if operation.variables.is_empty() {
         ""
