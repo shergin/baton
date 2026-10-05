@@ -3,7 +3,7 @@
 
 use std::collections::BTreeSet;
 
-use super::lens::{Primitive, ReaderPlan, ScalarShape};
+use super::lens::{Primitive, ReaderPlan, ScalarShape, hideable_name};
 use super::reader::Readers;
 use super::{NormalizationField, NormalizationKind, NormalizationSelection};
 use crate::names::{Kind, NameError, Reserved, Scope, Written, escape};
@@ -144,15 +144,16 @@ pub(super) fn operation(
 /// a value of its kind, which a variable would take the place of, and
 /// beside the names its code spells, which a variable would hide: the
 /// runtime's module, the shared enums its plan and its root lens read
-/// through, and a mutation's action's own parameter.
+/// through, Swift's `Self` where a lens nested in it reaches a static
+/// member of its own, and a mutation's action's own parameter.
 fn operation_scope(operation: &OperationPlan, resolves: bool, data: &ReaderPlan) -> Vec<NameError> {
     let none = Reserved::none();
     let mut scope = Scope::new(operation.name.as_str(), &none);
     scope.declare("Baton", Kind::Type, "the runtime's module `Baton`");
-    let mut spelled = data.shared_enums();
+    let mut spelled = data.hideable_names();
     spelled.extend(["Types", "Slots"]);
     for name in spelled {
-        scope.declare(name, Kind::Type, format!("the shared enum `{name}`"));
+        scope.declare(name, Kind::Type, hideable_name(name));
     }
     if operation.kind == OperationKind::Mutation {
         scope.declare(

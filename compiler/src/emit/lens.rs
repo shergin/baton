@@ -4,9 +4,11 @@
 //! from the `ReaderPlan`.
 //!
 //! A lens names the runtime's module only in a type, and a fragment or a
-//! query only as `Self`, from its context or through a local alias: the
-//! pieces in `swift` hold both rules, so a member named like any of them
-//! hides it from nothing a body spells.
+//! query only from its context or through a local alias: the pieces in
+//! `swift` hold both rules, so a member named like any of them hides it
+//! from nothing a body spells. A lens reaches its own static members,
+//! `refetchable` and `connection`, as `Self`, which a member named `Self`
+//! would hide; the decide pass refuses one where a body spells it.
 
 use super::swift::{
     Computed, LocalAlias, SwiftType, argument_expression, check_head, possible_types_reference,
@@ -631,7 +633,7 @@ fn field_errors_function(writer: &mut Writer, checks: &[ErrorCheck]) {
     writer.block(check_head("caught", &this().caught(), false), |writer| {
         writer.line("let errors = fieldErrors(anchor)");
         writer.line(
-            "return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))",
+            "return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))",
         );
     });
 }

@@ -70,7 +70,7 @@ nonisolated public struct TestProfile_character: Baton.Lens {
         /// The lens, or the field errors in it as a `Result`.
         @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
             let errors = fieldErrors(anchor)
-            return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
         }
     }
 }
@@ -95,7 +95,7 @@ nonisolated public struct TestStrict_character: Baton.Lens {
     /// The lens, or the field errors in it as a `Result`.
     @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
         let errors = fieldErrors(anchor)
-        return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+        return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
     }
 }
 
@@ -596,7 +596,7 @@ fragment TestAppearances_character on Character {
         /// The lens, or the field errors in it as a `Result`.
         @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
             let errors = fieldErrors(anchor)
-            return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
         }
 
         nonisolated public struct Character: Baton.Lens {
@@ -622,7 +622,7 @@ fragment TestAppearances_character on Character {
             /// The lens, or the field errors in it as a `Result`.
             @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
                 let errors = fieldErrors(anchor)
-                return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+                return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
             }
         }
     }
@@ -688,7 +688,7 @@ query TestStrictQuery(
         /// The lens, or the field errors in it as a `Result`.
         @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
             let errors = fieldErrors(anchor)
-            return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
         }
 
         nonisolated public struct Character: Baton.Lens {
@@ -709,7 +709,7 @@ query TestStrictQuery(
             /// The lens, or the field errors in it as a `Result`.
             @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
                 let errors = fieldErrors(anchor)
-                return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+                return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
             }
         }
     }
@@ -779,7 +779,7 @@ fragment TestName_character on Character {
         /// The lens, or the field errors in it as a `Result`.
         @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
             let errors = fieldErrors(anchor)
-            return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
         }
 
         nonisolated public struct Character: Baton.Lens {
@@ -799,7 +799,7 @@ fragment TestName_character on Character {
             /// The lens, or the field errors in it as a `Result`.
             @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
                 let errors = fieldErrors(anchor)
-                return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))
+                return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
             }
         }
     }

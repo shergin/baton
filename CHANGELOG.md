@@ -746,6 +746,14 @@ are expected and listed without apology.
   builder collected the response in a local `fields`, which `if let fields`
   hid; the local takes a name none of the builder's fields binds,
   `fields2`.
+- A field or a variable named `Self` compiles beside `@throwOnFieldError`
+  and `@catch`. The `caught` check they give a lens built the lens as
+  `Self(anchor:)`, which the member hid from that lens and from every lens
+  nested in it; it builds it as `.init(anchor:)`. Where a body still
+  reaches a lens's own static member through `Self`, as a refetchable
+  fragment's `refetch()` and a connection's members do, a field named
+  `Self` in that lens or in one around it, or a variable of that name, is
+  an error at the name.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 
