@@ -3,7 +3,8 @@
 
 use std::collections::BTreeSet;
 
-use super::reader::{Primitive, ReaderPlan, Readers, ScalarShape};
+use super::lens::{Primitive, ReaderPlan, ScalarShape};
+use super::reader::Readers;
 use super::{NormalizationField, NormalizationKind, NormalizationSelection};
 use crate::names::{Kind, NameError, Reserved, Scope, Written, escape};
 use crate::pipeline::{OperationKind, OperationPlan, TypeKind, VariablePlan};

@@ -843,6 +843,9 @@ fn local_aliases() -> Vec<String> {
 fn scope_names() -> Vec<String> {
     [
         include_str!("../decide/reader.rs"),
+        include_str!("../decide/lens.rs"),
+        include_str!("../decide/members.rs"),
+        include_str!("../decide/checks.rs"),
         include_str!("../decide/operation.rs"),
         include_str!("../decide/collect.rs"),
     ]
