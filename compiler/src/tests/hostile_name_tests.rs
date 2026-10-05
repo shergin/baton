@@ -435,12 +435,6 @@ fn positions() -> Vec<Position> {
 }
 
 fn defects() -> Vec<Defect> {
-    const VARIABLES: &[&str] = &[
-        QUERY_VARIABLE,
-        MUTATION_VARIABLE,
-        SUBSCRIPTION_VARIABLE,
-        FRAGMENT_ARGUMENT,
-    ];
     vec![
         // The name of a fragment or an operation is written unescaped.
         Defect {
