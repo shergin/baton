@@ -774,6 +774,12 @@ are expected and listed without apology.
   compiles. Its accessor took the owner's prefix before the first
   underscore, which is empty, and declared `var : _hidden`; it takes the
   fragment's whole name, `_hidden`.
+- A fragment named `Data` is an error at its name where an operation
+  spreads it, and so is one named `Action` or `OptimisticResponse` where a
+  mutation does. Inside the operation value those names are its own types,
+  so the spread's accessor read the fragment as the operation's root lens,
+  which compiled and returned the wrong lens, or as the mutation's action
+  or builder, which did not compile.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

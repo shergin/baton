@@ -7,7 +7,7 @@ use super::lens::{Primitive, ReaderPlan, ScalarShape, hideable_name};
 use super::reader::Readers;
 use super::{NormalizationField, NormalizationKind, NormalizationSelection};
 use crate::names::{Kind, NameError, Reserved, Scope, Written, escape};
-use crate::pipeline::{OperationKind, OperationPlan, TypeKind, VariablePlan};
+use crate::pipeline::{FragmentPlan, OperationKind, OperationPlan, TypeKind, VariablePlan};
 
 /// An operation's value type: its variables, its static data, its plan, its
 /// root lens and, for a mutation, its optimistic-response builder.
@@ -86,9 +86,11 @@ pub enum VariableBase {
 }
 
 /// An operation's value, its root lens decided by `readers`; the names it
-/// would declare twice go to `duplicates`.
+/// would declare twice go to `duplicates`, and so do the program's
+/// `fragments` its lenses spread that its own types would hide.
 pub(super) fn operation(
     operation: &OperationPlan,
+    fragments: &[FragmentPlan],
     readers: &mut Readers,
     builder_names: &Reserved,
     duplicates: &mut Vec<NameError>,
@@ -112,6 +114,7 @@ pub(super) fn operation(
     let normalization = super::normalization(&operation.root_type, &operation.normalization);
     let data = readers.operation(operation);
     duplicates.extend(operation_scope(operation, resolves, &data));
+    duplicates.extend(nested_types(operation, &data, fragments));
     let optimistic = (operation.kind == OperationKind::Mutation).then(|| {
         let path = format!("{}.OptimisticResponse", operation.name);
         builder(
@@ -220,6 +223,45 @@ fn operation_scope(operation: &OperationPlan, resolves: bool, data: &ReaderPlan)
             "OptimisticResponse",
             Kind::Type,
             "the mutation's `OptimisticResponse`",
+        );
+    }
+    scope.finish()
+}
+
+/// The clashes of the fragments an operation's lenses spread with the types
+/// its value nests. Inside the value `Data`, and a mutation's `Action` and
+/// `OptimisticResponse`, name its own types, so a spread's accessor would
+/// read a fragment of one of those names as that type, and no spelling
+/// reaches the fragment's.
+fn nested_types(
+    operation: &OperationPlan,
+    data: &ReaderPlan,
+    fragments: &[FragmentPlan],
+) -> Vec<NameError> {
+    let none = Reserved::none();
+    let mut scope = Scope::new(operation.name.as_str(), &none);
+    scope.declare("Data", Kind::Type, "the operation's root lens `Data`");
+    if operation.kind == OperationKind::Mutation {
+        scope.declare("Action", Kind::Type, "the mutation's `Action`");
+        scope.declare(
+            "OptimisticResponse",
+            Kind::Type,
+            "the mutation's `OptimisticResponse`",
+        );
+    }
+    for name in data.spread_fragments() {
+        let origin = fragments
+            .iter()
+            .find(|fragment| fragment.name == name)
+            .and_then(|fragment| fragment.origin.clone());
+        scope.declare_written(
+            name,
+            Kind::Type,
+            format!("the fragment `{name}`"),
+            origin.map(|origin| Written {
+                origin,
+                remedy: "rename the fragment",
+            }),
         );
     }
     scope.finish()

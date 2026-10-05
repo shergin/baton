@@ -135,6 +135,25 @@ impl ReaderPlan {
             child.collect_hideable_names(names);
         }
     }
+
+    /// The fragments the lens and every lens nested in it spread, whose
+    /// accessors name them by their types.
+    pub fn spread_fragments(&self) -> BTreeSet<&str> {
+        let mut fragments = BTreeSet::new();
+        self.collect_spread_fragments(&mut fragments);
+        fragments
+    }
+
+    fn collect_spread_fragments<'a>(&'a self, into: &mut BTreeSet<&'a str>) {
+        for accessor in &self.accessors {
+            if let Read::Spread(read) = &accessor.read {
+                into.insert(read.fragment.as_str());
+            }
+        }
+        for child in &self.nested {
+            child.collect_spread_fragments(into);
+        }
+    }
 }
 
 /// What a refusal calls a name `ReaderPlan::hideable_names` holds.

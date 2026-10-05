@@ -115,6 +115,8 @@ const QUERY_NAME: &str = "a query's name";
 const MUTATION_NAME: &str = "a mutation's name";
 const SUBSCRIPTION_NAME: &str = "a subscription's name";
 const REFETCH_QUERY_NAME: &str = "a refetch query's name";
+const QUERY_SPREAD: &str = "the name of a fragment a query spreads";
+const MUTATION_SPREAD: &str = "the name of a fragment a mutation spreads";
 
 /// A position a document's name can take, and what the compiler makes of a
 /// hostile name there.
@@ -137,7 +139,7 @@ struct Position {
     remedy: &'static str,
     /// The names the position refuses, each with what it clashes with in
     /// the generated Swift.
-    refused: &'static [(&'static str, &'static str)],
+    refused: Vec<(&'static str, &'static str)>,
 }
 
 /// Names a position accepts though the Swift written for them does not
@@ -168,6 +170,9 @@ const VARIABLE: (&str, &str) = ("variable", "the optimistic response's `variable
 const VARIABLES: (&str, &str) = ("variables", "the operation's `variables`");
 const RESOLUTION: (&str, &str) = ("resolution", "the operation's `resolution`");
 const DATA: (&str, &str) = ("Data", "the operation's root lens `Data`");
+const ACTION: (&str, &str) = ("Action", "the mutation's `Action`");
+const OPTIMISTIC_RESPONSE: (&str, &str) =
+    ("OptimisticResponse", "the mutation's `OptimisticResponse`");
 const HASH_VALUE: (&str, &str) = ("hashValue", "the `hashValue` every operation value has");
 const PHASE: (&str, &str) = ("phase", "the `phase` every query value has");
 const IS_REFRESHING: (&str, &str) = ("isRefreshing", "the `isRefreshing` every query value has");
@@ -199,41 +204,44 @@ const TOP_LEVEL: [(&str, &str); 15] = [
 ];
 
 fn positions() -> Vec<Position> {
-    let field = |name, corpus, probe, refused| Position {
+    type Refused = &'static [(&'static str, &'static str)];
+    let field = |name, corpus, probe, refused: Refused| Position {
         name,
         corpus: Some(corpus),
         probe,
         at: "HOSTILE:",
         what: "the field `HOSTILE`",
         remedy: "choose another alias",
-        refused,
+        refused: refused.to_vec(),
     };
-    let selection = |name, corpus, probe, refused| Position {
+    let selection = |name, corpus, probe, refused: Refused| Position {
         name,
         corpus: Some(corpus),
         probe,
         at: "\"HOSTILE\"",
         what: "the selection aliased `HOSTILE`",
         remedy: "choose another alias",
-        refused,
+        refused: refused.to_vec(),
     };
-    let variable = |name, corpus, probe, at, refused| Position {
+    let variable = |name, corpus, probe, at, refused: Refused| Position {
         name,
         corpus: Some(corpus),
         probe,
         at,
         what: "the variable `$HOSTILE`",
         remedy: "rename the variable",
-        refused,
+        refused: refused.to_vec(),
     };
-    let top_level = |name, probe, at, what, remedy| Position {
+    // A fragment's or an operation's name, which the module's top level
+    // refuses, and the types of an operation that spreads the fragment.
+    let top_level = |name, probe, at, what, remedy, nested: Refused| Position {
         name,
         corpus: None,
         probe,
         at,
         what,
         remedy,
-        refused: &TOP_LEVEL,
+        refused: [&TOP_LEVEL[..], nested].concat(),
     };
     vec![
         field(
@@ -323,8 +331,8 @@ fn positions() -> Vec<Position> {
                 VARIABLES,
                 HASH_VALUE,
                 DATA,
-                ("Action", "the mutation's `Action`"),
-                ("OptimisticResponse", "the mutation's `OptimisticResponse`"),
+                ACTION,
+                OPTIMISTIC_RESPONSE,
                 TYPES,
                 SLOTS,
                 MODULE,
@@ -383,6 +391,7 @@ fn positions() -> Vec<Position> {
             HOSTILE,
             "the fragment `HOSTILE`",
             "rename the fragment",
+            &[],
         ),
         top_level(
             QUERY_NAME,
@@ -390,6 +399,7 @@ fn positions() -> Vec<Position> {
             HOSTILE,
             "the query `HOSTILE`",
             "rename the query",
+            &[],
         ),
         top_level(
             MUTATION_NAME,
@@ -397,6 +407,7 @@ fn positions() -> Vec<Position> {
             HOSTILE,
             "the mutation `HOSTILE`",
             "rename the mutation",
+            &[],
         ),
         top_level(
             SUBSCRIPTION_NAME,
@@ -404,6 +415,7 @@ fn positions() -> Vec<Position> {
             HOSTILE,
             "the subscription `HOSTILE`",
             "rename the subscription",
+            &[],
         ),
         top_level(
             REFETCH_QUERY_NAME,
@@ -411,6 +423,23 @@ fn positions() -> Vec<Position> {
             "Probe_character",
             "the refetch query `HOSTILE`",
             "name it otherwise in `@refetchable(queryName:)`",
+            &[],
+        ),
+        top_level(
+            QUERY_SPREAD,
+            "fragment HOSTILE on Character { name } query Probe { character(id: 1) { ...HOSTILE } }",
+            HOSTILE,
+            "the fragment `HOSTILE`",
+            "rename the fragment",
+            &[DATA],
+        ),
+        top_level(
+            MUTATION_SPREAD,
+            r#"fragment HOSTILE on Character { name } mutation Probe { setFavorite(id: "1", favorite: true) { character { ...HOSTILE } } }"#,
+            HOSTILE,
+            "the fragment `HOSTILE`",
+            "rename the fragment",
+            &[DATA, ACTION, OPTIMISTIC_RESPONSE],
         ),
     ]
 }
@@ -772,7 +801,7 @@ fn every_hostile_name_is_in_the_corpus_or_refused_or_a_known_defect_in_every_pos
             .filter(|defect| defect.positions.contains(&position.name))
             .flat_map(|defect| defect.names.iter().map(|name| name.to_string()))
             .collect();
-        for (name, _) in position.refused {
+        for (name, _) in &position.refused {
             if !names.iter().any(|(known, _)| known == name) {
                 problems.push(format!(
                     "{}: `{name}` is refused but is no hostile name",
@@ -817,7 +846,7 @@ fn every_hostile_name_is_in_the_corpus_or_refused_or_a_known_defect_in_every_pos
 fn a_refused_name_is_an_error_at_the_name_that_says_what_it_clashes_with_and_what_to_do() {
     let mut problems = Vec::new();
     for position in positions() {
-        for (name, clashes) in position.refused {
+        for (name, clashes) in &position.refused {
             let probe = position.probe.replace(HOSTILE, name);
             let at = position.at.replace(HOSTILE, name);
             let column = probe
