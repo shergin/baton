@@ -35,3 +35,4 @@ principle, the proof belongs here.
 - [An operation states its expiration in its document](an-operation-states-its-expiration.md)
 - [Keys a session produces belong to its store](session-keys-belong-to-the-store.md)
 - [One runtime module, with edges as targets and a checked rule inside](one-runtime-module.md)
+- [The emitter writes Swift from typed pieces, not strings](the-emitter-writes-typed-pieces.md)
