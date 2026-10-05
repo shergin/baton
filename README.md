@@ -6,18 +6,7 @@
 
 **Baton brings Relay to SwiftUI and Compose.** A fragment beside every view,
 one request per screen, cached data in the first frame, and a re-render only
-where a field changed. It is faster than Apollo iOS.
-
-| | Baton | Apollo iOS 2.4 | Faster |
-|---|---|---|---|
-| Into the store | 3.4 ms | 318 ms | **94×** |
-| Same payload again | 165 µs | 3.99 ms | **24×** |
-| One field | 26 ns | 296 ns | **11×** |
-
-The head-to-head is the Rick and Morty page, 686 KB and 899 records, on an
-Apple M1 Pro, 2 October 2026. Before that field read, Apollo spends 228 ms
-rebuilding the query into models. The run is in
-[`BENCHMARKS.md`](BENCHMARKS.md).
+where a field changed.
 
 A view declares the GraphQL fragment it reads, beside its body. The compiler
 aggregates the fragments of a screen into one operation, validates everything
@@ -260,14 +249,23 @@ symbol is 🥖 and the logo is a loaf.
 
 ## Compared with the other native clients
 
-Baton is faster than Apollo iOS. The opening table is that head-to-head:
-**94×** into the store, **24×** when the same payload changes nothing,
-**11×** on a field. Baton 0.6.0, remeasured on the same machine without
-re-running Apollo, is 4.1 ms into the store, under 200 µs for the unchanged
-payload, and 28 ns a field. The shape is the same. Apollo's response for
-the same data is 849 KB, because its normalizer asks for `__typename` on
-every object. A launch with the file already open reads the fixture back
-in 1.78 ms.
+Baton is faster than Apollo iOS.
+
+| | Baton | Apollo iOS 2.4 | Faster |
+|---|---|---|---|
+| Into the store | 3.4 ms | 318 ms | **94×** |
+| Same payload again | 165 µs | 3.99 ms | **24×** |
+| One field | 26 ns | 296 ns | **11×** |
+
+The head-to-head is the Rick and Morty page, 686 KB and 899 records, on an
+Apple M1 Pro, 2 October 2026. Before that field read, Apollo spends 228 ms
+rebuilding the query into models. The run is in
+[`BENCHMARKS.md`](BENCHMARKS.md). Baton 0.6.0, remeasured on the same
+machine without re-running Apollo, is 4.1 ms into the store, under 200 µs
+for the unchanged payload, and 28 ns a field. The shape is the same.
+Apollo's response for the same data is 849 KB, because its normalizer asks
+for `__typename` on every object. A launch with the file already open reads
+the fixture back in 1.78 ms.
 
 Apollo spends the difference building a model of the operation, once from
 the response and again from the store. The write into the store itself is
