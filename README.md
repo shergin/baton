@@ -240,6 +240,14 @@ compiler was built keeps its first answer until told
 compiler bundle its release published; releases before the first that
 publishes one need the checkout's.
 
+## Caton
+
+[Caton](https://github.com/shergin/caton) is the demo app: a macOS menu bar
+inbox for GitHub notifications, built to show this framework in a real
+product. It joins each notification to the live state of its pull request
+or issue, and the number in the menu bar is the number of things waiting
+on you.
+
 ## The name
 
 In a relay, the baton is the thing that is actually handed over. Here it is
