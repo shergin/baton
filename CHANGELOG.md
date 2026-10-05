@@ -733,6 +733,15 @@ are expected and listed without apology.
   treats warnings as errors. Its action passed it by an escaped label,
   which Swift, 6.2 as much as 6.3, warns needs no backticks; at a call site
   only `inout` and `_` take them.
+- A variable named `hashValue`, or `phase`, `isRefreshing` or `isStale` in
+  a query, a refetchable fragment's arguments among them, or `subscription`
+  in a subscription, is an error at the variable that asks to rename it.
+  Each became a property of the value that took the place of the one the
+  runtime gives every such value: `isStale` read the variable where a view
+  meant the handle's state, without a word when both were `Bool`, and
+  `hashValue` stood beside `Hashable`'s, so the generated code did not
+  compile. Swift tells `refetch()` and `retry()` from a property by the
+  call, so variables of those names still compile.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 
