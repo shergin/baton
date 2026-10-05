@@ -1223,7 +1223,7 @@ struct HostileNameDocuments {
               # The locals, parameters and local aliases of generated bodies.
               bound: name errors: name child: name missing: name count: name lhs: name rhs: name
               hasher: name optimistic: name selfValue: name Fragment: name Spread: name Owner: name
-              Query: name Operation: name RefetchQuery: name
+              Query: name Operation: name RefetchQuery: name fields: name
               # What an operation value, a mutation's action and its optimistic response declare.
               variables: name resolution: name name: name persistedID: name text: name plan: name
               errorBehavior: name throwsOnFieldError: name bubbles: name hasDeferred: name Data: name
@@ -1272,6 +1272,7 @@ struct HostileNameDocuments {
             count: note { id } lhs: note { id } rhs: note { id } hasher: note { id }
             optimistic: note { id } selfValue: note { id } Fragment: note { id } Spread: note { id }
             Owner: note { id } Query: note { id } Operation: note { id } RefetchQuery: note { id }
+            fields: note { id }
             # What an operation value, a mutation's action and its optimistic response declare.
             variables: note { id } resolution: note { id } name: note { id } persistedID: note { id }
             text: note { id } plan: note { id } errorBehavior: note { id }

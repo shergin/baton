@@ -742,6 +742,10 @@ are expected and listed without apology.
   `hashValue` stood beside `Hashable`'s, so the generated code did not
   compile. Swift tells `refetch()` and `retry()` from a property by the
   call, so variables of those names still compile.
+- A mutation's payload field named `fields` compiles. Its optimistic
+  builder collected the response in a local `fields`, which `if let fields`
+  hid; the local takes a name none of the builder's fields binds,
+  `fields2`.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 
