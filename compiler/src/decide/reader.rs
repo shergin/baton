@@ -198,10 +198,39 @@ pub enum Read {
 #[derive(Debug, Clone, PartialEq)]
 pub struct ScalarRead {
     pub slot: SlotAccess,
-    /// The anchor's reader: `string`, `ints`.
-    pub reader: &'static str,
-    pub swift_type: String,
+    pub shape: ScalarShape,
     pub form: ScalarForm,
+}
+
+/// What a scalar field reads as, in no language's terms: each emitter
+/// spells the type and picks the reader for it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct ScalarShape {
+    pub primitive: Primitive,
+    pub list: bool,
+}
+
+/// What the store keeps a scalar as. An id, an enum and a custom scalar are
+/// kept as their text.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Primitive {
+    String,
+    Int,
+    Double,
+    Bool,
+}
+
+impl ScalarShape {
+    /// The shape of a field of `kind`.
+    pub fn of(kind: TypeKind, list: bool) -> ScalarShape {
+        let primitive = match kind {
+            TypeKind::Int => Primitive::Int,
+            TypeKind::Float => Primitive::Double,
+            TypeKind::Boolean => Primitive::Bool,
+            _ => Primitive::String,
+        };
+        ScalarShape { primitive, list }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -915,7 +944,6 @@ impl Readers {
                     let non_null = *non_null
                         || required.is_some()
                         || (*semantic_non_null && context.handles_errors());
-                    let (reader, swift_type) = scalar_reader(*base_kind, *list);
                     let form = match (
                         catch.as_ref().map(|catch| catch.to),
                         required.as_ref().map(|required| required.action),
@@ -930,8 +958,7 @@ impl Readers {
                     };
                     Read::Scalar(ScalarRead {
                         slot: slot_access(type_name, type_is_abstract, storage_key),
-                        reader,
-                        swift_type,
+                        shape: ScalarShape::of(*base_kind, *list),
                         form,
                     })
                 }
@@ -1474,29 +1501,6 @@ fn required_path(required: &Option<crate::pipeline::RequiredPlan>) -> String {
         .as_ref()
         .map(|required| required.path.clone())
         .unwrap_or_default()
-}
-
-/// The anchor's reader for a scalar and the Swift type it returns.
-pub fn scalar_reader(kind: TypeKind, list: bool) -> (&'static str, String) {
-    let (reader, swift) = match kind {
-        TypeKind::Int => ("int", "Int"),
-        TypeKind::Float => ("double", "Double"),
-        TypeKind::Boolean => ("bool", "Bool"),
-        _ => ("string", "String"),
-    };
-    if list {
-        (
-            match reader {
-                "int" => "ints",
-                "double" => "doubles",
-                "bool" => "bools",
-                _ => "strings",
-            },
-            format!("[{swift}]"),
-        )
-    } else {
-        (reader, swift.to_string())
-    }
 }
 
 /// The fragments spread under `@defer`, anywhere in a selection tree.

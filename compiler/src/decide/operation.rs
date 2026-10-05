@@ -3,7 +3,7 @@
 
 use std::collections::BTreeSet;
 
-use super::reader::{ReaderPlan, Readers, scalar_reader};
+use super::reader::{Primitive, ReaderPlan, Readers, ScalarShape};
 use super::{NormalizationField, NormalizationKind, NormalizationSelection};
 use crate::names::{Kind, NameError, Reserved, Scope, Written, escape};
 use crate::pipeline::{OperationKind, OperationPlan, TypeKind, VariablePlan};
@@ -34,7 +34,7 @@ pub struct OperationValue {
 pub struct VariableValue {
     /// The GraphQL name, which the property and the request share.
     pub name: String,
-    pub swift_type: String,
+    pub shape: VariableShape,
     /// A nullable variable's parameter defaults to nil.
     pub non_null: bool,
     /// The name its value goes by as a parameter.
@@ -61,8 +61,24 @@ pub struct BuilderField {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum BuilderValue {
-    Scalar { swift_type: String },
+    Scalar { shape: ScalarShape },
     Object { builder: String, plural: bool },
+}
+
+/// What a variable holds, in no language's terms.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct VariableShape {
+    pub base: VariableBase,
+    pub list: bool,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum VariableBase {
+    /// A scalar, as the accessors read it.
+    Scalar(Primitive),
+    /// An input object, which the request carries as the runtime's variable
+    /// value.
+    Input,
 }
 
 /// An operation's value, its root lens decided by `readers`; the names it
@@ -84,7 +100,7 @@ pub(super) fn operation(
         .iter()
         .map(|variable| VariableValue {
             name: variable.name.clone(),
-            swift_type: variable_type(variable),
+            shape: variable_shape(variable),
             non_null: variable.non_null,
             local: local_name(&variable.name, &names),
         })
@@ -222,7 +238,7 @@ fn builder(
         let key = field.response_key.clone();
         let value = match &field.kind {
             NormalizationKind::Scalar { base_kind, list } => BuilderValue::Scalar {
-                swift_type: scalar_reader(*base_kind, *list).1,
+                shape: ScalarShape::of(*base_kind, *list),
             },
             NormalizationKind::Linked {
                 plural,
@@ -280,24 +296,20 @@ fn local_name(property: &str, taken: &[&str]) -> String {
     name
 }
 
-/// A variable's Swift type: the scalars as the accessors read them, an
-/// input object as a `Baton.Variable`.
-fn variable_type(variable: &VariablePlan) -> String {
+/// A variable's shape: the scalars as the accessors read them, anything
+/// else as the request carries it.
+fn variable_shape(variable: &VariablePlan) -> VariableShape {
     let base = match variable.base_kind {
-        TypeKind::Int => "Int",
-        TypeKind::Float => "Double",
-        TypeKind::Boolean => "Bool",
-        TypeKind::String | TypeKind::Id | TypeKind::Enum | TypeKind::CustomScalar => "String",
-        _ => "Baton.Variable",
+        TypeKind::Int => VariableBase::Scalar(Primitive::Int),
+        TypeKind::Float => VariableBase::Scalar(Primitive::Double),
+        TypeKind::Boolean => VariableBase::Scalar(Primitive::Bool),
+        TypeKind::String | TypeKind::Id | TypeKind::Enum | TypeKind::CustomScalar => {
+            VariableBase::Scalar(Primitive::String)
+        }
+        _ => VariableBase::Input,
     };
-    let shape = if variable.list {
-        format!("[{base}]")
-    } else {
-        base.to_string()
-    };
-    if variable.non_null {
-        shape
-    } else {
-        format!("{shape}?")
+    VariableShape {
+        base,
+        list: variable.list,
     }
 }

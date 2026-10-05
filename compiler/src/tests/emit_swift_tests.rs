@@ -1,14 +1,52 @@
 //! Tests of the Swift pieces every printer writes through: a type as a
-//! structure, a computed property in each of its forms, the local alias a
-//! body names a type by, and the head of a check.
+//! structure, a scalar's type and reader, a variable's type, a computed
+//! property in each of its forms, the local alias a body names a type by,
+//! and the head of a check.
+
+use std::path::{Path, PathBuf};
 
 use super::*;
+use crate::config::Config;
+use crate::documents::Document;
+use crate::pipeline;
 
 /// The line `property` writes when it reads `expression` under `condition`.
 fn one_line(property: Computed, expression: &str, condition: Option<&str>) -> String {
     let mut writer = Writer::new();
     property.reads(&mut writer, expression, condition);
     writer.finish()
+}
+
+/// The variables of the one operation in `text`, compiled against the test
+/// schema and decided.
+fn decided_variables(text: &str) -> Vec<VariableValue> {
+    let schema_path = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .expect("the compiler sits one level below the repository root")
+        .join("spec/tests/schema.graphql");
+    let schema = std::fs::read_to_string(&schema_path).expect("the test schema is readable");
+    let document = Document {
+        path: PathBuf::from("Probe.swift"),
+        index: 0,
+        start: crate::swift::Position { line: 1, column: 1 },
+        text: text.to_string(),
+        embedded: None,
+    };
+    let compiled = pipeline::compile(
+        &schema,
+        &schema_path.to_string_lossy(),
+        &[document],
+        &Config::default(),
+    )
+    .unwrap_or_else(|errors| panic!("the document does not compile: {errors:?}"));
+    let program = crate::decide::program(&compiled.plan)
+        .unwrap_or_else(|errors| panic!("the document declares names twice: {errors:?}"));
+    program
+        .operations
+        .into_iter()
+        .next()
+        .expect("the document is an operation")
+        .variables
 }
 
 #[test]
@@ -63,6 +101,72 @@ fn the_runtime_is_named_by_its_module_in_a_type_and_in_an_expression() {
         "[Baton.FieldError]"
     );
     assert_eq!(runtime_value("Variables"), "Baton.Variables");
+}
+
+#[test]
+fn a_scalar_shape_is_spelled_as_swift_writes_it_and_read_by_its_matching_reader() {
+    let shapes = [
+        (Primitive::String, false, "String", "string"),
+        (Primitive::Int, false, "Int", "int"),
+        (Primitive::Double, false, "Double", "double"),
+        (Primitive::Bool, false, "Bool", "bool"),
+        (Primitive::String, true, "[String]", "strings"),
+        (Primitive::Int, true, "[Int]", "ints"),
+        (Primitive::Double, true, "[Double]", "doubles"),
+        (Primitive::Bool, true, "[Bool]", "bools"),
+    ];
+    for (primitive, list, swift_type, reader) in shapes {
+        let shape = ScalarShape { primitive, list };
+        assert_eq!(
+            scalar_type(shape).to_string(),
+            swift_type,
+            "the type of {shape:?}"
+        );
+        assert_eq!(scalar_reader(shape), reader, "the reader of {shape:?}");
+    }
+}
+
+#[test]
+fn a_variable_is_typed_by_its_shape_and_is_optional_when_it_may_be_null() {
+    // The schema has no nullable list argument, and GraphQL lets a nullable
+    // variable stand for a non-null argument only when it has a default, so
+    // `$someIds` has one.
+    let variables = decided_variables(
+        r#"query Probe(
+            $id: ID!
+            $shown: Boolean!
+            $page: Int
+            $ids: [ID!]!
+            $someIds: [ID!] = ["1"]
+            $required: FilterCharacter!
+            $filter: FilterCharacter
+            $filters: [FilterCharacter!]!
+        ) {
+            node(id: $id) @include(if: $shown) { id }
+            charactersByIds(ids: $ids) { id }
+            some: charactersByIds(ids: $someIds) { id }
+            required: characters(filter: $required) { results { id } }
+            characters(page: $page, filter: $filter) { results { id } }
+            charactersMatching(filters: $filters) { id }
+        }"#,
+    );
+    let declared: Vec<String> = variables
+        .iter()
+        .map(|variable| format!("{}: {}", variable.name, variable_type(variable)))
+        .collect();
+    assert_eq!(
+        declared,
+        [
+            "id: String",
+            "shown: Bool",
+            "page: Int?",
+            "ids: [String]",
+            "someIds: [String]?",
+            "required: Baton.Variable",
+            "filter: Baton.Variable?",
+            "filters: [Baton.Variable]",
+        ]
+    );
 }
 
 #[test]

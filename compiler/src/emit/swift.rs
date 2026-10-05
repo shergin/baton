@@ -11,6 +11,7 @@
 use std::fmt;
 
 use super::writer::Writer;
+use crate::decide::{Primitive, ScalarShape, VariableBase, VariableValue};
 use crate::names::{escape, possible_types, type_constant};
 use crate::pipeline::{ArgumentValuePlan, ConstantPlan};
 
@@ -85,6 +86,55 @@ impl fmt::Display for SwiftType {
             SwiftType::Array(element) => write!(formatter, "[{element}]"),
         }
     }
+}
+
+/// A scalar's type: the primitive, or an array of it.
+pub(super) fn scalar_type(shape: ScalarShape) -> SwiftType {
+    let primitive = primitive_type(shape.primitive);
+    if shape.list {
+        primitive.array()
+    } else {
+        primitive
+    }
+}
+
+fn primitive_type(primitive: Primitive) -> SwiftType {
+    SwiftType::named(match primitive {
+        Primitive::String => "String",
+        Primitive::Int => "Int",
+        Primitive::Double => "Double",
+        Primitive::Bool => "Bool",
+    })
+}
+
+/// The anchor's reader for a scalar: `string`, `ints`.
+pub(super) fn scalar_reader(shape: ScalarShape) -> &'static str {
+    match (shape.primitive, shape.list) {
+        (Primitive::String, false) => "string",
+        (Primitive::Int, false) => "int",
+        (Primitive::Double, false) => "double",
+        (Primitive::Bool, false) => "bool",
+        (Primitive::String, true) => "strings",
+        (Primitive::Int, true) => "ints",
+        (Primitive::Double, true) => "doubles",
+        (Primitive::Bool, true) => "bools",
+    }
+}
+
+/// A variable's type as the operation value stores it: a scalar as the
+/// accessors read it, an input object as the runtime's variable value,
+/// optional when the variable may be null.
+pub(super) fn variable_type(variable: &VariableValue) -> SwiftType {
+    let base = match variable.shape.base {
+        VariableBase::Scalar(primitive) => primitive_type(primitive),
+        VariableBase::Input => SwiftType::runtime("Variable"),
+    };
+    let shape = if variable.shape.list {
+        base.array()
+    } else {
+        base
+    };
+    shape.optional_if(!variable.non_null)
 }
 
 /// The runtime's module named in an expression, as `Baton.Variables`. Only

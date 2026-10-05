@@ -10,7 +10,7 @@
 
 use super::swift::{
     Computed, LocalAlias, SwiftType, argument_expression, check_head, possible_types_reference,
-    swift_literal, type_reference, variable_literal,
+    scalar_reader, scalar_type, swift_literal, type_reference, variable_literal,
 };
 use super::writer::Writer;
 use crate::decide::{
@@ -92,8 +92,8 @@ fn accessor(writer: &mut Writer, accessor: &Accessor) {
 /// A scalar accessor: plain, `@required`, `@catch` or throwing.
 fn scalar_accessor(writer: &mut Writer, name: &str, read: &ScalarRead, condition: Option<&str>) {
     let slot = slot_expression(&read.slot);
-    let reader = read.reader;
-    let value = SwiftType::named(&read.swift_type);
+    let reader = scalar_reader(read.shape);
+    let value = scalar_type(read.shape);
     let required_reader = format!("required{}", capitalize(reader));
     let (swift_type, body, throws) = match &read.form {
         ScalarForm::Caught { non_null } => {

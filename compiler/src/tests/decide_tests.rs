@@ -1,5 +1,6 @@
-//! Tests of the decide pass: documents compiled against the test schema, and
-//! the variants and guards their normalization comes to.
+//! Tests of the decide pass: documents compiled against the test schema, the
+//! variants and guards their normalization comes to, and what the store
+//! keeps a scalar as.
 
 use std::path::{Path, PathBuf};
 
@@ -237,4 +238,61 @@ fn a_field_the_initial_part_selects_goes_before_its_deferred_copy() {
         .map(|field| field.deferred.as_deref())
         .collect();
     assert_eq!(origins, vec![None, Some("Probe$defer$later")]);
+}
+
+#[test]
+fn an_id_an_enum_and_a_custom_scalar_are_kept_as_their_text() {
+    for kind in [
+        TypeKind::String,
+        TypeKind::Id,
+        TypeKind::Enum,
+        TypeKind::CustomScalar,
+    ] {
+        assert_eq!(
+            ScalarShape::of(kind, false).primitive,
+            Primitive::String,
+            "{kind:?}"
+        );
+    }
+}
+
+#[test]
+fn a_float_is_kept_as_a_double_a_boolean_as_a_bool_and_an_int_as_an_int() {
+    assert_eq!(
+        ScalarShape::of(TypeKind::Float, false).primitive,
+        Primitive::Double
+    );
+    assert_eq!(
+        ScalarShape::of(TypeKind::Boolean, false).primitive,
+        Primitive::Bool
+    );
+    assert_eq!(
+        ScalarShape::of(TypeKind::Int, false).primitive,
+        Primitive::Int
+    );
+}
+
+#[test]
+fn a_scalar_shape_is_a_list_exactly_when_its_field_is() {
+    assert_eq!(
+        ScalarShape::of(TypeKind::Float, true),
+        ScalarShape {
+            primitive: Primitive::Double,
+            list: true
+        }
+    );
+    assert_eq!(
+        ScalarShape::of(TypeKind::Id, true),
+        ScalarShape {
+            primitive: Primitive::String,
+            list: true
+        }
+    );
+    assert_eq!(
+        ScalarShape::of(TypeKind::Id, false),
+        ScalarShape {
+            primitive: Primitive::String,
+            list: false
+        }
+    );
 }

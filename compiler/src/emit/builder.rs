@@ -6,7 +6,7 @@
 //! in it. A value takes its type from the dictionary it is stored in, as
 //! `.init(name)` does.
 
-use super::swift::{SwiftType, member, parameter, swift_literal};
+use super::swift::{SwiftType, member, parameter, scalar_type, swift_literal};
 use super::writer::Writer;
 use crate::decide::{BuilderPlan, BuilderValue};
 
@@ -27,7 +27,7 @@ pub(super) fn builder(writer: &mut Writer, builder: &BuilderPlan) {
                 let key = swift_literal(&field.key);
                 let local = &field.local;
                 let swift_type = match &field.value {
-                    BuilderValue::Scalar { swift_type } => SwiftType::named(swift_type),
+                    BuilderValue::Scalar { shape } => scalar_type(*shape),
                     BuilderValue::Object {
                         builder,
                         plural: true,

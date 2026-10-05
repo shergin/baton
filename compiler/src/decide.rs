@@ -21,12 +21,12 @@ mod reader;
 
 pub use collect::Shared;
 pub use keys::{KeyPart, SlotRef, constant_json};
-pub use operation::{BuilderPlan, BuilderValue, OperationValue, VariableValue};
+pub use operation::{BuilderPlan, BuilderValue, OperationValue, VariableBase, VariableValue};
 pub use reader::{
     Accessor, AliasGuard, AliasedRead, BoundArgument, ConditionRead, ConnectionMembers, ErrorCheck,
-    ErrorLine, Guarded, LinkedForm, LinkedRead, LoadMore, Read, ReaderPlan, RefetchMembers,
-    SatisfiedCheck, ScalarForm, ScalarRead, SlotAccess, SpreadForm, SpreadGuard, SpreadRead,
-    TypeTest,
+    ErrorLine, Guarded, LinkedForm, LinkedRead, LoadMore, Primitive, Read, ReaderPlan,
+    RefetchMembers, SatisfiedCheck, ScalarForm, ScalarRead, ScalarShape, SlotAccess, SpreadForm,
+    SpreadGuard, SpreadRead, TypeTest,
 };
 
 use crate::names::{NameError, Reserved, Written};

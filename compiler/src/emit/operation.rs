@@ -10,6 +10,7 @@ use super::lens::lens;
 use super::plan::selection_plan;
 use super::swift::{
     SwiftType, member, parameter, raw_multiline_literal, runtime_value, swift_literal,
+    variable_type,
 };
 use super::writer::Writer;
 use crate::decide::{OperationValue, VariableValue};
@@ -50,7 +51,7 @@ fn value_members(writer: &mut Writer, operation: &OperationValue, resolution: Op
         writer.line(format!(
             "public var {}: {}",
             member(&variable.name),
-            variable.swift_type
+            variable_type(variable)
         ));
     }
     if let Some(handle) = resolution {
@@ -217,7 +218,7 @@ fn parameter_list(variables: &[VariableValue]) -> String {
             format!(
                 "{}: {}{}",
                 parameter(&variable.name, &variable.local),
-                variable.swift_type,
+                variable_type(variable),
                 default
             )
         })

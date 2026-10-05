@@ -51,9 +51,11 @@ than fifty lines.
   hundred lines, and no dependency is added.
 - The output does not change by a byte. The goldens are the proof of the
   change.
-- `decide` says what is generated in terms no language owns: a scalar's
-  kind, whether it is a list, whether it may be null *(planned)*. The Swift
-  spelling moves to the Swift writer.
+- `decide` says what a scalar and a variable are in terms no language
+  owns: what the store keeps them as, whether they are lists, whether they
+  may be null. The Swift writer spells the type and picks the reader. The
+  names `decide` allocates are still Swift's, and stay so until a second
+  emitter needs them otherwise.
 - Documents with hostile names become goldens *(planned)*: fields,
   variables and fragments named after Swift's keywords and after every
   name generated code spells, so the class is tested whole and not by
