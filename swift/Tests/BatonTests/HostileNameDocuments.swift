@@ -30,6 +30,7 @@ struct HostileNameDocuments {
           defer: name do: name catch: name true: name false: name nil: name super: name internal: name
           private: name public: name fileprivate: name open: name inout: name typealias: name
           associatedtype: name protocol: name some: name any: name
+          rethrows: name fallthrough: name precedencegroup: name _: name
           # Swift's contextual keywords that start an expression or a type.
           async: name await: name borrowing: name consume: name consuming: name copy: name discard: name
           each: name isolated: name sending: name then: name unsafe: name
@@ -77,6 +78,8 @@ struct HostileNameDocuments {
           internal: origin { id } private: origin { id } public: origin { id }
           fileprivate: origin { id } open: origin { id } inout: origin { id } typealias: origin { id }
           associatedtype: origin { id } protocol: origin { id } some: origin { id } any: origin { id }
+          rethrows: origin { id } fallthrough: origin { id } precedencegroup: origin { id }
+          _: origin { id }
           # Swift's contextual keywords that start an expression or a type.
           async: origin { id } await: origin { id } borrowing: origin { id } consume: origin { id }
           consuming: origin { id } copy: origin { id } discard: origin { id } each: origin { id }
@@ -145,6 +148,8 @@ struct HostileNameDocuments {
           ... @alias(as: "inout") { name } ... @alias(as: "typealias") { name }
           ... @alias(as: "associatedtype") { name } ... @alias(as: "protocol") { name }
           ... @alias(as: "some") { name } ... @alias(as: "any") { name }
+          ... @alias(as: "rethrows") { name } ... @alias(as: "fallthrough") { name }
+          ... @alias(as: "precedencegroup") { name } ... @alias(as: "_") { name }
           # Swift's contextual keywords that start an expression or a type.
           ... @alias(as: "async") { name } ... @alias(as: "await") { name }
           ... @alias(as: "borrowing") { name } ... @alias(as: "consume") { name }
@@ -268,6 +273,10 @@ struct HostileNameDocuments {
           ... @alias(as: "protocol") { ...HostileSpreadTarget_character }
           ... @alias(as: "some") { ...HostileSpreadTarget_character }
           ... @alias(as: "any") { ...HostileSpreadTarget_character }
+          ... @alias(as: "rethrows") { ...HostileSpreadTarget_character }
+          ... @alias(as: "fallthrough") { ...HostileSpreadTarget_character }
+          ... @alias(as: "precedencegroup") { ...HostileSpreadTarget_character }
+          ... @alias(as: "_") { ...HostileSpreadTarget_character }
           # Swift's contextual keywords that start an expression or a type.
           ... @alias(as: "async") { ...HostileSpreadTarget_character }
           ... @alias(as: "await") { ...HostileSpreadTarget_character }
@@ -408,6 +417,7 @@ struct HostileNameDocuments {
           do: name catch: name true: name false: name nil: name super: name internal: name private: name
           public: name fileprivate: name open: name inout: name typealias: name associatedtype: name
           protocol: name some: name any: name
+          rethrows: name fallthrough: name precedencegroup: name _: name
           # Swift's contextual keywords that start an expression or a type.
           async: name await: name borrowing: name consume: name consuming: name copy: name discard: name
           each: name isolated: name sending: name then: name unsafe: name
@@ -463,6 +473,7 @@ struct HostileNameDocuments {
             internal: totalCount private: totalCount public: totalCount fileprivate: totalCount
             open: totalCount inout: totalCount typealias: totalCount associatedtype: totalCount
             protocol: totalCount some: totalCount any: totalCount
+            rethrows: totalCount fallthrough: totalCount precedencegroup: totalCount _: totalCount
             # Swift's contextual keywords that start an expression or a type.
             async: totalCount await: totalCount borrowing: totalCount consume: totalCount
             consuming: totalCount copy: totalCount discard: totalCount each: totalCount
@@ -525,6 +536,7 @@ struct HostileNameDocuments {
             guard: name defer: name do: name catch: name true: name false: name nil: name super: name
             internal: name private: name public: name fileprivate: name open: name inout: name
             typealias: name associatedtype: name protocol: name some: name any: name
+            rethrows: name fallthrough: name precedencegroup: name _: name
             # Swift's contextual keywords that start an expression or a type.
             async: name await: name borrowing: name consume: name consuming: name copy: name
             discard: name each: name isolated: name sending: name then: name unsafe: name
@@ -567,6 +579,7 @@ struct HostileNameDocuments {
           defer: id do: id catch: id true: id false: id nil: id super: id internal: id private: id
           public: id fileprivate: id open: id inout: id typealias: id associatedtype: id protocol: id
           some: id any: id
+          rethrows: id fallthrough: id precedencegroup: id _: id
           # Swift's contextual keywords that start an expression or a type.
           async: id await: id borrowing: id consume: id consuming: id copy: id discard: id each: id
           isolated: id sending: id then: id unsafe: id
@@ -609,6 +622,7 @@ struct HostileNameDocuments {
           $nil: ID!, $super: ID!, $internal: ID!, $private: ID!, $public: ID!, $fileprivate: ID!,
           $open: ID!, $inout: ID!, $typealias: ID!, $associatedtype: ID!, $protocol: ID!, $some: ID!,
           $any: ID!,
+          $rethrows: ID!, $fallthrough: ID!, $precedencegroup: ID!, $_: ID!,
           # Swift's contextual keywords that start an expression or a type.
           $async: ID!, $borrowing: ID!, $consume: ID!, $consuming: ID!, $copy: ID!, $discard: ID!,
           $each: ID!, $isolated: ID!, $sending: ID!, $then: ID!, $unsafe: ID!,
@@ -642,6 +656,7 @@ struct HostileNameDocuments {
             $for, $in, $while, $repeat, $return, $break, $continue, $where, $is, $as, $try, $throw,
             $throws, $guard, $defer, $do, $catch, $true, $false, $nil, $super, $internal, $private,
             $public, $fileprivate, $open, $inout, $typealias, $associatedtype, $protocol, $some, $any,
+            $rethrows, $fallthrough, $precedencegroup, $_,
             # Swift's contextual keywords that start an expression or a type.
             $async, $borrowing, $consume, $consuming, $copy, $discard, $each, $isolated, $sending,
             $then, $unsafe,
@@ -684,6 +699,7 @@ struct HostileNameDocuments {
           $nil: Boolean!, $super: Boolean!, $internal: Boolean!, $private: Boolean!, $public: Boolean!,
           $fileprivate: Boolean!, $open: Boolean!, $inout: Boolean!, $typealias: Boolean!,
           $associatedtype: Boolean!, $protocol: Boolean!, $some: Boolean!, $any: Boolean!,
+          $rethrows: Boolean!, $fallthrough: Boolean!, $precedencegroup: Boolean!, $_: Boolean!,
           # Swift's contextual keywords that start an expression or a type.
           $async: Boolean!, $borrowing: Boolean!, $consume: Boolean!, $consuming: Boolean!,
           $copy: Boolean!, $discard: Boolean!, $each: Boolean!, $isolated: Boolean!, $sending: Boolean!,
@@ -745,6 +761,8 @@ struct HostileNameDocuments {
               ... @include(if: $inout) { name } ... @include(if: $typealias) { name }
               ... @include(if: $associatedtype) { name } ... @include(if: $protocol) { name }
               ... @include(if: $some) { name } ... @include(if: $any) { name }
+              ... @include(if: $rethrows) { name } ... @include(if: $fallthrough) { name }
+              ... @include(if: $precedencegroup) { name } ... @include(if: $_) { name }
               # Swift's contextual keywords that start an expression or a type.
               ... @include(if: $async) { name } ... @include(if: $borrowing) { name }
               ... @include(if: $consume) { name } ... @include(if: $consuming) { name }
@@ -817,6 +835,7 @@ struct HostileNameDocuments {
           $private: Boolean!, $public: Boolean!, $fileprivate: Boolean!, $open: Boolean!,
           $inout: Boolean!, $typealias: Boolean!, $associatedtype: Boolean!, $protocol: Boolean!,
           $some: Boolean!, $any: Boolean!,
+          $rethrows: Boolean!, $fallthrough: Boolean!, $precedencegroup: Boolean!, $_: Boolean!,
           # Swift's contextual keywords that start an expression or a type.
           $async: Boolean!, $borrowing: Boolean!, $consume: Boolean!, $consuming: Boolean!,
           $copy: Boolean!, $discard: Boolean!, $each: Boolean!, $isolated: Boolean!, $sending: Boolean!,
@@ -879,6 +898,8 @@ struct HostileNameDocuments {
               ... @include(if: $inout) { cursor } ... @include(if: $typealias) { cursor }
               ... @include(if: $associatedtype) { cursor } ... @include(if: $protocol) { cursor }
               ... @include(if: $some) { cursor } ... @include(if: $any) { cursor }
+              ... @include(if: $rethrows) { cursor } ... @include(if: $fallthrough) { cursor }
+              ... @include(if: $precedencegroup) { cursor } ... @include(if: $_) { cursor }
               # Swift's contextual keywords that start an expression or a type.
               ... @include(if: $async) { cursor } ... @include(if: $borrowing) { cursor }
               ... @include(if: $consume) { cursor } ... @include(if: $consuming) { cursor }
@@ -998,6 +1019,10 @@ struct HostileNameDocuments {
           protocol: {type: "Boolean", defaultValue: true},
           some: {type: "Boolean", defaultValue: true},
           any: {type: "Boolean", defaultValue: true},
+          rethrows: {type: "Boolean", defaultValue: true},
+          fallthrough: {type: "Boolean", defaultValue: true},
+          precedencegroup: {type: "Boolean", defaultValue: true},
+          _: {type: "Boolean", defaultValue: true},
           # Swift's contextual keywords that start an expression or a type.
           async: {type: "Boolean", defaultValue: true},
           borrowing: {type: "Boolean", defaultValue: true},
@@ -1117,6 +1142,8 @@ struct HostileNameDocuments {
           ... @include(if: $typealias) { name } ... @include(if: $associatedtype) { name }
           ... @include(if: $protocol) { name } ... @include(if: $some) { name }
           ... @include(if: $any) { name }
+          ... @include(if: $rethrows) { name } ... @include(if: $fallthrough) { name }
+          ... @include(if: $precedencegroup) { name } ... @include(if: $_) { name }
           # Swift's contextual keywords that start an expression or a type.
           ... @include(if: $async) { name } ... @include(if: $borrowing) { name }
           ... @include(if: $consume) { name } ... @include(if: $consuming) { name }
@@ -1187,6 +1214,7 @@ struct HostileNameDocuments {
               throws: name guard: name defer: name do: name catch: name true: name false: name nil: name
               super: name internal: name private: name public: name fileprivate: name open: name
               inout: name typealias: name associatedtype: name protocol: name some: name any: name
+              rethrows: name fallthrough: name precedencegroup: name _: name
               # Swift's contextual keywords that start an expression or a type.
               async: name borrowing: name consume: name consuming: name copy: name discard: name
               each: name isolated: name sending: name then: name unsafe: name
@@ -1229,6 +1257,8 @@ struct HostileNameDocuments {
             public: note { id } fileprivate: note { id } open: note { id } inout: note { id }
             typealias: note { id } associatedtype: note { id } protocol: note { id } some: note { id }
             any: note { id }
+            rethrows: note { id } fallthrough: note { id } precedencegroup: note { id }
+            _: note { id }
             # Swift's contextual keywords that start an expression or a type.
             async: note { id } borrowing: note { id } consume: note { id } consuming: note { id }
             copy: note { id } discard: note { id } each: note { id } isolated: note { id }

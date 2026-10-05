@@ -720,6 +720,11 @@ are expected and listed without apology.
   binding defaulted every item to null, `.string("2") ?? .null`, which
   Swift warns about, and a build that treats warnings as errors refused the
   generated code; only a variable, which the scope may lack, is defaulted.
+- A field, a selection, an argument or a variable named `rethrows`,
+  `fallthrough`, `precedencegroup` or `_` is escaped as Swift's other
+  keywords are; the generated code declared `public var rethrows` and
+  `var _`, which Swift refuses. A mutation's action passes a variable
+  named `$_` by an escaped label, since Swift reads a bare `_:` as no label.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 
