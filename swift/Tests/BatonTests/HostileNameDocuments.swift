@@ -938,12 +938,11 @@ struct HostileNameDocuments {
     var subscriptionVariables: HostileSubscriptionVariables
 
     /// Each name as an argument of a refetchable fragment, a variable of its
-    /// refetch query. Ten at most to a fragment: its refetch query binds them
-    /// in one expression, whose time to type-check doubles with each argument
-    /// and runs out at sixteen.
+    /// refetch query, which binds every one of them in one expression.
     @Fragment("""
-        fragment HostileArguments1_character on Character
+        fragment HostileArguments_character on Character
         @argumentDefinitions(
+          # Swift's keywords, as `escape` lists them.
           Type: {type: "Boolean", defaultValue: true},
           Protocol: {type: "Boolean", defaultValue: true},
           Any: {type: "Boolean", defaultValue: true},
@@ -953,21 +952,7 @@ struct HostileNameDocuments {
           deinit: {type: "Boolean", defaultValue: true},
           subscript: {type: "Boolean", defaultValue: true},
           class: {type: "Boolean", defaultValue: true},
-          struct: {type: "Boolean", defaultValue: true}
-        )
-        @refetchable(queryName: "HostileArguments1RefetchQuery") {
-          ... @include(if: $Type) { name } ... @include(if: $Protocol) { name }
-          ... @include(if: $Any) { name } ... @include(if: $self) { name }
-          ... @include(if: $Self) { name } ... @include(if: $init) { name }
-          ... @include(if: $deinit) { name } ... @include(if: $subscript) { name }
-          ... @include(if: $class) { name } ... @include(if: $struct) { name }
-        }
-        """)
-    var arguments1: HostileArguments1_character
-
-    @Fragment("""
-        fragment HostileArguments2_character on Character
-        @argumentDefinitions(
+          struct: {type: "Boolean", defaultValue: true},
           enum: {type: "Boolean", defaultValue: true},
           func: {type: "Boolean", defaultValue: true},
           var: {type: "Boolean", defaultValue: true},
@@ -977,21 +962,7 @@ struct HostileNameDocuments {
           operator: {type: "Boolean", defaultValue: true},
           static: {type: "Boolean", defaultValue: true},
           default: {type: "Boolean", defaultValue: true},
-          case: {type: "Boolean", defaultValue: true}
-        )
-        @refetchable(queryName: "HostileArguments2RefetchQuery") {
-          ... @include(if: $enum) { name } ... @include(if: $func) { name }
-          ... @include(if: $var) { name } ... @include(if: $let) { name }
-          ... @include(if: $import) { name } ... @include(if: $extension) { name }
-          ... @include(if: $operator) { name } ... @include(if: $static) { name }
-          ... @include(if: $default) { name } ... @include(if: $case) { name }
-        }
-        """)
-    var arguments2: HostileArguments2_character
-
-    @Fragment("""
-        fragment HostileArguments3_character on Character
-        @argumentDefinitions(
+          case: {type: "Boolean", defaultValue: true},
           switch: {type: "Boolean", defaultValue: true},
           if: {type: "Boolean", defaultValue: true},
           else: {type: "Boolean", defaultValue: true},
@@ -1001,21 +972,7 @@ struct HostileNameDocuments {
           repeat: {type: "Boolean", defaultValue: true},
           return: {type: "Boolean", defaultValue: true},
           break: {type: "Boolean", defaultValue: true},
-          continue: {type: "Boolean", defaultValue: true}
-        )
-        @refetchable(queryName: "HostileArguments3RefetchQuery") {
-          ... @include(if: $switch) { name } ... @include(if: $if) { name }
-          ... @include(if: $else) { name } ... @include(if: $for) { name }
-          ... @include(if: $in) { name } ... @include(if: $while) { name }
-          ... @include(if: $repeat) { name } ... @include(if: $return) { name }
-          ... @include(if: $break) { name } ... @include(if: $continue) { name }
-        }
-        """)
-    var arguments3: HostileArguments3_character
-
-    @Fragment("""
-        fragment HostileArguments4_character on Character
-        @argumentDefinitions(
+          continue: {type: "Boolean", defaultValue: true},
           where: {type: "Boolean", defaultValue: true},
           is: {type: "Boolean", defaultValue: true},
           as: {type: "Boolean", defaultValue: true},
@@ -1025,21 +982,7 @@ struct HostileNameDocuments {
           guard: {type: "Boolean", defaultValue: true},
           defer: {type: "Boolean", defaultValue: true},
           do: {type: "Boolean", defaultValue: true},
-          catch: {type: "Boolean", defaultValue: true}
-        )
-        @refetchable(queryName: "HostileArguments4RefetchQuery") {
-          ... @include(if: $where) { name } ... @include(if: $is) { name }
-          ... @include(if: $as) { name } ... @include(if: $try) { name }
-          ... @include(if: $throw) { name } ... @include(if: $throws) { name }
-          ... @include(if: $guard) { name } ... @include(if: $defer) { name }
-          ... @include(if: $do) { name } ... @include(if: $catch) { name }
-        }
-        """)
-    var arguments4: HostileArguments4_character
-
-    @Fragment("""
-        fragment HostileArguments5_character on Character
-        @argumentDefinitions(
+          catch: {type: "Boolean", defaultValue: true},
           true: {type: "Boolean", defaultValue: true},
           false: {type: "Boolean", defaultValue: true},
           nil: {type: "Boolean", defaultValue: true},
@@ -1049,69 +992,29 @@ struct HostileNameDocuments {
           public: {type: "Boolean", defaultValue: true},
           fileprivate: {type: "Boolean", defaultValue: true},
           open: {type: "Boolean", defaultValue: true},
-          inout: {type: "Boolean", defaultValue: true}
-        )
-        @refetchable(queryName: "HostileArguments5RefetchQuery") {
-          ... @include(if: $true) { name } ... @include(if: $false) { name }
-          ... @include(if: $nil) { name } ... @include(if: $super) { name }
-          ... @include(if: $internal) { name } ... @include(if: $private) { name }
-          ... @include(if: $public) { name } ... @include(if: $fileprivate) { name }
-          ... @include(if: $open) { name } ... @include(if: $inout) { name }
-        }
-        """)
-    var arguments5: HostileArguments5_character
-
-    @Fragment("""
-        fragment HostileArguments6_character on Character
-        @argumentDefinitions(
+          inout: {type: "Boolean", defaultValue: true},
           typealias: {type: "Boolean", defaultValue: true},
           associatedtype: {type: "Boolean", defaultValue: true},
           protocol: {type: "Boolean", defaultValue: true},
           some: {type: "Boolean", defaultValue: true},
           any: {type: "Boolean", defaultValue: true},
+          # Swift's contextual keywords that start an expression or a type.
           async: {type: "Boolean", defaultValue: true},
           borrowing: {type: "Boolean", defaultValue: true},
           consume: {type: "Boolean", defaultValue: true},
           consuming: {type: "Boolean", defaultValue: true},
-          copy: {type: "Boolean", defaultValue: true}
-        )
-        @refetchable(queryName: "HostileArguments6RefetchQuery") {
-          ... @include(if: $typealias) { name } ... @include(if: $associatedtype) { name }
-          ... @include(if: $protocol) { name } ... @include(if: $some) { name }
-          ... @include(if: $any) { name } ... @include(if: $async) { name }
-          ... @include(if: $borrowing) { name } ... @include(if: $consume) { name }
-          ... @include(if: $consuming) { name } ... @include(if: $copy) { name }
-        }
-        """)
-    var arguments6: HostileArguments6_character
-
-    @Fragment("""
-        fragment HostileArguments7_character on Character
-        @argumentDefinitions(
+          copy: {type: "Boolean", defaultValue: true},
           discard: {type: "Boolean", defaultValue: true},
           each: {type: "Boolean", defaultValue: true},
           isolated: {type: "Boolean", defaultValue: true},
           sending: {type: "Boolean", defaultValue: true},
           then: {type: "Boolean", defaultValue: true},
           unsafe: {type: "Boolean", defaultValue: true},
+          # What every lens declares, and what a refetchable fragment and a connection add.
           anchor: {type: "Boolean", defaultValue: true},
           recordID: {type: "Boolean", defaultValue: true},
           typeName: {type: "Boolean", defaultValue: true},
-          satisfied: {type: "Boolean", defaultValue: true}
-        )
-        @refetchable(queryName: "HostileArguments7RefetchQuery") {
-          ... @include(if: $discard) { name } ... @include(if: $each) { name }
-          ... @include(if: $isolated) { name } ... @include(if: $sending) { name }
-          ... @include(if: $then) { name } ... @include(if: $unsafe) { name }
-          ... @include(if: $anchor) { name } ... @include(if: $recordID) { name }
-          ... @include(if: $typeName) { name } ... @include(if: $satisfied) { name }
-        }
-        """)
-    var arguments7: HostileArguments7_character
-
-    @Fragment("""
-        fragment HostileArguments8_character on Character
-        @argumentDefinitions(
+          satisfied: {type: "Boolean", defaultValue: true},
           missingRequiredField: {type: "Boolean", defaultValue: true},
           fieldErrors: {type: "Boolean", defaultValue: true},
           isPresent: {type: "Boolean", defaultValue: true},
@@ -1121,45 +1024,18 @@ struct HostileNameDocuments {
           refetch: {type: "Boolean", defaultValue: true},
           connection: {type: "Boolean", defaultValue: true},
           nodes: {type: "Boolean", defaultValue: true},
-          hasNext: {type: "Boolean", defaultValue: true}
-        )
-        @refetchable(queryName: "HostileArguments8RefetchQuery") {
-          ... @include(if: $missingRequiredField) { name } ... @include(if: $fieldErrors) { name }
-          ... @include(if: $isPresent) { name } ... @include(if: $throwing) { name }
-          ... @include(if: $caught) { name } ... @include(if: $refetchable) { name }
-          ... @include(if: $refetch) { name } ... @include(if: $connection) { name }
-          ... @include(if: $nodes) { name } ... @include(if: $hasNext) { name }
-        }
-        """)
-    var arguments8: HostileArguments8_character
-
-    @Fragment("""
-        fragment HostileArguments9_character on Character
-        @argumentDefinitions(
+          hasNext: {type: "Boolean", defaultValue: true},
           hasPrevious: {type: "Boolean", defaultValue: true},
           isLoadingNext: {type: "Boolean", defaultValue: true},
           isLoadingPrevious: {type: "Boolean", defaultValue: true},
           connectionID: {type: "Boolean", defaultValue: true},
           loadNext: {type: "Boolean", defaultValue: true},
           loadPrevious: {type: "Boolean", defaultValue: true},
+          # The locals, parameters and local aliases of generated bodies.
           bound: {type: "Boolean", defaultValue: true},
           errors: {type: "Boolean", defaultValue: true},
           child: {type: "Boolean", defaultValue: true},
-          missing: {type: "Boolean", defaultValue: true}
-        )
-        @refetchable(queryName: "HostileArguments9RefetchQuery") {
-          ... @include(if: $hasPrevious) { name } ... @include(if: $isLoadingNext) { name }
-          ... @include(if: $isLoadingPrevious) { name } ... @include(if: $connectionID) { name }
-          ... @include(if: $loadNext) { name } ... @include(if: $loadPrevious) { name }
-          ... @include(if: $bound) { name } ... @include(if: $errors) { name }
-          ... @include(if: $child) { name } ... @include(if: $missing) { name }
-        }
-        """)
-    var arguments9: HostileArguments9_character
-
-    @Fragment("""
-        fragment HostileArguments10_character on Character
-        @argumentDefinitions(
+          missing: {type: "Boolean", defaultValue: true},
           count: {type: "Boolean", defaultValue: true},
           fields: {type: "Boolean", defaultValue: true},
           lhs: {type: "Boolean", defaultValue: true},
@@ -1169,45 +1045,18 @@ struct HostileNameDocuments {
           selfValue: {type: "Boolean", defaultValue: true},
           Fragment: {type: "Boolean", defaultValue: true},
           Spread: {type: "Boolean", defaultValue: true},
-          Owner: {type: "Boolean", defaultValue: true}
-        )
-        @refetchable(queryName: "HostileArguments10RefetchQuery") {
-          ... @include(if: $count) { name } ... @include(if: $fields) { name }
-          ... @include(if: $lhs) { name } ... @include(if: $rhs) { name }
-          ... @include(if: $hasher) { name } ... @include(if: $optimistic) { name }
-          ... @include(if: $selfValue) { name } ... @include(if: $Fragment) { name }
-          ... @include(if: $Spread) { name } ... @include(if: $Owner) { name }
-        }
-        """)
-    var arguments10: HostileArguments10_character
-
-    @Fragment("""
-        fragment HostileArguments11_character on Character
-        @argumentDefinitions(
+          Owner: {type: "Boolean", defaultValue: true},
           Query: {type: "Boolean", defaultValue: true},
           Operation: {type: "Boolean", defaultValue: true},
           RefetchQuery: {type: "Boolean", defaultValue: true},
+          # What an operation value, a mutation's action and its optimistic response declare.
           name: {type: "Boolean", defaultValue: true},
           persistedID: {type: "Boolean", defaultValue: true},
           text: {type: "Boolean", defaultValue: true},
           plan: {type: "Boolean", defaultValue: true},
           errorBehavior: {type: "Boolean", defaultValue: true},
           throwsOnFieldError: {type: "Boolean", defaultValue: true},
-          bubbles: {type: "Boolean", defaultValue: true}
-        )
-        @refetchable(queryName: "HostileArguments11RefetchQuery") {
-          ... @include(if: $Query) { name } ... @include(if: $Operation) { name }
-          ... @include(if: $RefetchQuery) { name } ... @include(if: $name) { name }
-          ... @include(if: $persistedID) { name } ... @include(if: $text) { name }
-          ... @include(if: $plan) { name } ... @include(if: $errorBehavior) { name }
-          ... @include(if: $throwsOnFieldError) { name } ... @include(if: $bubbles) { name }
-        }
-        """)
-    var arguments11: HostileArguments11_character
-
-    @Fragment("""
-        fragment HostileArguments12_character on Character
-        @argumentDefinitions(
+          bubbles: {type: "Boolean", defaultValue: true},
           hasDeferred: {type: "Boolean", defaultValue: true},
           Action: {type: "Boolean", defaultValue: true},
           OptimisticResponse: {type: "Boolean", defaultValue: true},
@@ -1216,46 +1065,21 @@ struct HostileNameDocuments {
           callAsFunction: {type: "Boolean", defaultValue: true},
           Op: {type: "Boolean", defaultValue: true},
           variable: {type: "Boolean", defaultValue: true},
+          # What the runtime's protocols give a generated type.
           phase: {type: "Boolean", defaultValue: true},
-          isRefreshing: {type: "Boolean", defaultValue: true}
-        )
-        @refetchable(queryName: "HostileArguments12RefetchQuery") {
-          ... @include(if: $hasDeferred) { name } ... @include(if: $Action) { name }
-          ... @include(if: $OptimisticResponse) { name } ... @include(if: $hash) { name }
-          ... @include(if: $commit) { name } ... @include(if: $callAsFunction) { name }
-          ... @include(if: $Op) { name } ... @include(if: $variable) { name }
-          ... @include(if: $phase) { name } ... @include(if: $isRefreshing) { name }
-        }
-        """)
-    var arguments12: HostileArguments12_character
-
-    @Fragment("""
-        fragment HostileArguments13_character on Character
-        @argumentDefinitions(
+          isRefreshing: {type: "Boolean", defaultValue: true},
           isStale: {type: "Boolean", defaultValue: true},
           retry: {type: "Boolean", defaultValue: true},
           subscription: {type: "Boolean", defaultValue: true},
+          # The shared enums.
           AbstractSlots: {type: "Boolean", defaultValue: true},
           schemaDigest: {type: "Boolean", defaultValue: true},
+          # The modules, and what the generated code spells from the standard library.
           Swift: {type: "Boolean", defaultValue: true},
           Set: {type: "Boolean", defaultValue: true},
           Result: {type: "Boolean", defaultValue: true},
           Optional: {type: "Boolean", defaultValue: true},
-          String: {type: "Boolean", defaultValue: true}
-        )
-        @refetchable(queryName: "HostileArguments13RefetchQuery") {
-          ... @include(if: $isStale) { name } ... @include(if: $retry) { name }
-          ... @include(if: $subscription) { name } ... @include(if: $AbstractSlots) { name }
-          ... @include(if: $schemaDigest) { name } ... @include(if: $Swift) { name }
-          ... @include(if: $Set) { name } ... @include(if: $Result) { name }
-          ... @include(if: $Optional) { name } ... @include(if: $String) { name }
-        }
-        """)
-    var arguments13: HostileArguments13_character
-
-    @Fragment("""
-        fragment HostileArguments14_character on Character
-        @argumentDefinitions(
+          String: {type: "Boolean", defaultValue: true},
           Int: {type: "Boolean", defaultValue: true},
           Double: {type: "Boolean", defaultValue: true},
           Bool: {type: "Boolean", defaultValue: true},
@@ -1263,13 +1087,89 @@ struct HostileNameDocuments {
           Hasher: {type: "Boolean", defaultValue: true},
           Sendable: {type: "Boolean", defaultValue: true}
         )
-        @refetchable(queryName: "HostileArguments14RefetchQuery") {
-          ... @include(if: $Int) { name } ... @include(if: $Double) { name }
-          ... @include(if: $Bool) { name } ... @include(if: $MainActor) { name }
-          ... @include(if: $Hasher) { name } ... @include(if: $Sendable) { name }
+        @refetchable(queryName: "HostileArgumentsRefetchQuery") {
+          # Swift's keywords, as `escape` lists them.
+          ... @include(if: $Type) { name } ... @include(if: $Protocol) { name }
+          ... @include(if: $Any) { name } ... @include(if: $self) { name }
+          ... @include(if: $Self) { name } ... @include(if: $init) { name }
+          ... @include(if: $deinit) { name } ... @include(if: $subscript) { name }
+          ... @include(if: $class) { name } ... @include(if: $struct) { name }
+          ... @include(if: $enum) { name } ... @include(if: $func) { name }
+          ... @include(if: $var) { name } ... @include(if: $let) { name }
+          ... @include(if: $import) { name } ... @include(if: $extension) { name }
+          ... @include(if: $operator) { name } ... @include(if: $static) { name }
+          ... @include(if: $default) { name } ... @include(if: $case) { name }
+          ... @include(if: $switch) { name } ... @include(if: $if) { name }
+          ... @include(if: $else) { name } ... @include(if: $for) { name }
+          ... @include(if: $in) { name } ... @include(if: $while) { name }
+          ... @include(if: $repeat) { name } ... @include(if: $return) { name }
+          ... @include(if: $break) { name } ... @include(if: $continue) { name }
+          ... @include(if: $where) { name } ... @include(if: $is) { name }
+          ... @include(if: $as) { name } ... @include(if: $try) { name }
+          ... @include(if: $throw) { name } ... @include(if: $throws) { name }
+          ... @include(if: $guard) { name } ... @include(if: $defer) { name }
+          ... @include(if: $do) { name } ... @include(if: $catch) { name }
+          ... @include(if: $true) { name } ... @include(if: $false) { name }
+          ... @include(if: $nil) { name } ... @include(if: $super) { name }
+          ... @include(if: $internal) { name } ... @include(if: $private) { name }
+          ... @include(if: $public) { name } ... @include(if: $fileprivate) { name }
+          ... @include(if: $open) { name } ... @include(if: $inout) { name }
+          ... @include(if: $typealias) { name } ... @include(if: $associatedtype) { name }
+          ... @include(if: $protocol) { name } ... @include(if: $some) { name }
+          ... @include(if: $any) { name }
+          # Swift's contextual keywords that start an expression or a type.
+          ... @include(if: $async) { name } ... @include(if: $borrowing) { name }
+          ... @include(if: $consume) { name } ... @include(if: $consuming) { name }
+          ... @include(if: $copy) { name } ... @include(if: $discard) { name }
+          ... @include(if: $each) { name } ... @include(if: $isolated) { name }
+          ... @include(if: $sending) { name } ... @include(if: $then) { name }
+          ... @include(if: $unsafe) { name }
+          # What every lens declares, and what a refetchable fragment and a connection add.
+          ... @include(if: $anchor) { name } ... @include(if: $recordID) { name }
+          ... @include(if: $typeName) { name } ... @include(if: $satisfied) { name }
+          ... @include(if: $missingRequiredField) { name } ... @include(if: $fieldErrors) { name }
+          ... @include(if: $isPresent) { name } ... @include(if: $throwing) { name }
+          ... @include(if: $caught) { name } ... @include(if: $refetchable) { name }
+          ... @include(if: $refetch) { name } ... @include(if: $connection) { name }
+          ... @include(if: $nodes) { name } ... @include(if: $hasNext) { name }
+          ... @include(if: $hasPrevious) { name } ... @include(if: $isLoadingNext) { name }
+          ... @include(if: $isLoadingPrevious) { name } ... @include(if: $connectionID) { name }
+          ... @include(if: $loadNext) { name } ... @include(if: $loadPrevious) { name }
+          # The locals, parameters and local aliases of generated bodies.
+          ... @include(if: $bound) { name } ... @include(if: $errors) { name }
+          ... @include(if: $child) { name } ... @include(if: $missing) { name }
+          ... @include(if: $count) { name } ... @include(if: $fields) { name }
+          ... @include(if: $lhs) { name } ... @include(if: $rhs) { name }
+          ... @include(if: $hasher) { name } ... @include(if: $optimistic) { name }
+          ... @include(if: $selfValue) { name } ... @include(if: $Fragment) { name }
+          ... @include(if: $Spread) { name } ... @include(if: $Owner) { name }
+          ... @include(if: $Query) { name } ... @include(if: $Operation) { name }
+          ... @include(if: $RefetchQuery) { name }
+          # What an operation value, a mutation's action and its optimistic response declare.
+          ... @include(if: $name) { name } ... @include(if: $persistedID) { name }
+          ... @include(if: $text) { name } ... @include(if: $plan) { name }
+          ... @include(if: $errorBehavior) { name } ... @include(if: $throwsOnFieldError) { name }
+          ... @include(if: $bubbles) { name } ... @include(if: $hasDeferred) { name }
+          ... @include(if: $Action) { name } ... @include(if: $OptimisticResponse) { name }
+          ... @include(if: $hash) { name } ... @include(if: $commit) { name }
+          ... @include(if: $callAsFunction) { name } ... @include(if: $Op) { name }
+          ... @include(if: $variable) { name }
+          # What the runtime's protocols give a generated type.
+          ... @include(if: $phase) { name } ... @include(if: $isRefreshing) { name }
+          ... @include(if: $isStale) { name } ... @include(if: $retry) { name }
+          ... @include(if: $subscription) { name }
+          # The shared enums.
+          ... @include(if: $AbstractSlots) { name } ... @include(if: $schemaDigest) { name }
+          # The modules, and what the generated code spells from the standard library.
+          ... @include(if: $Swift) { name } ... @include(if: $Set) { name }
+          ... @include(if: $Result) { name } ... @include(if: $Optional) { name }
+          ... @include(if: $String) { name } ... @include(if: $Int) { name }
+          ... @include(if: $Double) { name } ... @include(if: $Bool) { name }
+          ... @include(if: $MainActor) { name } ... @include(if: $Hasher) { name }
+          ... @include(if: $Sendable) { name }
         }
         """)
-    var arguments14: HostileArguments14_character
+    var arguments: HostileArguments_character
 
     /// Each name as a scalar and as a linked field of a mutation's payload: a
     /// property, a parameter and a local of the optimistic response's builder,

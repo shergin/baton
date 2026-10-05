@@ -295,9 +295,12 @@ fn spread_accessor(writer: &mut Writer, name: &str, read: &SpreadRead) {
                     format!("{}: {value}", swift_literal(name))
                 })
                 .collect();
+            // The closure states its type: inferred from the literal, the
+            // time Swift takes to check it doubles with each argument.
             writer.line(format!(
-                "let bound = anchor.binding(Sites.{}) {{ [{}] }}",
+                "let bound = anchor.binding(Sites.{}) {{ () -> [String: {}] in [{}] }}",
                 binding.site,
+                SwiftType::runtime("Variable").optional(),
                 bindings.join(", ")
             ));
         }

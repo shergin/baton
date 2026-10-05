@@ -710,6 +710,11 @@ are expected and listed without apology.
 - A variable that is a list of input objects, such as
   `$filters: [FilterCharacter!]!`, compiles: `Variable` has an initializer
   from a list of variables, which the operation value's `variables` calls.
+- A spread that binds sixteen or more of a fragment's arguments compiles,
+  and so does the refetch query of a fragment that declares as many. The
+  closure that binds them returned a dictionary whose type Swift inferred
+  from the literal, which took twice as long with each argument, and Swift
+  gave up on it at sixteen; the closure now states its type.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

@@ -244,20 +244,7 @@ nonisolated enum Slots {
 
 /// The spreads with `@arguments`, where an owner binds a fragment's scope once.
 nonisolated enum Sites {
-    static let HostileArguments10RefetchQuery_hostileArguments10 = Baton.ArgumentSite()
-    static let HostileArguments11RefetchQuery_hostileArguments11 = Baton.ArgumentSite()
-    static let HostileArguments12RefetchQuery_hostileArguments12 = Baton.ArgumentSite()
-    static let HostileArguments13RefetchQuery_hostileArguments13 = Baton.ArgumentSite()
-    static let HostileArguments14RefetchQuery_hostileArguments14 = Baton.ArgumentSite()
-    static let HostileArguments1RefetchQuery_hostileArguments1 = Baton.ArgumentSite()
-    static let HostileArguments2RefetchQuery_hostileArguments2 = Baton.ArgumentSite()
-    static let HostileArguments3RefetchQuery_hostileArguments3 = Baton.ArgumentSite()
-    static let HostileArguments4RefetchQuery_hostileArguments4 = Baton.ArgumentSite()
-    static let HostileArguments5RefetchQuery_hostileArguments5 = Baton.ArgumentSite()
-    static let HostileArguments6RefetchQuery_hostileArguments6 = Baton.ArgumentSite()
-    static let HostileArguments7RefetchQuery_hostileArguments7 = Baton.ArgumentSite()
-    static let HostileArguments8RefetchQuery_hostileArguments8 = Baton.ArgumentSite()
-    static let HostileArguments9RefetchQuery_hostileArguments9 = Baton.ArgumentSite()
+    static let HostileArgumentsRefetchQuery_hostileArguments = Baton.ArgumentSite()
     static let HostileBodies_character_hostileBound = Baton.ArgumentSite()
     static let HostileConnectionRefetchQuery_hostileConnection = Baton.ArgumentSite()
     static let TestDeferredNotesPaginationQuery_testDeferredNotes = Baton.ArgumentSite()
