@@ -34,3 +34,4 @@ principle, the proof belongs here.
 - [Client data is described by the schema and written by a payload](client-data-is-described-and-committed.md)
 - [An operation states its expiration in its document](an-operation-states-its-expiration.md)
 - [Keys a session produces belong to its store](session-keys-belong-to-the-store.md)
+- [One runtime module, with edges as targets and a checked rule inside](one-runtime-module.md)
