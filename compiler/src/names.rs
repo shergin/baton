@@ -425,7 +425,8 @@ pub fn call_label(name: &str) -> String {
     }
 }
 
-/// Escapes a property name that is a Swift keyword.
+/// Escapes a name that Swift would read as a keyword where the generated
+/// code declares or reads it.
 pub fn escape(name: &str) -> String {
     const KEYWORDS: &[&str] = &[
         "Type",
@@ -487,6 +488,9 @@ pub fn escape(name: &str) -> String {
         "fallthrough",
         "precedencegroup",
         "_",
+        // A contextual keyword that starts an expression, where a name is
+        // read: `self.await = await` awaits nothing.
+        "await",
     ];
     if KEYWORDS.contains(&name) {
         format!("`{name}`")

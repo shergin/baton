@@ -428,19 +428,6 @@ fn defects() -> Vec<Defect> {
             writes: &["    public var `Self`: ", ".success(Self(anchor: anchor))"],
             swift: "instance member 'Self' of type 'Probe' cannot be used on instance of nested type 'Probe.Data'",
         },
-        // An initializer's parameter named `await` reads as the keyword.
-        Defect {
-            positions: VARIABLES,
-            names: Names::These(&["await"]),
-            writes: &["self.await = await"],
-            swift: "expected expression after 'await'",
-        },
-        Defect {
-            positions: &[PAYLOAD_SCALAR, PAYLOAD_LINKED],
-            names: Names::These(&["await"]),
-            writes: &["if let await {"],
-            swift: "expected expression after 'await'",
-        },
         // A variable's property hides the `hashValue` of `Hashable`.
         Defect {
             positions: VARIABLES,

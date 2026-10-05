@@ -725,6 +725,10 @@ are expected and listed without apology.
   keywords are; the generated code declared `public var rethrows` and
   `var _`, which Swift refuses. A mutation's action passes a variable
   named `$_` by an escaped label, since Swift reads a bare `_:` as no label.
+- A variable, or a field of a mutation's payload, named `await` compiles.
+  Its value was read bare, as in `self.await = await` and `if let await`,
+  where Swift reads the keyword; it is escaped wherever it is declared or
+  read.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 
