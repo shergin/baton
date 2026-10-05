@@ -6,85 +6,85 @@
 //! in it. A value takes its type from the dictionary it is stored in, as
 //! `.init(name)` does.
 
-use std::fmt::Write as _;
-
-use super::swift::parameter;
+use super::swift::{SwiftType, member, parameter, swift_literal};
+use super::writer::Writer;
 use crate::decide::{BuilderPlan, BuilderValue};
-use crate::names::escape;
 
 /// Writes an optimistic-response builder and those nested in it.
-pub(super) fn builder(output: &mut String, builder: &BuilderPlan, indent: &str) {
-    let _ = writeln!(
-        output,
-        "{indent}/// A partial response to show before the server answers; absent fields leave the store untouched."
+pub(super) fn builder(writer: &mut Writer, builder: &BuilderPlan) {
+    let variable = SwiftType::runtime("Variable");
+    writer.doc(
+        "A partial response to show before the server answers; absent fields leave the store untouched.",
     );
-    let _ = writeln!(
-        output,
-        "{indent}nonisolated public struct {}: Sendable {{",
-        builder.name
+    writer.block(
+        format!("nonisolated public struct {}: Sendable", builder.name),
+        |writer| {
+            let mut parameters: Vec<String> = Vec::new();
+            let mut assignments: Vec<String> = Vec::new();
+            let mut renders: Vec<String> = Vec::new();
+            for field in &builder.fields {
+                let property = member(&field.key);
+                let key = swift_literal(&field.key);
+                let local = &field.local;
+                let swift_type = match &field.value {
+                    BuilderValue::Scalar { swift_type } => SwiftType::named(swift_type),
+                    BuilderValue::Object {
+                        builder,
+                        plural: true,
+                    } => SwiftType::named(builder).array(),
+                    BuilderValue::Object {
+                        builder,
+                        plural: false,
+                    } => SwiftType::named(builder),
+                }
+                .optional();
+                writer.line(format!("public var {property}: {swift_type}"));
+                parameters.push(format!(
+                    "{}: {swift_type} = nil",
+                    parameter(&field.key, local)
+                ));
+                assignments.push(format!("self.{property} = {local}"));
+                // A field of a plain name binds its value by its own name;
+                // `self` binds it by another, which needs the property
+                // spelled.
+                let bind = if *local == property {
+                    local.clone()
+                } else {
+                    format!("{local} = self.{property}")
+                };
+                renders.push(match &field.value {
+                    BuilderValue::Scalar { .. } => {
+                        format!("if let {bind} {{ fields[{key}] = .init({local}) }}")
+                    }
+                    BuilderValue::Object { plural: true, .. } => {
+                        format!(
+                            "if let {bind} {{ fields[{key}] = .list({local}.map(\\.variable)) }}"
+                        )
+                    }
+                    BuilderValue::Object { plural: false, .. } => {
+                        format!("if let {bind} {{ fields[{key}] = {local}.variable }}")
+                    }
+                });
+            }
+            writer.block(
+                format!("public init({})", parameters.join(", ")),
+                |writer| {
+                    for assignment in &assignments {
+                        writer.line(assignment);
+                    }
+                },
+            );
+            writer.block(format!("public var variable: {variable}"), |writer| {
+                writer.line(format!("var fields: [String: {variable}] = [:]"));
+                for render in &renders {
+                    writer.line(render);
+                }
+                writer.line("return .object(fields)");
+            });
+            for child in &builder.nested {
+                writer.blank();
+                self::builder(writer, child);
+            }
+        },
     );
-    let inner = format!("{indent}    ");
-    let mut parameters: Vec<String> = Vec::new();
-    let mut assignments: Vec<String> = Vec::new();
-    let mut renders: Vec<String> = Vec::new();
-    for field in &builder.fields {
-        let property = escape(&field.key);
-        let key = &field.key;
-        let local = &field.local;
-        let swift_type = match &field.value {
-            BuilderValue::Scalar { swift_type } => swift_type.clone(),
-            BuilderValue::Object {
-                builder,
-                plural: true,
-            } => format!("[{builder}]"),
-            BuilderValue::Object {
-                builder,
-                plural: false,
-            } => builder.clone(),
-        };
-        let _ = writeln!(output, "{inner}public var {property}: {swift_type}?");
-        parameters.push(format!(
-            "{}: {swift_type}? = nil",
-            parameter(&field.key, local)
-        ));
-        assignments.push(format!("self.{property} = {local}"));
-        // A field of a plain name binds its value by its own name; `self`
-        // binds it by another, which needs the property spelled.
-        let bind = if *local == property {
-            local.clone()
-        } else {
-            format!("{local} = self.{property}")
-        };
-        renders.push(match &field.value {
-            BuilderValue::Scalar { .. } => {
-                format!("if let {bind} {{ fields[\"{key}\"] = .init({local}) }}")
-            }
-            BuilderValue::Object { plural: true, .. } => {
-                format!("if let {bind} {{ fields[\"{key}\"] = .list({local}.map(\\.variable)) }}")
-            }
-            BuilderValue::Object { plural: false, .. } => {
-                format!("if let {bind} {{ fields[\"{key}\"] = {local}.variable }}")
-            }
-        });
-    }
-    let _ = writeln!(output, "{inner}public init({}) {{", parameters.join(", "));
-    for assignment in &assignments {
-        let _ = writeln!(output, "{inner}    {assignment}");
-    }
-    let _ = writeln!(output, "{inner}}}");
-    let _ = writeln!(output, "{inner}public var variable: Baton.Variable {{");
-    let _ = writeln!(
-        output,
-        "{inner}    var fields: [String: Baton.Variable] = [:]"
-    );
-    for render in &renders {
-        let _ = writeln!(output, "{inner}    {render}");
-    }
-    let _ = writeln!(output, "{inner}    return .object(fields)");
-    let _ = writeln!(output, "{inner}}}");
-    for child in &builder.nested {
-        output.push('\n');
-        self::builder(output, child, &inner);
-    }
-    let _ = writeln!(output, "{indent}}}");
 }

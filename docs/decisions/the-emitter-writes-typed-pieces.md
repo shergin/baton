@@ -39,12 +39,14 @@ than fifty lines.
 
 ## Decision
 
-- `emit` writes Swift from typed pieces *(planned)*. An identifier is
-  escaped where it is made. A type is a structure: named, optional, a
-  result, a list. A reference to what a member can hide, the runtime's
-  module, a fragment or a query, is made by one function that knows the
-  spelling nothing hides in that position. A declaration states its
-  effects, and one printer lays it out. A writer owns indentation.
+- `emit` writes Swift from typed pieces. An identifier is escaped where it
+  is made. A type is a structure: named, optional, a result, a list. A
+  reference to what a member can hide, the runtime's module, a fragment or
+  a query, is made by one function that knows the spelling nothing hides
+  in that position. A declaration states its effects, and one printer lays
+  it out. A writer owns indentation. The pieces are in `emit/swift.rs`,
+  over the writer in `emit/writer.rs`; the plan's printer still lays out
+  its one expression itself.
 - Expressions inside a body stay templates. The pieces are ours, a few
   hundred lines, and no dependency is added.
 - The output does not change by a byte. The goldens are the proof of the
@@ -67,6 +69,10 @@ than fifty lines.
   calls that write a line and 60 that format a string; the commits above
   are in its history; the rule against hiding is the comment at the top of
   `emit/lens.rs`.
+- The change itself, 2026-10-04: the Swift written for every target with
+  documents, the tests, the benchmarks and both examples, 21 files and
+  about 14,260 lines, is the same byte for byte from the compiler before
+  and after, and no golden changed. The pieces have tests of their own.
 - Relay's own compiler: its type generator has an `AST` of types that no
   language owns and a `Writer` per language, for Flow, TypeScript and
   JavaScript.

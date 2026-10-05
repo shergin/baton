@@ -17,6 +17,7 @@ mod operation;
 mod plan;
 mod shared;
 mod swift;
+mod writer;
 
 use std::collections::BTreeMap;
 

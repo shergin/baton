@@ -1,0 +1,267 @@
+//! Tests of the Swift pieces every printer writes through: a type as a
+//! structure, a computed property in each of its forms, the local alias a
+//! body names a type by, and the head of a check.
+
+use super::*;
+
+/// The line `property` writes when it reads `expression` under `condition`.
+fn one_line(property: Computed, expression: &str, condition: Option<&str>) -> String {
+    let mut writer = Writer::new();
+    property.reads(&mut writer, expression, condition);
+    writer.finish()
+}
+
+#[test]
+fn a_type_made_optional_twice_is_one_optional() {
+    let twice = SwiftType::named("String").optional().optional();
+    assert_eq!(twice, SwiftType::named("String").optional());
+    assert_eq!(twice.to_string(), "String?");
+}
+
+#[test]
+fn a_type_is_made_optional_only_when_the_condition_holds() {
+    assert_eq!(
+        SwiftType::named("Bool").optional_if(false).to_string(),
+        "Bool"
+    );
+    assert_eq!(
+        SwiftType::named("Bool").optional_if(true).to_string(),
+        "Bool?"
+    );
+    assert_eq!(
+        SwiftType::named("Bool")
+            .optional()
+            .optional_if(true)
+            .to_string(),
+        "Bool?"
+    );
+}
+
+#[test]
+fn a_type_prints_as_swift_writes_it_however_it_is_nested() {
+    let lens = || SwiftType::named("Friends");
+    assert_eq!(
+        lens().list().optional().caught().to_string(),
+        "Result<Baton.List<Friends>?, Baton.FieldErrors>"
+    );
+    assert_eq!(
+        lens().caught().optional().to_string(),
+        "Result<Friends, Baton.FieldErrors>?"
+    );
+    assert_eq!(
+        SwiftType::named("String").optional().caught().to_string(),
+        "Result<String?, Baton.FieldErrors>"
+    );
+    assert_eq!(lens().array().to_string(), "[Friends]");
+}
+
+#[test]
+fn the_runtime_is_named_by_its_module_in_a_type_and_in_an_expression() {
+    assert_eq!(SwiftType::runtime("Anchor").to_string(), "Baton.Anchor");
+    assert_eq!(
+        SwiftType::runtime("FieldError").array().to_string(),
+        "[Baton.FieldError]"
+    );
+    assert_eq!(runtime_value("Variables"), "Baton.Variables");
+}
+
+#[test]
+fn a_computed_property_reads_its_expression_in_one_line() {
+    let property = Computed::new("name", SwiftType::named("String").optional());
+    assert_eq!(
+        one_line(property, "anchor.string(Slots.Character.name)", None),
+        "@MainActor public var name: String? { anchor.string(Slots.Character.name) }\n"
+    );
+}
+
+#[test]
+fn a_throwing_computed_property_reads_its_expression_inside_get_throws() {
+    let property = Computed::new("strict", SwiftType::named("TestStrict_character")).throwing(true);
+    assert_eq!(
+        one_line(property, "try .throwing(anchor)", None),
+        "@MainActor public var strict: TestStrict_character { get throws { try .throwing(anchor) } }\n"
+    );
+}
+
+#[test]
+fn a_computed_property_under_a_condition_is_optional_and_nil_when_the_condition_fails() {
+    let property = Computed::new("asDroid", SwiftType::named("AsDroid"));
+    assert_eq!(
+        one_line(
+            property,
+            "AsDroid(anchor: anchor)",
+            Some("anchor.record.is(Types.Droid)")
+        ),
+        "@MainActor public var asDroid: AsDroid? { anchor.record.is(Types.Droid) ? AsDroid(anchor: anchor) : nil }\n"
+    );
+}
+
+#[test]
+fn a_throwing_computed_property_under_a_condition_returns_nil_before_it_reads() {
+    let property = Computed::new("strict", SwiftType::named("TestStrict_character")).throwing(true);
+    assert_eq!(
+        one_line(
+            property,
+            "try .throwing(anchor)",
+            Some("anchor.selects(\"withStrict\", true)")
+        ),
+        "@MainActor public var strict: TestStrict_character? { get throws { guard anchor.selects(\"withStrict\", true) else { return nil }; return try .throwing(anchor) } }\n"
+    );
+}
+
+#[test]
+fn a_computed_property_already_optional_is_not_made_optional_again_under_a_condition() {
+    let property = Computed::new("name", SwiftType::named("String").optional());
+    assert_eq!(
+        one_line(
+            property,
+            "anchor.string(Slots.Character.name)",
+            Some("anchor.selects(\"withName\", true)")
+        ),
+        "@MainActor public var name: String? { anchor.selects(\"withName\", true) ? anchor.string(Slots.Character.name) : nil }\n"
+    );
+}
+
+#[test]
+fn a_computed_property_named_like_a_swift_keyword_is_declared_in_backticks() {
+    let string = || SwiftType::named("String").optional();
+    assert_eq!(
+        one_line(
+            Computed::new("class", string()),
+            "anchor.string(Slots.Character.`class`)",
+            None
+        ),
+        "@MainActor public var `class`: String? { anchor.string(Slots.Character.`class`) }\n"
+    );
+    assert_eq!(
+        one_line(
+            Computed::new("self", SwiftType::named("SelfLens").optional()),
+            "anchor.linked(Slots.Mutation.setFavorite_e62d42).map(SelfLens.init(anchor:))",
+            None
+        ),
+        "@MainActor public var `self`: SelfLens? { anchor.linked(Slots.Mutation.setFavorite_e62d42).map(SelfLens.init(anchor:)) }\n"
+    );
+    assert_eq!(
+        one_line(
+            Computed::new("name", string()),
+            "anchor.string(Slots.Character.name)",
+            None
+        ),
+        "@MainActor public var name: String? { anchor.string(Slots.Character.name) }\n"
+    );
+}
+
+#[test]
+fn a_stored_property_named_like_a_swift_keyword_is_spelled_in_backticks() {
+    assert_eq!(member("class"), "`class`");
+    assert_eq!(member("self"), "`self`");
+    assert_eq!(member("name"), "name");
+}
+
+#[test]
+fn a_computed_property_with_a_body_writes_its_statements_one_level_deeper() {
+    let mut writer = Writer::new();
+    Computed::new(
+        "testNotes",
+        SwiftType::named("TestNotes_character").optional(),
+    )
+    .body(&mut writer, |writer| {
+        writer.line("guard anchor.record.is(Types.Character) else { return nil }");
+        writer.line("return .init(anchor: anchor)");
+    });
+    assert_eq!(
+        writer.finish(),
+        concat!(
+            "@MainActor public var testNotes: TestNotes_character? {\n",
+            "    guard anchor.record.is(Types.Character) else { return nil }\n",
+            "    return .init(anchor: anchor)\n",
+            "}\n",
+        )
+    );
+}
+
+#[test]
+fn a_throwing_computed_property_with_a_body_writes_its_statements_inside_get_throws() {
+    let mut writer = Writer::new();
+    Computed::new(
+        "testNotes",
+        SwiftType::named("TestNotes_character").optional(),
+    )
+    .throwing(true)
+    .body(&mut writer, |writer| {
+        writer.line("guard anchor.record.is(Types.Character) else { return nil }");
+        writer.line("return try .throwing(anchor)");
+    });
+    assert_eq!(
+        writer.finish(),
+        concat!(
+            "@MainActor public var testNotes: TestNotes_character? {\n",
+            "    get throws {\n",
+            "        guard anchor.record.is(Types.Character) else { return nil }\n",
+            "        return try .throwing(anchor)\n",
+            "    }\n",
+            "}\n",
+        )
+    );
+}
+
+#[test]
+fn a_fragment_alias_is_never_named_like_a_type_its_body_aliases() {
+    let alias = LocalAlias::fragment("TestNotes_character", &["TestNotes_character"]);
+    assert_eq!(alias.to_string(), "Fragment");
+    let alias = LocalAlias::fragment("Fragment", &["Fragment"]);
+    assert_eq!(alias.to_string(), "Spread");
+    // Every type the body aliases is kept off, a query's name as well as
+    // the fragment's own.
+    let alias = LocalAlias::fragment("TestNotes_character", &["Fragment", "TestNotes_character"]);
+    assert_eq!(alias.to_string(), "Spread");
+    let alias = LocalAlias::fragment("Spread", &["Fragment", "Spread"]);
+    assert_eq!(alias.to_string(), "Owner");
+}
+
+#[test]
+fn a_query_alias_is_never_named_like_a_type_its_body_aliases() {
+    let alias = LocalAlias::query("TestNotesRefetchQuery", &["TestNotesRefetchQuery"]);
+    assert_eq!(alias.to_string(), "Query");
+    let alias = LocalAlias::query("Query", &["Query"]);
+    assert_eq!(alias.to_string(), "Operation");
+    let alias = LocalAlias::query("Operation", &["Query", "Operation"]);
+    assert_eq!(alias.to_string(), "RefetchQuery");
+}
+
+#[test]
+fn a_local_alias_is_declared_at_the_depth_of_the_body_it_opens() {
+    let query = LocalAlias::query("TestNotesRefetchQuery", &["TestNotesRefetchQuery"]);
+    let mut writer = Writer::new();
+    writer.block("@MainActor public func refetch() async throws", |writer| {
+        query.declare(writer);
+        writer.line(format!(
+            "try await anchor.refetch({query}.self, Self.refetchable)"
+        ));
+    });
+    assert_eq!(
+        writer.finish(),
+        concat!(
+            "@MainActor public func refetch() async throws {\n",
+            "    typealias Query = TestNotesRefetchQuery\n",
+            "    try await anchor.refetch(Query.self, Self.refetchable)\n",
+            "}\n",
+        )
+    );
+}
+
+#[test]
+fn a_check_is_a_static_function_of_the_anchor_that_throws_only_when_asked() {
+    assert_eq!(
+        check_head("satisfied", &SwiftType::named("Bool"), false),
+        "@_spi(Generated) @MainActor public static func satisfied(_ anchor: Baton.Anchor) -> Bool"
+    );
+    assert_eq!(
+        check_head("throwing", &SwiftType::named("Self"), true),
+        "@_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self"
+    );
+    assert_eq!(
+        check_head("caught", &SwiftType::named("Self").caught(), false),
+        "@_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors>"
+    );
+}

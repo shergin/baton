@@ -257,8 +257,9 @@ fn spelled_enums(text: &str) -> BTreeSet<&'static str> {
 
 /// Checks `lens` and every lens nested in it against its printed text.
 fn check_shared_enums(lens: &crate::decide::ReaderPlan) {
-    let mut text = String::new();
-    super::lens::lens(&mut text, lens, "");
+    let mut writer = super::writer::Writer::new();
+    super::lens::lens(&mut writer, lens);
+    let text = writer.finish();
     assert_eq!(
         lens.shared_enums(),
         spelled_enums(&text),

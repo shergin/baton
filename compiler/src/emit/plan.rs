@@ -10,13 +10,17 @@ use crate::pipeline::{
     ArgumentValuePlan, ConnectionPlan, ConstantPlan, EditPlan, LookupPlan, StorageKeyPlan, TypeKind,
 };
 
-/// Writes a `Baton.Selection(...)` expression for the normalization plan:
-/// its fields when every type reads the same, else its variants.
-pub(super) fn selection_plan(
-    output: &mut String,
-    selection: &NormalizationSelection,
-    depth: usize,
-) {
+/// The `Baton.Selection(...)` expression of a normalization plan, laid out
+/// over several lines for a declaration written at `depth`.
+pub(super) fn selection_plan(selection: &NormalizationSelection, depth: usize) -> String {
+    let mut output = String::new();
+    write_selection(&mut output, selection, depth);
+    output
+}
+
+/// Writes a selection: its fields when every type reads the same, else its
+/// variants.
+fn write_selection(output: &mut String, selection: &NormalizationSelection, depth: usize) {
     let type_name = &selection.type_name;
     let pad = "    ".repeat(depth);
     let _ = write!(
@@ -115,7 +119,7 @@ fn plan_fields(output: &mut String, type_name: &str, fields: &[NormalizationFiel
                     ".linked({}, key: {slot}, plural: {plural}{lookup_argument}{connection_argument}{edit_argument}{deferred_argument}{caught_argument}{guards_argument}, selection: ",
                     swift_literal(&field.response_key)
                 );
-                selection_plan(output, selection, depth + 1);
+                write_selection(output, selection, depth + 1);
                 output.push_str("),");
             }
         }

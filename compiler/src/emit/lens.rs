@@ -3,165 +3,135 @@
 //! `missingRequiredField`, `fieldErrors` and `isPresent` checks, printed
 //! from the `ReaderPlan`.
 //!
-//! A lens names the runtime's module only in a type, where Swift looks up
-//! types alone, so an accessor named `Baton` hides it from nothing; an
-//! expression takes the runtime's type from its context, as
-//! `.failure(.init(errors))` does. The fragments and queries a lens uses
-//! are named the same way: a member named like one of them, of the lens,
-//! of a lens or an operation it is nested in, or the accessor itself,
-//! would hide it from an expression, so a body takes the type from its
-//! context, names it as `Self`, or names it through a local alias.
-
-use std::fmt::Write as _;
+//! A lens names the runtime's module only in a type, and a fragment or a
+//! query only as `Self`, from its context or through a local alias: the
+//! pieces in `swift` hold both rules, so a member named like any of them
+//! hides it from nothing a body spells.
 
 use super::swift::{
-    argument_expression, possible_types_reference, swift_literal, type_reference, variable_literal,
+    Computed, LocalAlias, SwiftType, argument_expression, check_head, possible_types_reference,
+    swift_literal, type_reference, variable_literal,
 };
+use super::writer::Writer;
 use crate::decide::{
     Accessor, AliasGuard, AliasedRead, BoundArgument, ConditionRead, ConnectionMembers, ErrorCheck,
     ErrorLine, FragmentLens, Guard, Guarded, LinkedForm, LinkedRead, LoadMore, Read, ReaderPlan,
     RefetchMembers, SatisfiedCheck, ScalarForm, ScalarRead, SlotAccess, SpreadForm, SpreadGuard,
     SpreadRead, TypeTest,
 };
-use crate::names::{capitalize, escape};
+use crate::names::capitalize;
 
 pub(super) fn fragment_text(fragment: &FragmentLens) -> String {
-    let mut output = String::new();
-    let _ = writeln!(
-        output,
-        "/// Lens for `fragment {} on {}`.",
+    let mut writer = Writer::new();
+    writer.doc(format!(
+        "Lens for `fragment {} on {}`.",
         fragment.name, fragment.type_condition
-    );
-    lens(&mut output, &fragment.lens, "");
-    output.push('\n');
-    output
+    ));
+    lens(&mut writer, &fragment.lens);
+    writer.blank();
+    writer.finish()
 }
 
 /// A lens struct and the lenses nested in it.
-pub(super) fn lens(output: &mut String, lens: &ReaderPlan, indent: &str) {
-    let _ = writeln!(
-        output,
-        "{indent}nonisolated public struct {}: Baton.Lens {{",
-        lens.name
+pub(super) fn lens(writer: &mut Writer, lens: &ReaderPlan) {
+    let anchor = SwiftType::runtime("Anchor");
+    let head = format!(
+        "nonisolated public struct {}: {}",
+        lens.name,
+        SwiftType::runtime("Lens")
     );
-    let _ = writeln!(
-        output,
-        "{indent}    @_spi(Generated) public let anchor: Baton.Anchor"
-    );
-    let _ = writeln!(
-        output,
-        "{indent}    @_spi(Generated) public init(anchor: Baton.Anchor) {{ self.anchor = anchor }}"
-    );
-    let _ = writeln!(
-        output,
-        "{indent}    public static let typeName = \"{}\"",
-        lens.type_name
-    );
-    let inner = format!("{indent}    ");
-    for accessor in &lens.accessors {
-        self::accessor(output, accessor, &inner);
-    }
-    if let Some(refetch) = &lens.refetch {
-        refetch_members(output, refetch, &inner);
-    }
-    if let Some(connection) = &lens.connection {
-        connection_members(output, connection, &inner);
-    }
-    if let Some(entries) = &lens.satisfied {
-        satisfied_function(output, entries, &inner);
-        if lens.reports_missing {
-            missing_required_function(output, entries, &inner);
+    writer.block(head, |writer| {
+        writer.line(format!("@_spi(Generated) public let anchor: {anchor}"));
+        writer.line(format!(
+            "@_spi(Generated) public init(anchor: {anchor}) {{ self.anchor = anchor }}"
+        ));
+        writer.line(format!(
+            "public static let typeName = {}",
+            swift_literal(&lens.type_name)
+        ));
+        for accessor in &lens.accessors {
+            self::accessor(writer, accessor);
         }
-    }
-    if let Some(checks) = &lens.field_errors {
-        field_errors_function(output, checks, &inner);
-    }
-    if let Some(checks) = &lens.is_present {
-        is_present_function(output, checks, &inner);
-    }
-    for child in &lens.nested {
-        output.push('\n');
-        self::lens(output, child, &inner);
-    }
-    let _ = writeln!(output, "{indent}}}");
+        if let Some(refetch) = &lens.refetch {
+            refetch_members(writer, refetch);
+        }
+        if let Some(connection) = &lens.connection {
+            connection_members(writer, connection);
+        }
+        if let Some(entries) = &lens.satisfied {
+            satisfied_function(writer, entries);
+            if lens.reports_missing {
+                missing_required_function(writer, entries);
+            }
+        }
+        if let Some(checks) = &lens.field_errors {
+            field_errors_function(writer, checks);
+        }
+        if let Some(checks) = &lens.is_present {
+            is_present_function(writer, checks);
+        }
+        for child in &lens.nested {
+            writer.blank();
+            self::lens(writer, child);
+        }
+    });
 }
 
-fn accessor(output: &mut String, accessor: &Accessor, indent: &str) {
+fn accessor(writer: &mut Writer, accessor: &Accessor) {
     let condition = guard_condition(&accessor.guards);
     let condition = condition.as_deref();
     match &accessor.read {
-        Read::Scalar(read) => scalar_accessor(output, &accessor.name, read, indent, condition),
-        Read::Linked(read) => linked_accessor(output, &accessor.name, read, indent, condition),
-        Read::Spread(read) => spread_accessor(output, &accessor.name, read, indent),
-        Read::Aliased(read) => aliased_accessor(output, &accessor.name, read, indent),
-        Read::Condition(read) => {
-            condition_accessor(output, &accessor.name, read, indent, condition)
-        }
+        Read::Scalar(read) => scalar_accessor(writer, &accessor.name, read, condition),
+        Read::Linked(read) => linked_accessor(writer, &accessor.name, read, condition),
+        Read::Spread(read) => spread_accessor(writer, &accessor.name, read),
+        Read::Aliased(read) => aliased_accessor(writer, &accessor.name, read),
+        Read::Condition(read) => condition_accessor(writer, &accessor.name, read, condition),
     }
 }
 
 /// A scalar accessor: plain, `@required`, `@catch` or throwing.
-fn scalar_accessor(
-    output: &mut String,
-    name: &str,
-    read: &ScalarRead,
-    indent: &str,
-    condition: Option<&str>,
-) {
+fn scalar_accessor(writer: &mut Writer, name: &str, read: &ScalarRead, condition: Option<&str>) {
     let slot = slot_expression(&read.slot);
-    let property = escape(name);
     let reader = read.reader;
-    let swift_type = &read.swift_type;
+    let value = SwiftType::named(&read.swift_type);
     let required_reader = format!("required{}", capitalize(reader));
     let (swift_type, body, throws) = match &read.form {
         ScalarForm::Caught { non_null } => {
-            let (value_type, read) = if *non_null {
-                (swift_type.clone(), format!("$0.{required_reader}({slot})"))
+            let (value, read) = if *non_null {
+                (value, format!("$0.{required_reader}({slot})"))
             } else {
-                (format!("{swift_type}?"), format!("$0.{reader}({slot})"))
+                (value.optional(), format!("$0.{reader}({slot})"))
             };
             (
-                format!("Result<{value_type}, Baton.FieldErrors>"),
+                value.caught(),
                 format!("anchor.caught({slot}) {{ {read} }}"),
                 false,
             )
         }
-        ScalarForm::Nulled | ScalarForm::Optional => (
-            format!("{swift_type}?"),
-            format!("anchor.{reader}({slot})"),
-            false,
-        ),
+        ScalarForm::Nulled | ScalarForm::Optional => {
+            (value.optional(), format!("anchor.{reader}({slot})"), false)
+        }
         ScalarForm::Throwing { path } => (
-            swift_type.clone(),
+            value,
             format!(
                 "try anchor.throwing({slot}, path: {}) {{ $0.{reader}({slot}) }}",
                 swift_literal(path)
             ),
             true,
         ),
-        ScalarForm::Required => (
-            swift_type.clone(),
-            format!("anchor.{required_reader}({slot})"),
-            false,
-        ),
+        ScalarForm::Required => (value, format!("anchor.{required_reader}({slot})"), false),
     };
-    write_accessor(
-        output, indent, &property, swift_type, body, throws, condition,
-    );
+    Computed::new(name, swift_type)
+        .throwing(throws)
+        .reads(writer, &body, condition);
 }
 
 /// A linked accessor: plain, bubbling, `@required`, `@catch` or throwing,
 /// singular or plural.
-fn linked_accessor(
-    output: &mut String,
-    name: &str,
-    read: &LinkedRead,
-    indent: &str,
-    condition: Option<&str>,
-) {
+fn linked_accessor(writer: &mut Writer, name: &str, read: &LinkedRead, condition: Option<&str>) {
     let slot = slot_expression(&read.slot);
-    let property = escape(name);
     let nested = &read.lens;
+    let lens = SwiftType::named(nested);
     let base_type = &read.base_type;
     let keep = if read.bubbles {
         format!(", keep: {nested}.satisfied")
@@ -175,17 +145,17 @@ fn linked_accessor(
     };
     let (swift_type, body, throws) = match &read.form {
         LinkedForm::CaughtList { non_null: true } => (
-            format!("Result<Baton.List<{nested}>, Baton.FieldErrors>"),
+            lens.list().caught(),
             format!("anchor.caughtRequiredList({slot}, within: {nested}.fieldErrors{keep})"),
             false,
         ),
         LinkedForm::CaughtList { non_null: false } => (
-            format!("Result<Baton.List<{nested}>?, Baton.FieldErrors>"),
+            lens.list().optional().caught(),
             format!("anchor.caughtList({slot}, within: {nested}.fieldErrors{keep})"),
             false,
         ),
         LinkedForm::ThrowingList { path } => (
-            format!("Baton.List<{nested}>"),
+            lens.list(),
             format!(
                 "try anchor.throwingList({slot}, path: {}{keep})",
                 swift_literal(path)
@@ -193,21 +163,21 @@ fn linked_accessor(
             true,
         ),
         LinkedForm::RequiredList => (
-            format!("Baton.List<{nested}>"),
+            lens.list(),
             format!("anchor.requiredList({slot}{keep})"),
             false,
         ),
         LinkedForm::List => (
-            format!("Baton.List<{nested}>?"),
+            lens.list().optional(),
             format!("anchor.list({slot}{keep})"),
             false,
         ),
         LinkedForm::Caught { optional } => {
-            let (value_type, read) = if *optional {
-                (format!("{nested}?"), format!("$0.linked({slot}){guarded}"))
+            let (value, read) = if *optional {
+                (lens.optional(), format!("$0.linked({slot}){guarded}"))
             } else {
                 (
-                    nested.clone(),
+                    lens,
                     format!(
                         "{nested}(anchor: $0.requiredLinked({slot}, type: {}))",
                         type_reference(base_type)
@@ -215,13 +185,13 @@ fn linked_accessor(
                 )
             };
             (
-                format!("Result<{value_type}, Baton.FieldErrors>"),
+                value.caught(),
                 format!("anchor.caught({slot}, within: {nested}.fieldErrors) {{ {read} }}"),
                 false,
             )
         }
         LinkedForm::Throwing { path } => (
-            nested.clone(),
+            lens,
             format!(
                 "{nested}(anchor: try anchor.throwingLinked({slot}, path: {}, satisfied: {nested}.satisfied))",
                 swift_literal(path)
@@ -229,12 +199,12 @@ fn linked_accessor(
             true,
         ),
         LinkedForm::Optional => (
-            format!("{nested}?"),
+            lens.optional(),
             format!("anchor.linked({slot}){guarded}"),
             false,
         ),
         LinkedForm::Required => (
-            nested.clone(),
+            lens,
             format!(
                 "{nested}(anchor: anchor.requiredLinked({slot}, type: {}))",
                 type_reference(base_type)
@@ -242,19 +212,18 @@ fn linked_accessor(
             false,
         ),
     };
-    write_accessor(
-        output, indent, &property, swift_type, body, throws, condition,
-    );
+    Computed::new(name, swift_type)
+        .throwing(throws)
+        .reads(writer, &body, condition);
 }
 
 /// A spread's accessor: the fragment's lens over the record, in the scope
 /// its arguments bind, optional when anything must hold first. It builds
 /// the lens from its own type, as `.init(anchor:)`, and calls the
-/// fragment's checks through a local alias, which names the fragment in a
-/// type.
-fn spread_accessor(output: &mut String, name: &str, read: &SpreadRead, indent: &str) {
+/// fragment's checks through a local alias.
+fn spread_accessor(writer: &mut Writer, name: &str, read: &SpreadRead) {
     let fragment = &read.fragment;
-    let alias = local_alias(&FRAGMENT_ALIASES, &[fragment]);
+    let alias = LocalAlias::fragment(fragment, &[fragment]);
     let anchor = if read.binding.is_some() {
         "bound"
     } else {
@@ -282,15 +251,11 @@ fn spread_accessor(output: &mut String, name: &str, read: &SpreadRead, indent: &
                 SpreadGuard::Present | SpreadGuard::Satisfied | SpreadGuard::NoErrors
             )
         });
-    let accessor = escape(name);
-    let optional = !guards.is_empty();
-    let (result_type, effect) = match read.form {
-        SpreadForm::Caught if optional => (format!("Result<{fragment}?, Baton.FieldErrors>"), ""),
-        SpreadForm::Caught => (format!("Result<{fragment}, Baton.FieldErrors>"), ""),
-        SpreadForm::Throwing if optional => (format!("{fragment}?"), " get throws"),
-        SpreadForm::Throwing => (fragment.to_string(), " get throws"),
-        SpreadForm::Plain if optional => (format!("{fragment}?"), ""),
-        SpreadForm::Plain => (fragment.to_string(), ""),
+    let lens = SwiftType::named(fragment).optional_if(!guards.is_empty());
+    let (swift_type, throws) = match read.form {
+        SpreadForm::Caught => (lens.caught(), false),
+        SpreadForm::Throwing => (lens, true),
+        SpreadForm::Plain => (lens, false),
     };
     // A catch reads the errors through what every lens has,
     // `fieldErrors` and `init(anchor:)`: only a fragment with an error
@@ -305,105 +270,58 @@ fn spread_accessor(output: &mut String, name: &str, read: &SpreadRead, indent: &
     } else {
         "nil"
     };
+    let property = Computed::new(name, swift_type).throwing(throws);
     if let Some(make) = &make
         && read.binding.is_none()
         && guards.is_empty()
     {
-        if effect.is_empty() {
-            let _ = writeln!(
-                output,
-                "{indent}@MainActor public var {accessor}: {result_type} {{ {make} }}"
-            );
-        } else {
-            let _ = writeln!(
-                output,
-                "{indent}@MainActor public var {accessor}: {result_type} {{ get throws {{ {make} }} }}"
-            );
-        }
+        property.reads(writer, make, None);
         return;
     }
-    let _ = writeln!(
-        output,
-        "{indent}@MainActor public var {accessor}: {result_type} {{"
-    );
-    let body_indent = if effect.is_empty() {
-        format!("{indent}    ")
-    } else {
-        let _ = writeln!(output, "{indent}    get throws {{");
-        format!("{indent}        ")
-    };
-    if checks {
-        let _ = writeln!(output, "{body_indent}typealias {alias} = {fragment}");
-    }
-    if let Some(binding) = &read.binding {
-        let bindings: Vec<String> = binding
-            .arguments
-            .iter()
-            .map(|(name, value)| {
-                let value = match value {
-                    BoundArgument::Passed(value) => argument_expression(value),
-                    BoundArgument::Default(constant) => variable_literal(constant),
-                    BoundArgument::Null => ".null".to_string(),
-                };
-                format!("{}: {value}", swift_literal(name))
-            })
-            .collect();
-        let _ = writeln!(
-            output,
-            "{body_indent}let bound = anchor.binding(Sites.{}) {{ [{}] }}",
-            binding.site,
-            bindings.join(", ")
-        );
-    }
-    if !guards.is_empty() {
-        let _ = writeln!(
-            output,
-            "{body_indent}guard {} else {{ return {miss} }}",
-            guards.join(", ")
-        );
-    }
-    match &make {
-        Some(make) => {
-            let _ = writeln!(output, "{body_indent}return {make}");
+    property.body(writer, |writer| {
+        if checks {
+            alias.declare(writer);
         }
-        None => {
-            let _ = writeln!(
-                output,
-                "{body_indent}let errors = {alias}.fieldErrors({anchor})"
-            );
-            let _ = writeln!(
-                output,
-                "{body_indent}return errors.isEmpty ? .success(.init(anchor: {anchor})) : .failure(.init(errors))"
-            );
+        if let Some(binding) = &read.binding {
+            let bindings: Vec<String> = binding
+                .arguments
+                .iter()
+                .map(|(name, value)| {
+                    let value = match value {
+                        BoundArgument::Passed(value) => argument_expression(value),
+                        BoundArgument::Default(constant) => variable_literal(constant),
+                        BoundArgument::Null => ".null".to_string(),
+                    };
+                    format!("{}: {value}", swift_literal(name))
+                })
+                .collect();
+            writer.line(format!(
+                "let bound = anchor.binding(Sites.{}) {{ [{}] }}",
+                binding.site,
+                bindings.join(", ")
+            ));
         }
-    }
-    if !effect.is_empty() {
-        let _ = writeln!(output, "{indent}    }}");
-    }
-    let _ = writeln!(output, "{indent}}}");
-}
-
-/// The names a body gives a fragment's type through a local alias: one
-/// more than the types a body aliases, so one is always free.
-const FRAGMENT_ALIASES: [&str; 3] = ["Fragment", "Spread", "Owner"];
-
-/// The names a body gives a query's type through a local alias.
-const QUERY_ALIASES: [&str; 3] = ["Query", "Operation", "RefetchQuery"];
-
-/// The first of `candidates` that is none of `named`, the types a body's
-/// aliases stand for: an alias named like one of them would refer to
-/// itself or to another alias.
-fn local_alias(candidates: &[&'static str], named: &[&str]) -> &'static str {
-    candidates
-        .iter()
-        .copied()
-        .find(|candidate| !named.contains(candidate))
-        .expect("an alias has more candidates than the types a body aliases")
+        if !guards.is_empty() {
+            writer.line(format!(
+                "guard {} else {{ return {miss} }}",
+                guards.join(", ")
+            ));
+        }
+        match &make {
+            Some(make) => writer.line(format!("return {make}")),
+            None => {
+                writer.line(format!("let errors = {alias}.fieldErrors({anchor})"));
+                writer.line(format!(
+                    "return errors.isEmpty ? .success(.init(anchor: {anchor})) : .failure(.init(errors))"
+                ));
+            }
+        }
+    });
 }
 
 /// An aliased selection's accessor: its nested lens, optional under its
 /// guards, a `Result` under `@catch`.
-fn aliased_accessor(output: &mut String, name: &str, read: &AliasedRead, indent: &str) {
+fn aliased_accessor(writer: &mut Writer, name: &str, read: &AliasedRead) {
     let nested = &read.lens;
     let guards: Vec<String> = read
         .guards
@@ -416,44 +334,22 @@ fn aliased_accessor(output: &mut String, name: &str, read: &AliasedRead, indent:
             AliasGuard::Satisfied => format!("{nested}.satisfied(anchor)"),
         })
         .collect();
-    let property = escape(name);
-    match (read.caught, guards.is_empty()) {
-        (true, true) => {
-            let _ = writeln!(
-                output,
-                "{indent}@MainActor public var {property}: Result<{nested}, Baton.FieldErrors> {{ {nested}.caught(anchor) }}"
-            );
-        }
-        (true, false) => {
-            let _ = writeln!(
-                output,
-                "{indent}@MainActor public var {property}: Result<{nested}, Baton.FieldErrors>? {{ {} ? {nested}.caught(anchor) : nil }}",
-                guards.join(" && ")
-            );
-        }
-        (false, true) => {
-            let _ = writeln!(
-                output,
-                "{indent}@MainActor public var {property}: {nested} {{ {nested}(anchor: anchor) }}"
-            );
-        }
-        (false, false) => {
-            let _ = writeln!(
-                output,
-                "{indent}@MainActor public var {property}: {nested}? {{ {} ? {nested}(anchor: anchor) : nil }}",
-                guards.join(" && ")
-            );
-        }
-    }
+    let condition = (!guards.is_empty()).then(|| guards.join(" && "));
+    let lens = SwiftType::named(nested);
+    let (swift_type, expression) = if read.caught {
+        (lens.caught(), format!("{nested}.caught(anchor)"))
+    } else {
+        (lens, format!("{nested}(anchor: anchor)"))
+    };
+    Computed::new(name, swift_type).reads(writer, &expression, condition.as_deref());
 }
 
 /// A type condition's accessor: its nested lens when the record satisfies
 /// the condition.
 fn condition_accessor(
-    output: &mut String,
+    writer: &mut Writer,
     name: &str,
     read: &ConditionRead,
-    indent: &str,
     condition: Option<&str>,
 ) {
     let nested = &read.lens;
@@ -462,72 +358,27 @@ fn condition_accessor(
         Some(condition) => format!("{condition} && {test}"),
         None => test,
     };
-    let _ = writeln!(
-        output,
-        "{indent}@MainActor public var {}: {nested}? {{ {test} ? {nested}(anchor: anchor) : nil }}",
-        escape(name)
+    Computed::new(name, SwiftType::named(nested)).reads(
+        writer,
+        &format!("{nested}(anchor: anchor)"),
+        Some(&test),
     );
-}
-
-/// Writes an accessor: `property` of `swift_type`, reading `body`. Under a
-/// guard the accessor is optional and returns nil without a read when the
-/// guard fails, so a field a condition left out reports nothing missing.
-fn write_accessor(
-    output: &mut String,
-    indent: &str,
-    property: &str,
-    swift_type: String,
-    body: String,
-    throws: bool,
-    condition: Option<&str>,
-) {
-    let Some(condition) = condition else {
-        if throws {
-            let _ = writeln!(
-                output,
-                "{indent}@MainActor public var {property}: {swift_type} {{ get throws {{ {body} }} }}"
-            );
-        } else {
-            let _ = writeln!(
-                output,
-                "{indent}@MainActor public var {property}: {swift_type} {{ {body} }}"
-            );
-        }
-        return;
-    };
-    let optional = if swift_type.ends_with('?') {
-        swift_type
-    } else {
-        format!("{swift_type}?")
-    };
-    if throws {
-        let _ = writeln!(
-            output,
-            "{indent}@MainActor public var {property}: {optional} {{ get throws {{ guard {condition} else {{ return nil }}; return {body} }} }}"
-        );
-    } else {
-        let _ = writeln!(
-            output,
-            "{indent}@MainActor public var {property}: {optional} {{ {condition} ? {body} : nil }}"
-        );
-    }
 }
 
 /// The `@refetchable` surface of a fragment lens: the descriptor of its
 /// query and `refetch()`.
-fn refetch_members(output: &mut String, refetch: &RefetchMembers, indent: &str) {
+fn refetch_members(writer: &mut Writer, refetch: &RefetchMembers) {
     let option = |value: &Option<String>| match value {
         Some(name) => swift_literal(name),
         None => "nil".to_string(),
     };
-    let _ = writeln!(
-        output,
-        "{indent}/// How the fragment is fetched again: `{}` with the lens's variables.",
+    writer.doc(format!(
+        "How the fragment is fetched again: `{}` with the lens's variables.",
         refetch.operation
-    );
-    let _ = writeln!(
-        output,
-        "{indent}@_spi(Generated) public static let refetchable: Baton.Refetch = .init(variables: [{}], identifier: {}, first: {}, after: {}, last: {}, before: {})",
+    ));
+    writer.line(format!(
+        "@_spi(Generated) public static let refetchable: {} = .init(variables: [{}], identifier: {}, first: {}, after: {}, last: {}, before: {})",
+        SwiftType::runtime("Refetch"),
         refetch
             .variables
             .iter()
@@ -539,44 +390,35 @@ fn refetch_members(output: &mut String, refetch: &RefetchMembers, indent: &str) 
         option(&refetch.after),
         option(&refetch.last),
         option(&refetch.before),
-    );
-    let _ = writeln!(
-        output,
-        "{indent}/// Fetches the fragment again through `{}` with its current variables; the records update in place.",
+    ));
+    writer.doc(format!(
+        "Fetches the fragment again through `{}` with its current variables; the records update in place.",
         refetch.operation
-    );
-    let query = local_alias(&QUERY_ALIASES, &[&refetch.operation]);
-    let _ = writeln!(
-        output,
-        "{indent}@MainActor public func refetch() async throws {{"
-    );
-    let _ = writeln!(
-        output,
-        "{indent}    typealias {query} = {}",
-        refetch.operation
-    );
-    let _ = writeln!(
-        output,
-        "{indent}    try await anchor.refetch({query}.self, Self.refetchable)"
-    );
-    let _ = writeln!(output, "{indent}}}");
+    ));
+    let query = LocalAlias::query(&refetch.operation, &[&refetch.operation]);
+    writer.block("@MainActor public func refetch() async throws", |writer| {
+        query.declare(writer);
+        writer.line(format!(
+            "try await anchor.refetch({query}.self, Self.refetchable)"
+        ));
+    });
 }
 
 /// The connection surface of a lens over a `@connection` field: Relay's
 /// state read from the store, `nodes`, and pagination when the fragment is
 /// refetchable.
-fn connection_members(output: &mut String, connection: &ConnectionMembers, indent: &str) {
-    let _ = writeln!(
-        output,
-        "{indent}/// The connection's slots: edges, nodes, cursors and the page info, for the store's merge and the state below."
+fn connection_members(writer: &mut Writer, connection: &ConnectionMembers) {
+    let boolean = || SwiftType::named("Bool");
+    writer.doc(
+        "The connection's slots: edges, nodes, cursors and the page info, for the store's merge and the state below.",
     );
-    let _ = writeln!(
-        output,
-        "{indent}@_spi(Generated) public static let connection: Baton.ConnectionSlots = .init(connection: {}, edge: {}, pageInfo: {})",
+    writer.line(format!(
+        "@_spi(Generated) public static let connection: {} = .init(connection: {}, edge: {}, pageInfo: {})",
+        SwiftType::runtime("ConnectionSlots"),
         type_reference(&connection.connection_type),
         type_reference(&connection.edge_type),
         type_reference(&connection.page_info_type)
-    );
+    ));
     if let Some(nodes) = &connection.nodes {
         let (edges, node) = (&nodes.edges, &nodes.node);
         let keep = if nodes.keep {
@@ -584,310 +426,252 @@ fn connection_members(output: &mut String, connection: &ConnectionMembers, inden
         } else {
             String::new()
         };
-        let _ = writeln!(
-            output,
-            "{indent}/// The edges' nodes, in order, without nulls."
-        );
-        let _ = writeln!(
-            output,
-            "{indent}@MainActor public var nodes: [{edges}.{node}] {{ anchor.nodes(Self.connection{keep}) }}"
+        writer.doc("The edges' nodes, in order, without nulls.");
+        Computed::new("nodes", SwiftType::named(format!("{edges}.{node}")).array()).reads(
+            writer,
+            &format!("anchor.nodes(Self.connection{keep})"),
+            None,
         );
     }
-    let _ = writeln!(
-        output,
-        "{indent}/// Whether the server has edges after the last one, from the merged `pageInfo`."
-    );
-    let _ = writeln!(
-        output,
-        "{indent}@MainActor public var hasNext: Bool {{ anchor.hasNext(Self.connection) }}"
-    );
-    let _ = writeln!(
-        output,
-        "{indent}@MainActor public var hasPrevious: Bool {{ anchor.hasPrevious(Self.connection) }}"
-    );
-    let _ = writeln!(
-        output,
-        "{indent}@MainActor public var isLoadingNext: Bool {{ anchor.isLoadingNext(Self.connection) }}"
-    );
-    let _ = writeln!(
-        output,
-        "{indent}@MainActor public var isLoadingPrevious: Bool {{ anchor.isLoadingPrevious(Self.connection) }}"
-    );
-    let _ = writeln!(
-        output,
-        "{indent}/// Relay's connection id, for the `connections` argument of the edge directives."
-    );
-    let _ = writeln!(
-        output,
-        "{indent}@MainActor public var connectionID: String {{ anchor.record.key }}"
+    writer.doc("Whether the server has edges after the last one, from the merged `pageInfo`.");
+    for state in [
+        "hasNext",
+        "hasPrevious",
+        "isLoadingNext",
+        "isLoadingPrevious",
+    ] {
+        Computed::new(state, boolean()).reads(
+            writer,
+            &format!("anchor.{state}(Self.connection)"),
+            None,
+        );
+    }
+    writer.doc("Relay's connection id, for the `connections` argument of the edge directives.");
+    Computed::new("connectionID", SwiftType::named("String")).reads(
+        writer,
+        "anchor.record.key",
+        None,
     );
     if let Some(load) = &connection.load_next {
-        let _ = writeln!(
-            output,
-            "{indent}/// Fetches the next `count` edges through `{}` and appends them; a no-op while loading or at the end.",
+        writer.doc(format!(
+            "Fetches the next `count` edges through `{}` and appends them; a no-op while loading or at the end.",
             load.operation
-        );
-        load_more(output, "loadNext", load, indent);
+        ));
+        load_more(writer, "loadNext", load);
     }
     if let Some(load) = &connection.load_previous {
-        let _ = writeln!(
-            output,
-            "{indent}/// Fetches the previous `count` edges through `{}` and prepends them; a no-op while loading or at the start.",
+        writer.doc(format!(
+            "Fetches the previous `count` edges through `{}` and prepends them; a no-op while loading or at the start.",
             load.operation
-        );
-        load_more(output, "loadPrevious", load, indent);
+        ));
+        load_more(writer, "loadPrevious", load);
     }
 }
 
 /// `loadNext` or `loadPrevious`, named `function`: the fragment's refetch
 /// query and descriptor, both named through local aliases, since the
 /// connection's lens is nested in the fragment's.
-fn load_more(output: &mut String, function: &str, load: &LoadMore, indent: &str) {
+fn load_more(writer: &mut Writer, function: &str, load: &LoadMore) {
     let named = [load.operation.as_str(), load.owner.as_str()];
-    let query = local_alias(&QUERY_ALIASES, &named);
-    let fragment = local_alias(&FRAGMENT_ALIASES, &named);
+    let query = LocalAlias::query(&load.operation, &named);
+    let fragment = LocalAlias::fragment(&load.owner, &named);
     let default_count = match load.default_count {
         Some(count) => format!(" = {count}"),
         None => String::new(),
     };
-    let _ = writeln!(
-        output,
-        "{indent}@MainActor public func {function}(_ count: Int{default_count}) async throws {{"
+    writer.block(
+        format!("@MainActor public func {function}(_ count: Int{default_count}) async throws"),
+        |writer| {
+            query.declare(writer);
+            fragment.declare(writer);
+            writer.line(format!(
+                "try await anchor.{function}({query}.self, Self.connection, {fragment}.refetchable, count: count)"
+            ));
+        },
     );
-    let _ = writeln!(output, "{indent}    typealias {query} = {}", load.operation);
-    let _ = writeln!(output, "{indent}    typealias {fragment} = {}", load.owner);
-    let _ = writeln!(
-        output,
-        "{indent}    try await anchor.{function}({query}.self, Self.connection, {fragment}.refetchable, count: count)"
-    );
-    let _ = writeln!(output, "{indent}}}");
 }
 
-/// Opens the block a guarded check is written in: the indent its lines
-/// take, and the line that closes it, none when nothing guards it.
-fn open_guard(output: &mut String, guards: &[Vec<Guard>], indent: &str) -> (String, String) {
+/// Writes what `body` writes inside `if` the guards select, or as it is
+/// when nothing guards it.
+fn guarded(writer: &mut Writer, guards: &[Vec<Guard>], body: impl FnOnce(&mut Writer)) {
     match guard_condition(guards) {
-        Some(condition) => {
-            let _ = writeln!(output, "{indent}    if {condition} {{");
-            (format!("{indent}    "), format!("{indent}    }}"))
-        }
-        None => (indent.to_string(), String::new()),
+        Some(condition) => writer.block(format!("if {condition}"), body),
+        None => body(writer),
     }
 }
 
 /// `satisfied`: whether every `@required` field (NONE or LOG) of the
 /// selection is present, recursing into required links.
-fn satisfied_function(
-    output: &mut String,
-    entries: &[Guarded<Option<SatisfiedCheck>>],
-    indent: &str,
-) {
-    let _ = writeln!(
-        output,
-        "{indent}/// Whether every `@required` field is present; the lens is otherwise null to its parent, as Relay bubbles."
+fn satisfied_function(writer: &mut Writer, entries: &[Guarded<Option<SatisfiedCheck>>]) {
+    writer.doc(
+        "Whether every `@required` field is present; the lens is otherwise null to its parent, as Relay bubbles.",
     );
-    let _ = writeln!(
-        output,
-        "{indent}@_spi(Generated) @MainActor public static func satisfied(_ anchor: Baton.Anchor) -> Bool {{"
-    );
-    for entry in entries {
-        let (indent, close) = open_guard(output, &entry.guards, indent);
-        match &entry.item {
-            Some(SatisfiedCheck::HasValue { slot, path, log }) => {
-                let _ = writeln!(
-                    output,
-                    "{indent}    guard anchor.hasValue({}, path: {}, log: {log}) else {{ return false }}",
-                    slot_expression(slot),
-                    swift_literal(path)
-                );
-            }
-            Some(SatisfiedCheck::Linked {
-                slot,
-                lens,
-                path,
-                log,
-            }) => {
-                let _ = writeln!(
-                    output,
-                    "{indent}    guard let child = anchor.linked({}), {lens}.satisfied(child) else {{ return anchor.requiredMissing(path: {}, log: {log}) }}",
-                    slot_expression(slot),
-                    swift_literal(path)
-                );
-            }
-            None => {}
+    let head = check_head("satisfied", &SwiftType::named("Bool"), false);
+    writer.block(head, |writer| {
+        for entry in entries {
+            guarded(writer, &entry.guards, |writer| match &entry.item {
+                Some(SatisfiedCheck::HasValue { slot, path, log }) => {
+                    writer.line(format!(
+                        "guard anchor.hasValue({}, path: {}, log: {log}) else {{ return false }}",
+                        slot_expression(slot),
+                        swift_literal(path)
+                    ));
+                }
+                Some(SatisfiedCheck::Linked {
+                    slot,
+                    lens,
+                    path,
+                    log,
+                }) => {
+                    writer.line(format!(
+                        "guard let child = anchor.linked({}), {lens}.satisfied(child) else {{ return anchor.requiredMissing(path: {}, log: {log}) }}",
+                        slot_expression(slot),
+                        swift_literal(path)
+                    ));
+                }
+                None => {}
+            });
         }
-        if !close.is_empty() {
-            let _ = writeln!(output, "{close}");
-        }
-    }
-    let _ = writeln!(output, "{indent}    return true");
-    let _ = writeln!(output, "{indent}}}");
+        writer.line("return true");
+    });
 }
 
 /// `missingRequiredField`: the path of the first `@required` field (NONE or
 /// LOG) of the selection that is missing, recursing into required links;
 /// nil when `satisfied` holds. It reads and reports what `satisfied` does.
-fn missing_required_function(
-    output: &mut String,
-    entries: &[Guarded<Option<SatisfiedCheck>>],
-    indent: &str,
-) {
-    let _ = writeln!(
-        output,
-        "{indent}/// The path of the first `@required` field that is missing, which bubbles to the root."
+fn missing_required_function(writer: &mut Writer, entries: &[Guarded<Option<SatisfiedCheck>>]) {
+    writer
+        .doc("The path of the first `@required` field that is missing, which bubbles to the root.");
+    let head = check_head(
+        "missingRequiredField",
+        &SwiftType::named("String").optional(),
+        false,
     );
-    let _ = writeln!(
-        output,
-        "{indent}@_spi(Generated) @MainActor public static func missingRequiredField(_ anchor: Baton.Anchor) -> String? {{"
-    );
-    for entry in entries {
-        let (indent, close) = open_guard(output, &entry.guards, indent);
-        match &entry.item {
-            Some(SatisfiedCheck::HasValue { slot, path, log }) => {
-                let path = swift_literal(path);
-                let _ = writeln!(
-                    output,
-                    "{indent}    guard anchor.hasValue({}, path: {path}, log: {log}) else {{ return {path} }}",
-                    slot_expression(slot)
-                );
-            }
-            Some(SatisfiedCheck::Linked {
-                slot,
-                lens,
-                path,
-                log,
-            }) => {
-                let path = swift_literal(path);
-                // A link that is null, or that a missing field below it
-                // nulls, is reported under its own path, as `satisfied`
-                // reports it.
-                let report = if *log {
-                    format!("_ = anchor.requiredMissing(path: {path}, log: true); ")
-                } else {
-                    String::new()
-                };
-                let _ = writeln!(
-                    output,
-                    "{indent}    guard let child = anchor.linked({}) else {{ {report}return {path} }}",
-                    slot_expression(slot)
-                );
-                let _ = writeln!(
-                    output,
-                    "{indent}    if let missing = {lens}.missingRequiredField(child) {{ {report}return missing }}"
-                );
-            }
-            None => {}
+    writer.block(head, |writer| {
+        for entry in entries {
+            guarded(writer, &entry.guards, |writer| match &entry.item {
+                Some(SatisfiedCheck::HasValue { slot, path, log }) => {
+                    let path = swift_literal(path);
+                    writer.line(format!(
+                        "guard anchor.hasValue({}, path: {path}, log: {log}) else {{ return {path} }}",
+                        slot_expression(slot)
+                    ));
+                }
+                Some(SatisfiedCheck::Linked {
+                    slot,
+                    lens,
+                    path,
+                    log,
+                }) => {
+                    let path = swift_literal(path);
+                    // A link that is null, or that a missing field below it
+                    // nulls, is reported under its own path, as `satisfied`
+                    // reports it.
+                    let report = if *log {
+                        format!("_ = anchor.requiredMissing(path: {path}, log: true); ")
+                    } else {
+                        String::new()
+                    };
+                    writer.line(format!(
+                        "guard let child = anchor.linked({}) else {{ {report}return {path} }}",
+                        slot_expression(slot)
+                    ));
+                    writer.line(format!(
+                        "if let missing = {lens}.missingRequiredField(child) {{ {report}return missing }}"
+                    ));
+                }
+                None => {}
+            });
         }
-        if !close.is_empty() {
-            let _ = writeln!(output, "{close}");
-        }
-    }
-    let _ = writeln!(output, "{indent}    return nil");
-    let _ = writeln!(output, "{indent}}}");
+        writer.line("return nil");
+    });
 }
 
 /// `fieldErrors`, `throwing` and `caught`: the field errors in this
 /// selection, excluding fields caught by their own `@catch`, plus the
 /// `@required(action: THROW)` fields that are null.
-fn field_errors_function(output: &mut String, checks: &[ErrorCheck], indent: &str) {
-    let _ = writeln!(
-        output,
-        "{indent}/// The field errors in this selection, for `@catch` and `@throwOnFieldError`."
-    );
-    let _ = writeln!(
-        output,
-        "{indent}@_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {{"
-    );
-    let _ = writeln!(output, "{indent}    var errors: [Baton.FieldError] = []");
-    for check in checks {
-        match check {
-            ErrorCheck::Condition { guards, test, lens } => {
-                let test = type_test(test);
-                let test = match guard_condition(guards) {
-                    Some(condition) => format!("{condition} && {test}"),
-                    None => test,
-                };
-                let _ = writeln!(
-                    output,
-                    "{indent}    if {test} {{ errors.append(contentsOf: {lens}.fieldErrors(anchor)) }}"
-                );
-            }
-            ErrorCheck::Member(lines) => {
-                let (indent, close) = open_guard(output, &lines.guards, indent);
-                for line in &lines.item {
-                    match line {
-                        ErrorLine::Field(slot) => {
-                            let _ = writeln!(
-                                output,
-                                "{indent}    anchor.collectError({}, into: &errors)",
-                                slot_expression(slot)
-                            );
-                        }
-                        ErrorLine::Linked { slot, lens } => {
-                            let _ = writeln!(
-                                output,
-                                "{indent}    anchor.collectErrors({}, within: {lens}.fieldErrors, into: &errors)",
-                                slot_expression(slot)
-                            );
-                        }
-                        ErrorLine::List { slot, lens } => {
-                            let _ = writeln!(
-                                output,
-                                "{indent}    anchor.collectErrors(list: {}, within: {lens}.fieldErrors, into: &errors)",
-                                slot_expression(slot)
-                            );
-                        }
-                        ErrorLine::Required { slot, path } => {
-                            let _ = writeln!(
-                                output,
-                                "{indent}    anchor.collectRequired({}, path: {}, into: &errors)",
-                                slot_expression(slot),
-                                swift_literal(path)
-                            );
-                        }
-                        ErrorLine::Nested(lens) => {
-                            let _ = writeln!(
-                                output,
-                                "{indent}    errors.append(contentsOf: {lens}.fieldErrors(anchor))"
-                            );
-                        }
-                    }
+fn field_errors_function(writer: &mut Writer, checks: &[ErrorCheck]) {
+    let errors = SwiftType::runtime("FieldError").array();
+    let this = || SwiftType::named("Self");
+    writer.doc("The field errors in this selection, for `@catch` and `@throwOnFieldError`.");
+    writer.block(check_head("fieldErrors", &errors, false), |writer| {
+        writer.line(format!("var errors: {errors} = []"));
+        for check in checks {
+            match check {
+                ErrorCheck::Condition { guards, test, lens } => {
+                    let test = type_test(test);
+                    let test = match guard_condition(guards) {
+                        Some(condition) => format!("{condition} && {test}"),
+                        None => test,
+                    };
+                    writer.line(format!(
+                        "if {test} {{ errors.append(contentsOf: {lens}.fieldErrors(anchor)) }}"
+                    ));
                 }
-                if !close.is_empty() {
-                    let _ = writeln!(output, "{close}");
+                ErrorCheck::Member(lines) => {
+                    guarded(writer, &lines.guards, |writer| {
+                        for line in &lines.item {
+                            error_line(writer, line);
+                        }
+                    });
                 }
             }
         }
+        writer.line("return errors");
+    });
+    writer.doc("The lens, or the field errors in it as a thrown `FieldErrors`.");
+    writer.line(format!(
+        "{} {{ try caught(anchor).get() }}",
+        check_head("throwing", &this(), true)
+    ));
+    writer.doc("The lens, or the field errors in it as a `Result`.");
+    writer.block(check_head("caught", &this().caught(), false), |writer| {
+        writer.line("let errors = fieldErrors(anchor)");
+        writer.line(
+            "return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))",
+        );
+    });
+}
+
+/// One member's part of `fieldErrors`.
+fn error_line(writer: &mut Writer, line: &ErrorLine) {
+    match line {
+        ErrorLine::Field(slot) => {
+            writer.line(format!(
+                "anchor.collectError({}, into: &errors)",
+                slot_expression(slot)
+            ));
+        }
+        ErrorLine::Linked { slot, lens } => {
+            writer.line(format!(
+                "anchor.collectErrors({}, within: {lens}.fieldErrors, into: &errors)",
+                slot_expression(slot)
+            ));
+        }
+        ErrorLine::List { slot, lens } => {
+            writer.line(format!(
+                "anchor.collectErrors(list: {}, within: {lens}.fieldErrors, into: &errors)",
+                slot_expression(slot)
+            ));
+        }
+        ErrorLine::Required { slot, path } => {
+            writer.line(format!(
+                "anchor.collectRequired({}, path: {}, into: &errors)",
+                slot_expression(slot),
+                swift_literal(path)
+            ));
+        }
+        ErrorLine::Nested(lens) => {
+            writer.line(format!(
+                "errors.append(contentsOf: {lens}.fieldErrors(anchor))"
+            ));
+        }
     }
-    let _ = writeln!(output, "{indent}    return errors");
-    let _ = writeln!(output, "{indent}}}");
-    let _ = writeln!(
-        output,
-        "{indent}/// The lens, or the field errors in it as a thrown `FieldErrors`."
-    );
-    let _ = writeln!(
-        output,
-        "{indent}@_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self {{ try caught(anchor).get() }}"
-    );
-    let _ = writeln!(
-        output,
-        "{indent}/// The lens, or the field errors in it as a `Result`."
-    );
-    let _ = writeln!(
-        output,
-        "{indent}@_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {{"
-    );
-    let _ = writeln!(output, "{indent}    let errors = fieldErrors(anchor)");
-    let _ = writeln!(
-        output,
-        "{indent}    return errors.isEmpty ? .success(Self(anchor: anchor)) : .failure(.init(errors))"
-    );
-    let _ = writeln!(output, "{indent}}}");
 }
 
 /// `isPresent`: whether the fragment's own fields have arrived, for a
 /// spread under `@defer`.
-fn is_present_function(output: &mut String, checks: &[Guarded<SlotAccess>], indent: &str) {
+fn is_present_function(writer: &mut Writer, checks: &[Guarded<SlotAccess>]) {
     let checks: Vec<String> = checks
         .iter()
         .map(|check| {
@@ -898,19 +682,16 @@ fn is_present_function(output: &mut String, checks: &[Guarded<SlotAccess>], inde
             }
         })
         .collect();
-    let _ = writeln!(
-        output,
-        "{indent}/// Whether the deferred part that carries this fragment has arrived."
-    );
-    let _ = writeln!(
-        output,
-        "{indent}@_spi(Generated) @MainActor public static func isPresent(_ anchor: Baton.Anchor) -> Bool {{ {} }}",
-        if checks.is_empty() {
-            "true".to_string()
-        } else {
-            checks.join(" && ")
-        }
-    );
+    let present = if checks.is_empty() {
+        "true".to_string()
+    } else {
+        checks.join(" && ")
+    };
+    writer.doc("Whether the deferred part that carries this fragment has arrived.");
+    writer.line(format!(
+        "{} {{ {present} }}",
+        check_head("isPresent", &SwiftType::named("Bool"), false)
+    ));
 }
 
 /// A slot as a value: the static slot, or on an interface or union the
