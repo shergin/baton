@@ -733,17 +733,10 @@ fn subscription_variable_names(plan: &Plan) -> Vec<String> {
 }
 
 fn fragment_argument_names(plan: &Plan) -> Vec<String> {
-    plan.fragments
+    fragment(plan, "HostileArguments_character")
+        .arguments
         .iter()
-        .filter(|fragment| {
-            fragment.name.starts_with("HostileArguments") && fragment.name.ends_with("_character")
-        })
-        .flat_map(|fragment| {
-            fragment
-                .arguments
-                .iter()
-                .map(|argument| argument.name.clone())
-        })
+        .map(|argument| argument.name.clone())
         .collect()
 }
 

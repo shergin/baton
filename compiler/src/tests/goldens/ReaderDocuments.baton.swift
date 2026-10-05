@@ -956,7 +956,7 @@ fragment TestNotes_character_35kO5h on Character {
             public static let typeName = "Character"
             @MainActor public var id: String? { anchor.string(Slots.Character.id) }
             @MainActor public var testNotes: TestNotes_character {
-                let bound = anchor.binding(Sites.TestReservedNames_testNotes) { ["count": .int(1), "cursor": .null] }
+                let bound = anchor.binding(Sites.TestReservedNames_testNotes) { () -> [String: Baton.Variable?] in ["count": .int(1), "cursor": .null] }
                 return .init(anchor: bound)
             }
         }
@@ -1841,7 +1841,7 @@ fragment TestNotes_character_41grAF on Character {
             @MainActor public var id: String? { anchor.string(Slots.Character.id) }
             @MainActor public var name: String? { anchor.string(Slots.Character.name) }
             @MainActor public var testNotes: TestNotes_character {
-                let bound = anchor.binding(Sites.TestTwoScopes_testNotes) { ["count": .int(1), "cursor": .null] }
+                let bound = anchor.binding(Sites.TestTwoScopes_testNotes) { () -> [String: Baton.Variable?] in ["count": .int(1), "cursor": .null] }
                 return .init(anchor: bound)
             }
         }
@@ -1853,7 +1853,7 @@ fragment TestNotes_character_41grAF on Character {
             @MainActor public var id: String? { anchor.string(Slots.Character.id) }
             @MainActor public var name: String? { anchor.string(Slots.Character.name) }
             @MainActor public var testNotes: TestNotes_character {
-                let bound = anchor.binding(Sites.TestTwoScopes_testNotes_2) { ["count": .int(3), "cursor": .null] }
+                let bound = anchor.binding(Sites.TestTwoScopes_testNotes_2) { () -> [String: Baton.Variable?] in ["count": .int(3), "cursor": .null] }
                 return .init(anchor: bound)
             }
         }

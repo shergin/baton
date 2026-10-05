@@ -1206,7 +1206,7 @@ fragment TestNoteText_note on Note {
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Node"
             @MainActor public var testDeferredNotes: TestDeferredNotes_character? {
-                let bound = anchor.binding(Sites.TestDeferredNotesPaginationQuery_testDeferredNotes) { ["count": anchor.variables["count"], "cursor": anchor.variables["cursor"]] }
+                let bound = anchor.binding(Sites.TestDeferredNotesPaginationQuery_testDeferredNotes) { () -> [String: Baton.Variable?] in ["count": anchor.variables["count"], "cursor": anchor.variables["cursor"]] }
                 guard anchor.record.is(Types.Character) else { return nil }
                 return .init(anchor: bound)
             }
@@ -1410,7 +1410,7 @@ fragment TestHiddenNotes_character_1G22uz on Character {
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Node"
             @MainActor public var testHiddenNotes: TestHiddenNotes_character? {
-                let bound = anchor.binding(Sites.TestHiddenNotesPaginationQuery_testHiddenNotes) { ["count": anchor.variables["count"], "cursor": anchor.variables["cursor"]] }
+                let bound = anchor.binding(Sites.TestHiddenNotesPaginationQuery_testHiddenNotes) { () -> [String: Baton.Variable?] in ["count": anchor.variables["count"], "cursor": anchor.variables["cursor"]] }
                 guard anchor.record.is(Types.Character) else { return nil }
                 return .init(anchor: bound)
             }
@@ -1509,7 +1509,7 @@ fragment TestHiddenNotes_character on Character {
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Character"
             @MainActor public var testHiddenNotes: TestHiddenNotes_character {
-                let bound = anchor.binding(Sites.TestHiddenNotesQuery_testHiddenNotes) { ["count": .int(2), "cursor": .null] }
+                let bound = anchor.binding(Sites.TestHiddenNotesQuery_testHiddenNotes) { () -> [String: Baton.Variable?] in ["count": .int(2), "cursor": .null] }
                 return .init(anchor: bound)
             }
         }
@@ -1619,7 +1619,7 @@ fragment TestHiddenRecentNotes_character_1G22uz on Character {
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Node"
             @MainActor public var testHiddenRecentNotes: TestHiddenRecentNotes_character? {
-                let bound = anchor.binding(Sites.TestHiddenRecentNotesPaginationQuery_testHiddenRecentNotes) { ["count": anchor.variables["count"], "cursor": anchor.variables["cursor"]] }
+                let bound = anchor.binding(Sites.TestHiddenRecentNotesPaginationQuery_testHiddenRecentNotes) { () -> [String: Baton.Variable?] in ["count": anchor.variables["count"], "cursor": anchor.variables["cursor"]] }
                 guard anchor.record.is(Types.Character) else { return nil }
                 return .init(anchor: bound)
             }
@@ -1714,7 +1714,7 @@ fragment TestHiddenRecentNotes_character on Character {
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Character"
             @MainActor public var testHiddenRecentNotes: TestHiddenRecentNotes_character {
-                let bound = anchor.binding(Sites.TestHiddenRecentNotesQuery_testHiddenRecentNotes) { ["count": .int(2), "cursor": .null] }
+                let bound = anchor.binding(Sites.TestHiddenRecentNotesQuery_testHiddenRecentNotes) { () -> [String: Baton.Variable?] in ["count": .int(2), "cursor": .null] }
                 return .init(anchor: bound)
             }
         }
@@ -1824,7 +1824,7 @@ fragment TestNotes_character_1G22uz on Character {
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Node"
             @MainActor public var testNotes: TestNotes_character? {
-                let bound = anchor.binding(Sites.TestNotesPaginationQuery_testNotes) { ["count": anchor.variables["count"], "cursor": anchor.variables["cursor"]] }
+                let bound = anchor.binding(Sites.TestNotesPaginationQuery_testNotes) { () -> [String: Baton.Variable?] in ["count": anchor.variables["count"], "cursor": anchor.variables["cursor"]] }
                 guard anchor.record.is(Types.Character) else { return nil }
                 return .init(anchor: bound)
             }
@@ -1919,7 +1919,7 @@ fragment TestNotes_character on Character {
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Character"
             @MainActor public var testNotes: TestNotes_character {
-                let bound = anchor.binding(Sites.TestNotesQuery_testNotes) { ["count": .int(2), "cursor": .null] }
+                let bound = anchor.binding(Sites.TestNotesQuery_testNotes) { () -> [String: Baton.Variable?] in ["count": .int(2), "cursor": .null] }
                 return .init(anchor: bound)
             }
         }
@@ -2017,7 +2017,7 @@ fragment TestNotes_character_2H9PL on Character {
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Character"
             @MainActor public var testNotes: TestNotes_character {
-                let bound = anchor.binding(Sites.TestNotesSizedQuery_testNotes) { ["count": anchor.variables["size"], "cursor": .null] }
+                let bound = anchor.binding(Sites.TestNotesSizedQuery_testNotes) { () -> [String: Baton.Variable?] in ["count": anchor.variables["size"], "cursor": .null] }
                 return .init(anchor: bound)
             }
         }
@@ -2123,7 +2123,7 @@ fragment TestRecentNotes_character_1G22uz on Character {
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Node"
             @MainActor public var testRecentNotes: TestRecentNotes_character? {
-                let bound = anchor.binding(Sites.TestRecentNotesPaginationQuery_testRecentNotes) { ["count": anchor.variables["count"], "cursor": anchor.variables["cursor"]] }
+                let bound = anchor.binding(Sites.TestRecentNotesPaginationQuery_testRecentNotes) { () -> [String: Baton.Variable?] in ["count": anchor.variables["count"], "cursor": anchor.variables["cursor"]] }
                 guard anchor.record.is(Types.Character) else { return nil }
                 return .init(anchor: bound)
             }
@@ -2214,7 +2214,7 @@ fragment TestRecentNotes_character on Character {
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Character"
             @MainActor public var testRecentNotes: TestRecentNotes_character {
-                let bound = anchor.binding(Sites.TestRecentNotesQuery_testRecentNotes) { ["count": .int(2), "cursor": .null] }
+                let bound = anchor.binding(Sites.TestRecentNotesQuery_testRecentNotes) { () -> [String: Baton.Variable?] in ["count": .int(2), "cursor": .null] }
                 return .init(anchor: bound)
             }
         }
