@@ -496,11 +496,11 @@ mutation TestAddNote(
     }
 }
 
-extension Baton.MutationAction where Op == TestAddNote {
+extension TestAddNote.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
-    public func callAsFunction(characterId: String, text: String, connections: [String], optimistic: TestAddNote.OptimisticResponse? = nil) async throws -> TestAddNote.Data {
-        try await self.commit(TestAddNote(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
+    public func callAsFunction(characterId: String, text: String, connections: [String], optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
+        try await self.commit(.init(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
     }
 }
 
@@ -652,11 +652,11 @@ mutation TestAddNoteFirst(
     }
 }
 
-extension Baton.MutationAction where Op == TestAddNoteFirst {
+extension TestAddNoteFirst.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
-    public func callAsFunction(characterId: String, text: String, connections: [String], optimistic: TestAddNoteFirst.OptimisticResponse? = nil) async throws -> TestAddNoteFirst.Data {
-        try await self.commit(TestAddNoteFirst(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
+    public func callAsFunction(characterId: String, text: String, connections: [String], optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
+        try await self.commit(.init(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
     }
 }
 
@@ -778,11 +778,11 @@ mutation TestAddNoteNode(
     }
 }
 
-extension Baton.MutationAction where Op == TestAddNoteNode {
+extension TestAddNoteNode.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
-    public func callAsFunction(characterId: String, text: String, connections: [String], optimistic: TestAddNoteNode.OptimisticResponse? = nil) async throws -> TestAddNoteNode.Data {
-        try await self.commit(TestAddNoteNode(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
+    public func callAsFunction(characterId: String, text: String, connections: [String], optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
+        try await self.commit(.init(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
     }
 }
 
@@ -904,11 +904,11 @@ mutation TestAddNoteNodeFirst(
     }
 }
 
-extension Baton.MutationAction where Op == TestAddNoteNodeFirst {
+extension TestAddNoteNodeFirst.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
-    public func callAsFunction(characterId: String, text: String, connections: [String], optimistic: TestAddNoteNodeFirst.OptimisticResponse? = nil) async throws -> TestAddNoteNodeFirst.Data {
-        try await self.commit(TestAddNoteNodeFirst(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
+    public func callAsFunction(characterId: String, text: String, connections: [String], optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
+        try await self.commit(.init(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
     }
 }
 
@@ -1030,11 +1030,11 @@ mutation TestAddNoteNodeOfAnotherType(
     }
 }
 
-extension Baton.MutationAction where Op == TestAddNoteNodeOfAnotherType {
+extension TestAddNoteNodeOfAnotherType.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
-    public func callAsFunction(characterId: String, text: String, connections: [String], optimistic: TestAddNoteNodeOfAnotherType.OptimisticResponse? = nil) async throws -> TestAddNoteNodeOfAnotherType.Data {
-        try await self.commit(TestAddNoteNodeOfAnotherType(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
+    public func callAsFunction(characterId: String, text: String, connections: [String], optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
+        try await self.commit(.init(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
     }
 }
 
@@ -1295,11 +1295,11 @@ mutation TestDeleteNote(
     }
 }
 
-extension Baton.MutationAction where Op == TestDeleteNote {
+extension TestDeleteNote.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
-    public func callAsFunction(id: String, optimistic: TestDeleteNote.OptimisticResponse? = nil) async throws -> TestDeleteNote.Data {
-        try await self.commit(TestDeleteNote(id: id), optimistic: optimistic?.variable)
+    public func callAsFunction(id: String, optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
+        try await self.commit(.init(id: id), optimistic: optimistic?.variable)
     }
 }
 
@@ -2311,11 +2311,11 @@ mutation TestRemoveNote(
     }
 }
 
-extension Baton.MutationAction where Op == TestRemoveNote {
+extension TestRemoveNote.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
-    public func callAsFunction(id: String, connections: [String], optimistic: TestRemoveNote.OptimisticResponse? = nil) async throws -> TestRemoveNote.Data {
-        try await self.commit(TestRemoveNote(id: id, connections: connections), optimistic: optimistic?.variable)
+    public func callAsFunction(id: String, connections: [String], optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
+        try await self.commit(.init(id: id, connections: connections), optimistic: optimistic?.variable)
     }
 }
 

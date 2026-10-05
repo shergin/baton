@@ -821,6 +821,15 @@ struct HostileNameDocuments {
         """)
     var mutationVariables: HostileMutationVariables.Action
 
+    /// A mutation whose variable is named like it, which its action passes
+    /// to the mutation's initializer.
+    @Mutation("""
+        mutation HostileNamesake($HostileNamesake: ID!) {
+          setFavorite(id: $HostileNamesake, favorite: true) { character { id } }
+        }
+        """)
+    var namesake: HostileNamesake.Action
+
     /// Each name as a variable of a subscription, which the lenses nested in it
     /// see as they check a caught field's errors.
     @Subscription("""

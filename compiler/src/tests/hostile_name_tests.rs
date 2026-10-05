@@ -144,6 +144,7 @@ struct Position {
 /// compile, as Swift 6.3.3 says with warnings as errors: defects of the
 /// compiler, kept here until each is fixed, when its names move to the
 /// corpus or to the refusals.
+#[allow(dead_code, reason = "no defect is known; the table waits for the next")]
 struct Defect {
     positions: &'static [&'static str],
     names: &'static [&'static str],
@@ -415,60 +416,13 @@ fn positions() -> Vec<Position> {
 }
 
 fn defects() -> Vec<Defect> {
-    vec![
-        // A mutation's action spells its name where a keyword or one of its
-        // own names takes the place of the type.
-        Defect {
-            positions: &[MUTATION_NAME],
-            names: &["async"],
-            writes: &["async throws -> async.Data {"],
-            swift: "'async' has already been specified",
-        },
-        // In an expression `self` is the instance, escaped or not.
-        Defect {
-            positions: &[MUTATION_NAME],
-            names: &["self"],
-            writes: &["try await self.commit(`self`(), optimistic:"],
-            swift: "cannot convert value of type '`self`.Data' to expected argument type '`self`'",
-        },
-        Defect {
-            positions: &[MUTATION_NAME],
-            names: &["Op"],
-            writes: &["where Op == Op {"],
-            swift: "'OptimisticResponse' is not a member type of type 'Op'",
-        },
-        Defect {
-            positions: &[MUTATION_NAME],
-            names: &["callAsFunction"],
-            writes: &["try await self.commit(callAsFunction(), optimistic:"],
-            swift: "cannot convert value of type 'callAsFunction.Data' to expected argument type 'callAsFunction'",
-        },
-        Defect {
-            positions: &[MUTATION_NAME],
-            names: &["commit"],
-            writes: &["try await self.commit(commit(), optimistic:"],
-            swift: "use of 'commit' refers to instance method rather than struct 'commit' in module",
-        },
-        Defect {
-            positions: &[MUTATION_NAME],
-            names: &["optimistic"],
-            writes: &["try await self.commit(optimistic(), optimistic:"],
-            swift: "cannot call value of non-function type 'optimistic.OptimisticResponse?'",
-        },
-    ]
+    Vec::new()
 }
 
 /// Defects of a name that hides another the same document chose, outside
 /// the table of positions: each with its document, what the Swift written
 /// for it holds, and what Swift 6.3.3 says.
-const RELATED_DEFECTS: [(&str, &[&str], &str); 2] = [
-    // A variable of a mutation named like the mutation takes the place of
-    // its type in the action's call.
-    (
-        r#"mutation Favorite($Favorite: ID!) { setFavorite(id: $Favorite, favorite: true) { character { id } } }"#,
-        &["try await self.commit(Favorite(Favorite: Favorite), optimistic:"],
-        "cannot call value of non-function type 'String'",
-    ),
+const RELATED_DEFECTS: [(&str, &[&str], &str); 1] = [
     // The spread of a fragment named from an underscore takes the empty
     // text before it as its accessor's name.
     (
