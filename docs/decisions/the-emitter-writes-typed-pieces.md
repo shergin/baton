@@ -56,10 +56,12 @@ than fifty lines.
   may be null. The Swift writer spells the type and picks the reader. The
   names `decide` allocates are still Swift's, and stay so until a second
   emitter needs them otherwise.
-- Documents with hostile names become goldens *(planned)*: fields,
-  variables and fragments named after Swift's keywords and after every
-  name generated code spells, so the class is tested whole and not by
-  incident.
+- Documents with hostile names are goldens: every Swift keyword and every
+  name generated code declares or spells, in every place a document's name
+  can stand. In each place a name is compiled, refused at the name, or a
+  known defect. The names are read from the rules that list them, so a
+  keyword or a reserved name added to a rule fails the tests until every
+  place holds it.
 - The compiler's files keep a model apart from its logic *(planned)*: the
   plan's types apart from the lowering and the driver, the reader's model
   apart from the code that decides it, and a long function broken along its
@@ -75,6 +77,16 @@ than fifty lines.
   documents, the tests, the benchmarks and both examples, 21 files and
   about 14,260 lines, is the same byte for byte from the compiler before
   and after, and no golden changed. The pieces have tests of their own.
+- The corpus of hostile names, 2026-10-04: 149 names in 19 places. It
+  found names the compiler accepted and wrote Swift for that does not
+  compile: four keywords `escape` does not list, `Self` as a member,
+  `await` and `hashValue` as variables, `var` and `let` as a mutation's
+  variables, `fields` in a mutation's payload, keywords as the names of
+  fragments and operations, a mutation named like what its action spells,
+  a variable named like its mutation, and a fragment named from an
+  underscore. Each is a known defect in its tests, which fails once it is
+  fixed. Beside the names, a spread that binds sixteen arguments or more
+  writes an expression Swift cannot type-check in reasonable time.
 - Relay's own compiler: its type generator has an `AST` of types that no
   language owns and a `Writer` per language, for Flow, TypeScript and
   JavaScript.
