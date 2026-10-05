@@ -137,10 +137,11 @@ pub(super) fn operation(
 }
 
 /// The names an operation's value would declare twice: its variables beside
-/// what every operation value has, and beside the names its code spells,
-/// which a variable would hide: the runtime's module, the shared enums its
-/// plan and its root lens read through, and a mutation's action's own
-/// parameter.
+/// what every operation value has, beside what the runtime's protocols give
+/// a value of its kind, which a variable would take the place of, and
+/// beside the names its code spells, which a variable would hide: the
+/// runtime's module, the shared enums its plan and its root lens read
+/// through, and a mutation's action's own parameter.
 fn operation_scope(operation: &OperationPlan, resolves: bool, data: &ReaderPlan) -> Vec<NameError> {
     let none = Reserved::none();
     let mut scope = Scope::new(operation.name.as_str(), &none);
@@ -171,6 +172,28 @@ fn operation_scope(operation: &OperationPlan, resolves: bool, data: &ReaderPlan)
     scope.declare("variables", Kind::Instance, "the operation's `variables`");
     if resolves {
         scope.declare("resolution", Kind::Instance, "the operation's `resolution`");
+    }
+    // A property the value declares is read before one a protocol gives
+    // it: `isStale` would read the variable where a view meant the
+    // handle's state, silently when the two have one type. Swift tells a
+    // method from a property by its call, so `refetch()` and `retry()`
+    // keep theirs.
+    scope.declare(
+        "hashValue",
+        Kind::Instance,
+        "the `hashValue` every operation value has",
+    );
+    let given: &[&str] = match operation.kind {
+        OperationKind::Query => &["phase", "isRefreshing", "isStale"],
+        OperationKind::Subscription => &["subscription"],
+        OperationKind::Mutation => &[],
+    };
+    for name in given {
+        scope.declare(
+            name,
+            Kind::Instance,
+            format!("the `{name}` every {} value has", operation.kind),
+        );
     }
     for name in ["name", "persistedID", "text", "plan"] {
         scope.declare(name, Kind::Static, format!("the operation's `{name}`"));

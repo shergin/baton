@@ -187,6 +187,14 @@ const VARIABLE: (&str, &str) = ("variable", "the optimistic response's `variable
 const VARIABLES: (&str, &str) = ("variables", "the operation's `variables`");
 const RESOLUTION: (&str, &str) = ("resolution", "the operation's `resolution`");
 const DATA: (&str, &str) = ("Data", "the operation's root lens `Data`");
+const HASH_VALUE: (&str, &str) = ("hashValue", "the `hashValue` every operation value has");
+const PHASE: (&str, &str) = ("phase", "the `phase` every query value has");
+const IS_REFRESHING: (&str, &str) = ("isRefreshing", "the `isRefreshing` every query value has");
+const IS_STALE: (&str, &str) = ("isStale", "the `isStale` every query value has");
+const SUBSCRIPTION_HANDLE: (&str, &str) = (
+    "subscription",
+    "the `subscription` every subscription value has",
+);
 const MODULE: (&str, &str) = ("Baton", "the runtime's module `Baton`");
 
 /// What the module's top level refuses a fragment's or an operation's name.
@@ -309,7 +317,18 @@ fn positions() -> Vec<Position> {
             query_variable_names,
             "query Probe($HOSTILE: ID!) @throwOnFieldError { charactersByIds(ids: [$HOSTILE]) { id } }",
             "$HOSTILE",
-            &[VARIABLES, RESOLUTION, DATA, TYPES, SLOTS, MODULE],
+            &[
+                VARIABLES,
+                RESOLUTION,
+                HASH_VALUE,
+                PHASE,
+                IS_REFRESHING,
+                IS_STALE,
+                DATA,
+                TYPES,
+                SLOTS,
+                MODULE,
+            ],
         ),
         variable(
             MUTATION_VARIABLE,
@@ -319,6 +338,7 @@ fn positions() -> Vec<Position> {
             &[
                 ("optimistic", "the action's parameter `optimistic`"),
                 VARIABLES,
+                HASH_VALUE,
                 DATA,
                 ("Action", "the mutation's `Action`"),
                 ("OptimisticResponse", "the mutation's `OptimisticResponse`"),
@@ -332,14 +352,35 @@ fn positions() -> Vec<Position> {
             subscription_variable_names,
             r#"subscription Probe($HOSTILE: Boolean!) { noteAdded(characterId: "1") @catch { noteEdge { node { id } ... @include(if: $HOSTILE) { cursor } } } }"#,
             "$HOSTILE",
-            &[VARIABLES, RESOLUTION, DATA, TYPES, SLOTS, MODULE],
+            &[
+                VARIABLES,
+                RESOLUTION,
+                HASH_VALUE,
+                SUBSCRIPTION_HANDLE,
+                DATA,
+                TYPES,
+                SLOTS,
+                MODULE,
+            ],
         ),
         variable(
             FRAGMENT_ARGUMENT,
             fragment_argument_names,
             r#"fragment Probe_character on Character @argumentDefinitions(HOSTILE: {type: "Boolean", defaultValue: true}) @refetchable(queryName: "ProbeRefetchQuery") { ... @include(if: $HOSTILE) { name } }"#,
             "HOSTILE:",
-            &[VARIABLES, RESOLUTION, DATA, TYPES, SLOTS, SITES, MODULE],
+            &[
+                VARIABLES,
+                RESOLUTION,
+                HASH_VALUE,
+                PHASE,
+                IS_REFRESHING,
+                IS_STALE,
+                DATA,
+                TYPES,
+                SLOTS,
+                SITES,
+                MODULE,
+            ],
         ),
         field(
             PAYLOAD_SCALAR,
@@ -428,13 +469,6 @@ fn defects() -> Vec<Defect> {
             writes: &["    public var `Self`: ", ".success(Self(anchor: anchor))"],
             swift: "instance member 'Self' of type 'Probe' cannot be used on instance of nested type 'Probe.Data'",
         },
-        // A variable's property hides the `hashValue` of `Hashable`.
-        Defect {
-            positions: VARIABLES,
-            names: Names::These(&["hashValue"]),
-            writes: &["public var hashValue: ", "Baton.Variable(self.hashValue)"],
-            swift: "ambiguous use of 'hashValue'",
-        },
         // A builder's field named like the dictionary its `variable` fills.
         Defect {
             positions: &[PAYLOAD_SCALAR, PAYLOAD_LINKED],
@@ -466,10 +500,7 @@ fn defects() -> Vec<Defect> {
         },
         Defect {
             positions: &[REFETCH_QUERY_NAME],
-            names: Names::KeywordsBut(
-                &["Type", "Protocol", "Any", "Self", "open"],
-                &["each"],
-            ),
+            names: Names::KeywordsBut(&["Type", "Protocol", "Any", "Self", "open"], &["each"]),
             writes: &["typealias Query = HOSTILE"],
             swift: "expected type in type alias declaration",
         },

@@ -642,7 +642,7 @@ struct HostileNameDocuments {
           $OptimisticResponse: ID!, $hash: ID!, $commit: ID!, $callAsFunction: ID!, $Op: ID!,
           $variable: ID!,
           # What the runtime's protocols give a generated type.
-          $phase: ID!, $isRefreshing: ID!, $isStale: ID!, $retry: ID!, $subscription: ID!,
+          $retry: ID!, $subscription: ID!,
           # The shared enums.
           $Sites: ID!, $AbstractSlots: ID!, $schemaDigest: ID!,
           # The modules, and what the generated code spells from the standard library.
@@ -671,7 +671,7 @@ struct HostileNameDocuments {
             $name, $persistedID, $text, $plan, $errorBehavior, $throwsOnFieldError, $bubbles,
             $hasDeferred, $Action, $OptimisticResponse, $hash, $commit, $callAsFunction, $Op, $variable,
             # What the runtime's protocols give a generated type.
-            $phase, $isRefreshing, $isStale, $retry, $subscription,
+            $retry, $subscription,
             # The shared enums.
             $Sites, $AbstractSlots, $schemaDigest,
             # The modules, and what the generated code spells from the standard library.
@@ -861,7 +861,6 @@ struct HostileNameDocuments {
           $commit: Boolean!, $callAsFunction: Boolean!, $Op: Boolean!, $variable: Boolean!,
           # What the runtime's protocols give a generated type.
           $phase: Boolean!, $isRefreshing: Boolean!, $isStale: Boolean!, $retry: Boolean!,
-          $subscription: Boolean!,
           # The shared enums.
           $Sites: Boolean!, $AbstractSlots: Boolean!, $schemaDigest: Boolean!,
           # The modules, and what the generated code spells from the standard library.
@@ -943,7 +942,6 @@ struct HostileNameDocuments {
               # What the runtime's protocols give a generated type.
               ... @include(if: $phase) { cursor } ... @include(if: $isRefreshing) { cursor }
               ... @include(if: $isStale) { cursor } ... @include(if: $retry) { cursor }
-              ... @include(if: $subscription) { cursor }
               # The shared enums.
               ... @include(if: $Sites) { cursor } ... @include(if: $AbstractSlots) { cursor }
               ... @include(if: $schemaDigest) { cursor }
@@ -1094,9 +1092,6 @@ struct HostileNameDocuments {
           Op: {type: "Boolean", defaultValue: true},
           variable: {type: "Boolean", defaultValue: true},
           # What the runtime's protocols give a generated type.
-          phase: {type: "Boolean", defaultValue: true},
-          isRefreshing: {type: "Boolean", defaultValue: true},
-          isStale: {type: "Boolean", defaultValue: true},
           retry: {type: "Boolean", defaultValue: true},
           subscription: {type: "Boolean", defaultValue: true},
           # The shared enums.
@@ -1185,8 +1180,7 @@ struct HostileNameDocuments {
           ... @include(if: $callAsFunction) { name } ... @include(if: $Op) { name }
           ... @include(if: $variable) { name }
           # What the runtime's protocols give a generated type.
-          ... @include(if: $phase) { name } ... @include(if: $isRefreshing) { name }
-          ... @include(if: $isStale) { name } ... @include(if: $retry) { name }
+          ... @include(if: $retry) { name }
           ... @include(if: $subscription) { name }
           # The shared enums.
           ... @include(if: $AbstractSlots) { name } ... @include(if: $schemaDigest) { name }
