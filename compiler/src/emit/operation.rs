@@ -172,9 +172,13 @@ fn value_members(writer: &mut Writer, operation: &OperationValue, resolution: Op
 }
 
 /// A mutation's action as a function: one labelled parameter per variable
-/// and the optimistic response.
+/// and the optimistic response. It extends the mutation's own `Action`, so
+/// the mutation is named once, in a type position, where only types are
+/// looked up; its body names the mutation as `Op`, the action's type
+/// parameter, and builds the value from its context. A variable, the
+/// action's `commit`, `callAsFunction` or `optimistic`, or `Op` itself,
+/// named like the mutation would take its name's place in an expression.
 fn action(writer: &mut Writer, operation: &OperationValue) {
-    let name = SwiftType::named(&operation.name);
     let parameters = parameter_list(&operation.variables);
     let separator = if operation.variables.is_empty() {
         ""
@@ -187,8 +191,8 @@ fn action(writer: &mut Writer, operation: &OperationValue) {
         .map(|variable| format!("{}: {}", call_label(&variable.name), variable.local))
         .collect();
     let head = format!(
-        "extension {} where Op == {name}",
-        SwiftType::runtime("MutationAction")
+        "extension {}",
+        SwiftType::named(&operation.name).nested("Action")
     );
     writer.block(head, |writer| {
         writer.doc(
@@ -196,13 +200,13 @@ fn action(writer: &mut Writer, operation: &OperationValue) {
         );
         writer.line("@MainActor @discardableResult");
         let function = format!(
-            "public func callAsFunction({parameters}{separator}optimistic: {name}.OptimisticResponse? = nil) async throws -> {name}.Data"
+            "public func callAsFunction({parameters}{separator}optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data"
         );
         // The action calls its `commit` through `self`, as a parameter for
         // a variable named `$commit` would take its place.
         writer.block(function, |writer| {
             writer.line(format!(
-                "try await self.commit({name}({}), optimistic: optimistic?.variable)",
+                "try await self.commit(.init({}), optimistic: optimistic?.variable)",
                 arguments.join(", ")
             ));
         });

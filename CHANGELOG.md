@@ -760,6 +760,16 @@ are expected and listed without apology.
   `public struct class` or `typealias Query = each`; a type a document
   names is escaped wherever the generated code spells it, as a property
   is.
+- A mutation named like a Swift keyword, or like what its action declares
+  or calls (`Op`, `callAsFunction`, `commit` or `optimistic`), compiles,
+  and so does a mutation with a variable named like it, as
+  `mutation Favorite($Favorite: ID!)`. The action extended
+  `MutationAction where Op == Favorite` and spelled the mutation in its
+  signature and its call, `Favorite(Favorite: Favorite)`, where the
+  parameter, the action's own members or its type parameter took the
+  name's place. It extends `Favorite.Action`, so the mutation is named
+  once, where only types are looked up, and its body writes `Op.Data` and
+  `self.commit(.init(Favorite: Favorite))`.
 
 ## 0.6.0 (Anchor Leg) — 2026-10-03
 

@@ -5877,11 +5877,124 @@ mutation HostileMutationVariables(
     }
 }
 
-extension Baton.MutationAction where Op == HostileMutationVariables {
+extension HostileMutationVariables.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
-    public func callAsFunction(`Type`: Bool, `Protocol`: Bool, `Any`: Bool, `self` selfValue2: Bool, `init`: Bool, `deinit`: Bool, `subscript`: Bool, `class`: Bool, `struct`: Bool, `enum`: Bool, `func`: Bool, `import`: Bool, `extension`: Bool, `operator`: Bool, `static`: Bool, `default`: Bool, `case`: Bool, `switch`: Bool, `if`: Bool, `else`: Bool, `for`: Bool, `in`: Bool, `while`: Bool, `repeat`: Bool, `return`: Bool, `break`: Bool, `continue`: Bool, `where`: Bool, `is`: Bool, `as`: Bool, `try`: Bool, `throw`: Bool, `throws`: Bool, `guard`: Bool, `defer`: Bool, `do`: Bool, `catch`: Bool, `true`: Bool, `false`: Bool, `nil`: Bool, `super`: Bool, `internal`: Bool, `private`: Bool, `public`: Bool, `fileprivate`: Bool, `open`: Bool, `inout`: Bool, `typealias`: Bool, `associatedtype`: Bool, `protocol`: Bool, `some`: Bool, `any`: Bool, `rethrows`: Bool, `fallthrough`: Bool, `precedencegroup`: Bool, `_`: Bool, `var`: Bool, `let`: Bool, `Self`: Bool, async: Bool, borrowing: Bool, consume: Bool, consuming: Bool, copy: Bool, discard: Bool, `each`: Bool, isolated: Bool, sending: Bool, then: Bool, unsafe: Bool, `await`: Bool, anchor: Bool, recordID: Bool, typeName: Bool, satisfied: Bool, missingRequiredField: Bool, fieldErrors: Bool, isPresent: Bool, throwing: Bool, caught: Bool, refetchable: Bool, refetch: Bool, connection: Bool, nodes: Bool, hasNext: Bool, hasPrevious: Bool, isLoadingNext: Bool, isLoadingPrevious: Bool, connectionID: Bool, loadNext: Bool, loadPrevious: Bool, bound: Bool, errors: Bool, child: Bool, missing: Bool, count: Bool, fields: Bool, lhs: Bool, rhs: Bool, hasher: Bool, selfValue: Bool, Fragment: Bool, Spread: Bool, Owner: Bool, Query: Bool, Operation: Bool, RefetchQuery: Bool, resolution: Bool, name: Bool, persistedID: Bool, text: Bool, plan: Bool, errorBehavior: Bool, throwsOnFieldError: Bool, bubbles: Bool, hasDeferred: Bool, hash: Bool, commit: Bool, callAsFunction: Bool, Op: Bool, variable: Bool, phase: Bool, isRefreshing: Bool, isStale: Bool, retry: Bool, subscription: Bool, Sites: Bool, AbstractSlots: Bool, schemaDigest: Bool, Swift: Bool, Set: Bool, Result: Bool, Optional: Bool, String: Bool, Int: Bool, Double: Bool, Bool: Bool, MainActor: Bool, Hasher: Bool, Sendable: Bool, optimistic: HostileMutationVariables.OptimisticResponse? = nil) async throws -> HostileMutationVariables.Data {
-        try await self.commit(HostileMutationVariables(Type: `Type`, Protocol: `Protocol`, Any: `Any`, self: selfValue2, init: `init`, deinit: `deinit`, subscript: `subscript`, class: `class`, struct: `struct`, enum: `enum`, func: `func`, import: `import`, extension: `extension`, operator: `operator`, static: `static`, default: `default`, case: `case`, switch: `switch`, if: `if`, else: `else`, for: `for`, in: `in`, while: `while`, repeat: `repeat`, return: `return`, break: `break`, continue: `continue`, where: `where`, is: `is`, as: `as`, try: `try`, throw: `throw`, throws: `throws`, guard: `guard`, defer: `defer`, do: `do`, catch: `catch`, true: `true`, false: `false`, nil: `nil`, super: `super`, internal: `internal`, private: `private`, public: `public`, fileprivate: `fileprivate`, open: `open`, `inout`: `inout`, typealias: `typealias`, associatedtype: `associatedtype`, protocol: `protocol`, some: `some`, any: `any`, rethrows: `rethrows`, fallthrough: `fallthrough`, precedencegroup: `precedencegroup`, `_`: `_`, var: `var`, let: `let`, Self: `Self`, async: async, borrowing: borrowing, consume: consume, consuming: consuming, copy: copy, discard: discard, each: `each`, isolated: isolated, sending: sending, then: then, unsafe: unsafe, await: `await`, anchor: anchor, recordID: recordID, typeName: typeName, satisfied: satisfied, missingRequiredField: missingRequiredField, fieldErrors: fieldErrors, isPresent: isPresent, throwing: throwing, caught: caught, refetchable: refetchable, refetch: refetch, connection: connection, nodes: nodes, hasNext: hasNext, hasPrevious: hasPrevious, isLoadingNext: isLoadingNext, isLoadingPrevious: isLoadingPrevious, connectionID: connectionID, loadNext: loadNext, loadPrevious: loadPrevious, bound: bound, errors: errors, child: child, missing: missing, count: count, fields: fields, lhs: lhs, rhs: rhs, hasher: hasher, selfValue: selfValue, Fragment: Fragment, Spread: Spread, Owner: Owner, Query: Query, Operation: Operation, RefetchQuery: RefetchQuery, resolution: resolution, name: name, persistedID: persistedID, text: text, plan: plan, errorBehavior: errorBehavior, throwsOnFieldError: throwsOnFieldError, bubbles: bubbles, hasDeferred: hasDeferred, hash: hash, commit: commit, callAsFunction: callAsFunction, Op: Op, variable: variable, phase: phase, isRefreshing: isRefreshing, isStale: isStale, retry: retry, subscription: subscription, Sites: Sites, AbstractSlots: AbstractSlots, schemaDigest: schemaDigest, Swift: Swift, Set: Set, Result: Result, Optional: Optional, String: String, Int: Int, Double: Double, Bool: Bool, MainActor: MainActor, Hasher: Hasher, Sendable: Sendable), optimistic: optimistic?.variable)
+    public func callAsFunction(`Type`: Bool, `Protocol`: Bool, `Any`: Bool, `self` selfValue2: Bool, `init`: Bool, `deinit`: Bool, `subscript`: Bool, `class`: Bool, `struct`: Bool, `enum`: Bool, `func`: Bool, `import`: Bool, `extension`: Bool, `operator`: Bool, `static`: Bool, `default`: Bool, `case`: Bool, `switch`: Bool, `if`: Bool, `else`: Bool, `for`: Bool, `in`: Bool, `while`: Bool, `repeat`: Bool, `return`: Bool, `break`: Bool, `continue`: Bool, `where`: Bool, `is`: Bool, `as`: Bool, `try`: Bool, `throw`: Bool, `throws`: Bool, `guard`: Bool, `defer`: Bool, `do`: Bool, `catch`: Bool, `true`: Bool, `false`: Bool, `nil`: Bool, `super`: Bool, `internal`: Bool, `private`: Bool, `public`: Bool, `fileprivate`: Bool, `open`: Bool, `inout`: Bool, `typealias`: Bool, `associatedtype`: Bool, `protocol`: Bool, `some`: Bool, `any`: Bool, `rethrows`: Bool, `fallthrough`: Bool, `precedencegroup`: Bool, `_`: Bool, `var`: Bool, `let`: Bool, `Self`: Bool, async: Bool, borrowing: Bool, consume: Bool, consuming: Bool, copy: Bool, discard: Bool, `each`: Bool, isolated: Bool, sending: Bool, then: Bool, unsafe: Bool, `await`: Bool, anchor: Bool, recordID: Bool, typeName: Bool, satisfied: Bool, missingRequiredField: Bool, fieldErrors: Bool, isPresent: Bool, throwing: Bool, caught: Bool, refetchable: Bool, refetch: Bool, connection: Bool, nodes: Bool, hasNext: Bool, hasPrevious: Bool, isLoadingNext: Bool, isLoadingPrevious: Bool, connectionID: Bool, loadNext: Bool, loadPrevious: Bool, bound: Bool, errors: Bool, child: Bool, missing: Bool, count: Bool, fields: Bool, lhs: Bool, rhs: Bool, hasher: Bool, selfValue: Bool, Fragment: Bool, Spread: Bool, Owner: Bool, Query: Bool, Operation: Bool, RefetchQuery: Bool, resolution: Bool, name: Bool, persistedID: Bool, text: Bool, plan: Bool, errorBehavior: Bool, throwsOnFieldError: Bool, bubbles: Bool, hasDeferred: Bool, hash: Bool, commit: Bool, callAsFunction: Bool, Op: Bool, variable: Bool, phase: Bool, isRefreshing: Bool, isStale: Bool, retry: Bool, subscription: Bool, Sites: Bool, AbstractSlots: Bool, schemaDigest: Bool, Swift: Bool, Set: Bool, Result: Bool, Optional: Bool, String: Bool, Int: Bool, Double: Bool, Bool: Bool, MainActor: Bool, Hasher: Bool, Sendable: Bool, optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
+        try await self.commit(.init(Type: `Type`, Protocol: `Protocol`, Any: `Any`, self: selfValue2, init: `init`, deinit: `deinit`, subscript: `subscript`, class: `class`, struct: `struct`, enum: `enum`, func: `func`, import: `import`, extension: `extension`, operator: `operator`, static: `static`, default: `default`, case: `case`, switch: `switch`, if: `if`, else: `else`, for: `for`, in: `in`, while: `while`, repeat: `repeat`, return: `return`, break: `break`, continue: `continue`, where: `where`, is: `is`, as: `as`, try: `try`, throw: `throw`, throws: `throws`, guard: `guard`, defer: `defer`, do: `do`, catch: `catch`, true: `true`, false: `false`, nil: `nil`, super: `super`, internal: `internal`, private: `private`, public: `public`, fileprivate: `fileprivate`, open: `open`, `inout`: `inout`, typealias: `typealias`, associatedtype: `associatedtype`, protocol: `protocol`, some: `some`, any: `any`, rethrows: `rethrows`, fallthrough: `fallthrough`, precedencegroup: `precedencegroup`, `_`: `_`, var: `var`, let: `let`, Self: `Self`, async: async, borrowing: borrowing, consume: consume, consuming: consuming, copy: copy, discard: discard, each: `each`, isolated: isolated, sending: sending, then: then, unsafe: unsafe, await: `await`, anchor: anchor, recordID: recordID, typeName: typeName, satisfied: satisfied, missingRequiredField: missingRequiredField, fieldErrors: fieldErrors, isPresent: isPresent, throwing: throwing, caught: caught, refetchable: refetchable, refetch: refetch, connection: connection, nodes: nodes, hasNext: hasNext, hasPrevious: hasPrevious, isLoadingNext: isLoadingNext, isLoadingPrevious: isLoadingPrevious, connectionID: connectionID, loadNext: loadNext, loadPrevious: loadPrevious, bound: bound, errors: errors, child: child, missing: missing, count: count, fields: fields, lhs: lhs, rhs: rhs, hasher: hasher, selfValue: selfValue, Fragment: Fragment, Spread: Spread, Owner: Owner, Query: Query, Operation: Operation, RefetchQuery: RefetchQuery, resolution: resolution, name: name, persistedID: persistedID, text: text, plan: plan, errorBehavior: errorBehavior, throwsOnFieldError: throwsOnFieldError, bubbles: bubbles, hasDeferred: hasDeferred, hash: hash, commit: commit, callAsFunction: callAsFunction, Op: Op, variable: variable, phase: phase, isRefreshing: isRefreshing, isStale: isStale, retry: retry, subscription: subscription, Sites: Sites, AbstractSlots: AbstractSlots, schemaDigest: schemaDigest, Swift: Swift, Set: Set, Result: Result, Optional: Optional, String: String, Int: Int, Double: Double, Bool: Bool, MainActor: MainActor, Hasher: Hasher, Sendable: Sendable), optimistic: optimistic?.variable)
+    }
+}
+
+/// Operation value for `mutation HostileNamesake`.
+nonisolated public struct HostileNamesake: Baton.Mutation {
+    public var HostileNamesake: String
+
+    public init(HostileNamesake: String) {
+        self.HostileNamesake = HostileNamesake
+    }
+
+    public static let name = "HostileNamesake"
+    public static let persistedID = "6720e169564f4eb88bb00f146055b86c"
+    public static let text = #"""
+mutation HostileNamesake(
+  $HostileNamesake: ID!
+) {
+  setFavorite(id: $HostileNamesake, favorite: true) {
+    character {
+      id
+    }
+  }
+}
+"""#
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["HostileNamesake": Baton.Variable(self.HostileNamesake)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.HostileNamesake == rhs.HostileNamesake
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.HostileNamesake)
+    }
+
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
+            .linked("setFavorite", key: .fixed(Slots.Mutation.setFavorite), plural: false, selection: Baton.Selection(type: Types.FavoritePayload, hasID: false, abstract: false, fields: [
+                .linked("character", key: .fixed(Slots.FavoritePayload.character), plural: false, selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                    .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+                ])),
+            ])),
+        ]))
+
+    nonisolated public struct Data: Baton.Lens {
+        @_spi(Generated) public let anchor: Baton.Anchor
+        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Mutation"
+        @MainActor public var setFavorite: SetFavorite? { anchor.linked(Slots.Mutation.setFavorite).map(SetFavorite.init(anchor:)) }
+
+        nonisolated public struct SetFavorite: Baton.Lens {
+            @_spi(Generated) public let anchor: Baton.Anchor
+            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "FavoritePayload"
+            @MainActor public var character: Character? { anchor.linked(Slots.FavoritePayload.character).map(Character.init(anchor:)) }
+
+            nonisolated public struct Character: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                public static let typeName = "Character"
+                @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+            }
+        }
+    }
+
+    public typealias Action = Baton.MutationAction<Self>
+
+    /// A partial response to show before the server answers; absent fields leave the store untouched.
+    nonisolated public struct OptimisticResponse: Sendable {
+        public var setFavorite: SetFavorite?
+        public init(setFavorite: SetFavorite? = nil) {
+            self.setFavorite = setFavorite
+        }
+        public var variable: Baton.Variable {
+            var fields: [String: Baton.Variable] = [:]
+            if let setFavorite { fields["setFavorite"] = setFavorite.variable }
+            return .object(fields)
+        }
+
+        /// A partial response to show before the server answers; absent fields leave the store untouched.
+        nonisolated public struct SetFavorite: Sendable {
+            public var character: Character?
+            public init(character: Character? = nil) {
+                self.character = character
+            }
+            public var variable: Baton.Variable {
+                var fields: [String: Baton.Variable] = [:]
+                if let character { fields["character"] = character.variable }
+                return .object(fields)
+            }
+
+            /// A partial response to show before the server answers; absent fields leave the store untouched.
+            nonisolated public struct Character: Sendable {
+                public var id: String?
+                public init(id: String? = nil) {
+                    self.id = id
+                }
+                public var variable: Baton.Variable {
+                    var fields: [String: Baton.Variable] = [:]
+                    if let id { fields["id"] = .init(id) }
+                    return .object(fields)
+                }
+            }
+        }
+    }
+}
+
+extension HostileNamesake.Action {
+    /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
+    @MainActor @discardableResult
+    public func callAsFunction(HostileNamesake: String, optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
+        try await self.commit(.init(HostileNamesake: HostileNamesake), optimistic: optimistic?.variable)
     }
 }
 
@@ -11228,11 +11341,11 @@ mutation HostilePayload {
     }
 }
 
-extension Baton.MutationAction where Op == HostilePayload {
+extension HostilePayload.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
-    public func callAsFunction(optimistic: HostilePayload.OptimisticResponse? = nil) async throws -> HostilePayload.Data {
-        try await self.commit(HostilePayload(), optimistic: optimistic?.variable)
+    public func callAsFunction(optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
+        try await self.commit(.init(), optimistic: optimistic?.variable)
     }
 }
 
