@@ -37,19 +37,21 @@ pub struct ReaderPlan {
 }
 
 impl ReaderPlan {
-    /// The module's shared enums that the lens and every lens nested in it
-    /// spell in their bodies: `Slots` and `AbstractSlots` where they read a
-    /// slot, `Types` where they test a record's type or name one, and
-    /// `Sites` where they bind a spread's arguments. A member of the lens,
-    /// or of the type it is nested in, named like one of them hides it from
-    /// all of those bodies.
-    pub fn shared_enums(&self) -> BTreeSet<&'static str> {
+    /// The names the lens and every lens nested in it spell in their bodies
+    /// that a member of the lens, or of the type it is nested in, named
+    /// like one of them would hide from all of those bodies. The module's
+    /// shared enums: `Slots` and `AbstractSlots` where they read a slot,
+    /// `Types` where they test a record's type or name one, and `Sites`
+    /// where they bind a spread's arguments; and Swift's `Self` where they
+    /// reach a static member of their own, a refetchable fragment's
+    /// descriptor or a connection's slots.
+    pub fn hideable_names(&self) -> BTreeSet<&'static str> {
         let mut names = BTreeSet::new();
-        self.collect_shared_enums(&mut names);
+        self.collect_hideable_names(&mut names);
         names
     }
 
-    fn collect_shared_enums(&self, names: &mut BTreeSet<&'static str>) {
+    fn collect_hideable_names(&self, names: &mut BTreeSet<&'static str>) {
         for accessor in &self.accessors {
             match &accessor.read {
                 Read::Scalar(read) => {
@@ -95,6 +97,9 @@ impl ReaderPlan {
         if self.connection.is_some() {
             names.insert("Types");
         }
+        if self.refetch.is_some() || self.connection.is_some() {
+            names.insert("Self");
+        }
         for entry in self.satisfied.iter().flatten() {
             if let Some(
                 SatisfiedCheck::HasValue { slot, .. } | SatisfiedCheck::Linked { slot, .. },
@@ -127,8 +132,16 @@ impl ReaderPlan {
             names.insert(presence.item.shared_enum());
         }
         for child in &self.nested {
-            child.collect_shared_enums(names);
+            child.collect_hideable_names(names);
         }
+    }
+}
+
+/// What a refusal calls a name `ReaderPlan::hideable_names` holds.
+pub fn hideable_name(name: &str) -> String {
+    match name {
+        "Self" => "Swift's keyword `Self`".to_string(),
+        shared => format!("the shared enum `{shared}`"),
     }
 }
 

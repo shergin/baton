@@ -196,11 +196,12 @@ const SUBSCRIPTION_HANDLE: (&str, &str) = (
     "the `subscription` every subscription value has",
 );
 const MODULE: (&str, &str) = ("Baton", "the runtime's module `Baton`");
+const SELF: (&str, &str) = ("Self", "Swift's keyword `Self`");
 
 /// What the module's top level refuses a fragment's or an operation's name.
 const TOP_LEVEL: [(&str, &str); 15] = [
     ("Any", "Swift's keyword `Any`"),
-    ("Self", "Swift's keyword `Self`"),
+    SELF,
     ("Swift", "the standard library's module `Swift`"),
     ("MainActor", "the standard library's `MainActor`"),
     ("Result", "the standard library's `Result`"),
@@ -282,7 +283,7 @@ fn positions() -> Vec<Position> {
             BODIES,
             bodies_names,
             r#"fragment ProbeBound_character on Character @argumentDefinitions(flag: {type: "Boolean!", defaultValue: true}) { name @include(if: $flag) origin @required(action: NONE) { id } } fragment ProbeDeferred_character on Character { name } fragment ProbeCaught_character on Character { name } fragment Probe_character on Character @refetchable(queryName: "ProbeRefetchQuery") @throwOnFieldError { HOSTILE: name species @required(action: THROW) origin @required(action: NONE) { name @required(action: NONE) } ...ProbeBound_character @arguments(flag: false) ...ProbeDeferred_character @defer ... @alias(as: "caughtSpread") @catch { ...ProbeCaught_character } }"#,
-            &[ANCHOR, RECORD_ID, TYPES, SLOTS, SITES],
+            &[ANCHOR, RECORD_ID, TYPES, SLOTS, SITES, SELF],
         ),
         field(
             CONNECTION,
@@ -298,6 +299,7 @@ fn positions() -> Vec<Position> {
                 ("connectionID", "the connection's `connectionID`"),
                 TYPES,
                 SLOTS,
+                SELF,
             ],
         ),
         field(
@@ -440,35 +442,6 @@ fn defects() -> Vec<Defect> {
         FRAGMENT_ARGUMENT,
     ];
     vec![
-        // A member named `Self` hides Swift's `Self` from the expressions
-        // of its lens and of every lens nested in it.
-        Defect {
-            positions: &[BODIES],
-            names: Names::These(&["Self"]),
-            writes: &[
-                "@MainActor public var `Self`: ",
-                ".success(Self(anchor: anchor))",
-                "try await anchor.refetch(Query.self, Self.refetchable)",
-            ],
-            swift: "instance member 'Self' cannot be used on type 'Probe_character'",
-        },
-        Defect {
-            positions: &[CONNECTION],
-            names: Names::These(&["Self"]),
-            writes: &[
-                "@MainActor public var `Self`: ",
-                "anchor.nodes(Self.connection)",
-            ],
-            swift: "value of type 'Int' has no member 'connection'",
-        },
-        // And a variable named `Self` hides it from the lenses nested in its
-        // operation.
-        Defect {
-            positions: &[QUERY_VARIABLE, MUTATION_VARIABLE, SUBSCRIPTION_VARIABLE],
-            names: Names::These(&["Self"]),
-            writes: &["    public var `Self`: ", ".success(Self(anchor: anchor))"],
-            swift: "instance member 'Self' of type 'Probe' cannot be used on instance of nested type 'Probe.Data'",
-        },
         // The name of a fragment or an operation is written unescaped.
         Defect {
             positions: &[FRAGMENT_NAME, QUERY_NAME, SUBSCRIPTION_NAME],

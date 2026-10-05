@@ -622,7 +622,7 @@ struct HostileNameDocuments {
           $nil: ID!, $super: ID!, $internal: ID!, $private: ID!, $public: ID!, $fileprivate: ID!,
           $open: ID!, $inout: ID!, $typealias: ID!, $associatedtype: ID!, $protocol: ID!, $some: ID!,
           $any: ID!,
-          $rethrows: ID!, $fallthrough: ID!, $precedencegroup: ID!, $_: ID!,
+          $rethrows: ID!, $fallthrough: ID!, $precedencegroup: ID!, $_: ID!, $Self: ID!,
           # Swift's contextual keywords that start an expression or a type.
           $async: ID!, $borrowing: ID!, $consume: ID!, $consuming: ID!, $copy: ID!, $discard: ID!,
           $each: ID!, $isolated: ID!, $sending: ID!, $then: ID!, $unsafe: ID!, $await: ID!,
@@ -656,7 +656,7 @@ struct HostileNameDocuments {
             $for, $in, $while, $repeat, $return, $break, $continue, $where, $is, $as, $try, $throw,
             $throws, $guard, $defer, $do, $catch, $true, $false, $nil, $super, $internal, $private,
             $public, $fileprivate, $open, $inout, $typealias, $associatedtype, $protocol, $some, $any,
-            $rethrows, $fallthrough, $precedencegroup, $_,
+            $rethrows, $fallthrough, $precedencegroup, $_, $Self,
             # Swift's contextual keywords that start an expression or a type.
             $async, $borrowing, $consume, $consuming, $copy, $discard, $each, $isolated, $sending,
             $then, $unsafe, $await,
@@ -700,7 +700,7 @@ struct HostileNameDocuments {
           $fileprivate: Boolean!, $open: Boolean!, $inout: Boolean!, $typealias: Boolean!,
           $associatedtype: Boolean!, $protocol: Boolean!, $some: Boolean!, $any: Boolean!,
           $rethrows: Boolean!, $fallthrough: Boolean!, $precedencegroup: Boolean!, $_: Boolean!,
-          $var: Boolean!, $let: Boolean!,
+          $var: Boolean!, $let: Boolean!, $Self: Boolean!,
           # Swift's contextual keywords that start an expression or a type.
           $async: Boolean!, $borrowing: Boolean!, $consume: Boolean!, $consuming: Boolean!,
           $copy: Boolean!, $discard: Boolean!, $each: Boolean!, $isolated: Boolean!, $sending: Boolean!,
@@ -765,6 +765,7 @@ struct HostileNameDocuments {
               ... @include(if: $rethrows) { name } ... @include(if: $fallthrough) { name }
               ... @include(if: $precedencegroup) { name } ... @include(if: $_) { name }
               ... @include(if: $var) { name } ... @include(if: $let) { name }
+              ... @include(if: $Self) { name }
               # Swift's contextual keywords that start an expression or a type.
               ... @include(if: $async) { name } ... @include(if: $borrowing) { name }
               ... @include(if: $consume) { name } ... @include(if: $consuming) { name }
@@ -838,6 +839,7 @@ struct HostileNameDocuments {
           $inout: Boolean!, $typealias: Boolean!, $associatedtype: Boolean!, $protocol: Boolean!,
           $some: Boolean!, $any: Boolean!,
           $rethrows: Boolean!, $fallthrough: Boolean!, $precedencegroup: Boolean!, $_: Boolean!,
+          $Self: Boolean!,
           # Swift's contextual keywords that start an expression or a type.
           $async: Boolean!, $borrowing: Boolean!, $consume: Boolean!, $consuming: Boolean!,
           $copy: Boolean!, $discard: Boolean!, $each: Boolean!, $isolated: Boolean!, $sending: Boolean!,
@@ -901,6 +903,7 @@ struct HostileNameDocuments {
               ... @include(if: $some) { cursor } ... @include(if: $any) { cursor }
               ... @include(if: $rethrows) { cursor } ... @include(if: $fallthrough) { cursor }
               ... @include(if: $precedencegroup) { cursor } ... @include(if: $_) { cursor }
+              ... @include(if: $Self) { cursor }
               # Swift's contextual keywords that start an expression or a type.
               ... @include(if: $async) { cursor } ... @include(if: $borrowing) { cursor }
               ... @include(if: $consume) { cursor } ... @include(if: $consuming) { cursor }

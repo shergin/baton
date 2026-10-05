@@ -17,6 +17,7 @@ use super::lens::{
     Accessor, AliasGuard, AliasedRead, Binding, BoundArgument, ConditionRead, ConnectionMembers,
     LinkedForm, LinkedRead, LoadMore, Nodes, Read, ReaderPlan, RefetchMembers, ScalarForm,
     ScalarRead, ScalarShape, SlotAccess, SpreadForm, SpreadGuard, SpreadRead, TypeTest,
+    hideable_name,
 };
 use super::members::{
     Member, collect_caught, collect_deferred, condition_lens, derived_spread, members,
@@ -309,7 +310,7 @@ impl Readers {
             nested,
         };
         self.duplicates
-            .extend(hidden_enums(context.path, &lens, &members));
+            .extend(hidden_names(context.path, &lens, &members));
         lens
     }
 
@@ -905,15 +906,15 @@ fn required_path(required: &Option<crate::pipeline::RequiredPlan>) -> String {
         .unwrap_or_default()
 }
 
-/// The clashes of a lens's accessors with the shared enums its code spells:
-/// an accessor the document named `Slots`, say, would hide the enum from
-/// every body of the lens and of the lenses nested in it.
-fn hidden_enums(path: &str, lens: &ReaderPlan, members: &[Member]) -> Vec<NameError> {
-    let spelled = lens.shared_enums();
+/// The clashes of a lens's accessors with the names its code spells that
+/// they would hide: an accessor the document named `Slots`, say, would hide
+/// the enum from every body of the lens and of the lenses nested in it.
+fn hidden_names(path: &str, lens: &ReaderPlan, members: &[Member]) -> Vec<NameError> {
+    let spelled = lens.hideable_names();
     let none = Reserved::none();
     let mut scope = Scope::new(path, &none);
     for name in &spelled {
-        scope.declare(name, Kind::Type, format!("the shared enum `{name}`"));
+        scope.declare(name, Kind::Type, hideable_name(name));
     }
     for member in members {
         let Some((name, what)) = written_accessor(&member.selection) else {
