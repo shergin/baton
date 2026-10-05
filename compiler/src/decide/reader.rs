@@ -519,101 +519,12 @@ impl Readers {
         let mut accessors = Vec::new();
         for member in members {
             let read = match &member.selection {
-                SelectionPlan::Scalar {
-                    name,
-                    base_kind,
-                    non_null,
-                    semantic_non_null,
-                    list,
-                    storage_key,
-                    required,
-                    catch,
-                    ..
-                } => {
-                    if name == "__typename" {
-                        continue;
-                    }
-                    let non_null = *non_null
-                        || required.is_some()
-                        || (*semantic_non_null && context.handles_errors());
-                    let form = match (
-                        catch.as_ref().map(|catch| catch.to),
-                        required.as_ref().map(|required| required.action),
-                    ) {
-                        (Some(CatchTarget::Result), _) => ScalarForm::Caught { non_null },
-                        (Some(CatchTarget::Null), _) => ScalarForm::Nulled,
-                        (_, Some(RequiredAction::Throw)) => ScalarForm::Throwing {
-                            path: required_path(required),
-                        },
-                        _ if non_null => ScalarForm::Required,
-                        _ => ScalarForm::Optional,
-                    };
-                    Read::Scalar(ScalarRead {
-                        slot: SlotAccess::of(type_name, type_is_abstract, storage_key),
-                        shape: ScalarShape::of(*base_kind, *list),
-                        form,
-                    })
+                SelectionPlan::Scalar { name, .. } if name == "__typename" => continue,
+                SelectionPlan::Scalar { .. } => {
+                    scalar_read(member, type_name, type_is_abstract, context)
                 }
-                SelectionPlan::Linked {
-                    base_type,
-                    non_null,
-                    semantic_non_null,
-                    plural,
-                    is_abstract,
-                    storage_key,
-                    connection,
-                    required,
-                    catch,
-                    bubbles,
-                    selections: child,
-                    ..
-                } => {
-                    let lens = member.lens_name().to_string();
-                    let non_null = *non_null
-                        || required.is_some()
-                        || (*semantic_non_null && context.handles_errors());
-                    let catch_to = catch.as_ref().map(|catch| catch.to);
-                    let required_action = required.as_ref().map(|required| required.action);
-                    let path = required_path(required);
-                    let form = if *plural {
-                        match (catch_to, required_action) {
-                            (Some(CatchTarget::Result), _) => LinkedForm::CaughtList { non_null },
-                            (_, Some(RequiredAction::Throw)) => LinkedForm::ThrowingList { path },
-                            _ if non_null && catch_to != Some(CatchTarget::Null) => {
-                                LinkedForm::RequiredList
-                            }
-                            _ => LinkedForm::List,
-                        }
-                    } else {
-                        // A link whose children can bubble reads as optional
-                        // unless it is itself required, when its parent has
-                        // checked it.
-                        let optional = !non_null
-                            || (*bubbles && required.is_none())
-                            || catch_to == Some(CatchTarget::Null);
-                        match (catch_to, required_action) {
-                            (Some(CatchTarget::Result), _) => LinkedForm::Caught { optional },
-                            (_, Some(RequiredAction::Throw)) => LinkedForm::Throwing { path },
-                            _ if optional => LinkedForm::Optional,
-                            _ => LinkedForm::Required,
-                        }
-                    };
-                    nested.push(Nested {
-                        name: lens.clone(),
-                        type_name: base_type.clone(),
-                        is_abstract: *is_abstract,
-                        selections: child.clone(),
-                        connection: connection.clone(),
-                        bubbles: *bubbles,
-                        within_catch: catch.is_some(),
-                    });
-                    Read::Linked(LinkedRead {
-                        slot: SlotAccess::of(type_name, type_is_abstract, storage_key),
-                        lens,
-                        base_type: base_type.clone(),
-                        bubbles: *bubbles,
-                        form,
-                    })
+                SelectionPlan::Linked { .. } => {
+                    linked_read(member, type_name, type_is_abstract, nested, context)
                 }
                 SelectionPlan::Spread {
                     fragment,
@@ -630,92 +541,11 @@ impl Readers {
                     type_name,
                     type_is_abstract,
                 )),
-                SelectionPlan::Inline {
-                    type_condition,
-                    condition_class,
-                    alias,
-                    deferred,
-                    catch,
-                    bubbles,
-                    selections: child,
-                    ..
-                } => {
-                    if let [
-                        SelectionPlan::Spread {
-                            fragment,
-                            type_condition: spread_condition,
-                            arguments,
-                        },
-                    ] = child.as_slice()
-                        && (alias.is_some() || deferred.is_some())
-                    {
-                        // `@alias(as:)` or `@defer` around one spread: the spread
-                        // keeps its lens, under the alias when given.
-                        Read::Spread(self.spread(
-                            context.owner,
-                            member,
-                            fragment,
-                            arguments,
-                            spread_condition,
-                            deferred.is_some(),
-                            catch.as_ref().map(|catch| catch.to),
-                            type_name,
-                            type_is_abstract,
-                        ))
-                    } else if alias.is_some() {
-                        // `@alias(as:)` on other selections: a nested lens.
-                        let lens = member.lens_name().to_string();
-                        let condition_lens =
-                            condition_lens(type_condition, condition_class, member);
-                        let (lens_type, lens_abstract) = match &condition_lens {
-                            Some((lens_type, lens_abstract, _)) => {
-                                (lens_type.clone(), *lens_abstract)
-                            }
-                            None => (type_name.to_string(), type_is_abstract),
-                        };
-                        let mut guards = Vec::new();
-                        if !member.guards.is_empty() {
-                            guards.push(AliasGuard::Selects(member.guards.clone()));
-                        }
-                        if let Some((_, _, test)) = condition_lens {
-                            guards.push(AliasGuard::Test(test));
-                        }
-                        if *bubbles {
-                            guards.push(AliasGuard::Satisfied);
-                        }
-                        nested.push(Nested {
-                            name: lens.clone(),
-                            type_name: lens_type,
-                            is_abstract: lens_abstract,
-                            selections: child.clone(),
-                            connection: None,
-                            bubbles: *bubbles,
-                            within_catch: catch.is_some(),
-                        });
-                        Read::Aliased(AliasedRead {
-                            lens,
-                            guards,
-                            caught: catch
-                                .as_ref()
-                                .is_some_and(|catch| catch.to == CatchTarget::Result),
-                        })
-                    } else if let Some((lens_type, lens_abstract, test)) =
-                        condition_lens(type_condition, condition_class, member)
-                    {
-                        let lens = member.lens_name().to_string();
-                        nested.push(Nested {
-                            name: lens.clone(),
-                            type_name: lens_type,
-                            is_abstract: lens_abstract,
-                            selections: child.clone(),
-                            connection: None,
-                            bubbles: false,
-                            within_catch: false,
-                        });
-                        Read::Condition(ConditionRead { lens, test })
-                    } else {
+                SelectionPlan::Inline { .. } => {
+                    match self.inline_read(member, type_name, type_is_abstract, nested, context) {
+                        Some(read) => read,
                         // `members` folds every other inline fragment into the lens.
-                        continue;
+                        None => continue,
                     }
                 }
                 SelectionPlan::Condition { .. } => {
@@ -729,6 +559,103 @@ impl Readers {
             });
         }
         accessors
+    }
+
+    /// An inline fragment's read: one spread under `@alias(as:)` or `@defer`,
+    /// a nested lens under an alias, or a type condition's optional lens.
+    /// None for one `members` folds into the lens.
+    fn inline_read(
+        &mut self,
+        member: &Member,
+        type_name: &str,
+        type_is_abstract: bool,
+        nested: &mut Vec<Nested>,
+        context: Context<'_>,
+    ) -> Option<Read> {
+        let SelectionPlan::Inline {
+            type_condition,
+            condition_class,
+            alias,
+            deferred,
+            catch,
+            bubbles,
+            selections: child,
+            ..
+        } = &member.selection
+        else {
+            unreachable!("an inline member is an inline fragment");
+        };
+        if let [
+            SelectionPlan::Spread {
+                fragment,
+                type_condition: spread_condition,
+                arguments,
+            },
+        ] = child.as_slice()
+            && (alias.is_some() || deferred.is_some())
+        {
+            // `@alias(as:)` or `@defer` around one spread: the spread
+            // keeps its lens, under the alias when given.
+            return Some(Read::Spread(self.spread(
+                context.owner,
+                member,
+                fragment,
+                arguments,
+                spread_condition,
+                deferred.is_some(),
+                catch.as_ref().map(|catch| catch.to),
+                type_name,
+                type_is_abstract,
+            )));
+        }
+        if alias.is_some() {
+            // `@alias(as:)` on other selections: a nested lens.
+            let lens = member.lens_name().to_string();
+            let condition_lens = condition_lens(type_condition, condition_class, member);
+            let (lens_type, lens_abstract) = match &condition_lens {
+                Some((lens_type, lens_abstract, _)) => (lens_type.clone(), *lens_abstract),
+                None => (type_name.to_string(), type_is_abstract),
+            };
+            let mut guards = Vec::new();
+            if !member.guards.is_empty() {
+                guards.push(AliasGuard::Selects(member.guards.clone()));
+            }
+            if let Some((_, _, test)) = condition_lens {
+                guards.push(AliasGuard::Test(test));
+            }
+            if *bubbles {
+                guards.push(AliasGuard::Satisfied);
+            }
+            nested.push(Nested {
+                name: lens.clone(),
+                type_name: lens_type,
+                is_abstract: lens_abstract,
+                selections: child.clone(),
+                connection: None,
+                bubbles: *bubbles,
+                within_catch: catch.is_some(),
+            });
+            return Some(Read::Aliased(AliasedRead {
+                lens,
+                guards,
+                caught: catch
+                    .as_ref()
+                    .is_some_and(|catch| catch.to == CatchTarget::Result),
+            }));
+        }
+        let (lens_type, lens_abstract, test) =
+            condition_lens(type_condition, condition_class, member)?;
+        let lens = member.lens_name().to_string();
+        nested.push(Nested {
+            name: lens.clone(),
+            type_name: lens_type,
+            is_abstract: lens_abstract,
+            selections: child.clone(),
+            connection: None,
+            bubbles: false,
+            within_catch: false,
+        });
+        Some(Read::Condition(ConditionRead { lens, test }))
     }
 
     /// A spread's accessor. The child's scope is the parent's variables with
@@ -842,6 +769,118 @@ impl Readers {
         self.sites.insert(name.clone());
         name
     }
+}
+
+/// A scalar field's read: non-null in effect when the schema, `@required`
+/// or the error policy around it says so, in the form its directives give.
+fn scalar_read(
+    member: &Member,
+    type_name: &str,
+    type_is_abstract: bool,
+    context: Context<'_>,
+) -> Read {
+    let SelectionPlan::Scalar {
+        base_kind,
+        non_null,
+        semantic_non_null,
+        list,
+        storage_key,
+        required,
+        catch,
+        ..
+    } = &member.selection
+    else {
+        unreachable!("a scalar member is a scalar field");
+    };
+    let non_null =
+        *non_null || required.is_some() || (*semantic_non_null && context.handles_errors());
+    let form = match (
+        catch.as_ref().map(|catch| catch.to),
+        required.as_ref().map(|required| required.action),
+    ) {
+        (Some(CatchTarget::Result), _) => ScalarForm::Caught { non_null },
+        (Some(CatchTarget::Null), _) => ScalarForm::Nulled,
+        (_, Some(RequiredAction::Throw)) => ScalarForm::Throwing {
+            path: required_path(required),
+        },
+        _ if non_null => ScalarForm::Required,
+        _ => ScalarForm::Optional,
+    };
+    Read::Scalar(ScalarRead {
+        slot: SlotAccess::of(type_name, type_is_abstract, storage_key),
+        shape: ScalarShape::of(*base_kind, *list),
+        form,
+    })
+}
+
+/// A linked field's read, singular or plural, and the nested lens it reads
+/// as.
+fn linked_read(
+    member: &Member,
+    type_name: &str,
+    type_is_abstract: bool,
+    nested: &mut Vec<Nested>,
+    context: Context<'_>,
+) -> Read {
+    let SelectionPlan::Linked {
+        base_type,
+        non_null,
+        semantic_non_null,
+        plural,
+        is_abstract,
+        storage_key,
+        connection,
+        required,
+        catch,
+        bubbles,
+        selections: child,
+        ..
+    } = &member.selection
+    else {
+        unreachable!("a linked member is a linked field");
+    };
+    let lens = member.lens_name().to_string();
+    let non_null =
+        *non_null || required.is_some() || (*semantic_non_null && context.handles_errors());
+    let catch_to = catch.as_ref().map(|catch| catch.to);
+    let required_action = required.as_ref().map(|required| required.action);
+    let path = required_path(required);
+    let form = if *plural {
+        match (catch_to, required_action) {
+            (Some(CatchTarget::Result), _) => LinkedForm::CaughtList { non_null },
+            (_, Some(RequiredAction::Throw)) => LinkedForm::ThrowingList { path },
+            _ if non_null && catch_to != Some(CatchTarget::Null) => LinkedForm::RequiredList,
+            _ => LinkedForm::List,
+        }
+    } else {
+        // A link whose children can bubble reads as optional
+        // unless it is itself required, when its parent has
+        // checked it.
+        let optional =
+            !non_null || (*bubbles && required.is_none()) || catch_to == Some(CatchTarget::Null);
+        match (catch_to, required_action) {
+            (Some(CatchTarget::Result), _) => LinkedForm::Caught { optional },
+            (_, Some(RequiredAction::Throw)) => LinkedForm::Throwing { path },
+            _ if optional => LinkedForm::Optional,
+            _ => LinkedForm::Required,
+        }
+    };
+    nested.push(Nested {
+        name: lens.clone(),
+        type_name: base_type.clone(),
+        is_abstract: *is_abstract,
+        selections: child.clone(),
+        connection: connection.clone(),
+        bubbles: *bubbles,
+        within_catch: catch.is_some(),
+    });
+    Read::Linked(LinkedRead {
+        slot: SlotAccess::of(type_name, type_is_abstract, storage_key),
+        lens,
+        base_type: base_type.clone(),
+        bubbles: *bubbles,
+        form,
+    })
 }
 
 /// The `@refetchable` surface of a fragment lens: the descriptor of its

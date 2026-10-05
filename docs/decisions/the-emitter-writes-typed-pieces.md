@@ -62,10 +62,12 @@ than fifty lines.
   known defect. The names are read from the rules that list them, so a
   keyword or a reserved name added to a rule fails the tests until every
   place holds it.
-- The compiler's files keep a model apart from its logic *(planned)*: the
-  plan's types apart from the lowering and the driver, the reader's model
-  apart from the code that decides it, and a long function broken along its
-  cases. Each is done when its file is next worked on.
+- The compiler's files keep a model apart from its logic. The plan's types
+  are in `pipeline/plan.rs`, apart from the lowering in `pipeline/lower.rs`
+  and the driver. The model of a lens is in `decide/lens.rs`, apart from
+  the merging of a selection into members, the checks a lens carries and
+  the decisions. The longest functions are broken along their cases: a
+  selection is lowered, and a member read, by one function per kind.
 
 ## Evidence
 

@@ -2,7 +2,10 @@
 //! Everything here reads Relay's types and writes Baton's.
 
 use common::{Diagnostic, DirectiveName, NamedItem, SourceLocationKey};
-use graphql_ir::{ConditionValue, Field, FragmentDefinition, Selection};
+use graphql_ir::{
+    Condition, ConditionValue, Field, FragmentDefinition, FragmentSpread, InlineFragment,
+    LinkedField, OperationDefinition, ScalarField, Selection,
+};
 use graphql_syntax::OperationKind as SyntaxOperationKind;
 use graphql_text_printer::{PrinterOptions, print_full_operation};
 use intern::Lookup;
@@ -65,99 +68,7 @@ pub(super) fn lower(
         .sort_by(|left, right| left.name.cmp(&right.name));
 
     for operation in programs.normalization.operations() {
-        let name = operation.name.item.0.lookup();
-        let root_type = schema.get_type_name(operation.type_).lookup().to_string();
-        let reader_operation = programs.reader.operation(operation.name.item);
-        let reader = reader_operation
-            .map(|reader_operation| {
-                lowering.selections(
-                    &reader_operation.selections,
-                    operation.type_,
-                    Side::Reader,
-                    false,
-                )
-            })
-            .unwrap_or_else(|| {
-                lowering.internal(
-                    "the reader program has no such operation",
-                    operation.name.location,
-                );
-                Vec::new()
-            });
-        let text = programs
-            .operation_text
-            .operation(operation.name.item)
-            .map(|text_operation| {
-                print_full_operation(
-                    &programs.operation_text,
-                    text_operation,
-                    PrinterOptions::default(),
-                )
-            })
-            .unwrap_or_else(|| {
-                lowering.internal(
-                    "the operation has no printable text",
-                    operation.name.location,
-                );
-                String::new()
-            })
-            // Trimmed once, here: the id is the hash of the very text the
-            // app holds and sends.
-            .trim_end()
-            .to_string();
-        let mut normalization = lowering.selections(
-            &operation.selections,
-            operation.type_,
-            Side::Normalization,
-            false,
-        );
-        let mut reader = reader;
-        if operation.kind == SyntaxOperationKind::Mutation {
-            key_by_response(&mut normalization);
-            key_by_response(&mut reader);
-        }
-        // A mutation's payload and a subscription's event each arrive whole:
-        // neither is read as a stream of parts.
-        if operation.kind != SyntaxOperationKind::Query && has_deferred(&normalization) {
-            lowering.diagnostics.borrow_mut().push(Diagnostic::error(
-                format!(
-                    "`@defer` in the {} `{name}`: its response arrives in one part, so nothing can be deferred",
-                    operation.kind
-                ),
-                operation.name.location,
-            ));
-        }
-        plan.operations.push(OperationPlan {
-            name: name.to_string(),
-            origin: Origin::of(operation.name.location),
-            source: operation.name.location.source_location().path().to_string(),
-            document: document_index(operation.name.location),
-            kind: match operation.kind {
-                SyntaxOperationKind::Query => OperationKind::Query,
-                SyntaxOperationKind::Mutation => OperationKind::Mutation,
-                SyntaxOperationKind::Subscription => OperationKind::Subscription,
-            },
-            root_type,
-            variables: lowering.variables(&operation.variable_definitions),
-            id: format!("{:x}", md5::compute(text.as_bytes())),
-            text,
-            throws_on_field_error: operation
-                .directives
-                .named(directive_name("throwOnFieldError"))
-                .is_some(),
-            bubbles: reader_operation.is_some_and(|reader_operation| {
-                reader_operation
-                    .directives
-                    .named(*CHILDREN_CAN_BUBBLE_METADATA_KEY)
-                    .is_some()
-            }),
-            has_deferred: has_deferred(&normalization),
-            error_behavior: config
-                .on_error
-                .map(|behavior| behavior.swift_case().to_string()),
-            reader,
-            normalization,
-        });
+        plan.operations.push(lowering.operation(operation));
     }
     plan.operations
         .sort_by(|left, right| left.name.cmp(&right.name));
@@ -293,6 +204,110 @@ impl Lowering<'_> {
             key_by_response(&mut plan.reader);
         }
         plan
+    }
+
+    /// An operation: its reader and normalization selections, its text and
+    /// id, and the policies the runtime reads from it.
+    fn operation(&self, operation: &OperationDefinition) -> OperationPlan {
+        let name = operation.name.item.0.lookup();
+        let root_type = self
+            .schema
+            .get_type_name(operation.type_)
+            .lookup()
+            .to_string();
+        let reader_operation = self.programs.reader.operation(operation.name.item);
+        let reader = reader_operation
+            .map(|reader_operation| {
+                self.selections(
+                    &reader_operation.selections,
+                    operation.type_,
+                    Side::Reader,
+                    false,
+                )
+            })
+            .unwrap_or_else(|| {
+                self.internal(
+                    "the reader program has no such operation",
+                    operation.name.location,
+                );
+                Vec::new()
+            });
+        let text = self
+            .programs
+            .operation_text
+            .operation(operation.name.item)
+            .map(|text_operation| {
+                print_full_operation(
+                    &self.programs.operation_text,
+                    text_operation,
+                    PrinterOptions::default(),
+                )
+            })
+            .unwrap_or_else(|| {
+                self.internal(
+                    "the operation has no printable text",
+                    operation.name.location,
+                );
+                String::new()
+            })
+            // Trimmed once, here: the id is the hash of the very text the
+            // app holds and sends.
+            .trim_end()
+            .to_string();
+        let mut normalization = self.selections(
+            &operation.selections,
+            operation.type_,
+            Side::Normalization,
+            false,
+        );
+        let mut reader = reader;
+        if operation.kind == SyntaxOperationKind::Mutation {
+            key_by_response(&mut normalization);
+            key_by_response(&mut reader);
+        }
+        // A mutation's payload and a subscription's event each arrive whole:
+        // neither is read as a stream of parts.
+        if operation.kind != SyntaxOperationKind::Query && has_deferred(&normalization) {
+            self.diagnostics.borrow_mut().push(Diagnostic::error(
+                format!(
+                    "`@defer` in the {} `{name}`: its response arrives in one part, so nothing can be deferred",
+                    operation.kind
+                ),
+                operation.name.location,
+            ));
+        }
+        OperationPlan {
+            name: name.to_string(),
+            origin: Origin::of(operation.name.location),
+            source: operation.name.location.source_location().path().to_string(),
+            document: document_index(operation.name.location),
+            kind: match operation.kind {
+                SyntaxOperationKind::Query => OperationKind::Query,
+                SyntaxOperationKind::Mutation => OperationKind::Mutation,
+                SyntaxOperationKind::Subscription => OperationKind::Subscription,
+            },
+            root_type,
+            variables: self.variables(&operation.variable_definitions),
+            id: format!("{:x}", md5::compute(text.as_bytes())),
+            text,
+            throws_on_field_error: operation
+                .directives
+                .named(directive_name("throwOnFieldError"))
+                .is_some(),
+            bubbles: reader_operation.is_some_and(|reader_operation| {
+                reader_operation
+                    .directives
+                    .named(*CHILDREN_CAN_BUBBLE_METADATA_KEY)
+                    .is_some()
+            }),
+            has_deferred: has_deferred(&normalization),
+            error_behavior: self
+                .config
+                .on_error
+                .map(|behavior| behavior.swift_case().to_string()),
+            reader,
+            normalization,
+        }
     }
 
     /// The `@refetchable` metadata Relay attached: the generated query's name
@@ -574,245 +589,300 @@ impl Lowering<'_> {
         selections
             .iter()
             .map(|selection| match selection {
-                Selection::ScalarField(field) => {
-                    let definition = self.schema.field(field.definition.item);
-                    let field_caught = caught || self.is_caught(&field.directives);
-                    SelectionPlan::Scalar {
-                        name: definition.name.item.lookup().to_string(),
-                        alias: field.alias.map(|alias| alias.item.lookup().to_string()),
-                        origin: Origin::of(field.alias_or_name_location()),
-                        type_name: self.type_reference_name(&definition.type_),
-                        base_type: self
-                            .schema
-                            .get_type_name(definition.type_.inner())
-                            .lookup()
-                            .to_string(),
-                        base_kind: self.type_kind(definition.type_.inner()),
-                        non_null: self.non_null(definition),
-                        semantic_non_null: self.semantic_non_null(definition),
-                        list: definition.type_.is_list(),
-                        storage_key: storage_key(definition.name.item.lookup(), &field.arguments),
-                        edit: self.edit(&field.directives),
-                        required: self.required(&field.directives),
-                        catch: self.catch(&field.directives),
-                        caught: field_caught,
-                    }
-                }
+                Selection::ScalarField(field) => self.scalar_field(field, caught),
                 Selection::LinkedField(field) => {
-                    let definition = self.schema.field(field.definition.item);
-                    let target = definition.type_.inner();
-                    let name = definition.name.item.lookup();
-                    let parent_name = self.schema.get_type_name(parent_type).lookup();
-                    let lookup = self
-                        .config
-                        .lookups
-                        .iter()
-                        .find(|lookup| lookup.field == format!("{parent_name}.{name}"))
-                        .and_then(|lookup| {
-                            let argument = field
-                                .arguments
-                                .named(common::ArgumentName(lookup.argument.as_str().intern()));
-                            let Some(argument) = argument else {
-                                self.diagnostics.borrow_mut().push(Diagnostic::error(
-                                    format!(
-                                        "baton.json looks `{parent_name}.{name}` up by `{}`, which this selection does not pass",
-                                        lookup.argument
-                                    ),
-                                    field.alias_or_name_location(),
-                                ));
-                                return None;
-                            };
-                            let value = argument_value_plan(&argument.value.item);
-                            if matches!(value, ArgumentValuePlan::List(_) | ArgumentValuePlan::Object(_)) {
-                                self.diagnostics.borrow_mut().push(Diagnostic::error(
-                                    format!(
-                                        "the lookup argument `{}` of `{parent_name}.{name}` must be a variable or a constant",
-                                        lookup.argument
-                                    ),
-                                    argument.value.location,
-                                ));
-                                return None;
-                            }
-                            Some(LookupPlan {
-                                type_name: lookup.type_name.clone(),
-                                possible_types: self.possible_types(target),
-                                argument: lookup.argument.clone(),
-                                value,
-                            })
-                        });
-                    let edit = self.edit(&field.directives);
-                    let mut connection = None;
-                    let mut field_storage_key = storage_key(name, &field.arguments);
-                    let connection_handle = extract_handle_field_directives(&field.directives)
-                        .next()
-                        .map(extract_values_from_handle_field_directive)
-                        .filter(|values| values.handle.lookup() == "connection");
-                    if let Some(values) = connection_handle {
-                        let handle_name = format!("__{}_connection", values.key.lookup());
-                        // Relay's reader keeps only the filter arguments; the
-                        // normalization keeps them all, and the connection
-                        // record's key is the handle with the filters.
-                        let filtered: Vec<graphql_ir::Argument> = field
-                            .arguments
-                            .iter()
-                            .filter(|argument| match &values.filters {
-                                Some(filters) => filters.contains(&argument.name.item.0),
-                                None => false,
-                            })
-                            .cloned()
-                            .collect();
-                        let client_key = match side {
-                            Side::Reader => storage_key(&handle_name, &field.arguments),
-                            Side::Normalization => storage_key(&handle_name, &filtered),
-                        };
-                        if side == Side::Reader {
-                            field_storage_key = client_key.clone();
-                        }
-                        let cursor = |argument: &str| {
-                            field
-                                .arguments
-                                .named(common::ArgumentName(argument.intern()))
-                                .map(|argument| argument_value_plan(&argument.value.item))
-                                .filter(|value| {
-                                    !matches!(
-                                        value,
-                                        ArgumentValuePlan::Constant(ConstantPlan::Null)
-                                    )
-                                })
-                        };
-                        connection = Some(ConnectionPlan {
-                            key: values.key.lookup().to_string(),
-                            storage_key: client_key,
-                            edge_type: self.field_type_name(target, "edges", field.alias_or_name_location()),
-                            page_info_type: self.field_type_name(
-                                target,
-                                "pageInfo",
-                                field.alias_or_name_location(),
-                            ),
-                            after: cursor("after"),
-                            before: cursor("before"),
-                        });
-                    }
-                    let field_caught = caught || self.is_caught(&field.directives);
-                    SelectionPlan::Linked {
-                        name: name.to_string(),
-                        alias: field.alias.map(|alias| alias.item.lookup().to_string()),
-                        origin: Origin::of(field.alias_or_name_location()),
-                        type_name: self.type_reference_name(&definition.type_),
-                        base_type: self.schema.get_type_name(target).lookup().to_string(),
-                        base_kind: self.type_kind(target),
-                        non_null: self.non_null(definition),
-                        semantic_non_null: self.semantic_non_null(definition),
-                        plural: definition.type_.is_list(),
-                        has_id: self.type_has_id(target),
-                        is_abstract: target.is_abstract_type(),
-                        possible_types: self.possible_types(target),
-                        storage_key: field_storage_key,
-                        lookup,
-                        connection,
-                        edit,
-                        required: self.required(&field.directives),
-                        catch: self.catch(&field.directives),
-                        caught: field_caught,
-                        bubbles: self.bubbles(&field.directives),
-                        selections: self.selections(&field.selections, target, side, field_caught),
-                    }
+                    self.linked_field(field, parent_type, side, caught)
                 }
                 Selection::InlineFragment(inline) => {
-                    // An alias that names what the selection is named by
-                    // anyway is no alias.
-                    let explicit =
-                        FragmentAliasMetadata::find(&inline.directives).filter(|metadata| {
-                            let default: Option<String> = if metadata.wraps_spread {
-                                match inline.selections.first() {
-                                    Some(Selection::FragmentSpread(spread)) => {
-                                        Some(spread.fragment.item.0.lookup().to_string())
-                                    }
-                                    _ => None,
-                                }
-                            } else {
-                                inline.type_condition.map(|type_| {
-                                    self.schema.get_type_name(type_).lookup().to_string()
-                                })
-                            };
-                            default.as_deref() != Some(metadata.alias.item.lookup())
-                        });
-                    let alias = explicit.map(|metadata| metadata.alias.item.lookup().to_string());
-                    let deferred = inline
-                        .directives
-                        .named(directive_name("defer"))
-                        .and_then(|directive| {
-                            directive
-                                .arguments
-                                .named(common::ArgumentName("label".intern()))
-                        })
-                        .and_then(|label| match &label.value.item {
-                            graphql_ir::Value::Constant(graphql_ir::ConstantValue::String(
-                                text,
-                            )) => Some(text.lookup().to_string()),
-                            _ => None,
-                        });
-                    let inline_caught = caught || self.is_caught(&inline.directives);
-                    SelectionPlan::Inline {
-                        type_condition: inline
-                            .type_condition
-                            .map(|type_| self.schema.get_type_name(type_).lookup().to_string()),
-                        condition_types: inline
-                            .type_condition
-                            .map(|type_| self.possible_types(type_)),
-                        condition_class: inline
-                            .type_condition
-                            .map(|type_| self.condition_class(parent_type, type_)),
-                        alias,
-                        origin: explicit.and_then(|metadata| Origin::of(metadata.alias.location)),
-                        deferred,
-                        catch: self.catch(&inline.directives),
-                        bubbles: self.bubbles(&inline.directives),
-                        selections: self.selections(
-                            &inline.selections,
-                            inline.type_condition.unwrap_or(parent_type),
-                            side,
-                            inline_caught,
-                        ),
-                    }
+                    self.inline_fragment(inline, parent_type, side, caught)
                 }
-                Selection::FragmentSpread(spread) => SelectionPlan::Spread {
-                    fragment: spread.fragment.item.0.lookup().to_string(),
-                    type_condition: self
-                        .programs
-                        .reader
-                        .fragment(spread.fragment.item)
-                        .map(|fragment| {
-                            self.schema
-                                .get_type_name(fragment.type_condition)
-                                .lookup()
-                                .to_string()
-                        })
-                        .unwrap_or_else(|| {
-                            self.internal("the spread names a fragment the reader program lacks", spread.fragment.location);
-                            String::new()
-                        }),
-                    arguments: spread
-                        .arguments
-                        .iter()
-                        .map(|argument| ArgumentPlan {
-                            name: argument.name.item.0.lookup().to_string(),
-                            value: argument_value_plan(&argument.value.item),
-                        })
-                        .collect(),
-                },
-                Selection::Condition(condition) => SelectionPlan::Condition {
-                    variable: match &condition.value {
-                        ConditionValue::Variable(variable) => {
-                            Some(variable.name.item.0.lookup().to_string())
-                        }
-                        ConditionValue::Constant(_) => None,
-                    },
-                    passing: condition.passing_value,
-                    selections: self.selections(&condition.selections, parent_type, side, caught),
-                },
+                Selection::FragmentSpread(spread) => self.fragment_spread(spread),
+                Selection::Condition(condition) => {
+                    self.condition(condition, parent_type, side, caught)
+                }
             })
             .collect()
+    }
+
+    fn scalar_field(&self, field: &ScalarField, caught: bool) -> SelectionPlan {
+        let definition = self.schema.field(field.definition.item);
+        let field_caught = caught || self.is_caught(&field.directives);
+        SelectionPlan::Scalar {
+            name: definition.name.item.lookup().to_string(),
+            alias: field.alias.map(|alias| alias.item.lookup().to_string()),
+            origin: Origin::of(field.alias_or_name_location()),
+            type_name: self.type_reference_name(&definition.type_),
+            base_type: self
+                .schema
+                .get_type_name(definition.type_.inner())
+                .lookup()
+                .to_string(),
+            base_kind: self.type_kind(definition.type_.inner()),
+            non_null: self.non_null(definition),
+            semantic_non_null: self.semantic_non_null(definition),
+            list: definition.type_.is_list(),
+            storage_key: storage_key(definition.name.item.lookup(), &field.arguments),
+            edit: self.edit(&field.directives),
+            required: self.required(&field.directives),
+            catch: self.catch(&field.directives),
+            caught: field_caught,
+        }
+    }
+
+    /// A linked field, its lookup when `baton.json` names one, and its
+    /// connection when it is one.
+    fn linked_field(
+        &self,
+        field: &LinkedField,
+        parent_type: Type,
+        side: Side,
+        caught: bool,
+    ) -> SelectionPlan {
+        let definition = self.schema.field(field.definition.item);
+        let target = definition.type_.inner();
+        let name = definition.name.item.lookup();
+        let lookup = self.lookup(field, name, parent_type, target);
+        let edit = self.edit(&field.directives);
+        let connection = self.connection(field, target, side);
+        // The reader reads a connection through its handle's key.
+        let field_storage_key = match (&connection, side) {
+            (Some(connection), Side::Reader) => connection.storage_key.clone(),
+            _ => storage_key(name, &field.arguments),
+        };
+        let field_caught = caught || self.is_caught(&field.directives);
+        SelectionPlan::Linked {
+            name: name.to_string(),
+            alias: field.alias.map(|alias| alias.item.lookup().to_string()),
+            origin: Origin::of(field.alias_or_name_location()),
+            type_name: self.type_reference_name(&definition.type_),
+            base_type: self.schema.get_type_name(target).lookup().to_string(),
+            base_kind: self.type_kind(target),
+            non_null: self.non_null(definition),
+            semantic_non_null: self.semantic_non_null(definition),
+            plural: definition.type_.is_list(),
+            has_id: self.type_has_id(target),
+            is_abstract: target.is_abstract_type(),
+            possible_types: self.possible_types(target),
+            storage_key: field_storage_key,
+            lookup,
+            connection,
+            edit,
+            required: self.required(&field.directives),
+            catch: self.catch(&field.directives),
+            caught: field_caught,
+            bubbles: self.bubbles(&field.directives),
+            selections: self.selections(&field.selections, target, side, field_caught),
+        }
+    }
+
+    /// The lookup `baton.json` names for the field, and the value the
+    /// selection passes its argument: an error when it passes none, or a
+    /// list or an object.
+    fn lookup(
+        &self,
+        field: &LinkedField,
+        name: &str,
+        parent_type: Type,
+        target: Type,
+    ) -> Option<LookupPlan> {
+        let parent_name = self.schema.get_type_name(parent_type).lookup();
+        self
+            .config
+            .lookups
+            .iter()
+            .find(|lookup| lookup.field == format!("{parent_name}.{name}"))
+            .and_then(|lookup| {
+                let argument = field
+                    .arguments
+                    .named(common::ArgumentName(lookup.argument.as_str().intern()));
+                let Some(argument) = argument else {
+                    self.diagnostics.borrow_mut().push(Diagnostic::error(
+                        format!(
+                            "baton.json looks `{parent_name}.{name}` up by `{}`, which this selection does not pass",
+                            lookup.argument
+                        ),
+                        field.alias_or_name_location(),
+                    ));
+                    return None;
+                };
+                let value = argument_value_plan(&argument.value.item);
+                if matches!(value, ArgumentValuePlan::List(_) | ArgumentValuePlan::Object(_)) {
+                    self.diagnostics.borrow_mut().push(Diagnostic::error(
+                        format!(
+                            "the lookup argument `{}` of `{parent_name}.{name}` must be a variable or a constant",
+                            lookup.argument
+                        ),
+                        argument.value.location,
+                    ));
+                    return None;
+                }
+                Some(LookupPlan {
+                    type_name: lookup.type_name.clone(),
+                    possible_types: self.possible_types(target),
+                    argument: lookup.argument.clone(),
+                    value,
+                })
+            })
+    }
+
+    /// The connection of a field with `@connection`: the client record its
+    /// pages merge into, the types of its edges and page info, and the
+    /// cursors that pick the merge. None for any other field.
+    fn connection(&self, field: &LinkedField, target: Type, side: Side) -> Option<ConnectionPlan> {
+        let values = extract_handle_field_directives(&field.directives)
+            .next()
+            .map(extract_values_from_handle_field_directive)
+            .filter(|values| values.handle.lookup() == "connection")?;
+        let handle_name = format!("__{}_connection", values.key.lookup());
+        // Relay's reader keeps only the filter arguments; the
+        // normalization keeps them all, and the connection
+        // record's key is the handle with the filters.
+        let filtered: Vec<graphql_ir::Argument> = field
+            .arguments
+            .iter()
+            .filter(|argument| match &values.filters {
+                Some(filters) => filters.contains(&argument.name.item.0),
+                None => false,
+            })
+            .cloned()
+            .collect();
+        let client_key = match side {
+            Side::Reader => storage_key(&handle_name, &field.arguments),
+            Side::Normalization => storage_key(&handle_name, &filtered),
+        };
+        let cursor = |argument: &str| {
+            field
+                .arguments
+                .named(common::ArgumentName(argument.intern()))
+                .map(|argument| argument_value_plan(&argument.value.item))
+                .filter(|value| !matches!(value, ArgumentValuePlan::Constant(ConstantPlan::Null)))
+        };
+        Some(ConnectionPlan {
+            key: values.key.lookup().to_string(),
+            storage_key: client_key,
+            edge_type: self.field_type_name(target, "edges", field.alias_or_name_location()),
+            page_info_type: self.field_type_name(
+                target,
+                "pageInfo",
+                field.alias_or_name_location(),
+            ),
+            after: cursor("after"),
+            before: cursor("before"),
+        })
+    }
+
+    fn inline_fragment(
+        &self,
+        inline: &InlineFragment,
+        parent_type: Type,
+        side: Side,
+        caught: bool,
+    ) -> SelectionPlan {
+        // An alias that names what the selection is named by
+        // anyway is no alias.
+        let explicit = FragmentAliasMetadata::find(&inline.directives).filter(|metadata| {
+            let default: Option<String> = if metadata.wraps_spread {
+                match inline.selections.first() {
+                    Some(Selection::FragmentSpread(spread)) => {
+                        Some(spread.fragment.item.0.lookup().to_string())
+                    }
+                    _ => None,
+                }
+            } else {
+                inline
+                    .type_condition
+                    .map(|type_| self.schema.get_type_name(type_).lookup().to_string())
+            };
+            default.as_deref() != Some(metadata.alias.item.lookup())
+        });
+        let alias = explicit.map(|metadata| metadata.alias.item.lookup().to_string());
+        let deferred = inline
+            .directives
+            .named(directive_name("defer"))
+            .and_then(|directive| {
+                directive
+                    .arguments
+                    .named(common::ArgumentName("label".intern()))
+            })
+            .and_then(|label| match &label.value.item {
+                graphql_ir::Value::Constant(graphql_ir::ConstantValue::String(text)) => {
+                    Some(text.lookup().to_string())
+                }
+                _ => None,
+            });
+        let inline_caught = caught || self.is_caught(&inline.directives);
+        SelectionPlan::Inline {
+            type_condition: inline
+                .type_condition
+                .map(|type_| self.schema.get_type_name(type_).lookup().to_string()),
+            condition_types: inline
+                .type_condition
+                .map(|type_| self.possible_types(type_)),
+            condition_class: inline
+                .type_condition
+                .map(|type_| self.condition_class(parent_type, type_)),
+            alias,
+            origin: explicit.and_then(|metadata| Origin::of(metadata.alias.location)),
+            deferred,
+            catch: self.catch(&inline.directives),
+            bubbles: self.bubbles(&inline.directives),
+            selections: self.selections(
+                &inline.selections,
+                inline.type_condition.unwrap_or(parent_type),
+                side,
+                inline_caught,
+            ),
+        }
+    }
+
+    fn fragment_spread(&self, spread: &FragmentSpread) -> SelectionPlan {
+        SelectionPlan::Spread {
+            fragment: spread.fragment.item.0.lookup().to_string(),
+            type_condition: self
+                .programs
+                .reader
+                .fragment(spread.fragment.item)
+                .map(|fragment| {
+                    self.schema
+                        .get_type_name(fragment.type_condition)
+                        .lookup()
+                        .to_string()
+                })
+                .unwrap_or_else(|| {
+                    self.internal(
+                        "the spread names a fragment the reader program lacks",
+                        spread.fragment.location,
+                    );
+                    String::new()
+                }),
+            arguments: spread
+                .arguments
+                .iter()
+                .map(|argument| ArgumentPlan {
+                    name: argument.name.item.0.lookup().to_string(),
+                    value: argument_value_plan(&argument.value.item),
+                })
+                .collect(),
+        }
+    }
+
+    fn condition(
+        &self,
+        condition: &Condition,
+        parent_type: Type,
+        side: Side,
+        caught: bool,
+    ) -> SelectionPlan {
+        SelectionPlan::Condition {
+            variable: match &condition.value {
+                ConditionValue::Variable(variable) => {
+                    Some(variable.name.item.0.lookup().to_string())
+                }
+                ConditionValue::Constant(_) => None,
+            },
+            passing: condition.passing_value,
+            selections: self.selections(&condition.selections, parent_type, side, caught),
+        }
     }
 
     fn type_kind(&self, type_: Type) -> TypeKind {
