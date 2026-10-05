@@ -48,6 +48,9 @@ pub struct VariableValue {
 pub struct BuilderPlan {
     pub name: String,
     pub fields: Vec<BuilderField>,
+    /// The local `variable` collects the fields in, named past the locals
+    /// they bind their values to.
+    pub collected: String,
     pub nested: Vec<BuilderPlan>,
 }
 
@@ -296,8 +299,13 @@ fn builder(
             )
         })
         .collect();
+    let locals: Vec<&str> = builder_fields
+        .iter()
+        .map(|field| field.local.as_str())
+        .collect();
     BuilderPlan {
         name: name.to_string(),
+        collected: numbered("fields", &locals),
         fields: builder_fields,
         nested,
     }
@@ -311,10 +319,15 @@ fn local_name(property: &str, taken: &[&str]) -> String {
     if property != "self" {
         return escape(property);
     }
-    let mut name = "selfValue".to_string();
+    numbered("selfValue", taken)
+}
+
+/// `base`, or the first of `base2`, `base3` and on that is none of `taken`.
+fn numbered(base: &str, taken: &[&str]) -> String {
+    let mut name = base.to_string();
     let mut number = 2;
     while taken.contains(&name.as_str()) {
-        name = format!("selfValue{number}");
+        name = format!("{base}{number}");
         number += 1;
     }
     name

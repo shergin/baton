@@ -5887,7 +5887,7 @@ nonisolated public struct HostilePayload: Baton.Mutation {
     }
 
     public static let name = "HostilePayload"
-    public static let persistedID = "f99950555eee8a37232fae48c18fb712"
+    public static let persistedID = "6e0cae797de2ed1e1c9b534d5900f348"
     public static let text = #"""
 mutation HostilePayload {
   setFavorite(id: "1", favorite: true) {
@@ -5997,6 +5997,7 @@ mutation HostilePayload {
       Query: name
       Operation: name
       RefetchQuery: name
+      fields: name
       variables: name
       resolution: name
       name
@@ -6355,6 +6356,9 @@ mutation HostilePayload {
     RefetchQuery: note {
       id
     }
+    fields: note {
+      id
+    }
     variables: note {
       id
     }
@@ -6595,6 +6599,7 @@ mutation HostilePayload {
                     .scalar("Query", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("Operation", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("RefetchQuery", key: .fixed(Slots.Character.name), kind: .string, list: false),
+                    .scalar("fields", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("variables", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("resolution", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
@@ -6953,6 +6958,9 @@ mutation HostilePayload {
                 .linked("RefetchQuery", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
+                .linked("fields", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
+                ])),
                 .linked("variables", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
@@ -7195,6 +7203,7 @@ mutation HostilePayload {
                 @MainActor public var Query: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var Operation: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var RefetchQuery: String? { anchor.string(Slots.Character.name) }
+                @MainActor public var fields: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var variables: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var resolution: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var name: String? { anchor.string(Slots.Character.name) }
@@ -7346,6 +7355,7 @@ mutation HostilePayload {
             @MainActor public var Query: Query2? { anchor.linked(Slots.AddNotePayload.note).map(Query2.init(anchor:)) }
             @MainActor public var Operation: Operation2? { anchor.linked(Slots.AddNotePayload.note).map(Operation2.init(anchor:)) }
             @MainActor public var RefetchQuery: RefetchQuery2? { anchor.linked(Slots.AddNotePayload.note).map(RefetchQuery2.init(anchor:)) }
+            @MainActor public var fields: Fields? { anchor.linked(Slots.AddNotePayload.note).map(Fields.init(anchor:)) }
             @MainActor public var variables: Variables? { anchor.linked(Slots.AddNotePayload.note).map(Variables.init(anchor:)) }
             @MainActor public var resolution: Resolution? { anchor.linked(Slots.AddNotePayload.note).map(Resolution.init(anchor:)) }
             @MainActor public var name: Name? { anchor.linked(Slots.AddNotePayload.note).map(Name.init(anchor:)) }
@@ -8121,6 +8131,13 @@ mutation HostilePayload {
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
+            nonisolated public struct Fields: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                public static let typeName = "Note"
+                @MainActor public var id: String? { anchor.string(Slots.Note.id) }
+            }
+
             nonisolated public struct Variables: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
@@ -8532,6 +8549,7 @@ mutation HostilePayload {
                 public var Query: String?
                 public var Operation: String?
                 public var RefetchQuery: String?
+                public var fields: String?
                 public var variables: String?
                 public var resolution: String?
                 public var name: String?
@@ -8572,7 +8590,7 @@ mutation HostilePayload {
                 public var Hasher: String?
                 public var Sendable: String?
                 public var id: String?
-                public init(`Type`: String? = nil, `Protocol`: String? = nil, `Any`: String? = nil, `self` selfValue2: String? = nil, `Self`: String? = nil, `init`: String? = nil, `deinit`: String? = nil, `subscript`: String? = nil, `class`: String? = nil, `struct`: String? = nil, `enum`: String? = nil, `func`: String? = nil, `var`: String? = nil, `let`: String? = nil, `import`: String? = nil, `extension`: String? = nil, `operator`: String? = nil, `static`: String? = nil, `default`: String? = nil, `case`: String? = nil, `switch`: String? = nil, `if`: String? = nil, `else`: String? = nil, `for`: String? = nil, `in`: String? = nil, `while`: String? = nil, `repeat`: String? = nil, `return`: String? = nil, `break`: String? = nil, `continue`: String? = nil, `where`: String? = nil, `is`: String? = nil, `as`: String? = nil, `try`: String? = nil, `throw`: String? = nil, `throws`: String? = nil, `guard`: String? = nil, `defer`: String? = nil, `do`: String? = nil, `catch`: String? = nil, `true`: String? = nil, `false`: String? = nil, `nil`: String? = nil, `super`: String? = nil, `internal`: String? = nil, `private`: String? = nil, `public`: String? = nil, `fileprivate`: String? = nil, `open`: String? = nil, `inout`: String? = nil, `typealias`: String? = nil, `associatedtype`: String? = nil, `protocol`: String? = nil, `some`: String? = nil, `any`: String? = nil, `rethrows`: String? = nil, `fallthrough`: String? = nil, `precedencegroup`: String? = nil, `_`: String? = nil, async: String? = nil, borrowing: String? = nil, consume: String? = nil, consuming: String? = nil, copy: String? = nil, discard: String? = nil, each: String? = nil, isolated: String? = nil, sending: String? = nil, then: String? = nil, unsafe: String? = nil, `await`: String? = nil, typeName: String? = nil, satisfied: String? = nil, missingRequiredField: String? = nil, fieldErrors: String? = nil, isPresent: String? = nil, throwing: String? = nil, caught: String? = nil, refetchable: String? = nil, refetch: String? = nil, connection: String? = nil, nodes: String? = nil, hasNext: String? = nil, hasPrevious: String? = nil, isLoadingNext: String? = nil, isLoadingPrevious: String? = nil, connectionID: String? = nil, loadNext: String? = nil, loadPrevious: String? = nil, bound: String? = nil, errors: String? = nil, child: String? = nil, missing: String? = nil, count: String? = nil, lhs: String? = nil, rhs: String? = nil, hasher: String? = nil, optimistic: String? = nil, selfValue: String? = nil, Fragment: String? = nil, Spread: String? = nil, Owner: String? = nil, Query: String? = nil, Operation: String? = nil, RefetchQuery: String? = nil, variables: String? = nil, resolution: String? = nil, name: String? = nil, persistedID: String? = nil, text: String? = nil, plan: String? = nil, errorBehavior: String? = nil, throwsOnFieldError: String? = nil, bubbles: String? = nil, hasDeferred: String? = nil, Data: String? = nil, Action: String? = nil, OptimisticResponse: String? = nil, hash: String? = nil, commit: String? = nil, callAsFunction: String? = nil, Op: String? = nil, hashValue: String? = nil, phase: String? = nil, isRefreshing: String? = nil, isStale: String? = nil, retry: String? = nil, subscription: String? = nil, Types: String? = nil, Sites: String? = nil, AbstractSlots: String? = nil, schemaDigest: String? = nil, Baton: String? = nil, Swift: String? = nil, Set: String? = nil, Result: String? = nil, Optional: String? = nil, String: String? = nil, Int: String? = nil, Double: String? = nil, Bool: String? = nil, MainActor: String? = nil, Hasher: String? = nil, Sendable: String? = nil, id: String? = nil) {
+                public init(`Type`: String? = nil, `Protocol`: String? = nil, `Any`: String? = nil, `self` selfValue2: String? = nil, `Self`: String? = nil, `init`: String? = nil, `deinit`: String? = nil, `subscript`: String? = nil, `class`: String? = nil, `struct`: String? = nil, `enum`: String? = nil, `func`: String? = nil, `var`: String? = nil, `let`: String? = nil, `import`: String? = nil, `extension`: String? = nil, `operator`: String? = nil, `static`: String? = nil, `default`: String? = nil, `case`: String? = nil, `switch`: String? = nil, `if`: String? = nil, `else`: String? = nil, `for`: String? = nil, `in`: String? = nil, `while`: String? = nil, `repeat`: String? = nil, `return`: String? = nil, `break`: String? = nil, `continue`: String? = nil, `where`: String? = nil, `is`: String? = nil, `as`: String? = nil, `try`: String? = nil, `throw`: String? = nil, `throws`: String? = nil, `guard`: String? = nil, `defer`: String? = nil, `do`: String? = nil, `catch`: String? = nil, `true`: String? = nil, `false`: String? = nil, `nil`: String? = nil, `super`: String? = nil, `internal`: String? = nil, `private`: String? = nil, `public`: String? = nil, `fileprivate`: String? = nil, `open`: String? = nil, `inout`: String? = nil, `typealias`: String? = nil, `associatedtype`: String? = nil, `protocol`: String? = nil, `some`: String? = nil, `any`: String? = nil, `rethrows`: String? = nil, `fallthrough`: String? = nil, `precedencegroup`: String? = nil, `_`: String? = nil, async: String? = nil, borrowing: String? = nil, consume: String? = nil, consuming: String? = nil, copy: String? = nil, discard: String? = nil, each: String? = nil, isolated: String? = nil, sending: String? = nil, then: String? = nil, unsafe: String? = nil, `await`: String? = nil, typeName: String? = nil, satisfied: String? = nil, missingRequiredField: String? = nil, fieldErrors: String? = nil, isPresent: String? = nil, throwing: String? = nil, caught: String? = nil, refetchable: String? = nil, refetch: String? = nil, connection: String? = nil, nodes: String? = nil, hasNext: String? = nil, hasPrevious: String? = nil, isLoadingNext: String? = nil, isLoadingPrevious: String? = nil, connectionID: String? = nil, loadNext: String? = nil, loadPrevious: String? = nil, bound: String? = nil, errors: String? = nil, child: String? = nil, missing: String? = nil, count: String? = nil, lhs: String? = nil, rhs: String? = nil, hasher: String? = nil, optimistic: String? = nil, selfValue: String? = nil, Fragment: String? = nil, Spread: String? = nil, Owner: String? = nil, Query: String? = nil, Operation: String? = nil, RefetchQuery: String? = nil, fields: String? = nil, variables: String? = nil, resolution: String? = nil, name: String? = nil, persistedID: String? = nil, text: String? = nil, plan: String? = nil, errorBehavior: String? = nil, throwsOnFieldError: String? = nil, bubbles: String? = nil, hasDeferred: String? = nil, Data: String? = nil, Action: String? = nil, OptimisticResponse: String? = nil, hash: String? = nil, commit: String? = nil, callAsFunction: String? = nil, Op: String? = nil, hashValue: String? = nil, phase: String? = nil, isRefreshing: String? = nil, isStale: String? = nil, retry: String? = nil, subscription: String? = nil, Types: String? = nil, Sites: String? = nil, AbstractSlots: String? = nil, schemaDigest: String? = nil, Baton: String? = nil, Swift: String? = nil, Set: String? = nil, Result: String? = nil, Optional: String? = nil, String: String? = nil, Int: String? = nil, Double: String? = nil, Bool: String? = nil, MainActor: String? = nil, Hasher: String? = nil, Sendable: String? = nil, id: String? = nil) {
                     self.`Type` = `Type`
                     self.`Protocol` = `Protocol`
                     self.`Any` = `Any`
@@ -8678,6 +8696,7 @@ mutation HostilePayload {
                     self.Query = Query
                     self.Operation = Operation
                     self.RefetchQuery = RefetchQuery
+                    self.fields = fields
                     self.variables = variables
                     self.resolution = resolution
                     self.name = name
@@ -8720,153 +8739,154 @@ mutation HostilePayload {
                     self.id = id
                 }
                 public var variable: Baton.Variable {
-                    var fields: [String: Baton.Variable] = [:]
-                    if let `Type` { fields["Type"] = .init(`Type`) }
-                    if let `Protocol` { fields["Protocol"] = .init(`Protocol`) }
-                    if let `Any` { fields["Any"] = .init(`Any`) }
-                    if let selfValue2 = self.`self` { fields["self"] = .init(selfValue2) }
-                    if let `Self` { fields["Self"] = .init(`Self`) }
-                    if let `init` { fields["init"] = .init(`init`) }
-                    if let `deinit` { fields["deinit"] = .init(`deinit`) }
-                    if let `subscript` { fields["subscript"] = .init(`subscript`) }
-                    if let `class` { fields["class"] = .init(`class`) }
-                    if let `struct` { fields["struct"] = .init(`struct`) }
-                    if let `enum` { fields["enum"] = .init(`enum`) }
-                    if let `func` { fields["func"] = .init(`func`) }
-                    if let `var` { fields["var"] = .init(`var`) }
-                    if let `let` { fields["let"] = .init(`let`) }
-                    if let `import` { fields["import"] = .init(`import`) }
-                    if let `extension` { fields["extension"] = .init(`extension`) }
-                    if let `operator` { fields["operator"] = .init(`operator`) }
-                    if let `static` { fields["static"] = .init(`static`) }
-                    if let `default` { fields["default"] = .init(`default`) }
-                    if let `case` { fields["case"] = .init(`case`) }
-                    if let `switch` { fields["switch"] = .init(`switch`) }
-                    if let `if` { fields["if"] = .init(`if`) }
-                    if let `else` { fields["else"] = .init(`else`) }
-                    if let `for` { fields["for"] = .init(`for`) }
-                    if let `in` { fields["in"] = .init(`in`) }
-                    if let `while` { fields["while"] = .init(`while`) }
-                    if let `repeat` { fields["repeat"] = .init(`repeat`) }
-                    if let `return` { fields["return"] = .init(`return`) }
-                    if let `break` { fields["break"] = .init(`break`) }
-                    if let `continue` { fields["continue"] = .init(`continue`) }
-                    if let `where` { fields["where"] = .init(`where`) }
-                    if let `is` { fields["is"] = .init(`is`) }
-                    if let `as` { fields["as"] = .init(`as`) }
-                    if let `try` { fields["try"] = .init(`try`) }
-                    if let `throw` { fields["throw"] = .init(`throw`) }
-                    if let `throws` { fields["throws"] = .init(`throws`) }
-                    if let `guard` { fields["guard"] = .init(`guard`) }
-                    if let `defer` { fields["defer"] = .init(`defer`) }
-                    if let `do` { fields["do"] = .init(`do`) }
-                    if let `catch` { fields["catch"] = .init(`catch`) }
-                    if let `true` { fields["true"] = .init(`true`) }
-                    if let `false` { fields["false"] = .init(`false`) }
-                    if let `nil` { fields["nil"] = .init(`nil`) }
-                    if let `super` { fields["super"] = .init(`super`) }
-                    if let `internal` { fields["internal"] = .init(`internal`) }
-                    if let `private` { fields["private"] = .init(`private`) }
-                    if let `public` { fields["public"] = .init(`public`) }
-                    if let `fileprivate` { fields["fileprivate"] = .init(`fileprivate`) }
-                    if let `open` { fields["open"] = .init(`open`) }
-                    if let `inout` { fields["inout"] = .init(`inout`) }
-                    if let `typealias` { fields["typealias"] = .init(`typealias`) }
-                    if let `associatedtype` { fields["associatedtype"] = .init(`associatedtype`) }
-                    if let `protocol` { fields["protocol"] = .init(`protocol`) }
-                    if let `some` { fields["some"] = .init(`some`) }
-                    if let `any` { fields["any"] = .init(`any`) }
-                    if let `rethrows` { fields["rethrows"] = .init(`rethrows`) }
-                    if let `fallthrough` { fields["fallthrough"] = .init(`fallthrough`) }
-                    if let `precedencegroup` { fields["precedencegroup"] = .init(`precedencegroup`) }
-                    if let `_` { fields["_"] = .init(`_`) }
-                    if let async { fields["async"] = .init(async) }
-                    if let borrowing { fields["borrowing"] = .init(borrowing) }
-                    if let consume { fields["consume"] = .init(consume) }
-                    if let consuming { fields["consuming"] = .init(consuming) }
-                    if let copy { fields["copy"] = .init(copy) }
-                    if let discard { fields["discard"] = .init(discard) }
-                    if let each { fields["each"] = .init(each) }
-                    if let isolated { fields["isolated"] = .init(isolated) }
-                    if let sending { fields["sending"] = .init(sending) }
-                    if let then { fields["then"] = .init(then) }
-                    if let unsafe { fields["unsafe"] = .init(unsafe) }
-                    if let `await` { fields["await"] = .init(`await`) }
-                    if let typeName { fields["typeName"] = .init(typeName) }
-                    if let satisfied { fields["satisfied"] = .init(satisfied) }
-                    if let missingRequiredField { fields["missingRequiredField"] = .init(missingRequiredField) }
-                    if let fieldErrors { fields["fieldErrors"] = .init(fieldErrors) }
-                    if let isPresent { fields["isPresent"] = .init(isPresent) }
-                    if let throwing { fields["throwing"] = .init(throwing) }
-                    if let caught { fields["caught"] = .init(caught) }
-                    if let refetchable { fields["refetchable"] = .init(refetchable) }
-                    if let refetch { fields["refetch"] = .init(refetch) }
-                    if let connection { fields["connection"] = .init(connection) }
-                    if let nodes { fields["nodes"] = .init(nodes) }
-                    if let hasNext { fields["hasNext"] = .init(hasNext) }
-                    if let hasPrevious { fields["hasPrevious"] = .init(hasPrevious) }
-                    if let isLoadingNext { fields["isLoadingNext"] = .init(isLoadingNext) }
-                    if let isLoadingPrevious { fields["isLoadingPrevious"] = .init(isLoadingPrevious) }
-                    if let connectionID { fields["connectionID"] = .init(connectionID) }
-                    if let loadNext { fields["loadNext"] = .init(loadNext) }
-                    if let loadPrevious { fields["loadPrevious"] = .init(loadPrevious) }
-                    if let bound { fields["bound"] = .init(bound) }
-                    if let errors { fields["errors"] = .init(errors) }
-                    if let child { fields["child"] = .init(child) }
-                    if let missing { fields["missing"] = .init(missing) }
-                    if let count { fields["count"] = .init(count) }
-                    if let lhs { fields["lhs"] = .init(lhs) }
-                    if let rhs { fields["rhs"] = .init(rhs) }
-                    if let hasher { fields["hasher"] = .init(hasher) }
-                    if let optimistic { fields["optimistic"] = .init(optimistic) }
-                    if let selfValue { fields["selfValue"] = .init(selfValue) }
-                    if let Fragment { fields["Fragment"] = .init(Fragment) }
-                    if let Spread { fields["Spread"] = .init(Spread) }
-                    if let Owner { fields["Owner"] = .init(Owner) }
-                    if let Query { fields["Query"] = .init(Query) }
-                    if let Operation { fields["Operation"] = .init(Operation) }
-                    if let RefetchQuery { fields["RefetchQuery"] = .init(RefetchQuery) }
-                    if let variables { fields["variables"] = .init(variables) }
-                    if let resolution { fields["resolution"] = .init(resolution) }
-                    if let name { fields["name"] = .init(name) }
-                    if let persistedID { fields["persistedID"] = .init(persistedID) }
-                    if let text { fields["text"] = .init(text) }
-                    if let plan { fields["plan"] = .init(plan) }
-                    if let errorBehavior { fields["errorBehavior"] = .init(errorBehavior) }
-                    if let throwsOnFieldError { fields["throwsOnFieldError"] = .init(throwsOnFieldError) }
-                    if let bubbles { fields["bubbles"] = .init(bubbles) }
-                    if let hasDeferred { fields["hasDeferred"] = .init(hasDeferred) }
-                    if let Data { fields["Data"] = .init(Data) }
-                    if let Action { fields["Action"] = .init(Action) }
-                    if let OptimisticResponse { fields["OptimisticResponse"] = .init(OptimisticResponse) }
-                    if let hash { fields["hash"] = .init(hash) }
-                    if let commit { fields["commit"] = .init(commit) }
-                    if let callAsFunction { fields["callAsFunction"] = .init(callAsFunction) }
-                    if let Op { fields["Op"] = .init(Op) }
-                    if let hashValue { fields["hashValue"] = .init(hashValue) }
-                    if let phase { fields["phase"] = .init(phase) }
-                    if let isRefreshing { fields["isRefreshing"] = .init(isRefreshing) }
-                    if let isStale { fields["isStale"] = .init(isStale) }
-                    if let retry { fields["retry"] = .init(retry) }
-                    if let subscription { fields["subscription"] = .init(subscription) }
-                    if let Types { fields["Types"] = .init(Types) }
-                    if let Sites { fields["Sites"] = .init(Sites) }
-                    if let AbstractSlots { fields["AbstractSlots"] = .init(AbstractSlots) }
-                    if let schemaDigest { fields["schemaDigest"] = .init(schemaDigest) }
-                    if let Baton { fields["Baton"] = .init(Baton) }
-                    if let Swift { fields["Swift"] = .init(Swift) }
-                    if let Set { fields["Set"] = .init(Set) }
-                    if let Result { fields["Result"] = .init(Result) }
-                    if let Optional { fields["Optional"] = .init(Optional) }
-                    if let String { fields["String"] = .init(String) }
-                    if let Int { fields["Int"] = .init(Int) }
-                    if let Double { fields["Double"] = .init(Double) }
-                    if let Bool { fields["Bool"] = .init(Bool) }
-                    if let MainActor { fields["MainActor"] = .init(MainActor) }
-                    if let Hasher { fields["Hasher"] = .init(Hasher) }
-                    if let Sendable { fields["Sendable"] = .init(Sendable) }
-                    if let id { fields["id"] = .init(id) }
-                    return .object(fields)
+                    var fields2: [String: Baton.Variable] = [:]
+                    if let `Type` { fields2["Type"] = .init(`Type`) }
+                    if let `Protocol` { fields2["Protocol"] = .init(`Protocol`) }
+                    if let `Any` { fields2["Any"] = .init(`Any`) }
+                    if let selfValue2 = self.`self` { fields2["self"] = .init(selfValue2) }
+                    if let `Self` { fields2["Self"] = .init(`Self`) }
+                    if let `init` { fields2["init"] = .init(`init`) }
+                    if let `deinit` { fields2["deinit"] = .init(`deinit`) }
+                    if let `subscript` { fields2["subscript"] = .init(`subscript`) }
+                    if let `class` { fields2["class"] = .init(`class`) }
+                    if let `struct` { fields2["struct"] = .init(`struct`) }
+                    if let `enum` { fields2["enum"] = .init(`enum`) }
+                    if let `func` { fields2["func"] = .init(`func`) }
+                    if let `var` { fields2["var"] = .init(`var`) }
+                    if let `let` { fields2["let"] = .init(`let`) }
+                    if let `import` { fields2["import"] = .init(`import`) }
+                    if let `extension` { fields2["extension"] = .init(`extension`) }
+                    if let `operator` { fields2["operator"] = .init(`operator`) }
+                    if let `static` { fields2["static"] = .init(`static`) }
+                    if let `default` { fields2["default"] = .init(`default`) }
+                    if let `case` { fields2["case"] = .init(`case`) }
+                    if let `switch` { fields2["switch"] = .init(`switch`) }
+                    if let `if` { fields2["if"] = .init(`if`) }
+                    if let `else` { fields2["else"] = .init(`else`) }
+                    if let `for` { fields2["for"] = .init(`for`) }
+                    if let `in` { fields2["in"] = .init(`in`) }
+                    if let `while` { fields2["while"] = .init(`while`) }
+                    if let `repeat` { fields2["repeat"] = .init(`repeat`) }
+                    if let `return` { fields2["return"] = .init(`return`) }
+                    if let `break` { fields2["break"] = .init(`break`) }
+                    if let `continue` { fields2["continue"] = .init(`continue`) }
+                    if let `where` { fields2["where"] = .init(`where`) }
+                    if let `is` { fields2["is"] = .init(`is`) }
+                    if let `as` { fields2["as"] = .init(`as`) }
+                    if let `try` { fields2["try"] = .init(`try`) }
+                    if let `throw` { fields2["throw"] = .init(`throw`) }
+                    if let `throws` { fields2["throws"] = .init(`throws`) }
+                    if let `guard` { fields2["guard"] = .init(`guard`) }
+                    if let `defer` { fields2["defer"] = .init(`defer`) }
+                    if let `do` { fields2["do"] = .init(`do`) }
+                    if let `catch` { fields2["catch"] = .init(`catch`) }
+                    if let `true` { fields2["true"] = .init(`true`) }
+                    if let `false` { fields2["false"] = .init(`false`) }
+                    if let `nil` { fields2["nil"] = .init(`nil`) }
+                    if let `super` { fields2["super"] = .init(`super`) }
+                    if let `internal` { fields2["internal"] = .init(`internal`) }
+                    if let `private` { fields2["private"] = .init(`private`) }
+                    if let `public` { fields2["public"] = .init(`public`) }
+                    if let `fileprivate` { fields2["fileprivate"] = .init(`fileprivate`) }
+                    if let `open` { fields2["open"] = .init(`open`) }
+                    if let `inout` { fields2["inout"] = .init(`inout`) }
+                    if let `typealias` { fields2["typealias"] = .init(`typealias`) }
+                    if let `associatedtype` { fields2["associatedtype"] = .init(`associatedtype`) }
+                    if let `protocol` { fields2["protocol"] = .init(`protocol`) }
+                    if let `some` { fields2["some"] = .init(`some`) }
+                    if let `any` { fields2["any"] = .init(`any`) }
+                    if let `rethrows` { fields2["rethrows"] = .init(`rethrows`) }
+                    if let `fallthrough` { fields2["fallthrough"] = .init(`fallthrough`) }
+                    if let `precedencegroup` { fields2["precedencegroup"] = .init(`precedencegroup`) }
+                    if let `_` { fields2["_"] = .init(`_`) }
+                    if let async { fields2["async"] = .init(async) }
+                    if let borrowing { fields2["borrowing"] = .init(borrowing) }
+                    if let consume { fields2["consume"] = .init(consume) }
+                    if let consuming { fields2["consuming"] = .init(consuming) }
+                    if let copy { fields2["copy"] = .init(copy) }
+                    if let discard { fields2["discard"] = .init(discard) }
+                    if let each { fields2["each"] = .init(each) }
+                    if let isolated { fields2["isolated"] = .init(isolated) }
+                    if let sending { fields2["sending"] = .init(sending) }
+                    if let then { fields2["then"] = .init(then) }
+                    if let unsafe { fields2["unsafe"] = .init(unsafe) }
+                    if let `await` { fields2["await"] = .init(`await`) }
+                    if let typeName { fields2["typeName"] = .init(typeName) }
+                    if let satisfied { fields2["satisfied"] = .init(satisfied) }
+                    if let missingRequiredField { fields2["missingRequiredField"] = .init(missingRequiredField) }
+                    if let fieldErrors { fields2["fieldErrors"] = .init(fieldErrors) }
+                    if let isPresent { fields2["isPresent"] = .init(isPresent) }
+                    if let throwing { fields2["throwing"] = .init(throwing) }
+                    if let caught { fields2["caught"] = .init(caught) }
+                    if let refetchable { fields2["refetchable"] = .init(refetchable) }
+                    if let refetch { fields2["refetch"] = .init(refetch) }
+                    if let connection { fields2["connection"] = .init(connection) }
+                    if let nodes { fields2["nodes"] = .init(nodes) }
+                    if let hasNext { fields2["hasNext"] = .init(hasNext) }
+                    if let hasPrevious { fields2["hasPrevious"] = .init(hasPrevious) }
+                    if let isLoadingNext { fields2["isLoadingNext"] = .init(isLoadingNext) }
+                    if let isLoadingPrevious { fields2["isLoadingPrevious"] = .init(isLoadingPrevious) }
+                    if let connectionID { fields2["connectionID"] = .init(connectionID) }
+                    if let loadNext { fields2["loadNext"] = .init(loadNext) }
+                    if let loadPrevious { fields2["loadPrevious"] = .init(loadPrevious) }
+                    if let bound { fields2["bound"] = .init(bound) }
+                    if let errors { fields2["errors"] = .init(errors) }
+                    if let child { fields2["child"] = .init(child) }
+                    if let missing { fields2["missing"] = .init(missing) }
+                    if let count { fields2["count"] = .init(count) }
+                    if let lhs { fields2["lhs"] = .init(lhs) }
+                    if let rhs { fields2["rhs"] = .init(rhs) }
+                    if let hasher { fields2["hasher"] = .init(hasher) }
+                    if let optimistic { fields2["optimistic"] = .init(optimistic) }
+                    if let selfValue { fields2["selfValue"] = .init(selfValue) }
+                    if let Fragment { fields2["Fragment"] = .init(Fragment) }
+                    if let Spread { fields2["Spread"] = .init(Spread) }
+                    if let Owner { fields2["Owner"] = .init(Owner) }
+                    if let Query { fields2["Query"] = .init(Query) }
+                    if let Operation { fields2["Operation"] = .init(Operation) }
+                    if let RefetchQuery { fields2["RefetchQuery"] = .init(RefetchQuery) }
+                    if let fields { fields2["fields"] = .init(fields) }
+                    if let variables { fields2["variables"] = .init(variables) }
+                    if let resolution { fields2["resolution"] = .init(resolution) }
+                    if let name { fields2["name"] = .init(name) }
+                    if let persistedID { fields2["persistedID"] = .init(persistedID) }
+                    if let text { fields2["text"] = .init(text) }
+                    if let plan { fields2["plan"] = .init(plan) }
+                    if let errorBehavior { fields2["errorBehavior"] = .init(errorBehavior) }
+                    if let throwsOnFieldError { fields2["throwsOnFieldError"] = .init(throwsOnFieldError) }
+                    if let bubbles { fields2["bubbles"] = .init(bubbles) }
+                    if let hasDeferred { fields2["hasDeferred"] = .init(hasDeferred) }
+                    if let Data { fields2["Data"] = .init(Data) }
+                    if let Action { fields2["Action"] = .init(Action) }
+                    if let OptimisticResponse { fields2["OptimisticResponse"] = .init(OptimisticResponse) }
+                    if let hash { fields2["hash"] = .init(hash) }
+                    if let commit { fields2["commit"] = .init(commit) }
+                    if let callAsFunction { fields2["callAsFunction"] = .init(callAsFunction) }
+                    if let Op { fields2["Op"] = .init(Op) }
+                    if let hashValue { fields2["hashValue"] = .init(hashValue) }
+                    if let phase { fields2["phase"] = .init(phase) }
+                    if let isRefreshing { fields2["isRefreshing"] = .init(isRefreshing) }
+                    if let isStale { fields2["isStale"] = .init(isStale) }
+                    if let retry { fields2["retry"] = .init(retry) }
+                    if let subscription { fields2["subscription"] = .init(subscription) }
+                    if let Types { fields2["Types"] = .init(Types) }
+                    if let Sites { fields2["Sites"] = .init(Sites) }
+                    if let AbstractSlots { fields2["AbstractSlots"] = .init(AbstractSlots) }
+                    if let schemaDigest { fields2["schemaDigest"] = .init(schemaDigest) }
+                    if let Baton { fields2["Baton"] = .init(Baton) }
+                    if let Swift { fields2["Swift"] = .init(Swift) }
+                    if let Set { fields2["Set"] = .init(Set) }
+                    if let Result { fields2["Result"] = .init(Result) }
+                    if let Optional { fields2["Optional"] = .init(Optional) }
+                    if let String { fields2["String"] = .init(String) }
+                    if let Int { fields2["Int"] = .init(Int) }
+                    if let Double { fields2["Double"] = .init(Double) }
+                    if let Bool { fields2["Bool"] = .init(Bool) }
+                    if let MainActor { fields2["MainActor"] = .init(MainActor) }
+                    if let Hasher { fields2["Hasher"] = .init(Hasher) }
+                    if let Sendable { fields2["Sendable"] = .init(Sendable) }
+                    if let id { fields2["id"] = .init(id) }
+                    return .object(fields2)
                 }
             }
         }
@@ -8978,6 +8998,7 @@ mutation HostilePayload {
             public var Query: Query2?
             public var Operation: Operation2?
             public var RefetchQuery: RefetchQuery2?
+            public var fields: Fields?
             public var variables: Variables?
             public var resolution: Resolution?
             public var name: Name?
@@ -9017,7 +9038,7 @@ mutation HostilePayload {
             public var MainActor: MainActor2?
             public var Hasher: Hasher3?
             public var Sendable: SendableResponse?
-            public init(`Type`: TypeResponse? = nil, `Protocol`: ProtocolResponse? = nil, `Any`: AnyResponse? = nil, `self` selfValue2: SelfResponse? = nil, `Self`: SelfResponse2? = nil, `init`: Init? = nil, `deinit`: Deinit? = nil, `subscript`: Subscript? = nil, `class`: Class? = nil, `struct`: Struct? = nil, `enum`: Enum? = nil, `func`: Func? = nil, `var`: Var? = nil, `let`: Let? = nil, `import`: Import? = nil, `extension`: Extension? = nil, `operator`: Operator? = nil, `static`: Static? = nil, `default`: Default? = nil, `case`: Case? = nil, `switch`: Switch? = nil, `if`: If? = nil, `else`: Else? = nil, `for`: For? = nil, `in`: In? = nil, `while`: While? = nil, `repeat`: Repeat? = nil, `return`: Return? = nil, `break`: Break? = nil, `continue`: Continue? = nil, `where`: Where? = nil, `is`: Is? = nil, `as`: As? = nil, `try`: Try? = nil, `throw`: Throw? = nil, `throws`: Throws? = nil, `guard`: Guard? = nil, `defer`: Defer? = nil, `do`: Do? = nil, `catch`: Catch? = nil, `true`: True? = nil, `false`: False? = nil, `nil`: Nil? = nil, `super`: Super? = nil, `internal`: Internal? = nil, `private`: Private? = nil, `public`: Public? = nil, `fileprivate`: Fileprivate? = nil, `open`: Open? = nil, `inout`: Inout? = nil, `typealias`: Typealias? = nil, `associatedtype`: Associatedtype? = nil, `protocol`: ProtocolResponse2? = nil, `some`: Some? = nil, `any`: AnyResponse2? = nil, `rethrows`: Rethrows? = nil, `fallthrough`: Fallthrough? = nil, `precedencegroup`: Precedencegroup? = nil, `_`: _2? = nil, async: Async? = nil, borrowing: Borrowing? = nil, consume: Consume? = nil, consuming: Consuming? = nil, copy: Copy? = nil, discard: Discard? = nil, each: Each? = nil, isolated: Isolated? = nil, sending: Sending? = nil, then: Then? = nil, unsafe: Unsafe? = nil, `await`: Await? = nil, typeName: TypeName? = nil, satisfied: Satisfied? = nil, missingRequiredField: MissingRequiredField? = nil, fieldErrors: FieldErrors? = nil, isPresent: IsPresent? = nil, throwing: Throwing? = nil, caught: Caught? = nil, refetchable: Refetchable? = nil, refetch: Refetch? = nil, connection: Connection? = nil, nodes: Nodes? = nil, hasNext: HasNext? = nil, hasPrevious: HasPrevious? = nil, isLoadingNext: IsLoadingNext? = nil, isLoadingPrevious: IsLoadingPrevious? = nil, connectionID: ConnectionID? = nil, loadNext: LoadNext? = nil, loadPrevious: LoadPrevious? = nil, bound: Bound? = nil, errors: Errors? = nil, child: Child? = nil, missing: Missing? = nil, count: Count? = nil, lhs: Lhs? = nil, rhs: Rhs? = nil, hasher: Hasher2? = nil, optimistic: Optimistic? = nil, selfValue: SelfValue? = nil, Fragment: Fragment2? = nil, Spread: Spread2? = nil, Owner: Owner2? = nil, Query: Query2? = nil, Operation: Operation2? = nil, RefetchQuery: RefetchQuery2? = nil, variables: Variables? = nil, resolution: Resolution? = nil, name: Name? = nil, persistedID: PersistedID? = nil, text: Text? = nil, plan: Plan? = nil, errorBehavior: ErrorBehavior? = nil, throwsOnFieldError: ThrowsOnFieldError? = nil, bubbles: Bubbles? = nil, hasDeferred: HasDeferred? = nil, Data: Data2? = nil, Action: Action2? = nil, OptimisticResponse: OptimisticResponse2? = nil, hash: Hash? = nil, commit: Commit? = nil, callAsFunction: CallAsFunction? = nil, Op: Op2? = nil, hashValue: HashValue? = nil, phase: Phase? = nil, isRefreshing: IsRefreshing? = nil, isStale: IsStale? = nil, retry: Retry? = nil, subscription: Subscription? = nil, Types: Types2? = nil, Sites: Sites2? = nil, AbstractSlots: AbstractSlots2? = nil, schemaDigest: SchemaDigest? = nil, Baton: BatonResponse? = nil, Swift: Swift2? = nil, Set: Set2? = nil, Result: Result2? = nil, Optional: Optional2? = nil, String: StringResponse? = nil, Int: IntResponse? = nil, Double: DoubleResponse? = nil, Bool: BoolResponse? = nil, MainActor: MainActor2? = nil, Hasher: Hasher3? = nil, Sendable: SendableResponse? = nil) {
+            public init(`Type`: TypeResponse? = nil, `Protocol`: ProtocolResponse? = nil, `Any`: AnyResponse? = nil, `self` selfValue2: SelfResponse? = nil, `Self`: SelfResponse2? = nil, `init`: Init? = nil, `deinit`: Deinit? = nil, `subscript`: Subscript? = nil, `class`: Class? = nil, `struct`: Struct? = nil, `enum`: Enum? = nil, `func`: Func? = nil, `var`: Var? = nil, `let`: Let? = nil, `import`: Import? = nil, `extension`: Extension? = nil, `operator`: Operator? = nil, `static`: Static? = nil, `default`: Default? = nil, `case`: Case? = nil, `switch`: Switch? = nil, `if`: If? = nil, `else`: Else? = nil, `for`: For? = nil, `in`: In? = nil, `while`: While? = nil, `repeat`: Repeat? = nil, `return`: Return? = nil, `break`: Break? = nil, `continue`: Continue? = nil, `where`: Where? = nil, `is`: Is? = nil, `as`: As? = nil, `try`: Try? = nil, `throw`: Throw? = nil, `throws`: Throws? = nil, `guard`: Guard? = nil, `defer`: Defer? = nil, `do`: Do? = nil, `catch`: Catch? = nil, `true`: True? = nil, `false`: False? = nil, `nil`: Nil? = nil, `super`: Super? = nil, `internal`: Internal? = nil, `private`: Private? = nil, `public`: Public? = nil, `fileprivate`: Fileprivate? = nil, `open`: Open? = nil, `inout`: Inout? = nil, `typealias`: Typealias? = nil, `associatedtype`: Associatedtype? = nil, `protocol`: ProtocolResponse2? = nil, `some`: Some? = nil, `any`: AnyResponse2? = nil, `rethrows`: Rethrows? = nil, `fallthrough`: Fallthrough? = nil, `precedencegroup`: Precedencegroup? = nil, `_`: _2? = nil, async: Async? = nil, borrowing: Borrowing? = nil, consume: Consume? = nil, consuming: Consuming? = nil, copy: Copy? = nil, discard: Discard? = nil, each: Each? = nil, isolated: Isolated? = nil, sending: Sending? = nil, then: Then? = nil, unsafe: Unsafe? = nil, `await`: Await? = nil, typeName: TypeName? = nil, satisfied: Satisfied? = nil, missingRequiredField: MissingRequiredField? = nil, fieldErrors: FieldErrors? = nil, isPresent: IsPresent? = nil, throwing: Throwing? = nil, caught: Caught? = nil, refetchable: Refetchable? = nil, refetch: Refetch? = nil, connection: Connection? = nil, nodes: Nodes? = nil, hasNext: HasNext? = nil, hasPrevious: HasPrevious? = nil, isLoadingNext: IsLoadingNext? = nil, isLoadingPrevious: IsLoadingPrevious? = nil, connectionID: ConnectionID? = nil, loadNext: LoadNext? = nil, loadPrevious: LoadPrevious? = nil, bound: Bound? = nil, errors: Errors? = nil, child: Child? = nil, missing: Missing? = nil, count: Count? = nil, lhs: Lhs? = nil, rhs: Rhs? = nil, hasher: Hasher2? = nil, optimistic: Optimistic? = nil, selfValue: SelfValue? = nil, Fragment: Fragment2? = nil, Spread: Spread2? = nil, Owner: Owner2? = nil, Query: Query2? = nil, Operation: Operation2? = nil, RefetchQuery: RefetchQuery2? = nil, fields: Fields? = nil, variables: Variables? = nil, resolution: Resolution? = nil, name: Name? = nil, persistedID: PersistedID? = nil, text: Text? = nil, plan: Plan? = nil, errorBehavior: ErrorBehavior? = nil, throwsOnFieldError: ThrowsOnFieldError? = nil, bubbles: Bubbles? = nil, hasDeferred: HasDeferred? = nil, Data: Data2? = nil, Action: Action2? = nil, OptimisticResponse: OptimisticResponse2? = nil, hash: Hash? = nil, commit: Commit? = nil, callAsFunction: CallAsFunction? = nil, Op: Op2? = nil, hashValue: HashValue? = nil, phase: Phase? = nil, isRefreshing: IsRefreshing? = nil, isStale: IsStale? = nil, retry: Retry? = nil, subscription: Subscription? = nil, Types: Types2? = nil, Sites: Sites2? = nil, AbstractSlots: AbstractSlots2? = nil, schemaDigest: SchemaDigest? = nil, Baton: BatonResponse? = nil, Swift: Swift2? = nil, Set: Set2? = nil, Result: Result2? = nil, Optional: Optional2? = nil, String: StringResponse? = nil, Int: IntResponse? = nil, Double: DoubleResponse? = nil, Bool: BoolResponse? = nil, MainActor: MainActor2? = nil, Hasher: Hasher3? = nil, Sendable: SendableResponse? = nil) {
                 self.`Type` = `Type`
                 self.`Protocol` = `Protocol`
                 self.`Any` = `Any`
@@ -9123,6 +9144,7 @@ mutation HostilePayload {
                 self.Query = Query
                 self.Operation = Operation
                 self.RefetchQuery = RefetchQuery
+                self.fields = fields
                 self.variables = variables
                 self.resolution = resolution
                 self.name = name
@@ -9164,152 +9186,153 @@ mutation HostilePayload {
                 self.Sendable = Sendable
             }
             public var variable: Baton.Variable {
-                var fields: [String: Baton.Variable] = [:]
-                if let `Type` { fields["Type"] = `Type`.variable }
-                if let `Protocol` { fields["Protocol"] = `Protocol`.variable }
-                if let `Any` { fields["Any"] = `Any`.variable }
-                if let selfValue2 = self.`self` { fields["self"] = selfValue2.variable }
-                if let `Self` { fields["Self"] = `Self`.variable }
-                if let `init` { fields["init"] = `init`.variable }
-                if let `deinit` { fields["deinit"] = `deinit`.variable }
-                if let `subscript` { fields["subscript"] = `subscript`.variable }
-                if let `class` { fields["class"] = `class`.variable }
-                if let `struct` { fields["struct"] = `struct`.variable }
-                if let `enum` { fields["enum"] = `enum`.variable }
-                if let `func` { fields["func"] = `func`.variable }
-                if let `var` { fields["var"] = `var`.variable }
-                if let `let` { fields["let"] = `let`.variable }
-                if let `import` { fields["import"] = `import`.variable }
-                if let `extension` { fields["extension"] = `extension`.variable }
-                if let `operator` { fields["operator"] = `operator`.variable }
-                if let `static` { fields["static"] = `static`.variable }
-                if let `default` { fields["default"] = `default`.variable }
-                if let `case` { fields["case"] = `case`.variable }
-                if let `switch` { fields["switch"] = `switch`.variable }
-                if let `if` { fields["if"] = `if`.variable }
-                if let `else` { fields["else"] = `else`.variable }
-                if let `for` { fields["for"] = `for`.variable }
-                if let `in` { fields["in"] = `in`.variable }
-                if let `while` { fields["while"] = `while`.variable }
-                if let `repeat` { fields["repeat"] = `repeat`.variable }
-                if let `return` { fields["return"] = `return`.variable }
-                if let `break` { fields["break"] = `break`.variable }
-                if let `continue` { fields["continue"] = `continue`.variable }
-                if let `where` { fields["where"] = `where`.variable }
-                if let `is` { fields["is"] = `is`.variable }
-                if let `as` { fields["as"] = `as`.variable }
-                if let `try` { fields["try"] = `try`.variable }
-                if let `throw` { fields["throw"] = `throw`.variable }
-                if let `throws` { fields["throws"] = `throws`.variable }
-                if let `guard` { fields["guard"] = `guard`.variable }
-                if let `defer` { fields["defer"] = `defer`.variable }
-                if let `do` { fields["do"] = `do`.variable }
-                if let `catch` { fields["catch"] = `catch`.variable }
-                if let `true` { fields["true"] = `true`.variable }
-                if let `false` { fields["false"] = `false`.variable }
-                if let `nil` { fields["nil"] = `nil`.variable }
-                if let `super` { fields["super"] = `super`.variable }
-                if let `internal` { fields["internal"] = `internal`.variable }
-                if let `private` { fields["private"] = `private`.variable }
-                if let `public` { fields["public"] = `public`.variable }
-                if let `fileprivate` { fields["fileprivate"] = `fileprivate`.variable }
-                if let `open` { fields["open"] = `open`.variable }
-                if let `inout` { fields["inout"] = `inout`.variable }
-                if let `typealias` { fields["typealias"] = `typealias`.variable }
-                if let `associatedtype` { fields["associatedtype"] = `associatedtype`.variable }
-                if let `protocol` { fields["protocol"] = `protocol`.variable }
-                if let `some` { fields["some"] = `some`.variable }
-                if let `any` { fields["any"] = `any`.variable }
-                if let `rethrows` { fields["rethrows"] = `rethrows`.variable }
-                if let `fallthrough` { fields["fallthrough"] = `fallthrough`.variable }
-                if let `precedencegroup` { fields["precedencegroup"] = `precedencegroup`.variable }
-                if let `_` { fields["_"] = `_`.variable }
-                if let async { fields["async"] = async.variable }
-                if let borrowing { fields["borrowing"] = borrowing.variable }
-                if let consume { fields["consume"] = consume.variable }
-                if let consuming { fields["consuming"] = consuming.variable }
-                if let copy { fields["copy"] = copy.variable }
-                if let discard { fields["discard"] = discard.variable }
-                if let each { fields["each"] = each.variable }
-                if let isolated { fields["isolated"] = isolated.variable }
-                if let sending { fields["sending"] = sending.variable }
-                if let then { fields["then"] = then.variable }
-                if let unsafe { fields["unsafe"] = unsafe.variable }
-                if let `await` { fields["await"] = `await`.variable }
-                if let typeName { fields["typeName"] = typeName.variable }
-                if let satisfied { fields["satisfied"] = satisfied.variable }
-                if let missingRequiredField { fields["missingRequiredField"] = missingRequiredField.variable }
-                if let fieldErrors { fields["fieldErrors"] = fieldErrors.variable }
-                if let isPresent { fields["isPresent"] = isPresent.variable }
-                if let throwing { fields["throwing"] = throwing.variable }
-                if let caught { fields["caught"] = caught.variable }
-                if let refetchable { fields["refetchable"] = refetchable.variable }
-                if let refetch { fields["refetch"] = refetch.variable }
-                if let connection { fields["connection"] = connection.variable }
-                if let nodes { fields["nodes"] = nodes.variable }
-                if let hasNext { fields["hasNext"] = hasNext.variable }
-                if let hasPrevious { fields["hasPrevious"] = hasPrevious.variable }
-                if let isLoadingNext { fields["isLoadingNext"] = isLoadingNext.variable }
-                if let isLoadingPrevious { fields["isLoadingPrevious"] = isLoadingPrevious.variable }
-                if let connectionID { fields["connectionID"] = connectionID.variable }
-                if let loadNext { fields["loadNext"] = loadNext.variable }
-                if let loadPrevious { fields["loadPrevious"] = loadPrevious.variable }
-                if let bound { fields["bound"] = bound.variable }
-                if let errors { fields["errors"] = errors.variable }
-                if let child { fields["child"] = child.variable }
-                if let missing { fields["missing"] = missing.variable }
-                if let count { fields["count"] = count.variable }
-                if let lhs { fields["lhs"] = lhs.variable }
-                if let rhs { fields["rhs"] = rhs.variable }
-                if let hasher { fields["hasher"] = hasher.variable }
-                if let optimistic { fields["optimistic"] = optimistic.variable }
-                if let selfValue { fields["selfValue"] = selfValue.variable }
-                if let Fragment { fields["Fragment"] = Fragment.variable }
-                if let Spread { fields["Spread"] = Spread.variable }
-                if let Owner { fields["Owner"] = Owner.variable }
-                if let Query { fields["Query"] = Query.variable }
-                if let Operation { fields["Operation"] = Operation.variable }
-                if let RefetchQuery { fields["RefetchQuery"] = RefetchQuery.variable }
-                if let variables { fields["variables"] = variables.variable }
-                if let resolution { fields["resolution"] = resolution.variable }
-                if let name { fields["name"] = name.variable }
-                if let persistedID { fields["persistedID"] = persistedID.variable }
-                if let text { fields["text"] = text.variable }
-                if let plan { fields["plan"] = plan.variable }
-                if let errorBehavior { fields["errorBehavior"] = errorBehavior.variable }
-                if let throwsOnFieldError { fields["throwsOnFieldError"] = throwsOnFieldError.variable }
-                if let bubbles { fields["bubbles"] = bubbles.variable }
-                if let hasDeferred { fields["hasDeferred"] = hasDeferred.variable }
-                if let Data { fields["Data"] = Data.variable }
-                if let Action { fields["Action"] = Action.variable }
-                if let OptimisticResponse { fields["OptimisticResponse"] = OptimisticResponse.variable }
-                if let hash { fields["hash"] = hash.variable }
-                if let commit { fields["commit"] = commit.variable }
-                if let callAsFunction { fields["callAsFunction"] = callAsFunction.variable }
-                if let Op { fields["Op"] = Op.variable }
-                if let hashValue { fields["hashValue"] = hashValue.variable }
-                if let phase { fields["phase"] = phase.variable }
-                if let isRefreshing { fields["isRefreshing"] = isRefreshing.variable }
-                if let isStale { fields["isStale"] = isStale.variable }
-                if let retry { fields["retry"] = retry.variable }
-                if let subscription { fields["subscription"] = subscription.variable }
-                if let Types { fields["Types"] = Types.variable }
-                if let Sites { fields["Sites"] = Sites.variable }
-                if let AbstractSlots { fields["AbstractSlots"] = AbstractSlots.variable }
-                if let schemaDigest { fields["schemaDigest"] = schemaDigest.variable }
-                if let Baton { fields["Baton"] = Baton.variable }
-                if let Swift { fields["Swift"] = Swift.variable }
-                if let Set { fields["Set"] = Set.variable }
-                if let Result { fields["Result"] = Result.variable }
-                if let Optional { fields["Optional"] = Optional.variable }
-                if let String { fields["String"] = String.variable }
-                if let Int { fields["Int"] = Int.variable }
-                if let Double { fields["Double"] = Double.variable }
-                if let Bool { fields["Bool"] = Bool.variable }
-                if let MainActor { fields["MainActor"] = MainActor.variable }
-                if let Hasher { fields["Hasher"] = Hasher.variable }
-                if let Sendable { fields["Sendable"] = Sendable.variable }
-                return .object(fields)
+                var fields2: [String: Baton.Variable] = [:]
+                if let `Type` { fields2["Type"] = `Type`.variable }
+                if let `Protocol` { fields2["Protocol"] = `Protocol`.variable }
+                if let `Any` { fields2["Any"] = `Any`.variable }
+                if let selfValue2 = self.`self` { fields2["self"] = selfValue2.variable }
+                if let `Self` { fields2["Self"] = `Self`.variable }
+                if let `init` { fields2["init"] = `init`.variable }
+                if let `deinit` { fields2["deinit"] = `deinit`.variable }
+                if let `subscript` { fields2["subscript"] = `subscript`.variable }
+                if let `class` { fields2["class"] = `class`.variable }
+                if let `struct` { fields2["struct"] = `struct`.variable }
+                if let `enum` { fields2["enum"] = `enum`.variable }
+                if let `func` { fields2["func"] = `func`.variable }
+                if let `var` { fields2["var"] = `var`.variable }
+                if let `let` { fields2["let"] = `let`.variable }
+                if let `import` { fields2["import"] = `import`.variable }
+                if let `extension` { fields2["extension"] = `extension`.variable }
+                if let `operator` { fields2["operator"] = `operator`.variable }
+                if let `static` { fields2["static"] = `static`.variable }
+                if let `default` { fields2["default"] = `default`.variable }
+                if let `case` { fields2["case"] = `case`.variable }
+                if let `switch` { fields2["switch"] = `switch`.variable }
+                if let `if` { fields2["if"] = `if`.variable }
+                if let `else` { fields2["else"] = `else`.variable }
+                if let `for` { fields2["for"] = `for`.variable }
+                if let `in` { fields2["in"] = `in`.variable }
+                if let `while` { fields2["while"] = `while`.variable }
+                if let `repeat` { fields2["repeat"] = `repeat`.variable }
+                if let `return` { fields2["return"] = `return`.variable }
+                if let `break` { fields2["break"] = `break`.variable }
+                if let `continue` { fields2["continue"] = `continue`.variable }
+                if let `where` { fields2["where"] = `where`.variable }
+                if let `is` { fields2["is"] = `is`.variable }
+                if let `as` { fields2["as"] = `as`.variable }
+                if let `try` { fields2["try"] = `try`.variable }
+                if let `throw` { fields2["throw"] = `throw`.variable }
+                if let `throws` { fields2["throws"] = `throws`.variable }
+                if let `guard` { fields2["guard"] = `guard`.variable }
+                if let `defer` { fields2["defer"] = `defer`.variable }
+                if let `do` { fields2["do"] = `do`.variable }
+                if let `catch` { fields2["catch"] = `catch`.variable }
+                if let `true` { fields2["true"] = `true`.variable }
+                if let `false` { fields2["false"] = `false`.variable }
+                if let `nil` { fields2["nil"] = `nil`.variable }
+                if let `super` { fields2["super"] = `super`.variable }
+                if let `internal` { fields2["internal"] = `internal`.variable }
+                if let `private` { fields2["private"] = `private`.variable }
+                if let `public` { fields2["public"] = `public`.variable }
+                if let `fileprivate` { fields2["fileprivate"] = `fileprivate`.variable }
+                if let `open` { fields2["open"] = `open`.variable }
+                if let `inout` { fields2["inout"] = `inout`.variable }
+                if let `typealias` { fields2["typealias"] = `typealias`.variable }
+                if let `associatedtype` { fields2["associatedtype"] = `associatedtype`.variable }
+                if let `protocol` { fields2["protocol"] = `protocol`.variable }
+                if let `some` { fields2["some"] = `some`.variable }
+                if let `any` { fields2["any"] = `any`.variable }
+                if let `rethrows` { fields2["rethrows"] = `rethrows`.variable }
+                if let `fallthrough` { fields2["fallthrough"] = `fallthrough`.variable }
+                if let `precedencegroup` { fields2["precedencegroup"] = `precedencegroup`.variable }
+                if let `_` { fields2["_"] = `_`.variable }
+                if let async { fields2["async"] = async.variable }
+                if let borrowing { fields2["borrowing"] = borrowing.variable }
+                if let consume { fields2["consume"] = consume.variable }
+                if let consuming { fields2["consuming"] = consuming.variable }
+                if let copy { fields2["copy"] = copy.variable }
+                if let discard { fields2["discard"] = discard.variable }
+                if let each { fields2["each"] = each.variable }
+                if let isolated { fields2["isolated"] = isolated.variable }
+                if let sending { fields2["sending"] = sending.variable }
+                if let then { fields2["then"] = then.variable }
+                if let unsafe { fields2["unsafe"] = unsafe.variable }
+                if let `await` { fields2["await"] = `await`.variable }
+                if let typeName { fields2["typeName"] = typeName.variable }
+                if let satisfied { fields2["satisfied"] = satisfied.variable }
+                if let missingRequiredField { fields2["missingRequiredField"] = missingRequiredField.variable }
+                if let fieldErrors { fields2["fieldErrors"] = fieldErrors.variable }
+                if let isPresent { fields2["isPresent"] = isPresent.variable }
+                if let throwing { fields2["throwing"] = throwing.variable }
+                if let caught { fields2["caught"] = caught.variable }
+                if let refetchable { fields2["refetchable"] = refetchable.variable }
+                if let refetch { fields2["refetch"] = refetch.variable }
+                if let connection { fields2["connection"] = connection.variable }
+                if let nodes { fields2["nodes"] = nodes.variable }
+                if let hasNext { fields2["hasNext"] = hasNext.variable }
+                if let hasPrevious { fields2["hasPrevious"] = hasPrevious.variable }
+                if let isLoadingNext { fields2["isLoadingNext"] = isLoadingNext.variable }
+                if let isLoadingPrevious { fields2["isLoadingPrevious"] = isLoadingPrevious.variable }
+                if let connectionID { fields2["connectionID"] = connectionID.variable }
+                if let loadNext { fields2["loadNext"] = loadNext.variable }
+                if let loadPrevious { fields2["loadPrevious"] = loadPrevious.variable }
+                if let bound { fields2["bound"] = bound.variable }
+                if let errors { fields2["errors"] = errors.variable }
+                if let child { fields2["child"] = child.variable }
+                if let missing { fields2["missing"] = missing.variable }
+                if let count { fields2["count"] = count.variable }
+                if let lhs { fields2["lhs"] = lhs.variable }
+                if let rhs { fields2["rhs"] = rhs.variable }
+                if let hasher { fields2["hasher"] = hasher.variable }
+                if let optimistic { fields2["optimistic"] = optimistic.variable }
+                if let selfValue { fields2["selfValue"] = selfValue.variable }
+                if let Fragment { fields2["Fragment"] = Fragment.variable }
+                if let Spread { fields2["Spread"] = Spread.variable }
+                if let Owner { fields2["Owner"] = Owner.variable }
+                if let Query { fields2["Query"] = Query.variable }
+                if let Operation { fields2["Operation"] = Operation.variable }
+                if let RefetchQuery { fields2["RefetchQuery"] = RefetchQuery.variable }
+                if let fields { fields2["fields"] = fields.variable }
+                if let variables { fields2["variables"] = variables.variable }
+                if let resolution { fields2["resolution"] = resolution.variable }
+                if let name { fields2["name"] = name.variable }
+                if let persistedID { fields2["persistedID"] = persistedID.variable }
+                if let text { fields2["text"] = text.variable }
+                if let plan { fields2["plan"] = plan.variable }
+                if let errorBehavior { fields2["errorBehavior"] = errorBehavior.variable }
+                if let throwsOnFieldError { fields2["throwsOnFieldError"] = throwsOnFieldError.variable }
+                if let bubbles { fields2["bubbles"] = bubbles.variable }
+                if let hasDeferred { fields2["hasDeferred"] = hasDeferred.variable }
+                if let Data { fields2["Data"] = Data.variable }
+                if let Action { fields2["Action"] = Action.variable }
+                if let OptimisticResponse { fields2["OptimisticResponse"] = OptimisticResponse.variable }
+                if let hash { fields2["hash"] = hash.variable }
+                if let commit { fields2["commit"] = commit.variable }
+                if let callAsFunction { fields2["callAsFunction"] = callAsFunction.variable }
+                if let Op { fields2["Op"] = Op.variable }
+                if let hashValue { fields2["hashValue"] = hashValue.variable }
+                if let phase { fields2["phase"] = phase.variable }
+                if let isRefreshing { fields2["isRefreshing"] = isRefreshing.variable }
+                if let isStale { fields2["isStale"] = isStale.variable }
+                if let retry { fields2["retry"] = retry.variable }
+                if let subscription { fields2["subscription"] = subscription.variable }
+                if let Types { fields2["Types"] = Types.variable }
+                if let Sites { fields2["Sites"] = Sites.variable }
+                if let AbstractSlots { fields2["AbstractSlots"] = AbstractSlots.variable }
+                if let schemaDigest { fields2["schemaDigest"] = schemaDigest.variable }
+                if let Baton { fields2["Baton"] = Baton.variable }
+                if let Swift { fields2["Swift"] = Swift.variable }
+                if let Set { fields2["Set"] = Set.variable }
+                if let Result { fields2["Result"] = Result.variable }
+                if let Optional { fields2["Optional"] = Optional.variable }
+                if let String { fields2["String"] = String.variable }
+                if let Int { fields2["Int"] = Int.variable }
+                if let Double { fields2["Double"] = Double.variable }
+                if let Bool { fields2["Bool"] = Bool.variable }
+                if let MainActor { fields2["MainActor"] = MainActor.variable }
+                if let Hasher { fields2["Hasher"] = Hasher.variable }
+                if let Sendable { fields2["Sendable"] = Sendable.variable }
+                return .object(fields2)
             }
 
             /// A partial response to show before the server answers; absent fields leave the store untouched.
@@ -10666,6 +10689,19 @@ mutation HostilePayload {
 
             /// A partial response to show before the server answers; absent fields leave the store untouched.
             nonisolated public struct RefetchQuery2: Sendable {
+                public var id: String?
+                public init(id: String? = nil) {
+                    self.id = id
+                }
+                public var variable: Baton.Variable {
+                    var fields: [String: Baton.Variable] = [:]
+                    if let id { fields["id"] = .init(id) }
+                    return .object(fields)
+                }
+            }
+
+            /// A partial response to show before the server answers; absent fields leave the store untouched.
+            nonisolated public struct Fields: Sendable {
                 public var id: String?
                 public init(id: String? = nil) {
                     self.id = id

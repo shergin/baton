@@ -469,16 +469,6 @@ fn defects() -> Vec<Defect> {
             writes: &["    public var `Self`: ", ".success(Self(anchor: anchor))"],
             swift: "instance member 'Self' of type 'Probe' cannot be used on instance of nested type 'Probe.Data'",
         },
-        // A builder's field named like the dictionary its `variable` fills.
-        Defect {
-            positions: &[PAYLOAD_SCALAR, PAYLOAD_LINKED],
-            names: Names::These(&["fields"]),
-            writes: &[
-                "var fields: [String: Baton.Variable] = [:]",
-                "if let fields { fields[\"fields\"]",
-            ],
-            swift: "cannot assign through subscript: 'fields' is a 'let' constant",
-        },
         // The name of a fragment or an operation is written unescaped.
         Defect {
             positions: &[FRAGMENT_NAME, QUERY_NAME, SUBSCRIPTION_NAME],
