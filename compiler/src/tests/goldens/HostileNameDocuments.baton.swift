@@ -3511,6 +3511,14 @@ nonisolated public struct HostileSpreads_character: Baton.Lens {
     @MainActor public var Sendable: HostileSpreadTarget_character { .init(anchor: anchor) }
 }
 
+/// Lens for `fragment _hostileHidden on Character`.
+nonisolated public struct _hostileHidden: Baton.Lens {
+    @_spi(Generated) public let anchor: Baton.Anchor
+    @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+    public static let typeName = "Character"
+    @MainActor public var name: String? { anchor.string(Slots.Character.name) }
+}
+
 /// Operation value for `query HostileArgumentsRefetchQuery`.
 nonisolated public struct HostileArgumentsRefetchQuery: Baton.Query {
     public var AbstractSlots: Bool?
@@ -5038,6 +5046,61 @@ fragment HostileConnection_character_1G22uz on Character {
                 guard anchor.record.is(Types.Character) else { return nil }
                 return .init(anchor: bound)
             }
+        }
+    }
+}
+
+/// Operation value for `query HostileHidden`.
+nonisolated public struct HostileHidden: Baton.Query {
+    public var resolution: Baton.OperationHandle<Self>? = nil
+
+    public init() {
+    }
+
+    public static let name = "HostileHidden"
+    public static let persistedID = "4f1209329e0caeac39498254e3b0777b"
+    public static let text = #"""
+query HostileHidden {
+  character(id: 1) {
+    ..._hostileHidden
+    id
+  }
+}
+
+fragment _hostileHidden on Character {
+  name
+}
+"""#
+
+    public var variables: Baton.Variables {
+        Baton.Variables([:])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        true
+    }
+
+    public func hash(into hasher: inout Hasher) {
+    }
+
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
+            .linked("character", key: .fixed(Slots.Query.character_c74a1e), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .literal("1")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+                .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
+                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            ])),
+        ]))
+
+    nonisolated public struct Data: Baton.Lens {
+        @_spi(Generated) public let anchor: Baton.Anchor
+        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Query"
+        @MainActor public var character: Character? { anchor.linked(Slots.Query.character_c74a1e).map(Character.init(anchor:)) }
+
+        nonisolated public struct Character: Baton.Lens {
+            @_spi(Generated) public let anchor: Baton.Anchor
+            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Character"
+            @MainActor public var _hostileHidden: _hostileHidden { .init(anchor: anchor) }
         }
     }
 }

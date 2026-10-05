@@ -521,6 +521,22 @@ struct HostileNameDocuments {
         """)
     var connectionNodes: HostileConnectionNodes_character
 
+    /// A fragment named from an underscore, which has no owner's prefix: its
+    /// spread's accessor takes its whole name.
+    @Fragment("""
+        fragment _hostileHidden on Character {
+          name
+        }
+        """)
+    var hidden: _hostileHidden
+
+    @Query("""
+        query HostileHidden {
+          character(id: 1) { ..._hostileHidden }
+        }
+        """)
+    var hiddenQuery: HostileHidden
+
     /// Each name as a field of a lens whose required field bubbles to the root,
     /// whose checks read a link as `child` and report the field that is
     /// `missing`.
