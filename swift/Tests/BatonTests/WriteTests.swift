@@ -63,7 +63,7 @@ struct WriteTests {
     func seededStore() throws -> Store {
         let store = Store()
         store.reportMissing = nil
-        store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
+        store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables, in: store.keys)))
         return store
     }
 
@@ -72,9 +72,9 @@ struct WriteTests {
     }
 
     /// Normalizes an optimistic response the way `Environment.mutate` does.
-    func layerChanges<Op: Baton.Operation>(_ operation: Op, _ optimistic: Variable) throws -> ChangeSet {
+    func layerChanges<Op: Baton.Operation>(_ operation: Op, _ optimistic: Variable, in store: Store) throws -> ChangeSet {
         let json = Data(("{\"data\":" + optimistic.json + "}").utf8)
-        return try Ingest.normalize(json, plan: Op.plan.resolve(operation.variables), rootKey: Store.mutationRootKey)
+        return try Ingest.normalize(json, plan: Op.plan.resolve(operation.variables, in: store.keys), rootKey: Store.mutationRootKey)
     }
 
     @Test("an optimistic response shows at once and is reverted when the server fails")
@@ -206,10 +206,12 @@ struct WriteTests {
     @Test("a mutation's root field is keyed without its input, so a call with a new input numbers no new slot")
     func mutationRootKeys() throws {
         let mutation = Registry.type("Mutation")
-        let first = TestRename.plan.resolve(TestRename(id: "1", name: "Rick Prime").variables)
+        let keys = Keys()
+        let first = TestRename.plan.resolve(TestRename(id: "1", name: "Rick Prime").variables, in: keys)
         let count = Registry.slotCount(mutation)
-        let second = TestRename.plan.resolve(TestRename(id: "1", name: "a name no other test sends").variables)
+        let second = TestRename.plan.resolve(TestRename(id: "1", name: "a name no other test sends").variables, in: keys)
         #expect(Registry.slotCount(mutation) == count)
+        #expect(keys.count(on: mutation) == 0, "the store numbers no rendering of it either")
         #expect(first.variant(for: mutation).fields.map(\.slot) == second.variant(for: mutation).fields.map(\.slot))
     }
 
@@ -221,7 +223,7 @@ struct WriteTests {
         #expect(rick.name == "Rick Sanchez")
 
         let rename = TestRename(id: "1", name: "Rick Prime")
-        let layer = store.applyOptimistic(try layerChanges(rename, TestRename.OptimisticResponse(rename: .init(character: .init(id: "1", name: "Rick Prime"))).variable))
+        let layer = store.applyOptimistic(try layerChanges(rename, TestRename.OptimisticResponse(rename: .init(character: .init(id: "1", name: "Rick Prime"))).variable, in: store))
         #expect(rick.name == "Rick Prime")
 
         // The list refreshes meanwhile: the server still calls him Rick Sanchez
@@ -229,14 +231,14 @@ struct WriteTests {
         // comes through.
         let refreshed = String(decoding: fixtureData, as: UTF8.self)
             .replacingOccurrences(of: "\"name\":\"Morty Smith\"", with: "\"name\":\"Morty C-137\"")
-        let changed = store.commit(try Ingest.normalize(Data(refreshed.utf8), plan: TestList.plan.resolve(TestList(page: 1).variables)))
+        let changed = store.commit(try Ingest.normalize(Data(refreshed.utf8), plan: TestList.plan.resolve(TestList(page: 1).variables, in: store.keys)))
         #expect(rick.name == "Rick Prime")
         #expect(morty.name == "Morty C-137")
         #expect(changed == 1, "only Morty's name changed in the end")
 
         // The mutation's own answer replaces the layer; nothing visible changes.
         let answer = fixture("rename-1")
-        let net = store.commit(try Ingest.normalize(answer, plan: TestRename.plan.resolve(rename.variables), rootKey: Store.mutationRootKey), replacingOptimistic: layer)
+        let net = store.commit(try Ingest.normalize(answer, plan: TestRename.plan.resolve(rename.variables, in: store.keys), rootKey: Store.mutationRootKey), replacingOptimistic: layer)
         #expect(net == 0)
         #expect(rick.name == "Rick Prime")
         #expect(store.optimisticLayers.isEmpty)
@@ -254,15 +256,15 @@ struct WriteTests {
 
         track()
         let rename = TestRename(id: "1", name: "Rick Prime")
-        let first = store.applyOptimistic(try layerChanges(rename, TestRename.OptimisticResponse(rename: .init(character: .init(id: "1", name: "Rick Prime"))).variable))
+        let first = store.applyOptimistic(try layerChanges(rename, TestRename.OptimisticResponse(rename: .init(character: .init(id: "1", name: "Rick Prime"))).variable, in: store))
         #expect(counter.fired == 1, "the apply changed the name")
 
         track()
         let answer = fixture("rename-1")
-        store.commit(try Ingest.normalize(answer, plan: TestRename.plan.resolve(rename.variables), rootKey: Store.mutationRootKey), replacingOptimistic: first)
+        store.commit(try Ingest.normalize(answer, plan: TestRename.plan.resolve(rename.variables, in: store.keys), rootKey: Store.mutationRootKey), replacingOptimistic: first)
         #expect(counter.fired == 1, "the answer agreed with the layer: no notification")
 
-        let second = store.applyOptimistic(try layerChanges(TestRename(id: "1", name: "Rick Two"), TestRename.OptimisticResponse(rename: .init(character: .init(id: "1", name: "Rick Two"))).variable))
+        let second = store.applyOptimistic(try layerChanges(TestRename(id: "1", name: "Rick Two"), TestRename.OptimisticResponse(rename: .init(character: .init(id: "1", name: "Rick Two"))).variable, in: store))
         #expect(counter.fired == 2)
         #expect(rick.name == "Rick Two")
 
@@ -277,7 +279,7 @@ struct WriteTests {
         let store = Store()
         let payload = fixture("search-1")
         let variables = TestSearch(name: "1").variables
-        store.commit(try Ingest.normalize(payload, plan: TestSearch.plan.resolve(variables)))
+        store.commit(try Ingest.normalize(payload, plan: TestSearch.plan.resolve(variables, in: store.keys)))
 
         #expect(store.existing("Character:1") != nil)
         #expect(store.existing("Location:1") != nil)
@@ -298,7 +300,7 @@ struct WriteTests {
         let store = Store()
         let payload = fixture("search-origins-1")
         let variables = TestSearchOrigins(name: "1").variables
-        store.commit(try Ingest.normalize(payload, plan: TestSearchOrigins.plan.resolve(variables)))
+        store.commit(try Ingest.normalize(payload, plan: TestSearchOrigins.plan.resolve(variables, in: store.keys)))
 
         #expect(store.existing("Character:1") != nil)
         #expect(store.existing("Character:2") != nil)
@@ -316,14 +318,14 @@ struct WriteTests {
         let store = Store()
         store.reportMissing = nil
         let list = fixture("characters-7-8")
-        store.commit(try Ingest.normalize(list, plan: TestList.plan.resolve(TestList(page: 1).variables)))
+        store.commit(try Ingest.normalize(list, plan: TestList.plan.resolve(TestList(page: 1).variables, in: store.keys)))
 
         let variables = TestNode(id: "8").variables
-        #expect(store.check(TestNode.plan.resolve(variables)) != .miss, "the id index satisfies the lookup")
+        #expect(store.check(TestNode.plan.resolve(variables, in: store.keys)) != .miss, "the id index satisfies the lookup")
         let data = TestNode.Data(anchor: Anchor(record: store.root, variables: variables, store: store))
         #expect(data.node?.asCharacter?.name == "Adjudicator Rick")
         #expect(data.node?.asEpisode == nil)
-        #expect(store.check(TestNode.plan.resolve(TestNode(id: "999").variables)) == .miss)
+        #expect(store.check(TestNode.plan.resolve(TestNode(id: "999").variables, in: store.keys)) == .miss)
     }
 
     @Test("a query's response committed by hand leaves the store as a fetch of the same response does, and a storeOnly handle answers from it")

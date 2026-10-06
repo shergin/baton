@@ -42,7 +42,7 @@ extension LeafValue {
 @MainActor
 @Suite("The tokenizer", .timeLimit(.minutes(1)))
 struct TokenizerTests {
-    let plan = TestTokenizerQuery.plan.resolve(TestTokenizerQuery().variables)
+    let plan = TestTokenizerQuery.plan.resolve(TestTokenizerQuery().variables, in: Keys())
 
     @Test("the printed document is the one in spec/tokenizer")
     func theDocumentIsTheSpecs() {
@@ -152,7 +152,7 @@ struct TokenizerTests {
                 id,
                 .linked("friend", key: .fixed(Registry.slot(user, "friend")), plural: false, selection: entity([id])),
             ])),
-        ])).resolve(.none)
+        ])).resolve(.none, in: Keys())
         let first = try Ingest.normalize(Data(#"{"data":{"user":{"id":42,"friend":{"id":7}}}}"#.utf8), plan: plan)
         let last = try Ingest.normalize(Data(#"{"data":{"user":{"friend":{"id":7},"id":42}}}"#.utf8), plan: plan)
         #expect(first.recordKeys.contains("TestNumericUser:42"))

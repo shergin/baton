@@ -14,16 +14,14 @@ public struct TypeID: Hashable, Sendable {
 /// without, has a dense index, from zero, into the values a record of the
 /// type makes room for; a program holds a bounded number of constants. A
 /// key rendered from variables, of which a session makes one per cursor
-/// and per id, has a negative index, numbered apart, and a record keeps it
-/// in a short list of the keys written to it, so the keys a session makes
-/// never widen the records of their type. Generated code holds slots as
-/// `static let`s; an app meets one only in the store's reports, which name
-/// it by its key.
+/// and per id, has a negative index, numbered apart by the store that
+/// renders it (`Keys`), and a record keeps it in a short list of the keys
+/// written to it, so the keys a session makes never widen the records of
+/// their type. Generated code holds slots as `static let`s; an app meets
+/// one only in the store's reports, and the store names it by its key.
 public struct Slot: Hashable, Sendable {
     @_spi(Generated) public let type: TypeID
     @_spi(Generated) public let index: Int32
-
-    public var storageKey: String { Registry.storageKey(self) }
 }
 
 /// A storage key read on whatever concrete type a record has: a field
@@ -33,19 +31,19 @@ public struct Slot: Hashable, Sendable {
 @MainActor
 public final class AbstractSlot {
     nonisolated public let storageKey: String
-    /// Whether the key was rendered from variables, which numbers it apart
-    /// on a type that has not met it.
-    nonisolated let rendered: Bool
+    /// The store's keys when the key was rendered from variables, which
+    /// number it on a type that has not met it; nil for the build's key.
+    nonisolated let keys: Keys?
     /// Slot index by `TypeID.raw`; `Int32.min` until the type is first read.
     private var indices: ContiguousArray<Int32> = []
 
     nonisolated public convenience init(_ storageKey: String) {
-        self.init(storageKey, rendered: false)
+        self.init(storageKey, keys: nil)
     }
 
-    nonisolated init(_ storageKey: String, rendered: Bool) {
+    nonisolated init(_ storageKey: String, keys: Keys?) {
         self.storageKey = storageKey
-        self.rendered = rendered
+        self.keys = keys
     }
 
     /// The key's slot on `type`.
@@ -59,7 +57,7 @@ public final class AbstractSlot {
     }
 
     private func resolve(_ type: TypeID) -> Slot {
-        let slot = Registry.slot(type, storageKey, rendered: rendered)
+        let slot = keys?.slot(type, storageKey) ?? Registry.slot(type, storageKey)
         let position = Int(type.raw)
         if position >= indices.count {
             indices.append(contentsOf: repeatElement(.min, count: position + 1 - indices.count))
@@ -69,24 +67,28 @@ public final class AbstractSlot {
     }
 }
 
-/// The process-wide table of types and storage keys. Independently compiled
-/// modules agree on slots because every slot is interned here on first use.
+/// The process-wide table of types and the storage keys the build names.
+/// Independently compiled modules agree on slots because every slot is
+/// interned here on first use. The keys a session renders from variables
+/// are a store's (`Keys`), not the process's.
 @_spi(Generated)
 public enum Registry {
     private struct State {
         var typeIDs: [String: TypeID] = [:]
         var typeNames: [String] = []
-        /// By type, the index of every key interned on it, of either kind.
+        /// By type, the index of every key interned on it.
         var slotIndices: [[String: Int32]] = []
         /// By type, the keys of the dense slots, by index.
         var slotKeys: [[String]] = []
-        /// By type, the keys numbered apart: the one at `n` has index `~n`.
-        var renderedKeys: [[String]] = []
         /// The slots of each connection type a plan describes, by `TypeID.raw`.
         var connections: [ConnectionSlots?] = []
     }
 
     private static let state = Mutex(State())
+    /// How many of the build's keys the process has numbered, on every type:
+    /// a store compares it with what it has reconciled its own numbers
+    /// against, without taking the lock.
+    static let denseTotal = Atomic<Int>(0)
 
     public static func type(_ name: String) -> TypeID {
         state.withLock { state in
@@ -96,36 +98,47 @@ public enum Registry {
             state.typeNames.append(name)
             state.slotIndices.append([:])
             state.slotKeys.append([])
-            state.renderedKeys.append([])
             return id
         }
     }
 
-    /// The slot of a key the compiler emitted as a constant: a dense one,
-    /// unless the process met the key's text first rendered or in the image.
+    /// The slot of a key the build names, a constant the compiler emitted
+    /// with arguments or without: dense, numbered on the type the first
+    /// time it is met.
     public static func slot(_ type: TypeID, _ storageKey: String) -> Slot {
-        slot(type, storageKey, rendered: false)
-    }
-
-    /// The slot of a storage key on a type. A key the type has not met is
-    /// numbered apart when it was rendered from variables, and densely
-    /// otherwise. The kind is decided then, once: a key's text has one slot
-    /// in a process, whether a constant or a rendering meets it later.
-    static func slot(_ type: TypeID, _ storageKey: String, rendered: Bool) -> Slot {
         state.withLock { state in
             let table = Int(type.raw)
             if let index = state.slotIndices[table][storageKey] { return Slot(type: type, index: index) }
-            let index: Int32
-            if rendered {
-                index = ~Int32(state.renderedKeys[table].count)
-                state.renderedKeys[table].append(storageKey)
-            } else {
-                index = Int32(state.slotKeys[table].count)
-                state.slotKeys[table].append(storageKey)
-            }
+            let index = Int32(state.slotKeys[table].count)
+            state.slotKeys[table].append(storageKey)
             state.slotIndices[table][storageKey] = index
+            denseTotal.wrappingAdd(1, ordering: .relaxed)
             return Slot(type: type, index: index)
         }
+    }
+
+    /// The build's keys numbered since `counts` last described each type's
+    /// table, and the total numbered so far; `counts` is brought up to date.
+    static func denseKeys(since counts: inout [Int]) -> (keys: [(type: TypeID, text: String, index: Int32)], total: Int) {
+        state.withLock { state in
+            var fresh: [(type: TypeID, text: String, index: Int32)] = []
+            if counts.count < state.slotKeys.count { counts.append(contentsOf: repeatElement(0, count: state.slotKeys.count - counts.count)) }
+            for table in state.slotKeys.indices {
+                let keys = state.slotKeys[table]
+                for index in counts[table]..<keys.count {
+                    fresh.append((TypeID(raw: Int32(table)), keys[index], Int32(index)))
+                }
+                counts[table] = keys.count
+            }
+            return (fresh, denseTotal.load(ordering: .relaxed))
+        }
+    }
+
+    /// The dense index of a key the build names on the type, when the
+    /// process has met it: what a store asks before it numbers a rendering,
+    /// so that a text has one slot.
+    static func denseIndex(_ type: TypeID, _ storageKey: String) -> Int32? {
+        state.withLock { $0.slotIndices[Int(type.raw)][storageKey] }
     }
 
     public static func typeName(_ type: TypeID) -> String {
@@ -137,17 +150,16 @@ public enum Registry {
         state.withLock { $0.typeNames }
     }
 
+    /// The text of a key the build names. A key a store numbered is named
+    /// by the store.
     public static func storageKey(_ slot: Slot) -> String {
-        state.withLock { state in
-            let table = Int(slot.type.raw)
-            return slot.index >= 0 ? state.slotKeys[table][Int(slot.index)] : state.renderedKeys[table][Int(~slot.index)]
-        }
+        precondition(slot.index >= 0, "a key a store numbered is named by the store")
+        return state.withLock { $0.slotKeys[Int(slot.type.raw)][Int(slot.index)] }
     }
 
-    /// How many storage keys have been interned on the type so far, of
-    /// either kind.
+    /// How many of the build's keys have been interned on the type so far.
     public static func slotCount(_ type: TypeID) -> Int {
-        state.withLock { $0.slotKeys[Int(type.raw)].count + $0.renderedKeys[Int(type.raw)].count }
+        state.withLock { $0.slotKeys[Int(type.raw)].count }
     }
 
     /// Keeps the slots a plan resolved for a connection type, under the type.

@@ -52,6 +52,7 @@ extension Store {
     /// The root of an operation, made on first sight: the caller retains it,
     /// or parks it in the release buffer.
     func root(_ key: String, resolved: ResolvedSelection, record: Record) -> Root {
+        adoptConstants()
         if let root = roots[key] { return root }
         let root = Root(key: key, resolved: resolved, record: record)
         roots[key] = root

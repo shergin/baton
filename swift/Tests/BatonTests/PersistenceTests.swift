@@ -42,7 +42,7 @@ struct PersistenceTests {
 
     /// Commits the fixture through its own plan and waits for the image.
     func seed(_ environment: Environment) async throws {
-        environment.store.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables)))
+        environment.store.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables, in: environment.store.keys)))
         await finish(environment)
     }
 
@@ -53,10 +53,57 @@ struct PersistenceTests {
         return data
     }
 
+    /// The `totalCount` of the connection a record links to under a slot,
+    /// or nil when the slot holds no link.
+    func totalCount(_ record: Record, _ slot: Slot) -> Int? {
+        guard case .ref(let connection) = record.read(slot) else { return nil }
+        guard case .int(let count) = connection.read(Registry.slot(connection.type, "totalCount")) else { return nil }
+        return count
+    }
+
+    @Test("a row the image named by a rendered key is read through a constant of its text the build named before the next launch")
+    func aRenderedRowIsReadThroughALaterConstant() async throws {
+        // A count no other test renders or names.
+        let written = TestNoteCounts(page: 1, count: 94)
+        let first = launch()
+        first.store.commit(try Ingest.normalize(fixture("note-counts-1"), plan: TestNoteCounts.plan.resolve(written.variables, in: first.store.keys)))
+        await finish(first)
+
+        let constant = Registry.slot(Registry.type("Character"), "notes(first:94)")
+        let second = launch()
+        let data = try stored(written, in: second)
+        #expect(data.characters?.results?.map(\.recent.totalCount) == [3, 0])
+        #expect(totalCount(try #require(second.store.existing("Character:1")), constant) == 3, "the constant reads the row the rendering wrote")
+        #expect(second.store.keys.count(on: Registry.type("Character")) == 0, "the second launch numbered nothing for the text")
+        await finish(second)
+    }
+
+    @Test("a row hydrated under a rendered key is adopted by a constant of its text the build names afterwards")
+    func aHydratedRenderingIsAdoptedByALaterConstant() async throws {
+        // A count no other test renders or names.
+        let written = TestNoteCounts(page: 1, count: 93)
+        let first = launch()
+        first.store.commit(try Ingest.normalize(fixture("note-counts-1"), plan: TestNoteCounts.plan.resolve(written.variables, in: first.store.keys)))
+        await finish(first)
+
+        let second = launch()
+        let data = try stored(written, in: second)
+        #expect(data.characters?.results?.first?.recent.totalCount == 3)
+        let record = try #require(second.store.existing("Character:1"))
+        let rendered = try #require(record.storedSlots.map(\.slot).first { second.store.storageKey(of: $0) == "notes(first:93)" })
+        #expect(rendered.index < 0, "the image's row filled the store's number")
+
+        let constant = Registry.slot(Registry.type("Character"), "notes(first:93)")
+        // A lens over the store that renders another key meets the constant.
+        _ = TestHeaderQuery.Data(anchor: Anchor(record: second.store.root, variables: TestHeaderQuery(id: "1").variables, store: second.store)).character
+        #expect(totalCount(record, constant) == 3, "the constant reads the hydrated row")
+        await finish(second)
+    }
+
     @Test("a networkOnly attach reads nothing from the image to decide")
     func networkOnlyReadsNoImage() async throws {
         let first = launch()
-        first.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
+        first.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables, in: first.store.keys)))
         await finish(first)
 
         let gate = GatedTransport()
@@ -155,11 +202,11 @@ struct PersistenceTests {
         let rename = TestRename(id: "1", name: "Rick Prime")
         let optimistic = TestRename.OptimisticResponse(rename: .init(character: .init(id: "1", name: "Rick Prime"))).variable
         let json = Data(("{\"data\":" + optimistic.json + "}").utf8)
-        _ = first.store.applyOptimistic(try Ingest.normalize(json, plan: TestRename.plan.resolve(rename.variables), rootKey: Store.mutationRootKey))
+        _ = first.store.applyOptimistic(try Ingest.normalize(json, plan: TestRename.plan.resolve(rename.variables, in: first.store.keys), rootKey: Store.mutationRootKey))
         // A commit under the layer writes the server's values, not the layer's.
         let refreshed = String(decoding: fixtureData, as: UTF8.self)
             .replacingOccurrences(of: "\"status\":\"Alive\"", with: "\"status\":\"Busy\"")
-        first.store.commit(try Ingest.normalize(Data(refreshed.utf8), plan: Fixture.plan.resolve(Fixture(page: 1).variables)))
+        first.store.commit(try Ingest.normalize(Data(refreshed.utf8), plan: Fixture.plan.resolve(Fixture(page: 1).variables, in: first.store.keys)))
         #expect(first.store.existing("Character:1")?.read(Registry.slot(Registry.type("Character"), "name")) == .string("Rick Prime"))
         await finish(first)
 
@@ -168,7 +215,7 @@ struct PersistenceTests {
         #expect(before.characters?.results?[0].name == "Rick Sanchez", "the layer was never written")
         #expect(before.characters?.results?[0].status == "Busy", "the commit under it was")
         let answer = fixture("rename-1")
-        second.store.commit(try Ingest.normalize(answer, plan: TestRename.plan.resolve(rename.variables), rootKey: Store.mutationRootKey))
+        second.store.commit(try Ingest.normalize(answer, plan: TestRename.plan.resolve(rename.variables, in: second.store.keys), rootKey: Store.mutationRootKey))
         await finish(second)
 
         let third = try stored(Fixture(page: 1), in: launch())
@@ -237,7 +284,7 @@ struct PersistenceTests {
         // A removal: the edge leaves the connection, the record is deleted.
         let removal = TestRemoveNote(id: "n2", connections: [notes.connectionID])
         let payload = fixture("remove-note-n2")
-        first.store.commit(try Ingest.normalize(payload, plan: TestRemoveNote.plan.resolve(removal.variables), rootKey: Store.mutationRootKey))
+        first.store.commit(try Ingest.normalize(payload, plan: TestRemoveNote.plan.resolve(removal.variables, in: first.store.keys), rootKey: Store.mutationRootKey))
         await finish(first)
 
         let second = launch()
@@ -256,7 +303,7 @@ struct PersistenceTests {
     @Test("an entity the image holds satisfies a lookup: a detail renders from a list an earlier launch fetched")
     func lookupsReadTheImage() async throws {
         let first = launch()
-        first.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
+        first.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables, in: first.store.keys)))
         await finish(first)
 
         let second = launch()
@@ -269,7 +316,7 @@ struct PersistenceTests {
     @Test("a lookup the image cannot answer leaves no record behind")
     func aLookupThatMisses() async throws {
         let first = launch()
-        first.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
+        first.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables, in: first.store.keys)))
         await finish(first)
 
         let second = launch()
@@ -355,7 +402,7 @@ struct PersistenceTests {
         readAndSweep(Fixture(page: 1), in: second)
         #expect(second.store.existing("Character:1") == nil, "memory does not hold it")
         let deletion = TestDeleteNote(id: "1")
-        second.store.commit(try Ingest.normalize(fixture("delete-record-1"), plan: TestDeleteNote.plan.resolve(deletion.variables), rootKey: Store.mutationRootKey))
+        second.store.commit(try Ingest.normalize(fixture("delete-record-1"), plan: TestDeleteNote.plan.resolve(deletion.variables, in: second.store.keys), rootKey: Store.mutationRootKey))
         await finish(second)
         // The list held Character:1: without it the list is a miss, and the
         // screen fetches rather than show the deleted character.
@@ -365,8 +412,8 @@ struct PersistenceTests {
     @Test("an edge appended to a connection the store holds only as a link's empty record makes it a miss at every check, in that launch and the next, not a connection of one edge or of none")
     func edgeIntoAConnectionOnlyTheImageHolds() async throws {
         let first = launch()
-        first.store.commit(try Ingest.normalize(notesPage(1), plan: TestNotesQuery.plan.resolve(TestNotesQuery(id: "1").variables)))
-        first.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
+        first.store.commit(try Ingest.normalize(notesPage(1), plan: TestNotesQuery.plan.resolve(TestNotesQuery(id: "1").variables, in: first.store.keys)))
+        first.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables, in: first.store.keys)))
         await finish(first)
 
         let second = launch(releaseBufferSize: 0)
@@ -378,8 +425,8 @@ struct PersistenceTests {
         let connection = "Character:1:__TestNotes_notes_connection"
         #expect(second.store.existing(connection) != nil)
         let append = TestAddNote(characterId: "1", text: "Appended", connections: [connection])
-        second.store.commit(try Ingest.normalize(fixture("add-note-n9"), plan: TestAddNote.plan.resolve(append.variables), rootKey: Store.mutationRootKey))
-        let plan = TestNotesQuery.plan.resolve(TestNotesQuery(id: "1").variables)
+        second.store.commit(try Ingest.normalize(fixture("add-note-n9"), plan: TestAddNote.plan.resolve(append.variables, in: second.store.keys), rootKey: Store.mutationRootKey))
+        let plan = TestNotesQuery.plan.resolve(TestNotesQuery(id: "1").variables, in: second.store.keys)
         #expect(second.store.check(plan) == .miss, "this launch reads no row of it either")
         // The first check read the page from the image, which leaves the
         // connection's own record, empty, as all memory holds of it.
@@ -415,7 +462,7 @@ struct PersistenceTests {
         defer { try? permit(0o644, paths) }
 
         let second = launch()
-        second.store.commit(try Ingest.normalize(fixture("delete-record-1"), plan: TestDeleteNote.plan.resolve(TestDeleteNote(id: "1").variables), rootKey: Store.mutationRootKey))
+        second.store.commit(try Ingest.normalize(fixture("delete-record-1"), plan: TestDeleteNote.plan.resolve(TestDeleteNote(id: "1").variables, in: second.store.keys), rootKey: Store.mutationRootKey))
         await second.store.persistence?.flush()
         // The file could not take the deletion, and is neither changed nor
         // marked for it.
@@ -448,8 +495,8 @@ struct PersistenceTests {
         // snapshot of nearly the whole fixture; the commits go on until the
         // queue outgrows the limit and the image is marked.
         let text = String(decoding: fixtureData, as: UTF8.self)
-        let plan = Fixture.plan.resolve(Fixture(page: 1).variables)
         let second = launch()
+        let plan = Fixture.plan.resolve(Fixture(page: 1).variables, in: second.store.keys)
         var commits = 0
         while !FileManager.default.fileExists(atPath: marker), commits < 500 {
             let renamed = text.replacingOccurrences(of: "\"name\":\"", with: "\"name\":\"\(commits) ")
@@ -496,21 +543,21 @@ struct PersistenceTests {
     @Test("records whose rows wait to be written survive a collection, so a check right behind a commit finds them")
     func unwrittenRecordsStay() async throws {
         let environment = launch()
-        environment.store.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables)))
+        environment.store.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables, in: environment.store.keys)))
         environment.store.collect()
-        #expect(environment.store.check(Fixture.plan.resolve(Fixture(page: 1).variables)) != .miss)
+        #expect(environment.store.check(Fixture.plan.resolve(Fixture(page: 1).variables, in: environment.store.keys)) != .miss)
         await finish(environment)
     }
 
     /// The plan of the header query for a character.
-    func header(_ id: String) -> ResolvedSelection {
-        TestHeaderQuery.plan.resolve(TestHeaderQuery(id: id).variables)
+    func header(_ id: String, in store: Store) -> ResolvedSelection {
+        TestHeaderQuery.plan.resolve(TestHeaderQuery(id: id).variables, in: store.keys)
     }
 
     /// Commits a root field the server does not know a character for, which
     /// the image holds as null.
     func commitUnknown(_ environment: Environment) throws {
-        environment.store.commit(try Ingest.normalize(fixture("character-null"), plan: header("999")))
+        environment.store.commit(try Ingest.normalize(fixture("character-null"), plan: header("999", in: environment.store)))
     }
 
     /// Runs `body` while the image's writer is held: what `body` commits is
@@ -528,7 +575,7 @@ struct PersistenceTests {
     @Test("a root field's new link keeps its record through a collection until the field's row is written, so a check does not read the row before it")
     func aQueuedRootLinkKeepsItsRecord() async throws {
         let first = launch()
-        first.store.commit(try Ingest.normalize(fixture("character-null"), plan: header("5")))
+        first.store.commit(try Ingest.normalize(fixture("character-null"), plan: header("5", in: first.store)))
         try await seed(first)
 
         let second = launch(releaseBufferSize: 0)
@@ -538,7 +585,7 @@ struct PersistenceTests {
             return
         }
         var listRetention: Retention? = list.retain()
-        let detail = header("5")
+        let detail = header("5", in: second.store)
         let jerry = try Ingest.normalize(fixture("character-header-5"), plan: detail)
         whileTheWriterWaits(in: second) {
             // The list read Jerry as the answer has him: only the root field
@@ -560,11 +607,11 @@ struct PersistenceTests {
 
         let second = launch(releaseBufferSize: 0)
         readAndSweep(Fixture(page: 1), in: second)
-        let list = Fixture.plan.resolve(Fixture(page: 1).variables)
-        let deletion = try Ingest.normalize(fixture("delete-record-1"), plan: TestDeleteNote.plan.resolve(TestDeleteNote(id: "1").variables), rootKey: Store.mutationRootKey)
+        let list = Fixture.plan.resolve(Fixture(page: 1).variables, in: second.store.keys)
+        let deletion = try Ingest.normalize(fixture("delete-record-1"), plan: TestDeleteNote.plan.resolve(TestDeleteNote(id: "1").variables, in: second.store.keys), rootKey: Store.mutationRootKey)
         // Albert Einstein, whose origin is `Location:1`.
-        let einstein = try Ingest.normalize(fixture("character-header-11"), plan: header("11"))
-        let origin = TestConditions.plan.resolve(TestConditions(id: "11", withOrigin: true, hideStatus: false).variables)
+        let einstein = try Ingest.normalize(fixture("character-header-11"), plan: header("11", in: second.store))
+        let origin = TestConditions.plan.resolve(TestConditions(id: "11", withOrigin: true, hideStatus: false).variables, in: second.store.keys)
         whileTheWriterWaits(in: second) {
             second.store.commit(deletion)
             #expect(second.store.check(list) == .miss, "the list holds Character:1")
@@ -582,7 +629,7 @@ struct PersistenceTests {
     /// `character(id: "5")`, which links to Jerry Smith.
     func seedJerry() async throws {
         let first = launch()
-        first.store.commit(try Ingest.normalize(fixture("character-header-5"), plan: header("5")))
+        first.store.commit(try Ingest.normalize(fixture("character-header-5"), plan: header("5", in: first.store)))
         try await seed(first)
     }
 
@@ -592,7 +639,7 @@ struct PersistenceTests {
 
         let second = launch()
         let store = second.store
-        let plan = header("5")
+        let plan = header("5", in: store)
         let slot = plan.variant(for: store.root.type).fields[0].slot
         @MainActor final class Seen {
             var fired = 0
@@ -626,10 +673,10 @@ struct PersistenceTests {
         let store = second.store
         // Jerry's header from the network: memory holds some of his fields,
         // the image holds the rest.
-        store.commit(try Ingest.normalize(fixture("character-header-5"), plan: header("5")))
+        store.commit(try Ingest.normalize(fixture("character-header-5"), plan: header("5", in: store)))
         let jerry = try #require(store.existing("Character:5"))
         let held = Set(jerry.storedSlots.map(\.slot.index))
-        let list = Fixture.plan.resolve(Fixture(page: 1).variables)
+        let list = Fixture.plan.resolve(Fixture(page: 1).variables, in: store.keys)
         guard case .linked(let page, _, _, _) = list.variant(for: store.root.type).fields[0].kind,
               let results = page.variant(for: page.type).fields.first(where: { $0.responseKey == "results" }),
               case .linked(let character, _, _, _) = results.kind
@@ -651,7 +698,7 @@ struct PersistenceTests {
         originObserver.track { for slot in originSlots { _ = origin.read(slot) } }
         let recordsBefore = store.count
 
-        #expect(store.check(TestEpisodesQuery.plan.resolve(TestEpisodesQuery(id: "5").variables)) == .image)
+        #expect(store.check(TestEpisodesQuery.plan.resolve(TestEpisodesQuery(id: "5").variables, in: store.keys)) == .image)
         var filled = 0
         for (slot, notifications) in observers {
             if held.contains(slot.index) {
@@ -699,7 +746,7 @@ struct PersistenceTests {
     func undatedDataIsStale() async throws {
         let transport = RecordedTransport { _ in fixtureData }
         let first = launch(transport)
-        first.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
+        first.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables, in: first.store.keys)))
         await finish(first)
 
         let second = launch(transport)
@@ -717,7 +764,7 @@ struct PersistenceTests {
     @Test("a root field an earlier check read from the image is image data for the next operation that reads it, stale without a fetch time of its own")
     func aRootFieldFromTheImageIsImageData() async throws {
         let first = launch()
-        first.store.commit(try Ingest.normalize(fixture("character-null"), plan: header("999")))
+        first.store.commit(try Ingest.normalize(fixture("character-null"), plan: header("999", in: first.store)))
         await finish(first)
 
         let transport = RecordedTransport { _ in fixture("character-null") }
@@ -725,7 +772,7 @@ struct PersistenceTests {
         _ = try stored(TestHeaderQuery(id: "999"), in: second)
         // Another operation on the same root field, which no launch fetched.
         let qualified = TestQualifiedQuery(id: "999")
-        #expect(second.store.check(TestQualifiedQuery.plan.resolve(qualified.variables)) == .image)
+        #expect(second.store.check(TestQualifiedQuery.plan.resolve(qualified.variables, in: second.store.keys)) == .image)
         let handle = second.handle(for: qualified, fetchPolicy: .storeOrNetwork)
         #expect(handle.isStale)
         await until { transport.requestCount == 1 }
@@ -784,7 +831,7 @@ struct PersistenceTests {
         // it; memory keeps what it had.
         let leaving = launch(version: "2")
         _ = try stored(Fixture(page: 1), in: leaving)
-        leaving.store.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables)))
+        leaving.store.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables, in: leaving.store.keys)))
         leaving.store.persistence?.removeAll()
         #expect(!FileManager.default.fileExists(atPath: image.url.path), "the file is gone, names and all")
         await finish(leaving)
@@ -890,7 +937,7 @@ struct PersistenceTests {
         let next = launch()
         let store = next.store
         let data = Fixture.Data(anchor: Anchor(record: store.root, variables: Fixture(page: 1).variables, store: store))
-        _ = store.check(Fixture.plan.resolve(Fixture(page: 1).variables))
+        _ = store.check(Fixture.plan.resolve(Fixture(page: 1).variables, in: store.keys))
         #expect(data.characters?.info?.count == nil)
         #expect(data.characters?.info?.pages == nil)
     }
@@ -949,7 +996,7 @@ struct PersistenceTests {
     @Test("an image made with a protection class carries it on its file and its write-ahead log")
     func protectionIsTheFiles() async throws {
         let environment = launch(protection: .complete)
-        environment.store.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables)))
+        environment.store.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables, in: environment.store.keys)))
         await environment.store.persistence?.flush()
         #expect(try protection(of: image.url.path) == .complete)
         #expect(FileManager.default.fileExists(atPath: image.url.path + "-wal"), "the log exists while the image is open")
@@ -997,7 +1044,7 @@ struct PersistenceTests {
         #expect(FileManager.default.createFile(atPath: marker, contents: nil))
 
         let environment = launch()
-        environment.store.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables)))
+        environment.store.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables, in: environment.store.keys)))
         await environment.store.persistence?.flush()
         #expect(!FileManager.default.fileExists(atPath: marker))
         _ = try stored(Fixture(page: 1), in: environment)
@@ -1084,7 +1131,7 @@ struct PersistenceTests {
         await handle.settle()
         await next.store.persistence?.flush()
 
-        #expect(leaving.store.check(Fixture.plan.resolve(Fixture(page: 1).variables)) == .miss, "the next user's rows")
+        #expect(leaving.store.check(Fixture.plan.resolve(Fixture(page: 1).variables, in: leaving.store.keys)) == .miss, "the next user's rows")
         leaving.invalidate()
         await leaving.store.persistence?.flush()
         withExtendedLifetime(retention) {}
@@ -1222,7 +1269,7 @@ struct PersistenceTests {
     /// the file.
     func lateWork(in environment: Environment) async throws {
         #expect(throws: NotStored.self) { try stored(Fixture(page: 1), in: environment) }
-        environment.store.commit(try Ingest.normalize(renamedFixture, plan: Fixture.plan.resolve(Fixture(page: 1).variables)))
+        environment.store.commit(try Ingest.normalize(renamedFixture, plan: Fixture.plan.resolve(Fixture(page: 1).variables, in: environment.store.keys)))
         await environment.store.persistence?.flush()
         environment.store.persistence?.removeAll()
         #expect(FileManager.default.fileExists(atPath: image.url.path), "the file is the other image's")
@@ -1233,7 +1280,7 @@ struct PersistenceTests {
         let first = launch()
         await finish(first)
         let second = launch()
-        second.store.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables)))
+        second.store.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables, in: second.store.keys)))
         await second.store.persistence?.flush()
         try await lateWork(in: first)
         await finish(first)
@@ -1291,7 +1338,7 @@ struct PersistenceTests {
     @Test("a second image made on a file another image in the process holds runs without it, and its close leaves the file to the first")
     func aSecondImageRunsWithoutTheFile() async throws {
         let first = launch()
-        first.store.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables)))
+        first.store.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables, in: first.store.keys)))
         await first.store.persistence?.flush()
         let second = launch()
         try await lateWork(in: second)
@@ -1310,7 +1357,7 @@ struct PersistenceTests {
         // Made before the file exists, then again after, under the spelling
         // Foundation standardizes differently once the file is there.
         let first = launch(at: otherSpelling)
-        first.store.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables)))
+        first.store.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables, in: first.store.keys)))
         await first.store.persistence?.flush()
         let second = launch(at: otherSpelling)
         try await lateWork(in: second)
@@ -1328,7 +1375,7 @@ struct PersistenceTests {
         do {
             let environment = launch()
             gone = environment.store.persistence
-            environment.store.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables)))
+            environment.store.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables, in: environment.store.keys)))
             await environment.store.persistence?.flush()
         }
         await until { gone == nil }
@@ -1359,7 +1406,7 @@ struct PersistenceTests {
             let image = TemporaryImage()
             let first = Store(persistence: Persistence(url: image.url))
             first.reportMissing = nil
-            first.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables)))
+            first.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables, in: first.keys)))
             await first.persistence?.flush()
             // The image's connection stays open while another moves its rows
             // into the main file and every page after the first is
@@ -1375,10 +1422,10 @@ struct PersistenceTests {
             try handle.close()
             let renamed = String(decoding: fixtureData, as: UTF8.self)
                 .replacingOccurrences(of: "\"name\":\"Morty Smith\"", with: "\"name\":\"Morty C-137\"")
-            first.commit(try Ingest.normalize(Data(renamed.utf8), plan: Fixture.plan.resolve(Fixture(page: 1).variables)))
+            first.commit(try Ingest.normalize(Data(renamed.utf8), plan: Fixture.plan.resolve(Fixture(page: 1).variables, in: first.keys)))
             let second = Store(persistence: first.persistence)
             second.reportMissing = nil
-            #expect(second.check(Fixture.plan.resolve(Fixture(page: 1).variables)) == .miss)
+            #expect(second.check(Fixture.plan.resolve(Fixture(page: 1).variables, in: second.keys)) == .miss)
             await first.persistence?.flush()
         }
     }

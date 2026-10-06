@@ -5,6 +5,20 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- The keys a session renders from its variables, one per id looked up and
+  per cursor paged past, are numbered by the store that renders them, in
+  `Keys`, where the process's registry numbered them for its own life: the
+  registry numbers the keys the build names, and nothing a session produces
+  is kept in a table of the process. A text has one slot in a store: a
+  rendering whose text the build names as a constant takes the constant's
+  slot, and a constant the build names after the store rendered its text is
+  adopted when the store next resolves, checks or commits: the two slots
+  become twins, the records' values are copied across, and every write
+  lands in both. A plan is resolved for a store, `Plan.resolve(_:in:)`, and a change
+  set made from the resolution is committed into that store; the image's
+  writer names a row's slots through the committing store's keys.
+  `Slot.storageKey` is gone: a report names a slot through
+  `Store.storageKey(of:)`.
 - The image's file is protected at creation:
   `Persistence(url:version:sizeLimit:protection:)` and the `name:` form take
   a `FileProtectionType`, which Apple's SQLite gives the file and its

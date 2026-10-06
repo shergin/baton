@@ -15,8 +15,8 @@ struct ReaderTests {
 
     func store(_ reports: Reports) -> Store {
         let store = Store()
-        store.reportMissing = { record, slot in reports.missing.append(record.key + "." + slot.storageKey) }
-        store.reportUnexpected = { record, slot, value in reports.unexpected.append(slot.storageKey + " = \(value)") }
+        store.reportMissing = { [unowned store] record, slot in reports.missing.append(record.key + "." + store.storageKey(of: slot)) }
+        store.reportUnexpected = { [unowned store] _, slot, value in reports.unexpected.append(store.storageKey(of: slot) + " = \(value)") }
         return store
     }
 
@@ -25,7 +25,7 @@ struct ReaderTests {
         let reports = Reports()
         let store = store(reports)
         let query = TestNotesQuery(id: "1")
-        store.commit(try Ingest.normalize(fixture("notes-total-null"), plan: TestNotesQuery.plan.resolve(query.variables)))
+        store.commit(try Ingest.normalize(fixture("notes-total-null"), plan: TestNotesQuery.plan.resolve(query.variables, in: store.keys)))
         let character = try #require(TestNotesQuery.Data(anchor: Anchor(record: store.root, variables: query.variables, store: store)).character)
         #expect(character.testNotes.notes.totalCount == 0)
         #expect(reports.unexpected == ["totalCount = null"])
@@ -36,7 +36,7 @@ struct ReaderTests {
     func missingNonNullLink() throws {
         let reports = Reports()
         let store = store(reports)
-        store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
+        store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables, in: store.keys)))
         let record = try #require(store.existing("Character:1"))
         let character = TestNotes_character(anchor: Anchor(record: record, variables: TestNotesQuery(id: "1").variables, store: store))
 
@@ -60,7 +60,7 @@ struct ReaderTests {
         let reports = Reports()
         let environment = Environment(transport: SilentTransport(), store: store(reports))
         environment.requiredFieldMissing = { record, path in reports.logged.append(record.key + " " + path) }
-        environment.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
+        environment.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables, in: environment.store.keys)))
         let record = try #require(environment.store.existing("Character:1"))
         let character = TestLoggedNotes_character(anchor: Anchor(record: record, variables: .none, store: environment.store))
 
@@ -162,7 +162,7 @@ struct ReaderTests {
         #expect(TestThrowingOrigin_character.fieldErrors(throwing).isEmpty)
 
         let deletion = TestDeleteNote(id: "L9")
-        environment.store.commit(try Ingest.normalize(fixture("delete-location-L9"), plan: TestDeleteNote.plan.resolve(deletion.variables), rootKey: Store.mutationRootKey))
+        environment.store.commit(try Ingest.normalize(fixture("delete-location-L9"), plan: TestDeleteNote.plan.resolve(deletion.variables, in: environment.store.keys), rootKey: Store.mutationRootKey))
         #expect(environment.store.existing("Location:L9")?.deleted == true)
         #expect(!TestRequiredOrigin.Data.Character.satisfied(Anchor(record: character, variables: .none, store: environment.store)))
         #expect(TestThrowingOrigin_character.fieldErrors(throwing).map(\.path) == ["origin"])
@@ -178,7 +178,7 @@ struct ReaderTests {
         let reports = Reports()
         let store = store(reports)
         let query = TestCaughtEpisodes(id: "1")
-        store.commit(try Ingest.normalize(fixture("caught-episodes-null"), plan: TestCaughtEpisodes.plan.resolve(query.variables)))
+        store.commit(try Ingest.normalize(fixture("caught-episodes-null"), plan: TestCaughtEpisodes.plan.resolve(query.variables, in: store.keys)))
         let character = try #require(TestCaughtEpisodes.Data(anchor: Anchor(record: store.root, variables: query.variables, store: store)).character)
         guard case .success(let episodes) = character.caught else {
             Issue.record("the list has no error")
@@ -199,7 +199,7 @@ struct ReaderTests {
             .linked("kinds", key: .fixed(Registry.slot(query, "kinds")), plural: false, selection: Selection(type: kinds, hasID: false, fields: [
                 .scalar("value", key: .fixed(value), kind: .string, list: false),
             ])),
-        ])).resolve(.none)
+        ])).resolve(.none, in: store.keys)
         store.commit(try Ingest.normalize(Data(#"{"data":{"kinds":{"value":"text"}}}"#.utf8), plan: plan))
         let anchor = Anchor(record: try #require(store.existing("client:root:kinds")), variables: .none, store: store)
         #expect(anchor.int(value) == nil)
@@ -214,9 +214,9 @@ struct ReaderTests {
     func ownerKeepsKeysApart() throws {
         let store = Store()
         store.reportMissing = nil
-        store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
+        store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables, in: store.keys)))
         for id in ["1", "2"] {
-            #expect(store.check(TestHeaderQuery.plan.resolve(TestHeaderQuery(id: id).variables)) != .miss, "the lookup binds character(id: \(id))")
+            #expect(store.check(TestHeaderQuery.plan.resolve(TestHeaderQuery(id: id).variables, in: store.keys)) != .miss, "the lookup binds character(id: \(id))")
         }
         let scopes = TestTwoScopes(a: "1", b: "2")
         let data = TestTwoScopes.Data(anchor: Anchor(record: store.root, variables: scopes.variables, store: store))
@@ -234,7 +234,7 @@ struct ReaderTests {
         let store = Store()
         store.reportMissing = nil
         let keys = TestKeys(id: "7", name: "Rick")
-        store.commit(try Ingest.normalize(fixture("keys-1"), plan: TestKeys.plan.resolve(keys.variables)))
+        store.commit(try Ingest.normalize(fixture("keys-1"), plan: TestKeys.plan.resolve(keys.variables, in: store.keys)))
         let query = TestSpreadKeys(id: "7", name: "Rick")
         let data = TestSpreadKeys.Data(anchor: Anchor(record: store.root, variables: query.variables, store: store))
         #expect(data.testKeyArguments.charactersByIds?.map(\.name) == ["Rick Sanchez", "Morty Smith"])
@@ -245,7 +245,7 @@ struct ReaderTests {
     func errorInsideATypeCondition() throws {
         let store = Store()
         let query = TestThrowingNode(id: "1")
-        let changes = try Ingest.normalize(fixture("throwing-node-1"), plan: TestThrowingNode.plan.resolve(query.variables))
+        let changes = try Ingest.normalize(fixture("throwing-node-1"), plan: TestThrowingNode.plan.resolve(query.variables, in: store.keys))
         store.commit(changes)
         let anchor = Anchor(record: store.root, variables: query.variables, store: store)
         #expect(TestThrowingNode.Data.fieldErrors(anchor).map(\.message) == ["name hidden"])
@@ -256,8 +256,8 @@ struct ReaderTests {
     func reservedNames() throws {
         let store = Store()
         store.reportMissing = nil
-        store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
-        #expect(store.check(TestHeaderQuery.plan.resolve(TestHeaderQuery(id: "1").variables)) != .miss)
+        store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables, in: store.keys)))
+        #expect(store.check(TestHeaderQuery.plan.resolve(TestHeaderQuery(id: "1").variables, in: store.keys)) != .miss)
         let query = TestReservedNames(id: "1")
         let data = TestReservedNames.Data(anchor: Anchor(record: store.root, variables: query.variables, store: store))
         let sites: TestReservedNames.Data.SitesLens? = data.sites
@@ -271,7 +271,7 @@ struct ReaderTests {
         let store = Store()
         store.reportMissing = nil
         let query = TestSwiftNames(id: "1")
-        store.commit(try Ingest.normalize(fixture("swift-names-1"), plan: TestSwiftNames.plan.resolve(query.variables)))
+        store.commit(try Ingest.normalize(fixture("swift-names-1"), plan: TestSwiftNames.plan.resolve(query.variables, in: store.keys)))
         let data = TestSwiftNames.Data(anchor: Anchor(record: store.root, variables: query.variables, store: store))
         let type: TestSwiftNames.Data.TypeLens? = data.type
         let mainActor: TestSwiftNames.Data.MainActorLens? = data.mainActor
@@ -303,13 +303,13 @@ struct ReaderTests {
         let store = Store()
         store.reportMissing = nil
         let errors = TestCollidingErrors(id: "1")
-        store.commit(try Ingest.normalize(fixture("colliding-lenses-name-hidden"), plan: TestCollidingErrors.plan.resolve(errors.variables)))
+        store.commit(try Ingest.normalize(fixture("colliding-lenses-name-hidden"), plan: TestCollidingErrors.plan.resolve(errors.variables, in: store.keys)))
         let errorsData = TestCollidingErrors.Data(anchor: Anchor(record: store.root, variables: errors.variables, store: store))
         let second: TestCollidingErrors.Data.TypesLens2? = errorsData.typesLens
         #expect(second?.id == "1")
         #expect(TestCollidingErrors.Data.fieldErrors(errorsData.anchor).map(\.message) == ["name hidden"])
         let required = TestCollidingRequired(id: "1")
-        store.commit(try Ingest.normalize(fixture("colliding-lenses-name-hidden"), plan: TestCollidingRequired.plan.resolve(required.variables)))
+        store.commit(try Ingest.normalize(fixture("colliding-lenses-name-hidden"), plan: TestCollidingRequired.plan.resolve(required.variables, in: store.keys)))
         #expect(!TestCollidingRequired.Data.satisfied(Anchor(record: store.root, variables: required.variables, store: store)))
     }
 
@@ -318,7 +318,7 @@ struct ReaderTests {
         let reports = Reports()
         let store = store(reports)
         let query = TestNotesQuery(id: "1")
-        store.commit(try Ingest.normalize(notesPage(1), plan: TestNotesQuery.plan.resolve(query.variables)))
+        store.commit(try Ingest.normalize(notesPage(1), plan: TestNotesQuery.plan.resolve(query.variables, in: store.keys)))
         let record = try #require(store.existing("Character:1"))
         let anchor = Anchor(record: record, variables: query.variables, store: store)
         #expect(!TestProfile_character.satisfied(anchor))

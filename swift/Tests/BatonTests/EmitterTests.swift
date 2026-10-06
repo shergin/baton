@@ -9,7 +9,7 @@ struct EmitterTests {
     /// The root lens of `query` over a store that holds the fixture `name`.
     func root<Query: Baton.Query>(_ query: Query, _ name: String, in store: Store) throws -> Anchor {
         store.reportMissing = nil
-        store.commit(try Ingest.normalize(fixture(name), plan: Query.plan.resolve(query.variables)))
+        store.commit(try Ingest.normalize(fixture(name), plan: Query.plan.resolve(query.variables, in: store.keys)))
         return Anchor(record: store.root, variables: query.variables, store: store)
     }
 
@@ -190,7 +190,7 @@ struct EmitterTests {
             "sendable": favorite,
         ]))
         let json = Data(("{\"data\":" + optimistic.variable.json + "}").utf8)
-        _ = store.applyOptimistic(try Ingest.normalize(json, plan: TestBuilderNames.plan.resolve(mutation.variables), rootKey: Store.mutationRootKey))
+        _ = store.applyOptimistic(try Ingest.normalize(json, plan: TestBuilderNames.plan.resolve(mutation.variables, in: store.keys), rootKey: Store.mutationRootKey))
         let root = try #require(store.existing(Store.mutationRootKey))
         let data = TestBuilderNames.Data(anchor: Anchor(record: root, variables: mutation.variables, store: store))
         let renamed: TestBuilderNames.Data.StringLens? = data.string
@@ -210,7 +210,7 @@ struct EmitterTests {
             "setFavorite": .object(["Baton": .object(["id": .string("1"), "Baton": .string("Rick Prime")])]),
         ]))
         let json = Data(("{\"data\":" + optimistic.variable.json + "}").utf8)
-        _ = store.applyOptimistic(try Ingest.normalize(json, plan: TestModuleNamedPayload.plan.resolve(mutation.variables), rootKey: Store.mutationRootKey))
+        _ = store.applyOptimistic(try Ingest.normalize(json, plan: TestModuleNamedPayload.plan.resolve(mutation.variables, in: store.keys), rootKey: Store.mutationRootKey))
         let root = try #require(store.existing(Store.mutationRootKey))
         let data = TestModuleNamedPayload.Data(anchor: Anchor(record: root, variables: mutation.variables, store: store))
         #expect(data.setFavorite?.Baton?.id == "1")
@@ -241,7 +241,7 @@ struct EmitterTests {
             "statuses": .list([.string("ALIVE"), .string("DEAD")]),
         ])]))
         let json = Data(("{\"data\":" + optimistic.variable.json + "}").utf8)
-        _ = store.applyOptimistic(try Ingest.normalize(json, plan: TestListPayload.plan.resolve(mutation.variables), rootKey: Store.mutationRootKey))
+        _ = store.applyOptimistic(try Ingest.normalize(json, plan: TestListPayload.plan.resolve(mutation.variables, in: store.keys), rootKey: Store.mutationRootKey))
         let root = try #require(store.existing(Store.mutationRootKey))
         let data = TestListPayload.Data(anchor: Anchor(record: root, variables: mutation.variables, store: store))
         let lists = try #require(data.setLists)

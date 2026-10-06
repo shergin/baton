@@ -546,13 +546,12 @@ final class Disk: @unchecked Sendable {
         }
     }
 
-    /// The slot a stored name is on a type, interning it for this process.
-    /// A name the process has met keeps its slot, of either kind. One it has
-    /// not met is taken as rendered when it has arguments: the file cannot
-    /// tell a constant from a key rendered from variables, and a key
-    /// numbered apart widens no record. A constant met later shares the
-    /// slot and reads it through the record's search.
-    func slot(_ name: Int, on type: TypeID) -> Slot? {
+    /// The slot a stored name is on a type, interning it for this store. A
+    /// name with arguments is the store's to number, as a rendering, unless
+    /// the build names it as a constant: the file cannot tell the two
+    /// apart, and a key numbered apart widens no record. One without
+    /// arguments is the build's.
+    func slot(_ name: Int, on type: TypeID, _ keys: Keys) -> Slot? {
         guard name >= 0, name < names.count else { return nil }
         let table = Int(type.raw)
         if table >= slots.count { slots.append(contentsOf: repeatElement([], count: table + 1 - slots.count)) }
@@ -560,7 +559,7 @@ final class Disk: @unchecked Sendable {
         var index = slots[table][name]
         if index == .min {
             let storageKey = names[name]
-            index = Registry.slot(type, storageKey, rendered: storageKey.utf8.contains(UInt8(ascii: "("))).index
+            index = (storageKey.utf8.contains(UInt8(ascii: "(")) ? keys.slot(type, storageKey) : Registry.slot(type, storageKey)).index
             slots[table][name] = index
         }
         return Slot(type: type, index: index)
@@ -598,9 +597,9 @@ final class Disk: @unchecked Sendable {
         }
         for item in work {
             switch item {
-            case .commit(let records, let root):
-                for snapshot in records { good = put(snapshot, prepared) && good }
-                for field in root { good = put(field, prepared) && good }
+            case .commit(let records, let root, let keys):
+                for snapshot in records { good = put(snapshot, prepared, keys) && good }
+                for field in root { good = put(field, prepared, keys) && good }
             case .fetched(let operation, let time):
                 good = put(operation, time, prepared) && good
             case .used(let records, let root):
@@ -637,22 +636,22 @@ final class Disk: @unchecked Sendable {
         return false
     }
 
-    private func put(_ snapshot: Record.Snapshot, _ prepared: Prepared) -> Bool {
+    private func put(_ snapshot: Record.Snapshot, _ prepared: Prepared, _ keys: Keys) -> Bool {
         let record = snapshot.record
         // What hangs off the mutation and subscription roots by path is a
         // payload, read once by its caller; entities inside it have keys of
         // their own and are written as themselves.
         if record.key.hasPrefix(Disk.mutationPayloads) || record.key.hasPrefix(Disk.subscriptionPayloads) { return true }
         writer.reset()
-        writer.row(snapshot, typeName: name(of:), slotName: name(of:))
+        writer.row(snapshot, typeName: name(of:), slotName: { name(of: $0, keys) })
         return upsert(prepared.upsertRecord, record.key)
     }
 
-    private func put(_ field: Store.RootField, _ prepared: Prepared) -> Bool {
+    private func put(_ field: Store.RootField, _ prepared: Prepared, _ keys: Keys) -> Bool {
         if case .missing = field.value { return true }
         writer.reset()
         writer.cell(field, typeName: name(of:))
-        return upsert(prepared.upsertRoot, Registry.storageKey(field.slot))
+        return upsert(prepared.upsertRoot, keys.text(of: field.slot))
     }
 
     /// Binds the key, the generation and the row's bytes, and steps.
@@ -717,19 +716,19 @@ final class Disk: @unchecked Sendable {
         return typeNames[index]
     }
 
-    /// The name id of a slot's storage key; negative for a slot that is never
-    /// written.
-    private func name(of slot: Slot) -> Int32 {
-        if slot.index < 0 { return name(of: slot, at: Int(~slot.index), in: &renderedNames) }
-        return name(of: slot, at: Int(slot.index), in: &slotNames)
+    /// The name id of a slot's storage key, which the store's keys give for
+    /// a slot the store numbered; negative for a slot that is never written.
+    private func name(of slot: Slot, _ keys: Keys) -> Int32 {
+        if slot.index < 0 { return name(of: slot, at: Int(~slot.index), in: &renderedNames, keys) }
+        return name(of: slot, at: Int(slot.index), in: &slotNames, keys)
     }
 
-    private func name(of slot: Slot, at index: Int, in table: inout [[Int32]]) -> Int32 {
+    private func name(of slot: Slot, at index: Int, in table: inout [[Int32]], _ keys: Keys) -> Int32 {
         let type = Int(slot.type.raw)
         if type >= table.count { table.append(contentsOf: repeatElement([], count: type + 1 - table.count)) }
         if index >= table[type].count { table[type].append(contentsOf: repeatElement(-1, count: index + 1 - table[type].count)) }
         if table[type][index] == -1 {
-            let storageKey = Registry.storageKey(slot)
+            let storageKey = keys.text(of: slot)
             table[type][index] = Disk.requestState.contains(storageKey) ? -2 : intern(storageKey)
         }
         return table[type][index]

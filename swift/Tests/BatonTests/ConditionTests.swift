@@ -12,7 +12,7 @@ struct ConditionTests {
 
     func store(_ misses: Misses) -> Store {
         let store = Store()
-        store.reportMissing = { record, slot in misses.reads.append(record.key + "." + slot.storageKey) }
+        store.reportMissing = { [unowned store] record, slot in misses.reads.append(record.key + "." + store.storageKey(of: slot)) }
         return store
     }
 
@@ -21,8 +21,8 @@ struct ConditionTests {
         let fetched = TestConditions(id: "1", withOrigin: true, hideStatus: false)
         let misses = Misses()
         let full = store(misses)
-        full.commit(try Ingest.normalize(fixture("conditions-included"), plan: TestConditions.plan.resolve(fetched.variables)))
-        #expect(full.check(TestConditions.plan.resolve(fetched.variables)) != .miss)
+        full.commit(try Ingest.normalize(fixture("conditions-included"), plan: TestConditions.plan.resolve(fetched.variables, in: full.keys)))
+        #expect(full.check(TestConditions.plan.resolve(fetched.variables, in: full.keys)) != .miss)
         let shown = try #require(TestConditions.Data(anchor: Anchor(record: full.root, variables: fetched.variables, store: full)).character)
         #expect(shown.origin?.id == "1")
         #expect(shown.origin?.name == "Earth (C-137)")
@@ -31,8 +31,8 @@ struct ConditionTests {
 
         let skipped = TestConditions(id: "1", withOrigin: false, hideStatus: true)
         let partial = store(misses)
-        partial.commit(try Ingest.normalize(fixture("conditions-excluded"), plan: TestConditions.plan.resolve(skipped.variables)))
-        #expect(partial.check(TestConditions.plan.resolve(skipped.variables)) != .miss, "a skipped field is not waited for")
+        partial.commit(try Ingest.normalize(fixture("conditions-excluded"), plan: TestConditions.plan.resolve(skipped.variables, in: partial.keys)))
+        #expect(partial.check(TestConditions.plan.resolve(skipped.variables, in: partial.keys)) != .miss, "a skipped field is not waited for")
         let hidden = try #require(TestConditions.Data(anchor: Anchor(record: partial.root, variables: skipped.variables, store: partial)).character)
         #expect(hidden.origin?.id == "1")
         #expect(hidden.origin?.name == nil)
@@ -46,8 +46,8 @@ struct ConditionTests {
         let search = TestUnion(name: "a")
         let misses = Misses()
         let store = store(misses)
-        store.commit(try Ingest.normalize(fixture("union-1"), plan: TestUnion.plan.resolve(search.variables)))
-        #expect(store.check(TestUnion.plan.resolve(search.variables)) != .miss)
+        store.commit(try Ingest.normalize(fixture("union-1"), plan: TestUnion.plan.resolve(search.variables, in: store.keys)))
+        #expect(store.check(TestUnion.plan.resolve(search.variables, in: store.keys)) != .miss)
         let results = try #require(TestUnion.Data(anchor: Anchor(record: store.root, variables: search.variables, store: store)).search)
         #expect(results.count == 3)
         #expect(results[0].asCharacter?.label == "Rick Sanchez")
@@ -68,8 +68,8 @@ struct ConditionTests {
             let node = TestNodeFields(id: "1")
             let store = Store()
             store.reportMissing = nil
-            store.commit(try Ingest.normalize(fixture(response), plan: TestNodeFields.plan.resolve(node.variables)))
-            #expect(store.check(TestNodeFields.plan.resolve(node.variables)) != .miss)
+            store.commit(try Ingest.normalize(fixture(response), plan: TestNodeFields.plan.resolve(node.variables, in: store.keys)))
+            #expect(store.check(TestNodeFields.plan.resolve(node.variables, in: store.keys)) != .miss)
             let data = try #require(TestNodeFields.Data(anchor: Anchor(record: store.root, variables: node.variables, store: store)).node)
             #expect(data.id == "1")
             #expect(data.asCharacter?.name == name)
@@ -82,7 +82,7 @@ struct ConditionTests {
         store.reportMissing = nil
         for again in [true, false] {
             let operation = TestTwoSpreads(id: "1", again: again)
-            store.commit(try Ingest.normalize(fixture("two-spreads-1"), plan: TestTwoSpreads.plan.resolve(operation.variables)))
+            store.commit(try Ingest.normalize(fixture("two-spreads-1"), plan: TestTwoSpreads.plan.resolve(operation.variables, in: store.keys)))
             let character = try #require(TestTwoSpreads.Data(anchor: Anchor(record: store.root, variables: operation.variables, store: store)).character)
             #expect(character.testRow.name == "Rick Sanchez")
             #expect((character.again != nil) == again)
@@ -94,7 +94,7 @@ struct ConditionTests {
         let fetched = TestStrictConditions(id: "1", withStatus: true)
         let store = Store()
         store.reportMissing = nil
-        store.commit(try Ingest.normalize(fixture("strict-conditions-caught"), plan: TestStrictConditions.plan.resolve(fetched.variables)))
+        store.commit(try Ingest.normalize(fixture("strict-conditions-caught"), plan: TestStrictConditions.plan.resolve(fetched.variables, in: store.keys)))
         let anchor = Anchor(record: store.root, variables: fetched.variables, store: store)
         #expect(TestStrictConditions.Data.fieldErrors(anchor).map(\.message) == ["species is private"], "the caught status and origin keep theirs")
         #expect(throws: FieldErrors.self) { try TestStrictConditions.Data.throwing(anchor) }
@@ -120,7 +120,7 @@ struct ConditionTests {
             let store = Store()
             store.reportMissing = nil
             let query = TestNamedSpread(id: id)
-            store.commit(try Ingest.normalize(fixture(file), plan: TestNamedSpread.plan.resolve(query.variables)))
+            store.commit(try Ingest.normalize(fixture(file), plan: TestNamedSpread.plan.resolve(query.variables, in: store.keys)))
             let node = try #require(TestNamedSpread.Data(anchor: Anchor(record: store.root, variables: query.variables, store: store)).node)
             #expect(node.named?.name == name, "\(file)")
             #expect((node.named != nil) == (name != nil), "\(file)")
@@ -132,7 +132,7 @@ struct ConditionTests {
         let store = Store()
         store.reportMissing = nil
         let query = TestFoldedNode(name: "1")
-        store.commit(try Ingest.normalize(fixture("search-1"), plan: TestFoldedNode.plan.resolve(query.variables)))
+        store.commit(try Ingest.normalize(fixture("search-1"), plan: TestFoldedNode.plan.resolve(query.variables, in: store.keys)))
         let results = try #require(TestFoldedNode.Data(anchor: Anchor(record: store.root, variables: query.variables, store: store)).search)
         let ids: [String?] = results.map(\.id)
         #expect(ids == ["1", "1", "1"], "every SearchResult is a Node, so `id` reads on the result itself")

@@ -152,7 +152,7 @@ struct LifetimeTests {
         }
         let environment = Environment(transport: transport, store: Store(releaseBufferSize: 0))
         let misses = Misses()
-        environment.store.reportMissing = { record, slot in misses.reads.append(record.key + "." + slot.storageKey) }
+        environment.store.reportMissing = { [unowned store = environment.store] record, slot in misses.reads.append(record.key + "." + store.storageKey(of: slot)) }
         let root = environment.store.root
         let before = root.renderedKeyCount
 
@@ -196,7 +196,7 @@ struct LifetimeTests {
     func policies() async throws {
         let transport = transport()
         let environment = Environment(transport: transport)
-        environment.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
+        environment.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables, in: environment.store.keys)))
 
         let quiet = environment.handle(for: TestList(page: 1), fetchPolicy: .storeOrNetwork)
         guard case .ready = quiet.phase else { Issue.record("expected ready from the store"); return }
@@ -478,7 +478,7 @@ struct LifetimeTests {
         let transport = GatedTransport()
         let environment = Environment(transport: transport)
         let store = environment.store
-        store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
+        store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables, in: store.keys)))
         let morty = TestRow_character(anchor: Anchor(record: try #require(store.existing("Character:2")), variables: .none, store: store))
 
         // Ready from the store, with the attach's fetch in flight.
@@ -671,7 +671,7 @@ struct LifetimeTests {
     func storageLifetime() async throws {
         let environment = Environment(transport: SilentTransport(), store: Store(releaseBufferSize: 0))
         environment.store.reportMissing = nil
-        environment.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
+        environment.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables, in: environment.store.keys)))
         // The renderer installs the view's state, runs the storage's update
         // and draws once; the pool lets its view graph go when it ends.
         var held: OperationHandle<TestHeaderQuery>?
@@ -719,7 +719,7 @@ struct LifetimeTests {
     @Test("a handle whose environment is gone keeps its data and stops loading instead of hanging")
     func handleAfterTheEnvironment() async throws {
         var environment: Baton.Environment? = Baton.Environment(transport: SilentTransport())
-        environment!.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
+        environment!.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables, in: environment!.store.keys)))
         let ready = environment!.handle(for: TestList(page: 1), fetchPolicy: .storeOnly)
         let empty = environment!.handle(for: TestList(page: 2), fetchPolicy: .storeOnly)
         let subscription = environment!.subscriptionHandle(for: TestNoteAdded(characterId: "1", connections: []))
@@ -756,7 +756,7 @@ struct LifetimeTests {
         }
 
         let store = Store()
-        store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
+        store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables, in: store.keys)))
         let character = try #require(store.existing("Character:1"))
         let notes = TestNotes_character(anchor: Anchor(record: character, variables: TestNotesQuery(id: "1").variables, store: store))
         await #expect(throws: EnvironmentError.outsideEnvironment) { try await notes.refetch() }
@@ -774,7 +774,7 @@ struct LifetimeTests {
         func environment() throws -> Baton.Environment {
             let environment = Baton.Environment(transport: SilentTransport(), store: Store(releaseBufferSize: 0))
             environment.store.reportMissing = nil
-            environment.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
+            environment.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables, in: environment.store.keys)))
             return environment
         }
         let first = try environment()
@@ -942,7 +942,7 @@ struct LifetimeTests {
     /// Commits the fixture's list and returns Rick and an episode he links
     /// to that links back to him: two records that hold each other.
     func commitLinkedRecords(into store: Store) throws -> (character: Record, episode: Record) {
-        store.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables)))
+        store.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables, in: store.keys)))
         let character = try #require(store.existing("Character:1"))
         let episode = try #require(links(of: character).first { links(of: $0).contains { $0 === character } })
         return (character, episode)
@@ -967,6 +967,28 @@ struct LifetimeTests {
         #expect(weakEpisode == nil, "and the one that kept the episode")
     }
 
+    @Test("after an environment's end its store keeps no key its session rendered")
+    func theEndForgetsRenderedKeys() async throws {
+        let transport = RecordedTransport { request in
+            guard case .string(let id)? = request.variables["id"] else { return nil }
+            return fixture("character-header-\(id)")
+        }
+        let environment = Baton.Environment(transport: transport)
+        environment.store.reportMissing = nil
+        let query = Registry.type("Query")
+        var retentions: [Retention] = []
+        for id in ["5", "11"] {
+            let handle = environment.handle(for: TestHeaderQuery(id: id))
+            retentions.append(handle.retain())
+            await handle.settle()
+            guard case .ready = handle.phase else { Issue.record("expected ready, got \(handle.phase)"); return }
+        }
+        #expect(environment.store.keys.count(on: query) == 2, "one key per id looked up")
+        await environment.end()
+        #expect(environment.store.keys.count(on: query) == 0)
+        withExtendedLifetime(retentions) {}
+    }
+
     @Test("an environment's end clears every record, even one something still holds, and leaves only the store's roots")
     func theEndClearsHeldRecords() async throws {
         let environment = Baton.Environment(transport: SilentTransport())
@@ -987,7 +1009,7 @@ struct LifetimeTests {
         let events = DeliveryTests.Events()
         let environment = Baton.Environment(transport: SilentTransport(), subscriptions: events)
         environment.store.reportMissing = nil
-        environment.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
+        environment.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables, in: environment.store.keys)))
         let handle = environment.handle(for: TestList(page: 1), fetchPolicy: .storeOnly)
         let retention = handle.retain()
         guard case .ready = handle.phase else { Issue.record("expected ready from the store, got \(handle.phase)"); return }

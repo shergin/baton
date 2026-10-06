@@ -19,8 +19,8 @@ final class Notifications {
 @Suite("One write path", .timeLimit(.minutes(1)))
 struct WritePathTests {
     /// Normalizes a payload as an optimistic response would be, at a root.
-    func changes<Op: Baton.Operation>(_ name: String, _ operation: Op, root: String = Store.rootKey) throws -> ChangeSet {
-        try Ingest.normalize(fixture(name), plan: Op.plan.resolve(operation.variables), rootKey: root)
+    func changes<Op: Baton.Operation>(_ name: String, _ operation: Op, root: String = Store.rootKey, in store: Store) throws -> ChangeSet {
+        try Ingest.normalize(fixture(name), plan: Op.plan.resolve(operation.variables, in: store.keys), rootKey: root)
     }
 
     @Test("a server's field error survives an optimistic write to the field that fails")
@@ -28,12 +28,12 @@ struct WritePathTests {
         let store = Store()
         store.reportMissing = nil
         let profile = TestProfileQuery(id: "1")
-        store.commit(try changes("character-errors", profile))
+        store.commit(try changes("character-errors", profile, in: store))
         let rick = try #require(store.existing("Character:1"))
         let image = Registry.slot(Registry.type("Character"), "image")
         #expect(rick.error(image) != nil)
 
-        let layer = store.applyOptimistic(try changes("character-deferred-1", profile))
+        let layer = store.applyOptimistic(try changes("character-deferred-1", profile, in: store))
         #expect(rick.read(image) == .string("rick.png"))
         #expect(rick.error(image) == nil, "the layer answers the field")
         store.revertOptimistic(layer)
@@ -49,11 +49,11 @@ struct WritePathTests {
         let retention = handle.retain()
         await handle.settle()
         let store = environment.store
-        store.commit(try changes("delete-note-n2", TestDeleteNote(id: "n2"), root: Store.mutationRootKey))
+        store.commit(try changes("delete-note-n2", TestDeleteNote(id: "n2"), root: Store.mutationRootKey, in: store))
         let note = try #require(store.existing("Note:n2"))
         #expect(note.deleted)
 
-        let layer = store.applyOptimistic(try changes("add-note-n2", TestAddNote(characterId: "1", text: "Portal gun needs charging", connections: []), root: Store.mutationRootKey))
+        let layer = store.applyOptimistic(try changes("add-note-n2", TestAddNote(characterId: "1", text: "Portal gun needs charging", connections: []), root: Store.mutationRootKey, in: store))
         #expect(!note.deleted, "the layer names the note again")
         store.revertOptimistic(layer)
         #expect(note.deleted, "and lifting it deletes it again")
@@ -65,16 +65,16 @@ struct WritePathTests {
         let store = Store()
         store.reportMissing = nil
         let list = TestList(page: 1)
-        store.commit(try changes("characters-7-8", list))
+        store.commit(try changes("characters-7-8", list, in: store))
         let data = TestList.Data(anchor: Anchor(record: store.root, variables: list.variables, store: store))
-        _ = store.applyOptimistic(try changes("delete-note-7", TestDeleteNote(id: "7"), root: Store.mutationRootKey))
+        _ = store.applyOptimistic(try changes("delete-note-7", TestDeleteNote(id: "7"), root: Store.mutationRootKey, in: store))
         #expect(data.characters?.results?.count == 1)
 
         let notifications = Notifications()
         let abradolf = TestRow_character(anchor: Anchor(record: try #require(store.existing("Character:7")), variables: .none, store: store))
         notifications.track { _ = abradolf.name }
         notifications.track { _ = data.characters?.results }
-        let changed = store.commit(try changes("characters-7-8", list))
+        let changed = store.commit(try changes("characters-7-8", list, in: store))
         #expect(changed == 0)
         #expect(notifications.fired == 0, "lifting and laying the deletion again cancels out")
     }
@@ -93,7 +93,7 @@ struct WritePathTests {
         #expect(character.notes.nodes.count == 2)
         let notifications = Notifications()
         notifications.track { _ = character.notes.nodes }
-        environment.store.commit(try changes("delete-note-n2", TestDeleteNote(id: "n2"), root: Store.mutationRootKey))
+        environment.store.commit(try changes("delete-note-n2", TestDeleteNote(id: "n2"), root: Store.mutationRootKey, in: environment.store))
         #expect(notifications.fired == 1)
         #expect(character.notes.nodes.map(\.id) == ["n1"])
         withExtendedLifetime(retention) {}
@@ -104,16 +104,16 @@ struct WritePathTests {
         let store = Store()
         store.reportMissing = nil
         let list = TestList(page: 1)
-        store.commit(try changes("characters-7-8", list))
+        store.commit(try changes("characters-7-8", list, in: store))
         let data = TestList.Data(anchor: Anchor(record: store.root, variables: list.variables, store: store))
         let notifications = Notifications()
         notifications.track { _ = data.characters?.results }
-        store.commit(try changes("delete-note-7", TestDeleteNote(id: "7"), root: Store.mutationRootKey))
+        store.commit(try changes("delete-note-7", TestDeleteNote(id: "7"), root: Store.mutationRootKey, in: store))
         #expect(notifications.fired == 1)
         #expect(data.characters?.results?.count == 1)
 
         notifications.track { _ = data.characters?.results }
-        store.commit(try changes("characters-7-8", list))
+        store.commit(try changes("characters-7-8", list, in: store))
         #expect(notifications.fired == 2, "the revival is told too")
         #expect(data.characters?.results?.count == 2)
     }

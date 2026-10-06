@@ -10,7 +10,7 @@ struct PhaseTests {
     /// A response about a character the operations below do not read, with
     /// nulls in it, so the store settles their phases again.
     func unrelatedCommit(_ store: Store) throws {
-        store.commit(try Ingest.normalize(fixture("characters-7-nulls"), plan: TestList.plan.resolve(TestList(page: 3).variables)))
+        store.commit(try Ingest.normalize(fixture("characters-7-nulls"), plan: TestList.plan.resolve(TestList(page: 3).variables, in: store.keys)))
     }
 
     func settled<Op: Baton.Query>(_ handle: OperationHandle<Op>) async {
@@ -241,7 +241,7 @@ struct PhaseTests {
             return
         }
         #expect(error.errors.map(\.message) == ["name hidden"])
-        let plan = TestStrictQuery.plan.resolve(TestStrictQuery(id: "1").variables)
+        let plan = TestStrictQuery.plan.resolve(TestStrictQuery(id: "1").variables, in: environment.store.keys)
         environment.store.commit(try Ingest.normalize(fixture("character-name-shown"), plan: plan))
         guard case .ready = handle.phase else {
             Issue.record("expected ready once a commit answers the field, got \(handle.phase)")
@@ -308,7 +308,7 @@ struct PhaseTests {
         }
         #expect(error.errors.map(\.message) == ["name hidden"])
         #expect(handle.isStale, "no response replaced the data the invalidation made stale")
-        let plan = TestStrictQuery.plan.resolve(TestStrictQuery(id: "1").variables)
+        let plan = TestStrictQuery.plan.resolve(TestStrictQuery(id: "1").variables, in: environment.store.keys)
         environment.store.commit(try Ingest.normalize(fixture("character-name-shown"), plan: plan))
         guard case .ready = handle.phase else {
             Issue.record("expected ready once a commit answers the field, got \(handle.phase)")
@@ -328,7 +328,7 @@ struct PhaseTests {
         environment.invalidate()
         await handle.settle()
         _ = consume retention
-        let plan = TestStrictQuery.plan.resolve(TestStrictQuery(id: "1").variables)
+        let plan = TestStrictQuery.plan.resolve(TestStrictQuery(id: "1").variables, in: environment.store.keys)
         environment.store.commit(try Ingest.normalize(fixture("character-name-shown"), plan: plan))
 
         let again = environment.handle(for: TestStrictQuery(id: "1"))
@@ -415,8 +415,8 @@ struct PhaseTests {
         }
         // Parked, the preloaded handles are settled by no commit before
         // their first attach.
-        environment.store.commit(try Ingest.normalize(fixture("character-name-hidden"), plan: TestStrictQuery.plan.resolve(TestStrictQuery(id: "1").variables)))
-        environment.store.commit(try Ingest.normalize(fixture("required-origin-1-null"), plan: TestRequiredOrigin.plan.resolve(TestRequiredOrigin(id: "1").variables)))
+        environment.store.commit(try Ingest.normalize(fixture("character-name-hidden"), plan: TestStrictQuery.plan.resolve(TestStrictQuery(id: "1").variables, in: environment.store.keys)))
+        environment.store.commit(try Ingest.normalize(fixture("required-origin-1-null"), plan: TestRequiredOrigin.plan.resolve(TestRequiredOrigin(id: "1").variables, in: environment.store.keys)))
 
         let attached = environment.handle(for: TestStrictQuery(id: "1"))
         #expect(attached === strict)
@@ -465,7 +465,7 @@ struct PhaseTests {
             return
         }
         // Another operation answers the name while the handle is parked.
-        let plan = TestProfileQuery.plan.resolve(TestProfileQuery(id: "1").variables)
+        let plan = TestProfileQuery.plan.resolve(TestProfileQuery(id: "1").variables, in: environment.store.keys)
         environment.store.commit(try Ingest.normalize(fixture("character-deferred-1"), plan: plan))
         let again = environment.handle(for: TestStrictQuery(id: "1"), fetchPolicy: .storeOnly)
         #expect(again === handle)
@@ -488,7 +488,7 @@ struct PhaseTests {
             return
         }
         // A parked handle is settled by no commit until a view attaches it.
-        let plan = TestStrictQuery.plan.resolve(TestStrictQuery(id: "1").variables)
+        let plan = TestStrictQuery.plan.resolve(TestStrictQuery(id: "1").variables, in: environment.store.keys)
         environment.store.commit(try Ingest.normalize(fixture("character-name-hidden"), plan: plan))
         let again = environment.handle(for: TestStrictQuery(id: "1"), fetchPolicy: .storeOnly)
         #expect(again === handle)
@@ -511,7 +511,7 @@ struct PhaseTests {
             Issue.record("expected ready, got \(handle.phase)")
             return
         }
-        let plan = TestRequiredOrigin.plan.resolve(TestRequiredOrigin(id: "1").variables)
+        let plan = TestRequiredOrigin.plan.resolve(TestRequiredOrigin(id: "1").variables, in: environment.store.keys)
         environment.store.commit(try Ingest.normalize(fixture("required-origin-1-null"), plan: plan))
         let again = environment.handle(for: TestRequiredOrigin(id: "1"), fetchPolicy: .storeOnly)
         #expect(again === handle)
@@ -586,13 +586,13 @@ struct PhaseTests {
             Issue.record("expected ready, got \(handle.phase)")
             return
         }
-        let other = TestStrictOrigin.plan.resolve(TestStrictOrigin(id: "2").variables)
+        let other = TestStrictOrigin.plan.resolve(TestStrictOrigin(id: "2").variables, in: environment.store.keys)
         environment.store.commit(try Ingest.normalize(fixture("strict-origin-2-hidden"), plan: other))
         guard case .ready = handle.phase else {
             Issue.record("another character's origin is not in the selection, got \(handle.phase)")
             return
         }
-        let own = TestStrictOrigin.plan.resolve(TestStrictOrigin(id: "1").variables)
+        let own = TestStrictOrigin.plan.resolve(TestStrictOrigin(id: "1").variables, in: environment.store.keys)
         environment.store.commit(try Ingest.normalize(fixture("strict-origin-1-moved"), plan: own))
         guard case .failed(let error as FieldErrors) = handle.phase else {
             Issue.record("expected the moved-in error, got \(handle.phase)")
@@ -613,7 +613,7 @@ struct PhaseTests {
             Issue.record("expected ready, got \(handle.phase)")
             return
         }
-        let other = TestStrictEpisodes.plan.resolve(TestStrictEpisodes(id: "2").variables)
+        let other = TestStrictEpisodes.plan.resolve(TestStrictEpisodes(id: "2").variables, in: environment.store.keys)
         environment.store.commit(try Ingest.normalize(fixture("strict-episodes-2-hidden"), plan: other))
         guard case .ready = handle.phase else {
             Issue.record("another character's episodes are not in the selection, got \(handle.phase)")
@@ -621,7 +621,7 @@ struct PhaseTests {
         }
         // The list is all the commit changes: the episode it links to holds
         // the error already.
-        let own = TestStrictEpisodes.plan.resolve(TestStrictEpisodes(id: "1").variables)
+        let own = TestStrictEpisodes.plan.resolve(TestStrictEpisodes(id: "1").variables, in: environment.store.keys)
         environment.store.commit(try Ingest.normalize(fixture("strict-episodes-1-moved"), plan: own))
         guard case .failed(let error as FieldErrors) = handle.phase else {
             Issue.record("expected the moved-in error, got \(handle.phase)")
@@ -642,7 +642,7 @@ struct PhaseTests {
             Issue.record("expected ready, got \(handle.phase)")
             return
         }
-        environment.store.commit(try Ingest.normalize(fixture("required-origin-1-null"), plan: TestRequiredOrigin.plan.resolve(TestRequiredOrigin(id: "1").variables)))
+        environment.store.commit(try Ingest.normalize(fixture("required-origin-1-null"), plan: TestRequiredOrigin.plan.resolve(TestRequiredOrigin(id: "1").variables, in: environment.store.keys)))
         guard case .failed(let error) = handle.phase, error is RequiredFieldError else {
             Issue.record("expected the required origin to fail the operation, got \(handle.phase)")
             return
@@ -667,7 +667,7 @@ struct PhaseTests {
 
         // The two without a public initializer, provoked: a response cut
         // off mid-way, and a store-only read of data never fetched.
-        let plan = TestList.plan.resolve(TestList(page: 1).variables)
+        let plan = TestList.plan.resolve(TestList(page: 1).variables, in: Keys())
         do {
             _ = try Ingest.normalize(fixtureData.prefix(40), plan: plan)
             Issue.record("expected the cut-off response to fail")
@@ -801,7 +801,7 @@ struct PhaseTests {
         _ = consume malformedRetention
 
         var environment: Baton.Environment? = Baton.Environment(transport: SilentTransport())
-        environment!.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
+        environment!.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables, in: environment!.store.keys)))
         let orphan = environment!.handle(for: TestList(page: 1), fetchPolicy: .storeOnly)
         let orphanRetention = orphan.retain()
         environment = nil
@@ -965,9 +965,9 @@ struct PhaseTests {
     func reporting(_ transport: any Transport) -> (Baton.Environment, Reports) {
         let environment = Environment(transport: transport)
         let reports = Reports()
-        environment.store.reportMissing = { record, slot in reports.missing.append(record.key + "." + slot.storageKey) }
-        environment.store.reportUnexpected = { record, slot, value in
-            if case .missing = value { reports.unexpected.append(record.key + "." + slot.storageKey) }
+        environment.store.reportMissing = { [unowned store = environment.store] record, slot in reports.missing.append(record.key + "." + store.storageKey(of: slot)) }
+        environment.store.reportUnexpected = { [unowned store = environment.store] record, slot, value in
+            if case .missing = value { reports.unexpected.append(record.key + "." + store.storageKey(of: slot)) }
         }
         return (environment, reports)
     }

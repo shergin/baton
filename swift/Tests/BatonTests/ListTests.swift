@@ -56,16 +56,16 @@ struct ListTests {
 
         // The second page, as the pagination query delivers it.
         let variables = Variables(["id": .string("1"), "count": .int(2), "cursor": .string("c2")])
-        environment.store.commit(try Ingest.normalize(notesPage(2), plan: TestNotesPaginationQuery.plan.resolve(variables)))
+        environment.store.commit(try Ingest.normalize(notesPage(2), plan: TestNotesPaginationQuery.plan.resolve(variables, in: environment.store.keys)))
         #expect(character.notes.nodes.map(\.text) == ["Wubba lubba dub dub", "Portal gun needs charging", "Get Schwifty", "Avoid the Citadel"])
         #expect(character.notes.hasNext)
         #expect(character.notes.pageInfo.endCursor == "c4")
 
         // The same page again changes nothing; a page after a stale cursor is ignored.
-        let unchanged = environment.store.commit(try Ingest.normalize(notesPage(2), plan: TestNotesPaginationQuery.plan.resolve(variables)))
+        let unchanged = environment.store.commit(try Ingest.normalize(notesPage(2), plan: TestNotesPaginationQuery.plan.resolve(variables, in: environment.store.keys)))
         #expect(unchanged == 0)
         let stale = Variables(["id": .string("1"), "count": .int(2), "cursor": .string("c1")])
-        environment.store.commit(try Ingest.normalize(notesPage(3), plan: TestNotesPaginationQuery.plan.resolve(stale)))
+        environment.store.commit(try Ingest.normalize(notesPage(3), plan: TestNotesPaginationQuery.plan.resolve(stale, in: environment.store.keys)))
         #expect(character.notes.nodes.count == 4)
         withExtendedLifetime(retention) {}
     }
@@ -76,18 +76,18 @@ struct ListTests {
         let (fired, track) = counter { _ = character.notes.nodes }
         let variables = Variables(["id": .string("1"), "count": .int(2), "cursor": .string("c2")])
         track()
-        environment.store.commit(try Ingest.normalize(notesPage(2), plan: TestNotesPaginationQuery.plan.resolve(variables)))
+        environment.store.commit(try Ingest.normalize(notesPage(2), plan: TestNotesPaginationQuery.plan.resolve(variables, in: environment.store.keys)))
         #expect(fired() == 1, "the list grew")
         #expect(character.notes.nodes.count == 4)
 
         track()
-        environment.store.commit(try Ingest.normalize(notesPage(1), plan: TestNotesQuery.plan.resolve(TestNotesQuery(id: "1").variables)))
+        environment.store.commit(try Ingest.normalize(notesPage(1), plan: TestNotesQuery.plan.resolve(TestNotesQuery(id: "1").variables, in: environment.store.keys)))
         #expect(character.notes.nodes.count == 2, "a refetch without a cursor is the first page again")
         #expect(character.notes.pageInfo.endCursor == "c2")
         #expect(fired() == 2)
 
         track()
-        environment.store.commit(try Ingest.normalize(notesPage(1), plan: TestNotesQuery.plan.resolve(TestNotesQuery(id: "1").variables)))
+        environment.store.commit(try Ingest.normalize(notesPage(1), plan: TestNotesQuery.plan.resolve(TestNotesQuery(id: "1").variables, in: environment.store.keys)))
         #expect(fired() == 2, "the same first page again: same edges, no notification")
         withExtendedLifetime(retention) {}
     }
@@ -189,17 +189,17 @@ struct ListTests {
         track()
         let appended = TestAddNote(characterId: "1", text: "Appended", connections: connections)
         let payload = fixture("add-note-n9")
-        environment.store.commit(try Ingest.normalize(payload, plan: TestAddNote.plan.resolve(appended.variables), rootKey: Store.mutationRootKey))
+        environment.store.commit(try Ingest.normalize(payload, plan: TestAddNote.plan.resolve(appended.variables, in: environment.store.keys), rootKey: Store.mutationRootKey))
         #expect(character.notes.nodes.map(\.text) == ["Wubba lubba dub dub", "Portal gun needs charging", "Appended"])
         #expect(fired() == 1)
 
         let prepended = TestAddNoteFirst(characterId: "1", text: "First", connections: connections)
         let first = fixture("add-note-n0")
-        environment.store.commit(try Ingest.normalize(first, plan: TestAddNoteFirst.plan.resolve(prepended.variables), rootKey: Store.mutationRootKey))
+        environment.store.commit(try Ingest.normalize(first, plan: TestAddNoteFirst.plan.resolve(prepended.variables, in: environment.store.keys), rootKey: Store.mutationRootKey))
         #expect(character.notes.nodes.map(\.text) == ["First", "Wubba lubba dub dub", "Portal gun needs charging", "Appended"])
 
         // The same node again is not inserted twice.
-        environment.store.commit(try Ingest.normalize(payload, plan: TestAddNote.plan.resolve(appended.variables), rootKey: Store.mutationRootKey))
+        environment.store.commit(try Ingest.normalize(payload, plan: TestAddNote.plan.resolve(appended.variables, in: environment.store.keys), rootKey: Store.mutationRootKey))
         #expect(character.notes.nodes.count == 4)
         withExtendedLifetime(retention) {}
     }
@@ -218,7 +218,7 @@ struct ListTests {
 
         // A page arrives while the layer is live: it lands under the optimistic edge.
         let variables = Variables(["id": .string("1"), "count": .int(2), "cursor": .string("c2")])
-        environment.store.commit(try Ingest.normalize(notesPage(2), plan: TestNotesPaginationQuery.plan.resolve(variables)))
+        environment.store.commit(try Ingest.normalize(notesPage(2), plan: TestNotesPaginationQuery.plan.resolve(variables, in: environment.store.keys)))
         #expect(character.notes.nodes.map(\.text) == ["Wubba lubba dub dub", "Portal gun needs charging", "Get Schwifty", "Avoid the Citadel", "Pending"])
 
         gate.respond(fixture("add-note-n9-pending"))
@@ -247,7 +247,7 @@ struct ListTests {
         track()
         let removal = TestRemoveNote(id: "n2", connections: [character.notes.connectionID])
         let payload = fixture("remove-note-n2")
-        environment.store.commit(try Ingest.normalize(payload, plan: TestRemoveNote.plan.resolve(removal.variables), rootKey: Store.mutationRootKey))
+        environment.store.commit(try Ingest.normalize(payload, plan: TestRemoveNote.plan.resolve(removal.variables, in: environment.store.keys), rootKey: Store.mutationRootKey))
         #expect(character.notes.nodes.map(\.text) == ["Wubba lubba dub dub"])
         #expect(fired() == 1, "the deleted record's observer was told")
         let record = try #require(environment.store.existing("Note:n2"))
@@ -305,17 +305,17 @@ struct ListTests {
 
         track()
         let appended = TestAddNoteNode(characterId: "1", text: "Node appended", connections: connections)
-        environment.store.commit(try Ingest.normalize(fixture("add-note-node-n7"), plan: TestAddNoteNode.plan.resolve(appended.variables), rootKey: Store.mutationRootKey))
+        environment.store.commit(try Ingest.normalize(fixture("add-note-node-n7"), plan: TestAddNoteNode.plan.resolve(appended.variables, in: environment.store.keys), rootKey: Store.mutationRootKey))
         #expect(character.notes.nodes.map(\.text) == ["Wubba lubba dub dub", "Portal gun needs charging", "Node appended"])
         #expect(fired() == 1)
         #expect(character.notes.edges?.last?.cursor == "", "the edge the store made has no cursor")
 
         let prepended = TestAddNoteNodeFirst(characterId: "1", text: "Node first", connections: connections)
-        environment.store.commit(try Ingest.normalize(fixture("add-note-node-n0"), plan: TestAddNoteNodeFirst.plan.resolve(prepended.variables), rootKey: Store.mutationRootKey))
+        environment.store.commit(try Ingest.normalize(fixture("add-note-node-n0"), plan: TestAddNoteNodeFirst.plan.resolve(prepended.variables, in: environment.store.keys), rootKey: Store.mutationRootKey))
         #expect(character.notes.nodes.map(\.text) == ["Node first", "Wubba lubba dub dub", "Portal gun needs charging", "Node appended"])
 
         // The same node again is not wrapped twice.
-        environment.store.commit(try Ingest.normalize(fixture("add-note-node-n7"), plan: TestAddNoteNode.plan.resolve(appended.variables), rootKey: Store.mutationRootKey))
+        environment.store.commit(try Ingest.normalize(fixture("add-note-node-n7"), plan: TestAddNoteNode.plan.resolve(appended.variables, in: environment.store.keys), rootKey: Store.mutationRootKey))
         #expect(character.notes.nodes.count == 4)
         withExtendedLifetime(retention) {}
     }
@@ -325,7 +325,7 @@ struct ListTests {
         let (environment, character, retention) = try await seededEnvironment()
         let entity = try #require(environment.store.existing("Character:1"))
         let appended = TestAddNote(characterId: "1", text: "Appended", connections: ["Character:1"])
-        environment.store.commit(try Ingest.normalize(fixture("add-note-n9"), plan: TestAddNote.plan.resolve(appended.variables), rootKey: Store.mutationRootKey))
+        environment.store.commit(try Ingest.normalize(fixture("add-note-n9"), plan: TestAddNote.plan.resolve(appended.variables, in: environment.store.keys), rootKey: Store.mutationRootKey))
         #expect(environment.store.existing("Character:1:edges:0") == nil, "no edge was made for it")
         #expect(entity.read(Registry.slot(entity.type, "edges")) == .missing)
         #expect(character.notes.nodes.map(\.text) == ["Wubba lubba dub dub", "Portal gun needs charging"])
@@ -336,7 +336,7 @@ struct ListTests {
     func nodeDirectiveOfAnotherEdgeType() async throws {
         let (environment, character, retention) = try await seededEnvironment()
         let appended = TestAddNoteNodeOfAnotherType(characterId: "1", text: "Node appended", connections: [character.notes.connectionID])
-        environment.store.commit(try Ingest.normalize(fixture("add-note-node-n7"), plan: TestAddNoteNodeOfAnotherType.plan.resolve(appended.variables), rootKey: Store.mutationRootKey))
+        environment.store.commit(try Ingest.normalize(fixture("add-note-node-n7"), plan: TestAddNoteNodeOfAnotherType.plan.resolve(appended.variables, in: environment.store.keys), rootKey: Store.mutationRootKey))
         #expect(character.notes.edges?.count == 2)
         #expect(character.notes.nodes.map(\.text) == ["Wubba lubba dub dub", "Portal gun needs charging"])
         withExtendedLifetime(retention) {}
@@ -426,7 +426,7 @@ struct ListTests {
         let store = Store()
         store.reportMissing = nil
         let sized = TestNotesSizedQuery(id: "1", size: 7)
-        store.commit(try Ingest.normalize(notesPage(1), plan: TestNotesSizedQuery.plan.resolve(sized.variables)))
+        store.commit(try Ingest.normalize(notesPage(1), plan: TestNotesSizedQuery.plan.resolve(sized.variables, in: store.keys)))
         let data = TestNotesSizedQuery.Data(anchor: Anchor(record: store.root, variables: sized.variables, store: store))
         let character = try #require(data.character?.testNotes)
         #expect(character.anchor.variables["count"] == .int(7))
@@ -443,13 +443,13 @@ struct ListTests {
     func pageAfterACursor() throws {
         let store = Store()
         store.reportMissing = nil
-        store.commit(try Ingest.normalize(notesPage(1), plan: TestNotesQuery.plan.resolve(TestNotesQuery(id: "1").variables)))
-        let plan = TestNotesPaginationQuery.plan.resolve(TestNotesPaginationQuery(count: 2, cursor: "c2", id: "1").variables)
+        store.commit(try Ingest.normalize(notesPage(1), plan: TestNotesQuery.plan.resolve(TestNotesQuery(id: "1").variables, in: store.keys)))
+        let plan = TestNotesPaginationQuery.plan.resolve(TestNotesPaginationQuery(count: 2, cursor: "c2", id: "1").variables, in: store.keys)
         #expect(store.check(plan) == .miss, "the first page does not answer the second")
         let changes = try Ingest.normalize(fixture("notes-page-2-errors"), plan: plan)
         let placed = try #require(changes.fieldErrors.first)
         #expect(changes.recordKeys[Int(placed.record)] == "Note:n3")
-        #expect(placed.slot.storageKey == "text")
+        #expect(store.storageKey(of: placed.slot) == "text")
         store.commit(changes)
         #expect(store.check(plan) == .memory)
         #expect(store.existing("Note:n3")?.error(Registry.slot(Registry.type("Note"), "text"))?.message == "text hidden")
@@ -467,8 +467,8 @@ struct ListTests {
 
     @Test("an error inside the second page a response merges into one connection lands on that page's record")
     func errorInTheSecondPage() throws {
-        let changes = try Ingest.normalize(fixture("two-notes-pages"), plan: TestTwoPagesQuery.plan.resolve(TestTwoPagesQuery(id: "1").variables))
         let store = Store()
+        let changes = try Ingest.normalize(fixture("two-notes-pages"), plan: TestTwoPagesQuery.plan.resolve(TestTwoPagesQuery(id: "1").variables, in: store.keys))
         store.reportMissing = nil
         store.commit(changes)
         let text = Registry.slot(Registry.type("Note"), "text")
@@ -480,9 +480,9 @@ struct ListTests {
     func aliasRenames() throws {
         let store = Store()
         store.reportMissing = nil
-        store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
+        store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables, in: store.keys)))
         let query = TestAliasQuery(id: "1")
-        #expect(store.check(TestAliasQuery.plan.resolve(query.variables)) != .miss, "the lookup finds the character the list fetched")
+        #expect(store.check(TestAliasQuery.plan.resolve(query.variables, in: store.keys)) != .miss, "the lookup finds the character the list fetched")
         let data = TestAliasQuery.Data(anchor: Anchor(record: store.root, variables: query.variables, store: store))
         #expect(data.character?.row.name == "Rick Sanchez")
     }
@@ -516,7 +516,7 @@ struct ListTests {
         await turns()
         let collections = store.collections
 
-        store.commit(try Ingest.normalize(notesPage(1), plan: TestNotesQuery.plan.resolve(TestNotesQuery(id: "1").variables)))
+        store.commit(try Ingest.normalize(notesPage(1), plan: TestNotesQuery.plan.resolve(TestNotesQuery(id: "1").variables, in: store.keys)))
         #expect(character.notes.nodes.count == 2, "the first page again replaces the merged list")
         #expect(store.collections == collections, "the pass waits for the next turn")
         await until { store.collections > collections }
@@ -534,7 +534,7 @@ struct ListTests {
         let collections = store.collections
 
         let removal = TestRemoveNote(id: "n2", connections: [character.notes.connectionID])
-        store.commit(try Ingest.normalize(fixture("remove-note-n2"), plan: TestRemoveNote.plan.resolve(removal.variables), rootKey: Store.mutationRootKey))
+        store.commit(try Ingest.normalize(fixture("remove-note-n2"), plan: TestRemoveNote.plan.resolve(removal.variables, in: store.keys), rootKey: Store.mutationRootKey))
         #expect(character.notes.nodes.map(\.text) == ["Wubba lubba dub dub"])
         await until { store.collections > collections }
         await turns()

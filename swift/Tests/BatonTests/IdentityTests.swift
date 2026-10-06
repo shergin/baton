@@ -16,8 +16,8 @@ struct IdentityTests {
         let store = Store()
         store.reportMissing = nil
         store.reportAmbiguousIdentity = { id, _ in ambiguities.ids.append(id) }
-        store.commit(try Ingest.normalize(fixture("search-1"), plan: TestSearch.plan.resolve(TestSearch(name: "1").variables)))
-        store.commit(try Ingest.normalize(fixture("characters-7-8"), plan: TestList.plan.resolve(TestList(page: 1).variables)))
+        store.commit(try Ingest.normalize(fixture("search-1"), plan: TestSearch.plan.resolve(TestSearch(name: "1").variables, in: store.keys)))
+        store.commit(try Ingest.normalize(fixture("characters-7-8"), plan: TestList.plan.resolve(TestList(page: 1).variables, in: store.keys)))
         return store
     }
 
@@ -26,14 +26,14 @@ struct IdentityTests {
         let ambiguities = Ambiguities()
         let store = try store(ambiguities)
         let shared = TestRemoveNote(id: "1", connections: [])
-        store.commit(try Ingest.normalize(fixture("remove-note-1"), plan: TestRemoveNote.plan.resolve(shared.variables), rootKey: Store.mutationRootKey))
+        store.commit(try Ingest.normalize(fixture("remove-note-1"), plan: TestRemoveNote.plan.resolve(shared.variables, in: store.keys), rootKey: Store.mutationRootKey))
         #expect(ambiguities.ids == ["1"])
         for key in ["Character:1", "Location:1", "Episode:1"] {
             #expect(store.existing(key)?.deleted == false, "\(key) is not deleted")
         }
 
         let unique = TestRemoveNote(id: "7", connections: [])
-        store.commit(try Ingest.normalize(fixture("remove-note-7"), plan: TestRemoveNote.plan.resolve(unique.variables), rootKey: Store.mutationRootKey))
+        store.commit(try Ingest.normalize(fixture("remove-note-7"), plan: TestRemoveNote.plan.resolve(unique.variables, in: store.keys), rootKey: Store.mutationRootKey))
         #expect(store.existing("Character:7")?.deleted == true)
         #expect(store.existing("Character:8")?.deleted == false)
         #expect(ambiguities.ids == ["1"])
@@ -43,9 +43,9 @@ struct IdentityTests {
     func lookupWithoutAType() throws {
         let ambiguities = Ambiguities()
         let store = try store(ambiguities)
-        #expect(store.check(TestNode.plan.resolve(TestNode(id: "1").variables)) == .miss, "three types have the id 1")
+        #expect(store.check(TestNode.plan.resolve(TestNode(id: "1").variables, in: store.keys)) == .miss, "three types have the id 1")
         #expect(ambiguities.ids == ["1"])
-        #expect(store.check(TestNode.plan.resolve(TestNode(id: "8").variables)) != .miss)
+        #expect(store.check(TestNode.plan.resolve(TestNode(id: "8").variables, in: store.keys)) != .miss)
         let data = TestNode.Data(anchor: Anchor(record: store.root, variables: TestNode(id: "8").variables, store: store))
         #expect(data.node?.asCharacter?.name == "Adjudicator Rick")
     }
@@ -55,7 +55,7 @@ struct IdentityTests {
         let store = Store()
         store.reportMissing = nil
         let search = TestUnion(name: "a")
-        let plan = TestUnion.plan.resolve(search.variables)
+        let plan = TestUnion.plan.resolve(search.variables, in: store.keys)
         let data = TestUnion.Data(anchor: Anchor(record: store.root, variables: search.variables, store: store))
         store.commit(try Ingest.normalize(fixture("union-path-character"), plan: plan))
         let first = try #require(data.search?.first)

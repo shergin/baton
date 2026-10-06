@@ -313,6 +313,17 @@ public final class Record: Observable {
         return true
     }
 
+    /// Copies a slot's value and error under its twin, a second slot the
+    /// store holds the same key at, silently. Returns whether there was a
+    /// value to copy.
+    func twin(_ slot: Slot, _ twin: Slot) -> Bool {
+        let value = peek(slot)
+        if case .missing = value { return false }
+        _ = writeSilently(twin, value)
+        if let error = errors?[slot.index] { errors?[twin.index] = error }
+        return true
+    }
+
     /// Marks the record deleted or revives it; the store clears the values
     /// around it and notifies.
     func setDeleted(_ deleted: Bool) {

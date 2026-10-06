@@ -27,10 +27,13 @@ extension Store {
             while !reader.isAtEnd {
                 // A row that stops making sense is used as far as it went:
                 // what follows reads as missing, and the operation refetches.
-                guard let name = reader.index(), let slot = disk.slot(name, on: record.type),
+                guard let name = reader.index(), let slot = disk.slot(name, on: record.type, keys),
                       let (value, error) = reader.value(disk, target: target)
                 else { return }
-                if record.fill(slot, value, error: error), observed { filled.append(slot) }
+                if record.fill(slot, value, error: error) {
+                    if observed { filled.append(slot) }
+                    if !twins.isEmpty, let twin = twins[slot] { _ = record.fill(twin, value, error: error) }
+                }
             }
         }
         for slot in filled { batch.touched(record, slot, value: .missing, error: nil) }
@@ -42,10 +45,11 @@ extension Store {
     /// field, through the batch. Returns whether the field was filled.
     func hydrateRoot(_ slot: Slot, from disk: Disk, _ batch: inout Batch) -> Bool {
         var filled = false
-        _ = disk.rootField(slot.storageKey) { bytes in
+        _ = disk.rootField(keys.text(of: slot)) { bytes in
             var reader = RowReader(bytes)
             guard let (value, error) = reader.value(disk, target: target) else { return }
             filled = root.fill(slot, value, error: error)
+            if filled, !twins.isEmpty, let twin = twins[slot] { _ = root.fill(twin, value, error: error) }
         }
         guard filled else { return false }
         hydratedRootSlots.insert(slot.index)

@@ -12,18 +12,18 @@ enum StoreDump {
     @MainActor static func text(of store: Store) -> String {
         let records = store.recordsByKey.sorted { $0.key < $1.key }
         let lines = records.map { key, record in
-            "  " + quote(key) + ": " + (record.deleted ? "null" : object(record))
+            "  " + quote(key) + ": " + (record.deleted ? "null" : object(record, in: store))
         }
         return "{\n" + lines.joined(separator: ",\n") + "\n}\n"
     }
 
-    @MainActor private static func object(_ record: Record) -> String {
+    @MainActor private static func object(_ record: Record, in store: Store) -> String {
         var fields: [(String, String)] = [("__typename", quote(record.type.name))]
         var errors: [(String, String)] = []
         for (slot, value, error) in record.storedSlots {
-            fields.append((slot.storageKey, json(value)))
+            fields.append((store.storageKey(of: slot), json(value)))
             if let error {
-                errors.append((slot.storageKey, "{\"message\": " + quote(error.message) + ", \"path\": " + quote(error.path) + "}"))
+                errors.append((store.storageKey(of: slot), "{\"message\": " + quote(error.message) + ", \"path\": " + quote(error.path) + "}"))
             }
         }
         if !errors.isEmpty {

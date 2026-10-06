@@ -8,6 +8,9 @@
 public final class Owner {
     nonisolated public let variables: Variables
     nonisolated let store: Store?
+    /// What numbers the keys the scope renders: the store's keys, or a
+    /// table of the scope's own for a lens made by hand over no store.
+    nonisolated let keys: Keys
     /// Whether reads in the scope report missing and unexpected values and
     /// log required fields; not under a placeholder, whose link reported
     /// already.
@@ -29,18 +32,19 @@ public final class Owner {
     let root: Store.Root?
 
     nonisolated public convenience init(variables: Variables, store: Store? = nil) {
-        self.init(variables: variables, store: store, environment: nil, root: nil, reports: true)
+        self.init(variables: variables, store: store, keys: store?.keys ?? Keys(), environment: nil, root: nil, reports: true)
     }
 
     /// The scope of a handle's lenses, which fetch through its environment
     /// and are healed through its root.
     convenience init(variables: Variables, store: Store, environment: Environment, root: Store.Root? = nil) {
-        self.init(variables: variables, store: store, environment: environment, root: root, reports: true)
+        self.init(variables: variables, store: store, keys: store.keys, environment: environment, root: root, reports: true)
     }
 
-    nonisolated private init(variables: Variables, store: Store?, environment: Environment?, root: Store.Root?, reports: Bool) {
+    nonisolated private init(variables: Variables, store: Store?, keys: Keys, environment: Environment?, root: Store.Root?, reports: Bool) {
         self.variables = variables
         self.store = store
+        self.keys = keys
         self.environment = environment
         self.root = root
         self.reports = reports
@@ -50,7 +54,7 @@ public final class Owner {
     @inline(__always)
     public func slot(_ key: DynamicKey) -> Slot {
         for entry in slots where entry.key === key { return entry.slot }
-        let slot = Registry.slot(key.type, key.render(variables), rendered: true)
+        let slot = resolve(key.type, key.render(variables))
         slots.append((key, slot))
         return slot
     }
@@ -59,9 +63,23 @@ public final class Owner {
     /// interface or union.
     public func slot(_ key: DynamicKey, on type: TypeID) -> Slot {
         for entry in abstractSlots where entry.key === key { return entry.slot.on(type) }
-        let slot = AbstractSlot(key.render(variables), rendered: true)
+        meetConstants()
+        let slot = AbstractSlot(key.render(variables), keys: keys)
         abstractSlots.append((key, slot))
         return slot.on(type)
+    }
+
+    /// Numbers a rendered key, once per owner, after the store has adopted
+    /// the constants the build named since: a key met first as a rendering
+    /// and then as a constant reads what either wrote.
+    private func resolve(_ type: TypeID, _ text: String) -> Slot {
+        meetConstants()
+        return keys.slot(type, text)
+    }
+
+    private func meetConstants() {
+        keys.reconcile()
+        store?.adoptConstants()
     }
 
     /// The scope a spread with arguments binds here: these variables with
@@ -70,7 +88,7 @@ public final class Owner {
         for entry in bound where entry.site === site { return entry.owner }
         var merged = variables.values
         for (name, value) in values() { merged[name] = value ?? .null }
-        let owner = Owner(variables: Variables(merged), store: store, environment: environment, root: root, reports: reports)
+        let owner = Owner(variables: Variables(merged), store: store, keys: keys, environment: environment, root: root, reports: reports)
         bound.append((site, owner))
         return owner
     }
@@ -80,7 +98,7 @@ public final class Owner {
     /// non-null link below it reads the store's placeholder of its type.
     var inert: Owner {
         if let inertOwner { return inertOwner }
-        let owner = reports ? Owner(variables: variables, store: store, environment: environment, root: root, reports: false) : self
+        let owner = reports ? Owner(variables: variables, store: store, keys: keys, environment: environment, root: root, reports: false) : self
         inertOwner = owner
         return owner
     }

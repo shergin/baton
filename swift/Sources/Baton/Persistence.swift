@@ -33,7 +33,9 @@ public final class Persistence: Sendable {
 
     /// One thing the main actor asked the writer to do, in order.
     enum Work: Sendable {
-        case commit(records: [Record.Snapshot], root: [Store.RootField])
+        /// Changed records and root fields, with the store's keys, which
+        /// name the slots a row is written under.
+        case commit(records: [Record.Snapshot], root: [Store.RootField], keys: Keys)
         case fetched(operation: String, time: Double)
         /// Rows a read found carrying an older generation.
         case used(records: [String], root: [String])
@@ -169,8 +171,8 @@ public final class Persistence: Sendable {
     // MARK: From the main actor
 
     /// Queues what a commit changed.
-    func committed(_ records: [Record.Snapshot], root: [Store.RootField]) {
-        enqueue(.commit(records: records, root: root))
+    func committed(_ records: [Record.Snapshot], root: [Store.RootField], keys: Keys) {
+        enqueue(.commit(records: records, root: root, keys: keys))
     }
 
     /// Queues the records a payload could not edit in memory, for the image
@@ -316,7 +318,7 @@ public final class Persistence: Sendable {
     func unwrittenRecords() -> [Record] {
         pending.withLock { pending in
             var kept: [Record] = []
-            for case .commit(let records, let root) in pending.work {
+            for case .commit(let records, let root, _) in pending.work {
                 for snapshot in records { kept.append(snapshot.record) }
                 for field in root {
                     switch field.value {
@@ -373,7 +375,7 @@ public final class Persistence: Sendable {
         let dropped = pending.withLock { pending in
             pending.work.insert(contentsOf: work, at: 0)
             var rows = 0
-            for case .commit(let records, let root) in pending.work { rows += records.count + root.count }
+            for case .commit(let records, let root, _) in pending.work { rows += records.count + root.count }
             if rows <= Persistence.waitLimit { return false }
             pending.work.removeAll()
             pending.forgets = 0

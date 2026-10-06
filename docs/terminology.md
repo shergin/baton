@@ -222,21 +222,21 @@ through `Store.reportAmbiguousIdentity`, and nothing is done for it.
 **Storage key, slot.** *Composition: record, plan.* Relay: a field name plus
 its serialized arguments, the key under which a value is stored. Here:
 computed by the compiler and emitted as a constant; the process numbers each
-key on first use, and a record stores the value at that number, so a read
-through a constant hashes nothing. A key with variables is rendered once
-per [owner](#generated); the keys a session renders, one per cursor and per
-id, are numbered apart from the constants, with arguments or without, and a
-record keeps those written to it in a list sorted by number, so they never
-widen the records they are not written to. A key keeps the kind it is first
-met as, and its text one slot. A field read through an interface or union
-reads an *abstract slot*: its key's slot on each concrete type, resolved on
-that type's first read. See
-[Slots are numbered by the process](decisions/slots-are-numbered-by-the-process.md).
-The process's table keeps a session's keys with arguments for its own life
-today. Numbering them by their store, so that they are dropped at its end
-and freed by its collector, is *(planned)*, and its mechanism waits for a
-spike: see
-[Keys a session produces belong to its store](decisions/session-keys-belong-to-the-store.md).
+key the build names on first use, and a record stores the value at that
+number, so a read through a constant hashes nothing. A key with variables is
+rendered once per [owner](#generated); the keys a session renders, one per
+cursor and per id, are the store's: numbered by it, apart from the build's,
+and a record keeps those written to it in a list sorted by number, so they
+never widen the records they are not written to. A text has one slot in a
+store: a rendering whose text the build names as a constant takes the
+constant's slot, and a constant the build names after the store rendered
+its text is adopted at the store's next resolution, check or commit, the
+two slots becoming twins the store writes together. A field read through
+an interface or union reads an
+*abstract slot*: its key's slot on each concrete type, resolved on that
+type's first read. A report names a slot through `Store.storageKey(of:)`.
+See [Slots are numbered by the process](decisions/slots-are-numbered-by-the-process.md)
+and [Keys a session produces belong to its store](decisions/session-keys-belong-to-the-store.md).
 
 **Invalidation channel.** *Concept: record.* Baton's word; Relay tells a
 fragment's subscribers when a record it read changes. Here: the Observation

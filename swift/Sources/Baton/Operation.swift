@@ -194,7 +194,7 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
         self.key = key
         self.environment = environment
         store = environment.store
-        root = environment.store.root(key, resolved: Op.plan.resolve(operation.variables), record: environment.store.root)
+        root = environment.store.root(key, resolved: Op.plan.resolve(operation.variables, in: environment.store.keys), record: environment.store.root)
         owner = Owner(variables: operation.variables, store: environment.store, environment: environment, root: root)
     }
 
@@ -580,7 +580,7 @@ public final class SubscriptionHandle<Op: Subscription>: AnyOperationHandle {
         self.key = key
         self.environment = environment
         store = environment.store
-        root = environment.store.root(key, resolved: Op.plan.resolve(operation.variables), record: environment.store.subscriptionRoot)
+        root = environment.store.root(key, resolved: Op.plan.resolve(operation.variables, in: environment.store.keys), record: environment.store.subscriptionRoot)
         owner = Owner(variables: operation.variables, store: environment.store, environment: environment)
     }
 

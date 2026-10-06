@@ -57,6 +57,13 @@ public final class Store {
     /// The store's image on disk, when it has one: every commit is written
     /// behind, and the availability check reads from it what memory lacks.
     public let persistence: Persistence?
+    /// The keys the store's session renders from variables, numbered by the
+    /// store and forgotten at its end.
+    package nonisolated let keys = Keys()
+    /// Slots that hold one key, each the other's twin: the store's number
+    /// for a text and the constant the build named for it afterwards. A
+    /// write to either lands in both. Bounded by the build's constants.
+    var twins: [Slot: Slot] = [:]
     /// How old an operation's data may be before it reads as stale, for an
     /// operation whose document states no `@cacheExpiration` of its own;
     /// `nil` is forever. Given when the store is made, where Relay gives it.
@@ -100,11 +107,12 @@ public final class Store {
         records[Store.mutationRootKey] = mutationRoot
         records[Store.subscriptionRootKey] = subscriptionRoot
         #if DEBUG
+        let keys = keys
         reportMissing = { record, slot in
-            print("Baton: missing data: \(record.key).\(slot.storageKey) was read but never fetched; the miss was recorded")
+            print("Baton: missing data: \(record.key).\(keys.text(of: slot)) was read but never fetched; the miss was recorded")
         }
         reportUnexpected = { record, slot, value in
-            print("Baton: \(record.key).\(slot.storageKey) holds \(value), which its reader's type cannot hold; it read as a zero value or nil")
+            print("Baton: \(record.key).\(keys.text(of: slot)) holds \(value), which its reader's type cannot hold; it read as a zero value or nil")
         }
         reportAmbiguousIdentity = { id, records in
             print("Baton: the id \(id) names \(records.map(\.key).joined(separator: ", ")); nothing was done for it")
@@ -143,6 +151,28 @@ public final class Store {
         guard !ended else { return }
         invalidationEpoch += 1
         persistence?.invalidate()
+    }
+
+    /// The storage key a slot stands for: the field's name with its
+    /// arguments rendered, as a report names it.
+    public func storageKey(of slot: Slot) -> String {
+        keys.text(of: slot)
+    }
+
+    /// Adopts the constants the build named after the store rendered their
+    /// texts: the store's number and the constant's slot become twins, the
+    /// records' values under the one are copied under the other, and every
+    /// later write to either lands in both, so a text keeps one slot
+    /// whichever way it was met first. Free when nothing waits.
+    func adoptConstants() {
+        guard keys.hasAdoptions.load(ordering: .relaxed) else { return }
+        for (rendered, dense) in keys.takeAdoptions() {
+            twins[rendered] = dense
+            twins[dense] = rendered
+            for record in records.values where record.type == rendered.type && record.twin(rendered, dense) {
+                record.notify(dense)
+            }
+        }
     }
 
     /// The placeholder record of a type.
@@ -353,6 +383,7 @@ public final class Store {
     /// batch.
     @discardableResult
     package func commit(_ changes: ChangeSet, replacingOptimistic id: UUID?) -> Int {
+        adoptConstants()
         defer { reevaluateIfNeeded() }
         if id == nil, optimisticLayers.isEmpty {
             var batch = Batch(.server, direct: true)
@@ -459,7 +490,7 @@ public final class Store {
             }
         }
         if records.isEmpty, fields.isEmpty { return }
-        persistence.committed(records, root: fields)
+        persistence.committed(records, root: fields, keys: keys)
     }
 
     /// Applies an optimistic response on top of everything else.
@@ -519,9 +550,14 @@ public final class Store {
         }
     }
 
-    /// Writes one slot inside a batch: silently, recorded for the net
-    /// notification and for the undo log.
+    /// Writes one slot inside a batch, and its twin when it has one:
+    /// silently, recorded for the net notification and for the undo log.
     func set(_ record: Record, _ slot: Slot, _ value: Value, _ batch: inout Batch) {
+        write(record, slot, value, &batch)
+        if !twins.isEmpty, let twin = twins[slot] { write(record, twin, value, &batch) }
+    }
+
+    private func write(_ record: Record, _ slot: Slot, _ value: Value, _ batch: inout Batch) {
         let error = record.peekError(slot)
         if let previous = record.writeSilently(slot, value) {
             batch.touched(record, slot, value: previous, error: error)
@@ -540,9 +576,15 @@ public final class Store {
         _ = finish(batch)
     }
 
-    /// Sets or clears a slot's field error inside a batch, recorded for the
-    /// net notification and for the undo log.
+    /// Sets or clears a slot's field error inside a batch, and its twin's
+    /// when it has one, recorded for the net notification and for the undo
+    /// log.
     private func setError(_ record: Record, _ slot: Slot, _ error: FieldError?, _ batch: inout Batch) {
+        setOwnError(record, slot, error, &batch)
+        if !twins.isEmpty, let twin = twins[slot] { setOwnError(record, twin, error, &batch) }
+    }
+
+    private func setOwnError(_ record: Record, _ slot: Slot, _ error: FieldError?, _ batch: inout Batch) {
         let previous = record.peekError(slot)
         guard record.setError(slot, error) else { return }
         batch.touched(record, slot, value: record.peek(slot), error: previous)
@@ -723,7 +765,7 @@ public final class Store {
                     }
                     value = .list(list)
                 }
-                if created[index] {
+                if created[index], twins.isEmpty {
                     // Nobody can have read a record this batch created.
                     if let previous = record.writeSilently(entry.slot, value) {
                         batch.record(.slot(record, entry.slot, previous))
@@ -795,6 +837,7 @@ public final class Store {
     /// part of the store: this is how a launch renders its first body from
     /// the last one's data.
     package func check(_ selection: ResolvedSelection, at record: Record? = nil) -> Answer {
+        adoptConstants()
         let record = record ?? root
         // What the walk writes, a lookup's link bound, a link repaired, a
         // cell filled from the image, is one local batch, notified once the

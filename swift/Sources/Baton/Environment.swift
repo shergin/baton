@@ -114,6 +114,9 @@ public final class Environment {
         handles.removeAll()
         store.end()
         await store.persistence?.close()
+        // After the writer, which named the rows it wrote by them: the
+        // process keeps no text the session rendered.
+        store.keys.clear()
     }
 
     /// Refetches the retained operations that are stale or whose last fetch
@@ -158,7 +161,7 @@ public final class Environment {
     /// `@throwOnFieldError` throws the field errors its handle fails on.
     public func fetch<Op: Query>(_ operation: Op, firstPart: (() -> Void)? = nil) async throws {
         guard !ended else { throw EnvironmentError.gone }
-        let committed = try await fetch(Op.self, variables: operation.variables, resolved: Op.plan.resolve(operation.variables), firstPart: firstPart.map { firstPart in { _ in firstPart() } })
+        let committed = try await fetch(Op.self, variables: operation.variables, resolved: Op.plan.resolve(operation.variables, in: store.keys), firstPart: firstPart.map { firstPart in { _ in firstPart() } })
         guard Op.throwsOnFieldError else { return }
         // The handle's reading: the operation's own selection, where an error
         // inside a spread is the fragment's to weigh, and the errors the
@@ -248,7 +251,7 @@ public final class Environment {
     /// handled are thrown, as a fetch throws them.
     public func commitPayload<Op: Operation>(_ operation: Op, _ payload: Data) async throws {
         guard !ended else { throw EnvironmentError.gone }
-        let root = store.root(Op.name + operation.variables.json, resolved: Op.plan.resolve(operation.variables), record: rootRecord(of: Op.self))
+        let root = store.root(Op.name + operation.variables.json, resolved: Op.plan.resolve(operation.variables, in: store.keys), record: rootRecord(of: Op.self))
         let committed = try await commit(payload, plan: root.resolved, root: root, checkingCancellation: false, complete: false)
         if Op.throwsOnFieldError, !committed.uncaught.isEmpty { throw FieldErrors(committed.uncaught) }
     }
@@ -267,7 +270,7 @@ public final class Environment {
     @discardableResult
     public func fetch<Op: Query>(_ operation: Op.Type, variables: Variables, firstPart: (() -> Void)? = nil) async throws -> [FieldError] {
         guard !ended else { throw EnvironmentError.gone }
-        return try await fetch(operation, variables: variables, resolved: Op.plan.resolve(variables), firstPart: firstPart.map { firstPart in { _ in firstPart() } }).uncaught
+        return try await fetch(operation, variables: variables, resolved: Op.plan.resolve(variables, in: store.keys), firstPart: firstPart.map { firstPart in { _ in firstPart() } }).uncaught
     }
 
     private func fetch<Op: Query>(_ operation: Op.Type, variables: Variables, resolved: ResolvedSelection, firstPart: ((Committed) -> Void)?) async throws -> Committed {
@@ -330,7 +333,7 @@ public final class Environment {
     /// an equal value, the same name and variables, takes its place.
     public func mutate<Op: Mutation>(_ operation: Op, optimistic: Variable? = nil) async throws -> Op.Data {
         guard !ended else { throw EnvironmentError.gone }
-        let resolved = Op.plan.resolve(operation.variables)
+        let resolved = Op.plan.resolve(operation.variables, in: store.keys)
         let root = store.root(Op.name + operation.variables.json, resolved: resolved, record: store.mutationRoot)
         var layer: UUID?
         if let optimistic {

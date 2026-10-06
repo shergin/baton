@@ -158,7 +158,7 @@ struct DeliveryTests {
         let character = try #require(try profile(environment).testProfile)
         let (fired, track) = counter { _ = character.image }
         track()
-        let plan = TestProfileQuery.plan.resolve(TestProfileQuery(id: "1").variables)
+        let plan = TestProfileQuery.plan.resolve(TestProfileQuery(id: "1").variables, in: environment.store.keys)
         environment.store.commit(try Ingest.normalize(fixture("character-deferred-1"), plan: plan))
         #expect(fired() == 1)
         guard case .success(let image) = character.image else {
@@ -174,7 +174,7 @@ struct DeliveryTests {
         environment.store.reportMissing = nil
         _ = try await environment.fetch(TestProfileQuery.self, variables: TestProfileQuery(id: "1").variables)
         let character = try #require(try profile(environment).testProfile)
-        let plan = TestProfileQuery.plan.resolve(TestProfileQuery(id: "1").variables)
+        let plan = TestProfileQuery.plan.resolve(TestProfileQuery(id: "1").variables, in: environment.store.keys)
         let (fired, track) = counter { _ = character.image }
 
         track()
@@ -195,8 +195,8 @@ struct DeliveryTests {
 
     @Test("an error under a parent the server nulled lands on that parent with its whole path, and one with no path still counts")
     func errorsUnderANullParent() throws {
-        let changes = try Ingest.normalize(fixture("character-origin-null"), plan: TestProfileQuery.plan.resolve(TestProfileQuery(id: "1").variables))
         let store = Store()
+        let changes = try Ingest.normalize(fixture("character-origin-null"), plan: TestProfileQuery.plan.resolve(TestProfileQuery(id: "1").variables, in: store.keys))
         store.reportMissing = nil
         store.commit(changes)
         let character = try #require(store.existing("Character:1"))
@@ -210,8 +210,8 @@ struct DeliveryTests {
 
     @Test("an error whose path goes through a null element, past a list's end or below a scalar lands on the last field the path reached")
     func errorsWherePathsStop() throws {
-        let changes = try Ingest.normalize(fixture("characters-with-gaps-errors"), plan: TestList.plan.resolve(TestList(page: 1).variables))
-        let placed = changes.fieldErrors.map { (changes.recordKeys[Int($0.record)], $0.slot.storageKey, $0.error.message) }
+        let changes = try Ingest.normalize(fixture("characters-with-gaps-errors"), plan: TestList.plan.resolve(TestList(page: 1).variables, in: Keys()))
+        let placed = changes.fieldErrors.map { (changes.recordKeys[Int($0.record)], Registry.storageKey($0.slot), $0.error.message) }
         #expect(placed.count == 3)
         #expect(placed.contains { $0 == ("client:root:characters(page:1)", "results", "row hidden") }, "\(placed)")
         #expect(placed.contains { $0 == ("client:root:characters(page:1)", "results", "past the end") }, "\(placed)")
@@ -220,13 +220,13 @@ struct DeliveryTests {
 
     @Test("an error whose path names a negative list index does not trap and lands on no row")
     func negativeErrorIndex() throws {
-        let changes = try Ingest.normalize(fixture("negative-error-index"), plan: TestList.plan.resolve(TestList(page: 1).variables))
+        let changes = try Ingest.normalize(fixture("negative-error-index"), plan: TestList.plan.resolve(TestList(page: 1).variables, in: Keys()))
         #expect(!changes.fieldErrors.contains { changes.recordTypes[Int($0.record)] == Registry.type("Character") })
     }
 
     @Test("an error whose path holds an index that is not an integer names nothing, and the data commits")
     func floatErrorIndex() throws {
-        let changes = try Ingest.normalize(fixture("float-error-index"), plan: TestList.plan.resolve(TestList(page: 1).variables))
+        let changes = try Ingest.normalize(fixture("float-error-index"), plan: TestList.plan.resolve(TestList(page: 1).variables, in: Keys()))
         #expect(changes.recordKeys.contains("Character:1"))
         #expect(changes.fieldErrors.isEmpty)
         #expect(changes.unplacedErrors.map(\.message) == ["a float index"])
@@ -237,12 +237,12 @@ struct DeliveryTests {
         let store = Store()
         store.reportMissing = nil
         let roster = TestRosterQuery(page: 1)
-        store.commit(try Ingest.normalize(fixtureData, plan: TestRosterQuery.plan.resolve(roster.variables)))
+        store.commit(try Ingest.normalize(fixtureData, plan: TestRosterQuery.plan.resolve(roster.variables, in: store.keys)))
         let data = TestRosterQuery.Data(anchor: Anchor(record: store.root, variables: roster.variables, store: store))
         #expect(data.characters?.results?.count == 20)
         let edited = String(decoding: fixtureData, as: UTF8.self)
             .replacingOccurrences(of: "\"name\":\"Morty Smith\",\"status\":\"Alive\"", with: "\"name\":\"Morty Smith\",\"status\":null")
-        store.commit(try Ingest.normalize(Data(edited.utf8), plan: TestRosterQuery.plan.resolve(roster.variables)))
+        store.commit(try Ingest.normalize(Data(edited.utf8), plan: TestRosterQuery.plan.resolve(roster.variables, in: store.keys)))
         let results = try #require(data.characters?.results)
         #expect(results.count == 19, "the row whose required status is null is dropped")
         #expect(!results.contains { $0.name == "Morty Smith" })
@@ -253,7 +253,7 @@ struct DeliveryTests {
         environment.requiredFieldMissing = { _, path in logged.append(path) }
         let unstated = String(decoding: fixture("character-errors"), as: UTF8.self)
             .replacingOccurrences(of: "\"status\":\"Alive\"", with: "\"status\":null")
-        let plan = TestProfileQuery.plan.resolve(TestProfileQuery(id: "1").variables)
+        let plan = TestProfileQuery.plan.resolve(TestProfileQuery(id: "1").variables, in: store.keys)
         store.commit(try Ingest.normalize(Data(unstated.utf8), plan: plan))
         // Read through a handle, whose lenses know the environment to report
         // to; a lens made by hand has none.
@@ -279,7 +279,7 @@ struct DeliveryTests {
         let store = Store()
         store.reportMissing = nil
         let environment = Environment(transport: SilentTransport(), store: store)
-        let plan = TestProfileQuery.plan.resolve(TestProfileQuery(id: "1").variables)
+        let plan = TestProfileQuery.plan.resolve(TestProfileQuery(id: "1").variables, in: store.keys)
         store.commit(try Ingest.normalize(fixture("character-errors"), plan: plan))
         let character = try profile(environment)
         // `type` is null and @required(action: THROW): the strict fragment throws at the spread.
@@ -324,7 +324,7 @@ struct DeliveryTests {
         guard case .ready = handle.phase else { Issue.record("expected ready, got \(handle.phase)"); return }
 
         // Another operation's response names the same character's name as errored.
-        let plan = TestProfileQuery.plan.resolve(TestProfileQuery(id: "1").variables)
+        let plan = TestProfileQuery.plan.resolve(TestProfileQuery(id: "1").variables, in: environment.store.keys)
         let hidden = String(decoding: fixture("character-deferred-1"), as: UTF8.self)
             .replacingOccurrences(of: #""name":"Rick Sanchez""#, with: #""name":null"#)
             .replacingOccurrences(of: #","hasNext":true}"#, with: #","errors":[{"message":"name hidden","path":["character","name"]}]}"#)
@@ -601,7 +601,7 @@ struct DeliveryTests {
         let transport = GatedParts(fixture("character-deferred-1"), fixture("character-deferred-2"))
         let environment = Environment(transport: transport)
         environment.store.reportMissing = nil
-        let plan = TestProfileQuery.plan.resolve(TestProfileQuery(id: "1").variables)
+        let plan = TestProfileQuery.plan.resolve(TestProfileQuery(id: "1").variables, in: environment.store.keys)
         environment.store.commit(try Ingest.normalize(fixture("character-deferred-1"), plan: plan))
         let handle = environment.handle(for: TestProfileQuery(id: "1"))
         let retention = handle.retain()
@@ -625,7 +625,7 @@ struct DeliveryTests {
         environment.store.reportMissing = nil
         // The initial part: `episode { id }` arrived, the fragment's
         // `episode { name air_date }` is on its way.
-        let plan = TestOverlapQuery.plan.resolve(TestOverlapQuery(id: "1").variables)
+        let plan = TestOverlapQuery.plan.resolve(TestOverlapQuery(id: "1").variables, in: environment.store.keys)
         environment.store.commit(try Ingest.normalize(fixture("character-overlap-1"), plan: plan))
         let handle = environment.handle(for: TestOverlapQuery(id: "1"))
         let retention = handle.retain()
