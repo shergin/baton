@@ -92,6 +92,7 @@ struct TriageScreen: View {
         }
         """)
     var triage: TriageQuery
+    @SwiftUI.Environment(\.baton) private var environment
 
     var body: some View {
         PhaseView(phase: triage.phase, retry: triage.retry) { data in
@@ -120,8 +121,32 @@ struct TriageScreen: View {
             Button("Refresh", systemImage: "arrow.clockwise") {
                 Task { try? await triage.refetch() }
             }
+            Button("Refresh rows", systemImage: "arrow.triangle.2.circlepath") {
+                guard case .ready(let data) = triage.phase, let environment else { return }
+                let ids = (data.assigned.nodes ?? .empty).compactMap { $0.asIssue?.id ?? $0.asPullRequest?.id }
+                    + (data.created.nodes ?? .empty).compactMap { $0.asIssue?.id ?? $0.asPullRequest?.id }
+                Task { try? await environment.fetch(RefreshRowsQuery(ids: Array(ids.prefix(50)))) }
+            }
         }
     }
+}
+
+/// The refresh of `docs/recipes/discover-once.md`: the rows the lists show,
+/// asked for again by id in one request, so each row re-renders with its new
+/// fields and the lists' own query is left alone. Declared apart from the
+/// screen: a view's `@Query` property resolves and fetches on appearance,
+/// and this one is sent by hand, with the ids at hand.
+@MainActor
+struct TriageDocuments {
+    @Query("""
+        query RefreshRowsQuery($ids: [ID!]!) {
+          nodes(ids: $ids) {
+            ... on Issue { id ...IssueRow_issue @alias }
+            ... on PullRequest { id ...PullRequestRow_pullRequest @alias }
+          }
+        }
+        """)
+    var refreshRows: RefreshRowsQuery
 }
 
 /// One search result: an issue links to its screen; a pull request is shown.

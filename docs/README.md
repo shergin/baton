@@ -24,7 +24,8 @@ What to read when.
   [UIKit and AppKit](recipes/uikit.md), a handle held by a controller, and
   [porting from Relay](recipes/porting-from-relay.md), Relay's words beside
   Baton's, and [derived state outside views](recipes/derived-state.md), a
-  model over `Observations`. The rest arrive with the releases that make
-  them true.
+  model over `Observations`, and [discover once, refresh through
+  `nodes(ids:)`](recipes/discover-once.md), the pattern for external keys.
+  The rest arrive with the releases that make them true.
 - **What did a decision open up?** — [openings/](openings/), written as the
   project ships. None yet.

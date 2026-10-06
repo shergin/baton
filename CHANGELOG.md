@@ -5,6 +5,10 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- A recipe, `docs/recipes/discover-once.md`: a subject discovered once by
+  its natural key and refreshed by id through `nodes(ids:)`, the pattern an
+  app with external keys needs; the GitHub sample refreshes its rows that
+  way from the toolbar.
 - A recipe for derived state outside views, `docs/recipes/derived-state.md`:
   a model derives its value inside an `Observations` closure over the
   lenses it reads, and no commit signal is added; recorded in
