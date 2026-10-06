@@ -1,0 +1,11 @@
+query TestEpisodesQuery(
+  $id: ID!
+) {
+  character(id: $id) {
+    episode {
+      id
+      name
+    }
+    id
+  }
+}

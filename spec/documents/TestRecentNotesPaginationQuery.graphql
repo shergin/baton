@@ -1,0 +1,29 @@
+query TestRecentNotesPaginationQuery(
+  $count: Int = 2
+  $cursor: String
+  $id: ID!
+) {
+  node(id: $id) {
+    __typename
+    ...TestRecentNotes_character_1G22uz
+    id
+  }
+}
+
+fragment TestRecentNotes_character_1G22uz on Character {
+  notes(last: $count, before: $cursor) {
+    edges {
+      node {
+        id
+        text
+        __typename
+      }
+      cursor
+    }
+    pageInfo {
+      hasPreviousPage
+      startCursor
+    }
+  }
+  id
+}

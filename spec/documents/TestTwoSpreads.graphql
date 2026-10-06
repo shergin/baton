@@ -1,0 +1,16 @@
+query TestTwoSpreads(
+  $id: ID!
+  $again: Boolean!
+) {
+  character(id: $id) {
+    ...TestRow_character
+    ...TestRow_character @include(if: $again)
+    id
+  }
+}
+
+fragment TestRow_character on Character {
+  name
+  status
+  image
+}

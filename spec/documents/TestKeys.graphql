@@ -1,0 +1,25 @@
+query TestKeys(
+  $id: ID!
+  $name: String
+) {
+  search(name: "$0.00") {
+    __typename
+    ... on Node {
+      __isNode: __typename
+      id
+    }
+  }
+  character(id: "a,b") {
+    name
+    id
+  }
+  charactersByIds(ids: [$id, "2"]) {
+    name
+    id
+  }
+  characters(filter: {status: "Alive", name: $name}) {
+    info {
+      count
+    }
+  }
+}

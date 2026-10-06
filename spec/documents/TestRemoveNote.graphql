@@ -1,0 +1,8 @@
+mutation TestRemoveNote(
+  $id: ID!
+) {
+  removeNote(id: $id) {
+    removedNoteId
+    deleted: removedNoteId
+  }
+}

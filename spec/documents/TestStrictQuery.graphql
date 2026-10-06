@@ -1,0 +1,9 @@
+query TestStrictQuery(
+  $id: ID!
+) {
+  character(id: $id) {
+    name
+    species
+    id
+  }
+}

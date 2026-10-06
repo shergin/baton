@@ -1,0 +1,11 @@
+mutation TestAddNoteNode(
+  $characterId: ID!
+  $text: String!
+) {
+  addNote(characterId: $characterId, text: $text) {
+    note {
+      id
+      text
+    }
+  }
+}

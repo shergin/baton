@@ -54,15 +54,19 @@ value to give.
 
 ## Spelled today
 
-`spec/` holds the schemas and the recorded responses, read in place by the
-Swift tests and benchmarks through `BatonSpec`. The reference reader is
-`Oracle` in the test target only: it walks a response's JSON, as
-`JSONSerialization` reads it, and the store's records by the same resolved
-plan. `OracleTests` requires the two to yield the same leaves for every
-response in `spec/` that has data and a document that reads it: after the
-commit; for those under the query root, from the image in a second store;
-and under an optimistic layer that overrides one leaf, then after it is
-reverted. A deferred response is checked as its first part with the later
+`spec/` holds the schemas, the documents, the recorded responses, the
+store dumps and the expected reads, read in place by the Swift tests and
+benchmarks through `BatonSpec`; `spec/manifest.json` lists the cases, and
+`spec/README.md` is its contract. The expected reads go through the lens
+the compiler generated for the document, so they do not share the plan the
+store walks by. Beside them, the reference reader `Oracle` in the test
+target walks a response's JSON, as `JSONSerialization` reads it, and the
+store's records by the same resolved plan. `OracleTests` requires every
+case of the manifest to read as its rows say, and the two walks to yield
+the same leaves for every response in `spec/` that has data and a document
+that reads it: after the commit; for those under the query root, from the
+image in a second store; and under an optimistic layer that overrides one
+leaf, then after it is reverted. A deferred response is checked as its first part with the later
 parts merged in at their paths. `tokenizer/custom-tokens.json` is read
 through the lens instead, because the layer's JSON round trip would rewrite
 the tokens it keeps as text. Beside each response the oracle reads,

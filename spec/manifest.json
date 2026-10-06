@@ -1,0 +1,1728 @@
+{
+  "format": 1,
+  "cases": [
+    {
+      "name": "rickandmorty/characters-page-1",
+      "operation": "Fixture",
+      "kind": "query",
+      "document": "documents/Fixture.graphql",
+      "variables": {
+        "page": 1
+      },
+      "responses": [
+        "rickandmorty/characters-page-1.json"
+      ],
+      "records": "rickandmorty/characters-page-1.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "characters.info.count",
+          "value": 826
+        },
+        {
+          "path": "characters.info.pages",
+          "value": 42
+        },
+        {
+          "path": "characters.info.next",
+          "value": 2
+        },
+        {
+          "path": "characters.results.0.episode.0.characters.0.id",
+          "value": "1"
+        },
+        {
+          "path": "characters.results.19.episode.0.characters.56.image",
+          "value": "https://rickandmortyapi.com/api/character/avatar/418.jpeg"
+        }
+      ],
+      "override": {
+        "paths": [
+          "characters.info.count"
+        ],
+        "value": 1
+      }
+    },
+    {
+      "name": "rickandmorty/character-episodes-9",
+      "operation": "TestEpisodesQuery",
+      "kind": "query",
+      "document": "documents/TestEpisodesQuery.graphql",
+      "variables": {
+        "id": "9"
+      },
+      "responses": [
+        "rickandmorty/character-episodes-9.json"
+      ],
+      "records": "rickandmorty/character-episodes-9.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "character.episode.0.id",
+          "value": "24"
+        },
+        {
+          "path": "character.episode.0.name",
+          "value": "Pickle Rick"
+        }
+      ],
+      "override": {
+        "paths": [
+          "character.episode.0.name"
+        ],
+        "value": "Pickle Rick Redux"
+      }
+    },
+    {
+      "name": "rickandmorty/character-header-9",
+      "operation": "TestHeaderQuery",
+      "kind": "query",
+      "document": "documents/TestHeaderQuery.graphql",
+      "variables": {
+        "id": "9"
+      },
+      "responses": [
+        "rickandmorty/character-header-9.json"
+      ],
+      "records": "rickandmorty/character-header-9.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "character.name",
+          "value": "Agency Director"
+        },
+        {
+          "path": "character.status",
+          "value": "Dead"
+        },
+        {
+          "path": "character.species",
+          "value": "Human"
+        },
+        {
+          "path": "character.origin.name",
+          "value": "Earth (Replacement Dimension)"
+        }
+      ],
+      "override": {
+        "paths": [
+          "character.name"
+        ],
+        "value": "Director"
+      }
+    },
+    {
+      "name": "tests/character-errors",
+      "operation": "TestProfileQuery",
+      "kind": "query",
+      "document": "documents/TestProfileQuery.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "tests/character-errors.json"
+      ],
+      "records": "tests/character-errors.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "character.name",
+          "value": "Rick Sanchez"
+        },
+        {
+          "path": "character.origin.name",
+          "value": "Earth (C-137)"
+        },
+        {
+          "path": "character.status",
+          "value": "Alive"
+        },
+        {
+          "path": "character.type",
+          "value": null
+        },
+        {
+          "path": "character.species",
+          "value": null,
+          "note": "the fragment is @throwOnFieldError and `type` carries a field error, so the fragment reads absent"
+        }
+      ],
+      "override": {
+        "paths": [
+          "character.species"
+        ],
+        "value": "Cyborg"
+      }
+    },
+    {
+      "name": "tests/character-deferred-1",
+      "operation": "TestProfileQuery",
+      "kind": "query",
+      "document": "documents/TestProfileQuery.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "tests/character-deferred-1.json"
+      ],
+      "records": "tests/character-deferred-1.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "character.name",
+          "value": "Rick Sanchez"
+        },
+        {
+          "path": "character.origin.name",
+          "value": "Earth (C-137)"
+        },
+        {
+          "path": "character.status",
+          "value": "Alive"
+        },
+        {
+          "path": "character.type",
+          "value": "Genius"
+        },
+        {
+          "path": "character.species",
+          "value": "Human"
+        }
+      ],
+      "override": {
+        "paths": [
+          "character.species"
+        ],
+        "value": "Cyborg"
+      }
+    },
+    {
+      "name": "tests/character-deferred-1-pending",
+      "operation": "TestProfileQuery",
+      "kind": "query",
+      "document": "documents/TestProfileQuery.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "tests/character-deferred-1-pending.json"
+      ],
+      "records": "tests/character-deferred-1-pending.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "character.name",
+          "value": "Rick Sanchez"
+        },
+        {
+          "path": "character.origin.name",
+          "value": "Earth (C-137)"
+        },
+        {
+          "path": "character.status",
+          "value": "Alive"
+        },
+        {
+          "path": "character.type",
+          "value": "Genius"
+        },
+        {
+          "path": "character.species",
+          "value": "Human"
+        }
+      ],
+      "override": {
+        "paths": [
+          "character.species"
+        ],
+        "value": "Cyborg"
+      }
+    },
+    {
+      "name": "tests/character-name-hidden",
+      "operation": "TestStrictQuery",
+      "kind": "query",
+      "document": "documents/TestStrictQuery.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "tests/character-name-hidden.json"
+      ],
+      "records": "tests/character-name-hidden.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "character.name",
+          "value": null
+        },
+        {
+          "path": "character.species",
+          "value": "Human"
+        }
+      ],
+      "override": {
+        "paths": [
+          "character.species"
+        ],
+        "value": "Cyborg"
+      }
+    },
+    {
+      "name": "tests/characters-7-8",
+      "operation": "TestList",
+      "kind": "query",
+      "document": "documents/TestList.graphql",
+      "variables": {
+        "page": 1
+      },
+      "responses": [
+        "tests/characters-7-8.json"
+      ],
+      "records": "tests/characters-7-8.store.json",
+      "complete": false,
+      "reads": [
+        {
+          "path": "characters.results.0.name",
+          "value": "Abradolf Lincler"
+        },
+        {
+          "path": "characters.results.1.name",
+          "value": "Adjudicator Rick"
+        }
+      ],
+      "override": {
+        "paths": [
+          "characters.results.1.name"
+        ],
+        "value": "Rick Prime"
+      }
+    },
+    {
+      "name": "tests/characters-with-gaps",
+      "operation": "TestList",
+      "kind": "query",
+      "document": "documents/TestList.graphql",
+      "variables": {
+        "page": 1
+      },
+      "responses": [
+        "tests/characters-with-gaps.json"
+      ],
+      "records": "tests/characters-with-gaps.store.json",
+      "complete": false,
+      "reads": [],
+      "override": {
+        "paths": [
+          "characters.results.2.name"
+        ],
+        "value": "Rick Prime"
+      }
+    },
+    {
+      "name": "tests/notes-page-1",
+      "operation": "TestNotesQuery",
+      "kind": "query",
+      "document": "documents/TestNotesQuery.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "tests/notes-page-1.json"
+      ],
+      "records": "tests/notes-page-1.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "character.name",
+          "value": "Rick Sanchez"
+        },
+        {
+          "path": "character.notes.totalCount",
+          "value": 5
+        },
+        {
+          "path": "character.notes.edges.0.node.id",
+          "value": "n1"
+        },
+        {
+          "path": "character.notes.edges.1.node.text",
+          "value": "Portal gun needs charging"
+        }
+      ],
+      "override": {
+        "paths": [
+          "character.name"
+        ],
+        "value": "Rick Prime"
+      }
+    },
+    {
+      "name": "tests/notes-page-2",
+      "operation": "TestNotesPaginationQuery",
+      "kind": "query",
+      "document": "documents/TestNotesPaginationQuery.graphql",
+      "variables": {
+        "count": 2,
+        "cursor": "c2",
+        "id": "1"
+      },
+      "responses": [
+        "tests/notes-page-2.json"
+      ],
+      "records": "tests/notes-page-2.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "node.id",
+          "value": "1"
+        },
+        {
+          "path": "node.name",
+          "value": "Rick Sanchez"
+        },
+        {
+          "path": "node.notes.totalCount",
+          "value": 5
+        },
+        {
+          "path": "node.notes.edges.0.node.id",
+          "value": "n3"
+        },
+        {
+          "path": "node.notes.pageInfo.hasNextPage",
+          "value": true
+        },
+        {
+          "path": "node.notes.edges.0.node.text",
+          "value": "Get Schwifty"
+        }
+      ],
+      "override": {
+        "paths": [
+          "node.notes.edges.0.node.text"
+        ],
+        "value": "Get Schwiftier"
+      }
+    },
+    {
+      "name": "tests/notes-page-3",
+      "operation": "TestNotesPaginationQuery",
+      "kind": "query",
+      "document": "documents/TestNotesPaginationQuery.graphql",
+      "variables": {
+        "count": 2,
+        "cursor": "c4",
+        "id": "1"
+      },
+      "responses": [
+        "tests/notes-page-3.json"
+      ],
+      "records": "tests/notes-page-3.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "node.id",
+          "value": "1"
+        },
+        {
+          "path": "node.name",
+          "value": "Rick Sanchez"
+        },
+        {
+          "path": "node.notes.totalCount",
+          "value": 5
+        },
+        {
+          "path": "node.notes.edges.0.node.id",
+          "value": "n5"
+        },
+        {
+          "path": "node.notes.pageInfo.hasNextPage",
+          "value": false
+        },
+        {
+          "path": "node.notes.edges.0.node.text",
+          "value": "Call Birdperson"
+        }
+      ],
+      "override": {
+        "paths": [
+          "node.notes.edges.0.node.text"
+        ],
+        "value": "Get Schwiftier"
+      }
+    },
+    {
+      "name": "tests/recent-notes-page-1",
+      "operation": "TestRecentNotesQuery",
+      "kind": "query",
+      "document": "documents/TestRecentNotesQuery.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "tests/recent-notes-page-1.json"
+      ],
+      "records": "tests/recent-notes-page-1.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "character.notes.edges.0.node.id",
+          "value": "n4"
+        },
+        {
+          "path": "character.notes.edges.0.node.text",
+          "value": "Avoid the Citadel"
+        },
+        {
+          "path": "character.notes.edges.1.node.id",
+          "value": "n5"
+        },
+        {
+          "path": "character.notes.edges.1.node.text",
+          "value": "Pickle Rick"
+        }
+      ],
+      "override": {
+        "paths": [
+          "character.notes.edges.1.node.text"
+        ],
+        "value": "Pickle Morty"
+      }
+    },
+    {
+      "name": "tests/recent-notes-page-2",
+      "operation": "TestRecentNotesPaginationQuery",
+      "kind": "query",
+      "document": "documents/TestRecentNotesPaginationQuery.graphql",
+      "variables": {
+        "count": 2,
+        "cursor": "c4",
+        "id": "1"
+      },
+      "responses": [
+        "tests/recent-notes-page-2.json"
+      ],
+      "records": "tests/recent-notes-page-2.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "node.notes.edges.0.node.id",
+          "value": "n2"
+        },
+        {
+          "path": "node.notes.edges.0.node.text",
+          "value": "Portal gun needs charging"
+        },
+        {
+          "path": "node.notes.edges.0.cursor",
+          "value": "c2"
+        },
+        {
+          "path": "node.id",
+          "value": "1"
+        },
+        {
+          "path": "node.notes.pageInfo.startCursor",
+          "value": "c2"
+        }
+      ],
+      "override": {
+        "paths": [
+          "node.notes.pageInfo.startCursor"
+        ],
+        "value": "c0"
+      }
+    },
+    {
+      "name": "tests/recent-notes-page-3",
+      "operation": "TestRecentNotesPaginationQuery",
+      "kind": "query",
+      "document": "documents/TestRecentNotesPaginationQuery.graphql",
+      "variables": {
+        "count": 1,
+        "cursor": "c2",
+        "id": "1"
+      },
+      "responses": [
+        "tests/recent-notes-page-3.json"
+      ],
+      "records": "tests/recent-notes-page-3.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "node.notes.edges.0.node.id",
+          "value": "n1"
+        },
+        {
+          "path": "node.notes.edges.0.node.text",
+          "value": "Wubba lubba dub dub"
+        },
+        {
+          "path": "node.notes.edges.0.cursor",
+          "value": "c1"
+        },
+        {
+          "path": "node.id",
+          "value": "1"
+        }
+      ],
+      "override": {
+        "paths": [
+          "node.notes.edges.0.cursor"
+        ],
+        "value": "c0"
+      }
+    },
+    {
+      "name": "tests/notes-refetch",
+      "operation": "TestNotesPaginationQuery",
+      "kind": "query",
+      "document": "documents/TestNotesPaginationQuery.graphql",
+      "variables": {
+        "count": 2,
+        "id": "1"
+      },
+      "responses": [
+        "tests/notes-refetch.json"
+      ],
+      "records": "tests/notes-refetch.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "node.name",
+          "value": "Rick Sanchez"
+        },
+        {
+          "path": "node.notes.totalCount",
+          "value": 5
+        },
+        {
+          "path": "node.notes.edges.0.cursor",
+          "value": "c1"
+        },
+        {
+          "path": "node.notes.edges.0.node.id",
+          "value": "n1"
+        },
+        {
+          "path": "node.id",
+          "value": "1"
+        }
+      ],
+      "override": {
+        "paths": [
+          "node.name"
+        ],
+        "value": "Rick Prime"
+      }
+    },
+    {
+      "name": "tests/add-note-node-n7",
+      "operation": "TestAddNoteNode",
+      "kind": "mutation",
+      "document": "documents/TestAddNoteNode.graphql",
+      "variables": {
+        "characterId": "1",
+        "text": "Node appended",
+        "connections": []
+      },
+      "responses": [
+        "tests/add-note-node-n7.json"
+      ],
+      "records": "tests/add-note-node-n7.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "addNote.note.id",
+          "value": "n7"
+        },
+        {
+          "path": "addNote.note.text",
+          "value": "Node appended"
+        }
+      ],
+      "override": {
+        "paths": [
+          "addNote.note.text"
+        ],
+        "value": "Edited"
+      }
+    },
+    {
+      "name": "tests/add-note-node-n0",
+      "operation": "TestAddNoteNodeFirst",
+      "kind": "mutation",
+      "document": "documents/TestAddNoteNodeFirst.graphql",
+      "variables": {
+        "characterId": "1",
+        "text": "Node first",
+        "connections": []
+      },
+      "responses": [
+        "tests/add-note-node-n0.json"
+      ],
+      "records": "tests/add-note-node-n0.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "addNote.note.id",
+          "value": "n0"
+        },
+        {
+          "path": "addNote.note.text",
+          "value": "Node first"
+        }
+      ],
+      "override": {
+        "paths": [
+          "addNote.note.text"
+        ],
+        "value": "Edited"
+      }
+    },
+    {
+      "name": "tests/keys-1",
+      "operation": "TestKeys",
+      "kind": "query",
+      "document": "documents/TestKeys.graphql",
+      "variables": {
+        "id": "7",
+        "name": "Rick"
+      },
+      "responses": [
+        "tests/keys-1.json"
+      ],
+      "records": "tests/keys-1.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "search",
+          "value": []
+        },
+        {
+          "path": "character.name",
+          "value": "Comma"
+        },
+        {
+          "path": "charactersByIds.0.name",
+          "value": "Rick Sanchez"
+        },
+        {
+          "path": "characters.info.count",
+          "value": 1
+        }
+      ],
+      "override": {
+        "paths": [
+          "characters.info.count"
+        ],
+        "value": 2
+      }
+    },
+    {
+      "name": "tests/conditions-included",
+      "operation": "TestConditions",
+      "kind": "query",
+      "document": "documents/TestConditions.graphql",
+      "variables": {
+        "id": "1",
+        "withOrigin": true,
+        "hideStatus": false
+      },
+      "responses": [
+        "tests/conditions-included.json"
+      ],
+      "records": "tests/conditions-included.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "character.name",
+          "value": "Rick Sanchez"
+        },
+        {
+          "path": "character.origin.name",
+          "value": "Earth (C-137)"
+        },
+        {
+          "path": "character.origin.dimension",
+          "value": "Dimension C-137"
+        },
+        {
+          "path": "character.status",
+          "value": "Alive"
+        }
+      ],
+      "override": {
+        "paths": [
+          "character.origin.dimension"
+        ],
+        "value": "Dimension C-138"
+      }
+    },
+    {
+      "name": "tests/conditions-excluded",
+      "operation": "TestConditions",
+      "kind": "query",
+      "document": "documents/TestConditions.graphql",
+      "variables": {
+        "id": "1",
+        "withOrigin": false,
+        "hideStatus": true
+      },
+      "responses": [
+        "tests/conditions-excluded.json"
+      ],
+      "records": "tests/conditions-excluded.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "character.name",
+          "value": "Rick Sanchez"
+        },
+        {
+          "path": "character.origin.id",
+          "value": "1"
+        }
+      ],
+      "override": {
+        "paths": [
+          "character.name"
+        ],
+        "value": "Rick Prime"
+      }
+    },
+    {
+      "name": "tests/union-1",
+      "operation": "TestUnion",
+      "kind": "query",
+      "document": "documents/TestUnion.graphql",
+      "variables": {
+        "name": "a"
+      },
+      "responses": [
+        "tests/union-1.json"
+      ],
+      "records": "tests/union-1.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "search.0.label",
+          "value": "Rick Sanchez"
+        },
+        {
+          "path": "search.0.status",
+          "value": "Alive"
+        },
+        {
+          "path": "search.0.name",
+          "value": "Rick Sanchez"
+        },
+        {
+          "path": "search.2.air_date",
+          "value": "December 2, 2013"
+        },
+        {
+          "path": "search.1.label",
+          "value": "Dimension C-137"
+        }
+      ],
+      "override": {
+        "paths": [
+          "search.1.label"
+        ],
+        "value": "Dimension C-138"
+      }
+    },
+    {
+      "name": "tests/node-fields-character",
+      "operation": "TestNodeFields",
+      "kind": "query",
+      "document": "documents/TestNodeFields.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "tests/node-fields-character.json"
+      ],
+      "records": "tests/node-fields-character.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "node.id",
+          "value": "1"
+        },
+        {
+          "path": "node.name",
+          "value": "Rick Sanchez"
+        }
+      ],
+      "override": {
+        "paths": [
+          "node.name"
+        ],
+        "value": "Rick Prime"
+      }
+    },
+    {
+      "name": "tests/node-fields-episode",
+      "operation": "TestNodeFields",
+      "kind": "query",
+      "document": "documents/TestNodeFields.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "tests/node-fields-episode.json"
+      ],
+      "records": "tests/node-fields-episode.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "node.id",
+          "value": "1"
+        }
+      ],
+      "override": {
+        "paths": [
+          "node.id"
+        ],
+        "value": "2"
+      }
+    },
+    {
+      "name": "tests/two-spreads-1",
+      "operation": "TestTwoSpreads",
+      "kind": "query",
+      "document": "documents/TestTwoSpreads.graphql",
+      "variables": {
+        "id": "1",
+        "again": true
+      },
+      "responses": [
+        "tests/two-spreads-1.json"
+      ],
+      "records": "tests/two-spreads-1.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "character.name",
+          "value": "Rick Sanchez"
+        },
+        {
+          "path": "character.status",
+          "value": "Alive"
+        },
+        {
+          "path": "character.image",
+          "value": "rick.png"
+        }
+      ],
+      "override": {
+        "paths": [
+          "character.status"
+        ],
+        "value": "Dead"
+      }
+    },
+    {
+      "name": "tests/union-path-character",
+      "operation": "TestUnion",
+      "kind": "query",
+      "document": "documents/TestUnion.graphql",
+      "variables": {
+        "name": "a"
+      },
+      "responses": [
+        "tests/union-path-character.json"
+      ],
+      "records": "tests/union-path-character.store.json",
+      "complete": false,
+      "reads": [
+        {
+          "path": "search.0.label",
+          "value": "Rick Sanchez"
+        },
+        {
+          "path": "search.0.status",
+          "value": "Alive"
+        },
+        {
+          "path": "search.0.name",
+          "value": "Rick Sanchez"
+        }
+      ],
+      "override": {
+        "paths": [
+          "search.0.label",
+          "search.0.name"
+        ],
+        "value": "Rick Prime"
+      }
+    },
+    {
+      "name": "tests/union-path-location",
+      "operation": "TestUnion",
+      "kind": "query",
+      "document": "documents/TestUnion.graphql",
+      "variables": {
+        "name": "a"
+      },
+      "responses": [
+        "tests/union-path-location.json"
+      ],
+      "records": "tests/union-path-location.store.json",
+      "complete": false,
+      "reads": [
+        {
+          "path": "search.0.label",
+          "value": "Dimension C-137"
+        },
+        {
+          "path": "search.0.type",
+          "value": "Planet"
+        },
+        {
+          "path": "search.0.name",
+          "value": "Earth (C-137)"
+        }
+      ],
+      "override": {
+        "paths": [
+          "search.0.label"
+        ],
+        "value": "Dimension C-138"
+      }
+    },
+    {
+      "name": "tests/delete-note-n2",
+      "operation": "TestDeleteNote",
+      "kind": "mutation",
+      "document": "documents/TestDeleteNote.graphql",
+      "variables": {
+        "id": "n2"
+      },
+      "responses": [
+        "tests/delete-note-n2.json"
+      ],
+      "records": "tests/delete-note-n2.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "removeNote.removedNoteId",
+          "value": "n2"
+        }
+      ],
+      "override": {
+        "paths": [
+          "removeNote.removedNoteId"
+        ],
+        "value": "n3"
+      }
+    },
+    {
+      "name": "tests/delete-note-7",
+      "operation": "TestDeleteNote",
+      "kind": "mutation",
+      "document": "documents/TestDeleteNote.graphql",
+      "variables": {
+        "id": "7"
+      },
+      "responses": [
+        "tests/delete-note-7.json"
+      ],
+      "records": "tests/delete-note-7.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "removeNote.removedNoteId",
+          "value": "7"
+        }
+      ],
+      "override": {
+        "paths": [
+          "removeNote.removedNoteId"
+        ],
+        "value": "8"
+      }
+    },
+    {
+      "name": "tests/add-note-n2",
+      "operation": "TestAddNote",
+      "kind": "mutation",
+      "document": "documents/TestAddNote.graphql",
+      "variables": {
+        "characterId": "1",
+        "text": "Portal gun needs charging",
+        "connections": []
+      },
+      "responses": [
+        "tests/add-note-n2.json"
+      ],
+      "records": "tests/add-note-n2.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "addNote.noteEdge.cursor",
+          "value": "c2"
+        },
+        {
+          "path": "addNote.noteEdge.node.id",
+          "value": "n2"
+        },
+        {
+          "path": "addNote.noteEdge.node.text",
+          "value": "Portal gun needs charging"
+        }
+      ],
+      "override": {
+        "paths": [
+          "addNote.noteEdge.node.text"
+        ],
+        "value": "Edited"
+      }
+    },
+    {
+      "name": "tests/search-1",
+      "operation": "TestSearch",
+      "kind": "query",
+      "document": "documents/TestSearch.graphql",
+      "variables": {
+        "name": "1"
+      },
+      "responses": [
+        "tests/search-1.json"
+      ],
+      "records": "tests/search-1.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "search.0.id",
+          "value": "1"
+        },
+        {
+          "path": "search.0.name",
+          "value": "Rick Sanchez"
+        },
+        {
+          "path": "search.1.id",
+          "value": "1"
+        },
+        {
+          "path": "search.1.dimension",
+          "value": "Dimension C-137"
+        }
+      ],
+      "override": {
+        "paths": [
+          "search.1.dimension"
+        ],
+        "value": "Dimension C-138"
+      }
+    },
+    {
+      "name": "tests/search-origins-1",
+      "operation": "TestSearchOrigins",
+      "kind": "query",
+      "document": "documents/TestSearchOrigins.graphql",
+      "variables": {
+        "name": "1"
+      },
+      "responses": [
+        "tests/search-origins-1.json"
+      ],
+      "records": "tests/search-origins-1.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "search.0.origin.name",
+          "value": "Earth (C-137)"
+        },
+        {
+          "path": "search.1.origin",
+          "value": null
+        }
+      ],
+      "override": {
+        "paths": [
+          "search.0.origin.name"
+        ],
+        "value": "Earth (C-138)"
+      }
+    },
+    {
+      "name": "tests/set-favorite-1",
+      "operation": "TestSetFavorite",
+      "kind": "mutation",
+      "document": "documents/TestSetFavorite.graphql",
+      "variables": {
+        "id": "1",
+        "favorite": true
+      },
+      "responses": [
+        "tests/set-favorite-1.json"
+      ],
+      "records": "tests/set-favorite-1.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "setFavorite.character.id",
+          "value": "1"
+        },
+        {
+          "path": "setFavorite.character.name",
+          "value": "Rick Sanchez"
+        },
+        {
+          "path": "setFavorite.character.favorite",
+          "value": true
+        }
+      ],
+      "override": {
+        "paths": [
+          "setFavorite.character.favorite"
+        ],
+        "value": false
+      }
+    },
+    {
+      "name": "tests/rename-1",
+      "operation": "TestRename",
+      "kind": "mutation",
+      "document": "documents/TestRename.graphql",
+      "variables": {
+        "id": "1",
+        "name": "Rick Prime"
+      },
+      "responses": [
+        "tests/rename-1.json"
+      ],
+      "records": "tests/rename-1.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "rename.character.id",
+          "value": "1"
+        },
+        {
+          "path": "rename.character.name",
+          "value": "Rick Prime"
+        }
+      ],
+      "override": {
+        "paths": [
+          "rename.character.name"
+        ],
+        "value": "Rick Two"
+      }
+    },
+    {
+      "name": "tests/add-note-n9",
+      "operation": "TestAddNote",
+      "kind": "mutation",
+      "document": "documents/TestAddNote.graphql",
+      "variables": {
+        "characterId": "1",
+        "text": "Appended",
+        "connections": []
+      },
+      "responses": [
+        "tests/add-note-n9.json"
+      ],
+      "records": "tests/add-note-n9.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "addNote.noteEdge.cursor",
+          "value": "c9"
+        },
+        {
+          "path": "addNote.noteEdge.node.id",
+          "value": "n9"
+        },
+        {
+          "path": "addNote.noteEdge.node.text",
+          "value": "Appended"
+        }
+      ],
+      "override": {
+        "paths": [
+          "addNote.noteEdge.node.text"
+        ],
+        "value": "Edited"
+      }
+    },
+    {
+      "name": "tests/add-note-n9-pending",
+      "operation": "TestAddNote",
+      "kind": "mutation",
+      "document": "documents/TestAddNote.graphql",
+      "variables": {
+        "characterId": "1",
+        "text": "Pending",
+        "connections": []
+      },
+      "responses": [
+        "tests/add-note-n9-pending.json"
+      ],
+      "records": "tests/add-note-n9-pending.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "addNote.noteEdge.cursor",
+          "value": "c9"
+        },
+        {
+          "path": "addNote.noteEdge.node.id",
+          "value": "n9"
+        },
+        {
+          "path": "addNote.noteEdge.node.text",
+          "value": "Pending"
+        }
+      ],
+      "override": {
+        "paths": [
+          "addNote.noteEdge.node.text"
+        ],
+        "value": "Edited"
+      }
+    },
+    {
+      "name": "tests/add-note-n0",
+      "operation": "TestAddNoteFirst",
+      "kind": "mutation",
+      "document": "documents/TestAddNoteFirst.graphql",
+      "variables": {
+        "characterId": "1",
+        "text": "First",
+        "connections": []
+      },
+      "responses": [
+        "tests/add-note-n0.json"
+      ],
+      "records": "tests/add-note-n0.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "addNote.noteEdge.cursor",
+          "value": "c0"
+        },
+        {
+          "path": "addNote.noteEdge.node.id",
+          "value": "n0"
+        },
+        {
+          "path": "addNote.noteEdge.node.text",
+          "value": "First"
+        }
+      ],
+      "override": {
+        "paths": [
+          "addNote.noteEdge.cursor"
+        ],
+        "value": "c00"
+      }
+    },
+    {
+      "name": "tests/remove-note-n2",
+      "operation": "TestRemoveNote",
+      "kind": "mutation",
+      "document": "documents/TestRemoveNote.graphql",
+      "variables": {
+        "id": "n2",
+        "connections": []
+      },
+      "responses": [
+        "tests/remove-note-n2.json"
+      ],
+      "records": "tests/remove-note-n2.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "removeNote.removedNoteId",
+          "value": "n2"
+        },
+        {
+          "path": "removeNote.deleted",
+          "value": "n2"
+        }
+      ],
+      "override": {
+        "paths": [
+          "removeNote.removedNoteId",
+          "removeNote.deleted"
+        ],
+        "value": "n3"
+      }
+    },
+    {
+      "name": "tests/note-added-1",
+      "operation": "TestNoteAdded",
+      "kind": "subscription",
+      "document": "documents/TestNoteAdded.graphql",
+      "variables": {
+        "characterId": "1",
+        "connections": []
+      },
+      "responses": [
+        "tests/note-added-1.json"
+      ],
+      "records": "tests/note-added-1.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "noteAdded.noteEdge.cursor",
+          "value": "c6"
+        },
+        {
+          "path": "noteAdded.noteEdge.node.id",
+          "value": "n6"
+        },
+        {
+          "path": "noteAdded.noteEdge.node.text",
+          "value": "Live from the garage"
+        }
+      ],
+      "override": {
+        "paths": [
+          "noteAdded.noteEdge.node.text"
+        ],
+        "value": "Edited"
+      }
+    },
+    {
+      "name": "tests/character-origin-null",
+      "operation": "TestProfileQuery",
+      "kind": "query",
+      "document": "documents/TestProfileQuery.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "tests/character-origin-null.json"
+      ],
+      "records": "tests/character-origin-null.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "character.name",
+          "value": null,
+          "note": "`origin` is @required and null, so the fragment reads absent"
+        },
+        {
+          "path": "character.origin",
+          "value": null
+        },
+        {
+          "path": "character.status",
+          "value": null,
+          "note": "`origin` is @required and null, so the fragment reads absent"
+        },
+        {
+          "path": "character.location.name",
+          "value": null,
+          "note": "`origin` is @required and null, so the fragment reads absent"
+        },
+        {
+          "path": "character.type",
+          "value": "Genius"
+        },
+        {
+          "path": "character.species",
+          "value": "Human"
+        }
+      ],
+      "override": {
+        "paths": [
+          "character.species"
+        ],
+        "value": "Cyborg"
+      }
+    },
+    {
+      "name": "tests/character-errors-answered",
+      "operation": "TestProfileQuery",
+      "kind": "query",
+      "document": "documents/TestProfileQuery.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "tests/character-errors-answered.json"
+      ],
+      "records": "tests/character-errors-answered.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "character.name",
+          "value": "Rick Sanchez"
+        },
+        {
+          "path": "character.origin.name",
+          "value": "Earth (C-137)"
+        },
+        {
+          "path": "character.status",
+          "value": "Alive"
+        },
+        {
+          "path": "character.type",
+          "value": null
+        },
+        {
+          "path": "character.species",
+          "value": null,
+          "note": "the fragment is @throwOnFieldError and `type` carries a field error, so the fragment reads absent"
+        }
+      ],
+      "override": {
+        "paths": [
+          "character.species"
+        ],
+        "value": "Cyborg"
+      }
+    },
+    {
+      "name": "tests/negative-error-index",
+      "operation": "TestList",
+      "kind": "query",
+      "document": "documents/TestList.graphql",
+      "variables": {
+        "page": 1
+      },
+      "responses": [
+        "tests/negative-error-index.json"
+      ],
+      "records": "tests/negative-error-index.store.json",
+      "complete": false,
+      "reads": [
+        {
+          "path": "characters.results.0.name",
+          "value": "Rick Sanchez"
+        }
+      ],
+      "override": {
+        "paths": [
+          "characters.results.0.name"
+        ],
+        "value": "Rick Prime"
+      }
+    },
+    {
+      "name": "tests/float-error-index",
+      "operation": "TestList",
+      "kind": "query",
+      "document": "documents/TestList.graphql",
+      "variables": {
+        "page": 1
+      },
+      "responses": [
+        "tests/float-error-index.json"
+      ],
+      "records": "tests/float-error-index.store.json",
+      "complete": false,
+      "reads": [
+        {
+          "path": "characters.results.0.name",
+          "value": "Rick Sanchez"
+        }
+      ],
+      "override": {
+        "paths": [
+          "characters.results.0.name"
+        ],
+        "value": "Rick Prime"
+      }
+    },
+    {
+      "name": "tokenizer/response",
+      "operation": "TestTokenizerQuery",
+      "kind": "query",
+      "document": "documents/TestTokenizerQuery.graphql",
+      "variables": {},
+      "responses": [
+        "tokenizer/response.json"
+      ],
+      "records": "tokenizer/response.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "tokenizer.id",
+          "value": "t1"
+        },
+        {
+          "path": "tokenizer.text",
+          "value": "quote \" backslash \\ slash / backspace \b formfeed \f newline \n return \r tab \t e-acute é control \u0001 pair 😀 raw é end"
+        },
+        {
+          "path": "tokenizer.strings",
+          "value": [
+            "plain",
+            null,
+            "été",
+            "",
+            null
+          ]
+        },
+        {
+          "path": "tokenizer.flags",
+          "value": [
+            true,
+            null,
+            false
+          ]
+        }
+      ],
+      "override": {
+        "paths": [
+          "tokenizer.text"
+        ],
+        "value": "overridden"
+      }
+    },
+    {
+      "name": "tests/note-added-2",
+      "operation": "TestNoteAdded",
+      "kind": "subscription",
+      "document": "documents/TestNoteAdded.graphql",
+      "variables": {
+        "characterId": "1",
+        "connections": []
+      },
+      "responses": [
+        "tests/note-added-2.json"
+      ],
+      "records": "tests/note-added-2.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "noteAdded.noteEdge.cursor",
+          "value": "c7"
+        },
+        {
+          "path": "noteAdded.noteEdge.node.id",
+          "value": "n7"
+        },
+        {
+          "path": "noteAdded.noteEdge.node.text",
+          "value": "Second live note"
+        }
+      ],
+      "override": {
+        "paths": [
+          "noteAdded.noteEdge.node.text"
+        ],
+        "value": "Edited"
+      }
+    },
+    {
+      "name": "tests/character-deferred",
+      "operation": "TestProfileQuery",
+      "kind": "query",
+      "document": "documents/TestProfileQuery.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "tests/character-deferred-1.json",
+        "tests/character-deferred-2.json"
+      ],
+      "records": "tests/character-deferred.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "character.name",
+          "value": "Rick Sanchez"
+        },
+        {
+          "path": "character.origin.name",
+          "value": "Earth (C-137)"
+        },
+        {
+          "path": "character.status",
+          "value": "Alive"
+        },
+        {
+          "path": "character.episode.0.name",
+          "value": "Pilot"
+        },
+        {
+          "path": "character.episode.1.air_date",
+          "value": "December 9, 2013"
+        }
+      ]
+    },
+    {
+      "name": "tests/character-deferred-pending",
+      "operation": "TestProfileQuery",
+      "kind": "query",
+      "document": "documents/TestProfileQuery.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "tests/character-deferred-1-pending.json",
+        "tests/character-deferred-2-pending.json"
+      ],
+      "records": "tests/character-deferred-pending.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "character.name",
+          "value": "Rick Sanchez"
+        },
+        {
+          "path": "character.origin.name",
+          "value": "Earth (C-137)"
+        },
+        {
+          "path": "character.status",
+          "value": "Alive"
+        },
+        {
+          "path": "character.episode.0.name",
+          "value": "Pilot"
+        },
+        {
+          "path": "character.episode.1.air_date",
+          "value": "December 9, 2013"
+        }
+      ]
+    },
+    {
+      "name": "tests/node-deferred",
+      "operation": "TestNodeDeferred",
+      "kind": "query",
+      "document": "documents/TestNodeDeferred.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "tests/node-deferred-1.json",
+        "tests/node-deferred-2.json"
+      ],
+      "records": "tests/node-deferred.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "node.id",
+          "value": "1"
+        },
+        {
+          "path": "node.name",
+          "value": "Rick Sanchez"
+        },
+        {
+          "path": "node.episode.0.name",
+          "value": "Pilot"
+        },
+        {
+          "path": "node.episode.1.air_date",
+          "value": "December 9, 2013"
+        }
+      ]
+    }
+  ]
+}

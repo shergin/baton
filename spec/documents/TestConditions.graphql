@@ -1,0 +1,20 @@
+query TestConditions(
+  $id: ID!
+  $withOrigin: Boolean!
+  $hideStatus: Boolean!
+) {
+  character(id: $id) {
+    name
+    origin {
+      id
+    }
+    origin @include(if: $withOrigin) {
+      name
+      dimension
+      id
+    }
+    species @include(if: $withOrigin)
+    status @skip(if: $hideStatus)
+    id
+  }
+}

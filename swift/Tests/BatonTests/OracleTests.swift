@@ -4,110 +4,65 @@ import BatonTesting
 import Foundation
 import Testing
 
-/// A recorded response, the plan that reads it, and where it hangs.
+/// A case of `spec/manifest.json`: the responses, the operation that reads
+/// them, where they hang, and what the store and the lens must give after.
 struct OracleCase: Sendable, CustomTestStringConvertible {
-    enum Root: Sendable {
-        case query, mutation, subscription
+    let entry: Manifest.Case
 
-        var key: String {
-            switch self {
-            case .query: Store.rootKey
-            case .mutation: Store.mutationRootKey
-            case .subscription: Store.subscriptionRootKey
-            }
-        }
+    var testDescription: String { entry.name }
 
-        @MainActor func record(in store: Store) -> Record {
-            switch self {
-            case .query: store.root
-            case .mutation: store.mutationRoot
-            case .subscription: store.subscriptionRoot
-            }
+    static let all = Spec.manifest.cases.map(OracleCase.init(entry:))
+
+    var rootKey: String {
+        switch entry.kind {
+        case .query: Store.rootKey
+        case .mutation: Store.mutationRootKey
+        case .subscription: Store.subscriptionRootKey
         }
     }
 
-    let name: String
-    let response: Data
-    /// The operation's plan and variables, resolved in the store that
-    /// reads the response.
-    let operationPlan: Plan
-    let variables: Variables
-    let root: Root
-    /// The leaves an optimistic layer overrides, and the value they show:
-    /// one leaf, or several aliases of one storage key.
-    let override: (paths: [String], value: LeafValue)
+    @MainActor func root(in store: Store) -> Record {
+        switch entry.kind {
+        case .query: store.root
+        case .mutation: store.mutationRoot
+        case .subscription: store.subscriptionRoot
+        }
+    }
+
     /// Whether the image is read back: it keeps what hangs off the query
     /// root only.
-    let persisted: Bool
-    /// Whether the response answers every field the plan selects, so that
-    /// the availability check passes on it.
-    let complete: Bool
+    var persisted: Bool { entry.kind == .query }
 
-    var testDescription: String { name }
-
-    /// The plan resolved in a store.
-    @MainActor func plan(in store: Store) -> ResolvedSelection {
-        operationPlan.resolve(variables, in: store.keys)
+    /// The dump's name as `StoreDump` takes it, without the extension.
+    var dumpName: String {
+        let suffix = ".store.json"
+        return entry.records.hasSuffix(suffix) ? String(entry.records.dropLast(suffix.count)) : entry.records
     }
 
-    init<Op: Baton.Operation>(_ name: String, _ response: Data, _ operation: Op, root: Root = .query, override: ([String], LeafValue), complete: Bool = true) {
-        self.name = name
-        self.response = response
-        operationPlan = Op.plan
-        variables = operation.variables
-        self.root = root
-        self.override = override
-        persisted = root == .query
-        self.complete = complete
+    var parts: [Data] { entry.responses.map(Spec.data) }
+
+    /// The response the parts add up to: the one response, or the first part
+    /// with every later part merged in at its path.
+    func response() throws -> Data {
+        let parts = parts
+        guard let first = parts.first else { throw OracleError(description: "\(entry.name) lists no response") }
+        return parts.count == 1 ? first : try Oracle.merging(Array(parts.dropFirst()), into: first)
     }
 
-    static let all: [OracleCase] = [
-        OracleCase("rickandmorty/characters-page-1", fixtureData, Fixture(page: 1), override: (["characters.info.count"], .int(1))),
-        OracleCase("rickandmorty/character-episodes-9", Spec.data("rickandmorty/character-episodes-9.json"), TestEpisodesQuery(id: "9"), override: (["character.episode.0.name"], .string("Pickle Rick Redux"))),
-        OracleCase("rickandmorty/character-header-9", Spec.data("rickandmorty/character-header-9.json"), TestHeaderQuery(id: "9"), override: (["character.name"], .string("Director"))),
-        OracleCase("tests/character-errors", fixture("character-errors"), TestProfileQuery(id: "1"), override: (["character.species"], .string("Cyborg"))),
-        OracleCase("tests/character-deferred-1", fixture("character-deferred-1"), TestProfileQuery(id: "1"), override: (["character.species"], .string("Cyborg"))),
-        OracleCase("tests/character-deferred-1-pending", fixture("character-deferred-1-pending"), TestProfileQuery(id: "1"), override: (["character.species"], .string("Cyborg"))),
-        OracleCase("tests/character-name-hidden", fixture("character-name-hidden"), TestStrictQuery(id: "1"), override: (["character.species"], .string("Cyborg"))),
-        OracleCase("tests/characters-7-8", fixture("characters-7-8"), TestList(page: 1), override: (["characters.results.1.name"], .string("Rick Prime")), complete: false),
-        OracleCase("tests/characters-with-gaps", fixture("characters-with-gaps"), TestList(page: 1), override: (["characters.results.2.name"], .string("Rick Prime")), complete: false),
-        OracleCase("tests/notes-page-1", notesPage(1), TestNotesQuery(id: "1"), override: (["character.name"], .string("Rick Prime"))),
-        OracleCase("tests/notes-page-2", notesPage(2), TestNotesPaginationQuery(count: 2, cursor: "c2", id: "1"), override: (["node.notes.edges.0.node.text"], .string("Get Schwiftier"))),
-        OracleCase("tests/notes-page-3", notesPage(3), TestNotesPaginationQuery(count: 2, cursor: "c4", id: "1"), override: (["node.notes.edges.0.node.text"], .string("Get Schwiftier"))),
-        OracleCase("tests/recent-notes-page-1", fixture("recent-notes-page-1"), TestRecentNotesQuery(id: "1"), override: (["character.notes.edges.1.node.text"], .string("Pickle Morty"))),
-        OracleCase("tests/recent-notes-page-2", fixture("recent-notes-page-2"), TestRecentNotesPaginationQuery(count: 2, cursor: "c4", id: "1"), override: (["node.notes.pageInfo.startCursor"], .string("c0"))),
-        OracleCase("tests/recent-notes-page-3", fixture("recent-notes-page-3"), TestRecentNotesPaginationQuery(count: 1, cursor: "c2", id: "1"), override: (["node.notes.edges.0.cursor"], .string("c0"))),
-        OracleCase("tests/notes-refetch", fixture("notes-refetch"), TestNotesPaginationQuery(count: 2, id: "1"), override: (["node.name"], .string("Rick Prime"))),
-        OracleCase("tests/add-note-node-n7", fixture("add-note-node-n7"), TestAddNoteNode(characterId: "1", text: "Node appended", connections: []), root: .mutation, override: (["addNote.note.text"], .string("Edited"))),
-        OracleCase("tests/add-note-node-n0", fixture("add-note-node-n0"), TestAddNoteNodeFirst(characterId: "1", text: "Node first", connections: []), root: .mutation, override: (["addNote.note.text"], .string("Edited"))),
-        OracleCase("tests/keys-1", fixture("keys-1"), TestKeys(id: "7", name: "Rick"), override: (["characters.info.count"], .int(2))),
-        OracleCase("tests/conditions-included", fixture("conditions-included"), TestConditions(id: "1", withOrigin: true, hideStatus: false), override: (["character.origin.dimension"], .string("Dimension C-138"))),
-        OracleCase("tests/conditions-excluded", fixture("conditions-excluded"), TestConditions(id: "1", withOrigin: false, hideStatus: true), override: (["character.name"], .string("Rick Prime"))),
-        OracleCase("tests/union-1", fixture("union-1"), TestUnion(name: "a"), override: (["search.1.label"], .string("Dimension C-138"))),
-        OracleCase("tests/node-fields-character", fixture("node-fields-character"), TestNodeFields(id: "1"), override: (["node.name"], .string("Rick Prime"))),
-        OracleCase("tests/node-fields-episode", fixture("node-fields-episode"), TestNodeFields(id: "1"), override: (["node.id"], .string("2"))),
-        OracleCase("tests/two-spreads-1", fixture("two-spreads-1"), TestTwoSpreads(id: "1", again: true), override: (["character.status"], .string("Dead"))),
-        OracleCase("tests/union-path-character", fixture("union-path-character"), TestUnion(name: "a"), override: (["search.0.label", "search.0.name"], .string("Rick Prime")), complete: false),
-        OracleCase("tests/union-path-location", fixture("union-path-location"), TestUnion(name: "a"), override: (["search.0.label"], .string("Dimension C-138")), complete: false),
-        OracleCase("tests/delete-note-n2", fixture("delete-note-n2"), TestDeleteNote(id: "n2"), root: .mutation, override: (["removeNote.removedNoteId"], .string("n3"))),
-        OracleCase("tests/delete-note-7", fixture("delete-note-7"), TestDeleteNote(id: "7"), root: .mutation, override: (["removeNote.removedNoteId"], .string("8"))),
-        OracleCase("tests/add-note-n2", fixture("add-note-n2"), TestAddNote(characterId: "1", text: "Portal gun needs charging", connections: []), root: .mutation, override: (["addNote.noteEdge.node.text"], .string("Edited"))),
-        OracleCase("tests/search-1", fixture("search-1"), TestSearch(name: "1"), override: (["search.1.dimension"], .string("Dimension C-138"))),
-        OracleCase("tests/search-origins-1", fixture("search-origins-1"), TestSearchOrigins(name: "1"), override: (["search.0.origin.name"], .string("Earth (C-138)"))),
-        OracleCase("tests/set-favorite-1", fixture("set-favorite-1"), TestSetFavorite(id: "1", favorite: true), root: .mutation, override: (["setFavorite.character.favorite"], .bool(false))),
-        OracleCase("tests/rename-1", fixture("rename-1"), TestRename(id: "1", name: "Rick Prime"), root: .mutation, override: (["rename.character.name"], .string("Rick Two"))),
-        OracleCase("tests/add-note-n9", fixture("add-note-n9"), TestAddNote(characterId: "1", text: "Appended", connections: []), root: .mutation, override: (["addNote.noteEdge.node.text"], .string("Edited"))),
-        OracleCase("tests/add-note-n9-pending", fixture("add-note-n9-pending"), TestAddNote(characterId: "1", text: "Pending", connections: []), root: .mutation, override: (["addNote.noteEdge.node.text"], .string("Edited"))),
-        OracleCase("tests/add-note-n0", fixture("add-note-n0"), TestAddNoteFirst(characterId: "1", text: "First", connections: []), root: .mutation, override: (["addNote.noteEdge.cursor"], .string("c00"))),
-        OracleCase("tests/remove-note-n2", fixture("remove-note-n2"), TestRemoveNote(id: "n2", connections: []), root: .mutation, override: (["removeNote.removedNoteId", "removeNote.deleted"], .string("n3"))),
-        OracleCase("tests/note-added-1", fixture("note-added-1"), TestNoteAdded(characterId: "1", connections: []), root: .subscription, override: (["noteAdded.noteEdge.node.text"], .string("Edited"))),
-        OracleCase("tests/character-origin-null", fixture("character-origin-null"), TestProfileQuery(id: "1"), override: (["character.species"], .string("Cyborg"))),
-        OracleCase("tests/character-errors-answered", fixture("character-errors-answered"), TestProfileQuery(id: "1"), override: (["character.species"], .string("Cyborg"))),
-        OracleCase("tests/negative-error-index", fixture("negative-error-index"), TestList(page: 1), override: (["characters.results.0.name"], .string("Rick Prime")), complete: false),
-        OracleCase("tests/float-error-index", fixture("float-error-index"), TestList(page: 1), override: (["characters.results.0.name"], .string("Rick Prime")), complete: false),
-        OracleCase("tokenizer/response", Spec.data("tokenizer/response.json"), TestTokenizerQuery(), override: (["tokenizer.text"], .string("overridden"))),
-        OracleCase("tests/note-added-2", fixture("note-added-2"), TestNoteAdded(characterId: "1", connections: []), root: .subscription, override: (["noteAdded.noteEdge.node.text"], .string("Edited"))),
-    ]
+    /// Commits the responses into a store: one response directly, the parts
+    /// of an incremental response through a fetch, as an app receives them.
+    @MainActor func commit(_ operation: OracleOperation, into store: Store) async throws {
+        let parts = parts
+        if parts.count == 1 {
+            let plan = operation.plan.resolve(operation.variables, in: store.keys)
+            store.commit(try Ingest.normalize(parts[0], plan: plan, rootKey: rootKey))
+            return
+        }
+        guard let fetch = operation.fetch else {
+            throw OracleError(description: "\(entry.name): only a query takes its responses in parts")
+        }
+        try await fetch(Environment(transport: Parts(parts), store: store))
+    }
 }
 
 @MainActor
@@ -115,75 +70,90 @@ struct OracleCase: Sendable, CustomTestStringConvertible {
 struct OracleTests {
     @Test("the store reads back every leaf of the response, after the commit as its dump in spec/ says, from the image in a second store, and under a layer that overrides one leaf", arguments: OracleCase.all)
     func theStoreAgreesWithTheResponse(_ oracle: OracleCase) async throws {
+        let operation = try OracleOperation.bind(oracle.entry)
+        let response = try oracle.response()
         let image = TemporaryImage()
         let persistence = Persistence(url: image.url)
         let store = Store(persistence: oracle.persisted ? persistence : nil)
-        let plan = oracle.plan(in: store)
-        let expected = try Oracle.leaves(of: oracle.response, plan: plan)
+        let plan = operation.plan.resolve(operation.variables, in: store.keys)
+        let expected = try Oracle.leaves(of: response, plan: plan)
         #expect(!expected.isEmpty)
         store.reportMissing = nil
-        store.commit(try Ingest.normalize(oracle.response, plan: plan, rootKey: oracle.root.key))
-        expectSame(Oracle.leaves(of: oracle.root.record(in: store), plan: plan), expected, "after the commit")
-        StoreDump.expectMatches(store, oracle.name)
+        try await oracle.commit(operation, into: store)
+        expectSame(Oracle.leaves(of: oracle.root(in: store), plan: plan), expected, "after the commit")
+        StoreDump.expectMatches(store, oracle.dumpName)
 
         if oracle.persisted {
             await persistence.close()
             let second = Store(persistence: Persistence(url: image.url))
             second.reportMissing = nil
             let environment = Environment(transport: SilentTransport(), store: second)
-            let secondPlan = oracle.plan(in: second)
+            let secondPlan = operation.plan.resolve(operation.variables, in: second.keys)
             let answered = environment.store.check(secondPlan)
-            if oracle.complete { #expect(answered == .image, "the image answers the plan") }
-            expectSame(Oracle.leaves(of: second.root, plan: secondPlan), expected, "from the image")
+            if oracle.entry.complete { #expect(answered == .image, "the image answers the plan") }
+            // The check passes over deferred fields, so the image answers an
+            // incremental response's initial part, and its operation fetches.
+            let initial = oracle.parts.count == 1 ? expected : try Oracle.leaves(of: oracle.parts[0], plan: secondPlan)
+            expectSame(Oracle.leaves(of: second.root, plan: secondPlan), initial, "from the image")
         }
 
-        let (paths, value) = oracle.override
-        var edited = oracle.response
+        guard let override = oracle.entry.override else { return }
+        let value = try LeafValue(override.value)
+        var edited = response
         var overridden = expected
-        for path in paths {
+        for path in override.paths {
             edited = try Oracle.replacing(path, with: value, in: edited)
             overridden = overridden.replacing(path, with: value)
         }
-        let layer = store.applyOptimistic(try Ingest.normalize(edited, plan: plan, rootKey: oracle.root.key))
-        expectSame(Oracle.leaves(of: oracle.root.record(in: store), plan: plan), overridden, "under the layer")
+        let layer = store.applyOptimistic(try Ingest.normalize(edited, plan: plan, rootKey: oracle.rootKey))
+        expectSame(Oracle.leaves(of: oracle.root(in: store), plan: plan), overridden, "under the layer")
         store.revertOptimistic(layer)
-        expectSame(Oracle.leaves(of: oracle.root.record(in: store), plan: plan), expected, "after the layer is reverted")
+        expectSame(Oracle.leaves(of: oracle.root(in: store), plan: plan), expected, "after the layer is reverted")
     }
 
-    @Test("a deferred response reads back as the first part with every later part merged in at its path", arguments: [
-        ("character-deferred-1", "character-deferred-2"),
-        ("character-deferred-1-pending", "character-deferred-2-pending"),
-    ])
-    func deferredPartsAgreeWithTheResponse(_ parts: (String, String)) async throws {
-        let first = fixture(parts.0)
-        let second = fixture(parts.1)
-        let environment = Environment(transport: Parts([first, second]))
-        environment.store.reportMissing = nil
-        let operation = TestProfileQuery(id: "1")
-        try await environment.fetch(operation)
-
-        let plan = TestProfileQuery.plan.resolve(operation.variables, in: environment.store.keys)
-        let merged = try Oracle.merging([second], into: first)
-        let expected = try Oracle.leaves(of: merged, plan: plan)
-        #expect(expected.contains { $0.path == "character.episode.1.name" }, "the deferred part's leaves are expected")
-        expectSame(Oracle.leaves(of: environment.store.root, plan: plan), expected, "after both parts")
+    @Test("the generated lens reads every value the manifest lists for the case, through its own accessors and not the plan", arguments: OracleCase.all)
+    func theLensAgreesWithTheManifest(_ oracle: OracleCase) async throws {
+        let operation = try OracleOperation.bind(oracle.entry)
+        let store = Store()
+        store.reportMissing = nil
+        try await oracle.commit(operation, into: store)
+        let anchor = Anchor(record: oracle.root(in: store), variables: operation.variables, store: store)
+        for row in oracle.entry.reads {
+            guard let read = operation.readers[row.path] else {
+                Issue.record("\(oracle.entry.name): no reader of \(operation.name) for \(row.path)")
+                continue
+            }
+            let value = read(anchor)
+            if value != row.value {
+                Issue.record("\(oracle.entry.name): the lens reads \(row.path) as \(value) where the manifest has \(row.value)")
+            }
+        }
     }
 
-    @Test("a deferred part under an abstract selection reads back as its record's own type")
-    func deferredPartOnAnAbstractSelection() async throws {
-        let first = fixture("node-deferred-1")
-        let second = fixture("node-deferred-2")
-        let environment = Environment(transport: Parts([first, second]))
-        environment.store.reportMissing = nil
-        let operation = TestNodeDeferred(id: "1")
-        try await environment.fetch(operation)
-
-        let plan = TestNodeDeferred.plan.resolve(operation.variables, in: environment.store.keys)
-        let expected = try Oracle.leaves(of: try Oracle.merging([second], into: first), plan: plan)
-        #expect(expected.contains { $0.path == "node.episode.1.air_date" })
-        expectSame(Oracle.leaves(of: environment.store.root, plan: plan), expected, "after both parts")
-        let data = try #require(TestNodeDeferred.Data(anchor: Anchor(record: environment.store.root, variables: operation.variables, store: environment.store)).node)
-        #expect(data.appearances?.testAppearances?.episode.map(\.name) == ["Pilot", "Lawnmower Dog"])
+    @Test("every operation the manifest names has its document under spec/documents, equal to the text the compiler generated")
+    func theDocumentsAgreeWithTheGeneratedText() throws {
+        var documents: [String: String] = [:]
+        for entry in Spec.manifest.cases {
+            do {
+                documents[entry.document] = try OracleOperation.bind(entry).text + "\n"
+            } catch {
+                Issue.record("\(entry.name): \(error)")
+            }
+        }
+        let bless = ProcessInfo.processInfo.environment["BATON_BLESS"] != nil
+        for (path, text) in documents.sorted(by: { $0.key < $1.key }) {
+            let url = Spec.directory.appendingPathComponent(path)
+            if bless {
+                try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+                try Data(text.utf8).write(to: url)
+                continue
+            }
+            guard let written = try? String(contentsOf: url, encoding: .utf8) else {
+                Issue.record("\(path) is missing; run the tests with BATON_BLESS=1 to write it")
+                continue
+            }
+            #expect(written == text, "\(path) differs from the text the compiler generated")
+        }
     }
 
     /// Compares two leaf lists and names the first leaf where they part.
@@ -193,6 +163,21 @@ struct OracleTests {
         let store = index < actual.count ? actual[index].description : "<end>"
         let response = index < expected.count ? expected[index].description : "<end>"
         Issue.record("\(stage): the store reads \(store) where the response has \(response) (leaf \(index) of \(expected.count))", sourceLocation: sourceLocation)
+    }
+}
+
+extension LeafValue {
+    /// A manifest value as a leaf; an object is no leaf.
+    init(_ value: Manifest.Value) throws {
+        switch value {
+        case .null: self = .null
+        case .bool(let bool): self = .bool(bool)
+        case .int(let int): self = .int(int)
+        case .double(let double): self = .double(double)
+        case .string(let string): self = .string(string)
+        case .list(let items): self = .list(try items.map(LeafValue.init))
+        case .object: throw OracleError(description: "an object is not a leaf")
+        }
     }
 }
 

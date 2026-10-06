@@ -17,6 +17,14 @@ are expected and listed without apology.
   this shape is format 2: code of format 1 fails to compile at its marker,
   with a message that says to rebuild. The decision is
   [A list's null elements are typed as the schema says](docs/decisions/a-lists-null-elements-are-typed.md).
+- `spec/manifest.json` lists the cases a runtime is held to: each a
+  document, its variables, the responses in order, the store's dump after
+  them, and what a generated lens reads at each of a set of paths, in a
+  language-neutral form `spec/README.md` spells out. The documents the
+  manifest names are under `spec/documents/`, written from the generated
+  code and checked against it. The oracle tests run the manifest's cases
+  and read every row through the generated lens, beside the plan walk they
+  ran before.
 - The keys a session renders from its variables, one per id looked up and
   per cursor paged past, are numbered by the store that renders them, in
   `Keys`, where the process's registry numbered them for its own life: the

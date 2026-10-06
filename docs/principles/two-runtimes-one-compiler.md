@@ -69,6 +69,6 @@ measurements and the one condition under which this bends.
 
 `swift/` holds the Swift runtime, its macros, its build plugin, its
 benchmarks and its tests; `compiler/` holds `batonc`, which emits Swift;
-`spec/` holds the schemas, the responses and the store dumps a runtime is
-held to. There is no Kotlin runtime yet, and `batonc` has no Kotlin
+`spec/` holds the schemas, the documents, the responses, the store dumps
+and the expected reads a runtime is held to, listed in `spec/manifest.json`. There is no Kotlin runtime yet, and `batonc` has no Kotlin
 emitter. This section may rot; the rest must not.

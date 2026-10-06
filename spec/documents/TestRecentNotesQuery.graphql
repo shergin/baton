@@ -1,0 +1,26 @@
+query TestRecentNotesQuery(
+  $id: ID!
+) {
+  character(id: $id) {
+    ...TestRecentNotes_character
+    id
+  }
+}
+
+fragment TestRecentNotes_character on Character {
+  notes(last: 2) {
+    edges {
+      node {
+        id
+        text
+        __typename
+      }
+      cursor
+    }
+    pageInfo {
+      hasPreviousPage
+      startCursor
+    }
+  }
+  id
+}

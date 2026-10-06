@@ -1,0 +1,20 @@
+query TestNodeDeferred(
+  $id: ID!
+) {
+  node(id: $id) {
+    __typename
+    id
+    ... on Character {
+      name
+    }
+    ...TestAppearances_character @defer(label: "TestNodeDeferred$defer$TestAppearances_character")
+  }
+}
+
+fragment TestAppearances_character on Character {
+  episode {
+    name
+    air_date
+    id
+  }
+}

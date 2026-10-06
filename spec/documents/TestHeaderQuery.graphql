@@ -1,0 +1,19 @@
+query TestHeaderQuery(
+  $id: ID!
+) {
+  character(id: $id) {
+    ...TestHeader_character
+    id
+  }
+}
+
+fragment TestHeader_character on Character {
+  name
+  status
+  species
+  image
+  origin {
+    name
+    id
+  }
+}
