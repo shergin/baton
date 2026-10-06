@@ -47,8 +47,8 @@ accessors that read them, and a transport that sends ids. It has no opinion.
   Identity lives in schema configuration; fetch behaviour is a directive or a
   value on a handle.
 - Diagnostics are a build artifact and appear inline in the editor.
-- A compile-time plan means a compile-time size: the bench suite fences bytes
-  of generated code per field.
+- A compile-time plan means a compile-time size: the compiler's tests fence
+  the bytes of generated code per accessor line at 120, over the goldens.
 - The Swift and Kotlin runtimes consume the same plans, so they can only
   disagree in execution, which the fixtures catch.
 - Adopting a new specification feature is our decision, not a dependency's.

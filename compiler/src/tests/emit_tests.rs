@@ -346,6 +346,53 @@ fn compiling_the_same_sources_twice_emits_the_same_bytes() {
     );
 }
 
+/// Whether `line` declares a lens accessor: `@MainActor public var name:
+/// Type {`, the name bare or in backticks, as `^\s*@MainActor public var
+/// `?\w+`?: .*\{` would match.
+fn is_accessor(line: &str) -> bool {
+    let Some(rest) = line.trim_start().strip_prefix("@MainActor public var ") else {
+        return false;
+    };
+    let Some((name, kind)) = rest.split_once(':') else {
+        return false;
+    };
+    let name = name
+        .strip_prefix('`')
+        .and_then(|name| name.strip_suffix('`'))
+        .unwrap_or(name);
+    !name.is_empty()
+        && name
+            .chars()
+            .all(|character| character.is_alphanumeric() || character == '_')
+        && kind.starts_with(' ')
+        && kind.contains('{')
+}
+
+/// The fence on generated code: an accessor is one line of Swift a consumer
+/// compiles once per field it selects, so its average length over the test
+/// target bounds what the emitter costs a build. The hostile-name corpus is
+/// left out, as from the plan goldens: its names are long by design.
+#[test]
+fn generated_accessors_stay_under_their_byte_budget() {
+    const BUDGET: f64 = 120.0;
+    let corpus = golden_name(hostile_names::CORPUS, ".baton.swift");
+    let files = emit_swift_tests();
+    let accessors: Vec<&str> = files
+        .iter()
+        .filter(|(name, _)| **name != corpus)
+        .flat_map(|(_, text)| text.lines())
+        .filter(|line| is_accessor(line))
+        .collect();
+    assert!(!accessors.is_empty(), "the test target emits no accessor");
+    let bytes: usize = accessors.iter().map(|line| line.len()).sum();
+    let average = bytes as f64 / accessors.len() as f64;
+    assert!(
+        average <= BUDGET,
+        "{} accessor lines average {average:.1} bytes, over the budget of {BUDGET} bytes",
+        accessors.len()
+    );
+}
+
 /// The names `text` spells unqualified that a member could hide: a shared
 /// enum before a dot, and `Self` before a dot or a parenthesis, where it is
 /// an expression; each with no identifier or dot before it.

@@ -21,6 +21,22 @@ Best ingest and best commit of the fixture at each release below.
   <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
 
+## Unreleased, generated code per accessor — 2026-10-11
+
+Revision: the working tree on top of `a59397d`, measured over the Swift
+goldens under `compiler/src/tests/goldens` with the hostile-name corpus left
+out, by the test `generated_accessors_stay_under_their_byte_budget`. The
+figure is a property of the emitter, not of a machine.
+
+0.1.0 measured 107 bytes of source per accessor line against a budget of 120
+and fenced nothing; the compiler's tests now fence it, so a change to the
+emitter that pads an accessor fails `cargo test` before it is blessed.
+
+| Measurement | Value |
+|---|---|
+| Accessor lines in the goldens | 760 |
+| Bytes of source per accessor line, without the newline | 106.1 (budget 120) |
+
 ## Unreleased, eviction in the image — 2026-10-11
 
 Revision: the working tree of the eviction change on top of `0c61554`, one

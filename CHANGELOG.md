@@ -5,6 +5,9 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- The compiler's tests fence the bytes of generated code per accessor line
+  at 120 over the goldens, the budget 0.1.0 named and never enforced; the
+  goldens stand at 106.1.
 - A part of a deferred response that names a place no earlier part created,
   or a label the plan does not know, is logged as `partDropped` with its
   response path, where it was dropped without a word.
