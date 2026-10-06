@@ -76,9 +76,10 @@ public enum Phase<Data> {
 }
 
 /// A `storeOnly` operation whose data the store does not have.
-public struct MissingDataError: Error, CustomStringConvertible, Sendable {
+public struct MissingDataError: Error, CustomStringConvertible, Sendable, LocalizedError {
     public let operationName: String
     public var description: String { "\(operationName): the store does not have this data and the policy forbids fetching" }
+    public var errorDescription: String? { description }
 }
 
 extension Query {
@@ -221,8 +222,9 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
         return .ready(data)
     }
 
-    /// Whether the store holds every field the operation selects.
-    public var isComplete: Bool { store.check(resolved) != .miss }
+    /// Whether the store holds every field the operation selects. For the
+    /// tests, until the handle derives its phase.
+    package var isComplete: Bool { store.check(resolved) != .miss }
 
     /// Whether the data predates `Environment.invalidate()` or the expiration.
     /// A handle that is loading, or failed with no data behind the failure,
@@ -404,8 +406,9 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
         if let failure = await task?.value { throw failure }
     }
 
-    /// Waits for an in-flight fetch, if any.
-    public func settle() async {
+    /// Waits for an in-flight fetch, if any. For the tests and the benchmarks,
+    /// until the fetch is a value a reader awaits.
+    package func settle() async {
         _ = await task?.value
     }
 

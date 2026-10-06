@@ -64,7 +64,7 @@ public protocol SubscriptionTransport: Sendable {
 /// request that got no response: a socket that closed under it, or a
 /// recorded transport with nothing recorded for it. A connection that fails
 /// under `URLSession` throws the system's `URLError` instead.
-public struct TransportError: Error, CustomStringConvertible, Sendable {
+public struct TransportError: Error, CustomStringConvertible, Sendable, LocalizedError {
     /// The response's HTTP status, or 0 when there was none, as the web's
     /// `XMLHttpRequest` reports it.
     public let statusCode: Int
@@ -80,6 +80,8 @@ public struct TransportError: Error, CustomStringConvertible, Sendable {
         let body = body.prefix(200)
         return statusCode == 0 ? String(body) : "HTTP \(statusCode): \(body)"
     }
+
+    public var errorDescription: String? { description }
 }
 
 /// POSTs operations as JSON to one endpoint. An operation with `@defer` asks

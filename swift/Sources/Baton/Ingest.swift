@@ -207,10 +207,11 @@ package struct ChangeSet: Sendable {
     }
 }
 
-public struct IngestError: Error, CustomStringConvertible, Sendable {
+public struct IngestError: Error, CustomStringConvertible, Sendable, LocalizedError {
     public let offset: Int
     public let message: String
     public var description: String { "ingest error at byte \(offset): \(message)" }
+    public var errorDescription: String? { description }
 }
 
 /// Decodes a GraphQL response straight into a change set, following a resolved

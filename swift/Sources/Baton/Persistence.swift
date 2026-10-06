@@ -115,11 +115,19 @@ public final class Persistence: Sendable {
         }
     }
 
-    /// An image named `name` in the app's caches directory, which the system
-    /// may empty when storage runs low and does not back up.
+    /// An image named `name` in the app's caches directory, under the app's
+    /// bundle identifier, which the system may empty when storage runs low
+    /// and does not back up. On a Mac the caches directory is shared by
+    /// every process of the user, so the identifier keeps two apps that both
+    /// name their image `"Main"` apart; a process without one, a tool or a
+    /// test runner, is kept apart by its name.
     public convenience init(name: String, version: String = "", sizeLimit: Int = 64 << 20) {
         let caches = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
-        let url = caches.appendingPathComponent("Baton", isDirectory: true).appendingPathComponent(name + ".sqlite")
+        let owner = Bundle.main.bundleIdentifier ?? ProcessInfo.processInfo.processName
+        let url = caches
+            .appendingPathComponent(owner, isDirectory: true)
+            .appendingPathComponent("Baton", isDirectory: true)
+            .appendingPathComponent(name + ".sqlite")
         self.init(url: url, version: version, sizeLimit: sizeLimit)
     }
 

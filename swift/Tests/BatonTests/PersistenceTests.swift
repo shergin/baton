@@ -987,4 +987,27 @@ struct PersistenceTests {
             await first.persistence?.flush()
         }
     }
+
+    @Test("an image made by name lives under the owner's directory, so two apps naming theirs alike do not share a file")
+    func anImageByNameLivesUnderItsOwner() async {
+        let owner = Bundle.main.bundleIdentifier ?? ProcessInfo.processInfo.processName
+        #expect(Bundle.main.bundleIdentifier == nil, "the test runner has no bundle identifier; its process name keeps it apart")
+        let caches = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+        let expected = caches.appendingPathComponent(owner).appendingPathComponent("Baton").appendingPathComponent("Main.sqlite")
+        let directory = expected.deletingLastPathComponent()
+        let existed = FileManager.default.fileExists(atPath: expected.path)
+        let directoryExisted = FileManager.default.fileExists(atPath: directory.path)
+
+        let persistence = Persistence(name: "Main")
+        #expect(Array(persistence.url.pathComponents.suffix(3)) == [owner, "Baton", "Main.sqlite"])
+        #expect(persistence.url.standardizedFileURL.path == expected.standardizedFileURL.path)
+
+        // Making the value opens its file; one this test created goes with it.
+        await persistence.close()
+        guard !existed else { return }
+        for suffix in ["", "-wal", "-shm"] {
+            try? FileManager.default.removeItem(atPath: expected.path + suffix)
+        }
+        if !directoryExisted { try? FileManager.default.removeItem(at: directory) }
+    }
 }

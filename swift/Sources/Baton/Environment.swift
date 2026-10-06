@@ -338,8 +338,9 @@ public final class Environment {
     }
 
     /// Removes every record no root reaches. Returns how many were removed.
+    /// For the tests and the benchmarks, until the store owns its collector.
     @discardableResult
-    public func collect() -> Int {
+    package func collect() -> Int {
         var reachable = Set<ObjectIdentifier>()
         reachable.reserveCapacity(store.count)
         for handle in handles.values {

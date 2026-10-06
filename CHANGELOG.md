@@ -5,6 +5,20 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- Small truths. `Persistence(name:)` resolves under the app's bundle
+  identifier, or the process's name when it has none, so two apps on a Mac
+  that both name their image `"Main"` no longer share one file; an app
+  upgrading finds an empty image at the new path, which is a cache's lot.
+  The public error types are `LocalizedError`s, so `localizedDescription`
+  shows the text they carry. Three names that never passed the terminology
+  leave the public surface, to go with the steps that remove them:
+  `Environment.collect()`, `OperationHandle.settle()` and
+  `OperationHandle.isComplete`. The docs tell the truth again where they had
+  not: `onError` is `baton.json`'s, not the environment's; a record's
+  type-membership bits, configured identity and an introspection command
+  are not built, and are marked so or dropped; the lookup entry links the
+  decision that stands; `baton.json` takes Relay's key names, and
+  `relay.config.json` is not read.
 - The collector takes a root's entries with the records it sweeps. A root
   field rendered from variables, `character(id:"7")` or a page after a
   cursor, kept its entry on the root with a blank value after its record

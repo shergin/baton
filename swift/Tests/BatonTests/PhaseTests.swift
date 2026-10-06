@@ -649,4 +649,43 @@ struct PhaseTests {
         }
         handle.release()
     }
+
+    @Test("every public error's localized description is the description it carries")
+    func localizedDescriptions() async throws {
+        var errors: [any Error & CustomStringConvertible] = [
+            FieldError(message: "rate limited", path: "character.name"),
+            FieldErrors([FieldError(message: "rate limited", path: "character.name"), FieldError(message: "gone", path: "")]),
+            RequiredFieldError(path: "character.name"),
+            EnvironmentError.notInjected,
+            EnvironmentError.outsideEnvironment,
+            EnvironmentError.gone,
+            EnvironmentError.noSubscriptionTransport,
+            GraphQLErrors(messages: ["not found", "rate limited"]),
+            TransportError(statusCode: 503, body: "unavailable"),
+            TransportError(statusCode: 0, body: "the socket closed"),
+        ]
+
+        // The two without a public initializer, provoked: a response cut
+        // off mid-way, and a store-only read of data never fetched.
+        let plan = TestList.plan.resolve(TestList(page: 1).variables)
+        do {
+            _ = try Ingest.normalize(fixtureData.prefix(40), plan: plan)
+            Issue.record("expected the cut-off response to fail")
+        } catch let error as IngestError {
+            errors.append(error)
+        }
+        let environment = Environment(transport: SilentTransport())
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestHeaderQuery(id: "1"), fetchPolicy: .storeOnly)
+        guard case .failed(let missing as MissingDataError) = handle.phase else {
+            Issue.record("expected missing data, got \(handle.phase)")
+            return
+        }
+        errors.append(missing)
+
+        for error in errors {
+            #expect(error.localizedDescription == error.description)
+        }
+        #expect(errors.count == 12)
+    }
 }

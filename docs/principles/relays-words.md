@@ -25,9 +25,9 @@ Baton consumes the Relay compiler's front end, so Relay's directives are
 parsed and validated by the code that defines them. The directive set is
 Relay's; the connection handling is Relay's; the fetch policies are Relay's
 four; the glossary terms (operation, fragment, record, store, environment,
-retain, release buffer) are Relay's. Configuration a web project already has
-in `relay.config.json` (schema path, schema extensions, custom scalars,
-persisted-query settings) is read where it applies.
+retain, release buffer) are Relay's. Configuration keeps Relay's key names,
+in `baton.json`: `schema` today, and `schemaExtensions`, `customScalarTypes`
+and `persistConfig` as each is built; `relay.config.json` itself is not read.
 
 What Baton does not port is named in the vision: snapshots and seen-record
 sets, structural recycling, suspension by thrown promises, the generator-based

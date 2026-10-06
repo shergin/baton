@@ -196,7 +196,9 @@ labelled argument per variable and an optional `optimistic:` response,
 
 **Record.** *Concept: record.* Relay: a normalized object in the store.
 Here: an observable object identified by typename plus key, holding interned
-slots, per-field errors and type-membership bits. Its values are sized by
+slots and per-field errors. Type-membership bits, so that a record of a
+concrete type the build never saw takes its variant from the response's own
+`__isX` answers, are *(planned)*. Its values are sized by
 what was written, not by how many storage keys the type has, and the keys
 rendered from variables written to it are kept in a short list apart. A
 record `@deleteRecord` removed is *deleted*: links to it read as null, lists
@@ -205,13 +207,15 @@ are told, and a payload that names it again revives it, told the same way;
 see
 [A deletion is announced by its commit](decisions/deletion-is-announced-by-its-commit.md).
 
-**Key.** *Composition: schema, record.* The configured identity fields of a
-type (default `id`), combined with the typename: `Type:id`. Objects without
+**Key.** *Composition: schema, record.* The field named `id`, combined with
+the typename: `Type:id`. Identity configured per type in `baton.json`, as
+Relay's `nodeInterfaceIdField` and beyond it, is *(planned)*. Objects without
 a key get a path-based client id, as in Relay; under an interface or union
 the path ends in the record's concrete type. The store has no index by id
 alone: a lookup without a type (`node(id:)`) and `@deleteRecord` probe
 `Type:id` for each possible type, and act only when exactly one live record
-has the id.
+has the id; an id that names live records of several types is reported
+through `Store.reportAmbiguousIdentity`, and nothing is done for it.
 
 **Storage key, slot.** *Composition: record, plan.* Relay: a field name plus
 its serialized arguments, the key under which a value is stored. Here:
@@ -358,8 +362,10 @@ miss, so nothing heals it.
 
 ## Compiler
 
-**Schema.** *Concept: schema.* GraphQL: the SDL. Here: a checked-in file
-plus identity configuration; introspection download is a CLI command.
+**Schema.** *Concept: schema.* GraphQL: the SDL. Here: a checked-in file,
+named in `baton.json`. Identity configured beside it is *(planned)*; the
+compiler has no introspection command, and the file is downloaded by the
+app's own tooling.
 
 **Client schema extension, client field.** *Concept: schema.* Relay:
 `schemaExtensions`, files that give server types client fields or declare
@@ -508,7 +514,8 @@ decided on attach over the availability check and staleness.
 **Lookup.** *Composition: schema, store, plan.* Baton's word for a root
 field configured in `baton.json` as returning an entity by one of its
 arguments, so a cached entity satisfies the field before it was fetched. See
-[the decision](decisions/lookups.md).
+[the decision](decisions/lookups-bind-in-the-check.md), which superseded
+[the first one](decisions/lookups.md).
 
 ## Lists
 

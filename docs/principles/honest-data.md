@@ -75,7 +75,8 @@ errors stored beside the field, in memory and in the image, and read through
 `@required(action:)` bubbling at the lens boundary, logging through
 `Environment.requiredFieldMissing`, or throwing from the accessor;
 `@throwOnFieldError` failing the operation or throwing at the spread, with
-`@semanticNonNull` types under it; `Environment.errorBehavior` for `onError`;
+`@semanticNonNull` types under it; `onError` in `baton.json`, sent with every
+operation the target compiles;
 `Store.reportMissing` for missing data and `Store.reportUnexpected` for a
 null in a field typed non-null or a value of another kind, with zero values
 from the `required*` readers and one placeholder record per type behind a
