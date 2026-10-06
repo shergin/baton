@@ -12,8 +12,10 @@ the vocabulary is `docs/terminology.md`. These files outrank any default.
   ship. Name a concept in `docs/terminology.md` before naming it in code.
 - Relay's words and directives, not Apollo's. Do not invent a word where Relay
   or the GraphQL specification has one.
-- Reads are synchronous on the main actor; everything else runs off it. Never
-  add an asynchronous read API for views. Never parse GraphQL at run time.
+- Reads are synchronous on the main actor, and so are the availability
+  check and the collection; the ingest, the image and the network run off
+  it. Never add an asynchronous read API for views. Never parse GraphQL at
+  run time.
 - The response is the oracle: a change to the store, the tokenizer or the
   record layout is behavior-frozen under `spec/` fixtures. The fixtures are
   server responses, not tests; the rules under Tests do not let a change
