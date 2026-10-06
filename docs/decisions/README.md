@@ -27,6 +27,7 @@ principle, the proof belongs here.
 - [The availability check and collection run on the main actor](the-check-and-collection-run-on-the-main-actor.md)
 - [The environment is the session](the-environment-is-the-session.md)
 - [An image belongs to one store](an-image-belongs-to-one-store.md)
+- [The image's file is protected at creation and waited for when locked](the-images-file-is-protected-and-waited-for.md)
 - [The store owns roots and ages](the-store-owns-roots-and-ages.md)
 - [A fragment has one reading: a lens, or an `@inline` value](a-fragment-has-one-reading.md)
 - [A mapped scalar is a fallible read](a-mapped-scalar-is-a-fallible-read.md)

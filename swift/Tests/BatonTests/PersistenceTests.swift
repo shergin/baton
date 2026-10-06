@@ -10,7 +10,7 @@ final class TemporaryImage {
     let url = FileManager.default.temporaryDirectory.appendingPathComponent("baton-\(UUID().uuidString).sqlite")
 
     deinit {
-        for suffix in ["", "-wal", "-shm"] {
+        for suffix in ["", "-wal", "-shm", "-discard"] {
             try? FileManager.default.removeItem(atPath: url.path + suffix)
         }
     }
@@ -28,8 +28,8 @@ struct PersistenceTests {
     /// test runs its launches one after another, as a device does, and ends
     /// each with `finish`. `url` spells the image's path another way;
     /// `cacheExpiration` is the store's default.
-    func launch(_ transport: any Transport = SilentTransport(), at url: URL? = nil, version: String = "", sizeLimit: Int = 64 << 20, cacheExpiration: Duration? = nil, releaseBufferSize: Int = 10) -> Environment {
-        let store = Store(persistence: Persistence(url: url ?? image.url, version: version, sizeLimit: sizeLimit), cacheExpiration: cacheExpiration, releaseBufferSize: releaseBufferSize)
+    func launch(_ transport: any Transport = SilentTransport(), at url: URL? = nil, version: String = "", sizeLimit: Int = 64 << 20, protection: FileProtectionType? = nil, cacheExpiration: Duration? = nil, releaseBufferSize: Int = 10) -> Environment {
+        let store = Store(persistence: Persistence(url: url ?? image.url, version: version, sizeLimit: sizeLimit, protection: protection), cacheExpiration: cacheExpiration, releaseBufferSize: releaseBufferSize)
         store.reportMissing = nil
         return Environment(transport: transport, store: store)
     }
@@ -393,19 +393,81 @@ struct PersistenceTests {
         #expect(third.store.check(plan) == .miss)
     }
 
-    @Test("an image that lost a batch it could not write is discarded at the next open")
-    func lostBatch() async throws {
+    /// The image's file and the journal files beside it that exist now.
+    var imageFiles: [String] {
+        ["", "-wal", "-shm"].map { image.url.path + $0 }.filter { FileManager.default.fileExists(atPath: $0) }
+    }
+
+    /// Sets the permissions of each of `paths`.
+    func permit(_ permissions: Int, _ paths: [String]) throws {
+        for path in paths { try FileManager.default.setAttributes([.posixPermissions: permissions], ofItemAtPath: path) }
+    }
+
+    /// The marker beside the image that has the next open discard it.
+    var marker: String { image.url.path + "-discard" }
+
+    @Test("work the image's file cannot take waits for it, and lands when the file can be taken again")
+    func workWaitsForTheFile() async throws {
         try await seed(launch())
-        let attributes = [FileAttributeKey.posixPermissions: 0o444]
-        let paths = ["", "-wal", "-shm"].map { image.url.path + $0 }.filter { FileManager.default.fileExists(atPath: $0) }
-        for path in paths { try FileManager.default.setAttributes(attributes, ofItemAtPath: path) }
+        let paths = imageFiles
+        let size = try #require(try FileManager.default.attributesOfItem(atPath: image.url.path)[.size] as? Int)
+        try permit(0o444, paths)
+        defer { try? permit(0o644, paths) }
+
         let second = launch()
         second.store.commit(try Ingest.normalize(fixture("delete-record-1"), plan: TestDeleteNote.plan.resolve(TestDeleteNote(id: "1").variables), rootKey: Store.mutationRootKey))
+        await second.store.persistence?.flush()
+        // The file could not take the deletion, and is neither changed nor
+        // marked for it.
+        #expect(FileManager.default.fileExists(atPath: image.url.path), "the image was not discarded")
+        #expect(try FileManager.default.attributesOfItem(atPath: image.url.path)[.size] as? Int == size)
+        #expect(!FileManager.default.fileExists(atPath: marker))
+
+        try permit(0o644, paths)
+        try await Task.sleep(for: .seconds(1.1))
+        await second.store.persistence?.flush()
         await finish(second)
-        // The open after the lost batch discarded the file; what is left is
-        // made writable again for the test's own cleanup.
-        for path in paths { try? FileManager.default.setAttributes([.posixPermissions: 0o644], ofItemAtPath: path) }
-        #expect(throws: NotStored.self) { try stored(Fixture(page: 1), in: launch()) }
+
+        // The deletion landed in the image, which kept the rest.
+        let third = launch()
+        #expect(throws: NotStored.self) { try stored(TestHeaderQuery(id: "1"), in: third) }
+        #expect(throws: NotStored.self) { try stored(Fixture(page: 1), in: third) }
+        let morty = try stored(TestHeaderQuery(id: "2"), in: third)
+        #expect(morty.character?.testHeader.name == "Morty Smith")
+        await finish(third)
+    }
+
+    @Test("work that waits for the image's file past the wait limit is dropped, and the image starts again at the next open")
+    func workPastTheWaitLimitIsDropped() async throws {
+        try await seed(launch())
+        let paths = imageFiles
+        try permit(0o444, paths)
+        defer { try? permit(0o644, paths) }
+
+        // Every commit renames every named record, so each one queues a
+        // snapshot of nearly the whole fixture; the commits go on until the
+        // queue outgrows the limit and the image is marked.
+        let text = String(decoding: fixtureData, as: UTF8.self)
+        let plan = Fixture.plan.resolve(Fixture(page: 1).variables)
+        let second = launch()
+        var commits = 0
+        while !FileManager.default.fileExists(atPath: marker), commits < 500 {
+            let renamed = text.replacingOccurrences(of: "\"name\":\"", with: "\"name\":\"\(commits) ")
+            second.store.commit(try Ingest.normalize(Data(renamed.utf8), plan: plan))
+            await second.store.persistence?.flush()
+            commits += 1
+        }
+        #expect(FileManager.default.fileExists(atPath: marker), "the image was marked once the work outgrew the limit")
+        #expect(commits > 1, "one commit's work waits")
+        #expect(FileManager.default.fileExists(atPath: image.url.path), "the file itself is left for the next open")
+
+        try permit(0o644, paths)
+        await finish(second)
+        let third = launch()
+        #expect(throws: NotStored.self) { try stored(Fixture(page: 1), in: third) }
+        #expect(third.store.hydratedRecords == 0)
+        #expect(!FileManager.default.fileExists(atPath: marker))
+        await finish(third)
     }
 
     @Test("a deferred fragment whose records the image lacks reads absent, not empty, and its operation fetches")
@@ -877,6 +939,94 @@ struct PersistenceTests {
         #expect(sqlite3_open_v2(image.url.path, &db, SQLITE_OPEN_READONLY, nil) == SQLITE_OK)
         #expect(sqlite3_exec(db, "SELECT text FROM notes", nil, nil, nil) == SQLITE_OK, "the table is still there")
         sqlite3_close(db)
+    }
+
+    /// The protection class a file reports.
+    func protection(of path: String) throws -> FileProtectionType? {
+        try FileManager.default.attributesOfItem(atPath: path)[.protectionKey] as? FileProtectionType
+    }
+
+    @Test("an image made with a protection class carries it on its file and its write-ahead log")
+    func protectionIsTheFiles() async throws {
+        let environment = launch(protection: .complete)
+        environment.store.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables)))
+        await environment.store.persistence?.flush()
+        #expect(try protection(of: image.url.path) == .complete)
+        #expect(FileManager.default.fileExists(atPath: image.url.path + "-wal"), "the log exists while the image is open")
+        #expect(try protection(of: image.url.path + "-wal") == .complete)
+        await finish(environment)
+
+        let data = try stored(Fixture(page: 1), in: launch(protection: .complete))
+        #expect(data.characters?.results?.first?.name == "Rick Sanchez", "the same class reads its rows")
+    }
+
+    @Test("an image made under another protection class is a miss and starts again under the new one, in either direction")
+    func anotherProtectionStartsAgain() async throws {
+        try await seed(launch())
+        let protected = launch(protection: .complete)
+        #expect(throws: NotStored.self) { try stored(Fixture(page: 1), in: protected) }
+        #expect(protected.store.hydratedRecords == 0)
+        #expect(try protection(of: image.url.path) == .complete)
+        try await seed(protected)
+        _ = try stored(Fixture(page: 1), in: launch(protection: .complete))
+
+        let unprotected = launch()
+        #expect(throws: NotStored.self) { try stored(Fixture(page: 1), in: unprotected) }
+        #expect(unprotected.store.hydratedRecords == 0)
+        await finish(unprotected)
+    }
+
+    @Test("a removal a crash interrupted is finished at the next open: the image is a miss and the marker goes")
+    func anInterruptedRemovalIsFinished() async throws {
+        try await seed(launch())
+        #expect(FileManager.default.createFile(atPath: marker, contents: nil))
+        let next = launch()
+        #expect(throws: NotStored.self) { try stored(Fixture(page: 1), in: next) }
+        #expect(next.store.hydratedRecords == 0)
+        await next.store.persistence?.flush()
+        #expect(!FileManager.default.fileExists(atPath: marker))
+        await finish(next)
+    }
+
+    @Test("a marker beside a database of another kind leaves the database alone and goes, and the store works without an image")
+    func aMarkerBesideAForeignDatabase() async throws {
+        var db: OpaquePointer?
+        #expect(sqlite3_open(image.url.path, &db) == SQLITE_OK)
+        #expect(sqlite3_exec(db, "CREATE TABLE notes(text); INSERT INTO notes VALUES('mine')", nil, nil, nil) == SQLITE_OK)
+        sqlite3_close(db)
+        #expect(FileManager.default.createFile(atPath: marker, contents: nil))
+
+        let environment = launch()
+        environment.store.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables)))
+        await environment.store.persistence?.flush()
+        #expect(!FileManager.default.fileExists(atPath: marker))
+        _ = try stored(Fixture(page: 1), in: environment)
+        await finish(environment)
+        #expect(throws: NotStored.self) { try stored(Fixture(page: 1), in: launch()) }
+
+        #expect(sqlite3_open(image.url.path, &db) == SQLITE_OK)
+        #expect(sqlite3_exec(db, "SELECT text FROM notes", nil, nil, nil) == SQLITE_OK, "the table is still there")
+        sqlite3_close(db)
+    }
+
+    @Test("a removal of an image whose file cannot be opened is marked, and the next open that can finishes it")
+    func aRemovalOfAFileThatCannotBeOpened() async throws {
+        try await seed(launch())
+        try permit(0o000, [image.url.path])
+        defer { try? permit(0o644, [image.url.path]) }
+
+        let closed = Persistence(url: image.url)
+        await closed.close()
+        closed.removeAll()
+        #expect(FileManager.default.fileExists(atPath: image.url.path), "the file could not be told an image, and stays")
+        #expect(FileManager.default.fileExists(atPath: marker))
+
+        try permit(0o644, [image.url.path])
+        let next = launch()
+        #expect(throws: NotStored.self) { try stored(Fixture(page: 1), in: next) }
+        #expect(next.store.hydratedRecords == 0)
+        #expect(!FileManager.default.fileExists(atPath: marker))
+        await finish(next)
     }
 
     /// The fixture with Morty renamed, as a later response has it.

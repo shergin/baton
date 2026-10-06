@@ -14,7 +14,8 @@ import Synchronization
 /// environment makes its own, on that file or another. One process uses a
 /// file at a time, and one image in it: a second image made on a file
 /// another holds runs without it, as on a database of another kind, and
-/// stops a debug build where it is made.
+/// stops a debug build where it is made. A file that cannot be opened for a
+/// while, on a locked device, keeps the writer's work until it can.
 public final class Persistence: Sendable {
     public let url: URL
     /// The app's own version of what it caches. An image written under
@@ -23,6 +24,12 @@ public final class Persistence: Sendable {
     public let version: String
     /// The file size, in bytes, past which the image is discarded at launch.
     public let sizeLimit: Int
+    /// The platform's protection class the file is made with, or nil for
+    /// its directory's default. An image whose file was made under another
+    /// is discarded and made again. Under `.complete` the file cannot be
+    /// opened while the device is locked: the writer keeps its work for the
+    /// next try, and a read meanwhile misses.
+    public let protection: FileProtectionType?
 
     /// One thing the main actor asked the writer to do, in order.
     enum Work: Sendable {
@@ -41,7 +48,8 @@ public final class Persistence: Sendable {
     private struct Pending: Sendable {
         var work: [Work] = []
         var scheduled = false
-        /// How many forgets the work holds.
+        /// How many forgets wait to be written: queued, or taken and not
+        /// yet in the file.
         var forgets = 0
         /// Whether the writer is held: the work waits in the queue until it is
         /// let go. For the tests.
@@ -63,12 +71,14 @@ public final class Persistence: Sendable {
     private let ages = Mutex(Ages())
 
     /// An image in the file at `url`; its directory is created when missing.
-    /// The file is opened at once, off the caller's thread.
-    public init(url: URL, version: String = "", sizeLimit: Int = 64 << 20) {
+    /// The file is opened at once, off the caller's thread, and made with
+    /// `protection` when there is none.
+    public init(url: URL, version: String = "", sizeLimit: Int = 64 << 20, protection: FileProtectionType? = nil) {
         self.url = url
         self.version = version
         self.sizeLimit = sizeLimit
-        disk = Mutex(Disk(path: Persistence.canonicalPath(of: url), version: version, sizeLimit: sizeLimit))
+        self.protection = protection
+        disk = Mutex(Disk(path: Persistence.canonicalPath(of: url), version: version, sizeLimit: sizeLimit, protection: protection))
         Task.detached(priority: .userInitiated) { self.drain() }
     }
 
@@ -99,14 +109,14 @@ public final class Persistence: Sendable {
     /// every process of the user, so the identifier keeps two apps that both
     /// name their image `"Main"` apart; a process without one, a tool or a
     /// test runner, is kept apart by its name.
-    public convenience init(name: String, version: String = "", sizeLimit: Int = 64 << 20) {
+    public convenience init(name: String, version: String = "", sizeLimit: Int = 64 << 20, protection: FileProtectionType? = nil) {
         let caches = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
         let owner = Bundle.main.bundleIdentifier ?? ProcessInfo.processInfo.processName
         let url = caches
             .appendingPathComponent(owner, isDirectory: true)
             .appendingPathComponent("Baton", isDirectory: true)
             .appendingPathComponent(name + ".sqlite")
-        self.init(url: url, version: version, sizeLimit: sizeLimit)
+        self.init(url: url, version: version, sizeLimit: sizeLimit, protection: protection)
     }
 
     /// Waits until everything committed so far is in the file: for tests, and
@@ -122,8 +132,15 @@ public final class Persistence: Sendable {
     /// launch wrote that the new image does not read age out a launch sooner.
     public func close() async {
         await Task.detached(priority: .userInitiated) {
-            self.drain()
-            self.disk.withLock { $0.release() }
+            self.disk.withLock { disk in
+                let work = self.take()
+                // Work the file cannot take by the close is lost: the store
+                // it was for is ending, and nothing is behind what memory no
+                // longer holds.
+                if !work.isEmpty, self.opened(disk) { _ = disk.write(work) }
+                self.finished(work)
+                disk.release()
+            }
         }.value
     }
 
@@ -133,9 +150,10 @@ public final class Persistence: Sendable {
     /// kind at the path is left alone. The deletion is hygiene, which can be
     /// interrupted and repeated: what keeps one account's rows from the next
     /// is the image's identity, the account in its path or in its `version`.
-    /// The order of a sign-out is the app's: end the environment, which
-    /// closes the image and commits nothing after, remove the image, forget
-    /// the credential last.
+    /// A marker beside the file has the next open finish a deletion a crash
+    /// interrupted, or one a locked device put off. The order of a sign-out
+    /// is the app's: end the environment, which closes the image and commits
+    /// nothing after, remove the image, forget the credential last.
     public func removeAll() {
         ages.withLock { ages in
             ages.times.removeAll()
@@ -210,9 +228,9 @@ public final class Persistence: Sendable {
         }
     }
 
-    /// Whether a forget waits in the queue, the rows it names still in the
-    /// file. One the writer has taken is done, or the image is to be
-    /// discarded, before a read can take the file.
+    /// Whether a forget waits to be written, the rows it names still in the
+    /// file. One written is done, and one dropped leaves an image marked to
+    /// be discarded, before a read can take the file.
     var forgetting: Bool {
         pending.withLock { $0.forgets > 0 }
     }
@@ -330,15 +348,43 @@ public final class Persistence: Sendable {
             pending.scheduled = false
             // A held writer leaves the work where it is; letting go drains.
             if pending.held { return [] }
-            pending.forgets = 0
             let work = pending.work
             pending.work.removeAll(keepingCapacity: true)
             return work
         }
     }
 
+    /// Notes that the work is written, or lost with a file that is done with.
+    private func finished(_ work: [Work]) {
+        let forgets = work.count { if case .forget = $0 { return true } else { return false } }
+        if forgets > 0 { pending.withLock { $0.forgets = max(0, $0.forgets - forgets) } }
+    }
+
+    /// How many rows the work waiting for a file may hold before it is
+    /// dropped: the largest store on the bench, so that what waits never
+    /// outweighs what a store holds at that scale.
+    static let waitLimit = 50_000
+
+    /// Puts work the file could not take back ahead of what was queued
+    /// since, to wait for the next drain. Work that outgrows `waitLimit` is
+    /// dropped instead and the image marked: memory has moved past the file,
+    /// which is not to be read again.
+    private func keep(_ work: [Work], _ disk: Disk) {
+        let dropped = pending.withLock { pending in
+            pending.work.insert(contentsOf: work, at: 0)
+            var rows = 0
+            for case .commit(let records, let root) in pending.work { rows += records.count + root.count }
+            if rows <= Persistence.waitLimit { return false }
+            pending.work.removeAll()
+            pending.forgets = 0
+            return true
+        }
+        if dropped { disk.mark() }
+    }
+
     /// Opens the file if needed and writes everything queued, in one
-    /// transaction. Work queued while the file cannot be opened is dropped.
+    /// transaction. Work the file cannot take now, locked or full, waits for
+    /// the next drain; an image that runs without a file drops it.
     private func drain() {
         disk.withLock { disk in
             let work = take()
@@ -346,12 +392,11 @@ public final class Persistence: Sendable {
             // to be ready for it: the open its creation scheduled, or a
             // drain behind `close()`, must not take it from the next image.
             if work.isEmpty, !disk.holding { return }
-            guard opened(disk) else {
-                // Work the file could not take is lost: the image is behind.
-                if !work.isEmpty { disk.markBehind() }
+            guard opened(disk), disk.write(work) else {
+                if disk.off { finished(work) } else { keep(work, disk) }
                 return
             }
-            disk.write(work)
+            finished(work)
         }
     }
 

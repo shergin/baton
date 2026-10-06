@@ -311,18 +311,26 @@ in memory. The image is the store's records in one SQLite file, written
 behind every commit of server data, off the main actor: a row per record,
 the query root a row per field, each operation's fetch time. Optimistic
 layers never reach it. `Persistence(url:)` or `Persistence(name:)`, handed
-to `Store(persistence:)`. It is a cache: an image of another format or
-`version`, a corrupt one and one over its size limit are deleted and started
-again, and a record that goes a whole launch unread is dropped at the next.
+to `Store(persistence:)`. It is a cache: an image of another format,
+`version` or protection class, a corrupt one and one over its size limit are
+deleted and started again, and a record that goes a whole launch unread is
+dropped at the next.
 An image is made for one store and lives as long as it: the environment's
 end closes it and gives the file back, and the next environment makes its
 own, on that file or another; the image that takes a file over counts as a
 launch, though the process is the same, so the rows the closed one wrote
 that it does not read age out a launch sooner. One image in a process holds
-a file; a second made on it runs without it. What keeps one account's rows
-from the next is the account in the image's path or in its `version`;
-`removeAll()`, deleting the file after the end, is hygiene. See
-[the decision](decisions/an-image-belongs-to-one-store.md).
+a file; a second made on it runs without it. The file is made with the
+protection class `Persistence(protection:)` names, or its directory's
+default, which Apple's SQLite gives the file and its log. A file that cannot
+be taken, locked or full, is waited for, not discarded: the writer keeps its
+work for the next commit or read, a read meanwhile misses, and work that
+outgrows 50,000 rows is dropped and the image started again. What keeps one
+account's rows from the next is the account in the image's path or in its
+`version`; `removeAll()`, deleting the file after the end, is hygiene, under
+a marker that has the next open finish a deletion a crash interrupts. See
+[the decision](decisions/an-image-belongs-to-one-store.md) and
+[the file's](decisions/the-images-file-is-protected-and-waited-for.md).
 
 **Hydration.** *Composition: store, plan.* The web's word for filling a
 client's state from stored data. Here: the availability check reading from

@@ -5,6 +5,17 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- The image's file is protected at creation:
+  `Persistence(url:version:sizeLimit:protection:)` and the `name:` form take
+  a `FileProtectionType`, which Apple's SQLite gives the file and its
+  write-ahead log; an image made under another class starts again. A file
+  that cannot be taken, locked or full, is waited for, not discarded: the
+  writer keeps its work for the next commit or read, where a lost batch
+  marked the image behind memory and the next open emptied the cache, so
+  every background refresh on a locked device would have emptied it. Work
+  that outgrows 50,000 rows is dropped and the image starts again. A marker
+  beside the file has the next open finish a removal a crash interrupted or
+  a locked device put off; the log is deleted before the database file.
 - What the image was told to forget and has not yet dropped is kept behind
   the image's interface, as one value the store holds, where three sets of
   the store's tracked it.

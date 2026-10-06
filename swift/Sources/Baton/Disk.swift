@@ -54,12 +54,16 @@ final class Disk: @unchecked Sendable {
     private let path: String
     private let version: String
     private let sizeLimit: Int
+    /// The platform's protection class the file is made with, or nil for
+    /// its directory's default. Apple's SQLite takes it as an open flag and
+    /// gives the write-ahead log the same class.
+    private let protection: FileProtectionType?
     private var db: OpaquePointer?
     private var retryAfter: UInt64 = 0
     /// Set when the file is another program's database, or when another
     /// image in the process holds it: this image stays off for the process,
     /// leaves the file alone, and does not ask again every second.
-    private var off = false
+    private(set) var off = false
     /// Whether this image holds its file among the process's images: from
     /// its creation, or from the open after a `release()`, until the next
     /// `release()` or its end.
@@ -114,10 +118,11 @@ final class Disk: @unchecked Sendable {
     private var readRecords: [String] = []
     private var readRoot: [String] = []
 
-    init(path: String, version: String, sizeLimit: Int) {
+    init(path: String, version: String, sizeLimit: Int, protection: FileProtectionType?) {
         self.path = path
         self.version = version
         self.sizeLimit = sizeLimit
+        self.protection = protection
         let claimed = claim()
         assert(claimed, "another Persistence in this process holds \(path); close() it before making another")
     }
@@ -145,21 +150,31 @@ final class Disk: @unchecked Sendable {
     // MARK: Opening
 
     /// Opens the file unless it is open. An unreadable file is deleted and
-    /// started again; any other failure leaves the image off for a second.
+    /// started again; any other failure, a locked file among them, leaves
+    /// the image off for a second, and the work queued meanwhile waits.
     func open() -> Opening {
         if db != nil { return .already }
         if off { return .unavailable }
         // A released image takes its file again, unless another took it
         // over meanwhile.
         if !holding, !claim() { return .unavailable }
-        // An image that missed a batch is behind memory and every launch
-        // after: it starts again.
-        if FileManager.default.fileExists(atPath: behind) {
-            discard()
-            try? FileManager.default.removeItem(atPath: behind)
-        }
         let now = DispatchTime.now().uptimeNanoseconds
         if now < retryAfter { return .unavailable }
+        // An image marked to be discarded, for work it dropped or a removal
+        // a crash interrupted, is deleted before anything is read. A file of
+        // another kind under the marker is left, and the marker goes.
+        if FileManager.default.fileExists(atPath: marker) {
+            switch inspect() {
+            case .image:
+                discard()
+            case .absent, .foreign:
+                break
+            case .unavailable:
+                retryAfter = now + 1_000_000_000
+                return .unavailable
+            }
+            unmark()
+        }
         for attempt in 0..<2 {
             do {
                 return .opened(try connect())
@@ -180,7 +195,9 @@ final class Disk: @unchecked Sendable {
     private func connect() throws(Failure) -> [String: Double] {
         try? FileManager.default.createDirectory(atPath: (path as NSString).deletingLastPathComponent, withIntermediateDirectories: true)
         var handle: OpaquePointer?
-        let status = sqlite3_open_v2(path, &handle, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_NOMUTEX, nil)
+        var flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_NOMUTEX
+        if let protection, let flag = Disk.flag(for: protection) { flags |= flag }
+        let status = sqlite3_open_v2(path, &handle, flags, nil)
         db = handle
         guard status == SQLITE_OK else { throw failure(status) }
         // One process uses an image; the wait only covers a connection that
@@ -195,6 +212,9 @@ final class Disk: @unchecked Sendable {
         let fresh = application == 0 && format == 0 && tables == 0
         if !fresh, application != Disk.applicationID { throw .foreign }
         if !fresh, format != Disk.format { throw .unreadable }
+        // The protection is the file's from its creation: a file made under
+        // another starts again, so that what the image states is true of it.
+        if !fresh, try text("SELECT value FROM meta WHERE key = 'protection'") != protection?.rawValue { throw .unreadable }
         // An image that outgrew its limit starts over.
         if let size = (try? FileManager.default.attributesOfItem(atPath: path))?[.size] as? Int, size > sizeLimit {
             throw .unreadable
@@ -222,6 +242,9 @@ final class Disk: @unchecked Sendable {
         // and the generation moves once per image. Rows no launch has
         // touched since the one before last go in the writer's first batch.
         try exec("BEGIN IMMEDIATE")
+        if fresh, let protection {
+            try bind("INSERT INTO meta(key, value) VALUES('protection', ?1)") { sqlite3_bind_text($0, 1, protection.rawValue, -1, copied) }
+        }
         if try text("SELECT value FROM meta WHERE key = 'version'") != version {
             try exec("DELETE FROM records; DELETE FROM root; DELETE FROM fetches; DELETE FROM names")
             try bind("INSERT OR REPLACE INTO meta(key, value) VALUES('version', ?1)") { sqlite3_bind_text($0, 1, version, -1, copied) }
@@ -233,6 +256,13 @@ final class Disk: @unchecked Sendable {
             INSERT OR REPLACE INTO meta(key, value) VALUES('generation', \(generation));
             COMMIT
             """)
+        // A class the open takes no flag for is set on the file and its log
+        // once they exist.
+        if fresh, let protection, Disk.flag(for: protection) == nil {
+            for suffix in ["", "-wal"] {
+                try? FileManager.default.setAttributes([.protectionKey: protection], ofItemAtPath: path + suffix)
+            }
+        }
 
         names.removeAll()
         ids.removeAll()
@@ -274,6 +304,19 @@ final class Disk: @unchecked Sendable {
         return times
     }
 
+    /// The open flag under which Apple's SQLite makes the file with the
+    /// protection class, and its write-ahead log with it; nil for a class
+    /// the library has no flag for.
+    private static func flag(for protection: FileProtectionType) -> Int32? {
+        switch protection {
+        case .complete: SQLITE_OPEN_FILEPROTECTION_COMPLETE
+        case .completeUnlessOpen: SQLITE_OPEN_FILEPROTECTION_COMPLETEUNLESSOPEN
+        case .completeUntilFirstUserAuthentication: SQLITE_OPEN_FILEPROTECTION_COMPLETEUNTILFIRSTUSERAUTHENTICATION
+        case .none: SQLITE_OPEN_FILEPROTECTION_NONE
+        default: nil
+        }
+    }
+
     /// Closes the connection and gives the file back, so another image may
     /// take it, as the tests do to run one launch after another. Work that
     /// comes later takes it again, unless another image has.
@@ -299,21 +342,28 @@ final class Disk: @unchecked Sendable {
         types.removeAll()
     }
 
-    /// The file whose presence says a batch was lost: the image is behind.
-    private var behind: String { path + "-behind" }
+    /// The file whose presence says the image is to be discarded before it
+    /// is read again: it dropped work memory kept, or its removal was
+    /// interrupted. It covers a crash inside the delete and no more; before
+    /// the removal, the image's identity keeps one account's rows from the
+    /// next.
+    private var marker: String { path + "-discard" }
 
-    /// Notes that a batch was lost, written in vain or dropped while the
-    /// file could not be opened, and closes the connection: the next open
-    /// discards the image rather than serve rows older than memory knew.
-    func markBehind() {
+    /// Marks the image to be discarded at the next open.
+    func mark() {
         guard !off else { return }
-        FileManager.default.createFile(atPath: behind, contents: nil)
-        close()
+        FileManager.default.createFile(atPath: marker, contents: nil)
     }
 
-    /// Deletes the file for a sign-out when it is an image, and leaves a
-    /// database of another kind, or a file another image holds, alone; the
-    /// next work opens a new one.
+    private func unmark() {
+        try? FileManager.default.removeItem(atPath: marker)
+    }
+
+    /// Deletes the file for a sign-out when it is an image, under a marker
+    /// that has the next open finish a delete a crash interrupts, and leaves
+    /// a database of another kind, or a file another image holds, alone;
+    /// the next work opens a new one. A file that cannot be opened now, on a
+    /// locked device, is marked for the next open to tell and delete.
     func erase() {
         if off { return }
         // A released image holds its file for the removal alone, so the
@@ -323,29 +373,57 @@ final class Disk: @unchecked Sendable {
         defer { if borrowed { letGo() } }
         // A file the connection does not hold open is told by its
         // application id first: it may never have been opened.
-        if db == nil, !holdsAnImage() { return }
+        if db == nil {
+            switch inspect() {
+            case .image:
+                break
+            case .absent, .foreign:
+                unmark()
+                return
+            case .unavailable:
+                mark()
+                return
+            }
+        }
+        mark()
         discard()
+        unmark()
     }
 
-    /// Whether the file at the path is an image, by its application id:
-    /// false when there is no file, or none SQLite can read.
-    private func holdsAnImage() -> Bool {
+    private enum File {
+        case absent
+        /// An image by its application id, or a file SQLite cannot read as
+        /// a database at all, which an open deletes and starts again.
+        case image
+        /// A database of another kind.
+        case foreign
+        /// A file that cannot be opened now: locked, or another's.
+        case unavailable
+    }
+
+    /// What the path holds, told by a connection of its own.
+    private func inspect() -> File {
+        guard FileManager.default.fileExists(atPath: path) else { return .absent }
         var handle: OpaquePointer?
         defer { sqlite3_close_v2(handle) }
         // Read and write, without create: a read-only connection cannot
         // open a WAL file whose shared memory file is gone.
-        guard sqlite3_open_v2(path, &handle, SQLITE_OPEN_READWRITE | SQLITE_OPEN_NOMUTEX, nil) == SQLITE_OK else { return false }
+        guard sqlite3_open_v2(path, &handle, SQLITE_OPEN_READWRITE | SQLITE_OPEN_NOMUTEX, nil) == SQLITE_OK else { return .unavailable }
         var statement: OpaquePointer?
-        guard sqlite3_prepare_v2(handle, "PRAGMA application_id", -1, &statement, nil) == SQLITE_OK else { return false }
+        var status = sqlite3_prepare_v2(handle, "PRAGMA application_id", -1, &statement, nil)
         defer { sqlite3_finalize(statement) }
-        return sqlite3_step(statement) == SQLITE_ROW && sqlite3_column_int64(statement, 0) == Disk.applicationID
+        if status == SQLITE_OK { status = sqlite3_step(statement) }
+        if status == SQLITE_ROW { return sqlite3_column_int64(statement, 0) == Disk.applicationID ? .image : .foreign }
+        return failure(status) == .unreadable ? .image : .unavailable
     }
 
     /// Deletes the file and its journal: an image that cannot be read is a
-    /// miss, never a migration.
+    /// miss, never a migration. The log goes first: a database file left
+    /// alone is a consistent older image, where a log left alone would be
+    /// replayed into the next file made at the path.
     private func discard() {
         close()
-        for suffix in ["", "-wal", "-shm"] {
+        for suffix in ["-wal", "-shm", ""] {
             try? FileManager.default.removeItem(atPath: path + suffix)
         }
     }
@@ -500,17 +578,15 @@ final class Disk: @unchecked Sendable {
 
     // MARK: Writing
 
-    /// Writes everything in one transaction. A failure rolls it back and the
-    /// work is lost, which a cache can afford.
-    func write(_ work: [Persistence.Work]) {
-        guard !work.isEmpty, let prepared else { return }
-        guard run(prepared.begin) else {
-            // A file too damaged to begin a transaction in is discarded now,
-            // not at the next read; one that could not begin for another
-            // reason has lost the batch.
-            if damaged { discard() } else { markBehind() }
-            return
-        }
+    /// Writes everything in one transaction, and says whether the file took
+    /// it. A failure rolls the transaction back. A file too damaged to write
+    /// is discarded and the work lost with it, which a cache can afford;
+    /// after any other failure, a locked file or a full disk, the connection
+    /// closes and the work waits to be written at the next drain.
+    func write(_ work: [Persistence.Work]) -> Bool {
+        if work.isEmpty { return true }
+        guard let prepared else { return false }
+        guard run(prepared.begin) else { return failed() }
         var good = true
         if !aged {
             good = (try? exec("""
@@ -540,14 +616,25 @@ final class Disk: @unchecked Sendable {
             }
         }
         for id in unwritten { good = put(name: id, prepared) && good }
-        if good, run(prepared.commit) {
-            unwritten.removeAll()
-        } else {
+        guard good, run(prepared.commit) else {
             _ = run(prepared.rollback)
-            if damaged { discard() } else { markBehind() }
-            return
+            return failed()
         }
+        unwritten.removeAll()
         if damaged { discard() }
+        return true
+    }
+
+    /// After a transaction failed: a damaged file is discarded now, not at
+    /// the next read, and its work is done with; any other closes, to be
+    /// opened again, and its work waits.
+    private func failed() -> Bool {
+        if damaged {
+            discard()
+            return true
+        }
+        close()
+        return false
     }
 
     private func put(_ snapshot: Record.Snapshot, _ prepared: Prepared) -> Bool {
