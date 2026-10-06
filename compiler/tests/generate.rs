@@ -417,3 +417,91 @@ var place: Members_place
     );
     assert!(!directory.join("out").exists(), "an output was written");
 }
+
+#[test]
+fn a_source_renamed_between_two_runs_leaves_no_output_for_its_old_name() {
+    let directory = workspace("renamed");
+    write(&directory, "Home.swift", QUERY);
+    let output = generate(&directory, &["--out", "out", "Home.swift"]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let out = directory.join("out");
+    assert!(out.join("Home.baton.swift").exists());
+    assert!(out.join("Baton.baton.swift").exists());
+
+    std::fs::rename(directory.join("Home.swift"), directory.join("Away.swift"))
+        .expect("the source is renamed");
+    let output = generate(&directory, &["--out", "out", "Away.swift"]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(out.join("Away.baton.swift").exists());
+    assert!(
+        !out.join("Home.baton.swift").exists(),
+        "the old name's output was left"
+    );
+    assert!(out.join("Baton.baton.swift").exists());
+}
+
+#[test]
+fn a_file_in_the_output_directory_that_is_not_generated_code_survives_a_run() {
+    let directory = workspace("foreign");
+    write(&directory, "Home.swift", QUERY);
+    write(&directory, "out/notes.txt", "kept\n");
+    let output = generate(&directory, &["--out", "out", "Home.swift"]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(
+        std::fs::read_to_string(directory.join("out/notes.txt")).unwrap_or_default(),
+        "kept\n"
+    );
+    assert!(directory.join("out/Home.baton.swift").exists());
+}
+
+#[test]
+fn a_run_that_names_its_outputs_removes_a_stale_output_beside_them() {
+    let directory = workspace("declared-stale");
+    write(&directory, "Home.swift", QUERY);
+    write(&directory, "Row.swift", FRAGMENT);
+    write(
+        &directory,
+        "out/Gone.baton.swift",
+        "// A source since removed.\n",
+    );
+    let output = generate(
+        &directory,
+        &[
+            "--out",
+            "out",
+            "--emit",
+            "Home.swift=out/Home.baton.swift",
+            "--emit",
+            "Row.swift=out/Row.baton.swift",
+            "--shared",
+            "out/Baton.baton.swift",
+            "Home.swift",
+            "Row.swift",
+        ],
+    );
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let out = directory.join("out");
+    assert!(
+        !out.join("Gone.baton.swift").exists(),
+        "the stale output was left"
+    );
+    assert!(out.join("Home.baton.swift").exists());
+    assert!(out.join("Row.baton.swift").exists());
+    assert!(out.join("Baton.baton.swift").exists());
+}

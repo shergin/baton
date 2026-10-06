@@ -4,9 +4,9 @@
 //! The shared enums name the runtime's module in expressions, which is safe
 //! here alone: their members are spelled off its name, as `names` decides.
 
-use super::HEADER;
 use super::swift::{SwiftType, runtime_value, swift_literal, type_reference};
 use super::writer::Writer;
+use super::{FORMAT, HEADER};
 use crate::decide::{KeyPart, Shared, SlotRef};
 use crate::names::{possible_types, slot_name, type_constant};
 
@@ -21,6 +21,12 @@ pub(super) fn shared_text(shared: &Shared) -> String {
         writer.line(format!(
             "static let schemaDigest = {}",
             swift_literal(&shared.schema_digest)
+        ));
+        writer.doc("The format of this generated code, which the runtime that reads it");
+        writer.doc("declares; a runtime of another format fails to compile this line.");
+        writer.line(format!(
+            "static let format = {}.self",
+            runtime_value(&format!("Format{FORMAT}"))
         ));
         for type_name in &shared.types {
             // A root type is interned by the name the store's root record

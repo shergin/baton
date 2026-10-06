@@ -5,6 +5,14 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- The build plugin tells the truth about its inputs and outputs. The
+  compiler is among the build command's inputs, so a rebuilt compiler
+  regenerates; the compiler removes from its output directory the
+  generated files it did not write in this run, so a source renamed or
+  removed leaves none behind; and generated code and the runtime share a
+  format number, `Types.format` naming `Baton.Format1`, so code of another
+  format fails to compile at one line that says which side is behind,
+  rather than at every line that names the runtime.
 - A field whose type is a list of lists, `[[Int!]!]!`, is a compile error
   at the field. The plan says of a type that it is a list or not, so such
   a field was lowered to a flat list and read wrong; the refusal stands

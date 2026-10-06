@@ -1,5 +1,15 @@
 import Synchronization
 
+/// The format of the generated code this runtime reads: what that code names
+/// in the runtime, from the plan tables to the lens requirements. Every
+/// shared file the compiler writes names the marker of its format, so
+/// generated code of another format fails to compile at that one line, and
+/// the message there says which side is behind. When the format changes, a
+/// new marker is declared and the one before it stays, unavailable, with
+/// the message. The compiler's `FORMAT` is the same number.
+@_spi(Generated)
+public enum Format1 {}
+
 /// An operation's normalization plan, emitted by the compiler as static data:
 /// what the response contains and where each value is stored.
 @_spi(Generated)

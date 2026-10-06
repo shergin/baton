@@ -1023,7 +1023,14 @@ fn the_names_read_from_the_rules_are_the_ones_the_rules_apply() {
         );
     }
     let scopes = scope_names();
-    for name in ["anchor", "variables", "variable", "schemaDigest", "Data"] {
+    for name in [
+        "anchor",
+        "variables",
+        "variable",
+        "schemaDigest",
+        "format",
+        "Data",
+    ] {
         assert!(
             scopes.iter().any(|known| known == name),
             "`{name}` was not read as a name `decide` declares: {scopes:?}"

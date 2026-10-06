@@ -258,6 +258,7 @@ impl Shared {
         }
         let mut types = Scope::new("Types", &none);
         types.declare("schemaDigest", Kind::Static, "the schema's digest");
+        types.declare("format", Kind::Static, "the format of the generated code");
         for type_name in &self.types {
             types.declare(
                 type_constant(type_name).trim_matches('`'),

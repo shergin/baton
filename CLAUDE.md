@@ -93,6 +93,10 @@ the vocabulary is `docs/terminology.md`. These files outrank any default.
 - Errors use `thiserror` with `#[from]`; early returns over nested matches.
 - Generated output is deterministic and byte-stable; golden tests cover every
   emitter.
+- What generated code names in the runtime is a format with a number
+  (`FORMAT` in `emit.rs`, `Format<N>` in `Plan.swift`); a change to it
+  raises the number on both sides in one commit and keeps the old marker
+  unavailable with a message.
 - Diagnostics are printed as `path:line:column: error: message`, pointing
   into the GraphQL text inside the host file.
 

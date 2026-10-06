@@ -39,8 +39,17 @@ struct BatonPlugin: BuildToolPlugin {
         let outputDirectory = workDirectory.appending(path: "Generated")
         let shared = outputDirectory.appending(path: "Baton.baton.swift")
 
-        var inputs: [URL] = [schema, configurationFile]
-        var arguments = ["generate", "--config", configurationFile.path(percentEncoded: false), "--shared", shared.path(percentEncoded: false)]
+        // The compiler is an input: a rebuilt compiler regenerates. The
+        // output directory is the compiler's own, and it removes the
+        // outputs there it did not write, so a source renamed or removed
+        // leaves no file behind.
+        var inputs: [URL] = [schema, configurationFile, tool]
+        var arguments = [
+            "generate",
+            "--config", configurationFile.path(percentEncoded: false),
+            "--out", outputDirectory.path(percentEncoded: false),
+            "--shared", shared.path(percentEncoded: false),
+        ]
         var outputs: [URL] = []
         for source in sources {
             inputs.append(source)

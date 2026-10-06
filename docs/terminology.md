@@ -400,7 +400,10 @@ has a mode. See
 emits for one source file: lens types, plans, ids. It opens with
 `@_spi(Generated) import Baton`, the runtime's interface for generated code:
 anchors and owners, the numbers of types and slots, the registry, the plan
-types, and the anchor and initializer of every lens. An app's own files
+types, and the anchor and initializer of every lens. That interface has a
+format with a number, which the target's shared file names as
+`Types.format` and the runtime declares as a marker type, so generated code
+of another format fails to compile at that one line. An app's own files
 import `Baton` and see lenses, handles, the environment, transports and
 persistence.
 
