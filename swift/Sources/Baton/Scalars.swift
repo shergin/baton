@@ -60,3 +60,15 @@ extension UUID: MappedScalar {
 
     public var scalarText: String { uuidString }
 }
+
+/// A Swift enum generated for a schema enum: a case per value the build
+/// knows and `unknown` for one it does not, so the conversion from the text
+/// cannot fail and the accessor keeps the schema's nullability. A null on a
+/// non-null field reads as `unknown("")`, the type's zero, and is reported.
+public protocol GeneratedEnum: MappedScalar, Hashable {
+    init(enumText: String)
+}
+
+extension GeneratedEnum {
+    public init?(scalarText: String) { self.init(enumText: scalarText) }
+}

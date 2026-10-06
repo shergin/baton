@@ -2020,6 +2020,37 @@
         ],
         "value": "9.5"
       }
+    },
+    {
+      "name": "tests/lists-statuses",
+      "operation": "TestSetStatuses",
+      "kind": "mutation",
+      "document": "documents/TestSetStatuses.graphql",
+      "variables": {},
+      "responses": [
+        "tests/lists-statuses.json"
+      ],
+      "records": "tests/lists-statuses.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "setLists.statuses",
+          "value": [
+            "ALIVE",
+            "GHOST",
+            null,
+            "DEAD"
+          ]
+        }
+      ],
+      "override": {
+        "paths": [
+          "setLists.statuses"
+        ],
+        "value": [
+          "DEAD"
+        ]
+      }
     }
   ]
 }

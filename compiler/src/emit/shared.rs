@@ -8,7 +8,10 @@ use super::swift::{runtime_value, swift_literal, type_reference};
 use super::writer::Writer;
 use super::{FORMAT, HEADER};
 use crate::decide::{KeyPart, Shared, SlotRef};
-use crate::names::{guard_name, keyed_types, possible_types, slot_name, type_constant};
+use crate::names::{
+    enum_case_name, enum_type_name, guard_name, keyed_types, possible_types, slot_name,
+    type_constant,
+};
 
 /// `Types`, `Slots` and, when the module has any, `Sites` and
 /// `AbstractSlots`.
@@ -124,6 +127,51 @@ pub(super) fn shared_text(shared: &Shared) -> String {
                 ));
             }
         });
+    }
+    for (name, values) in &shared.enums {
+        writer.blank();
+        writer.doc(format!(
+            "The schema's enum `{name}`. A value this build does not know reads as `unknown`, with its text."
+        ));
+        writer.block(
+            format!(
+                "nonisolated public enum {}: {}",
+                enum_type_name(name),
+                runtime_value("GeneratedEnum")
+            ),
+            |writer| {
+                for value in values {
+                    writer.line(format!("case {}", enum_case_name(value)));
+                }
+                writer.line("case unknown(String)");
+                writer.blank();
+                writer.block("public init(enumText: String)", |writer| {
+                    writer.block("self = switch enumText", |writer| {
+                        for value in values {
+                            writer.line(format!(
+                                "case {}: .{}",
+                                swift_literal(value),
+                                enum_case_name(value)
+                            ));
+                        }
+                        writer.line("default: .unknown(enumText)");
+                    });
+                });
+                writer.blank();
+                writer.block("public var scalarText: String", |writer| {
+                    writer.block("switch self", |writer| {
+                        for value in values {
+                            writer.line(format!(
+                                "case .{}: {}",
+                                enum_case_name(value),
+                                swift_literal(value)
+                            ));
+                        }
+                        writer.line("case .unknown(let text): text");
+                    });
+                });
+            },
+        );
     }
     if !shared.abstract_slots.is_empty() {
         writer.blank();

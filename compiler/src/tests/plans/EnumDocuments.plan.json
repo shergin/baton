@@ -1,0 +1,356 @@
+{
+  "fragments": [],
+  "operations": [
+    {
+      "name": "TestCharactersWithStatus",
+      "source": "swift/Tests/BatonTests/EnumDocuments.swift",
+      "document": 1,
+      "kind": "query",
+      "root_type": "Query",
+      "variables": [
+        {
+          "name": "status",
+          "type": {
+            "shape": "named",
+            "name": "Status",
+            "kind": "enum",
+            "non_null": true
+          },
+          "default_value": null
+        },
+        {
+          "name": "any",
+          "type": {
+            "shape": "list",
+            "element": {
+              "shape": "named",
+              "name": "Status",
+              "kind": "enum",
+              "non_null": true
+            },
+            "non_null": false
+          },
+          "default_value": null
+        }
+      ],
+      "text": "query TestCharactersWithStatus(\n  $status: Status!\n  $any: [Status!]\n) {\n  charactersWithStatus(status: $status, any: $any) {\n    name\n    id\n  }\n}",
+      "id": "62f7376a8075372523611fb83b48083d",
+      "throws_on_field_error": false,
+      "bubbles": false,
+      "has_deferred": false,
+      "error_behavior": null,
+      "reader": [
+        {
+          "kind": "linked",
+          "name": "charactersWithStatus",
+          "alias": null,
+          "type": {
+            "shape": "list",
+            "element": {
+              "shape": "named",
+              "name": "Character",
+              "kind": "object",
+              "non_null": false
+            },
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "keys": {
+            "Character": [
+              "id"
+            ]
+          },
+          "is_abstract": false,
+          "possible_types": [
+            "Character"
+          ],
+          "storage_key": {
+            "name": "charactersWithStatus",
+            "arguments": [
+              {
+                "name": "any",
+                "value": {
+                  "kind": "variable",
+                  "value": "any"
+                }
+              },
+              {
+                "name": "status",
+                "value": {
+                  "kind": "variable",
+                  "value": "status"
+                }
+              }
+            ]
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "name",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "String",
+                "kind": "string",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "name",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            }
+          ]
+        }
+      ],
+      "normalization": [
+        {
+          "kind": "linked",
+          "name": "charactersWithStatus",
+          "alias": null,
+          "type": {
+            "shape": "list",
+            "element": {
+              "shape": "named",
+              "name": "Character",
+              "kind": "object",
+              "non_null": false
+            },
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "keys": {
+            "Character": [
+              "id"
+            ]
+          },
+          "is_abstract": false,
+          "possible_types": [
+            "Character"
+          ],
+          "storage_key": {
+            "name": "charactersWithStatus",
+            "arguments": [
+              {
+                "name": "any",
+                "value": {
+                  "kind": "variable",
+                  "value": "any"
+                }
+              },
+              {
+                "name": "status",
+                "value": {
+                  "kind": "variable",
+                  "value": "status"
+                }
+              }
+            ]
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "name",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "String",
+                "kind": "string",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "name",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "id",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "ID",
+                "kind": "id",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "id",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TestSetStatuses",
+      "source": "swift/Tests/BatonTests/EnumDocuments.swift",
+      "document": 0,
+      "kind": "mutation",
+      "root_type": "Mutation",
+      "variables": [],
+      "text": "mutation TestSetStatuses {\n  setLists {\n    statuses\n  }\n}",
+      "id": "433463231ee85f8c76dcbd796d45d6dc",
+      "throws_on_field_error": false,
+      "bubbles": false,
+      "has_deferred": false,
+      "error_behavior": null,
+      "reader": [
+        {
+          "kind": "linked",
+          "name": "setLists",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "ListsPayload",
+            "kind": "object",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "keys": {},
+          "is_abstract": false,
+          "possible_types": [
+            "ListsPayload"
+          ],
+          "storage_key": {
+            "name": "setLists",
+            "arguments": []
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "statuses",
+              "alias": null,
+              "type": {
+                "shape": "list",
+                "element": {
+                  "shape": "named",
+                  "name": "Status",
+                  "kind": "enum",
+                  "non_null": false
+                },
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "statuses",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            }
+          ]
+        }
+      ],
+      "normalization": [
+        {
+          "kind": "linked",
+          "name": "setLists",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "ListsPayload",
+            "kind": "object",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "keys": {},
+          "is_abstract": false,
+          "possible_types": [
+            "ListsPayload"
+          ],
+          "storage_key": {
+            "name": "setLists",
+            "arguments": []
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "statuses",
+              "alias": null,
+              "type": {
+                "shape": "list",
+                "element": {
+                  "shape": "named",
+                  "name": "Status",
+                  "kind": "enum",
+                  "non_null": false
+                },
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "statuses",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "enums": {
+    "Status": [
+      "ALIVE",
+      "DEAD",
+      "UNKNOWN"
+    ]
+  }
+}

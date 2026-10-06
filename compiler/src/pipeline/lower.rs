@@ -48,6 +48,8 @@ struct Lowering<'a> {
     keys: &'a Keys,
     /// Errors found while lowering, reported together at the end.
     diagnostics: std::cell::RefCell<Vec<Diagnostic>>,
+    /// The enums the documents' types name, with their values.
+    enums: std::cell::RefCell<BTreeMap<String, Vec<String>>>,
 }
 
 fn directive_name(name: &str) -> DirectiveName {
@@ -67,6 +69,7 @@ pub(super) fn lower(
         config,
         keys,
         diagnostics: std::cell::RefCell::new(Vec::new()),
+        enums: std::cell::RefCell::new(BTreeMap::new()),
     };
     let mut plan = Plan::default();
     for fragment in programs.reader.fragments() {
@@ -80,6 +83,7 @@ pub(super) fn lower(
     }
     plan.operations
         .sort_by(|left, right| left.name.cmp(&right.name));
+    plan.enums = lowering.enums.borrow().clone();
     // An operation is lowered twice, as its reader and as its
     // normalization, so a selection's error is found twice: once is told.
     let mut diagnostics: Vec<Diagnostic> = Vec::new();
@@ -983,6 +987,19 @@ impl Lowering<'_> {
             TypeReference::Named(named) => {
                 let name = self.schema.get_type_name(*named).lookup().to_string();
                 let kind = self.type_kind(*named);
+                if let Type::Enum(id) = named {
+                    self.enums
+                        .borrow_mut()
+                        .entry(name.clone())
+                        .or_insert_with(|| {
+                            self.schema
+                                .enum_(*id)
+                                .values
+                                .iter()
+                                .map(|value| value.value.lookup().to_string())
+                                .collect()
+                        });
+                }
                 let mapped = (kind == TypeKind::CustomScalar)
                     .then(|| self.config.custom_scalar_types.get(&name).cloned())
                     .flatten();

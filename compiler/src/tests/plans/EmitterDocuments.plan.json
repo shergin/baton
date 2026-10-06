@@ -7051,5 +7051,12 @@
         }
       ]
     }
-  ]
+  ],
+  "enums": {
+    "Status": [
+      "ALIVE",
+      "DEAD",
+      "UNKNOWN"
+    ]
+  }
 }

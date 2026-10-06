@@ -12,8 +12,8 @@ use super::lens::{
 };
 use super::{Guard, NormalizationKind, NormalizationSelection, Program};
 use crate::names::{
-    Kind, NameError, Reserved, STANDARD_LIBRARY_NAMES, Scope, Written, keyed_types, possible_types,
-    type_constant,
+    Kind, NameError, Reserved, STANDARD_LIBRARY_NAMES, Scope, Written, enum_type_name, keyed_types,
+    possible_types, type_constant,
 };
 use crate::pipeline::{OperationKind, Plan};
 
@@ -41,6 +41,9 @@ pub struct Shared {
     /// The conditions `@include` and `@skip` put on selections, which an
     /// owner settles once each.
     pub guards: BTreeSet<Guard>,
+    /// The schema's enums the documents read or pass, with their values,
+    /// each declared as a Swift enum.
+    pub enums: BTreeMap<String, Vec<String>>,
 }
 
 impl Shared {
@@ -49,6 +52,7 @@ impl Shared {
         let mut shared = Shared {
             schema_digest: plan.schema_digest.clone(),
             root_names: plan.root_names.clone(),
+            enums: plan.enums.clone(),
             ..Shared::default()
         };
         for fragment in &program.fragments {
@@ -232,6 +236,13 @@ impl Shared {
         }
         if !self.guards.is_empty() {
             module.declare("Guards", Kind::Type, "the shared enum `Guards`");
+        }
+        for name in self.enums.keys() {
+            module.declare(
+                &enum_type_name(name),
+                Kind::Type,
+                format!("the schema's enum `{name}`"),
+            );
         }
         if !self.abstract_slots.is_empty() {
             module.declare(

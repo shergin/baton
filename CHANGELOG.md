@@ -5,6 +5,16 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- A schema enum reads as a Swift enum generated for it, declared once per
+  module in the shared file: a case per value the build knows, spelled as
+  the schema spells it, and `unknown(String)` for a value it does not, so a
+  schema's growth never fails a read. The conversion cannot fail, so the
+  accessor keeps the schema's nullability; a null on a non-null field reads
+  as `unknown("")` and is reported. Variables and optimistic responses of
+  an enum type take the enum. A schema enum named like a fragment or an
+  operation is a name error at the document; one named like a shared enum
+  or a standard library type takes `Enum` after its name. Generated code of
+  this shape is format 10.
 - A custom scalar reads as the Swift type `baton.json` maps it to, under
   Relay's key `customScalarTypes`: `"Decimal": "Foundation.Decimal"`. The
   type conforms to `MappedScalar`, an initializer from the scalar's text

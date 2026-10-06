@@ -40,7 +40,11 @@ public enum Format7 {}
 public enum Format8 {}
 
 @_spi(Generated)
+@available(*, unavailable, message: "this generated code is of format 9 and the runtime reads format 10: a schema enum reads as the Swift enum generated for it; rebuild with the compiler of this release")
 public enum Format9 {}
+
+@_spi(Generated)
+public enum Format10 {}
 
 /// An operation's normalization plan, emitted by the compiler as static data:
 /// what the response contains and where each value is stored.

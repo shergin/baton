@@ -1283,7 +1283,7 @@ mutation TestListPayload {
             @MainActor public var ratios: [Double?]? { anchor.nullableDoubles(Slots.ListsPayload.ratios) }
             @MainActor public var flags: [Bool?]? { anchor.nullableBools(Slots.ListsPayload.flags) }
             @MainActor public var jsons: [String?]? { anchor.nullableStrings(Slots.ListsPayload.jsons) }
-            @MainActor public var statuses: [String?]? { anchor.nullableStrings(Slots.ListsPayload.statuses) }
+            @MainActor public var statuses: [Status?]? { anchor.nullableEnumValues(Slots.ListsPayload.statuses) }
         }
     }
 
@@ -1309,8 +1309,8 @@ mutation TestListPayload {
             public var ratios: [Double?]?
             public var flags: [Bool?]?
             public var jsons: [String?]?
-            public var statuses: [String?]?
-            public init(strings: [String?]? = nil, ids: [String]? = nil, counts: [Int?]? = nil, ratios: [Double?]? = nil, flags: [Bool?]? = nil, jsons: [String?]? = nil, statuses: [String?]? = nil) {
+            public var statuses: [Status?]?
+            public init(strings: [String?]? = nil, ids: [String]? = nil, counts: [Int?]? = nil, ratios: [Double?]? = nil, flags: [Bool?]? = nil, jsons: [String?]? = nil, statuses: [Status?]? = nil) {
                 self.strings = strings
                 self.ids = ids
                 self.counts = counts

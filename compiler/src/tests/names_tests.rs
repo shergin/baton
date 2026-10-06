@@ -27,7 +27,7 @@ fn a_nested_lens_is_never_named_like_what_a_lens_spells_unqualified_or_a_swift_k
         "Double",
         "Bool",
     ];
-    let lenses = Reserved::lenses([]);
+    let lenses = Reserved::lenses([] as [&str; 0]);
     for name in reserved {
         assert_eq!(lenses.type_name(&lower_camel(name)), format!("{name}Lens"));
         assert_eq!(lenses.type_name(name), format!("{name}Lens"));
@@ -52,7 +52,7 @@ fn a_nested_lens_is_never_named_like_a_fragment_or_operation_of_the_program() {
 
 #[test]
 fn a_nested_builder_is_never_named_like_what_a_builder_spells_or_a_swift_keyword() {
-    let builders = Reserved::builders();
+    let builders = Reserved::builders([] as [&str; 0]);
     for name in [
         "type", "self", "string", "sendable", "int", "double", "bool", "baton",
     ] {
@@ -114,7 +114,7 @@ fn a_derived_member_takes_the_first_free_candidate_and_numbers_the_last() {
 
 #[test]
 fn a_type_condition_numbers_its_accessor_and_its_lens_together() {
-    let lenses = Reserved::lenses([]);
+    let lenses = Reserved::lenses([] as [&str; 0]);
     let mut scope = Scope::new("Lens", &lenses);
     scope.declare("asCharacter", Kind::Instance, "the field `asCharacter`");
     assert_eq!(
@@ -225,4 +225,43 @@ fn a_call_site_label_is_escaped_only_where_swift_requires_it() {
     // A bare `_` is no label: the argument would go to an unlabelled
     // parameter.
     assert_eq!(call_label("_"), "`_`");
+}
+
+#[test]
+fn an_enum_value_is_its_case_escaped_and_unknown_takes_an_underscore() {
+    assert_eq!(enum_case_name("ALIVE"), "ALIVE");
+    assert_eq!(enum_case_name("UNKNOWN"), "UNKNOWN");
+    assert_eq!(
+        enum_case_name("unknown"),
+        "unknown_",
+        "the case for a value the build does not know is `unknown`"
+    );
+    assert_eq!(enum_case_name("default"), "`default`");
+    assert_eq!(enum_case_name("self"), "`self`");
+    assert_eq!(enum_case_name("Type"), "`Type`");
+}
+
+#[test]
+fn an_enum_named_like_what_the_module_keeps_or_the_standard_library_takes_enum_after_its_name() {
+    assert_eq!(enum_type_name("Status"), "Status");
+    for name in [
+        "Types",
+        "Slots",
+        "Sites",
+        "Guards",
+        "AbstractSlots",
+        "Baton",
+        "Swift",
+        "Foundation",
+        "Data",
+        "Action",
+        "OptimisticResponse",
+    ] {
+        assert_eq!(enum_type_name(name), format!("{name}Enum"));
+    }
+    for name in ["Result", "Optional", "String", "Hasher"] {
+        assert_eq!(enum_type_name(name), format!("{name}Enum"));
+    }
+    assert_eq!(enum_type_name("Self"), "SelfEnum");
+    assert_eq!(enum_type_name("class"), "`class`");
 }

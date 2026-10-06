@@ -127,15 +127,16 @@ fn the_runtime_is_named_by_its_module_in_a_type_and_in_an_expression() {
 /// The scalar shape of a nullable `primitive`, or of a nullable list of it
 /// whose elements are non-null or not.
 fn shape_of(primitive: Primitive, elements_non_null: Option<bool>) -> ScalarShape {
-    let (kind, mapped) = match primitive {
-        Primitive::String => (TypeKind::String, None),
-        Primitive::Int => (TypeKind::Int, None),
-        Primitive::Double => (TypeKind::Float, None),
-        Primitive::Bool => (TypeKind::Boolean, None),
-        Primitive::Mapped(name) => (TypeKind::CustomScalar, Some(name)),
+    let (kind, mapped, name) = match primitive {
+        Primitive::String => (TypeKind::String, None, None),
+        Primitive::Int => (TypeKind::Int, None, None),
+        Primitive::Double => (TypeKind::Float, None, None),
+        Primitive::Bool => (TypeKind::Boolean, None, None),
+        Primitive::Mapped(name) => (TypeKind::CustomScalar, Some(name), None),
+        Primitive::Enum(name) => (TypeKind::Enum, None, Some(name)),
     };
     let element = TypePlan::Named {
-        name: format!("{kind:?}"),
+        name: name.unwrap_or_else(|| format!("{kind:?}")),
         kind,
         non_null: elements_non_null.unwrap_or(false),
         mapped,
@@ -192,6 +193,30 @@ fn a_scalar_shape_is_spelled_as_swift_writes_it_and_read_by_its_matching_reader(
             Some(false),
             "[Foundation.Decimal?]",
             "nullableMappedList",
+        ),
+        (
+            Primitive::Enum("Status".to_string()),
+            None,
+            "Status",
+            "enumValue",
+        ),
+        (
+            Primitive::Enum("Status".to_string()),
+            Some(true),
+            "[Status]",
+            "enumValues",
+        ),
+        (
+            Primitive::Enum("Status".to_string()),
+            Some(false),
+            "[Status?]",
+            "nullableEnumValues",
+        ),
+        (
+            Primitive::Enum("Result".to_string()),
+            None,
+            "ResultEnum",
+            "enumValue",
         ),
     ];
     for (primitive, elements_non_null, swift_type, reader) in shapes {

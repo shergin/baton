@@ -58,7 +58,7 @@ struct IssueDetail: View {
                     NavigationLink(value: RepositoryQuery(owner: issue.repository.owner.login, name: issue.repository.name)) {
                         Text(issue.repository.nameWithOwner)
                     }
-                    Text("#\(issue.number) · \(issue.author?.login ?? "ghost") · \(shortDate(issue.createdAt)) · \(issue.state.lowercased())")
+                    Text("#\(issue.number) · \(issue.author?.login ?? "ghost") · \(shortDate(issue.createdAt)) · \(issue.state.word)")
                         .foregroundStyle(.secondary)
                 }
                 .font(.subheadline)
@@ -69,7 +69,7 @@ struct IssueDetail: View {
                     HStack {
                         ForEach(groups) { group in
                             if group.reactors.totalCount > 0 {
-                                Text("\(group.content.lowercased()) \(group.reactors.totalCount)")
+                                Text("\(group.content.scalarText.lowercased()) \(group.reactors.totalCount)")
                                     .font(.caption)
                                     .padding(4)
                                     .background(group.viewerHasReacted ? Color.accentColor.opacity(0.2) : Color.secondary.opacity(0.1), in: Capsule())

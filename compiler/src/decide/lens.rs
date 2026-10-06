@@ -317,7 +317,10 @@ pub enum Primitive {
     Int,
     Double,
     Bool,
+    /// A custom scalar read as the Swift type `baton.json` maps it to.
     Mapped(String),
+    /// A schema enum, read as the Swift enum generated for it.
+    Enum(String),
 }
 
 impl Primitive {
@@ -344,6 +347,7 @@ impl ScalarShape {
             TypeKind::Int => Primitive::Int,
             TypeKind::Float => Primitive::Double,
             TypeKind::Boolean => Primitive::Bool,
+            TypeKind::Enum => Primitive::Enum(type_.base_name().to_string()),
             _ => Primitive::String,
         }
     }

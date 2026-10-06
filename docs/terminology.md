@@ -469,6 +469,21 @@ a mapped type takes the Swift type and is sent as its text. See
 [the first decision](decisions/a-mapped-scalar-is-a-fallible-read.md) and
 [the second](decisions/a-mapped-scalar-converts-at-the-read.md).
 
+**Enum.** *Composition: schema, lens.* GraphQL: a type with a closed set of
+named values. Here: stored as its text, as a custom scalar is, and read as
+a Swift enum generated for it, with a case per value the build knows and
+`unknown(String)` for one it does not, so a value the schema gained after
+the build reads as itself rather than failing the read; Relay's generated
+types carry `%future added value` for the same reason. The conversion
+cannot fail, so the accessor keeps the schema's nullability; a null on a
+non-null field reads as `unknown("")` and is reported, as any value a type
+cannot hold is. A variable of an enum type takes the enum and is sent as
+its text. The enum is declared once per module in the shared file, named
+as the schema names it; a schema enum named like a fragment or an operation
+is a name error at the document, and one named like a shared enum or the
+standard library's types takes `Enum` after its name. See
+[the decision](decisions/an-enum-reads-as-a-generated-enum.md).
+
 **Plan.** *Concept: plan.* Baton's word for the normalization artifact: the
 data a response is decoded by and a store is written from, one per
 operation, emitted by the compiler and interpreted by the runtime. Relay's

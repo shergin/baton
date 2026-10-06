@@ -200,6 +200,27 @@ extension Anchor {
         return value
     }
 
+    /// A schema enum, as the Swift enum generated for it; a value this build
+    /// does not know is its `unknown` case.
+    @inline(__always)
+    public func enumValue<T: GeneratedEnum>(_ slot: Slot) -> T? {
+        string(slot, nonNull: false).map(T.init(enumText:))
+    }
+
+    public func requiredEnumValue<T: GeneratedEnum>(_ slot: Slot) -> T {
+        T(enumText: string(slot, nonNull: true) ?? "")
+    }
+
+    public func enumValues<T: GeneratedEnum>(_ slot: Slot) -> [T]? { scalars(slot, nonNull: false) { Anchor.enumCase($0) } }
+    public func requiredEnumValues<T: GeneratedEnum>(_ slot: Slot) -> [T] { scalars(slot, nonNull: true) { Anchor.enumCase($0) } ?? [] }
+    public func nullableEnumValues<T: GeneratedEnum>(_ slot: Slot) -> [T?]? { nullableScalars(slot, nonNull: false) { Anchor.enumCase($0) } }
+    public func requiredNullableEnumValues<T: GeneratedEnum>(_ slot: Slot) -> [T?] { nullableScalars(slot, nonNull: true) { Anchor.enumCase($0) } ?? [] }
+
+    private static func enumCase<T: GeneratedEnum>(_ value: Value) -> T? {
+        if case .string(let text) = value { return T(enumText: text) }
+        return nil
+    }
+
     /// `@required` or `@throwOnFieldError` on a mapped scalar: the value, or
     /// the field's error, or the conversion's error. A failure has no zero to
     /// read as, so the accessor throws where a scalar's would read one.

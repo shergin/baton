@@ -282,19 +282,32 @@ fn non_null(type_: TypePlan) -> TypePlan {
 }
 
 #[test]
-fn an_id_an_enum_and_a_custom_scalar_are_kept_as_their_text() {
-    for kind in [
-        TypeKind::String,
-        TypeKind::Id,
-        TypeKind::Enum,
-        TypeKind::CustomScalar,
-    ] {
+fn an_id_and_an_unmapped_custom_scalar_are_kept_as_their_text() {
+    for kind in [TypeKind::String, TypeKind::Id, TypeKind::CustomScalar] {
         assert_eq!(
             ScalarShape::of(&named(kind)).primitive,
             Primitive::String,
             "{kind:?}"
         );
     }
+}
+
+#[test]
+fn an_enum_reads_as_the_enum_its_schema_type_names() {
+    let status = TypePlan::Named {
+        name: "Status".to_string(),
+        kind: TypeKind::Enum,
+        non_null: false,
+        mapped: None,
+    };
+    assert_eq!(
+        ScalarShape::of(&status).primitive,
+        Primitive::Enum("Status".to_string())
+    );
+    assert_eq!(
+        ScalarShape::of(&list_of(status)).primitive,
+        Primitive::Enum("Status".to_string())
+    );
 }
 
 #[test]

@@ -615,3 +615,6 @@ mod identity_tests;
 
 #[path = "scalar_tests.rs"]
 mod scalar_tests;
+
+#[path = "enum_tests.rs"]
+mod enum_tests;

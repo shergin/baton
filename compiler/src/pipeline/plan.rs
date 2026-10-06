@@ -18,6 +18,11 @@ pub struct Plan {
     /// version so a new schema starts the image again.
     #[serde(skip)]
     pub schema_digest: String,
+    /// The schema's enums the documents read or pass, with their values in
+    /// the schema's order: each is generated as a Swift enum with a case per
+    /// value and one for a value the build does not know.
+    #[serde(skip_serializing_if = "BTreeMap::is_empty")]
+    pub enums: BTreeMap<String, Vec<String>>,
 }
 
 /// Where a document wrote a name it chose: the file, which of the file's

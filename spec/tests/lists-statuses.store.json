@@ -1,0 +1,6 @@
+{
+  "client:root": {"__typename": "Query"},
+  "client:root:mutation": {"__typename": "Mutation", "setLists": {"__ref": "client:root:mutation:setLists"}},
+  "client:root:mutation:setLists": {"__typename": "ListsPayload", "statuses": ["ALIVE", "GHOST", null, "DEAD"]},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

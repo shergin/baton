@@ -20,9 +20,21 @@ struct IssueRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(issue.title).font(.headline)
-            Text("\(issue.repository.nameWithOwner) #\(issue.number) · \(issue.author.login) · \(issue.state.lowercased())")
+            Text("\(issue.repository.nameWithOwner) #\(issue.number) · \(issue.author.login) · \(issue.state.word)")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
+        }
+    }
+}
+
+/// The schema's `IssueState` is generated as a Swift enum, so a row
+/// switches over its cases; a state this build does not know shows its text.
+extension IssueState {
+    var word: String {
+        switch self {
+        case .OPEN: "open"
+        case .CLOSED: "closed"
+        case .unknown(let text): text.lowercased()
         }
     }
 }

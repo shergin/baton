@@ -1,0 +1,12 @@
+{
+  "data": {
+    "setLists": {
+      "statuses": [
+        "ALIVE",
+        "GHOST",
+        null,
+        "DEAD"
+      ]
+    }
+  }
+}

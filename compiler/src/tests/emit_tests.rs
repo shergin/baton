@@ -144,11 +144,40 @@ fn plan_swift_tests() -> BTreeMap<String, String> {
     }
     by_source
         .into_iter()
-        .map(|(name, plan)| {
-            let json = serde_json::to_string_pretty(&plan).expect("a plan serializes");
+        .map(|(name, mut file_plan)| {
+            let named = enums_named(&serde_json::to_value(&file_plan).expect("a plan serializes"));
+            file_plan.enums = plan
+                .enums
+                .iter()
+                .filter(|(name, _)| named.contains(name.as_str()))
+                .map(|(name, values)| (name.clone(), values.clone()))
+                .collect();
+            let json = serde_json::to_string_pretty(&file_plan).expect("a plan serializes");
             (name, format!("{json}\n"))
         })
         .collect()
+}
+
+/// The enums a serialized plan's types name, so that one file's plan
+/// carries the enums its own documents read or pass and no other file's.
+fn enums_named(value: &serde_json::Value) -> BTreeSet<String> {
+    let mut names = BTreeSet::new();
+    let mut pending = vec![value];
+    while let Some(value) = pending.pop() {
+        match value {
+            serde_json::Value::Array(items) => pending.extend(items),
+            serde_json::Value::Object(fields) => {
+                if fields.get("kind").and_then(|kind| kind.as_str()) == Some("enum")
+                    && let Some(name) = fields.get("name").and_then(|name| name.as_str())
+                {
+                    names.insert(name.to_string());
+                }
+                pending.extend(fields.values());
+            }
+            _ => {}
+        }
+    }
+    names
 }
 
 /// The names of the goldens on disk that end with `extension`.

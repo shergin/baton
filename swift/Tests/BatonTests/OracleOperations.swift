@@ -89,6 +89,7 @@ struct OracleOperation: Sendable {
         "TestQuotesQuery": { _ in OracleOperation(TestQuotesQuery(), reads: quotesReads) },
         "TestQuoteQuery": { try OracleOperation(TestQuoteQuery(base: $0.string("base"), quote: $0.string("quote")), reads: quoteReads) },
         "TestAssetPricesQuery": { _ in OracleOperation(TestAssetPricesQuery(), reads: assetPricesReads, spellings: assetPricesSpellings) },
+        "TestSetStatuses": { _ in OracleOperation(TestSetStatuses(), reads: setStatusesReads, spellings: setStatusesSpellings) },
     ]
 
     /// Binds a manifest case to its operation.
@@ -265,6 +266,18 @@ extension OracleOperation {
         }
         return spellings
     }()
+
+    /// A list of the schema enum `Status`, read with a value the schema does
+    /// not declare as the `unknown` case with its text.
+    static let setStatusesReads: [String: @MainActor @Sendable (TestSetStatuses.Data) -> Manifest.Value] = [
+        "setLists.statuses": { $0.setLists?.statuses.manifestValue ?? .null }
+    ]
+
+    /// An enum's conversion cannot fail, so its text is written back as it
+    /// was, a value the build does not know included.
+    static let setStatusesSpellings: [String: Spelling] = [
+        "setLists.statuses": spelled(as: Status.self)
+    ]
 
     /// The manifest's text converted to `type` and written back as its
     /// `scalarText`, element by element in a list; a text the type cannot
@@ -445,6 +458,12 @@ extension Date: ManifestValueConvertible {
 }
 
 extension URL: ManifestValueConvertible {
+    var manifestValue: Manifest.Value { .string(scalarText) }
+}
+
+/// A generated enum is read in the manifest's spelling as its text, so
+/// `unknown("GHOST")` is the response's `GHOST`.
+extension Status: ManifestValueConvertible {
     var manifestValue: Manifest.Value { .string(scalarText) }
 }
 

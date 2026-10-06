@@ -12,7 +12,7 @@ use std::fmt;
 
 use super::writer::Writer;
 use crate::decide::{Primitive, ScalarShape, VariableBase, VariableValue};
-use crate::names::{escape, keyed_types, possible_types, type_constant};
+use crate::names::{enum_type_name, escape, keyed_types, possible_types, type_constant};
 use crate::pipeline::{ArgumentValuePlan, ConstantPlan};
 
 /// The runtime's module.
@@ -127,6 +127,7 @@ fn primitive_type(primitive: &Primitive) -> SwiftType {
         Primitive::Double => SwiftType::named("Double"),
         Primitive::Bool => SwiftType::named("Bool"),
         Primitive::Mapped(name) => SwiftType::Named(name.clone()),
+        Primitive::Enum(name) => SwiftType::Named(enum_type_name(name)),
     }
 }
 
@@ -140,16 +141,19 @@ pub(super) fn scalar_reader(shape: &ScalarShape) -> &'static str {
         (Primitive::Double, None) => "double",
         (Primitive::Bool, None) => "bool",
         (Primitive::Mapped(_), None) => "mapped",
+        (Primitive::Enum(_), None) => "enumValue",
         (Primitive::String, Some(true)) => "strings",
         (Primitive::Int, Some(true)) => "ints",
         (Primitive::Double, Some(true)) => "doubles",
         (Primitive::Bool, Some(true)) => "bools",
         (Primitive::Mapped(_), Some(true)) => "mappedList",
+        (Primitive::Enum(_), Some(true)) => "enumValues",
         (Primitive::String, Some(false)) => "nullableStrings",
         (Primitive::Int, Some(false)) => "nullableInts",
         (Primitive::Double, Some(false)) => "nullableDoubles",
         (Primitive::Bool, Some(false)) => "nullableBools",
         (Primitive::Mapped(_), Some(false)) => "nullableMappedList",
+        (Primitive::Enum(_), Some(false)) => "nullableEnumValues",
     }
 }
 

@@ -6,10 +6,10 @@ import Foundation
 nonisolated enum Types {
     /// The schema's digest: pass it as the image's `version`, so an image
     /// written under another schema starts again.
-    static let schemaDigest = "5325069616af784aa2f598f7554789af"
+    static let schemaDigest = "706c73074c8964ce187f560dba49fe83"
     /// The format of this generated code, which the runtime that reads it
     /// declares; a runtime of another format fails to compile this line.
-    static let format = Baton.Format9.self
+    static let format = Baton.Format10.self
     static let AddNotePayload = Baton.Registry.type("AddNotePayload")
     static let Any_ = Baton.Registry.type("Any")
     static let Asset = Baton.Registry.type("Asset")
@@ -213,6 +213,7 @@ nonisolated enum Slots {
         static let charactersByIds_433c34 = Baton.DynamicKey(Types.Query, "charactersByIds", [Baton.KeyArgument("ids", [.literal("["), .variable("Type"), .literal(","), .variable("Protocol"), .literal(","), .variable("Any"), .literal(","), .variable("self"), .literal(","), .variable("init"), .literal(","), .variable("deinit"), .literal(","), .variable("subscript"), .literal(","), .variable("class"), .literal(","), .variable("struct"), .literal(","), .variable("enum"), .literal(","), .variable("func"), .literal(","), .variable("var"), .literal(","), .variable("let"), .literal(","), .variable("import"), .literal(","), .variable("extension"), .literal(","), .variable("operator"), .literal(","), .variable("static"), .literal(","), .variable("default"), .literal(","), .variable("case"), .literal(","), .variable("switch"), .literal(","), .variable("if"), .literal(","), .variable("else"), .literal(","), .variable("for"), .literal(","), .variable("in"), .literal(","), .variable("while"), .literal(","), .variable("repeat"), .literal(","), .variable("return"), .literal(","), .variable("break"), .literal(","), .variable("continue"), .literal(","), .variable("where"), .literal(","), .variable("is"), .literal(","), .variable("as"), .literal(","), .variable("try"), .literal(","), .variable("throw"), .literal(","), .variable("throws"), .literal(","), .variable("guard"), .literal(","), .variable("defer"), .literal(","), .variable("do"), .literal(","), .variable("catch"), .literal(","), .variable("true"), .literal(","), .variable("false"), .literal(","), .variable("nil"), .literal(","), .variable("super"), .literal(","), .variable("internal"), .literal(","), .variable("private"), .literal(","), .variable("public"), .literal(","), .variable("fileprivate"), .literal(","), .variable("open"), .literal(","), .variable("inout"), .literal(","), .variable("typealias"), .literal(","), .variable("associatedtype"), .literal(","), .variable("protocol"), .literal(","), .variable("some"), .literal(","), .variable("any"), .literal(","), .variable("rethrows"), .literal(","), .variable("fallthrough"), .literal(","), .variable("precedencegroup"), .literal(","), .variable("_"), .literal(","), .variable("Self"), .literal(","), .variable("async"), .literal(","), .variable("borrowing"), .literal(","), .variable("consume"), .literal(","), .variable("consuming"), .literal(","), .variable("copy"), .literal(","), .variable("discard"), .literal(","), .variable("each"), .literal(","), .variable("isolated"), .literal(","), .variable("sending"), .literal(","), .variable("then"), .literal(","), .variable("unsafe"), .literal(","), .variable("await"), .literal(","), .variable("anchor"), .literal(","), .variable("recordID"), .literal(","), .variable("typeName"), .literal(","), .variable("satisfied"), .literal(","), .variable("missingRequiredField"), .literal(","), .variable("fieldErrors"), .literal(","), .variable("isPresent"), .literal(","), .variable("throwing"), .literal(","), .variable("caught"), .literal(","), .variable("refetchable"), .literal(","), .variable("refetch"), .literal(","), .variable("connection"), .literal(","), .variable("nodes"), .literal(","), .variable("hasNext"), .literal(","), .variable("hasPrevious"), .literal(","), .variable("isLoadingNext"), .literal(","), .variable("isLoadingPrevious"), .literal(","), .variable("connectionID"), .literal(","), .variable("loadNext"), .literal(","), .variable("loadPrevious"), .literal(","), .variable("bound"), .literal(","), .variable("errors"), .literal(","), .variable("child"), .literal(","), .variable("missing"), .literal(","), .variable("count"), .literal(","), .variable("fields"), .literal(","), .variable("lhs"), .literal(","), .variable("rhs"), .literal(","), .variable("hasher"), .literal(","), .variable("optimistic"), .literal(","), .variable("selfValue"), .literal(","), .variable("Fragment"), .literal(","), .variable("Spread"), .literal(","), .variable("Owner"), .literal(","), .variable("Query"), .literal(","), .variable("Operation"), .literal(","), .variable("RefetchQuery"), .literal(","), .variable("name"), .literal(","), .variable("persistedID"), .literal(","), .variable("text"), .literal(","), .variable("plan"), .literal(","), .variable("errorBehavior"), .literal(","), .variable("throwsOnFieldError"), .literal(","), .variable("bubbles"), .literal(","), .variable("hasDeferred"), .literal(","), .variable("cacheExpiration"), .literal(","), .variable("Action"), .literal(","), .variable("OptimisticResponse"), .literal(","), .variable("hash"), .literal(","), .variable("commit"), .literal(","), .variable("callAsFunction"), .literal(","), .variable("Op"), .literal(","), .variable("variable"), .literal(","), .variable("retry"), .literal(","), .variable("subscription"), .literal(","), .variable("Sites"), .literal(","), .variable("Guards"), .literal(","), .variable("AbstractSlots"), .literal(","), .variable("schemaDigest"), .literal(","), .variable("format"), .literal(","), .variable("Swift"), .literal(","), .variable("Set"), .literal(","), .variable("Result"), .literal(","), .variable("Optional"), .literal(","), .variable("String"), .literal(","), .variable("Int"), .literal(","), .variable("Double"), .literal(","), .variable("Bool"), .literal(","), .variable("MainActor"), .literal(","), .variable("Hasher"), .literal(","), .variable("Sendable"), .literal("]")])])
         static let charactersByIds_0b7f7b = Baton.DynamicKey(Types.Query, "charactersByIds", [Baton.KeyArgument("ids", [.literal("["), .variable("id"), .literal(",\"2\"]")])])
         static let charactersMatching_ca82bd = Baton.DynamicKey(Types.Query, "charactersMatching", [Baton.KeyArgument("filters", [.variable("filters")])])
+        static let charactersWithStatus_deb51f = Baton.DynamicKey(Types.Query, "charactersWithStatus", [Baton.KeyArgument("any", [.variable("any")]), Baton.KeyArgument("status", [.variable("status")])])
         static let namesake_9b6471 = Baton.DynamicKey(Types.Query, "namesake", [Baton.KeyArgument("name", [.variable("name")])])
         static let node_8f7d08 = Baton.DynamicKey(Types.Query, "node", [Baton.KeyArgument("id", [.variable("id")])])
         static let quote_bd29fc = Baton.DynamicKey(Types.Query, "quote", [Baton.KeyArgument("base", [.variable("base")]), Baton.KeyArgument("quote", [.variable("quote")])])
@@ -449,6 +450,32 @@ nonisolated enum Sites {
     static let TestSpreadKeys_testKeyArguments = Baton.ArgumentSite()
     static let TestTwoScopes_testNotes = Baton.ArgumentSite()
     static let TestTwoScopes_testNotes_2 = Baton.ArgumentSite()
+}
+
+/// The schema's enum `Status`. A value this build does not know reads as `unknown`, with its text.
+nonisolated public enum Status: Baton.GeneratedEnum {
+    case ALIVE
+    case DEAD
+    case UNKNOWN
+    case unknown(String)
+
+    public init(enumText: String) {
+        self = switch enumText {
+            case "ALIVE": .ALIVE
+            case "DEAD": .DEAD
+            case "UNKNOWN": .UNKNOWN
+            default: .unknown(enumText)
+        }
+    }
+
+    public var scalarText: String {
+        switch self {
+            case .ALIVE: "ALIVE"
+            case .DEAD: "DEAD"
+            case .UNKNOWN: "UNKNOWN"
+            case .unknown(let text): text
+        }
+    }
 }
 
 /// Storage keys read on interfaces and unions, each resolved once per concrete type.

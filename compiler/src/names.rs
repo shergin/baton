@@ -148,28 +148,32 @@ pub struct Reserved {
 }
 
 impl Reserved {
-    /// For lenses: the names a lens spells, and every fragment and
-    /// operation of the program, which a lens refers to unqualified; `Lens`
-    /// goes after one of them.
-    pub fn lenses<'a>(program: impl IntoIterator<Item = &'a str>) -> Reserved {
+    /// For lenses: the names a lens spells, and every fragment, operation
+    /// and schema enum of the program, which a lens refers to unqualified;
+    /// `Lens` goes after one of them.
+    pub fn lenses<S: Into<String>>(program: impl IntoIterator<Item = S>) -> Reserved {
         let mut names: BTreeSet<String> = RESERVED_TYPE_NAMES
             .iter()
             .map(|name| name.to_string())
             .collect();
-        names.extend(program.into_iter().map(str::to_string));
+        names.extend(program.into_iter().map(Into::into));
         Reserved {
             names,
             suffix: "Lens",
         }
     }
 
-    /// For optimistic-response builders, `Response` after a reserved name.
-    pub fn builders() -> Reserved {
+    /// For optimistic-response builders: the names a builder spells and the
+    /// program's schema enums, which a builder's fields are typed by;
+    /// `Response` goes after one of them.
+    pub fn builders<S: Into<String>>(program: impl IntoIterator<Item = S>) -> Reserved {
+        let mut names: BTreeSet<String> = BUILDER_RESERVED_NAMES
+            .iter()
+            .map(|name| name.to_string())
+            .collect();
+        names.extend(program.into_iter().map(Into::into));
         Reserved {
-            names: BUILDER_RESERVED_NAMES
-                .iter()
-                .map(|name| name.to_string())
-                .collect(),
+            names,
             suffix: "Response",
         }
     }
@@ -397,6 +401,47 @@ pub fn slot_name(name: &str) -> String {
 /// hides nothing: inside the enum the members are named bare.
 pub fn type_constant(name: &str) -> String {
     underscored(name, &["Type", "Protocol", "Any", "Baton"])
+}
+
+/// The names the module's top level keeps for itself, which a schema enum
+/// of the same name would hide from every file: the shared enums, the
+/// modules, Swift's keywords and what the generated code spells from the
+/// standard library.
+pub const MODULE_RESERVED_NAMES: [&str; 15] = [
+    "Swift",
+    "Foundation",
+    "Baton",
+    "Types",
+    "Slots",
+    "Sites",
+    "Guards",
+    "AbstractSlots",
+    "Self",
+    "Any",
+    "Type",
+    "Protocol",
+    // The types every operation nests, which an enum of the name would be
+    // hidden by inside the operation.
+    "Data",
+    "Action",
+    "OptimisticResponse",
+];
+
+/// A schema enum's Swift type, declared at the module's top level: its own
+/// name, escaped, with `Enum` after it where the name is one the module
+/// keeps or the standard library's, as a nested lens takes `Lens`.
+pub fn enum_type_name(name: &str) -> String {
+    if MODULE_RESERVED_NAMES.contains(&name) || STANDARD_LIBRARY_NAMES.contains(&name) {
+        return format!("{name}Enum");
+    }
+    escape(name)
+}
+
+/// A schema enum's value as a case of its Swift enum: the value's own
+/// spelling, escaped where Swift reads it as a keyword; `unknown` takes an
+/// underscore, since the case for a value the build does not know has it.
+pub fn enum_case_name(value: &str) -> String {
+    underscored(value, &["unknown"])
 }
 
 /// The constant in `Types` of the types that satisfy `condition`.

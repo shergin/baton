@@ -229,7 +229,7 @@ struct EmitterTests {
             ratios: [0.5, 1.25],
             flags: [true, false],
             jsons: ["{\"a\":1}", "1.50"],
-            statuses: ["ALIVE", "DEAD"]
+            statuses: [.ALIVE, .DEAD]
         ))
         #expect(optimistic.variable == .object(["setLists": .object([
             "strings": .list([.string("Rick"), .string("Morty")]),
@@ -251,7 +251,7 @@ struct EmitterTests {
         #expect(lists.ratios == [0.5, 1.25])
         #expect(lists.flags == [true, false])
         #expect(lists.jsons == ["{\"a\":1}", "1.50"])
-        #expect(lists.statuses == ["ALIVE", "DEAD"])
+        #expect(lists.statuses == [.ALIVE, .DEAD])
     }
 
     @Test("an operation whose text holds a backslash before a hash compiles, and its text holds both as the document wrote them")

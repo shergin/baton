@@ -43,6 +43,7 @@ type Query {
   asset(uuid: String!): Asset
   assets: [Asset]
   assetsPricedAbove(price: Decimal!, among: [Decimal!]): [Asset]
+  charactersWithStatus(status: Status!, any: [Status!]): [Character]
   quote(base: String!, quote: String!): Quote
   quotes: [Quote]
 }
