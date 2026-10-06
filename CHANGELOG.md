@@ -5,6 +5,9 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- What the image was told to forget and has not yet dropped is kept behind
+  the image's interface, as one value the store holds, where three sets of
+  the store's tracked it.
 - The image's row is one codec: the tags, the writing of a record's row and
   a root field's cell, and the reading back, in one type over bytes, where
   the writer was the disk's and the reader the hydration's. The disk keeps

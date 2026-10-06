@@ -384,36 +384,18 @@ public final class Store {
         apply(changes, into: &batch)
         if let forgets, !forgets.keys.isEmpty || !forgets.ids.isEmpty {
             persistence?.forget(keys: forgets.keys, ids: forgets.ids)
-            forgottenKeys.formUnion(forgets.keys)
-            forgottenIDs.formUnion(forgets.ids)
-            // A record with the id that an earlier payload wrote is forgotten
-            // with the rest.
-            if !forgets.ids.isEmpty, !rewrittenKeys.isEmpty {
-                rewrittenKeys = rewrittenKeys.filter { !forgets.ids.contains(Store.id(ofEntity: $0)) }
-            }
+            forgotten.note(keys: forgets.keys, ids: forgets.ids)
         }
         forgets = nil
-        // A record the payload wrote is the store's again, by its exact key.
-        // The other records with a forgotten id stay unread until the writer
-        // has dropped them: a payload with `Location:1` says nothing of
-        // `Character:1`.
-        if !forgottenKeys.isEmpty || !forgottenIDs.isEmpty {
+        // The records the payload wrote are the store's again, by their exact
+        // keys; the others with a forgotten id stay unread until the writer
+        // has dropped them.
+        if !forgotten.isEmpty {
             for index in changes.recordKeys.indices {
-                let key = changes.recordKeys[index]
-                forgottenKeys.remove(key)
-                if !forgottenIDs.isEmpty, changes.recordIsEntity[index], forgottenIDs.contains(Store.id(ofEntity: key)) {
-                    rewrittenKeys.insert(key)
-                }
+                forgotten.wrote(changes.recordKeys[index], isEntity: changes.recordIsEntity[index])
             }
         }
         persist(batch.steps(since: start))
-    }
-
-    /// The id inside an entity's key: what follows its type's name, which
-    /// holds no colon.
-    private static func id(ofEntity key: String) -> String {
-        guard let separator = key.firstIndex(of: ":") else { return key }
-        return String(key[key.index(after: separator)...])
     }
 
     /// What a server batch could not edit in memory: connection keys, and
@@ -426,26 +408,18 @@ public final class Store {
 
     var forgets: Forgets?
 
-    /// What the image was told to forget, until the writer has: by key,
-    /// until a response writes that key, and by bare id, but for the keys
-    /// with the id that a response has written since.
-    private var forgottenKeys: Set<String> = []
-    private var forgottenIDs: Set<String> = []
-    private var rewrittenKeys: Set<String> = []
+    /// What the image was told to forget and has not yet.
+    private var forgotten = Persistence.Forgotten()
 
     /// Whether the image's row of a record is not to be read. Once no forget
-    /// waits for the writer, the rows are gone and the sets are emptied.
+    /// waits for the writer, the rows are gone and nothing is forgotten.
     func forgotten(_ record: Record) -> Bool {
-        if forgottenKeys.isEmpty, forgottenIDs.isEmpty { return false }
+        if forgotten.isEmpty { return false }
         guard persistence?.forgetting == true else {
-            forgottenKeys.removeAll()
-            forgottenIDs.removeAll()
-            rewrittenKeys.removeAll()
+            forgotten.clear()
             return false
         }
-        if forgottenKeys.contains(record.key) { return true }
-        if let id = record.entityID, forgottenIDs.contains(id), !rewrittenKeys.contains(record.key) { return true }
-        return false
+        return forgotten.contains(record)
     }
 
     /// A changed field of the query root, which the image stores a row per

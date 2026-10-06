@@ -161,6 +161,55 @@ public final class Persistence: Sendable {
         enqueue(.forget(keys: keys, ids: ids))
     }
 
+    /// What the image was told to forget and the writer has not yet dropped,
+    /// which a read must not meet meanwhile: by key, until a response writes
+    /// that key, and by bare id, but for the keys with the id that a
+    /// response has written since (a payload with `Location:1` says nothing
+    /// of `Character:1`). The store keeps one, on the main actor.
+    struct Forgotten {
+        private var keys: Set<String> = []
+        private var ids: Set<String> = []
+        private var rewritten: Set<String> = []
+
+        var isEmpty: Bool { keys.isEmpty && ids.isEmpty }
+
+        /// Notes what a batch told the image to forget. A record with an id
+        /// that an earlier payload wrote is forgotten with the rest.
+        mutating func note(keys forgottenKeys: [String], ids forgottenIDs: [String]) {
+            keys.formUnion(forgottenKeys)
+            ids.formUnion(forgottenIDs)
+            if !forgottenIDs.isEmpty, !rewritten.isEmpty {
+                rewritten = rewritten.filter { !forgottenIDs.contains(Forgotten.id(ofEntity: $0)) }
+            }
+        }
+
+        /// A record a payload wrote is the store's again, by its exact key.
+        mutating func wrote(_ key: String, isEntity: Bool) {
+            keys.remove(key)
+            if isEntity, !ids.isEmpty, ids.contains(Forgotten.id(ofEntity: key)) { rewritten.insert(key) }
+        }
+
+        mutating func clear() {
+            keys.removeAll()
+            ids.removeAll()
+            rewritten.removeAll()
+        }
+
+        /// Whether the record's row is not to be read.
+        func contains(_ record: Record) -> Bool {
+            if keys.contains(record.key) { return true }
+            if let id = record.entityID, ids.contains(id), !rewritten.contains(record.key) { return true }
+            return false
+        }
+
+        /// The id inside an entity's key: what follows its type's name,
+        /// which holds no colon.
+        private static func id(ofEntity key: String) -> String {
+            guard let separator = key.firstIndex(of: ":") else { return key }
+            return String(key[key.index(after: separator)...])
+        }
+    }
+
     /// Whether a forget waits in the queue, the rows it names still in the
     /// file. One the writer has taken is done, or the image is to be
     /// discarded, before a read can take the file.
