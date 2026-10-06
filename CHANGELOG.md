@@ -5,6 +5,12 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- A subscription handle's stream is a value beside its events. `stream`
+  reads `.idle`, `.connecting` until the first event, `.open`, or
+  `.ended(failure)`, with `nil` for the server's completion and a `Failure`
+  for an error that ended it; `isActive` is connecting or open. A
+  subscription has no loading, since it has no data of its own to wait for,
+  so this is not a phase.
 - A handle's fetch is a value beside its phase. `fetch` on a query value
   and on `OperationHandle` reads `.idle`, `.inFlight`, or
   `.failed(failure, at:)` with the failure and when it failed, so a fetch

@@ -522,6 +522,27 @@ public struct MutationAction<Op: Mutation>: Sendable {
 }
 // MARK: Subscriptions
 
+/// The stream a subscription handle holds, as a value read beside its
+/// events: not started, connecting until the first event, open, or ended,
+/// by the server's completion or by a failure. Not a phase: a subscription
+/// has no data of its own to wait for, so it has no loading. A stream that
+/// waits to reconnect is a case to come with reconnection.
+public enum Stream: Sendable {
+    case idle
+    case connecting
+    case open
+    /// The server completed the stream (`nil`), or a failure ended it.
+    case ended(Failure?)
+
+    /// Whether the stream is connecting or open.
+    public var isActive: Bool {
+        switch self {
+        case .connecting, .open: true
+        case .idle, .ended: false
+        }
+    }
+}
+
 /// The live side of a subscription value: the stream it holds open, how many
 /// events arrived, the latest event's data, and the error that ended it.
 /// Each event is normalized with the operation's plan at the subscription root
@@ -537,8 +558,10 @@ public final class SubscriptionHandle<Op: Subscription>: AnyOperationHandle {
     /// The error of the last event, cleared by the next good one, or the
     /// error that ended the stream.
     public private(set) var error: (any Error)?
-    /// Whether the stream is open.
-    public private(set) var isActive = false
+    /// The stream, as a value: idle, connecting, open, or ended.
+    public private(set) var stream: Stream = .idle
+    /// Whether the stream is connecting or open.
+    public var isActive: Bool { stream.isActive }
     /// The environment that made the handle; releasing the handle after it
     /// is gone does nothing.
     @ObservationIgnored private(set) weak var environment: Environment?
@@ -562,10 +585,14 @@ public final class SubscriptionHandle<Op: Subscription>: AnyOperationHandle {
     /// Opens the stream unless it is open, or its environment is gone.
     func start() {
         guard task == nil, environment != nil else { return }
-        isActive = true
+        stream = .connecting
         error = nil
         task = Task { [weak self] in
             guard let self, let environment else { return }
+            // How the stream ended, written once the task is known not to
+            // have been replaced: the stream a newer one replaced leaves
+            // the newer one's state be.
+            var ending: Stream = .ended(nil)
             do {
                 for try await payload in environment.subscribe(operation) {
                     guard !Task.isCancelled else { return }
@@ -576,6 +603,7 @@ public final class SubscriptionHandle<Op: Subscription>: AnyOperationHandle {
                         events += 1
                         latest = Op.Data(anchor: Anchor(record: store.subscriptionRoot, owner: owner))
                         error = nil
+                        stream = .open
                     } catch let failure as GraphQLErrors {
                         // An event with errors and no data is one bad event;
                         // the stream goes on. The ingest runs to its end
@@ -591,11 +619,11 @@ public final class SubscriptionHandle<Op: Subscription>: AnyOperationHandle {
             } catch {
                 guard !Task.isCancelled else { return }
                 self.error = error
+                ending = .ended(Failure(error))
             }
-            // A stream a newer one replaced leaves the newer one's state be.
             guard !Task.isCancelled else { return }
             task = nil
-            isActive = false
+            stream = ending
         }
     }
 
@@ -635,7 +663,7 @@ public final class SubscriptionHandle<Op: Subscription>: AnyOperationHandle {
     func cancel() {
         task?.cancel()
         task = nil
-        isActive = false
+        stream = .idle
     }
 }
 

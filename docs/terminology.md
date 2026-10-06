@@ -166,8 +166,7 @@ side of a query value, made by the environment and shared by equal values:
 its phase, its [fetch](#runtime) as a value, `isRefreshing`, `fetchTime`,
 and its place among the store's roots while retained or in the release
 buffer. `SubscriptionHandle` is the same for a subscription: the stream
-held open, its events, its last error; a subscription handle showing its
-stream's state as the fetch is shown is *(planned)*. See
+held open as a value, `stream`, its events, its last error. See
 [the decision](decisions/a-handle-derives-its-phase.md). Relay also calls
 the code behind `@connection` and the edge directives handles; here "handle"
 is only the operation handle, and an edge directive in a plan is an
@@ -461,7 +460,11 @@ import and its shipping binary does not; see
 an operation whose events arrive over time. Here: `@Subscription("…")`
 expands like `@Query`: the storage subscribes while the view lives and
 closes the stream when it goes; the handle exposes `events`, `latest`,
-`error`, `isActive`. Each event is normalized at the subscription root
+`error`, and `stream`, the stream as a value: idle, connecting until the
+first event, open, or ended, by the server's completion or by a
+[failure](#runtime); `isActive` is connecting or open. Not a phase: a
+subscription has no data of its own to wait for, so it has no loading. Each
+event is normalized at the subscription root
 (`client:root:subscription`) and committed, so edge directives on its
 payload work. `SubscriptionTransport` is the protocol;
 `GraphQLTransportWebSocket` speaks `graphql-transport-ws`.
