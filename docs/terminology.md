@@ -166,9 +166,13 @@ side of a query value, made by the environment and shared by equal values:
 its phase, the fetch in flight, `isRefreshing`, `fetchTime`, and its place
 among the store's roots while retained or in the release buffer.
 `SubscriptionHandle` is the same for a subscription: the stream held open,
-its events, its last error. Relay also calls the code behind `@connection`
-and the edge directives handles; here "handle" is only the operation handle,
-and an edge directive in a plan is an [edit](#lists).
+its events, its last error. The [fetch](#runtime) as a value a view reads,
+idle, in flight, or failed with its failure and its time, is *(planned)*,
+and a subscription handle shows its stream's state the same way; see
+[the decision](decisions/a-handle-derives-its-phase.md). Relay also calls
+the code behind `@connection` and the edge directives handles; here "handle"
+is only the operation handle, and an edge directive in a plan is an
+[edit](#lists).
 
 **Phase.** *Concept: phase.* The state of a resolved operation: loading,
 ready, or failed. Always synchronously readable; previous data stays visible
@@ -176,7 +180,11 @@ while refreshing, and `isRefreshing` says a fetch runs behind it: behind
 ready data, or behind a failure on field errors or a `@required` null, whose
 data is in the store, which `retry()` leaves in place as a refetch does;
 after any other failure a retry shows loading. Named after
-`AsyncImagePhase`, the platform's own word for the same shape.
+`AsyncImagePhase`, the platform's own word for the same shape. Stored on the
+handle and settled after each commit today; derived when it is read, from
+what the store holds and from the handle's [fetch](#runtime), is
+*(planned)*, and a fetch's failure is then readable beside it. See
+[the decision](decisions/a-handle-derives-its-phase.md).
 
 **Action.** *Composition: lens, operation value, environment.* A mutation as
 a callable value, after SwiftUI's `dismiss` and `openURL`: called with one
@@ -334,7 +342,11 @@ record and slot the path names and stored beside the field (`FieldError`:
 message and dotted path); a payload that answers the field clears it; either
 change notifies the field. Read through [catch](#documents) and
 [throw on field error](#documents); a plain read sees null. A response with
-errors and no data is a `GraphQLErrors` failure of the fetch.
+errors and no data is a [request error](#runtime), a `GraphQLErrors`
+failure of the fetch. The ingest drops an error's `extensions` today; an
+error that keeps them as a JSON value beside its message and path is
+*(planned)*: see
+[A failure says its kind](decisions/a-failure-says-its-kind.md).
 
 **Heal.** *Composition: store, operation value, environment.* Baton's word
 for the response to missing data: record the event, mark the owning
@@ -420,7 +432,10 @@ the parts of a deferred response. `URLSessionTransport` implements both;
 `MultipartParser` splits the parts. A response outside 2xx fails with
 `TransportError`, its HTTP status and body; a socket that closed under a
 subscription and a recorded transport with nothing recorded fail with one of
-status 0, which says what went wrong.
+status 0, which says what went wrong. `TransportError` stays the built-in
+transports' error, and is carried unchanged inside the transport's kind of
+[failure](#runtime) *(planned)*, as a `URLError` or an app's own
+transport's error is.
 
 **Recorded transport.** *Concept: transport.* Baton's word.
 `RecordedTransport` answers from recorded responses by operation name, or
@@ -445,12 +460,38 @@ field in place, so the compiler types the fields the schema calls non-null
 by their semantic nullability: non-optional under `@throwOnFieldError` and
 inside `@catch`, optional elsewhere.
 
+**Request error.** *Composition: transport, phase.* GraphQL's word for an
+error raised before execution begins, which leaves the response no data;
+beside it the specification names the [field error](#store). Here: a
+response of errors and no data fails its fetch with `GraphQLErrors`, which
+keeps the errors' messages alone. As one of the kinds of a
+[failure](#runtime), whose errors keep their `extensions`, it is
+*(planned)*. See [the decision](decisions/a-failure-says-its-kind.md).
+
 **Ingest.** *Composition: store, plan.* The off-main-actor stage that
 decodes response bytes straight into a change set by following a plan.
 
 **Preload.** *Composition: operation value, environment.* Relay: starting a
 request on user intent, before the destination renders. Here:
 `preload(operationValue)`; the destination's handle dedupes against it.
+
+**Fetch.** *Composition: operation value, environment, transport.* Relay's
+word: `fetchQuery`, and the fetch policies that say when one is made. Here:
+one request for an operation's data, from the transport through the ingest
+to the commit. A handle shows its last fetch as a value *(planned)*: idle,
+in flight, or failed, with the [failure](#runtime) and when it failed. Not a
+phase: the phase is what the data deserves, and the fetch is what the
+network did. See [the decision](decisions/a-handle-derives-its-phase.md).
+
+**Failure.** *Composition: transport, environment, phase.* A plain English
+word: GraphQL has *request error* and *field error* for the server's part
+and no word for the client's. Here *(planned)*: what a fetch or a stream
+that did not deliver says, in one of a closed set of kinds: the
+transport's, a [request error](#runtime), a malformed response, the
+environment's. The transport's kind carries what the transport threw,
+unchanged. The phase reads it when there is no data, and the events the
+runtime reports, proposed apart, classify by it. Spelled today as
+`any Error`. See [the decision](decisions/a-failure-says-its-kind.md).
 
 **Fetch policy.** *Composition: store, operation value, environment.*
 Relay's four, as `@Query("…", fetchPolicy:)`: `storeOrNetwork`
