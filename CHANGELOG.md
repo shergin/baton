@@ -5,6 +5,10 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- A query or subscription value's `resolution`, the handle a view resolved
+  it to, is the mechanism's: declared behind `@_spi(Generated)` on the
+  protocols and in generated code, read through `phase`, `fetch`,
+  `isStale` and the rest as before.
 - `Lens.typeName` is gone: a line of generated code per lens and a public
   requirement, read by nothing. Format 15.
 - A fragment no operation reaches, directly or through another fragment,

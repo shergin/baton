@@ -63,7 +63,7 @@ fn value_members(
     }
     if let Some(handle) = resolution {
         writer.line(format!(
-            "public var resolution: {}<Self>? = nil",
+            "@_spi(Generated) public var resolution: {}<Self>? = nil",
             SwiftType::runtime(handle)
         ));
     }

@@ -97,7 +97,7 @@ nonisolated public struct TestStrict_character: Baton.Lens {
 nonisolated public struct TestNoteAdded: Baton.Subscription {
     public var characterId: String
     public var connections: [String]
-    public var resolution: Baton.SubscriptionHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.SubscriptionHandle<Self>? = nil
 
     public init(characterId: String, connections: [String]) {
         self.characterId = characterId
@@ -176,7 +176,7 @@ subscription TestNoteAdded(
 /// Operation value for `query TestNullsOnError`.
 nonisolated public struct TestNullsOnError: Baton.Query {
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String) {
         self.id = id
@@ -229,7 +229,7 @@ query TestNullsOnError(
 /// Operation value for `query TestOverlapQuery`.
 nonisolated public struct TestOverlapQuery: Baton.Query {
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String) {
         self.id = id
@@ -315,7 +315,7 @@ fragment TestAppearances_character on Character {
 /// Operation value for `query TestProfileQuery`.
 nonisolated public struct TestProfileQuery: Baton.Query {
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String) {
         self.id = id
@@ -429,7 +429,7 @@ fragment TestStrict_character on Character {
 /// Operation value for `query TestRosterQuery`.
 nonisolated public struct TestRosterQuery: Baton.Query {
     public var page: Int?
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(page: Int? = nil) {
         self.page = page
@@ -501,7 +501,7 @@ query TestRosterQuery(
 /// Operation value for `query TestStrictDeferred`.
 nonisolated public struct TestStrictDeferred: Baton.Query {
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String) {
         self.id = id
@@ -603,7 +603,7 @@ fragment TestAppearances_character on Character {
 /// Operation value for `query TestStrictQuery`.
 nonisolated public struct TestStrictQuery: Baton.Query {
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String) {
         self.id = id
@@ -687,7 +687,7 @@ query TestStrictQuery(
 /// Operation value for `query TestThrowingSpread`.
 nonisolated public struct TestThrowingSpread: Baton.Query {
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String) {
         self.id = id

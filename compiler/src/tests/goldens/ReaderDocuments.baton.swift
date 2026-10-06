@@ -131,7 +131,7 @@ nonisolated public struct TestThrowingOrigin_character: Baton.Lens {
 /// Operation value for `query TestCaughtEpisodes`.
 nonisolated public struct TestCaughtEpisodes: Baton.Query {
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String) {
         self.id = id
@@ -210,7 +210,7 @@ query TestCaughtEpisodes(
 /// Operation value for `query TestCaughtPartQuery`.
 nonisolated public struct TestCaughtPartQuery: Baton.Query {
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String) {
         self.id = id
@@ -310,7 +310,7 @@ fragment TestCaughtAppearances_character on Character {
 /// Operation value for `query TestCollidingErrors`.
 nonisolated public struct TestCollidingErrors: Baton.Query {
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String) {
         self.id = id
@@ -419,7 +419,7 @@ query TestCollidingErrors(
 /// Operation value for `query TestCollidingRequired`.
 nonisolated public struct TestCollidingRequired: Baton.Query {
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String) {
         self.id = id
@@ -508,7 +508,7 @@ query TestCollidingRequired(
 /// Operation value for `query TestFilteredCharacters`.
 nonisolated public struct TestFilteredCharacters: Baton.Query {
     public var filters: [FilterCharacter]
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(filters: [FilterCharacter]) {
         self.filters = filters
@@ -563,7 +563,7 @@ query TestFilteredCharacters(
 nonisolated public struct TestKeywordVariables: Baton.Query {
     public var `where`: String
     public var `in`: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(`where`: String, `in`: String) {
         self.`where` = `where`
@@ -643,7 +643,7 @@ query TestKeywordVariables(
 /// Operation value for `query TestLoggedOrigin`.
 nonisolated public struct TestLoggedOrigin: Baton.Query {
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String) {
         self.id = id
@@ -732,7 +732,7 @@ query TestLoggedOrigin(
 /// Operation value for `query TestRequiredOrigin`.
 nonisolated public struct TestRequiredOrigin: Baton.Query {
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String) {
         self.id = id
@@ -821,7 +821,7 @@ query TestRequiredOrigin(
 /// Operation value for `query TestReservedNames`.
 nonisolated public struct TestReservedNames: Baton.Query {
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String) {
         self.id = id
@@ -939,7 +939,7 @@ fragment TestNotes_character_35kO5h on Character {
 /// Operation value for `query TestStandaloneFragmentsQuery`.
 nonisolated public struct TestStandaloneFragmentsQuery: Baton.Query {
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String) {
         self.id = id
@@ -1038,7 +1038,7 @@ fragment TestThrowingOrigin_character on Character {
 /// Operation value for `query TestStrictEpisodes`.
 nonisolated public struct TestStrictEpisodes: Baton.Query {
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String) {
         self.id = id
@@ -1147,7 +1147,7 @@ query TestStrictEpisodes(
 /// Operation value for `query TestStrictOrigin`.
 nonisolated public struct TestStrictOrigin: Baton.Query {
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String) {
         self.id = id
@@ -1256,7 +1256,7 @@ query TestStrictOrigin(
 /// Operation value for `query TestSwiftNames`.
 nonisolated public struct TestSwiftNames: Baton.Query {
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String) {
         self.id = id
@@ -1538,7 +1538,7 @@ query TestSwiftNames(
 /// Operation value for `query TestThrowingNode`.
 nonisolated public struct TestThrowingNode: Baton.Query {
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String) {
         self.id = id
@@ -1649,7 +1649,7 @@ query TestThrowingNode(
 /// Operation value for `query TestTwoFieldPartQuery`.
 nonisolated public struct TestTwoFieldPartQuery: Baton.Query {
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String) {
         self.id = id
@@ -1730,7 +1730,7 @@ fragment TestOriginAndEpisode_character on Character {
 nonisolated public struct TestTwoScopes: Baton.Query {
     public var a: String
     public var b: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(a: String, b: String) {
         self.a = a
@@ -1883,7 +1883,7 @@ fragment TestNotes_character_41grAF on Character {
 /// Operation value for `query TestUncaughtPartQuery`.
 nonisolated public struct TestUncaughtPartQuery: Baton.Query {
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String) {
         self.id = id

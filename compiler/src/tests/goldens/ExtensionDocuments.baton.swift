@@ -4,7 +4,7 @@ import Foundation
 
 /// Operation value for `query TestDrafts`.
 nonisolated public struct TestDrafts: Baton.Query {
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init() {
     }
@@ -78,7 +78,7 @@ query TestDrafts {
 /// Operation value for `query TestPinnedCharacter`.
 nonisolated public struct TestPinnedCharacter: Baton.Query {
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String) {
         self.id = id

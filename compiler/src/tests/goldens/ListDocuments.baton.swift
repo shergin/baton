@@ -1062,7 +1062,7 @@ extension TestAddNoteNodeOfAnotherType.Action {
 /// Operation value for `query TestAliasQuery`.
 nonisolated public struct TestAliasQuery: Baton.Query {
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String) {
         self.id = id
@@ -1125,7 +1125,7 @@ nonisolated public struct TestAuthorNotesPaginationQuery: Baton.Query {
     public var count: Int?
     public var cursor: String?
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(count: Int? = nil, cursor: String? = nil, id: String) {
         self.count = count
@@ -1235,7 +1235,7 @@ fragment TestAuthorNotes_note_1G22uz on Note {
 /// Operation value for `query TestAuthorNotesQuery`.
 nonisolated public struct TestAuthorNotesQuery: Baton.Query {
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String) {
         self.id = id
@@ -1341,7 +1341,7 @@ nonisolated public struct TestDeferredNotesPaginationQuery: Baton.Query {
     public var count: Int?
     public var cursor: String?
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(count: Int? = nil, cursor: String? = nil, id: String) {
         self.count = count
@@ -1536,7 +1536,7 @@ nonisolated public struct TestHiddenNotesPaginationQuery: Baton.Query {
     public var count: Int?
     public var cursor: String?
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(count: Int? = nil, cursor: String? = nil, id: String) {
         self.count = count
@@ -1646,7 +1646,7 @@ fragment TestHiddenNotes_character_1G22uz on Character {
 /// Operation value for `query TestHiddenNotesQuery`.
 nonisolated public struct TestHiddenNotesQuery: Baton.Query {
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String) {
         self.id = id
@@ -1743,7 +1743,7 @@ nonisolated public struct TestHiddenRecentNotesPaginationQuery: Baton.Query {
     public var count: Int?
     public var cursor: String?
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(count: Int? = nil, cursor: String? = nil, id: String) {
         self.count = count
@@ -1849,7 +1849,7 @@ fragment TestHiddenRecentNotes_character_1G22uz on Character {
 /// Operation value for `query TestHiddenRecentNotesQuery`.
 nonisolated public struct TestHiddenRecentNotesQuery: Baton.Query {
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String) {
         self.id = id
@@ -1942,7 +1942,7 @@ nonisolated public struct TestNotesPaginationQuery: Baton.Query {
     public var count: Int?
     public var cursor: String?
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(count: Int? = nil, cursor: String? = nil, id: String) {
         self.count = count
@@ -2048,7 +2048,7 @@ fragment TestNotes_character_1G22uz on Character {
 /// Operation value for `query TestNotesQuery`.
 nonisolated public struct TestNotesQuery: Baton.Query {
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String) {
         self.id = id
@@ -2140,7 +2140,7 @@ fragment TestNotes_character on Character {
 nonisolated public struct TestNotesSizedQuery: Baton.Query {
     public var id: String
     public var size: Int?
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String, size: Int? = nil) {
         self.id = id
@@ -2236,7 +2236,7 @@ nonisolated public struct TestRecentNotesPaginationQuery: Baton.Query {
     public var count: Int?
     public var cursor: String?
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(count: Int? = nil, cursor: String? = nil, id: String) {
         self.count = count
@@ -2338,7 +2338,7 @@ fragment TestRecentNotes_character_1G22uz on Character {
 /// Operation value for `query TestRecentNotesQuery`.
 nonisolated public struct TestRecentNotesQuery: Baton.Query {
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String) {
         self.id = id
@@ -2520,7 +2520,7 @@ extension TestRemoveNote.Action {
 /// Operation value for `query TestTwoPagesQuery`.
 nonisolated public struct TestTwoPagesQuery: Baton.Query {
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String) {
         self.id = id

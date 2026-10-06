@@ -4,7 +4,7 @@ import Foundation
 
 /// Operation value for `query TestCharacterSecret`.
 nonisolated public struct TestCharacterSecret: Baton.Query {
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init() {
     }
@@ -70,7 +70,7 @@ query TestCharacterSecret {
 /// Operation value for `query TestSecrets`.
 nonisolated public struct TestSecrets: Baton.Query {
     public var code: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(code: String) {
         self.code = code

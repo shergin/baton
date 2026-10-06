@@ -3406,7 +3406,7 @@ nonisolated public struct HostileArgumentsRefetchQuery: Baton.Query {
     public var `where`: Bool?
     public var `while`: Bool?
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(AbstractSlots: Bool? = nil, Action: Bool? = nil, `Any`: Bool? = nil, Bool: Bool? = nil, Double: Bool? = nil, Fragment: Bool? = nil, Hasher: Bool? = nil, Int: Bool? = nil, MainActor: Bool? = nil, Op: Bool? = nil, Operation: Bool? = nil, OptimisticResponse: Bool? = nil, Optional: Bool? = nil, Owner: Bool? = nil, `Protocol`: Bool? = nil, Query: Bool? = nil, RefetchQuery: Bool? = nil, Result: Bool? = nil, `Self`: Bool? = nil, Sendable: Bool? = nil, Set: Bool? = nil, Spread: Bool? = nil, String: Bool? = nil, Swift: Bool? = nil, `Type`: Bool? = nil, `_`: Bool? = nil, anchor: Bool? = nil, `any`: Bool? = nil, `as`: Bool? = nil, `associatedtype`: Bool? = nil, async: Bool? = nil, `await`: Bool? = nil, `borrowing`: Bool? = nil, bound: Bool? = nil, `break`: Bool? = nil, bubbles: Bool? = nil, cacheExpiration: Bool? = nil, callAsFunction: Bool? = nil, `case`: Bool? = nil, `catch`: Bool? = nil, caught: Bool? = nil, child: Bool? = nil, `class`: Bool? = nil, commit: Bool? = nil, connection: Bool? = nil, connectionID: Bool? = nil, consume: Bool? = nil, `consuming`: Bool? = nil, `continue`: Bool? = nil, copy: Bool? = nil, count: Bool? = nil, `default`: Bool? = nil, `defer`: Bool? = nil, `deinit`: Bool? = nil, discard: Bool? = nil, `do`: Bool? = nil, document: Bool? = nil, `each`: Bool? = nil, `else`: Bool? = nil, `enum`: Bool? = nil, errorBehavior: Bool? = nil, errors: Bool? = nil, `extension`: Bool? = nil, `fallthrough`: Bool? = nil, `false`: Bool? = nil, fieldErrors: Bool? = nil, fields: Bool? = nil, `fileprivate`: Bool? = nil, `for`: Bool? = nil, format: Bool? = nil, `func`: Bool? = nil, `guard`: Bool? = nil, hasDeferred: Bool? = nil, hasNext: Bool? = nil, hasPrevious: Bool? = nil, hash: Bool? = nil, hasher: Bool? = nil, `if`: Bool? = nil, `import`: Bool? = nil, `in`: Bool? = nil, `init`: Bool? = nil, `inout`: Bool? = nil, `internal`: Bool? = nil, `is`: Bool? = nil, isLoadingNext: Bool? = nil, isLoadingPrevious: Bool? = nil, isPresent: Bool? = nil, `isolated`: Bool? = nil, `let`: Bool? = nil, lhs: Bool? = nil, loadNext: Bool? = nil, loadPrevious: Bool? = nil, missing: Bool? = nil, missingRequiredField: Bool? = nil, name: Bool? = nil, `nil`: Bool? = nil, nodes: Bool? = nil, `open`: Bool? = nil, `operator`: Bool? = nil, optimistic: Bool? = nil, plan: Bool? = nil, `precedencegroup`: Bool? = nil, `private`: Bool? = nil, `protocol`: Bool? = nil, `public`: Bool? = nil, recordID: Bool? = nil, refetch: Bool? = nil, refetchable: Bool? = nil, `repeat`: Bool? = nil, `rethrows`: Bool? = nil, retry: Bool? = nil, `return`: Bool? = nil, rhs: Bool? = nil, satisfied: Bool? = nil, schemaDigest: Bool? = nil, `self` selfValue2: Bool? = nil, selfValue: Bool? = nil, `sending`: Bool? = nil, `some`: Bool? = nil, `static`: Bool? = nil, `struct`: Bool? = nil, `subscript`: Bool? = nil, subscription: Bool? = nil, `super`: Bool? = nil, `switch`: Bool? = nil, text: Bool? = nil, then: Bool? = nil, `throw`: Bool? = nil, throwing: Bool? = nil, `throws`: Bool? = nil, throwsOnFieldError: Bool? = nil, transient: Bool? = nil, `true`: Bool? = nil, `try`: Bool? = nil, `typealias`: Bool? = nil, unsafe: Bool? = nil, `var`: Bool? = nil, variable: Bool? = nil, `where`: Bool? = nil, `while`: Bool? = nil, id: String) {
         self.AbstractSlots = AbstractSlots
@@ -4035,7 +4035,7 @@ fragment HostileArguments_character_YwmvO on Character {
 /// Operation value for `query HostileBodiesRefetchQuery`.
 nonisolated public struct HostileBodiesRefetchQuery: Baton.Query {
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String) {
         self.id = id
@@ -4428,7 +4428,7 @@ nonisolated public struct HostileConnectionRefetchQuery: Baton.Query {
     public var count: Int?
     public var cursor: String?
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(count: Int? = nil, cursor: String? = nil, id: String) {
         self.count = count
@@ -4809,7 +4809,7 @@ fragment HostileConnection_character_1G22uz on Character {
 
 /// Operation value for `query HostileHidden`.
 nonisolated public struct HostileHidden: Baton.Query {
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init() {
     }
@@ -11125,7 +11125,7 @@ extension HostilePayload.Action {
 
 /// Operation value for `query HostileReach`.
 nonisolated public struct HostileReach: Baton.Query {
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init() {
     }
@@ -12957,7 +12957,7 @@ fragment HostileSpreads_character on Character {
 
 /// Operation value for `query HostileRequired`.
 nonisolated public struct HostileRequired: Baton.Query {
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init() {
     }
@@ -13637,7 +13637,7 @@ nonisolated public struct HostileSubscriptionVariables: Baton.Subscription {
     public var MainActor: Bool
     public var Hasher: Bool
     public var Sendable: Bool
-    public var resolution: Baton.SubscriptionHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.SubscriptionHandle<Self>? = nil
 
     public init(`Type`: Bool, `Protocol`: Bool, `Any`: Bool, `self` selfValue2: Bool, `init`: Bool, `deinit`: Bool, `subscript`: Bool, `class`: Bool, `struct`: Bool, `enum`: Bool, `func`: Bool, `var`: Bool, `let`: Bool, `import`: Bool, `extension`: Bool, `operator`: Bool, `static`: Bool, `default`: Bool, `case`: Bool, `switch`: Bool, `if`: Bool, `else`: Bool, `for`: Bool, `in`: Bool, `while`: Bool, `repeat`: Bool, `return`: Bool, `break`: Bool, `continue`: Bool, `where`: Bool, `is`: Bool, `as`: Bool, `try`: Bool, `throw`: Bool, `throws`: Bool, `guard`: Bool, `defer`: Bool, `do`: Bool, `catch`: Bool, `true`: Bool, `false`: Bool, `nil`: Bool, `super`: Bool, `internal`: Bool, `private`: Bool, `public`: Bool, `fileprivate`: Bool, `open`: Bool, `inout`: Bool, `typealias`: Bool, `associatedtype`: Bool, `protocol`: Bool, `some`: Bool, `any`: Bool, `rethrows`: Bool, `fallthrough`: Bool, `precedencegroup`: Bool, `_`: Bool, `Self`: Bool, async: Bool, `borrowing`: Bool, consume: Bool, `consuming`: Bool, copy: Bool, discard: Bool, `each`: Bool, `isolated`: Bool, `sending`: Bool, then: Bool, unsafe: Bool, `await`: Bool, anchor: Bool, recordID: Bool, satisfied: Bool, missingRequiredField: Bool, fieldErrors: Bool, isPresent: Bool, throwing: Bool, caught: Bool, refetchable: Bool, refetch: Bool, connection: Bool, nodes: Bool, hasNext: Bool, hasPrevious: Bool, isLoadingNext: Bool, isLoadingPrevious: Bool, connectionID: Bool, loadNext: Bool, loadPrevious: Bool, bound: Bool, errors: Bool, child: Bool, missing: Bool, count: Bool, fields: Bool, lhs: Bool, rhs: Bool, hasher: Bool, optimistic: Bool, selfValue: Bool, Fragment: Bool, Spread: Bool, Owner: Bool, Query: Bool, Operation: Bool, RefetchQuery: Bool, name: Bool, document: Bool, text: Bool, plan: Bool, errorBehavior: Bool, throwsOnFieldError: Bool, bubbles: Bool, hasDeferred: Bool, cacheExpiration: Bool, Action: Bool, OptimisticResponse: Bool, hash: Bool, commit: Bool, callAsFunction: Bool, Op: Bool, variable: Bool, phase: Bool, isRefreshing: Bool, isStale: Bool, retry: Bool, Sites: Bool, AbstractSlots: Bool, schemaDigest: Bool, format: Bool, transient: Bool, Swift: Bool, Set: Bool, Result: Bool, Optional: Bool, String: Bool, Int: Bool, Double: Bool, Bool: Bool, MainActor: Bool, Hasher: Bool, Sendable: Bool) {
         self.`Type` = `Type`
@@ -14462,7 +14462,7 @@ nonisolated public struct HostileVariables: Baton.Query {
     public var MainActor: String
     public var Hasher: String
     public var Sendable: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(`Type`: String, `Protocol`: String, `Any`: String, `self` selfValue2: String, `init`: String, `deinit`: String, `subscript`: String, `class`: String, `struct`: String, `enum`: String, `func`: String, `var`: String, `let`: String, `import`: String, `extension`: String, `operator`: String, `static`: String, `default`: String, `case`: String, `switch`: String, `if`: String, `else`: String, `for`: String, `in`: String, `while`: String, `repeat`: String, `return`: String, `break`: String, `continue`: String, `where`: String, `is`: String, `as`: String, `try`: String, `throw`: String, `throws`: String, `guard`: String, `defer`: String, `do`: String, `catch`: String, `true`: String, `false`: String, `nil`: String, `super`: String, `internal`: String, `private`: String, `public`: String, `fileprivate`: String, `open`: String, `inout`: String, `typealias`: String, `associatedtype`: String, `protocol`: String, `some`: String, `any`: String, `rethrows`: String, `fallthrough`: String, `precedencegroup`: String, `_`: String, `Self`: String, async: String, `borrowing`: String, consume: String, `consuming`: String, copy: String, discard: String, `each`: String, `isolated`: String, `sending`: String, then: String, unsafe: String, `await`: String, anchor: String, recordID: String, satisfied: String, missingRequiredField: String, fieldErrors: String, isPresent: String, throwing: String, caught: String, refetchable: String, refetch: String, connection: String, nodes: String, hasNext: String, hasPrevious: String, isLoadingNext: String, isLoadingPrevious: String, connectionID: String, loadNext: String, loadPrevious: String, bound: String, errors: String, child: String, missing: String, count: String, fields: String, lhs: String, rhs: String, hasher: String, optimistic: String, selfValue: String, Fragment: String, Spread: String, Owner: String, Query: String, Operation: String, RefetchQuery: String, name: String, document: String, text: String, plan: String, errorBehavior: String, throwsOnFieldError: String, bubbles: String, hasDeferred: String, cacheExpiration: String, Action: String, OptimisticResponse: String, hash: String, commit: String, callAsFunction: String, Op: String, variable: String, retry: String, subscription: String, Sites: String, Guards: String, AbstractSlots: String, schemaDigest: String, format: String, transient: String, Swift: String, Set: String, Result: String, Optional: String, String: String, Int: String, Double: String, Bool: String, MainActor: String, Hasher: String, Sendable: String) {
         self.`Type` = `Type`

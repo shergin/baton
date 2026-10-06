@@ -14,7 +14,7 @@ nonisolated public struct TestConditions: Baton.Query {
     public var id: String
     public var withOrigin: Bool
     public var hideStatus: Bool
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String, withOrigin: Bool, hideStatus: Bool) {
         self.id = id
@@ -101,7 +101,7 @@ query TestConditions(
 /// Operation value for `query TestFoldedNode`.
 nonisolated public struct TestFoldedNode: Baton.Query {
     public var name: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(name: String) {
         self.name = name
@@ -166,7 +166,7 @@ query TestFoldedNode(
 /// Operation value for `query TestNamedSpread`.
 nonisolated public struct TestNamedSpread: Baton.Query {
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String) {
         self.id = id
@@ -241,7 +241,7 @@ fragment TestNamed_named on Named {
 /// Operation value for `query TestNodeDeferred`.
 nonisolated public struct TestNodeDeferred: Baton.Query {
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String) {
         self.id = id
@@ -337,7 +337,7 @@ fragment TestAppearances_character on Character {
 /// Operation value for `query TestNodeFields`.
 nonisolated public struct TestNodeFields: Baton.Query {
     public var id: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String) {
         self.id = id
@@ -408,7 +408,7 @@ query TestNodeFields(
 nonisolated public struct TestStrictConditions: Baton.Query {
     public var id: String
     public var withStatus: Bool
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String, withStatus: Bool) {
         self.id = id
@@ -531,7 +531,7 @@ query TestStrictConditions(
 nonisolated public struct TestTwoSpreads: Baton.Query {
     public var id: String
     public var again: Bool
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String, again: Bool) {
         self.id = id
@@ -600,7 +600,7 @@ fragment TestRow_character on Character {
 /// Operation value for `query TestUnion`.
 nonisolated public struct TestUnion: Baton.Query {
     public var name: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(name: String) {
         self.name = name

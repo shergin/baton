@@ -5,7 +5,7 @@ import Foundation
 /// Operation value for `query TestAssetNameQuery`.
 nonisolated public struct TestAssetNameQuery: Baton.Query {
     public var uuid: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(uuid: String) {
         self.uuid = uuid
@@ -60,7 +60,7 @@ query TestAssetNameQuery(
 /// Operation value for `query TestAssetQuery`.
 nonisolated public struct TestAssetQuery: Baton.Query {
     public var uuid: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(uuid: String) {
         self.uuid = uuid
@@ -130,7 +130,7 @@ query TestAssetQuery(
 
 /// Operation value for `query TestAssetsQuery`.
 nonisolated public struct TestAssetsQuery: Baton.Query {
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init() {
     }
@@ -185,7 +185,7 @@ query TestAssetsQuery {
 nonisolated public struct TestQuoteQuery: Baton.Query {
     public var base: String
     public var quote: String
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(base: String, quote: String) {
         self.base = base
@@ -244,7 +244,7 @@ query TestQuoteQuery(
 
 /// Operation value for `query TestQuotesQuery`.
 nonisolated public struct TestQuotesQuery: Baton.Query {
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init() {
     }

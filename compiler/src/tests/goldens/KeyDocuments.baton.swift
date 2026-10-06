@@ -32,7 +32,7 @@ nonisolated public struct TestKeyArguments_query: Baton.Lens {
 nonisolated public struct TestKeys: Baton.Query {
     public var id: String
     public var name: String?
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String, name: String? = nil) {
         self.id = id
@@ -153,7 +153,7 @@ query TestKeys(
 nonisolated public struct TestNoteCounts: Baton.Query {
     public var page: Int?
     public var count: Int?
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(page: Int? = nil, count: Int? = nil) {
         self.page = page
@@ -247,7 +247,7 @@ query TestNoteCounts(
 nonisolated public struct TestSpreadKeys: Baton.Query {
     public var id: String
     public var name: String?
-    public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init(id: String, name: String? = nil) {
         self.id = id
