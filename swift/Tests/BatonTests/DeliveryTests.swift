@@ -83,6 +83,31 @@ struct DeliveryTests {
         return ({ counter.fired }, track)
     }
 
+    /// A response like `character-errors` whose image error carries
+    /// `extensions` of every JSON kind and whose location error carries none.
+    /// No fixture under `spec/` has `extensions`.
+    static let extensionsResponse = #"{"data":{"character":{"id":"1","name":"Rick Sanchez","origin":{"id":"1","name":"Earth (C-137)"},"status":"Alive","image":null,"location":{"id":"20","name":null,"dimension":"Replacement Dimension"},"gender":null,"species":"Human","type":null}},"errors":[{"message":"image service unavailable","extensions":{"code":"FORBIDDEN","retryAfter":30,"ratio":0.5,"flags":[true,null],"nested":{"a":"b"}},"path":["character","image"]},{"message":"location name redacted","path":["character","location","name"]}]}"#
+
+    /// The `extensions` of `extensionsResponse`'s image error, as a variable.
+    static let extensions: Variable = .object([
+        "code": .string("FORBIDDEN"),
+        "retryAfter": .int(30),
+        "ratio": .double(0.5),
+        "flags": .list([.bool(true), .null]),
+        "nested": .object(["a": .string("b")]),
+    ])
+
+    /// The case of a subscription's stream, with the failure that ended it.
+    func state(_ stream: Baton.Stream) -> String {
+        switch stream {
+        case .idle: "idle"
+        case .connecting: "connecting"
+        case .open: "open"
+        case .ended(nil): "ended"
+        case .ended(.some(let failure)): "ended(\(failure))"
+        }
+    }
+
     func profile(_ environment: Environment) throws -> TestProfileQuery.Data.Character {
         let data = TestProfileQuery.Data(anchor: Anchor(record: environment.store.root, variables: TestProfileQuery(id: "1").variables, store: environment.store))
         return try #require(data.character)
@@ -334,6 +359,56 @@ struct DeliveryTests {
             return
         }
         #expect(errors.messages == ["not authorized"])
+    }
+
+    @Test("a field error's extensions read back through @catch as the JSON value the server sent, and an error without them reads nil")
+    func fieldErrorExtensions() async throws {
+        let environment = Environment(transport: RecordedTransport([TestProfileQuery.name: Data(Self.extensionsResponse.utf8)]))
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestProfileQuery(id: "1"))
+        handle.retain()
+        await handle.settle()
+        let character = try #require(try profile(environment).testProfile)
+        guard case .failure(let image) = character.image else {
+            Issue.record("expected the image error")
+            return
+        }
+        #expect(image.errors.map(\.extensions) == [Self.extensions])
+        #expect(image.errors.map(\.message) == ["image service unavailable"])
+        guard case .failure(let location) = character.location else {
+            Issue.record("expected the error inside location")
+            return
+        }
+        #expect(location.errors.map(\.extensions) == [nil])
+    }
+
+    @Test("a response with errors and no data fails the fetch with GraphQL errors that keep their extensions beside their messages")
+    func requestErrorExtensions() async throws {
+        let response = #"{"data":null,"errors":[{"message":"not authorized","extensions":{"code":"FORBIDDEN","retryAfter":30,"ratio":0.5,"flags":[true,null],"nested":{"a":"b"}}},{"message":"try again"}]}"#
+        let environment = Environment(transport: RecordedTransport([TestProfileQuery.name: Data(response.utf8)]))
+        let handle = environment.handle(for: TestProfileQuery(id: "1"))
+        handle.retain()
+        await handle.settle()
+        guard case .failed(let error) = handle.phase, let errors = error as? GraphQLErrors else {
+            Issue.record("expected .failed(GraphQLErrors), got \(handle.phase)")
+            return
+        }
+        #expect(errors.messages == ["not authorized", "try again"])
+        #expect(errors.errors.map(\.extensions) == [Self.extensions, nil])
+        #expect(errors.errors.map(\.path) == ["", ""])
+    }
+
+    @Test("the scanner reads any JSON value as a variable: objects, lists, strings, booleans, null, ints, and doubles for fractions, exponents and numbers past Int")
+    func variablesFromJSON() throws {
+        let json = #"{"code":"FORBIDDEN","retryAfter":30,"ratio":0.5,"flags":[true,null],"nested":{"a":"b"}}"#
+        #expect(try Ingest.variable(Data(json.utf8)) == Self.extensions)
+        #expect(try Ingest.variable(Data(Self.extensions.json.utf8)) == Self.extensions, "a value's own JSON text reads back as the value")
+        #expect(try Ingest.variable(Data("1e3".utf8)) == .double(1000))
+        #expect(try Ingest.variable(Data("-7".utf8)) == .int(-7))
+        guard case .double = try Ingest.variable(Data("99999999999999999999".utf8)) else {
+            Issue.record("a number past Int reads as a double")
+            return
+        }
     }
 
     @Test("onError is sent as the operation names it, and not at all when baton.json names none")
@@ -651,6 +726,72 @@ struct DeliveryTests {
         #expect(live.isActive)
         live.release()
         live.release()
+    }
+
+    @Test("a subscription's stream is idle until retained, connecting until its first event, open after it, and idle once released")
+    func streamBeforeAndAfterTheFirstEvent() async throws {
+        let events = Events()
+        let environment = Environment(transport: SilentTransport(), subscriptions: events)
+        environment.store.reportMissing = nil
+        let live = environment.subscriptionHandle(for: TestNoteAdded(characterId: "events-\(#line)", connections: []))
+        #expect(state(live.stream) == "idle")
+        #expect(!live.isActive)
+        live.retain()
+        #expect(state(live.stream) == "connecting")
+        #expect(live.isActive)
+        await until { events.continuation != nil }
+        #expect(state(live.stream) == "connecting", "a stream the transport opened has sent nothing yet")
+        events.send(fixture("note-added-1"))
+        await until { live.events == 1 }
+        #expect(state(live.stream) == "open")
+        #expect(live.isActive)
+        live.release()
+        #expect(state(live.stream) == "idle")
+        #expect(!live.isActive)
+    }
+
+    @Test("a stream the server completes reads ended with no failure, a retry reads connecting, and an error frame ends it with the request failure holding the frame's errors")
+    func streamEnds() async throws {
+        let server = try SocketServer()
+        let socket = GraphQLTransportWebSocket(url: try await server.start())
+        defer { server.stop() }
+        let environment = Environment(transport: SilentTransport(), subscriptions: socket)
+        environment.store.reportMissing = nil
+        let live = environment.subscriptionHandle(for: TestNoteAdded(characterId: "events-\(#line)", connections: []))
+        live.retain()
+        await until { server.count(of: "subscribe") == 1 }
+        let first = try #require(server.ids(of: "subscribe").first)
+        server.send(#"{"id":"\#(first)","type":"next","payload":{"data":{"noteAdded":null}}}"#)
+        await until { live.events == 1 }
+        #expect(state(live.stream) == "open")
+
+        server.send(#"{"id":"\#(first)","type":"complete"}"#)
+        await until { !live.isActive }
+        #expect(state(live.stream) == "ended")
+        #expect(live.error == nil)
+
+        live.retry()
+        #expect(state(live.stream) == "connecting")
+        #expect(live.isActive)
+        await until { server.count(of: "subscribe") == 2 }
+        let second = try #require(server.ids(of: "subscribe").last)
+        server.send(#"{"id":"\#(second)","type":"error","payload":[{"message":"bad subscription","path":["noteAdded"],"extensions":{"code":"FORBIDDEN","retryAfter":30,"ratio":0.5,"flags":[true,null],"nested":{"a":"b"}}}]}"#)
+        await until { !live.isActive }
+        guard case .ended(.request(let errors)?) = live.stream else {
+            Issue.record("expected the stream ended by a request failure, got \(state(live.stream))")
+            live.release()
+            return
+        }
+        #expect(errors.messages == ["bad subscription"])
+        #expect(errors.errors.map(\.path) == ["noteAdded"])
+        #expect(errors.errors.map(\.extensions) == [Self.extensions])
+        #expect((live.error as? GraphQLErrors)?.messages == ["bad subscription"], "the error that ended the stream is the handle's error")
+
+        live.retry()
+        #expect(state(live.stream) == "connecting", "a retry after a failure reads connecting again")
+        await until { server.count(of: "subscribe") == 3 }
+        live.release()
+        #expect(state(live.stream) == "idle")
     }
 
     @Test("the socket closes when its last subscription ends, and an error frame's GraphQL errors are its messages")

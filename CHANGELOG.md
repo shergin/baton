@@ -11,6 +11,12 @@ are expected and listed without apology.
   for an error that ended it; `isActive` is connecting or open. A
   subscription has no loading, since it has no data of its own to wait for,
   so this is not a phase.
+- An error keeps its `extensions`. `FieldError.extensions` is the server's
+  `extensions` for the error as a JSON value (`Variable`), kept in memory
+  and in the image, so an app branches on the server's code and never on
+  its message; `GraphQLErrors.errors` carries a request error's errors
+  whole, with `messages` still readable. The image's row format moves to
+  3, so an image written before starts again, as a cache does.
 - A handle's fetch is a value beside its phase. `fetch` on a query value
   and on `OperationHandle` reads `.idle`, `.inFlight`, or
   `.failed(failure, at:)` with the failure and when it failed, so a fetch

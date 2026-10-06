@@ -10,10 +10,14 @@ public struct FieldError: Error, Hashable, Sendable, CustomStringConvertible, Lo
     public let message: String
     /// The response path, dotted, with list indices: `character.episode.2.name`.
     public let path: String
+    /// The server's `extensions` for the error, a JSON value, when it sent
+    /// any: an app branches on a code in it, never on the message.
+    public let extensions: Variable?
 
-    public init(message: String, path: String) {
+    public init(message: String, path: String, extensions: Variable? = nil) {
         self.message = message
         self.path = path
+        self.extensions = extensions
     }
 
     /// The error a `@required(action: THROW)` field that is null raises.
@@ -86,10 +90,21 @@ public enum EnvironmentError: Error, Equatable, Sendable, CustomStringConvertibl
 }
 
 /// A response that carried errors and no data: the request failed as a whole.
+/// The request kind of a `Failure`.
 public struct GraphQLErrors: Error, Sendable, CustomStringConvertible, LocalizedError {
-    public let messages: [String]
+    /// The response's errors: each its message, its path when the server
+    /// gave one and an empty path otherwise, and its `extensions`.
+    public let errors: [FieldError]
 
-    public init(messages: [String]) { self.messages = messages }
+    public init(errors: [FieldError]) { self.errors = errors }
+
+    /// Errors of messages alone.
+    public init(messages: [String]) {
+        errors = messages.map { FieldError(message: $0, path: "") }
+    }
+
+    /// The errors' messages.
+    public var messages: [String] { errors.map(\.message) }
 
     public var description: String { messages.joined(separator: "; ") }
     public var errorDescription: String? { description }

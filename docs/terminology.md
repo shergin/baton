@@ -348,9 +348,9 @@ message and dotted path); a payload that answers the field clears it; either
 change notifies the field. Read through [catch](#documents) and
 [throw on field error](#documents); a plain read sees null. A response with
 errors and no data is a [request error](#runtime), a `GraphQLErrors`
-failure of the fetch. The ingest drops an error's `extensions` today; an
-error that keeps them as a JSON value beside its message and path is
-*(planned)*: see
+failure of the fetch. An error keeps its `extensions`, as a JSON value
+(`Variable`) beside its message and path, in memory and in the image, so
+an app branches on the server's code and never on its message: see
 [A failure says its kind](decisions/a-failure-says-its-kind.md).
 
 **Heal.** *Composition: store, operation value, environment.* Baton's word
@@ -480,10 +480,10 @@ inside `@catch`, optional elsewhere.
 **Request error.** *Composition: transport, phase.* GraphQL's word for an
 error raised before execution begins, which leaves the response no data;
 beside it the specification names the [field error](#store). Here: a
-response of errors and no data fails its fetch with `GraphQLErrors`, which
-keeps the errors' messages alone: the request kind of a
-[failure](#runtime). Its errors keeping their `extensions` is *(planned)*.
-See [the decision](decisions/a-failure-says-its-kind.md).
+response of errors and no data fails its fetch with `GraphQLErrors`, whose
+`errors` keep each error's message, path and `extensions`: the request
+kind of a [failure](#runtime). See
+[the decision](decisions/a-failure-says-its-kind.md).
 
 **Ingest.** *Composition: store, plan.* The off-main-actor stage that
 decodes response bytes straight into a change set by following a plan.

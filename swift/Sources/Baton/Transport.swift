@@ -475,8 +475,10 @@ public actor GraphQLTransportWebSocket: SubscriptionTransport {
             if let id = frame.id {
                 // The payload is the operation's GraphQL errors.
                 let errors = frame.payload.flatMap { try? Ingest.responseErrors($0) } ?? []
-                let messages = errors.isEmpty ? ["subscription error"] : errors.map(\.message)
-                subscribers.removeValue(forKey: id)?.finish(throwing: GraphQLErrors(messages: messages))
+                let failure = errors.isEmpty
+                    ? GraphQLErrors(messages: ["subscription error"])
+                    : GraphQLErrors(errors: errors.map { FieldError(message: $0.message, path: $0.path.map { Ingest.render($0) } ?? "", extensions: $0.extensions) })
+                subscribers.removeValue(forKey: id)?.finish(throwing: failure)
                 closeIfUnused()
             }
         case "complete":

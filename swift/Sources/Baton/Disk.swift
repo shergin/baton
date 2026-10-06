@@ -16,8 +16,9 @@ import Synchronization
 /// write or read.
 final class Disk: @unchecked Sendable {
     /// The row format. A file of another format is discarded. 2: a path key
-    /// under an interface or union ends in the record's concrete type.
-    static let format: Int64 = 2
+    /// under an interface or union ends in the record's concrete type. 3: a
+    /// field error carries its `extensions` as JSON text after its path.
+    static let format: Int64 = 3
     /// Marks the file as an image, so a database of another kind is left alone.
     static let applicationID: Int64 = 0x4241_544E
     /// How many names an image may intern before it starts again: argument
@@ -726,6 +727,9 @@ final class Disk: @unchecked Sendable {
         if let error {
             append(error.message)
             append(error.path)
+            // The extensions as JSON text; empty for none, since a JSON value
+            // is never empty.
+            append(error.extensions?.json ?? "")
         }
     }
 }

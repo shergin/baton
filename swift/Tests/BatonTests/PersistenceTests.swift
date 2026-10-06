@@ -182,6 +182,28 @@ struct PersistenceTests {
         #expect(location.errors.map(\.path) == ["character.location.name"])
     }
 
+    @Test("a field error's extensions survive a launch: @catch reads the value the first launch received, and an error without them reads nil")
+    func fieldErrorExtensionsSurvive() async throws {
+        let first = launch(RecordedTransport([TestProfileQuery.name: Data(DeliveryTests.extensionsResponse.utf8)]))
+        let fetched = first.handle(for: TestProfileQuery(id: "1"))
+        fetched.retain()
+        await fetched.settle()
+        await finish(first)
+
+        let data = try stored(TestProfileQuery(id: "1"), in: launch())
+        let character = try #require(data.character?.testProfile)
+        guard case .failure(let image) = character.image else {
+            Issue.record("the image lost the error")
+            return
+        }
+        #expect(image.errors == [FieldError(message: "image service unavailable", path: "character.image", extensions: DeliveryTests.extensions)])
+        guard case .failure(let location) = character.location else {
+            Issue.record("the image lost the error inside location")
+            return
+        }
+        #expect(location.errors.map(\.extensions) == [nil])
+    }
+
     @Test("a connection's merged pages and a deletion survive a launch, and the loading flag does not")
     func connectionsSurvive() async throws {
         let first = launch(notesTransport())

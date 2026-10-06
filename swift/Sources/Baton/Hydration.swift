@@ -99,8 +99,14 @@ extension Store {
             return nil
         }
         guard tag & RowTag.hasError != 0 else { return (value, nil) }
-        guard let message = reader.string(), let path = reader.string() else { return nil }
-        return (value, FieldError(message: message, path: path))
+        guard let message = reader.string(), let path = reader.string(), let extensions = reader.string() else { return nil }
+        // Extensions the row holds that no longer read are a damaged row.
+        var parsed: Variable?
+        if !extensions.isEmpty {
+            guard let value = try? Ingest.variable(Data(extensions.utf8)) else { return nil }
+            parsed = value
+        }
+        return (value, FieldError(message: message, path: path, extensions: parsed))
     }
 
     /// An element of a stored list of scalars. Lists hold scalars only, so a

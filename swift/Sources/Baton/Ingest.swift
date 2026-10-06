@@ -264,6 +264,8 @@ package enum Ingest {
     package struct ResponseError: Sendable {
         package var message: String
         package var path: [PathSegment]?
+        /// The error's `extensions`, a JSON value, when the server sent any.
+        package var extensions: Variable? = nil
     }
 
     /// One object a later part delivers, at the record its path names.
@@ -315,7 +317,7 @@ package enum Ingest {
             _ = try cursor.object(plan: plan, parent: rootID, storageKey: nil, listIndex: nil, depth: 0, fixedRecord: rootID)
             cursor.changes.group()
             if !errors.isEmpty {
-                cursor.rawErrors = errors.map { ($0.message, $0.path) }
+                cursor.rawErrors = errors
                 cursor.resolveErrors(root: plan, rootID: rootID, below: path)
             }
             return cursor.changes
@@ -340,7 +342,7 @@ package enum Ingest {
         var changes = ChangeSet(bytes: [])
         let record = changes.record(for: key, type: type, entity: entity)
         changes.group()
-        let rendered = errors.map { FieldError(message: $0.message, path: Ingest.render($0.path ?? path)) }
+        let rendered = errors.map { FieldError(message: $0.message, path: Ingest.render($0.path ?? path), extensions: $0.extensions) }
         guard let first = rendered.first else { return changes }
         let fields = plan.variant(for: type).fields.filter { !$0.isTypename }
         // A record of a type the part selects nothing on holds none of them.
@@ -434,6 +436,16 @@ package enum Ingest {
 
     /// Reads an array of GraphQL errors, such as a subscription's `error` frame
     /// carries: messages and paths.
+    /// A JSON value as a variable: an error's `extensions` read back from
+    /// the image.
+    package static func variable(_ data: Data) throws -> Variable {
+        let bytes = [UInt8](data)
+        return try bytes.withUnsafeBufferPointer { buffer in
+            var scanner = Scanner(base: buffer.baseAddress!, count: buffer.count)
+            return try scanner.value()
+        }
+    }
+
     package static func responseErrors(_ data: Data) throws -> [ResponseError] {
         let bytes = [UInt8](data)
         return try bytes.withUnsafeBufferPointer { buffer in
@@ -481,7 +493,7 @@ package enum Ingest {
         /// How deep a selection may nest.
         static let depthLimit = 24
         /// The response's `errors`, as read; resolved against the plan at the end.
-        var rawErrors: [(message: String, path: [PathSegment]?)] = []
+        var rawErrors: [ResponseError] = []
 
         init(base: UnsafePointer<UInt8>, count: Int, changes: ChangeSet) {
             scanner = Scanner(base: base, count: count)
@@ -530,7 +542,9 @@ package enum Ingest {
                 }
             }
             if !sawData {
-                if !rawErrors.isEmpty { throw GraphQLErrors(messages: rawErrors.map(\.message)) }
+                if !rawErrors.isEmpty {
+                    throw GraphQLErrors(errors: rawErrors.map { FieldError(message: $0.message, path: Ingest.render($0.path ?? []), extensions: $0.extensions) })
+                }
                 throw IngestError(offset: position, message: "no data in response")
             }
             changes.group()
@@ -556,7 +570,7 @@ package enum Ingest {
 
         /// The response's `errors` array: messages and paths.
         mutating func errors() throws {
-            rawErrors.append(contentsOf: try scanner.responseErrors().map { ($0.message, $0.path) })
+            rawErrors.append(contentsOf: try scanner.responseErrors())
         }
 
         /// Resolves each error's path through the plan and the entries to the
@@ -565,8 +579,9 @@ package enum Ingest {
         /// does not have, and the error lands on the last field it reached:
         /// with GraphQL's null propagation, that is the nullable ancestor.
         mutating func resolveErrors(root: ResolvedSelection, rootID: Int32, below prefix: [PathSegment] = []) {
-            for (message, path) in rawErrors {
-                let error = FieldError(message: message, path: Ingest.render(path ?? []))
+            for raw in rawErrors {
+                let path = raw.path
+                let error = FieldError(message: raw.message, path: Ingest.render(path ?? []), extensions: raw.extensions)
                 // A part's errors are by the response's paths: the walk
                 // starts where the part's object is.
                 guard let path, path.count > prefix.count, Array(path.prefix(prefix.count)) == prefix else {
@@ -959,12 +974,42 @@ package enum Ingest {
                     switch key {
                     case "message": error.message = try scanner.stringValue() ?? ""
                     case "path": error.path = try scanner.path()
+                    case "extensions": error.extensions = try scanner.value()
                     default: try scanner.skipValue()
                     }
                 }
                 read.append(error)
             }
             return read
+        }
+
+        /// Any JSON value, as a variable: an error's `extensions`, which the
+        /// plan says nothing about. A number without a fraction or an
+        /// exponent that `Int` holds is an int; any other is a double.
+        mutating func value() throws -> Variable {
+            skipWhitespace()
+            switch peek() {
+            case 0x7B:
+                var fields: [String: Variable] = [:]
+                try members { key, scanner in fields[key] = try scanner.value() }
+                return .object(fields)
+            case 0x5B:
+                var items: [Variable] = []
+                try elements { scanner in items.append(try scanner.value()) }
+                return .list(items)
+            case 0x22:
+                return .string(try stringValue() ?? "")
+            case 0x74, 0x66:
+                return .bool(try parseBool())
+            case 0x6E:
+                try literal("null")
+                return .null
+            default:
+                let start = position
+                if let int = try? parseInt() { return .int(int) }
+                position = start
+                return .double(try parseDouble())
+            }
         }
 
         /// A first part's `pending` array: the parts it announces.
