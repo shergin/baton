@@ -226,8 +226,10 @@ key the build names on first use, and a record stores the value at that
 number, so a read through a constant hashes nothing. A key with variables is
 rendered once per [owner](#generated); the keys a session renders, one per
 cursor and per id, are the store's: numbered by it, apart from the build's,
-and a record keeps those written to it in a list sorted by number, so they
-never widen the records they are not written to. A text has one slot in a
+held by the resolutions and scopes that took them, freed by its collector
+once nothing can name them and used again, and forgotten at its end; a
+record keeps those written to it in a list sorted by number, so they never
+widen the records they are not written to. A text has one slot in a
 store: a rendering whose text the build names as a constant takes the
 constant's slot, and a constant the build names after the store rendered
 its text is adopted at the store's next resolution, check or commit, the

@@ -676,6 +676,36 @@ struct DeliveryTests {
         withExtendedLifetime(retention) {}
     }
 
+    @Test("a subscription root's field is keyed by its arguments and freed with its subscription")
+    func aSubscriptionsKeyIsFreedWithIt() async throws {
+        let events = Events()
+        let environment = Environment(transport: SilentTransport(), subscriptions: events)
+        environment.store.reportMissing = nil
+        let store = environment.store
+        let subscription = Registry.type("Subscription")
+        do {
+            let live = environment.subscriptionHandle(for: TestNoteAdded(characterId: "1", connections: []))
+            let retention = live.retain()
+            await until { events.continuation != nil }
+            events.send(fixture("note-added-1"))
+            await until { live.events >= 1 }
+            #expect(live.latest?.noteAdded?.noteEdge?.node?.text == "Live from the garage")
+            store.collect()
+            #expect(store.keys.count(on: subscription) == 1, "the held subscription's root field is keyed by its argument")
+            #expect(store.subscriptionRoot.renderedKeyCount == 1)
+            _ = consume retention
+            await until { events.ended }
+        }
+        // The released subscription's root left at once; once its handle
+        // is gone, nothing names the key.
+        await until {
+            store.collect()
+            return store.keys.count(on: subscription) == 0
+        }
+        #expect(store.keys.count(on: subscription) == 0, "the key went with the subscription")
+        #expect(store.subscriptionRoot.renderedKeyCount == 0, "and so did the root's entry under it")
+    }
+
     @Test("an event with errors and no data is one bad event: the subscription shows it and goes on, and the next good event clears it")
     func badEvent() async throws {
         let events = Events()

@@ -45,10 +45,21 @@ public final class Persistence: Sendable {
         /// apply, by key, and by bare id under every type the image names.
         case forget(keys: [String], ids: [String])
         case invalidate
+        /// Slots the store freed, whose numbers it gives other texts: the
+        /// image forgets the names it had for them.
+        case freed([Slot])
+
+        /// Whether the work touches no row, so the writer needs no file.
+        static func needsNoFile(_ work: Work) -> Bool {
+            if case .freed = work { return true }
+            return false
+        }
     }
 
     private struct Pending: Sendable {
         var work: [Work] = []
+        /// The work the writer has taken and not yet written.
+        var writing: [Work] = []
         var scheduled = false
         /// How many forgets wait to be written: queued, or taken and not
         /// yet in the file.
@@ -173,6 +184,23 @@ public final class Persistence: Sendable {
     /// Queues what a commit changed.
     func committed(_ records: [Record.Snapshot], root: [Store.RootField], keys: Keys) {
         enqueue(.commit(records: records, root: root, keys: keys))
+    }
+
+    /// Tells the image the slots the store freed.
+    func freed(_ slots: [Slot]) {
+        enqueue(.freed(slots))
+    }
+
+    /// The rendered keys the rows waiting to be written, queued or being
+    /// written, are named by: the collector frees none of them before the
+    /// writer has named them.
+    func unwrittenSlots(into slots: inout Set<Slot>) {
+        pending.withLock { pending in
+            for case .commit(let records, let root, _) in pending.work + pending.writing {
+                for snapshot in records { snapshot.renderedSlots(into: &slots) }
+                for field in root where field.slot.index < 0 { slots.insert(field.slot) }
+            }
+        }
     }
 
     /// Queues the records a payload could not edit in memory, for the image
@@ -352,6 +380,7 @@ public final class Persistence: Sendable {
             if pending.held { return [] }
             let work = pending.work
             pending.work.removeAll(keepingCapacity: true)
+            pending.writing = work
             return work
         }
     }
@@ -359,7 +388,10 @@ public final class Persistence: Sendable {
     /// Notes that the work is written, or lost with a file that is done with.
     private func finished(_ work: [Work]) {
         let forgets = work.count { if case .forget = $0 { return true } else { return false } }
-        if forgets > 0 { pending.withLock { $0.forgets = max(0, $0.forgets - forgets) } }
+        pending.withLock { pending in
+            pending.writing.removeAll()
+            if forgets > 0 { pending.forgets = max(0, pending.forgets - forgets) }
+        }
     }
 
     /// How many rows the work waiting for a file may hold before it is
@@ -373,6 +405,7 @@ public final class Persistence: Sendable {
     /// which is not to be read again.
     private func keep(_ work: [Work], _ disk: Disk) {
         let dropped = pending.withLock { pending in
+            pending.writing.removeAll()
             pending.work.insert(contentsOf: work, at: 0)
             var rows = 0
             for case .commit(let records, let root, _) in pending.work { rows += records.count + root.count }
@@ -390,6 +423,13 @@ public final class Persistence: Sendable {
     private func drain() {
         disk.withLock { disk in
             let work = take()
+            // Forgetting the names of freed slots needs no file: it is done
+            // whether or not the image holds one, and never opens it.
+            if !work.isEmpty, work.allSatisfy(Work.needsNoFile) {
+                for case .freed(let slots) in work { disk.forget(slots) }
+                finished(work)
+                return
+            }
             // An image that gave its file back takes it again for work, not
             // to be ready for it: the open its creation scheduled, or a
             // drain behind `close()`, must not take it from the next image.

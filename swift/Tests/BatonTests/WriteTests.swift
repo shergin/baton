@@ -1,4 +1,5 @@
 @_spi(Generated) import Baton
+import BatonSpec
 import BatonTesting
 import Foundation
 import Observation
@@ -213,6 +214,30 @@ struct WriteTests {
         #expect(Registry.slotCount(mutation) == count)
         #expect(keys.count(on: mutation) == 0, "the store numbers no rendering of it either")
         #expect(first.variant(for: mutation).fields.map(\.slot) == second.variant(for: mutation).fields.map(\.slot))
+    }
+
+    @Test("an optimistic layer's keys stay while the layer is applied and go when it lifts")
+    func anOptimisticLayersKeysStayWhileApplied() throws {
+        let store = Store()
+        store.reportMissing = nil
+        let query = Registry.type("Query")
+        let header = TestHeaderQuery(id: "9")
+        // No mutation renders a key, its root field being keyed without its
+        // input, so the layer is a lookup's response applied as one. The
+        // resolution goes with the statement: only the layer names the key.
+        let layer = store.applyOptimistic(try Ingest.normalize(Spec.data("rickandmorty/character-header-9.json"), plan: TestHeaderQuery.plan.resolve(header.variables, in: store.keys)))
+        store.collect()
+        #expect(store.keys.count(on: query) == 1, "the applied layer keeps the key it writes")
+        do {
+            let data = TestHeaderQuery.Data(anchor: Anchor(record: store.root, variables: header.variables, store: store))
+            #expect(data.character?.testHeader.name == "Agency Director", "the layer's value reads under its key")
+        }
+
+        store.revertOptimistic(layer)
+        #expect(store.optimisticLayers.isEmpty)
+        store.collect()
+        #expect(store.keys.count(on: query) == 0, "the lifted layer's key is freed")
+        #expect(store.root.renderedKeyCount == 0)
     }
 
     @Test("a server payload commits under a live layer and the layer stays on top until it resolves")

@@ -222,6 +222,20 @@ public final class Store {
         package let id: UUID
         package let changes: ChangeSet
         var undo: [Undo] = []
+
+        /// The rendered keys the layer writes and its undo restores: kept
+        /// while the layer is applied.
+        func slots(into slots: inout Set<Slot>) {
+            for entry in changes.entries where entry.slot.index < 0 { slots.insert(entry.slot) }
+            for entry in changes.fieldErrors where entry.slot.index < 0 { slots.insert(entry.slot) }
+            for step in undo {
+                switch step {
+                case .slot(_, let slot, _) where slot.index < 0: slots.insert(slot)
+                case .error(_, let slot, _) where slot.index < 0: slots.insert(slot)
+                default: continue
+                }
+            }
+        }
     }
 
     /// One step of a batch, as it was before the batch: reversed when a
@@ -1088,6 +1102,22 @@ public final class Store {
             subscriptionRoot.prune(swept)
         }
         return swept.count
+    }
+
+    /// Frees the numbers of rendered keys nothing can name any more: no live
+    /// resolution or scope took them, no optimistic layer carries them, no
+    /// row waiting for the image is written under them. The entries records
+    /// keep under them go with them, and the image forgets their names.
+    func freeKeys() {
+        var kept = Set<Slot>()
+        for layer in optimisticLayers { layer.slots(into: &kept) }
+        persistence?.unwrittenSlots(into: &kept)
+        let freed = keys.free(butKeeping: kept)
+        guard !freed.isEmpty else { return }
+        let set = Set(freed)
+        for record in records.values { record.drop(set) }
+        for slot in freed where slot.type == root.type { hydratedRootSlots.remove(slot.index) }
+        persistence?.freed(freed)
     }
 
     /// The record and selection a response path names, from the root: for an

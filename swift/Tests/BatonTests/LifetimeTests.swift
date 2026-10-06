@@ -1,4 +1,5 @@
 @_spi(Generated) import Baton
+import BatonSpec
 import BatonTesting
 import Foundation
 import Observation
@@ -1068,5 +1069,97 @@ struct LifetimeTests {
         }
         #expect(transport.requestCount == 0)
         withExtendedLifetime(retention) {}
+    }
+
+    /// A transport that answers a lookup by id with the character's header,
+    /// for the ids a fixture has one for.
+    func headerTransport() -> RecordedTransport {
+        RecordedTransport { request in
+            guard case .string(let id)? = request.variables["id"] else { return nil }
+            return id == "9" ? Spec.data("rickandmorty/character-header-9.json") : fixture("character-header-\(id)")
+        }
+    }
+
+    /// The slot the store keys a lookup of a character by id under; the
+    /// scope that renders it lives for the call alone.
+    func lookupSlot(_ id: String, in store: Store) -> Slot {
+        Owner(variables: TestHeaderQuery(id: id).variables, store: store).slot(Slots.Query.character_bca4f9)
+    }
+
+    /// Looks a character up through a handle, retained until it settles and
+    /// released. With a buffer of zero its root leaves the store at once and
+    /// the environment drops the handle, so nothing this returns holds the
+    /// lookup's key. Returns the name read and the slot of the key.
+    func lookUpAndRelease(_ id: String, in environment: Baton.Environment) async -> (name: String?, slot: Slot) {
+        let handle = environment.handle(for: TestHeaderQuery(id: id))
+        let retention = handle.retain()
+        await handle.settle()
+        var name: String?
+        if case .ready(let data) = handle.phase { name = data.character?.testHeader.name }
+        let slot = lookupSlot(id, in: environment.store)
+        _ = consume retention
+        return (name, slot)
+    }
+
+    @Test("a lookup's key is freed when its root has left the buffer and a collection runs, and a retained lookup's key stays")
+    func aReleasedLookupsKeyIsFreed() async throws {
+        let environment = Environment(transport: headerTransport(), store: Store(releaseBufferSize: 0))
+        environment.store.reportMissing = nil
+        let store = environment.store
+        let query = Registry.type("Query")
+
+        let kept = environment.handle(for: TestHeaderQuery(id: "5"))
+        let keptRetention = kept.retain()
+        await kept.settle()
+        let keptSlot = lookupSlot("5", in: store)
+        var released: [Slot] = []
+        for id in ["9", "11"] {
+            let lookup = await lookUpAndRelease(id, in: environment)
+            #expect(lookup.name != nil, "the lookup of \(id) read its character")
+            released.append(lookup.slot)
+        }
+        #expect(([keptSlot] + released).allSatisfy { $0.index < 0 }, "the store numbers every lookup's key, the process none")
+
+        store.collect()
+        #expect(store.keys.count(on: query) == 1, "only the retained lookup's key is numbered")
+        #expect(store.storageKey(of: keptSlot) == #"character(id:"5")"#)
+        #expect(released.allSatisfy { store.storageKey(of: $0) == "" }, "a freed number has no text")
+        #expect(store.root.renderedKeyCount == 1, "the root holds an entry under the retained key alone")
+        guard case .ready(let data) = kept.phase else { Issue.record("the retained lookup stays ready, got \(kept.phase)"); return }
+        #expect(data.character?.testHeader.name == "Jerry Smith")
+        withExtendedLifetime(keptRetention) {}
+    }
+
+    @Test("a freed number is used again by the next rendering, and reads nothing of the old key")
+    func aFreedNumberIsUsedAgain() async throws {
+        let environment = Environment(transport: headerTransport(), store: Store(releaseBufferSize: 0))
+        environment.store.reportMissing = nil
+        let store = environment.store
+        let query = Registry.type("Query")
+
+        let kept = environment.handle(for: TestHeaderQuery(id: "5"))
+        let keptRetention = kept.retain()
+        await kept.settle()
+        let old = await lookUpAndRelease("9", in: environment)
+        #expect(old.name == "Agency Director")
+        store.collect()
+        #expect(store.keys.count(on: query) == 1)
+        #expect(store.storageKey(of: old.slot) == "")
+
+        let next = environment.handle(for: TestHeaderQuery(id: "11"))
+        let nextRetention = next.retain()
+        let slot = lookupSlot("11", in: store)
+        #expect(slot == old.slot, "the freed number is used again")
+        #expect(store.storageKey(of: slot) == #"character(id:"11")"#, "under the new key's text")
+        if case .ready = next.phase { Issue.record("the new lookup read data before its fetch: the old key's entry outlived its number") }
+        #expect(store.root.read(slot) == .missing, "the root has no entry under the number until the new lookup's response")
+
+        await next.settle()
+        guard case .ready(let data) = next.phase else { Issue.record("expected ready, got \(next.phase)"); return }
+        #expect(data.character?.testHeader.name == "Albert Einstein")
+        guard case .ref(let character) = store.root.read(slot) else { Issue.record("expected a link under the number"); return }
+        #expect(character.key == "Character:11")
+        #expect(store.keys.count(on: query) == 2)
+        withExtendedLifetime((keptRetention, nextRetention)) {}
     }
 }

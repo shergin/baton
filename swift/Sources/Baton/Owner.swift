@@ -11,6 +11,8 @@ public final class Owner {
     /// What numbers the keys the scope renders: the store's keys, or a
     /// table of the scope's own for a lens made by hand over no store.
     nonisolated let keys: Keys
+    /// The scope's hold on the numbers it took, kept while the scope lives.
+    nonisolated let hold: Keys.Hold
     /// Whether reads in the scope report missing and unexpected values and
     /// log required fields; not under a placeholder, whose link reported
     /// already.
@@ -45,6 +47,7 @@ public final class Owner {
         self.variables = variables
         self.store = store
         self.keys = keys
+        hold = keys.hold()
         self.environment = environment
         self.root = root
         self.reports = reports
@@ -64,7 +67,7 @@ public final class Owner {
     public func slot(_ key: DynamicKey, on type: TypeID) -> Slot {
         for entry in abstractSlots where entry.key === key { return entry.slot.on(type) }
         meetConstants()
-        let slot = AbstractSlot(key.render(variables), keys: keys)
+        let slot = AbstractSlot(key.render(variables), hold: hold)
         abstractSlots.append((key, slot))
         return slot.on(type)
     }
@@ -74,7 +77,7 @@ public final class Owner {
     /// and then as a constant reads what either wrote.
     private func resolve(_ type: TypeID, _ text: String) -> Slot {
         meetConstants()
-        return keys.slot(type, text)
+        return keys.slot(type, text, for: hold)
     }
 
     private func meetConstants() {

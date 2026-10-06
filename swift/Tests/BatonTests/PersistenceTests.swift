@@ -600,6 +600,98 @@ struct PersistenceTests {
         await finish(second)
     }
 
+    @Test("a key in a row the image has not written yet is kept through a collection, and freed after the write")
+    func anUnwrittenRowKeepsItsKey() async throws {
+        let environment = launch()
+        let store = environment.store
+        let query = Registry.type("Query")
+        // The resolution goes with the statement: once the commit is queued,
+        // only its waiting row names the key.
+        let jerry = try Ingest.normalize(fixture("character-header-5"), plan: header("5", in: store))
+        whileTheWriterWaits(in: environment) {
+            store.commit(jerry)
+            store.collect()
+            #expect(store.keys.count(on: query) == 1, "the row waiting for the writer keeps its key")
+        }
+        await store.persistence?.flush()
+        store.collect()
+        #expect(store.keys.count(on: query) == 0, "the written row names the key no more")
+        await finish(environment)
+
+        let second = launch()
+        #expect(try stored(TestHeaderQuery(id: "5"), in: second).character?.testHeader.name == "Jerry Smith", "the row was written under the key's text")
+        await finish(second)
+    }
+
+    @Test("a row written under a freed number is named by the new key, not the old")
+    func aRowUnderAFreedNumberIsNamedByItsNewKey() async throws {
+        let transport = RecordedTransport { request in
+            guard case .string(let id)? = request.variables["id"] else { return nil }
+            return fixture("character-header-\(id)")
+        }
+        let first = launch(transport, releaseBufferSize: 0)
+        let store = first.store
+        func slot(_ id: String) -> Slot {
+            Owner(variables: TestHeaderQuery(id: id).variables, store: store).slot(Slots.Query.character_bca4f9)
+        }
+        let freed: Slot
+        do {
+            let handle = first.handle(for: TestHeaderQuery(id: "5"))
+            let retention = handle.retain()
+            await handle.settle()
+            freed = slot("5")
+            _ = consume retention
+        }
+        // The row is written first, so that no waiting row keeps the key.
+        await store.persistence?.flush()
+        store.collect()
+        #expect(store.storageKey(of: freed) == "", "the released lookup's key is freed")
+        let reused: Slot
+        do {
+            let handle = first.handle(for: TestHeaderQuery(id: "11"))
+            let retention = handle.retain()
+            await handle.settle()
+            guard case .ready = handle.phase else { Issue.record("expected ready, got \(handle.phase)"); return }
+            reused = slot("11")
+            withExtendedLifetime(retention) {}
+        }
+        #expect(reused == freed, "the next lookup takes the freed number")
+        await finish(first)
+
+        let second = launch()
+        #expect(try stored(TestHeaderQuery(id: "11"), in: second).character?.testHeader.name == "Albert Einstein", "the row written under the number is named by the new key")
+        #expect(try stored(TestHeaderQuery(id: "5"), in: second).character?.testHeader.name == "Jerry Smith", "the old key's row stays under its own text, which the image did not lend the new row")
+        await finish(second)
+    }
+
+    @Test("a key a record's row was read under stays numbered while the image lives, and a root field's key is freed and read from the image again")
+    func aHydratedKeyStaysNumbered() async throws {
+        // A count no other test renders or names.
+        let written = TestNoteCounts(page: 1, count: 91)
+        let first = launch()
+        first.store.commit(try Ingest.normalize(fixture("note-counts-1"), plan: TestNoteCounts.plan.resolve(written.variables, in: first.store.keys)))
+        await finish(first)
+
+        let second = launch(releaseBufferSize: 0)
+        let store = second.store
+        // Reads the operation from the image through a handle that is gone,
+        // its root with it, when this returns.
+        func read() -> [Int]? {
+            let handle = second.handle(for: written, fetchPolicy: .storeOnly)
+            let retention = handle.retain()
+            defer { withExtendedLifetime(retention) {} }
+            guard case .ready(let data) = handle.phase else { return nil }
+            return data.characters?.results?.map(\.recent.totalCount)
+        }
+        #expect(read() == [3, 0])
+        store.collect()
+        #expect(store.existing("Character:1") == nil, "the released operation's records were swept")
+        #expect(store.keys.count(on: Registry.type("Character")) == 1, "the image holds the key a record's row filled a value under")
+        #expect(store.keys.count(on: Registry.type("Query")) == 0, "a root field's key is freed: the image finds its row by its text")
+        #expect(read() == [3, 0], "the root field is read from the image again under its next number")
+        await finish(second)
+    }
+
     @Test("a record @deleteRecord named that only the image holds stays unread while the forget waits for the writer, when a record of another type with its id arrives; that record reads its own row")
     func aForgottenIDIsLiftedOnlyByItsKey() async throws {
         let first = launch()

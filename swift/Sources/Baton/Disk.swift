@@ -115,6 +115,7 @@ final class Disk: @unchecked Sendable {
     private var types: [TypeID?] = []
 
     private var writer = RowWriter()
+    private var hydrationHold: Keys.Hold?
     private var readRecords: [String] = []
     private var readRoot: [String] = []
 
@@ -559,10 +560,20 @@ final class Disk: @unchecked Sendable {
         var index = slots[table][name]
         if index == .min {
             let storageKey = names[name]
-            index = (storageKey.utf8.contains(UInt8(ascii: "(")) ? keys.slot(type, storageKey) : Registry.slot(type, storageKey)).index
+            index = (storageKey.utf8.contains(UInt8(ascii: "(")) ? keys.slot(type, storageKey, for: hold(on: keys)) : Registry.slot(type, storageKey)).index
             slots[table][name] = index
         }
         return Slot(type: type, index: index)
+    }
+
+    /// The image's hold on the numbers its rows were read under: a value a
+    /// row filled stays under its number for the image's life, named or
+    /// not by a live plan, as it would in the file.
+    private func hold(on keys: Keys) -> Keys.Hold {
+        if let hydrationHold, hydrationHold.keys === keys { return hydrationHold }
+        let hold = keys.hold()
+        hydrationHold = hold
+        return hold
     }
 
     /// The type a stored name is.
@@ -612,6 +623,8 @@ final class Disk: @unchecked Sendable {
                 for id in ids { good = forget(prepared.forgetID, id) && good }
             case .invalidate:
                 good = (try? exec("DELETE FROM fetches")) != nil && good
+            case .freed(let slots):
+                forget(slots)
             }
         }
         for id in unwritten { good = put(name: id, prepared) && good }
@@ -714,6 +727,22 @@ final class Disk: @unchecked Sendable {
         if index >= typeNames.count { typeNames.append(contentsOf: repeatElement(-1, count: index + 1 - typeNames.count)) }
         if typeNames[index] < 0 { typeNames[index] = intern(Registry.typeName(type)) }
         return typeNames[index]
+    }
+
+    /// Forgets what it knew of slots the store freed, whose numbers it will
+    /// give other texts: the next row written under one interns the new
+    /// text, and a stored name whose slot was one is looked up again.
+    func forget(_ freed: [Slot]) {
+        var byType: [Int: Set<Int32>] = [:]
+        for slot in freed where slot.index < 0 { byType[Int(slot.type.raw), default: []].insert(slot.index) }
+        for (type, indices) in byType {
+            if type < renderedNames.count {
+                for index in indices where Int(~index) < renderedNames[type].count { renderedNames[type][Int(~index)] = -1 }
+            }
+            if type < slots.count {
+                for name in slots[type].indices where indices.contains(slots[type][name]) { slots[type][name] = .min }
+            }
+        }
     }
 
     /// The name id of a slot's storage key, which the store's keys give for

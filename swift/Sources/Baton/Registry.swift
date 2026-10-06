@@ -31,19 +31,20 @@ public struct Slot: Hashable, Sendable {
 @MainActor
 public final class AbstractSlot {
     nonisolated public let storageKey: String
-    /// The store's keys when the key was rendered from variables, which
-    /// number it on a type that has not met it; nil for the build's key.
-    nonisolated let keys: Keys?
+    /// The scope's hold on the store's keys when the key was rendered from
+    /// variables, which number it on a type that has not met it; nil for
+    /// the build's key.
+    nonisolated let hold: Keys.Hold?
     /// Slot index by `TypeID.raw`; `Int32.min` until the type is first read.
     private var indices: ContiguousArray<Int32> = []
 
     nonisolated public convenience init(_ storageKey: String) {
-        self.init(storageKey, keys: nil)
+        self.init(storageKey, hold: nil)
     }
 
-    nonisolated init(_ storageKey: String, keys: Keys?) {
+    nonisolated init(_ storageKey: String, hold: Keys.Hold?) {
         self.storageKey = storageKey
-        self.keys = keys
+        self.hold = hold
     }
 
     /// The key's slot on `type`.
@@ -57,7 +58,7 @@ public final class AbstractSlot {
     }
 
     private func resolve(_ type: TypeID) -> Slot {
-        let slot = keys?.slot(type, storageKey) ?? Registry.slot(type, storageKey)
+        let slot = hold.map { $0.keys.slot(type, storageKey, for: $0) } ?? Registry.slot(type, storageKey)
         let position = Int(type.raw)
         if position >= indices.count {
             indices.append(contentsOf: repeatElement(.min, count: position + 1 - indices.count))

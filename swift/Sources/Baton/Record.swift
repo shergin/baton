@@ -269,6 +269,12 @@ public final class Record: Observable {
         let renderedValues: ContiguousArray<Value>
         let errors: [Int32: FieldError]?
         let deleted: Bool
+
+        /// The rendered keys the row is written under, which the writer
+        /// names when it writes: not to be freed before.
+        nonisolated func renderedSlots(into slots: inout Set<Slot>) {
+            for id in renderedIDs { slots.insert(Slot(type: record.type, index: ~id)) }
+        }
     }
 
     /// The record as the image stores it: its values and errors now.
@@ -311,6 +317,29 @@ public final class Record: Observable {
             errors?[slot.index] = error
         }
         return true
+    }
+
+    /// Drops the entries under keys the store freed, which nothing can name
+    /// any more, silently; for the collector.
+    func drop(_ freed: Set<Slot>) {
+        guard !renderedIDs.isEmpty else { return }
+        var position = 0
+        while position < renderedIDs.count {
+            let index = ~renderedIDs[position]
+            guard freed.contains(Slot(type: type, index: index)) else {
+                position += 1
+                continue
+            }
+            renderedIDs.remove(at: position)
+            renderedValues.remove(at: position)
+            errors?.removeValue(forKey: index)
+        }
+        if errors?.isEmpty == true { errors = nil }
+    }
+
+    /// The rendered keys the record holds a value under.
+    func renderedSlots(into slots: inout Set<Slot>) {
+        for id in renderedIDs { slots.insert(Slot(type: type, index: ~id)) }
     }
 
     /// Copies a slot's value and error under its twin, a second slot the

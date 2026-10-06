@@ -19,6 +19,16 @@ are expected and listed without apology.
   writer names a row's slots through the committing store's keys.
   `Slot.storageKey` is gone: a report names a slot through
   `Store.storageKey(of:)`.
+- The collector frees the keys a session rendered once nothing can name
+  them: a resolution and a lens's scope hold the numbers they took while
+  they live, an optimistic layer and a row waiting for the image keep
+  theirs, and the rest go with the records the pass sweeps, their numbers
+  used again for the next renderings, lowest first, and the image told to
+  forget their names. A key a record's row was read under stays numbered
+  while the image lives, as the record reads its row once; a root field's
+  is freed with the rest and read from the image again. After a long
+  session whose roots left, the store's table is the size it was at the
+  start.
 - The image's file is protected at creation:
   `Persistence(url:version:sizeLimit:protection:)` and the `name:` form take
   a `FileProtectionType`, which Apple's SQLite gives the file and its

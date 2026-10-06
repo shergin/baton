@@ -201,8 +201,11 @@ extension Store {
             }
         }
         collections += 1
-        return sweep(keeping: reachable)
+        let swept = sweep(keeping: reachable)
+        freeKeys()
+        return swept
     }
+
 }
 
 /// What keeps an operation's records alive: the token `retain()` returns,

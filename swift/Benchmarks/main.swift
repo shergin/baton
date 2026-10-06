@@ -1253,6 +1253,12 @@ func longSessionBench() throws {
     print("    a new character given name (slot \(Registry.slot(character, "name").index)): room for \(namedCharacter.allocated) values, \(megabytes(namedGrowth)) for \(lookups)")
     print("    a new character given favorite (slot \(Registry.slot(character, "favorite").index)): room for \(favoredCharacter.allocated) values, \(megabytes(favoredGrowth)) for \(lookups)")
     print("    the session's \(lookups) characters given favorite: \(megabytes(sessionGrowth))")
+
+    // Nothing retains the session's roots: a collection frees its records
+    // and the keys they were written under.
+    let beforeCollection = footprint()
+    store.collect()
+    print("    after a collection with no roots: keys the store numbers on Query \(store.keys.count(on: query)), on Character \(store.keys.count(on: character)); \(store.count) records; footprint \(megabytes(footprint() - beforeCollection))")
 }
 
 if CommandLine.arguments.count == 3, CommandLine.arguments[1].hasPrefix("--launch") {

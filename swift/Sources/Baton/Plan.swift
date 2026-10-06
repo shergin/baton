@@ -24,7 +24,7 @@ public struct Plan: Sendable {
     /// serves ingest, check and read, in the store whose keys numbered it.
     package func resolve(_ variables: Variables, in keys: Keys) -> ResolvedSelection {
         keys.reconcile()
-        return root.resolve(variables, keys)
+        return root.resolve(variables, keys.hold())
     }
 }
 
@@ -335,40 +335,40 @@ public final class Selection: Sendable {
     /// variables are rendered, and each listed type's variant is resolved
     /// now; every other type's is resolved from the shared fields when a
     /// record of it first comes.
-    func resolve(_ variables: Variables, _ keys: Keys) -> ResolvedSelection {
-        if readsVariables { return resolving(variables, keys) }
+    func resolve(_ variables: Variables, _ hold: Keys.Hold) -> ResolvedSelection {
+        if readsVariables { return resolving(variables, hold) }
         if let resolved = resolution.withLock({ $0 }) { return resolved }
-        let resolved = resolving(variables, keys)
+        let resolved = resolving(variables, hold)
         resolution.withLock { $0 = resolved }
         return resolved
     }
 
-    private func resolving(_ variables: Variables, _ keys: Keys) -> ResolvedSelection {
+    private func resolving(_ variables: Variables, _ hold: Keys.Hold) -> ResolvedSelection {
         var listed: [TypeID: ResolvedVariant] = [:]
         var others: [ResolvedField] = []
         for variant in variants {
-            let fields = variant.fields.filter { $0.selected(by: variables) }.map { resolve($0, variables, keys) }
+            let fields = variant.fields.filter { $0.selected(by: variables) }.map { resolve($0, variables, hold) }
             guard let types = variant.types else {
                 others = fields
                 continue
             }
             for concrete in types {
-                listed[concrete] = ResolvedVariant(type: concrete, fields: fields.map { $0.on(concrete, keys) })
+                listed[concrete] = ResolvedVariant(type: concrete, fields: fields.map { $0.on(concrete, hold) })
             }
         }
         // A selection that reads no variables renders no key, and its
-        // resolution is shared by every store: it keeps no store's keys.
-        return ResolvedSelection(type: type, hasID: hasID, isAbstract: isAbstract, fields: others, listed: listed, keys: readsVariables ? keys : nil)
+        // resolution is shared by every store: it holds no store's keys.
+        return ResolvedSelection(type: type, hasID: hasID, isAbstract: isAbstract, fields: others, listed: listed, hold: readsVariables ? hold : nil)
     }
 
     /// A field with its variables bound, its slot on the selection's own type.
-    private func resolve(_ field: PlanField, _ variables: Variables, _ keys: Keys) -> ResolvedField {
+    private func resolve(_ field: PlanField, _ variables: Variables, _ hold: Keys.Hold) -> ResolvedField {
         let storageKey = Selection.render(field, variables)
         let kind: ResolvedField.Kind = switch field.kind {
         case .scalar(let scalar, let list): .scalar(scalar, list: list)
         case .linked(let selection, let plural, let lookup, let connection):
             .linked(
-                selection.resolve(variables, keys),
+                selection.resolve(variables, hold),
                 plural: plural,
                 lookupKey: lookup.map { lookup in
                     let value = switch lookup.key {
@@ -382,7 +382,7 @@ public final class Selection: Sendable {
                     return ResolvedConnection(
                         storageKey: key,
                         rendered: connection.key.isRendered,
-                        slot: Selection.slot(connection.key, key, on: type, keys),
+                        slot: Selection.slot(connection.key, key, on: type, hold),
                         slots: connection.slots,
                         mode: Selection.mode(connection, variables)
                     )
@@ -394,7 +394,7 @@ public final class Selection: Sendable {
             keyBytes: field.keyBytes,
             storageKey: storageKey,
             rendered: field.key.isRendered,
-            slot: Selection.slot(field.key, storageKey, on: type, keys),
+            slot: Selection.slot(field.key, storageKey, on: type, hold),
             kind: kind,
             edit: field.edit.map { edit in
                 ResolvedEdit(
@@ -420,11 +420,11 @@ public final class Selection: Sendable {
         return render(field.key, variables)
     }
 
-    private static func slot(_ key: StorageKey, _ storageKey: String, on type: TypeID, _ keys: Keys) -> Slot {
+    private static func slot(_ key: StorageKey, _ storageKey: String, on type: TypeID, _ hold: Keys.Hold) -> Slot {
         switch key {
         case .fixed(let slot) where slot.type == type: slot
         case .fixed: Registry.slot(type, storageKey)
-        case .dynamic: keys.slot(type, storageKey)
+        case .dynamic: hold.keys.slot(type, storageKey, for: hold)
         }
     }
 
@@ -523,18 +523,20 @@ package final class ResolvedSelection: Sendable {
     private let deferredParts = Mutex<[String: ResolvedSelection]>([:])
     /// The selection's own type's name, taken once.
     private let typeName: String
-    /// The store's keys, which number a rendered key on a type the plan did
-    /// not list when a record of it first comes; nil for a selection that
-    /// reads no variables, whose resolution every store shares.
-    private let keys: Keys?
+    /// The resolution's hold on the store's keys, which numbers a rendered
+    /// key on a type the plan did not list when a record of it first comes,
+    /// and keeps every number the resolution took while it lives; nil for a
+    /// selection that reads no variables, whose resolution every store
+    /// shares.
+    private let hold: Keys.Hold?
 
-    init(type: TypeID, hasID: Bool, isAbstract: Bool, fields: [ResolvedField], listed: [TypeID: ResolvedVariant], keys: Keys?) {
+    init(type: TypeID, hasID: Bool, isAbstract: Bool, fields: [ResolvedField], listed: [TypeID: ResolvedVariant], hold: Keys.Hold?) {
         self.type = type
         self.hasID = hasID
         self.isAbstract = isAbstract
         self.fields = fields
         self.listed = listed
-        self.keys = keys
+        self.hold = hold
         typeName = type.name
     }
 
@@ -545,7 +547,7 @@ package final class ResolvedSelection: Sendable {
         if let variant = listed[type] { return variant }
         return others.withLock { cache in
             if let variant = cache[type] { return variant }
-            let variant = ResolvedVariant(type: type, fields: fields.map { $0.on(type, keys) })
+            let variant = ResolvedVariant(type: type, fields: fields.map { $0.on(type, hold) })
             cache[type] = variant
             return variant
         }
@@ -560,7 +562,7 @@ package final class ResolvedSelection: Sendable {
                 ResolvedVariant(type: variant.type, fields: variant.fields.filter { $0.deferred == label }.map { $0.undeferred() }, typeName: variant.typeName)
             }
             let own = fields.filter { $0.deferred == label }.map { $0.undeferred() }
-            let selection = ResolvedSelection(type: type, hasID: hasID, isAbstract: isAbstract, fields: own, listed: listed.mapValues(part), keys: keys)
+            let selection = ResolvedSelection(type: type, hasID: hasID, isAbstract: isAbstract, fields: own, listed: listed.mapValues(part), hold: hold)
             guard !own.isEmpty || selection.listed.values.contains(where: { !$0.fields.isEmpty }) else { return nil }
             cache[label] = selection
             return selection
@@ -629,7 +631,7 @@ package struct ResolvedField: Sendable {
 
     /// The same field on another concrete type: its slot, and its
     /// connection's, interned there, by the store's keys when rendered.
-    func on(_ type: TypeID, _ keys: Keys?) -> ResolvedField {
+    func on(_ type: TypeID, _ hold: Keys.Hold?) -> ResolvedField {
         if slot.type == type { return self }
         let kind: Kind = switch kind {
         case .scalar: kind
@@ -638,7 +640,7 @@ package struct ResolvedField: Sendable {
                 ResolvedConnection(
                     storageKey: connection.storageKey,
                     rendered: connection.rendered,
-                    slot: ResolvedField.slot(type, connection.storageKey, rendered: connection.rendered, keys),
+                    slot: ResolvedField.slot(type, connection.storageKey, rendered: connection.rendered, hold),
                     slots: connection.slots,
                     mode: connection.mode
                 )
@@ -649,7 +651,7 @@ package struct ResolvedField: Sendable {
             keyBytes: keyBytes,
             storageKey: storageKey,
             rendered: rendered,
-            slot: ResolvedField.slot(type, storageKey, rendered: rendered, keys),
+            slot: ResolvedField.slot(type, storageKey, rendered: rendered, hold),
             kind: kind,
             edit: edit,
             deferred: deferred,
@@ -659,9 +661,9 @@ package struct ResolvedField: Sendable {
 
     /// The key's slot on another type: the store's for a rendered key, which
     /// only a selection that reads variables has, and the build's otherwise.
-    private static func slot(_ type: TypeID, _ storageKey: String, rendered: Bool, _ keys: Keys?) -> Slot {
+    private static func slot(_ type: TypeID, _ storageKey: String, rendered: Bool, _ hold: Keys.Hold?) -> Slot {
         guard rendered else { return Registry.slot(type, storageKey) }
-        guard let keys else { preconditionFailure("a rendered key is resolved under a selection that reads variables, which keeps the store's keys") }
-        return keys.slot(type, storageKey)
+        guard let hold else { preconditionFailure("a rendered key is resolved under a selection that reads variables, which holds the store's keys") }
+        return hold.keys.slot(type, storageKey, for: hold)
     }
 }
