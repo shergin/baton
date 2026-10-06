@@ -5,6 +5,11 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- `BatonTesting` gains `ScriptedTransport`, for an app's tests: answers
+  from fixtures by operation name or through a responder, mutations held
+  until the test replies or refuses, subscriptions driven by hand, and the
+  requests sent listed by kind; and `wait(until:)`, which waits on the main
+  actor for a handle or a store to settle.
 - Subscriptions over HTTP, with `graphql-sse` in its distinct-connections
   mode: `URLSessionTransport` asks a subscription for `text/event-stream`
   and yields the payload of each `next` event until `complete`, so the

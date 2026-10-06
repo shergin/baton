@@ -627,15 +627,21 @@ stays the built-in transports' error, and is carried unchanged inside the
 transport's kind of [failure](#runtime), as a `URLError` or an app's own
 transport's error is.
 
-**Recorded transport.** *Concept: transport.* Baton's word.
-`RecordedTransport` answers from recorded responses by operation name, or
-from a function of the whole request, and keeps the requests it was sent;
-for previews, tests and benchmarks. Not a mock: it is a transport like any
-other, and nothing behind it can tell. Beside it, `SilentTransport` never
-answers, for a first body with no network behind it. Both live in
-`BatonTesting`, a product of the package that an app's tests and previews
-import and its shipping binary does not; see
-[the decision](decisions/one-runtime-module.md).
+**Recorded transport, scripted transport.** *Concept: transport.* Baton's
+words. `RecordedTransport` answers from recorded responses by operation
+name, or from a function of the whole request, and keeps the requests it
+was sent; for previews, tests and benchmarks. `ScriptedTransport` does the
+same and more for an app's tests: it holds a mutation, or any operation the
+test names, until the test replies or refuses, so the window between an
+optimistic apply and the server's answer can be observed; it drives a
+subscription's events by hand, delivering, completing or failing; and it
+lists its requests by kind. An operation with no answer scripted fails with
+a status 0 that says so. Beside them, `SilentTransport` never answers, for a
+first body with no network behind it, and `wait(until:)` waits for a handle
+or a store to settle. Not mocks: each is a transport like any other, and
+nothing behind it can tell. All live in `BatonTesting`, a product of the
+package that an app's tests and previews import and its shipping binary
+does not; see [the decision](decisions/one-runtime-module.md).
 
 **Subscription.** *Composition: store, operation value, transport.* GraphQL:
 an operation whose events arrive over time. Here: `@Subscription("…")`

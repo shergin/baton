@@ -253,7 +253,9 @@ the operation's plan over bytes in a response's shape and commits them as a
 fetch's response is, so a preview draws from a fixture and a test seeds its
 store without a transport; the payload may carry part of what the operation
 selects. For the paths that do go through the network, `BatonTesting`'s
-`RecordedTransport` answers requests from recorded responses.
+`RecordedTransport` answers requests from recorded responses, and its
+`ScriptedTransport` holds a mutation until the test replies, drives a
+subscription's events, and lists what was sent.
 
 In this repository:
 
