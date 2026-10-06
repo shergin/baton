@@ -223,8 +223,7 @@ struct LifetimeTests {
     @Test("an expired handle refetches on attach under storeOrNetwork")
     func expiration() async {
         let transport = transport()
-        let environment = Environment(transport: transport)
-        environment.queryCacheExpiration = .zero
+        let environment = Environment(transport: transport, store: Store(cacheExpiration: .zero))
         let handle = environment.handle(for: TestList(page: 1), fetchPolicy: .storeOrNetwork)
         handle.retain()
         await handle.settle()
@@ -234,6 +233,63 @@ struct LifetimeTests {
         _ = environment.handle(for: TestList(page: 1), fetchPolicy: .storeOrNetwork)
         await handle.settle()
         #expect(transport.requestCount == 2)
+    }
+
+    /// A transport that serves a character's header for a lookup by id,
+    /// whichever operation asks.
+    func characterTransport() -> RecordedTransport {
+        RecordedTransport { request in
+            guard case .string(let id)? = request.variables["id"] else { return nil }
+            return fixture("character-header-\(id)")
+        }
+    }
+
+    @Test("an operation's own cache expiration is the constant its directive states, and an operation without the directive has none")
+    func cacheExpirationIsGenerated() {
+        #expect(TestFreshCharacter.cacheExpiration == .seconds(30))
+        #expect(TestHeaderQuery.cacheExpiration == nil)
+    }
+
+    @Test("an operation's own cache expiration outranks the store's default: with a default of zero, only the operation without a directive is stale after its fetch")
+    func operationExpirationOutranksTheStoreDefault() async {
+        let environment = Environment(transport: characterTransport(), store: Store(cacheExpiration: .zero))
+        let header = environment.handle(for: TestHeaderQuery(id: "5"))
+        let fresh = environment.handle(for: TestFreshCharacter(id: "5"))
+        header.retain()
+        fresh.retain()
+        await header.settle()
+        await fresh.settle()
+        guard case .ready = header.phase, case .ready = fresh.phase else {
+            Issue.record("expected both ready, got \(header.phase) and \(fresh.phase)")
+            return
+        }
+        #expect(header.isStale, "the store's default of zero ages it at once")
+        #expect(!fresh.isStale, "thirty seconds of its own outrank the store's default")
+
+        environment.invalidate()
+        #expect(header.isStale)
+        #expect(fresh.isStale, "an invalidation ages data whatever its expiration")
+    }
+
+    @Test("with no default in the store, neither an operation without a directive nor one with it is stale after its fetch, and an invalidation ages both")
+    func noStoreDefaultKeepsDataFresh() async {
+        let environment = Environment(transport: characterTransport())
+        let header = environment.handle(for: TestHeaderQuery(id: "5"))
+        let fresh = environment.handle(for: TestFreshCharacter(id: "5"))
+        header.retain()
+        fresh.retain()
+        await header.settle()
+        await fresh.settle()
+        guard case .ready = header.phase, case .ready = fresh.phase else {
+            Issue.record("expected both ready, got \(header.phase) and \(fresh.phase)")
+            return
+        }
+        #expect(!header.isStale)
+        #expect(!fresh.isStale)
+
+        environment.invalidate()
+        #expect(header.isStale)
+        #expect(fresh.isStale)
     }
 
     @Test("a refetch during a fetch supersedes it: one fetch stays in flight, the superseded response is not committed, and the handle follows the refetch")

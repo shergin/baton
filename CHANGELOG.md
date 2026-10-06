@@ -5,6 +5,15 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- A query states how old its data may be in its document:
+  `@cacheExpiration(seconds:)`, the first directive that is not Relay's,
+  which the compiler emits as a constant of the operation and leaves out of
+  the text a server receives. The handle reads it with the operation's age;
+  an operation that states none takes `Store(cacheExpiration:)`, the
+  default given when the store is made. The settable
+  `Environment.queryCacheExpiration` is gone: a handle has no one owner, so
+  a number set at run time was whoever set it last. The directive is
+  refused on a mutation or a subscription, and with a variable.
 - A response that omits a field the operation selected fails the fetch as
   malformed, an `IngestError` naming the field and its type, where before
   the handle settled ready and the first read of the field reported missing

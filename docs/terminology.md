@@ -61,17 +61,18 @@ place. New variables replace the lens.
 
 **Directive.** *Concept: directive.* GraphQL: an annotation on a selection
 or definition. Here: the only way behaviour is attached to data; the set is
-Relay's ([Relay's words](principles/relays-words.md)), with one exception
-that is *(planned)*, [cache expiration](#documents).
+Relay's ([Relay's words](principles/relays-words.md)), with one exception,
+[cache expiration](#documents).
 
 **Cache expiration.** *Concept: directive.* Baton's word. Relay has one
 expiration for a whole store, `queryCacheExpirationTime`, and no word for
-one query's; nor has the GraphQL specification. Here: *(planned)*.
+one query's; nor has the GraphQL specification. Here:
 `@cacheExpiration(seconds:)` on a query states how old its data may be
 before it reads as stale. The compiler emits it as a constant of the
-operation, and the store reads it with the operation's age; an operation
-that states none takes the default given when the store is made. Nothing is
-passed at an attach, and no timer is armed. See
+operation, `cacheExpiration`, left out of the text a server receives, and
+the handle reads it with the operation's age; an operation that states
+none takes `Store(cacheExpiration:)`, the default given when the store is
+made. Nothing is passed at an attach, and no timer is armed. See
 [the decision](decisions/an-operation-states-its-expiration.md).
 
 **Required.** *Concept: directive.* Relay:
@@ -286,8 +287,9 @@ selection with the record it starts from or a set of records, which
 
 **Invalidation, TTL.** *Composition: store, operation value, environment.*
 Relay's and Apollo's shared words. `Environment.invalidate()` marks every
-fetched operation stale and refetches the retained ones;
-`queryCacheExpiration` does the same by age. Stale data stays readable. An
+fetched operation stale and refetches the retained ones; an operation's
+[cache expiration](#documents), or the store's default, does the same by
+age. Stale data stays readable. An
 invalidation also forgets the image's fetch times, so it outlives the
 launch. A handle stamps its operation's age after its own fetch today; the
 age kept by the store, stamped by the commit of every response and

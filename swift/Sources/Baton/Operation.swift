@@ -36,6 +36,9 @@ public protocol Operation: Hashable, Sendable {
     @_spi(Generated) static var hasDeferred: Bool { get }
     /// The `onError` value `baton.json` names, sent with every request.
     @_spi(Generated) static var errorBehavior: ErrorBehavior? { get }
+    /// `@cacheExpiration(seconds:)`: how old the operation's data may be
+    /// before it reads as stale. None takes the store's default.
+    @_spi(Generated) static var cacheExpiration: Duration? { get }
     var variables: Variables { get }
 }
 
@@ -66,6 +69,7 @@ extension Operation {
     @_spi(Generated) public static var bubbles: Bool { false }
     @_spi(Generated) public static var hasDeferred: Bool { false }
     @_spi(Generated) public static var errorBehavior: ErrorBehavior? { nil }
+    @_spi(Generated) public static var cacheExpiration: Duration? { nil }
 }
 
 /// The state of a resolved operation. Always synchronously readable.
@@ -267,14 +271,16 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
     /// tests, until the handle derives its phase.
     package var isComplete: Bool { store.check(resolved) != .miss }
 
-    /// Whether the data predates `Environment.invalidate()` or the expiration.
-    /// A handle that is loading, or failed with no data behind the failure,
-    /// has nothing to go stale; one failed on field errors or a `@required`
-    /// null has its data in the store, and it ages as ready data does.
+    /// Whether the data predates `Environment.invalidate()` or is older than
+    /// the operation's expiration, `@cacheExpiration(seconds:)` in its
+    /// document, or the store's default when it states none. A handle that
+    /// is loading, or failed with no data behind the failure, has nothing to
+    /// go stale; one failed on field errors or a `@required` null has its
+    /// data in the store, and it ages as ready data does.
     public var isStale: Bool {
         guard showsData else { return false }
         if fetchEpoch < store.invalidationEpoch { return true }
-        if let expiration = environment?.queryCacheExpiration, let fetchTime, fetchTime + expiration < .now { return true }
+        if let expiration = Op.cacheExpiration ?? store.cacheExpiration, let fetchTime, fetchTime + expiration < .now { return true }
         return false
     }
 

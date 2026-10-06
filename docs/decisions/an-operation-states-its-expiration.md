@@ -30,8 +30,10 @@ query by convention; Apollo Client's cache has no expiration at all.
 
 ## Decision
 
-How old an operation's data may be is part of what the operation says. All
-of this is *(planned)*.
+How old an operation's data may be is part of what the operation says.
+Built 2026-10-06: the directive, its constant, the store's default, and
+the end of the settable expiration. The age it is read against is the
+handle's until the store owns roots and ages.
 
 - A query states its expiration once, in its document, with a directive:
   `@cacheExpiration(seconds:)`. The compiler emits it as a constant of the

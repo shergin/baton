@@ -23,7 +23,10 @@ conventions exist for Meta's module system. Those are not GraphQL's words.
 
 Baton consumes the Relay compiler's front end, so Relay's directives are
 parsed and validated by the code that defines them. The directive set is
-Relay's; the connection handling is Relay's; the fetch policies are Relay's
+Relay's, with one exception, `@cacheExpiration(seconds:)`, for what neither
+Relay nor the specification has a word
+([the decision](../decisions/an-operation-states-its-expiration.md)); the
+connection handling is Relay's; the fetch policies are Relay's
 four; the glossary terms (operation, fragment, record, store, environment,
 retain, release buffer) are Relay's. Configuration keeps Relay's key names,
 in `baton.json`: `schema` today, and `schemaExtensions`, `customScalarTypes`

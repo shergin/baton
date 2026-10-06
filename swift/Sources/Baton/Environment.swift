@@ -14,8 +14,6 @@ public final class Environment {
     /// How many released queries keep their data alive, oldest out first;
     /// as many completed mutations keep theirs, apart from them.
     public let releaseBufferSize: Int
-    /// How long a fetched response stays fresh; `nil` means forever.
-    public var queryCacheExpiration: Duration?
     /// Called when a `@required(action: LOG)` field is null: the record and
     /// Relay's path. Debug builds print by default.
     public var requiredFieldMissing: ((Record, String) -> Void)?
@@ -42,9 +40,11 @@ public final class Environment {
     }
 
     /// An environment over HTTP. With `persistence`, the store keeps an image
-    /// on disk and a launch renders from it before the network answers.
-    public convenience init(url: URL, headers: [String: String] = [:], subscriptions: (any SubscriptionTransport)? = nil, persistence: Persistence? = nil, releaseBufferSize: Int = 10) {
-        self.init(transport: URLSessionTransport(url: url, headers: headers), subscriptions: subscriptions, store: Store(persistence: persistence), releaseBufferSize: releaseBufferSize)
+    /// on disk and a launch renders from it before the network answers;
+    /// `cacheExpiration` is the store's default for operations that state
+    /// none of their own.
+    public convenience init(url: URL, headers: [String: String] = [:], subscriptions: (any SubscriptionTransport)? = nil, persistence: Persistence? = nil, cacheExpiration: Duration? = nil, releaseBufferSize: Int = 10) {
+        self.init(transport: URLSessionTransport(url: url, headers: headers), subscriptions: subscriptions, store: Store(persistence: persistence, cacheExpiration: cacheExpiration), releaseBufferSize: releaseBufferSize)
     }
 
     /// The handle for an operation value, shared by every view that holds an

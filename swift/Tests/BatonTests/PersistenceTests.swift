@@ -26,9 +26,10 @@ struct PersistenceTests {
 
     /// An environment over the image, as a launch of the app makes one. A
     /// test runs its launches one after another, as a device does, and ends
-    /// each with `finish`. `url` spells the image's path another way.
-    func launch(_ transport: any Transport = SilentTransport(), at url: URL? = nil, version: String = "", sizeLimit: Int = 64 << 20, releaseBufferSize: Int = 10) -> Environment {
-        let store = Store(persistence: Persistence(url: url ?? image.url, version: version, sizeLimit: sizeLimit))
+    /// each with `finish`. `url` spells the image's path another way;
+    /// `cacheExpiration` is the store's default.
+    func launch(_ transport: any Transport = SilentTransport(), at url: URL? = nil, version: String = "", sizeLimit: Int = 64 << 20, cacheExpiration: Duration? = nil, releaseBufferSize: Int = 10) -> Environment {
+        let store = Store(persistence: Persistence(url: url ?? image.url, version: version, sizeLimit: sizeLimit), cacheExpiration: cacheExpiration)
         store.reportMissing = nil
         return Environment(transport: transport, store: store, releaseBufferSize: releaseBufferSize)
     }
@@ -296,25 +297,33 @@ struct PersistenceTests {
         #expect(transport.requestCount == 1, "fresh data from the image is not refetched")
         await finish(second)
 
-        let third = launch(transport)
-        third.queryCacheExpiration = .zero
+        let third = launch(transport, cacheExpiration: .zero)
         let expired = third.handle(for: TestList(page: 1), fetchPolicy: .storeOrNetwork)
         expired.retain()
         #expect(expired.isStale)
         await expired.settle()
         #expect(transport.requestCount == 2, "expired data is")
-        third.queryCacheExpiration = nil
-        #expect(!expired.isStale)
-        third.invalidate()
-        await expired.settle()
-        #expect(transport.requestCount == 3, "a retained handle refetches when everything is invalidated")
-        // An invalidation that nothing refetched reaches the next launch.
         expired.release()
-        third.invalidate()
         await finish(third)
 
+        // The refetch wrote its own age: a launch without the expiration
+        // reads it fresh.
         let fourth = launch(transport)
-        let invalidated = fourth.handle(for: TestList(page: 1), fetchPolicy: .storeOrNetwork)
+        let refetched = fourth.handle(for: TestList(page: 1), fetchPolicy: .storeOrNetwork)
+        refetched.retain()
+        #expect(!refetched.isStale)
+        await refetched.settle()
+        #expect(transport.requestCount == 2)
+        fourth.invalidate()
+        await refetched.settle()
+        #expect(transport.requestCount == 3, "a retained handle refetches when everything is invalidated")
+        // An invalidation that nothing refetched reaches the next launch.
+        refetched.release()
+        fourth.invalidate()
+        await finish(fourth)
+
+        let fifth = launch(transport)
+        let invalidated = fifth.handle(for: TestList(page: 1), fetchPolicy: .storeOrNetwork)
         #expect(invalidated.isStale, "the invalidation outlived the launch")
         await invalidated.settle()
         #expect(transport.requestCount == 4)
@@ -601,8 +610,7 @@ struct PersistenceTests {
         await fetched.settle()
         await finish(first)
 
-        let second = launch(transport)
-        second.queryCacheExpiration = .zero
+        let second = launch(transport, cacheExpiration: .zero)
         let expired = second.handle(for: TestList(page: 1), fetchPolicy: .storeOnly)
         #expect(expired.fetchTime != nil)
         #expect(expired.isStale, "the age came from the image, and it is past the expiration")

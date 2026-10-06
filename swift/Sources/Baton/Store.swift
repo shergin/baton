@@ -53,6 +53,10 @@ public final class Store {
     /// The store's image on disk, when it has one: every commit is written
     /// behind, and the availability check reads from it what memory lacks.
     public let persistence: Persistence?
+    /// How old an operation's data may be before it reads as stale, for an
+    /// operation whose document states no `@cacheExpiration` of its own;
+    /// `nil` is forever. Given when the store is made, where Relay gives it.
+    public let cacheExpiration: Duration?
     /// How many times the image had been removed when this store was made.
     /// The store hands it over with everything it asks of the image, so a
     /// store from before a sign-out's `removeAll()` reads, writes and dates
@@ -70,8 +74,9 @@ public final class Store {
     /// bubbling `@required` read.
     private var nullsOrErrorsChanged = false
 
-    public init(persistence: Persistence? = nil) {
+    public init(persistence: Persistence? = nil, cacheExpiration: Duration? = nil) {
         self.persistence = persistence
+        self.cacheExpiration = cacheExpiration
         imageRemovals = persistence?.removals ?? 0
         root = Record(type: Registry.type("Query"), key: Store.rootKey)
         mutationRoot = Record(type: Registry.type("Mutation"), key: Store.mutationRootKey)
