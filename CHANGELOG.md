@@ -5,6 +5,13 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- A resolved variant carries the lists its walks need, made once at the
+  resolution: the fields a response is read by and the ones a complete
+  response must carry, the fields the availability check waits for, the
+  connections' client links the check walks for merged pages, and the
+  links the collector follows. A walk tests no field for what it is; a
+  field's origin, the server, a `@defer` label or the client, is one
+  attribute of it.
 - An anchor's third word is the record its fragment starts at. A fragment
   spread enters its record as the anchor's origin, and a connection below
   it, however many links down, paginates with that record's id, as its

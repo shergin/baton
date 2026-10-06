@@ -686,11 +686,45 @@ package struct ResolvedVariant: Sendable {
     package let fields: [ResolvedField]
     /// The type's name, taken once, for the keys the ingest builds.
     let typeName: String
+    /// The lists the walks need, made once here, so that no walk tests a
+    /// field for what it is.
+    /// The fields a response is read by: every field but `__typename`, which
+    /// the ingest reads as the record's identity before any field.
+    let read: [ResolvedField]
+    /// Where in `read` the fields are that a complete response carries: the
+    /// server's own, outside any deferred part.
+    let expected: [Int]
+    /// The fields the availability check waits for: the server's own,
+    /// outside any deferred part.
+    let waits: [ResolvedField]
+    /// The connections' client links, which the check walks for their
+    /// merged pages after the fields, and the collector follows.
+    let clientLinks: [ResolvedField]
+    /// The links the collector follows: every linked field, deferred or not,
+    /// and the client links.
+    let follows: [ResolvedField]
 
     init(type: TypeID, fields: [ResolvedField], typeName: String? = nil) {
         self.type = type
         self.fields = fields
         self.typeName = typeName ?? type.name
+        let read = fields.filter { !$0.isTypename }
+        self.read = read
+        expected = read.indices.filter { read[$0].origin.isServer }
+        waits = read.filter { $0.origin.isServer }
+        var clientLinks: [ResolvedField] = []
+        var follows: [ResolvedField] = []
+        for field in read {
+            guard case .linked(let child, _, _, let connection) = field.kind else { continue }
+            follows.append(field)
+            if let connection {
+                let link = ResolvedField(responseKey: connection.storageKey, keyBytes: [], storageKey: connection.storageKey, rendered: connection.rendered, slot: connection.slot, kind: .linked(child, plural: false, lookupKey: nil, connection: nil), edit: nil, deferred: nil, caught: field.caught, client: true)
+                clientLinks.append(link)
+                follows.append(link)
+            }
+        }
+        self.clientLinks = clientLinks
+        self.follows = follows
     }
 
     /// The field with a response key, for walking a response path.
@@ -715,13 +749,31 @@ package struct ResolvedField: Sendable {
     package let slot: Slot
     package let kind: Kind
     package let edit: ResolvedEdit?
-    /// The `@defer` label of the part that carries the field; the availability
-    /// check does not wait for it.
-    package let deferred: String?
+    /// Where the field's value comes from: the server's response, the part
+    /// of it under a `@defer` label, which the availability check does not
+    /// wait for, or the client, which no response carries.
+    package let origin: Origin
     package let caught: Bool
     let isTypename: Bool
 
-    init(responseKey: String, keyBytes: [UInt8], storageKey: String, rendered: Bool, slot: Slot, kind: Kind, edit: ResolvedEdit?, deferred: String?, caught: Bool) {
+    package enum Origin: Sendable, Equatable {
+        case server
+        case deferred(String)
+        case client
+
+        var isServer: Bool {
+            if case .server = self { return true }
+            return false
+        }
+    }
+
+    /// The `@defer` label of the part that carries the field, when one does.
+    package var deferred: String? {
+        if case .deferred(let label) = origin { return label }
+        return nil
+    }
+
+    init(responseKey: String, keyBytes: [UInt8], storageKey: String, rendered: Bool, slot: Slot, kind: Kind, edit: ResolvedEdit?, deferred: String?, caught: Bool, client: Bool = false) {
         self.responseKey = responseKey
         self.keyBytes = keyBytes
         self.storageKey = storageKey
@@ -729,7 +781,7 @@ package struct ResolvedField: Sendable {
         self.slot = slot
         self.kind = kind
         self.edit = edit
-        self.deferred = deferred
+        origin = client ? .client : deferred.map(Origin.deferred) ?? .server
         self.caught = caught
         isTypename = responseKey == "__typename"
     }

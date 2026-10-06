@@ -908,8 +908,8 @@ public final class Store {
     }
 
     private func deferredParts(_ selection: ResolvedSelection, at record: Record, _ whole: inout Bool, _ batch: inout Batch) {
-        let fields = selection.isAbstract ? selection.variant(for: record.type).fields : selection.fields
-        for field in fields where !field.isTypename {
+        let fields = selection.variant(for: record.type).read
+        for field in fields {
             let value = record.peek(field.slot)
             guard case .linked(let child, _, _, _) = field.kind else {
                 if field.deferred != nil, case .missing = value { whole = false }
@@ -953,14 +953,14 @@ public final class Store {
     /// record the collector swept is pointed at the live record of that key,
     /// and a connection's client record is walked while it holds nothing.
     private func available(_ selection: ResolvedSelection, at record: Record, from disk: Disk?, _ walk: inout Walk) -> Bool {
-        selection.isAbstract
-            ? available(selection.variant(for: record.type).fields, at: record, from: disk, &walk)
-            : available(selection.fields, at: record, from: disk, &walk)
+        available(selection.variant(for: record.type), at: record, from: disk, &walk)
     }
 
-    /// The walk over one record's fields. They are taken as a parameter and
-    /// read in place, so neither the list nor a field is retained per record.
-    private func available(_ fields: [ResolvedField], at record: Record, from disk: Disk?, _ walk: inout Walk) -> Bool {
+    /// The walk over one record's fields the check waits for, then the
+    /// connections' client links. The lists are the variant's, read in
+    /// place, so neither a list nor a field is retained per record.
+    private func available(_ variant: ResolvedVariant, at record: Record, from disk: Disk?, _ walk: inout Walk) -> Bool {
+        let fields = variant.waits
         if disk == nil {
             if record.hydrated {
                 walk.met = true
@@ -969,13 +969,12 @@ public final class Store {
             }
         }
         for index in fields.indices {
-            if fields[index].isTypename || fields[index].deferred != nil { continue }
             let slot = fields[index].slot
             if let disk, case .missing = record.peek(slot) { hydrate(record, slot, from: disk, &walk.batch) }
             switch fields[index].kind {
             case .scalar:
                 if case .missing = record.peek(slot) { return false }
-            case .linked(let child, let plural, let lookupKey, let connection):
+            case .linked(let child, let plural, let lookupKey, _):
                 switch record.peek(slot) {
                 case .missing:
                     guard !plural, let lookupKey, let target = resolve(lookupKey, disk, &walk.batch) else { return false }
@@ -1007,30 +1006,28 @@ public final class Store {
                 default:
                     return false
                 }
-                // Lenses read a connection through its client record, which
-                // the walk above does not pass. A merge always fills it, so
-                // one that holds nothing, swept or never filled, is not in
-                // memory: the image may hold it, or have been told to forget
-                // it. With the image at hand it is walked, so its merged
-                // pages come back with it, and one the image has no row for
-                // stays a miss.
-                if let connection, case .ref(let found) = record.peek(connection.slot), found.swept || found.isEmpty {
-                    guard let disk else { return false }
-                    let merged = live(found, disk, &walk.batch)
-                    if merged !== found { set(record, connection.slot, .ref(merged), &walk.batch) }
-                    if !merged.deleted, !available(child, at: merged, from: disk, &walk) { return false }
-                }
             }
+        }
+        // Lenses read a connection through its client record, which the walk
+        // above does not pass. A merge always fills it, so one that holds
+        // nothing, swept or never filled, is not in memory: the image may
+        // hold it, or have been told to forget it. With the image at hand it
+        // is walked, so its merged pages come back with it, and one the
+        // image has no row for stays a miss.
+        for link in variant.clientLinks {
+            guard case .linked(let child, _, _, _) = link.kind, case .ref(let found) = record.peek(link.slot), found.swept || found.isEmpty else { continue }
+            guard let disk else { return false }
+            let merged = live(found, disk, &walk.batch)
+            if merged !== found { set(record, link.slot, .ref(merged), &walk.batch) }
+            if !merged.deleted, !available(child, at: merged, from: disk, &walk) { return false }
         }
         return true
     }
 
     /// Whether the walk reads one of the root's fields the image filled:
     /// taken once, before the walk, so the records below pay nothing for it.
-    private func readsHydratedRootSlot(_ fields: [ResolvedField]) -> Bool {
-        for index in fields.indices where !fields[index].isTypename && fields[index].deferred == nil {
-            if hydratedRootSlots.contains(fields[index].slot.index) { return true }
-        }
+    private func readsHydratedRootSlot(_ waits: [ResolvedField]) -> Bool {
+        for index in waits.indices where hydratedRootSlots.contains(waits[index].slot.index) { return true }
         return false
     }
 
@@ -1063,20 +1060,15 @@ public final class Store {
     func mark(_ selection: ResolvedSelection, from record: Record? = nil, into reachable: inout Set<ObjectIdentifier>) {
         let record = record ?? root
         reachable.insert(ObjectIdentifier(record))
-        if selection.isAbstract {
-            mark(selection.variant(for: record.type).fields, from: record, into: &reachable)
-        } else {
-            mark(selection.fields, from: record, into: &reachable)
-        }
+        mark(selection.variant(for: record.type).follows, from: record, into: &reachable)
     }
 
-    private func mark(_ fields: [ResolvedField], from record: Record, into reachable: inout Set<ObjectIdentifier>) {
-        for index in fields.indices {
-            guard case .linked(let child, _, _, let connection) = fields[index].kind else { continue }
-            mark(record.peek(fields[index].slot), child, into: &reachable)
-            if let connection {
-                mark(record.peek(connection.slot), child, into: &reachable)
-            }
+    /// Follows the variant's links, the connections' client links among
+    /// them.
+    private func mark(_ follows: [ResolvedField], from record: Record, into reachable: inout Set<ObjectIdentifier>) {
+        for index in follows.indices {
+            guard case .linked(let child, _, _, _) = follows[index].kind else { continue }
+            mark(record.peek(follows[index].slot), child, into: &reachable)
         }
     }
 

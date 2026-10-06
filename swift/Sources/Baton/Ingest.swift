@@ -382,7 +382,7 @@ package enum Ingest {
         changes.group()
         let rendered = errors.map { FieldError(message: $0.message, path: Ingest.render($0.path ?? path), extensions: $0.extensions) }
         guard let first = rendered.first else { return FailedPart(changes: changes, uncaught: []) }
-        let fields = plan.variant(for: type, memberOf: []).fields.filter { !$0.isTypename }
+        let fields = plan.variant(for: type, memberOf: []).read
         // A record of a type the part selects nothing on holds none of them.
         guard !fields.isEmpty else {
             changes.unplacedErrors = rendered
@@ -682,7 +682,7 @@ package enum Ingest {
             var expected = 0
             let variant = plan.variant(for: concreteType, memberOf: answers)
             for condition in answers { changes.memberships.append((concreteType, condition)) }
-            let fields = variant.fields
+            let fields = variant.read
             let fieldCount = fields.count
             if complete {
                 seen[depth].removeAll(keepingCapacity: true)
@@ -713,12 +713,6 @@ package enum Ingest {
                 guard matched >= 0 else { try skipValue(); continue }
                 if complete { seen[depth][matched] = true }
                 let field = fields[matched]
-
-                if field.isTypename {
-                    // The record's type, settled before the first key.
-                    try skipValue()
-                    continue
-                }
 
                 switch field.kind {
                 case .scalar(let scalar, let list):
@@ -804,9 +798,8 @@ package enum Ingest {
                 }
             }
             if complete {
-                // A deferred field arrives in a later part, and `__typename`
-                // is the object's identity rather than its data.
-                for index in 0..<fieldCount where !seen[depth][index] && !fields[index].isTypename && fields[index].deferred == nil {
+                // A deferred field arrives in a later part.
+                for index in variant.expected where !seen[depth][index] {
                     throw IngestError(offset: opening, message: "the response omits `\(fields[index].responseKey)` of `\(variant.typeName)`, which the operation selected")
                 }
             }
