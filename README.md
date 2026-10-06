@@ -257,12 +257,20 @@ selects. For the paths that do go through the network, `BatonTesting`'s
 `ScriptedTransport` holds a mutation until the test replies, drives a
 subscription's events, and lists what was sent.
 
+What a production endpoint needs around the transport, one replay of an
+authorization challenge, a bounded retry with backoff, a deadline across the
+attempts, and never a second send of a mutation, is a few dozen lines the
+app owns over the transport's one verb. [The exchange recipe](docs/recipes/exchange.md)
+walks through `examples/Exchange`, the wrapper the GitHub sample sends
+through; copy it and change the numbers.
+
 In this repository:
 
 - `swift run RickAndMorty` opens the read-only sample, which keeps its store
   on disk.
 - `GITHUB_TOKEN=$(gh auth token) swift run GitHubTriage` opens the one with
-  writes, connections, unions and a 1,800-definition schema.
+  writes, connections, unions and a 1,800-definition schema, sent through
+  the exchange recipe's wrapper.
 - `swift test` runs the proofs.
 - `swift run -c release BatonBenchmarks` prints the numbers behind
   [`BENCHMARKS.md`](BENCHMARKS.md).

@@ -625,7 +625,11 @@ transport with nothing recorded and a transport that delivers no payload
 fail with one of status 0, which says what went wrong. `TransportError`
 stays the built-in transports' error, and is carried unchanged inside the
 transport's kind of [failure](#runtime), as a `URLError` or an app's own
-transport's error is.
+transport's error is. What a production endpoint needs beyond the built-in
+transports, one replay of an authorization challenge, a bounded retry with
+backoff, a deadline across the attempts, is a wrapper over the one verb the
+app owns, not a library type; [the exchange recipe](recipes/exchange.md)
+walks through the one the GitHub sample sends through.
 
 **Recorded transport, scripted transport.** *Concept: transport.* Baton's
 words. `RecordedTransport` answers from recorded responses by operation

@@ -78,7 +78,7 @@ let package = Package(
         ),
         .testTarget(
             name: "BatonTests",
-            dependencies: ["Baton", "BatonTesting", "BatonSpec"],
+            dependencies: ["Baton", "BatonTesting", "BatonSpec", "Exchange"],
             path: "swift/Tests/BatonTests",
             swiftSettings: [.swiftLanguageMode(.v6)],
             plugins: ["BatonPlugin"]
@@ -110,9 +110,18 @@ let package = Package(
             swiftSettings: [.swiftLanguageMode(.v6)],
             plugins: ["BatonPlugin"]
         ),
+        // The exchange of `docs/recipes/exchange.md`: a wrapper over the
+        // transport's one verb an app copies, compiled here so the GitHub
+        // sample sends through it and the tests prove it.
+        .target(
+            name: "Exchange",
+            dependencies: ["Baton"],
+            path: "examples/Exchange",
+            swiftSettings: [.swiftLanguageMode(.v6)]
+        ),
         .executableTarget(
             name: "GitHubTriage",
-            dependencies: ["Baton"],
+            dependencies: ["Baton", "Exchange"],
             path: "examples/GitHubTriage",
             exclude: ["schema.docs.graphql", "baton.json"],
             swiftSettings: [.swiftLanguageMode(.v6)],

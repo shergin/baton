@@ -104,4 +104,7 @@ source tree. The id is the hash's lowercase hexadecimal with no prefix, as
 Relay writes it; a server wanting the working group's `sha256:` prefix adds
 it in its encoding. The transport's one verb and the request's kind landed
 in the same change, and the credentials are read per attempt, so the exact
-shape this record deferred to #19 is settled with it.
+shape this record deferred to #19 is settled with it. The retry, the
+challenge and the deadline a production endpoint needs are a wrapper over
+the one verb that the app owns: `docs/recipes/exchange.md` walks through
+`examples/Exchange`, which the GitHub sample sends through.

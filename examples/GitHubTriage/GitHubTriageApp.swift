@@ -1,4 +1,5 @@
 import Baton
+import Exchange
 import SwiftUI
 
 /// The sample on GitHub's API: what the viewer has to look at (open issues
@@ -10,11 +11,17 @@ import SwiftUI
 ///     GITHUB_TOKEN=$(gh auth token) swift run GitHubTriage
 @main
 struct GitHubTriageApp: App {
-    private static let token = ProcessInfo.processInfo.environment["GITHUB_TOKEN"] ?? ""
+    private nonisolated static let token = ProcessInfo.processInfo.environment["GITHUB_TOKEN"] ?? ""
 
+    /// The exchange of `docs/recipes/exchange.md` over GitHub's endpoint: a
+    /// query the API refused with a 5xx or lost the connection of is sent
+    /// again, under a deadline; a mutation never is. A personal access token
+    /// is not renewed, so a 401 is sent once more with the same token.
     @State private var environment = Baton.Environment(
-        url: URL(string: "https://api.github.com/graphql")!,
-        headers: ["Authorization": "Bearer \(token)"]
+        transport: Exchange(base: URLSessionTransport(
+            url: URL(string: "https://api.github.com/graphql")!,
+            credentials: { ["Authorization": "Bearer \(token)"] }
+        ))
     )
 
     var body: some Scene {

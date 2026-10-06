@@ -5,6 +5,12 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- A recipe, `docs/recipes/exchange.md`, and its sample, `examples/Exchange`,
+  for what a production endpoint needs around the transport's one verb: one
+  replay of an authorization challenge, a bounded retry with a jittered
+  doubling backoff over a 5xx or a lost connection, a deadline across every
+  attempt and its waits, and never a second send of a mutation or of a
+  stream that delivered. The GitHub sample sends through it.
 - `BatonTesting` gains `ScriptedTransport`, for an app's tests: answers
   from fixtures by operation name or through a responder, mutations held
   until the test replies or refuses, subscriptions driven by hand, and the
