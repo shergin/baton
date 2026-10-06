@@ -13,6 +13,11 @@ DerivedData/
 
 # Local
 .DS_Store
+# Objects a swiftc run from the root drops beside the sources.
+/*.o
+/*.d
+/*.dia
+/*.swiftdeps
 
 # The compiler binary bundle Package.swift points at; build it with scripts/build-compiler.sh.
 /compiler/dist/
