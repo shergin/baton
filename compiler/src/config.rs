@@ -216,12 +216,34 @@ pub struct Config {
     pub path: PathBuf,
 }
 
+/// Why `baton.json` could not be loaded.
+#[derive(Debug, thiserror::Error)]
+pub enum ConfigError {
+    #[error("batonc: cannot read {path}: {source}")]
+    Read {
+        path: String,
+        #[source]
+        source: std::io::Error,
+    },
+    #[error("batonc: {path}: {source}")]
+    Parse {
+        path: String,
+        #[source]
+        source: serde_json::Error,
+    },
+}
+
 impl Config {
-    pub fn load(path: &Path) -> Result<Config, String> {
-        let text = std::fs::read_to_string(path)
-            .map_err(|error| format!("batonc: cannot read {}: {error}", path.display()))?;
-        let mut config: Config = serde_json::from_str(&text)
-            .map_err(|error| format!("batonc: {}: {error}", path.display()))?;
+    pub fn load(path: &Path) -> Result<Config, ConfigError> {
+        let text = std::fs::read_to_string(path).map_err(|source| ConfigError::Read {
+            path: path.display().to_string(),
+            source,
+        })?;
+        let mut config: Config =
+            serde_json::from_str(&text).map_err(|source| ConfigError::Parse {
+                path: path.display().to_string(),
+                source,
+            })?;
         config.path = path.to_path_buf();
         Ok(config)
     }

@@ -71,7 +71,7 @@ enum DriverError {
     Usage(String),
     /// `baton.json` could not be read or parsed.
     #[error("{0}")]
-    Config(String),
+    Config(#[from] crate::config::ConfigError),
     #[error("batonc: cannot read {path}: {source}")]
     Read {
         path: String,
@@ -177,7 +177,7 @@ struct SchemaSources {
 
 fn read_schema(options: &Options) -> Result<SchemaSources, DriverError> {
     let config = match options.values.get("config") {
-        Some(path) => Config::load(Path::new(path)).map_err(DriverError::Config)?,
+        Some(path) => Config::load(Path::new(path))?,
         None => Config::default(),
     };
     let path =
