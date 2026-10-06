@@ -5,6 +5,10 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- A recipe for derived state outside views, `docs/recipes/derived-state.md`:
+  a model derives its value inside an `Observations` closure over the
+  lenses it reads, and no commit signal is added; recorded in
+  `docs/decisions/derived-state-is-observed-not-signaled.md`.
 - `Record`, `Value`, `Slot`, `TypeID`, `Owner` and `Members` are generated
   code's interface, behind `@_spi(Generated)`, now that no hook hands them
   out; an app's own files see lenses, handles, the environment, the log,
