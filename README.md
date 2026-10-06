@@ -224,7 +224,11 @@ GraphQL and reports schema errors at the GraphQL text. It also writes
 `Baton.report.json` into the build's output directory, what the target
 compiled: every operation with its text, id and the fragments it reaches,
 every fragment with the operations that reach it, by name and deterministic,
-for the people who register operations and review contract changes. The generated files import
+for the people who register operations and review contract changes.
+Outside SwiftPM, the same compiler runs by hand or from a Bazel rule, and a
+team that commits its generated code gates with `batonc generate --check`;
+[the command's contract](docs/recipes/batonc.md) has the arguments, the
+exit codes and the examples. The generated files import
 the runtime's interface for generated code, `@_spi(Generated) import
 Baton`; the app's own files import `Baton` and need nothing more. Tests and
 previews add `BatonTesting`, a second product of the package, for a

@@ -579,8 +579,10 @@ every fragment with its name, type condition, source, the operations that
 reach it, and its definition as the author wrote it, printed before the
 transforms. Deterministic, by
 name, with sources relative to the working directory, so the diff of two
-builds' reports is the contract's change. The persisted documents file is a
-second view of the same facts, and a dependent target's compilation is what
+builds' reports is the contract's change. `validate`, `print` and
+`generate --check` are the same compilation with another output, and
+[the command's contract](recipes/batonc.md) states all of them. The
+persisted documents file is a second view of the same facts, and a dependent target's compilation is what
 the fragment's definition is there for; see
 [the decision](decisions/the-report-is-what-a-dependent-target-reads.md).
 

@@ -17,8 +17,9 @@ What to read when.
   [terminology.md](terminology.md) — the vocabulary contract, updated in the
   same change as the code. Concepts marked *(planned)* do not exist yet.
 - **How do I…** — [recipes/](recipes/), one page per composition of what
-  ships; the first is [the exchange](recipes/exchange.md), a challenge, a
-  retry and a deadline over the transport's one verb. The rest arrive with
-  the releases that make them true.
+  ships: [the exchange](recipes/exchange.md), a challenge, a retry and a
+  deadline over the transport's one verb, and [`batonc`](recipes/batonc.md),
+  the compiler's command line for a build outside SwiftPM. The rest arrive
+  with the releases that make them true.
 - **What did a decision open up?** — [openings/](openings/), written as the
   project ships. None yet.

@@ -7,7 +7,10 @@
 //! - `generate --schema <sdl> (--out <dir> | --emit <src>=<out>…) <files…>`
 //!   writes the Swift of each host file and the shared file, or nothing when a
 //!   document has an error, and prints diagnostics in `path:line:col:` form;
-//!   `--report <file>` writes what the target compiled as JSON.
+//!   `--report <file>` writes what the target compiled as JSON; `--check`
+//!   writes nothing and names every output that is stale.
+//! - `validate --schema <sdl> <files…>` is the same compilation with no output.
+//! - `print <Name> --schema <sdl> <files…>` prints one operation's text and id.
 //! - `bench --schema <sdl> --fragments <n>` compiles a synthetic corpus twice
 //!   and prints the warm timings.
 
@@ -22,7 +25,7 @@ mod pipeline;
 mod report;
 mod swift;
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
@@ -35,13 +38,15 @@ use crate::swift::Marker;
 fn main() -> ExitCode {
     let arguments: Vec<String> = std::env::args().skip(1).collect();
     let Some(command) = arguments.first() else {
-        eprintln!("usage: batonc <scan|plan|generate|bench> …");
+        eprintln!("usage: batonc <scan|plan|generate|validate|print|bench> …");
         return ExitCode::from(2);
     };
     let result = match command.as_str() {
         "scan" => scan(&arguments[1..]),
         "plan" => plan(&arguments[1..]),
         "generate" => generate(&arguments[1..]),
+        "validate" => validate(&arguments[1..]),
+        "print" => print(&arguments[1..]),
         "bench" => bench(&arguments[1..]),
         other => {
             eprintln!("batonc: unknown command `{other}`");
@@ -90,15 +95,22 @@ enum DriverError {
     /// The diagnostics have been printed.
     #[error("batonc: the documents have errors")]
     Reported,
+    /// Under `--check`, outputs on disk differ from what `generate` writes.
+    #[error("batonc: {0} outputs differ from what `generate` writes")]
+    Stale(usize),
 }
 
-/// Parsed command-line options: `--name value` pairs, repeated `--emit`, and
-/// the remaining positional paths.
+/// Parsed command-line options: `--name value` pairs, flags, repeated
+/// `--emit`, and the remaining positional paths.
 struct Options {
     values: BTreeMap<String, String>,
+    flags: BTreeSet<String>,
     emits: Vec<(PathBuf, PathBuf)>,
     paths: Vec<PathBuf>,
 }
+
+/// The options that take no value.
+const FLAGS: &[&str] = &["check"];
 
 /// Reads a command's arguments; `allowed` names the options the command
 /// takes, and any other is an error rather than a silent default.
@@ -109,6 +121,7 @@ fn parse_options(
 ) -> Result<Options, DriverError> {
     let mut options = Options {
         values: BTreeMap::new(),
+        flags: BTreeSet::new(),
         emits: Vec::new(),
         paths: Vec::new(),
     };
@@ -126,6 +139,10 @@ fn parse_options(
                 return Err(DriverError::Usage(format!(
                     "`--{name}` is not an option of `{command}`, which {takes}"
                 )));
+            }
+            if FLAGS.contains(&name) {
+                options.flags.insert(name.to_string());
+                continue;
             }
             let value = iterator
                 .next()
@@ -266,29 +283,37 @@ fn plan(arguments: &[String]) -> Result<(), DriverError> {
     }
 }
 
-fn generate(arguments: &[String]) -> Result<(), DriverError> {
-    let options = parse_options(
-        "generate",
-        arguments,
-        &["schema", "config", "out", "shared", "emit", "report"],
-    )?;
-    let sources = read_schema(&options)?;
-    let (sdl, schema_path, config) = (&sources.sdl, &sources.path, &sources.config);
-    let out_dir = options.values.get("out").map(PathBuf::from);
-    let shared_path = options.values.get("shared").map(PathBuf::from);
+/// One compilation of a target's documents: the schema sources, the
+/// documents, the plan, and the lines the compiler itself reports after the
+/// front end, property types and unused fragments.
+struct Compilation {
+    sources: SchemaSources,
+    documents: Vec<Document>,
+    plan: pipeline::Plan,
+    rendered: Vec<Rendered>,
+}
+
+/// Compiles the documents `options` names against the schema it names, or
+/// prints the diagnostics and reports. Relay's program is all or nothing:
+/// after an error nothing is written, so a command stops on the first wave
+/// of diagnostics instead of a second one from a module half written.
+fn compile_documents(options: &Options) -> Result<Compilation, DriverError> {
+    let sources = read_schema(options)?;
     let (documents, errors) = documents::collect(&options.paths);
     for error in &errors {
         eprintln!("{error}");
     }
-
-    // Relay's program is all or nothing: after an error nothing is written,
-    // so the build stops on the first wave of diagnostics instead of a second
-    // one from a module half written.
-    let compiled = pipeline::compile(sdl, schema_path, &sources.extensions, &documents, config);
+    let compiled = pipeline::compile(
+        &sources.sdl,
+        &sources.path,
+        &sources.extensions,
+        &documents,
+        &sources.config,
+    );
     let plan = match compiled {
         Ok(compiled) => compiled.plan,
         Err(diagnostics) => {
-            let known = with_schema(&documents, schema_path, sdl);
+            let known = with_schema(&documents, &sources.path, &sources.sdl);
             for diagnostic in &diagnostics {
                 eprintln!("{}", diagnostics::render(diagnostic, &known));
             }
@@ -299,29 +324,63 @@ fn generate(arguments: &[String]) -> Result<(), DriverError> {
         return Err(DriverError::Reported);
     }
     let rendered = check_property_types(&documents, &plan);
-    let output = match emit::emit(&plan) {
-        Ok(output) => output,
-        Err(errors) => {
-            for error in &errors {
-                match error {
-                    NameError::Clash(clash) => eprintln!(
-                        "{}",
-                        diagnostics::at(&clash.origin, &documents, clash.to_string())
-                    ),
-                    NameError::Duplicate(duplicate) => eprintln!("batonc: {duplicate}"),
-                }
-            }
-            return Err(DriverError::Reported);
-        }
-    };
+    Ok(Compilation {
+        sources,
+        documents,
+        plan,
+        rendered,
+    })
+}
 
+/// The Swift of a plan, or the name errors printed and reported.
+fn emitted(plan: &pipeline::Plan, documents: &[Document]) -> Result<emit::Output, DriverError> {
+    emit::emit(plan).map_err(|errors| {
+        for error in &errors {
+            match error {
+                NameError::Clash(clash) => eprintln!(
+                    "{}",
+                    diagnostics::at(&clash.origin, documents, clash.to_string())
+                ),
+                NameError::Duplicate(duplicate) => eprintln!("batonc: {duplicate}"),
+            }
+        }
+        DriverError::Reported
+    })
+}
+
+/// Prints the compiler's own lines and reports when one is an error.
+fn finish(rendered: &[Rendered]) -> Result<(), DriverError> {
+    for line in rendered {
+        eprintln!("{line}");
+    }
+    if rendered.iter().any(|line| line.severity == "error") {
+        Err(DriverError::Reported)
+    } else {
+        Ok(())
+    }
+}
+
+fn generate(arguments: &[String]) -> Result<(), DriverError> {
+    let options = parse_options(
+        "generate",
+        arguments,
+        &[
+            "schema", "config", "out", "shared", "emit", "report", "check",
+        ],
+    )?;
+    let out_dir = options.values.get("out").map(PathBuf::from);
+    let shared_path = options.values.get("shared").map(PathBuf::from);
+    let compilation = compile_documents(&options)?;
+    let (documents, plan) = (&compilation.documents, &compilation.plan);
+    let output = emitted(plan, documents)?;
+
+    let root = std::env::current_dir().unwrap_or_default();
     let mut targets: Vec<(PathBuf, PathBuf)> = options.emits.clone();
     if let (true, Some(out_dir)) = (targets.is_empty(), &out_dir) {
-        let root = std::env::current_dir().unwrap_or_default();
         for path in documents
             .iter()
             .map(|document| &document.path)
-            .collect::<std::collections::BTreeSet<_>>()
+            .collect::<BTreeSet<_>>()
         {
             targets.push((path.clone(), out_dir.join(output_name(path, &root))));
         }
@@ -330,31 +389,26 @@ fn generate(arguments: &[String]) -> Result<(), DriverError> {
         shared_path.or_else(|| out_dir.as_ref().map(|dir| dir.join("Baton.baton.swift")));
     check_targets(&targets, shared_path.as_deref(), &output)?;
 
-    // Every declared output is written, so the build system never sees a
+    // Every declared output is planned, so the build system never sees a
     // missing file; a host file without documents gets a header only.
-    let mut written: Vec<&Path> = Vec::new();
+    let mut planned: Vec<(PathBuf, String)> = Vec::new();
     for (source, destination) in &targets {
         let text = output
             .files
             .get(&source.to_string_lossy().into_owned())
             .cloned()
             .unwrap_or_else(|| "// Generated by batonc. No GraphQL in this file.\n".to_string());
-        write_output(destination, &text)?;
-        written.push(destination);
+        planned.push((destination.clone(), text));
     }
     if let Some(shared_path) = &shared_path {
-        write_output(shared_path, &output.shared)?;
-        written.push(shared_path);
+        planned.push((shared_path.clone(), output.shared.clone()));
     }
     // Under `persistConfig`, Relay's map from id to text, which a
     // registration step consumes: beside the configuration when run by
     // hand, or in the output directory under the build, whose sandbox keeps
     // the source tree.
-    let persist_path = sources
-        .config
-        .persist_config
-        .as_ref()
-        .map(|persist| match &out_dir {
+    if let Some(persist) = &compilation.sources.config.persist_config {
+        let persist_path = match &out_dir {
             Some(out_dir) => out_dir.join(Path::new(&persist.file).file_name().unwrap_or_default()),
             None => options
                 .values
@@ -364,28 +418,108 @@ fn generate(arguments: &[String]) -> Result<(), DriverError> {
                 .map(Path::to_path_buf)
                 .unwrap_or_default()
                 .join(&persist.file),
-        });
-    if let Some(persist_path) = &persist_path {
-        write_output(persist_path, &persisted_documents(&plan))?;
+        };
+        planned.push((persist_path, persisted_documents(plan)));
     }
     // The report: what this target compiled, for the people who register
     // operations and review contract changes.
     if let Some(report_path) = options.values.get("report") {
-        let root = std::env::current_dir().unwrap_or_default();
-        write_output(Path::new(report_path), &report::text(&plan, &root))?;
-    }
-    if let Some(out_dir) = &out_dir {
-        remove_stale_outputs(out_dir, &written)?;
+        planned.push((PathBuf::from(report_path), report::text(plan, &root)));
     }
 
-    for line in &rendered {
-        eprintln!("{line}");
-    }
-    if rendered.iter().any(|line| line.severity == "error") {
-        Err(DriverError::Reported)
+    if options.flags.contains("check") {
+        check_outputs(&planned, out_dir.as_deref())?;
     } else {
-        Ok(())
+        for (path, text) in &planned {
+            write_output(path, text)?;
+        }
+        if let Some(out_dir) = &out_dir {
+            let written: Vec<&Path> = planned.iter().map(|(path, _)| path.as_path()).collect();
+            remove_stale_outputs(out_dir, &written)?;
+        }
     }
+    finish(&compilation.rendered)
+}
+
+/// `--check`: compares every planned output with the file at its path and
+/// names each that is stale or missing, and each `.baton.swift` in the
+/// output directory that nothing writes any more; reports when any is.
+fn check_outputs(planned: &[(PathBuf, String)], out_dir: Option<&Path>) -> Result<(), DriverError> {
+    let mut stale = 0;
+    for (path, text) in planned {
+        match std::fs::read_to_string(path) {
+            Ok(existing) if &existing == text => {}
+            Ok(_) => {
+                eprintln!("{}: stale", path.display());
+                stale += 1;
+            }
+            Err(_) => {
+                eprintln!("{}: missing", path.display());
+                stale += 1;
+            }
+        }
+    }
+    if let Some(out_dir) = out_dir {
+        let planned_paths: BTreeSet<PathBuf> = planned
+            .iter()
+            .filter_map(|(path, _)| std::fs::canonicalize(path).ok())
+            .collect();
+        for entry in std::fs::read_dir(out_dir).into_iter().flatten().flatten() {
+            let path = entry.path();
+            if !path.to_string_lossy().ends_with(".baton.swift") {
+                continue;
+            }
+            let Ok(canonical) = std::fs::canonicalize(&path) else {
+                continue;
+            };
+            if !planned_paths.contains(&canonical) {
+                eprintln!("{}: nothing writes it any more", path.display());
+                stale += 1;
+            }
+        }
+    }
+    if stale == 0 {
+        Ok(())
+    } else {
+        Err(DriverError::Stale(stale))
+    }
+}
+
+/// The same compilation as `generate` with no output: diagnostics and an
+/// exit code, for an editor or a hook.
+fn validate(arguments: &[String]) -> Result<(), DriverError> {
+    let options = parse_options("validate", arguments, &["schema", "config"])?;
+    let compilation = compile_documents(&options)?;
+    emitted(&compilation.plan, &compilation.documents)?;
+    finish(&compilation.rendered)
+}
+
+/// The same compilation, printing one operation's text, the very text the
+/// app sends, after `# documentId: <id>` when it is persisted.
+fn print(arguments: &[String]) -> Result<(), DriverError> {
+    let mut options = parse_options("print", arguments, &["schema", "config"])?;
+    if options.paths.is_empty() {
+        return Err(DriverError::Usage(
+            "`print` takes the operation's name, then the files".to_string(),
+        ));
+    }
+    let name = options.paths.remove(0).to_string_lossy().into_owned();
+    let compilation = compile_documents(&options)?;
+    let Some(operation) = compilation
+        .plan
+        .operations
+        .iter()
+        .find(|operation| operation.name == name)
+    else {
+        return Err(DriverError::Usage(format!(
+            "no operation is named `{name}`"
+        )));
+    };
+    if let Some(id) = &operation.id {
+        println!("# documentId: {id}");
+    }
+    println!("{}", operation.text);
+    Ok(())
 }
 
 /// Relay's persisted-documents file: a JSON object from each operation's id
@@ -703,3 +837,7 @@ fn report_timings(timings: &pipeline::Timings, document_count: usize) {
         ms(timings.total())
     );
 }
+
+#[cfg(test)]
+#[path = "tests/driver_tests.rs"]
+mod driver_tests;

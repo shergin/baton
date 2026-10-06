@@ -5,6 +5,12 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- `batonc validate`, the same compilation with no output, for an editor or a
+  hook; `batonc print <Name>`, one operation's text and id as the app sends
+  them; and `batonc generate --check`, which writes nothing and names every
+  output on disk that differs from what it would write, for a team that
+  commits its generated code. The command's contract, with a Bazel
+  `genrule` over it, is `docs/recipes/batonc.md`.
 - `BatonInspector`, a third product of the package for a debug menu:
   `StoreInspector(environment)` is a view over the store, its counts, its
   records by type searchable by key, each record's slots with their values
