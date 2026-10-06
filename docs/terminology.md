@@ -491,7 +491,11 @@ kind of a [failure](#runtime). See
 [the decision](decisions/a-failure-says-its-kind.md).
 
 **Ingest.** *Composition: store, plan.* The off-main-actor stage that
-decodes response bytes straight into a change set by following a plan.
+decodes response bytes straight into a change set by following a plan. A
+change set holds what the store writes and nothing else; what the first
+part of an incremental response announces, and whether more parts follow,
+are read beside it, and the parts that follow are assembled into change
+sets at the records their paths name by the environment's delivery.
 
 **Preload.** *Composition: operation value, environment.* Relay: starting a
 request on user intent, before the destination renders. Here:

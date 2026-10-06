@@ -5,6 +5,13 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- The ingest returns what it normalized and no more: a change set holds
+  what the store writes, and the parts an incremental response announces,
+  whether more follow, and the errors of a part the server could not
+  deliver are read beside it rather than carried through the commit. The
+  assembly of a stream of parts into change sets, by announced id or by
+  path and label, leaves the environment's fetch for a delivery of its
+  own; the socket's frame reader leaves the ingest for the transport.
 - Nothing outside a batch writes a record. A commit is a batch of one of
   three kinds: server, written to the image; optimistic, whose undo stays
   with its layer; and local, the runtime's own writes, a page's loading

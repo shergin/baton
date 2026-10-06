@@ -460,8 +460,29 @@ public actor GraphQLTransportWebSocket: SubscriptionTransport {
         }
     }
 
+    /// Reads a `graphql-transport-ws` frame: its type, id and payload bytes,
+    /// over the ingest's scanner.
+    package static func frame(_ data: Data) throws -> (type: String?, id: String?, payload: Data?) {
+        let bytes = [UInt8](data)
+        var type: String?
+        var id: String?
+        var payload: Data?
+        try bytes.withUnsafeBufferPointer { buffer in
+            var scanner = Ingest.Scanner(base: buffer.baseAddress!, count: buffer.count)
+            try scanner.members { key, scanner in
+                switch key {
+                case "type": type = try scanner.stringValue()
+                case "id": id = try scanner.stringValue()
+                case "payload": payload = try scanner.rawValue(in: bytes)
+                default: try scanner.skipValue()
+                }
+            }
+        }
+        return (type, id, payload)
+    }
+
     private func handle(_ data: Data) throws {
-        let frame = try Ingest.frame(data)
+        let frame = try Self.frame(data)
         switch frame.type {
         case "connection_ack":
             acknowledged = true

@@ -61,14 +61,6 @@ package struct ChangeSet: Sendable {
     /// Errors the response carried without a path, or with one that names
     /// no field it selected: nothing in the store holds them.
     package internal(set) var unplacedErrors: [FieldError] = []
-    /// The errors of an announced part the server could not deliver, when a
-    /// field it would have filled is under no `@catch`, each once. They
-    /// belong to the part's fields, which hold one error each, the first.
-    var failedPartErrors: [FieldError] = []
-    /// The parts the first part of an incremental response announces, and
-    /// whether more parts follow it.
-    package internal(set) var pending: [Ingest.IncrementalPart.Pending] = []
-    package internal(set) var hasNext = false
     var index: [String: Int32] = [:]
 
     /// Reserves by the response's size: the Rick and Morty fixture writes an
@@ -167,13 +159,11 @@ package struct ChangeSet: Sendable {
     }
 
     /// The field errors no `@catch` handles, placed or not, each once; they
-    /// fail a `@throwOnFieldError` operation.
+    /// fail a `@throwOnFieldError` operation. A failed part's change set
+    /// repeats one error on every field the part would have filled, and
+    /// counts them through `Ingest.FailedPart` instead.
     package var uncaughtFieldErrors: [FieldError] {
-        // A failed part's change set holds that part alone, and its entries
-        // repeat the first error on every field the part would have filled;
-        // its errors are counted from `failedPartErrors` instead, once each.
-        guard failedPartErrors.isEmpty else { return failedPartErrors + unplacedErrors }
-        return fieldErrors.filter { !$0.caught }.map(\.error) + unplacedErrors
+        fieldErrors.filter { !$0.caught }.map(\.error) + unplacedErrors
     }
 
     @inline(__always)
@@ -281,15 +271,19 @@ package enum Ingest {
         let errors: [ResponseError]
     }
 
+    /// A whole response, or the first part of an incremental one, as it
+    /// normalizes: its change set, the parts it announces (the 2024 format's
+    /// `pending`) and whether more parts follow it. A whole response announces
+    /// nothing and is followed by nothing.
+    package struct FirstPart: Sendable {
+        package var changes: ChangeSet
+        package var pending: [IncrementalPart.Pending]
+        package var hasNext: Bool
+    }
+
+    /// The change set a response normalizes to: what the store writes.
     package static func normalize(_ data: Data, plan: ResolvedSelection, rootKey: String) throws -> ChangeSet {
-        let bytes = [UInt8](data)
-        // The change set is made inside the cursor and moved out, so no copy
-        // is held while the cursor appends and nothing is copied on write.
-        return try bytes.withUnsafeBufferPointer { buffer in
-            var cursor = Cursor(base: buffer.baseAddress!, count: buffer.count, changes: ChangeSet(bytes: bytes))
-            try cursor.run(root: plan, rootKey: rootKey)
-            return cursor.changes
-        }
+        try normalizeFirstPart(data, plan: plan, rootKey: rootKey).changes
     }
 
     /// Normalizes a response off the caller's actor and inside the caller's
@@ -297,6 +291,24 @@ package enum Ingest {
     @concurrent
     nonisolated static func normalized(_ data: Data, plan: ResolvedSelection, rootKey: String) async throws -> ChangeSet {
         try normalize(data, plan: plan, rootKey: rootKey)
+    }
+
+    /// A response, or the first part of an incremental one, with what it
+    /// says of the parts to follow.
+    package static func normalizeFirstPart(_ data: Data, plan: ResolvedSelection, rootKey: String) throws -> FirstPart {
+        let bytes = [UInt8](data)
+        // The change set is made inside the cursor and moved out, so no copy
+        // is held while the cursor appends and nothing is copied on write.
+        return try bytes.withUnsafeBufferPointer { buffer in
+            var cursor = Cursor(base: buffer.baseAddress!, count: buffer.count, changes: ChangeSet(bytes: bytes))
+            try cursor.run(root: plan, rootKey: rootKey)
+            return FirstPart(changes: cursor.changes, pending: cursor.pending, hasNext: cursor.hasNext)
+        }
+    }
+
+    @concurrent
+    nonisolated static func normalizedFirstPart(_ data: Data, plan: ResolvedSelection, rootKey: String) async throws -> FirstPart {
+        try normalizeFirstPart(data, plan: plan, rootKey: rootKey)
     }
 
     /// Normalizes one object, as a deferred part delivers it: the selection
@@ -333,33 +345,38 @@ package enum Ingest {
         }
     }
 
+    /// An announced part the server could not deliver: the change set of its
+    /// errors on the fields the part would have filled, and the errors a
+    /// `@throwOnFieldError` operation counts, each once.
+    struct FailedPart: Sendable {
+        var changes: ChangeSet
+        var uncaught: [FieldError]
+    }
+
     /// The field errors of an announced part the server could not deliver,
     /// on the fields the part would have filled, so a `@catch` there reads
     /// them. A field holds one error, the first. The errors are caught when
     /// every one of those fields is under `@catch`, whatever their number;
-    /// otherwise each counts once, however many fields are under none.
-    nonisolated static func failed(_ plan: ResolvedSelection, key: String, type: TypeID, entity: Bool, at path: [PathSegment], errors: [ResponseError]) -> ChangeSet {
+    /// otherwise each counts once, however many fields are under none. They
+    /// are not unplaced, which would fail a handle whose operation spreads
+    /// the part's fragment: an error inside a spread is the fragment's to
+    /// weigh.
+    nonisolated static func failed(_ plan: ResolvedSelection, key: String, type: TypeID, entity: Bool, at path: [PathSegment], errors: [ResponseError]) -> FailedPart {
         var changes = ChangeSet(bytes: [])
         let record = changes.record(for: key, type: type, entity: entity)
         changes.group()
         let rendered = errors.map { FieldError(message: $0.message, path: Ingest.render($0.path ?? path), extensions: $0.extensions) }
-        guard let first = rendered.first else { return changes }
+        guard let first = rendered.first else { return FailedPart(changes: changes, uncaught: []) }
         let fields = plan.variant(for: type).fields.filter { !$0.isTypename }
         // A record of a type the part selects nothing on holds none of them.
         guard !fields.isEmpty else {
             changes.unplacedErrors = rendered
-            return changes
+            return FailedPart(changes: changes, uncaught: rendered)
         }
         for field in fields {
             changes.fieldErrors.append(ChangeSet.FieldErrorEntry(record: record, slot: field.slot, error: first, caught: field.caught))
         }
-        // They are not unplaced, which would fail a handle whose operation
-        // spreads the part's fragment: an error inside a spread is the
-        // fragment's to weigh.
-        if !fields.allSatisfy(\.caught) {
-            changes.failedPartErrors = rendered
-        }
-        return changes
+        return FailedPart(changes: changes, uncaught: fields.allSatisfy(\.caught) ? [] : rendered)
     }
 
     /// A response path, dotted, as a field error shows it.
@@ -454,31 +471,15 @@ package enum Ingest {
         }
     }
 
-    /// Reads a `graphql-transport-ws` frame: its type, id and payload bytes.
-    package static func frame(_ data: Data) throws -> (type: String?, id: String?, payload: Data?) {
-        let bytes = [UInt8](data)
-        var type: String?
-        var id: String?
-        var payload: Data?
-        try bytes.withUnsafeBufferPointer { buffer in
-            var scanner = Scanner(base: buffer.baseAddress!, count: buffer.count)
-            try scanner.members { key, scanner in
-                switch key {
-                case "type": type = try scanner.stringValue()
-                case "id": id = try scanner.stringValue()
-                case "payload": payload = try scanner.rawValue(in: bytes)
-                default: try scanner.skipValue()
-                }
-            }
-        }
-        return (type, id, payload)
-    }
-
     /// The plan-driven reader: a scanner over the response, and the change set
     /// it fills by the plan.
     struct Cursor {
         var scanner: Scanner
         var changes: ChangeSet
+        /// What the response says of the parts to follow: the 2024 format's
+        /// announcements, and whether there are more.
+        var pending: [IncrementalPart.Pending] = []
+        var hasNext = false
         /// One scratch buffer per nesting depth: (field index, value). Slots are
         /// resolved when the object ends, because abstract selections resolve
         /// them against the concrete type the payload names. Made when the
@@ -534,9 +535,9 @@ package enum Ingest {
                 case "errors":
                     try cursor.errors()
                 case "pending":
-                    cursor.changes.pending = try cursor.scanner.pending()
+                    cursor.pending = try cursor.scanner.pending()
                 case "hasNext":
-                    cursor.changes.hasNext = try cursor.parseBool()
+                    cursor.hasNext = try cursor.parseBool()
                 default:
                     try cursor.skipValue()
                 }

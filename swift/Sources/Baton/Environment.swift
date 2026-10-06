@@ -138,6 +138,12 @@ public final class Environment {
             uncaught.append(contentsOf: changes.uncaughtFieldErrors)
             unplaced.append(contentsOf: changes.unplacedErrors)
         }
+
+        /// A part the server could not deliver: its errors count once each.
+        mutating func add(_ failure: Ingest.FailedPart) {
+            uncaught.append(contentsOf: failure.uncaught)
+            unplaced.append(contentsOf: failure.changes.unplacedErrors)
+        }
     }
 
     /// Fetches with a plan already resolved, as a handle holds it. The field
@@ -170,50 +176,32 @@ public final class Environment {
             return fetched
         }
         var fetched = Fetched()
+        var delivery = Delivery(store: store, resolved: resolved)
         var first = true
-        var pending: [String: Ingest.IncrementalPart.Pending] = [:]
         for try await part in transport.stream(request) {
             if first {
                 first = false
-                let changes = try await Ingest.normalized(part, plan: resolved, rootKey: Store.rootKey)
+                let opening = try await Ingest.normalizedFirstPart(part, plan: resolved, rootKey: Store.rootKey)
                 try Task.checkCancellation()
-                store.commit(changes)
-                fetched.add(changes)
-                // The 2024 format announces the parts to come in the first one.
-                for announced in changes.pending { pending[announced.id] = announced }
+                store.commit(opening.changes)
+                fetched.add(opening.changes)
+                delivery.announce(opening.pending)
                 firstPart?(fetched)
-                if !changes.hasNext { break }
+                if !opening.hasNext { break }
                 continue
             }
             let incremental = try await Ingest.incrementalPart(part)
-            for announced in incremental.pending { pending[announced.id] = announced }
-            // Where each object goes is read from the store, here; the
-            // objects are normalized off the main actor in one call.
-            var objects: [Ingest.ObjectPart] = []
-            for item in incremental.items {
-                let base = item.path ?? item.id.flatMap { pending[$0]?.path }
-                let label = item.label ?? item.id.flatMap { pending[$0]?.label }
-                guard let base, let label else { continue }
-                let path = base + (item.subPath ?? [])
-                guard let (record, selection) = store.walk(path, resolved) else { continue }
-                // Below the announced path the item carries the rest of an
-                // object the part selects, by the object's own selection.
-                let plan = item.subPath?.isEmpty == false ? selection : selection.deferred(label)
-                guard let plan else { continue }
-                objects.append(Ingest.ObjectPart(data: item.data, plan: plan, key: record.key, type: record.type, entity: record.isEntity, path: path, errors: item.errors))
-            }
-            var changes = try await Ingest.normalized(objects)
-            for completion in incremental.completed where !completion.errors.isEmpty {
-                guard let announced = pending[completion.id], let label = announced.label,
-                      let (record, selection) = store.walk(announced.path, resolved),
-                      let deferred = selection.deferred(label)
-                else { continue }
-                changes.append(Ingest.failed(deferred, key: record.key, type: record.type, entity: record.isEntity, at: announced.path, errors: completion.errors))
-            }
+            delivery.announce(incremental.pending)
+            let changes = try await Ingest.normalized(delivery.objects(of: incremental))
+            let failures = delivery.failures(of: incremental)
             try Task.checkCancellation()
             for change in changes {
                 store.commit(change)
                 fetched.add(change)
+            }
+            for failure in failures {
+                store.commit(failure.changes)
+                fetched.add(failure)
             }
             if !incremental.hasNext { break }
         }
