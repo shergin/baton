@@ -12,7 +12,7 @@ use std::fmt;
 
 use super::writer::Writer;
 use crate::decide::{Primitive, ScalarShape, VariableBase, VariableValue};
-use crate::names::{escape, possible_types, type_constant};
+use crate::names::{escape, keyed_types, possible_types, type_constant};
 use crate::pipeline::{ArgumentValuePlan, ConstantPlan};
 
 /// The runtime's module.
@@ -309,6 +309,12 @@ pub(super) fn type_reference(type_name: &str) -> String {
 /// `Types.Node_possible`.
 pub(super) fn possible_types_reference(condition: &str) -> String {
     format!("Types.{}", possible_types(condition))
+}
+
+/// `Types.Node_keyed`: the members one value keys, for a lookup without a
+/// type.
+pub(super) fn keyed_types_reference(condition: &str) -> String {
+    format!("Types.{}", keyed_types(condition))
 }
 
 /// A Swift string literal for text that may contain quotes or backslashes

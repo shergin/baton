@@ -23,9 +23,9 @@ use schema::{SDLSchema, Schema, Type, TypeReference};
 use super::identity::Keys;
 use super::plan::{
     ArgumentPlan, ArgumentValuePlan, CatchPlan, CatchTarget, ConditionClass, ConnectionPlan,
-    ConstantPlan, EditKind, EditPlan, FragmentPlan, LookupPlan, OperationKind, OperationPlan,
-    Origin, PaginationPlan, Plan, RefetchPlan, RequiredAction, RequiredPlan, SelectionPlan,
-    StorageKeyPlan, TypeKind, TypePlan, VariablePlan,
+    ConstantPlan, EditKind, EditPlan, FragmentPlan, LookupArgumentPlan, LookupPlan, OperationKind,
+    OperationPlan, Origin, PaginationPlan, Plan, RefetchPlan, RequiredAction, RequiredPlan,
+    SelectionPlan, StorageKeyPlan, TypeKind, TypePlan, VariablePlan,
 };
 
 use crate::config::Config;
@@ -736,35 +736,49 @@ impl Lowering<'_> {
             .iter()
             .find(|lookup| lookup.field == format!("{parent_name}.{name}"))
             .and_then(|lookup| {
-                let argument = field
-                    .arguments
-                    .named(common::ArgumentName(lookup.argument.as_str().intern()));
-                let Some(argument) = argument else {
-                    self.diagnostics.borrow_mut().push(Diagnostic::error(
-                        format!(
-                            "baton.json looks `{parent_name}.{name}` up by `{}`, which this selection does not pass",
-                            lookup.argument
-                        ),
-                        field.alias_or_name_location(),
-                    ));
-                    return None;
-                };
-                let value = argument_value_plan(&argument.value.item);
-                if matches!(value, ArgumentValuePlan::List(_) | ArgumentValuePlan::Object(_)) {
-                    self.diagnostics.borrow_mut().push(Diagnostic::error(
-                        format!(
-                            "the lookup argument `{}` of `{parent_name}.{name}` must be a variable or a constant",
-                            lookup.argument
-                        ),
-                        argument.value.location,
-                    ));
-                    return None;
+                let mut arguments = Vec::new();
+                for argument_name in lookup.arguments() {
+                    let argument = field
+                        .arguments
+                        .named(common::ArgumentName(argument_name.intern()));
+                    let Some(argument) = argument else {
+                        self.diagnostics.borrow_mut().push(Diagnostic::error(
+                            format!(
+                                "baton.json looks `{parent_name}.{name}` up by `{argument_name}`, which this selection does not pass"
+                            ),
+                            field.alias_or_name_location(),
+                        ));
+                        return None;
+                    };
+                    let value = argument_value_plan(&argument.value.item);
+                    if matches!(value, ArgumentValuePlan::List(_) | ArgumentValuePlan::Object(_)) {
+                        self.diagnostics.borrow_mut().push(Diagnostic::error(
+                            format!(
+                                "the lookup argument `{argument_name}` of `{parent_name}.{name}` must be a variable or a constant"
+                            ),
+                            argument.value.location,
+                        ));
+                        return None;
+                    }
+                    arguments.push(LookupArgumentPlan {
+                        name: argument_name.to_string(),
+                        value,
+                    });
                 }
+                // Without a type, one value is probed as the id of each type
+                // the field returns, among those one value keys.
+                let possible_types = self
+                    .possible_types(target)
+                    .into_iter()
+                    .filter(|type_name| {
+                        lookup.type_name.is_some()
+                            || self.keys.of(type_name).is_some_and(|key| key.len() == 1)
+                    })
+                    .collect();
                 Some(LookupPlan {
                     type_name: lookup.type_name.clone(),
-                    possible_types: self.possible_types(target),
-                    argument: lookup.argument.clone(),
-                    value,
+                    possible_types,
+                    arguments,
                 })
             })
     }

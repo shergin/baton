@@ -357,14 +357,18 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "constant",
-              "value": {
-                "kind": "string",
-                "value": "a,b"
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "constant",
+                  "value": {
+                    "kind": "string",
+                    "value": "a,b"
+                  }
+                }
               }
-            }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -768,14 +772,18 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "constant",
-              "value": {
-                "kind": "string",
-                "value": "a,b"
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "constant",
+                  "value": {
+                    "kind": "string",
+                    "value": "a,b"
+                  }
+                }
               }
-            }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -1638,11 +1646,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -1864,11 +1876,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,

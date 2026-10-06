@@ -607,10 +607,16 @@ whether any holder allows the network, and a `storeOnly` holder is fetched
 for by none of them.
 
 **Lookup.** *Composition: schema, store, plan.* Baton's word for a root
-field configured in `baton.json` as returning an entity by one of its
-arguments, so a cached entity satisfies the field before it was fetched. See
+field configured in `baton.json` as returning an entity by its arguments,
+so a cached entity satisfies the field before it was fetched: one argument
+(`argument`) for a type keyed by one field, or one per field of a composite
+key in the key's order (`arguments`), composed into the record's key as the
+ingest composes it. A lookup without a type finds an id among the field's
+types that one value keys. See
 [the decision](decisions/lookups-bind-in-the-check.md), which superseded
-[the first one](decisions/lookups.md).
+[the first one](decisions/lookups.md), and
+[the identity decision](decisions/identity-is-configured.md), which answered
+the first one's reopening line.
 
 ## Lists
 

@@ -2,7 +2,7 @@
 
 use std::fmt::Write as _;
 
-use super::swift::{constant_text, possible_types_reference, swift_literal, type_reference};
+use super::swift::{constant_text, keyed_types_reference, swift_literal, type_reference};
 use crate::decide::{
     self, Guard, NormalizationField, NormalizationKind, NormalizationSelection, SlotRef,
 };
@@ -176,33 +176,37 @@ fn plan_key(type_name: &str, storage_key: &StorageKeyPlan) -> String {
 }
 
 /// The lookup: the entity type, or for a field that returns an interface
-/// or union the set of its possible types, and the argument's value, a
-/// variable or a constant written as a record key writes it: a string as
-/// itself, anything else as JSON.
+/// or union the set of its possible types, and the arguments' values in the
+/// key's order, each a variable or a constant written as a record key
+/// writes it: a string as itself, anything else as JSON.
 fn lookup_expression(lookup: &LookupPlan, base_type: &str) -> String {
     let types = match &lookup.type_name {
         Some(type_name) => format!("type: {}", type_reference(type_name)),
         None => format!(
             "type: nil, possibleTypes: {}",
-            possible_types_reference(base_type)
+            keyed_types_reference(base_type)
         ),
     };
-    let key = match &lookup.value {
-        ArgumentValuePlan::Variable(name) => format!(".variable({})", swift_literal(name)),
-        ArgumentValuePlan::Constant(ConstantPlan::String(text)) => {
-            format!(".literal({})", swift_literal(text))
-        }
-        ArgumentValuePlan::Constant(constant) => {
-            format!(
-                ".literal({})",
-                swift_literal(&decide::constant_json(constant))
-            )
-        }
-        ArgumentValuePlan::List(_) | ArgumentValuePlan::Object(_) => {
-            unreachable!("lowering rejects a lookup argument that is a list or an object")
-        }
-    };
-    format!("Baton.Lookup({types}, key: {key})")
+    let parts: Vec<String> = lookup
+        .arguments
+        .iter()
+        .map(|argument| match &argument.value {
+            ArgumentValuePlan::Variable(name) => format!(".variable({})", swift_literal(name)),
+            ArgumentValuePlan::Constant(ConstantPlan::String(text)) => {
+                format!(".literal({})", swift_literal(text))
+            }
+            ArgumentValuePlan::Constant(constant) => {
+                format!(
+                    ".literal({})",
+                    swift_literal(&decide::constant_json(constant))
+                )
+            }
+            ArgumentValuePlan::List(_) | ArgumentValuePlan::Object(_) => {
+                unreachable!("lowering rejects a lookup argument that is a list or an object")
+            }
+        })
+        .collect();
+    format!("Baton.Lookup({types}, key: [{}])", parts.join(", "))
 }
 
 /// The plan's description of a connection: the client key on the parent

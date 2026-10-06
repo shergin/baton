@@ -2,6 +2,233 @@
   "fragments": [],
   "operations": [
     {
+      "name": "TestAssetNameQuery",
+      "source": "swift/Tests/BatonTests/IdentityDocuments.swift",
+      "document": 2,
+      "kind": "query",
+      "root_type": "Query",
+      "variables": [
+        {
+          "name": "uuid",
+          "type": {
+            "shape": "named",
+            "name": "String",
+            "kind": "string",
+            "non_null": true
+          },
+          "default_value": null
+        }
+      ],
+      "text": "query TestAssetNameQuery(\n  $uuid: String!\n) {\n  asset(uuid: $uuid) {\n    name\n    id\n    uuid\n  }\n}",
+      "id": "78cdff70b45310a221c727b9d738e35f",
+      "throws_on_field_error": false,
+      "bubbles": false,
+      "has_deferred": false,
+      "error_behavior": null,
+      "reader": [
+        {
+          "kind": "linked",
+          "name": "asset",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Asset",
+            "kind": "object",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "keys": {
+            "Asset": [
+              "uuid"
+            ]
+          },
+          "is_abstract": false,
+          "possible_types": [
+            "Asset"
+          ],
+          "storage_key": {
+            "name": "asset",
+            "arguments": [
+              {
+                "name": "uuid",
+                "value": {
+                  "kind": "variable",
+                  "value": "uuid"
+                }
+              }
+            ]
+          },
+          "lookup": {
+            "type_name": "Asset",
+            "possible_types": [
+              "Asset"
+            ],
+            "arguments": [
+              {
+                "name": "uuid",
+                "value": {
+                  "kind": "variable",
+                  "value": "uuid"
+                }
+              }
+            ]
+          },
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "name",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "String",
+                "kind": "string",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "name",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            }
+          ]
+        }
+      ],
+      "normalization": [
+        {
+          "kind": "linked",
+          "name": "asset",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Asset",
+            "kind": "object",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "keys": {
+            "Asset": [
+              "uuid"
+            ]
+          },
+          "is_abstract": false,
+          "possible_types": [
+            "Asset"
+          ],
+          "storage_key": {
+            "name": "asset",
+            "arguments": [
+              {
+                "name": "uuid",
+                "value": {
+                  "kind": "variable",
+                  "value": "uuid"
+                }
+              }
+            ]
+          },
+          "lookup": {
+            "type_name": "Asset",
+            "possible_types": [
+              "Asset"
+            ],
+            "arguments": [
+              {
+                "name": "uuid",
+                "value": {
+                  "kind": "variable",
+                  "value": "uuid"
+                }
+              }
+            ]
+          },
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "name",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "String",
+                "kind": "string",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "name",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "id",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "ID",
+                "kind": "id",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "id",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "uuid",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "String",
+                "kind": "string",
+                "non_null": true
+              },
+              "non_null": true,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "uuid",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "TestAssetQuery",
       "source": "swift/Tests/BatonTests/IdentityDocuments.swift",
       "document": 1,
@@ -59,7 +286,21 @@
               }
             ]
           },
-          "lookup": null,
+          "lookup": {
+            "type_name": "Asset",
+            "possible_types": [
+              "Asset"
+            ],
+            "arguments": [
+              {
+                "name": "uuid",
+                "value": {
+                  "kind": "variable",
+                  "value": "uuid"
+                }
+              }
+            ]
+          },
           "connection": null,
           "edit": null,
           "required": null,
@@ -202,7 +443,21 @@
               }
             ]
           },
-          "lookup": null,
+          "lookup": {
+            "type_name": "Asset",
+            "possible_types": [
+              "Asset"
+            ],
+            "arguments": [
+              {
+                "name": "uuid",
+                "value": {
+                  "kind": "variable",
+                  "value": "uuid"
+                }
+              }
+            ]
+          },
           "connection": null,
           "edit": null,
           "required": null,
@@ -579,7 +834,7 @@
     {
       "name": "TestQuoteQuery",
       "source": "swift/Tests/BatonTests/IdentityDocuments.swift",
-      "document": 3,
+      "document": 4,
       "kind": "query",
       "root_type": "Query",
       "variables": [
@@ -652,7 +907,28 @@
               }
             ]
           },
-          "lookup": null,
+          "lookup": {
+            "type_name": "Quote",
+            "possible_types": [
+              "Quote"
+            ],
+            "arguments": [
+              {
+                "name": "base",
+                "value": {
+                  "kind": "variable",
+                  "value": "base"
+                }
+              },
+              {
+                "name": "quote",
+                "value": {
+                  "kind": "variable",
+                  "value": "quote"
+                }
+              }
+            ]
+          },
           "connection": null,
           "edit": null,
           "required": null,
@@ -768,7 +1044,28 @@
               }
             ]
           },
-          "lookup": null,
+          "lookup": {
+            "type_name": "Quote",
+            "possible_types": [
+              "Quote"
+            ],
+            "arguments": [
+              {
+                "name": "base",
+                "value": {
+                  "kind": "variable",
+                  "value": "base"
+                }
+              },
+              {
+                "name": "quote",
+                "value": {
+                  "kind": "variable",
+                  "value": "quote"
+                }
+              }
+            ]
+          },
           "connection": null,
           "edit": null,
           "required": null,
@@ -846,7 +1143,7 @@
     {
       "name": "TestQuotesQuery",
       "source": "swift/Tests/BatonTests/IdentityDocuments.swift",
-      "document": 2,
+      "document": 3,
       "kind": "query",
       "root_type": "Query",
       "variables": [],

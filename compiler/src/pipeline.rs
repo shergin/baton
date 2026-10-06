@@ -94,11 +94,11 @@ pub fn compile(
     )?;
     let schema = Arc::new(schema);
     timings.schema = started.elapsed();
-    let errors = validate_lookups(&schema, config);
+    let keys = identity::Keys::resolve(&schema, &config.identity, config_location(config))?;
+    let errors = validate_lookups(&schema, config, &keys);
     if !errors.is_empty() {
         return Err(errors);
     }
-    let keys = identity::Keys::resolve(&schema, &config.identity, config_location(config))?;
     let root_names = root_names(&schema, schema_path)?;
 
     let started = Instant::now();
@@ -244,14 +244,24 @@ fn config_location(config: &Config) -> common::Location {
     )
 }
 
-/// Checks each lookup in `baton.json` against the schema: the root field
-/// exists and takes the argument, and `type` is the field's concrete return
-/// type, omitted only when the field returns an interface or a union.
-fn validate_lookups(schema: &SDLSchema, config: &Config) -> Vec<Diagnostic> {
+/// Checks each lookup in `baton.json` against the schema and the keys: the
+/// root field exists and takes the arguments, one per field of the type's
+/// key in its order, and `type` is the field's concrete return type, omitted
+/// only when the field returns an interface or a union, which one argument
+/// then finds an id among.
+fn validate_lookups(schema: &SDLSchema, config: &Config, keys: &identity::Keys) -> Vec<Diagnostic> {
     let location = config_location(config);
     let mut errors = Vec::new();
     for lookup in &config.lookups {
         let mut fail = |message: String| errors.push(Diagnostic::error(message, location));
+        let arguments = lookup.arguments();
+        if arguments.is_empty() {
+            fail(format!(
+                "the lookup `{}` names its argument neither as `argument` nor as `arguments`, or as both",
+                lookup.field
+            ));
+            continue;
+        }
         let Some((type_name, field_name)) = lookup.field.split_once('.') else {
             fail(format!(
                 "the lookup `{}` names no field: write `Type.field`",
@@ -274,20 +284,36 @@ fn validate_lookups(schema: &SDLSchema, config: &Config) -> Vec<Diagnostic> {
             continue;
         };
         let field = schema.field(field);
-        if field
-            .arguments
-            .named(common::ArgumentName(lookup.argument.as_str().intern()))
-            .is_none()
-        {
-            fail(format!(
-                "the lookup `{}` takes `{}`, which the field has no argument of",
-                lookup.field, lookup.argument
-            ));
+        for argument in &arguments {
+            if field
+                .arguments
+                .named(common::ArgumentName(argument.intern()))
+                .is_none()
+            {
+                fail(format!(
+                    "the lookup `{}` takes `{argument}`, which the field has no argument of",
+                    lookup.field
+                ));
+            }
         }
         let returns = field.type_.inner();
         let returned = schema.get_type_name(returns).lookup();
         match (&lookup.type_name, returns.is_abstract_type()) {
-            (Some(named), false) if named == returned => {}
+            (Some(named), false) if named == returned => match keys.of(named) {
+                Some(key) if key.len() != arguments.len() => fail(format!(
+                    "the lookup `{}` passes {} argument{}, but `{named}` is keyed by {} field{}: pass one per field, in the key's order",
+                    lookup.field,
+                    arguments.len(),
+                    if arguments.len() == 1 { "" } else { "s" },
+                    key.len(),
+                    if key.len() == 1 { "" } else { "s" },
+                )),
+                Some(_) => {}
+                None => fail(format!(
+                    "the lookup `{}` names `{named}`, which has no key: a lookup finds an entity",
+                    lookup.field
+                )),
+            },
             (Some(named), false) => fail(format!(
                 "the lookup `{}` names the type `{named}`, but the field returns `{returned}`",
                 lookup.field
@@ -298,6 +324,10 @@ fn validate_lookups(schema: &SDLSchema, config: &Config) -> Vec<Diagnostic> {
             )),
             (None, false) => fail(format!(
                 "`{}` returns `{returned}`: name it as the lookup's `type`",
+                lookup.field
+            )),
+            (None, true) if arguments.len() > 1 => fail(format!(
+                "`{}` returns `{returned}`, an interface or union: the lookup finds an id among its types by one argument",
                 lookup.field
             )),
             (None, true) => {}

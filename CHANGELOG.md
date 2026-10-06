@@ -5,6 +5,15 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- A lookup takes several arguments. `baton.json`'s `lookups` name the
+  arguments that carry a composite key, `"arguments": ["base", "quote"]`,
+  one per field of the type's key in its order; `argument` stays the
+  spelling for a key of one field. The compiler refuses a lookup whose
+  arguments do not match the type's key, and a lookup without a type probes
+  only the types one value keys. The runtime composes the arguments' values
+  into the record's key as the ingest composes the key fields, so a cached
+  `Quote` satisfies `quote(base:, quote:)` before it is fetched. Generated
+  code of this shape is format 8.
 - Identity is configured. `baton.json`'s `identity` names the fields that
   key a record of each type: a `default` list, `["id"]` unless written, and
   `types` entries for a type or for an interface, whose implementers take

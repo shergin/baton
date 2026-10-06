@@ -283,11 +283,15 @@
               "Location",
               "Note"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -492,11 +496,15 @@
               "Location",
               "Note"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,

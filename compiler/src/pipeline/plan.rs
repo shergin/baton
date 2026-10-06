@@ -272,10 +272,17 @@ pub struct StorageKeyPlan {
 pub struct LookupPlan {
     /// `None` resolves by id among `possible_types`.
     pub type_name: Option<String>,
-    /// The concrete types the field returns, for a lookup without a type.
+    /// The concrete types the field returns that one value keys, for a
+    /// lookup without a type.
     pub possible_types: Vec<String>,
-    pub argument: String,
-    /// The argument's value in the document.
+    /// The arguments that carry the key, in the key's order, with the value
+    /// the document passes each.
+    pub arguments: Vec<LookupArgumentPlan>,
+}
+
+#[derive(Debug, Clone, PartialEq, serde::Serialize)]
+pub struct LookupArgumentPlan {
+    pub name: String,
     pub value: ArgumentValuePlan,
 }
 

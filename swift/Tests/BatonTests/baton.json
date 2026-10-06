@@ -30,6 +30,19 @@
     {
       "field": "Query.node",
       "argument": "id"
+    },
+    {
+      "field": "Query.asset",
+      "type": "Asset",
+      "argument": "uuid"
+    },
+    {
+      "field": "Query.quote",
+      "type": "Quote",
+      "arguments": [
+        "base",
+        "quote"
+      ]
     }
   ]
 }

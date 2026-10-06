@@ -404,6 +404,12 @@ pub fn possible_types(condition: &str) -> String {
     format!("{condition}_possible")
 }
 
+/// The constant in `Types` of the members of an abstract type that one
+/// value keys, which a lookup without a type probes: `Node_keyed`.
+pub fn keyed_types(condition: &str) -> String {
+    format!("{condition}_keyed")
+}
+
 /// The constant in `Guards` of a condition: the variable and the value of
 /// it that selects, `withOrigin_true`.
 pub fn guard_name(variable: &str, passing: bool) -> String {

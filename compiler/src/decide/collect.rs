@@ -12,7 +12,7 @@ use super::lens::{
 };
 use super::{Guard, NormalizationKind, NormalizationSelection, Program};
 use crate::names::{
-    Kind, NameError, Reserved, STANDARD_LIBRARY_NAMES, Scope, Written, possible_types,
+    Kind, NameError, Reserved, STANDARD_LIBRARY_NAMES, Scope, Written, keyed_types, possible_types,
     type_constant,
 };
 use crate::pipeline::{OperationKind, Plan};
@@ -28,6 +28,10 @@ pub struct Shared {
     pub root_names: BTreeMap<String, String>,
     /// The possible types of each abstract type tested as a set.
     pub possible_sets: BTreeMap<String, Vec<String>>,
+    /// The members of each abstract type that one value keys, which a lookup
+    /// without a type probes: its own set, since a type test on the same
+    /// type names every member.
+    pub keyed_sets: BTreeMap<String, Vec<String>>,
     /// Keys read on object types, and keys with variables.
     pub slots: BTreeSet<SlotRef>,
     /// Constant keys read on an interface or union.
@@ -185,7 +189,7 @@ impl Shared {
                         }
                         None => {
                             self.types.extend(lookup.possible_types.iter().cloned());
-                            self.possible_sets
+                            self.keyed_sets
                                 .insert(child.type_name.clone(), lookup.possible_types.clone());
                         }
                     }
@@ -281,6 +285,13 @@ impl Shared {
                 type_constant(type_name).trim_matches('`'),
                 Kind::Static,
                 format!("the type `{type_name}`"),
+            );
+        }
+        for condition in self.keyed_sets.keys() {
+            types.declare(
+                &keyed_types(condition),
+                Kind::Static,
+                format!("the types that satisfy `{condition}` that one value keys"),
             );
         }
         for condition in self.possible_sets.keys() {

@@ -32,7 +32,11 @@ public enum Format5 {}
 public enum Format6 {}
 
 @_spi(Generated)
+@available(*, unavailable, message: "this generated code is of format 7 and the runtime reads format 8: a lookup's key is the list of its arguments' values; rebuild with the compiler of this release")
 public enum Format7 {}
+
+@_spi(Generated)
+public enum Format8 {}
 
 /// An operation's normalization plan, emitted by the compiler as static data:
 /// what the response contains and where each value is stored.
@@ -90,11 +94,13 @@ public struct Lookup: Sendable {
 
     public let type: TypeID?
     /// The types a lookup without a type probes: the members the build
-    /// compiled for the field's interface or union.
+    /// compiled for the field's interface or union that one value keys.
     public let possibleTypes: Members?
-    public let key: Key
+    /// The arguments' values that make the key, in the order of the type's
+    /// key fields; one for a lookup without a type.
+    public let key: [Key]
 
-    public init(type: TypeID?, possibleTypes: Members? = nil, key: Key) {
+    public init(type: TypeID?, possibleTypes: Members? = nil, key: [Key]) {
         self.type = type
         self.possibleTypes = possibleTypes
         self.key = key
@@ -302,7 +308,7 @@ public struct PlanField: Sendable {
         if case .variable? = edit?.connections { readsVariables = true }
         if case .linked(let selection, _, let lookup, let connection) = kind {
             if selection.readsVariables { readsVariables = true }
-            if case .variable? = lookup?.key { readsVariables = true }
+            if let lookup, lookup.key.contains(where: { if case .variable = $0 { return true } else { return false } }) { readsVariables = true }
             if let connection, connection.readsVariables { readsVariables = true }
         }
         self.readsVariables = readsVariables
@@ -438,11 +444,13 @@ public final class Selection: Sendable {
                 selection.resolve(variables, hold),
                 plural: plural,
                 lookupKey: lookup.map { lookup in
-                    let value = switch lookup.key {
-                    case .variable(let name): variables.keyText(name)
-                    case .literal(let text): text
+                    let parts = lookup.key.map { part in
+                        switch part {
+                        case .variable(let name): variables.keyText(name)
+                        case .literal(let text): text
+                        }
                     }
-                    return LookupKey(type: lookup.type, possibleTypes: lookup.possibleTypes, value: value)
+                    return LookupKey(type: lookup.type, possibleTypes: lookup.possibleTypes, value: Record.keyValue(parts))
                 },
                 connection: connection.map { connection in
                     let key = Selection.render(connection.key, variables)
@@ -529,8 +537,9 @@ public final class Selection: Sendable {
     }
 }
 
-/// A bound lookup: the record key `Type:value`, or the id among the
-/// possible types.
+/// A bound lookup: the value part of the record key `Type:value`, composed
+/// from the arguments as the ingest composes it from the key fields, or the
+/// id among the possible types.
 package struct LookupKey: Sendable {
     package let type: TypeID?
     package let possibleTypes: Members?

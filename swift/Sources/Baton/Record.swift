@@ -60,16 +60,23 @@ public final class Record: Observable {
     /// and colons escaped, `Type:a\:b:c`, so that no two value lists meet.
     /// What names a record by one bare value reaches single-field keys only.
     nonisolated static func entityKey(_ typeName: String, parts: [String]) -> String {
-        if parts.count == 1 { return entityKey(typeName, parts[0]) }
-        var key = typeName
-        for part in parts {
-            key.append(":")
+        entityKey(typeName, keyValue(parts))
+    }
+
+    /// The value part of an entity's key from the values of its key fields:
+    /// one as it is, several escaped and joined, as `entityKey(_:parts:)`
+    /// writes them; what a lookup composes from its arguments.
+    nonisolated static func keyValue(_ parts: [String]) -> String {
+        if parts.count == 1 { return parts[0] }
+        var value = ""
+        for (index, part) in parts.enumerated() {
+            if index > 0 { value.append(":") }
             for scalar in part.unicodeScalars {
-                if scalar == ":" || scalar == "\\" { key.unicodeScalars.append("\\") }
-                key.unicodeScalars.append(scalar)
+                if scalar == ":" || scalar == "\\" { value.unicodeScalars.append("\\") }
+                value.unicodeScalars.append(scalar)
             }
         }
-        return key
+        return value
     }
 
     /// Where the id starts in an entity's key of the type.

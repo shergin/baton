@@ -510,11 +510,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -648,11 +652,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -830,11 +838,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -945,11 +957,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -1160,11 +1176,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -1234,11 +1254,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -1331,11 +1355,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -1405,11 +1433,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -1527,11 +1559,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -1601,11 +1637,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -1704,11 +1744,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -1778,11 +1822,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -2121,11 +2169,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "where"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "where"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -2273,11 +2325,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "where"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "where"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -2511,11 +2567,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -2670,11 +2730,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -2848,11 +2912,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -3007,11 +3075,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -3185,11 +3257,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -3276,11 +3352,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -3350,11 +3430,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -3426,11 +3510,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -3830,11 +3918,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -3904,11 +3996,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -4005,11 +4101,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -4162,11 +4262,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -4344,11 +4448,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -4497,11 +4605,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -4675,11 +4787,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -4749,11 +4865,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -4823,11 +4943,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -4897,11 +5021,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -4971,11 +5099,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -5045,11 +5177,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -5119,11 +5255,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -5193,11 +5333,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -5267,11 +5411,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -5341,11 +5489,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -5415,11 +5567,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -5489,11 +5645,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -5563,11 +5723,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -5637,11 +5801,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -5711,11 +5879,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -5802,11 +5974,15 @@
               "Location",
               "Note"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -5976,11 +6152,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -6050,11 +6230,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -6124,11 +6308,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -6198,11 +6386,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -6272,11 +6464,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -6346,11 +6542,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -6420,11 +6620,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -6494,11 +6698,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -6568,11 +6776,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -6642,11 +6854,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -6716,11 +6932,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -6790,11 +7010,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -6864,11 +7088,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -6938,11 +7166,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -7012,11 +7244,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -7101,11 +7337,15 @@
               "Location",
               "Note"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -7357,11 +7597,15 @@
               "Location",
               "Note"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -7486,11 +7730,15 @@
               "Location",
               "Note"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -7646,11 +7894,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -7761,11 +8013,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -8063,11 +8319,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "a"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "a"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -8175,11 +8435,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "b"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "b"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -8289,11 +8553,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "a"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "a"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -8693,11 +8961,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "b"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "b"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -9124,11 +9396,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,
@@ -9239,11 +9515,15 @@
             "possible_types": [
               "Character"
             ],
-            "argument": "id",
-            "value": {
-              "kind": "variable",
-              "value": "id"
-            }
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
           },
           "connection": null,
           "edit": null,

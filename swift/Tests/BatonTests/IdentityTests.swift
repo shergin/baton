@@ -1,4 +1,5 @@
 @_spi(Generated) import Baton
+import BatonTesting
 import Foundation
 import Testing
 
@@ -50,11 +51,11 @@ struct IdentityTests {
         #expect(data.node?.asCharacter?.name == "Adjudicator Rick")
     }
 
-    @Test("a lookup without a type probes the members the build compiled")
-    func lookupProbesTheCompiledMembers() {
-        let members = Set(Types.Node_possible.types.map(\.name))
-        #expect(members == ["Character", "Episode", "Location", "Note"], "the schema's implementers of Node")
-        #expect(Types.Node_possible.condition == Types.Node)
+    @Test("a lookup without a type probes the compiled members its one value keys")
+    func lookupProbesTheCompiledKeyedMembers() {
+        let members = Set(Types.Node_keyed.types.map(\.name))
+        #expect(members == ["Character", "Episode", "Location", "Note"], "every implementer of Node is keyed by `id` alone")
+        #expect(Types.Node_keyed.condition == Types.Node)
     }
 
     @Test("an object under a union keyed by its path is a record per concrete type, so another type at the same path does not share one")
@@ -148,6 +149,79 @@ struct IdentityTests {
         let response = Data(#"{"data":{"\#(fieldName)":{"id":"1:2"}}}"#.utf8)
         store.commit(try Ingest.normalize(response, plan: plan.resolve(.none, in: store.keys)))
         #expect(store.existing(keyed.name + ":1:2") != nil, "one value is written as it is, colon and all")
+    }
+
+    @Test("a lookup by two arguments finds the quote a list cached, by its escaped composite key too, and renders it without a fetch")
+    func a_lookup_by_two_arguments_finds_the_quote_a_list_cached() throws {
+        let environment = Environment(transport: SilentTransport())
+        environment.store.reportMissing = nil
+        try commit("quote-list", TestQuotesQuery(), into: environment.store)
+
+        let plain = environment.handle(for: TestQuoteQuery(base: "BTC", quote: "USD"), fetchPolicy: .storeOnly)
+        guard case .ready(let data) = plain.phase else {
+            Issue.record("expected .ready from the store, got \(plain.phase)")
+            return
+        }
+        #expect(data.quote?.rate == 1.5)
+        #expect(data.quote?.recordID.key == "Quote:BTC:USD")
+
+        let escaped = environment.handle(for: TestQuoteQuery(base: "A:B", quote: #"C\D"#), fetchPolicy: .storeOnly)
+        guard case .ready(let escapedData) = escaped.phase else {
+            Issue.record("expected .ready from the store, got \(escaped.phase)")
+            return
+        }
+        #expect(escapedData.quote?.rate == 2)
+        #expect(escapedData.quote?.recordID.key == #"Quote:A\:B:C\\D"#)
+    }
+
+    @Test("a lookup by a pair the store never cached is not satisfied, nor is one whose values join to a cached key only unescaped")
+    func a_lookup_by_a_pair_the_store_never_cached_is_not_satisfied() throws {
+        let environment = Environment(transport: SilentTransport())
+        environment.store.reportMissing = nil
+        try commit("quote-list", TestQuotesQuery(), into: environment.store)
+
+        for pair in [("BTC", "EUR"), ("USD", "BTC"), ("A", #"B:C\D"#)] {
+            let operation = TestQuoteQuery(base: pair.0, quote: pair.1)
+            #expect(environment.store.check(TestQuoteQuery.plan.resolve(operation.variables, in: environment.store.keys)) == .miss, "\(pair)")
+            let handle = environment.handle(for: operation)
+            guard case .loading = handle.phase else {
+                Issue.record("expected .loading for \(pair), got \(handle.phase)")
+                continue
+            }
+        }
+    }
+
+    @Test("a lookup by one configured key field finds the asset a list cached and renders it without a fetch, and one for a uuid never cached loads")
+    func a_lookup_by_one_configured_key_field_finds_the_asset_a_list_cached() throws {
+        let environment = Environment(transport: SilentTransport())
+        environment.store.reportMissing = nil
+        try commit("asset-list", TestAssetsQuery(), into: environment.store)
+
+        let cached = environment.handle(for: TestAssetNameQuery(uuid: "a1"), fetchPolicy: .storeOnly)
+        guard case .ready(let data) = cached.phase else {
+            Issue.record("expected .ready from the store, got \(cached.phase)")
+            return
+        }
+        #expect(data.asset?.name == "Portal gun")
+        #expect(data.asset?.recordID.key == "Asset:a1")
+
+        let absent = environment.handle(for: TestAssetNameQuery(uuid: "z9"))
+        guard case .loading = absent.phase else {
+            Issue.record("expected .loading for an asset the store never saw, got \(absent.phase)")
+            return
+        }
+    }
+
+    @Test("a lookup binds only an entity that satisfies the whole selection under it, so an asset the list fetched without its owner does not")
+    func a_lookup_binds_only_an_entity_that_satisfies_its_selection() throws {
+        let store = Store()
+        store.reportMissing = nil
+        try commit("asset-list", TestAssetsQuery(), into: store)
+
+        let single = TestAssetQuery(uuid: "a1")
+        #expect(store.check(TestAssetQuery.plan.resolve(single.variables, in: store.keys)) == .miss, "the owner was never fetched")
+        let data = TestAssetQuery.Data(anchor: Anchor(record: store.root, variables: single.variables, store: store))
+        #expect(data.asset == nil, "the check wrote no link")
     }
 
     @Test("the compiler selects the configured key fields an operation leaves out")

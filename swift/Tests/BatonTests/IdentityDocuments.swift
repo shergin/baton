@@ -4,7 +4,8 @@ import Baton
 /// `Asset` by `uuid` and `Quote` by `base` and `quote`. Two of them leave
 /// the key out, which the compiler selects; two reach the same records by
 /// another path, one with the key after a link, so that a record is one
-/// record however a response reached it.
+/// record however a response reached it. `TestAssetNameQuery` reads only
+/// what the list fetched, so a lookup by the key alone can answer it.
 @MainActor
 struct IdentityDocuments {
     @Query("""
@@ -16,6 +17,11 @@ struct IdentityDocuments {
         query TestAssetQuery($uuid: String!) { asset(uuid: $uuid) { owner { name } uuid name } }
         """)
     var asset: TestAssetQuery
+
+    @Query("""
+        query TestAssetNameQuery($uuid: String!) { asset(uuid: $uuid) { name } }
+        """)
+    var assetName: TestAssetNameQuery
 
     @Query("""
         query TestQuotesQuery { quotes { rate } }

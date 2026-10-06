@@ -15,8 +15,26 @@ pub struct Lookup {
     /// across types.
     #[serde(rename = "type", default)]
     pub type_name: Option<String>,
-    /// The argument that carries the entity's key, e.g. `id`.
-    pub argument: String,
+    /// The argument that carries the entity's key, e.g. `id`: the one
+    /// spelling for a key of one field.
+    #[serde(default)]
+    pub argument: Option<String>,
+    /// The arguments that carry the key's fields, in the order of the type's
+    /// key fields, for a key of several.
+    #[serde(default)]
+    pub arguments: Vec<String>,
+}
+
+impl Lookup {
+    /// The arguments the lookup reads, in the key's order; empty when the
+    /// configuration names none or both spellings.
+    pub fn arguments(&self) -> Vec<&str> {
+        match (&self.argument, self.arguments.is_empty()) {
+            (Some(argument), true) => vec![argument.as_str()],
+            (None, false) => self.arguments.iter().map(String::as_str).collect(),
+            _ => Vec::new(),
+        }
+    }
 }
 
 /// Which fields identify a record of a type: the list tried for every object

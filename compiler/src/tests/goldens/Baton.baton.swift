@@ -8,7 +8,7 @@ nonisolated enum Types {
     static let schemaDigest = "0156d604990af7a179ef6c8c2a687646"
     /// The format of this generated code, which the runtime that reads it
     /// declares; a runtime of another format fails to compile this line.
-    static let format = Baton.Format7.self
+    static let format = Baton.Format8.self
     static let AddNotePayload = Baton.Registry.type("AddNotePayload")
     static let Any_ = Baton.Registry.type("Any")
     static let Asset = Baton.Registry.type("Asset")
@@ -42,10 +42,10 @@ nonisolated enum Types {
     static let Types = Baton.Registry.type("Types")
     /// The types that satisfy `... on Named`, as the build knows them.
     static let Named_possible = Baton.Members(Named, [Character, Location])
-    /// The types that satisfy `... on Node`, as the build knows them.
-    static let Node_possible = Baton.Members(Node, [Character, Episode, Location, Note])
     /// The types that satisfy `... on Spelled`, as the build knows them.
     static let Spelled_possible = Baton.Members(Spelled, [Any_, Baton_, Protocol_, Set, Type_])
+    /// The types that satisfy `... on Node` that one value keys, which a lookup without a type probes.
+    static let Node_keyed = Baton.Members(Node, [Character, Episode, Location, Note])
 }
 
 /// Interned storage keys used by this module's documents.

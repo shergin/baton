@@ -8,7 +8,7 @@ use super::swift::{runtime_value, swift_literal, type_reference};
 use super::writer::Writer;
 use super::{FORMAT, HEADER};
 use crate::decide::{KeyPart, Shared, SlotRef};
-use crate::names::{guard_name, possible_types, slot_name, type_constant};
+use crate::names::{guard_name, keyed_types, possible_types, slot_name, type_constant};
 
 /// `Types`, `Slots` and, when the module has any, `Sites` and
 /// `AbstractSlots`.
@@ -50,6 +50,19 @@ pub(super) fn shared_text(shared: &Shared) -> String {
             writer.line(format!(
                 "static let {} = {}({}, [{}])",
                 possible_types(condition),
+                runtime_value("Members"),
+                type_constant(condition),
+                members.join(", ")
+            ));
+        }
+        for (condition, types) in &shared.keyed_sets {
+            let members: Vec<String> = types.iter().map(|name| type_constant(name)).collect();
+            writer.doc(format!(
+                "The types that satisfy `... on {condition}` that one value keys, which a lookup without a type probes."
+            ));
+            writer.line(format!(
+                "static let {} = {}({}, [{}])",
+                keyed_types(condition),
                 runtime_value("Members"),
                 type_constant(condition),
                 members.join(", ")
