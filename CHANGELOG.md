@@ -5,6 +5,13 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- Two recipes: `docs/recipes/uikit.md`, a handle held by a view controller
+  and rendered through `Observations`, with a cell over a lens; and
+  `docs/recipes/porting-from-relay.md`, Relay's words beside Baton's, what
+  differs on purpose, and what is not ported with its reason.
+- A recipe for previews and tests, `docs/recipes/testing.md`: a fixture
+  committed as a response, recorded responses, a held mutation and a driven
+  subscription, the log in tests, and a bug report's dump as a fixture.
 - `Environment.fetch` has one spelling, the operation value's. The one by
   type and variables, which returned the uncaught field errors as an array
   beside the other's throwing under `@throwOnFieldError`, is gone: a

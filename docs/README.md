@@ -18,8 +18,11 @@ What to read when.
   same change as the code. Concepts marked *(planned)* do not exist yet.
 - **How do I…** — [recipes/](recipes/), one page per composition of what
   ships: [the exchange](recipes/exchange.md), a challenge, a retry and a
-  deadline over the transport's one verb, and [`batonc`](recipes/batonc.md),
-  the compiler's command line for a build outside SwiftPM. The rest arrive
-  with the releases that make them true.
+  deadline over the transport's one verb, [`batonc`](recipes/batonc.md),
+  the compiler's command line for a build outside SwiftPM, and
+  [previews and tests](recipes/testing.md), a store without a server,
+  [UIKit and AppKit](recipes/uikit.md), a handle held by a controller, and
+  [porting from Relay](recipes/porting-from-relay.md), Relay's words beside
+  Baton's. The rest arrive with the releases that make them true.
 - **What did a decision open up?** — [openings/](openings/), written as the
   project ships. None yet.

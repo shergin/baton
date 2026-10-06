@@ -254,7 +254,8 @@ nor the image, and a handle a model still holds reads
 
 Outside SwiftUI, a model or a view controller keeps an operation's data
 alive by holding the `Retention` that `handle.retain()` returns, and lets it
-go with itself; the policy it attached with stays with the retention, so a
+go with itself ([the UIKit and AppKit recipe](docs/recipes/uikit.md) walks
+through a controller and a cell); the policy it attached with stays with the retention, so a
 `storeOnly` holder is never fetched for behind its back. `revalidate()` on
 the environment refetches what is stale or failed when the app returns to
 the foreground.
@@ -267,7 +268,9 @@ store without a transport; the payload may carry part of what the operation
 selects. For the paths that do go through the network, `BatonTesting`'s
 `RecordedTransport` answers requests from recorded responses, and its
 `ScriptedTransport` holds a mutation until the test replies, drives a
-subscription's events, and lists what was sent.
+subscription's events, and lists what was sent;
+[the recipe for previews and tests](docs/recipes/testing.md) walks through
+them.
 
 What a production endpoint needs around the transport, one replay of an
 authorization challenge, a bounded retry with backoff, a deadline across the
