@@ -19,12 +19,14 @@
           "kind": "linked",
           "name": "tokenizer",
           "alias": null,
-          "type_name": "Tokenizer",
-          "base_type": "Tokenizer",
-          "base_kind": "object",
+          "type": {
+            "shape": "named",
+            "name": "Tokenizer",
+            "kind": "object",
+            "non_null": false
+          },
           "non_null": false,
           "semantic_non_null": false,
-          "plural": false,
           "has_id": true,
           "is_abstract": false,
           "possible_types": [
@@ -46,12 +48,14 @@
               "kind": "scalar",
               "name": "id",
               "alias": null,
-              "type_name": "ID",
-              "base_type": "ID",
-              "base_kind": "id",
+              "type": {
+                "shape": "named",
+                "name": "ID",
+                "kind": "id",
+                "non_null": false
+              },
               "non_null": false,
               "semantic_non_null": false,
-              "list": false,
               "storage_key": {
                 "name": "id",
                 "arguments": []
@@ -65,12 +69,14 @@
               "kind": "scalar",
               "name": "text",
               "alias": null,
-              "type_name": "String",
-              "base_type": "String",
-              "base_kind": "string",
+              "type": {
+                "shape": "named",
+                "name": "String",
+                "kind": "string",
+                "non_null": false
+              },
               "non_null": false,
               "semantic_non_null": false,
-              "list": false,
               "storage_key": {
                 "name": "text",
                 "arguments": []
@@ -84,12 +90,18 @@
               "kind": "scalar",
               "name": "strings",
               "alias": null,
-              "type_name": "[String]",
-              "base_type": "String",
-              "base_kind": "string",
+              "type": {
+                "shape": "list",
+                "element": {
+                  "shape": "named",
+                  "name": "String",
+                  "kind": "string",
+                  "non_null": false
+                },
+                "non_null": false
+              },
               "non_null": false,
               "semantic_non_null": false,
-              "list": true,
               "storage_key": {
                 "name": "strings",
                 "arguments": []
@@ -103,12 +115,14 @@
               "kind": "scalar",
               "name": "count",
               "alias": null,
-              "type_name": "Int",
-              "base_type": "Int",
-              "base_kind": "int",
+              "type": {
+                "shape": "named",
+                "name": "Int",
+                "kind": "int",
+                "non_null": false
+              },
               "non_null": false,
               "semantic_non_null": false,
-              "list": false,
               "storage_key": {
                 "name": "count",
                 "arguments": []
@@ -122,12 +136,18 @@
               "kind": "scalar",
               "name": "counts",
               "alias": null,
-              "type_name": "[Int]",
-              "base_type": "Int",
-              "base_kind": "int",
+              "type": {
+                "shape": "list",
+                "element": {
+                  "shape": "named",
+                  "name": "Int",
+                  "kind": "int",
+                  "non_null": false
+                },
+                "non_null": false
+              },
               "non_null": false,
               "semantic_non_null": false,
-              "list": true,
               "storage_key": {
                 "name": "counts",
                 "arguments": []
@@ -141,12 +161,14 @@
               "kind": "scalar",
               "name": "ratio",
               "alias": null,
-              "type_name": "Float",
-              "base_type": "Float",
-              "base_kind": "float",
+              "type": {
+                "shape": "named",
+                "name": "Float",
+                "kind": "float",
+                "non_null": false
+              },
               "non_null": false,
               "semantic_non_null": false,
-              "list": false,
               "storage_key": {
                 "name": "ratio",
                 "arguments": []
@@ -160,12 +182,18 @@
               "kind": "scalar",
               "name": "ratios",
               "alias": null,
-              "type_name": "[Float]",
-              "base_type": "Float",
-              "base_kind": "float",
+              "type": {
+                "shape": "list",
+                "element": {
+                  "shape": "named",
+                  "name": "Float",
+                  "kind": "float",
+                  "non_null": false
+                },
+                "non_null": false
+              },
               "non_null": false,
               "semantic_non_null": false,
-              "list": true,
               "storage_key": {
                 "name": "ratios",
                 "arguments": []
@@ -179,12 +207,14 @@
               "kind": "scalar",
               "name": "flag",
               "alias": null,
-              "type_name": "Boolean",
-              "base_type": "Boolean",
-              "base_kind": "boolean",
+              "type": {
+                "shape": "named",
+                "name": "Boolean",
+                "kind": "boolean",
+                "non_null": false
+              },
               "non_null": false,
               "semantic_non_null": false,
-              "list": false,
               "storage_key": {
                 "name": "flag",
                 "arguments": []
@@ -198,12 +228,18 @@
               "kind": "scalar",
               "name": "flags",
               "alias": null,
-              "type_name": "[Boolean]",
-              "base_type": "Boolean",
-              "base_kind": "boolean",
+              "type": {
+                "shape": "list",
+                "element": {
+                  "shape": "named",
+                  "name": "Boolean",
+                  "kind": "boolean",
+                  "non_null": false
+                },
+                "non_null": false
+              },
               "non_null": false,
               "semantic_non_null": false,
-              "list": true,
               "storage_key": {
                 "name": "flags",
                 "arguments": []
@@ -217,12 +253,14 @@
               "kind": "scalar",
               "name": "json",
               "alias": null,
-              "type_name": "JSON",
-              "base_type": "JSON",
-              "base_kind": "custom_scalar",
+              "type": {
+                "shape": "named",
+                "name": "JSON",
+                "kind": "custom_scalar",
+                "non_null": false
+              },
               "non_null": false,
               "semantic_non_null": false,
-              "list": false,
               "storage_key": {
                 "name": "json",
                 "arguments": []
@@ -236,12 +274,18 @@
               "kind": "scalar",
               "name": "jsons",
               "alias": null,
-              "type_name": "[JSON]",
-              "base_type": "JSON",
-              "base_kind": "custom_scalar",
+              "type": {
+                "shape": "list",
+                "element": {
+                  "shape": "named",
+                  "name": "JSON",
+                  "kind": "custom_scalar",
+                  "non_null": false
+                },
+                "non_null": false
+              },
               "non_null": false,
               "semantic_non_null": false,
-              "list": true,
               "storage_key": {
                 "name": "jsons",
                 "arguments": []
@@ -259,12 +303,14 @@
           "kind": "linked",
           "name": "tokenizer",
           "alias": null,
-          "type_name": "Tokenizer",
-          "base_type": "Tokenizer",
-          "base_kind": "object",
+          "type": {
+            "shape": "named",
+            "name": "Tokenizer",
+            "kind": "object",
+            "non_null": false
+          },
           "non_null": false,
           "semantic_non_null": false,
-          "plural": false,
           "has_id": true,
           "is_abstract": false,
           "possible_types": [
@@ -286,12 +332,14 @@
               "kind": "scalar",
               "name": "id",
               "alias": null,
-              "type_name": "ID",
-              "base_type": "ID",
-              "base_kind": "id",
+              "type": {
+                "shape": "named",
+                "name": "ID",
+                "kind": "id",
+                "non_null": false
+              },
               "non_null": false,
               "semantic_non_null": false,
-              "list": false,
               "storage_key": {
                 "name": "id",
                 "arguments": []
@@ -305,12 +353,14 @@
               "kind": "scalar",
               "name": "text",
               "alias": null,
-              "type_name": "String",
-              "base_type": "String",
-              "base_kind": "string",
+              "type": {
+                "shape": "named",
+                "name": "String",
+                "kind": "string",
+                "non_null": false
+              },
               "non_null": false,
               "semantic_non_null": false,
-              "list": false,
               "storage_key": {
                 "name": "text",
                 "arguments": []
@@ -324,12 +374,18 @@
               "kind": "scalar",
               "name": "strings",
               "alias": null,
-              "type_name": "[String]",
-              "base_type": "String",
-              "base_kind": "string",
+              "type": {
+                "shape": "list",
+                "element": {
+                  "shape": "named",
+                  "name": "String",
+                  "kind": "string",
+                  "non_null": false
+                },
+                "non_null": false
+              },
               "non_null": false,
               "semantic_non_null": false,
-              "list": true,
               "storage_key": {
                 "name": "strings",
                 "arguments": []
@@ -343,12 +399,14 @@
               "kind": "scalar",
               "name": "count",
               "alias": null,
-              "type_name": "Int",
-              "base_type": "Int",
-              "base_kind": "int",
+              "type": {
+                "shape": "named",
+                "name": "Int",
+                "kind": "int",
+                "non_null": false
+              },
               "non_null": false,
               "semantic_non_null": false,
-              "list": false,
               "storage_key": {
                 "name": "count",
                 "arguments": []
@@ -362,12 +420,18 @@
               "kind": "scalar",
               "name": "counts",
               "alias": null,
-              "type_name": "[Int]",
-              "base_type": "Int",
-              "base_kind": "int",
+              "type": {
+                "shape": "list",
+                "element": {
+                  "shape": "named",
+                  "name": "Int",
+                  "kind": "int",
+                  "non_null": false
+                },
+                "non_null": false
+              },
               "non_null": false,
               "semantic_non_null": false,
-              "list": true,
               "storage_key": {
                 "name": "counts",
                 "arguments": []
@@ -381,12 +445,14 @@
               "kind": "scalar",
               "name": "ratio",
               "alias": null,
-              "type_name": "Float",
-              "base_type": "Float",
-              "base_kind": "float",
+              "type": {
+                "shape": "named",
+                "name": "Float",
+                "kind": "float",
+                "non_null": false
+              },
               "non_null": false,
               "semantic_non_null": false,
-              "list": false,
               "storage_key": {
                 "name": "ratio",
                 "arguments": []
@@ -400,12 +466,18 @@
               "kind": "scalar",
               "name": "ratios",
               "alias": null,
-              "type_name": "[Float]",
-              "base_type": "Float",
-              "base_kind": "float",
+              "type": {
+                "shape": "list",
+                "element": {
+                  "shape": "named",
+                  "name": "Float",
+                  "kind": "float",
+                  "non_null": false
+                },
+                "non_null": false
+              },
               "non_null": false,
               "semantic_non_null": false,
-              "list": true,
               "storage_key": {
                 "name": "ratios",
                 "arguments": []
@@ -419,12 +491,14 @@
               "kind": "scalar",
               "name": "flag",
               "alias": null,
-              "type_name": "Boolean",
-              "base_type": "Boolean",
-              "base_kind": "boolean",
+              "type": {
+                "shape": "named",
+                "name": "Boolean",
+                "kind": "boolean",
+                "non_null": false
+              },
               "non_null": false,
               "semantic_non_null": false,
-              "list": false,
               "storage_key": {
                 "name": "flag",
                 "arguments": []
@@ -438,12 +512,18 @@
               "kind": "scalar",
               "name": "flags",
               "alias": null,
-              "type_name": "[Boolean]",
-              "base_type": "Boolean",
-              "base_kind": "boolean",
+              "type": {
+                "shape": "list",
+                "element": {
+                  "shape": "named",
+                  "name": "Boolean",
+                  "kind": "boolean",
+                  "non_null": false
+                },
+                "non_null": false
+              },
               "non_null": false,
               "semantic_non_null": false,
-              "list": true,
               "storage_key": {
                 "name": "flags",
                 "arguments": []
@@ -457,12 +537,14 @@
               "kind": "scalar",
               "name": "json",
               "alias": null,
-              "type_name": "JSON",
-              "base_type": "JSON",
-              "base_kind": "custom_scalar",
+              "type": {
+                "shape": "named",
+                "name": "JSON",
+                "kind": "custom_scalar",
+                "non_null": false
+              },
               "non_null": false,
               "semantic_non_null": false,
-              "list": false,
               "storage_key": {
                 "name": "json",
                 "arguments": []
@@ -476,12 +558,18 @@
               "kind": "scalar",
               "name": "jsons",
               "alias": null,
-              "type_name": "[JSON]",
-              "base_type": "JSON",
-              "base_kind": "custom_scalar",
+              "type": {
+                "shape": "list",
+                "element": {
+                  "shape": "named",
+                  "name": "JSON",
+                  "kind": "custom_scalar",
+                  "non_null": false
+                },
+                "non_null": false
+              },
               "non_null": false,
               "semantic_non_null": false,
-              "list": true,
               "storage_key": {
                 "name": "jsons",
                 "arguments": []

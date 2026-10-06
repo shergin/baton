@@ -133,8 +133,14 @@ parameters. Here: the stored properties of an [operation value](#generated).
 fragment or operation root compiles to: a record reference and a context,
 its owner, with one accessor per declared field. Relay has two words,
 fragment reference and fragment data, for what is one value here; "reader"
-is Relay's name for machinery and "view" is SwiftUI's. See
-[A fragment is a lens](principles/fragment-is-a-lens.md).
+is Relay's name for machinery and "view" is SwiftUI's. An accessor's type
+follows the schema's: a list whose elements the schema types nullable reads
+as an array of optionals, a null element as nil; a list of non-null elements
+reports an element it cannot hold, as a scalar reports a value it cannot
+hold, and leaves it out; a list of records shows its records, a null entry
+having no identity to be keyed by. See
+[A fragment is a lens](principles/fragment-is-a-lens.md) and
+[A list's null elements are typed as the schema says](decisions/a-lists-null-elements-are-typed.md).
 
 **Owner.** *Composition: lens, operation value.* Relay: the fragment owner,
 the request whose variables a fragment reference is read with. Here: the

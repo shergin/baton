@@ -51,14 +51,14 @@ pub(super) fn satisfied(
                 SelectionPlan::Linked {
                     required: Some(required),
                     storage_key,
-                    plural,
+                    type_,
                     bubbles,
                     ..
                 } if required.action != RequiredAction::Throw => {
                     let slot = SlotAccess::of(type_name, type_is_abstract, storage_key);
                     let path = required.path.clone();
                     let log = required.action == RequiredAction::Log;
-                    if *plural || !*bubbles {
+                    if type_.is_list() || !*bubbles {
                         Some(SatisfiedCheck::HasValue { slot, path, log })
                     } else {
                         Some(SatisfiedCheck::Linked {
@@ -131,12 +131,12 @@ pub(super) fn field_errors(
             SelectionPlan::Linked {
                 storage_key,
                 required,
-                plural,
+                type_,
                 ..
             } => {
                 let slot = SlotAccess::of(type_name, type_is_abstract, storage_key);
                 let lens = member.lens_name().to_string();
-                lines.push(if *plural {
+                lines.push(if type_.is_list() {
                     ErrorLine::List {
                         slot: slot.clone(),
                         lens,

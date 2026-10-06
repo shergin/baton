@@ -8,7 +8,11 @@ import Synchronization
 /// new marker is declared and the one before it stays, unavailable, with
 /// the message. The compiler's `FORMAT` is the same number.
 @_spi(Generated)
+@available(*, unavailable, message: "this generated code is of format 1 and the runtime reads format 2: a list whose elements the schema types nullable reads as an array of optionals; rebuild with the compiler of this release")
 public enum Format1 {}
+
+@_spi(Generated)
+public enum Format2 {}
 
 /// An operation's normalization plan, emitted by the compiler as static data:
 /// what the response contains and where each value is stored.

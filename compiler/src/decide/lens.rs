@@ -6,7 +6,7 @@ use std::collections::BTreeSet;
 
 use super::Guard;
 use super::keys::SlotRef;
-use crate::pipeline::{ArgumentValuePlan, ConstantPlan, StorageKeyPlan, TypeKind};
+use crate::pipeline::{ArgumentValuePlan, ConstantPlan, StorageKeyPlan, TypeKind, TypePlan};
 
 /// A lens type: its accessors, the surface its kind has, and the lenses
 /// nested in it.
@@ -238,7 +238,24 @@ pub struct ScalarRead {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct ScalarShape {
     pub primitive: Primitive,
-    pub list: bool,
+    /// A list of the primitive, when the field is one.
+    pub list: Option<ListShape>,
+}
+
+/// A list's shape beyond its element: whether the schema types the elements
+/// non-null, which decides whether an accessor reads `[T]` or `[T?]`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct ListShape {
+    pub non_null: bool,
+}
+
+impl ListShape {
+    /// The list shape of a type, when it is a list.
+    pub fn of(type_: &TypePlan) -> Option<ListShape> {
+        type_.element().map(|element| ListShape {
+            non_null: element.non_null(),
+        })
+    }
 }
 
 /// What the store keeps a scalar as. An id, an enum and a custom scalar are
@@ -252,15 +269,21 @@ pub enum Primitive {
 }
 
 impl ScalarShape {
-    /// The shape of a field of `kind`.
-    pub fn of(kind: TypeKind, list: bool) -> ScalarShape {
-        let primitive = match kind {
+    /// The shape of a field of the type.
+    pub fn of(type_: &TypePlan) -> ScalarShape {
+        ScalarShape {
+            primitive: Self::primitive(type_.base_kind()),
+            list: ListShape::of(type_),
+        }
+    }
+
+    fn primitive(kind: TypeKind) -> Primitive {
+        match kind {
             TypeKind::Int => Primitive::Int,
             TypeKind::Float => Primitive::Double,
             TypeKind::Boolean => Primitive::Bool,
             _ => Primitive::String,
-        };
-        ScalarShape { primitive, list }
+        }
     }
 }
 

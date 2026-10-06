@@ -8,7 +8,7 @@ use std::path::{Path, PathBuf};
 use super::*;
 use crate::config::Config;
 use crate::documents::Document;
-use crate::pipeline;
+use crate::pipeline::{self, TypeKind, TypePlan};
 
 /// The line `property` writes when it reads `expression` under `condition`.
 fn one_line(property: Computed, expression: &str, condition: Option<&str>) -> String {
@@ -124,20 +124,58 @@ fn the_runtime_is_named_by_its_module_in_a_type_and_in_an_expression() {
     assert_eq!(runtime_value("Variables"), "Baton.Variables");
 }
 
+/// The scalar shape of a nullable `primitive`, or of a nullable list of it
+/// whose elements are non-null or not.
+fn shape_of(primitive: Primitive, elements_non_null: Option<bool>) -> ScalarShape {
+    let kind = match primitive {
+        Primitive::String => TypeKind::String,
+        Primitive::Int => TypeKind::Int,
+        Primitive::Double => TypeKind::Float,
+        Primitive::Bool => TypeKind::Boolean,
+    };
+    let element = TypePlan::Named {
+        name: format!("{kind:?}"),
+        kind,
+        non_null: elements_non_null.unwrap_or(false),
+    };
+    let type_ = match elements_non_null {
+        None => element,
+        Some(_) => TypePlan::List {
+            element: Box::new(element),
+            non_null: false,
+        },
+    };
+    ScalarShape::of(&type_)
+}
+
 #[test]
 fn a_scalar_shape_is_spelled_as_swift_writes_it_and_read_by_its_matching_reader() {
     let shapes = [
-        (Primitive::String, false, "String", "string"),
-        (Primitive::Int, false, "Int", "int"),
-        (Primitive::Double, false, "Double", "double"),
-        (Primitive::Bool, false, "Bool", "bool"),
-        (Primitive::String, true, "[String]", "strings"),
-        (Primitive::Int, true, "[Int]", "ints"),
-        (Primitive::Double, true, "[Double]", "doubles"),
-        (Primitive::Bool, true, "[Bool]", "bools"),
+        (Primitive::String, None, "String", "string"),
+        (Primitive::Int, None, "Int", "int"),
+        (Primitive::Double, None, "Double", "double"),
+        (Primitive::Bool, None, "Bool", "bool"),
+        (Primitive::String, Some(true), "[String]", "strings"),
+        (Primitive::Int, Some(true), "[Int]", "ints"),
+        (Primitive::Double, Some(true), "[Double]", "doubles"),
+        (Primitive::Bool, Some(true), "[Bool]", "bools"),
+        (
+            Primitive::String,
+            Some(false),
+            "[String?]",
+            "nullableStrings",
+        ),
+        (Primitive::Int, Some(false), "[Int?]", "nullableInts"),
+        (
+            Primitive::Double,
+            Some(false),
+            "[Double?]",
+            "nullableDoubles",
+        ),
+        (Primitive::Bool, Some(false), "[Bool?]", "nullableBools"),
     ];
-    for (primitive, list, swift_type, reader) in shapes {
-        let shape = ScalarShape { primitive, list };
+    for (primitive, elements_non_null, swift_type, reader) in shapes {
+        let shape = shape_of(primitive, elements_non_null);
         assert_eq!(
             scalar_type(shape).to_string(),
             swift_type,

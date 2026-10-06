@@ -3,7 +3,7 @@
 
 use std::collections::BTreeSet;
 
-use super::lens::{Primitive, ReaderPlan, ScalarShape, hideable_name};
+use super::lens::{ListShape, Primitive, ReaderPlan, ScalarShape, hideable_name};
 use super::reader::Readers;
 use super::{NormalizationField, NormalizationKind, NormalizationSelection};
 use crate::names::{Kind, NameError, Reserved, Scope, Written, escape};
@@ -75,7 +75,8 @@ pub enum BuilderValue {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct VariableShape {
     pub base: VariableBase,
-    pub list: bool,
+    /// A list of the base, when the variable is one.
+    pub list: Option<ListShape>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -109,7 +110,7 @@ pub(super) fn operation(
         .map(|variable| VariableValue {
             name: variable.name.clone(),
             shape: variable_shape(variable),
-            non_null: variable.non_null,
+            non_null: variable.type_.non_null(),
             local: local_name(&variable.name, &names),
         })
         .collect();
@@ -313,8 +314,8 @@ fn builder(
     for field in &fields {
         let key = field.response_key.clone();
         let value = match &field.kind {
-            NormalizationKind::Scalar { base_kind, list } => BuilderValue::Scalar {
-                shape: ScalarShape::of(*base_kind, *list),
+            NormalizationKind::Scalar { type_ } => BuilderValue::Scalar {
+                shape: ScalarShape::of(type_),
             },
             NormalizationKind::Linked {
                 plural,
@@ -385,7 +386,7 @@ fn numbered(base: &str, taken: &[&str]) -> String {
 /// A variable's shape: the scalars as the accessors read them, anything
 /// else as the request carries it.
 fn variable_shape(variable: &VariablePlan) -> VariableShape {
-    let base = match variable.base_kind {
+    let base = match variable.type_.base_kind() {
         TypeKind::Int => VariableBase::Scalar(Primitive::Int),
         TypeKind::Float => VariableBase::Scalar(Primitive::Double),
         TypeKind::Boolean => VariableBase::Scalar(Primitive::Bool),
@@ -396,6 +397,6 @@ fn variable_shape(variable: &VariablePlan) -> VariableShape {
     };
     VariableShape {
         base,
-        list: variable.list,
+        list: ListShape::of(&variable.type_),
     }
 }

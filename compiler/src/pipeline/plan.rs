@@ -143,14 +143,71 @@ pub struct VariablePlan {
     /// Where the document wrote the variable's name.
     #[serde(skip)]
     pub origin: Option<Origin>,
-    /// The GraphQL type, e.g. `Int`, `ID!`, `[String!]`.
-    pub type_name: String,
-    /// The innermost named type.
-    pub base_type: String,
-    pub base_kind: TypeKind,
-    pub non_null: bool,
-    pub list: bool,
+    #[serde(rename = "type")]
+    pub type_: TypePlan,
     pub default_value: Option<ConstantPlan>,
+}
+
+/// A field's or a variable's type as the schema writes it: a named type, or
+/// a list of a type, each non-null or not. Built once, in the lowering, for
+/// the reader side and the normalization side alike, so the two cannot
+/// disagree about a shape. The accessor form `@required` and `@catch`
+/// produce stays apart from it.
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize)]
+#[serde(tag = "shape", rename_all = "snake_case")]
+pub enum TypePlan {
+    Named {
+        name: String,
+        kind: TypeKind,
+        non_null: bool,
+    },
+    List {
+        element: Box<TypePlan>,
+        non_null: bool,
+    },
+}
+
+impl TypePlan {
+    /// Whether the outermost type is non-null.
+    pub fn non_null(&self) -> bool {
+        match self {
+            TypePlan::Named { non_null, .. } | TypePlan::List { non_null, .. } => *non_null,
+        }
+    }
+
+    pub fn is_list(&self) -> bool {
+        matches!(self, TypePlan::List { .. })
+    }
+
+    /// A list's element type.
+    pub fn element(&self) -> Option<&TypePlan> {
+        match self {
+            TypePlan::List { element, .. } => Some(element),
+            TypePlan::Named { .. } => None,
+        }
+    }
+
+    /// The innermost named type.
+    pub fn base(&self) -> &TypePlan {
+        match self {
+            TypePlan::Named { .. } => self,
+            TypePlan::List { element, .. } => element.base(),
+        }
+    }
+
+    pub fn base_name(&self) -> &str {
+        match self.base() {
+            TypePlan::Named { name, .. } => name,
+            TypePlan::List { .. } => unreachable!("the base of a type is named"),
+        }
+    }
+
+    pub fn base_kind(&self) -> TypeKind {
+        match self.base() {
+            TypePlan::Named { kind, .. } => *kind,
+            TypePlan::List { .. } => unreachable!("the base of a type is named"),
+        }
+    }
 }
 
 /// What kind of named type a field or variable has.
@@ -333,13 +390,13 @@ pub enum SelectionPlan {
         /// the name.
         #[serde(skip)]
         origin: Option<Origin>,
-        type_name: String,
-        base_type: String,
-        base_kind: TypeKind,
+        #[serde(rename = "type")]
+        type_: TypePlan,
+        /// Non-null in effect: the schema says so, and the error policy does
+        /// not make every field nullable.
         non_null: bool,
         /// `@semanticNonNull` in the schema: null only when an error occurred.
         semantic_non_null: bool,
-        list: bool,
         storage_key: StorageKeyPlan,
         edit: Option<EditPlan>,
         required: Option<RequiredPlan>,
@@ -353,12 +410,10 @@ pub enum SelectionPlan {
         alias: Option<String>,
         #[serde(skip)]
         origin: Option<Origin>,
-        type_name: String,
-        base_type: String,
-        base_kind: TypeKind,
+        #[serde(rename = "type")]
+        type_: TypePlan,
         non_null: bool,
         semantic_non_null: bool,
-        plural: bool,
         /// Whether the target type defines an `id` field (identity by typename and id).
         has_id: bool,
         /// Whether the target type is an interface or union: records are then

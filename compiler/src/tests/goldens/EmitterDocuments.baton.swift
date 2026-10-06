@@ -1267,13 +1267,13 @@ mutation TestListPayload {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "ListsPayload"
-            @MainActor public var strings: [String]? { anchor.strings(Slots.ListsPayload.strings) }
+            @MainActor public var strings: [String?]? { anchor.nullableStrings(Slots.ListsPayload.strings) }
             @MainActor public var ids: [String] { anchor.requiredStrings(Slots.ListsPayload.ids) }
-            @MainActor public var counts: [Int]? { anchor.ints(Slots.ListsPayload.counts) }
-            @MainActor public var ratios: [Double]? { anchor.doubles(Slots.ListsPayload.ratios) }
-            @MainActor public var flags: [Bool]? { anchor.bools(Slots.ListsPayload.flags) }
-            @MainActor public var jsons: [String]? { anchor.strings(Slots.ListsPayload.jsons) }
-            @MainActor public var statuses: [String]? { anchor.strings(Slots.ListsPayload.statuses) }
+            @MainActor public var counts: [Int?]? { anchor.nullableInts(Slots.ListsPayload.counts) }
+            @MainActor public var ratios: [Double?]? { anchor.nullableDoubles(Slots.ListsPayload.ratios) }
+            @MainActor public var flags: [Bool?]? { anchor.nullableBools(Slots.ListsPayload.flags) }
+            @MainActor public var jsons: [String?]? { anchor.nullableStrings(Slots.ListsPayload.jsons) }
+            @MainActor public var statuses: [String?]? { anchor.nullableStrings(Slots.ListsPayload.statuses) }
         }
     }
 
@@ -1293,14 +1293,14 @@ mutation TestListPayload {
 
         /// A partial response to show before the server answers; absent fields leave the store untouched.
         nonisolated public struct SetLists: Sendable {
-            public var strings: [String]?
+            public var strings: [String?]?
             public var ids: [String]?
-            public var counts: [Int]?
-            public var ratios: [Double]?
-            public var flags: [Bool]?
-            public var jsons: [String]?
-            public var statuses: [String]?
-            public init(strings: [String]? = nil, ids: [String]? = nil, counts: [Int]? = nil, ratios: [Double]? = nil, flags: [Bool]? = nil, jsons: [String]? = nil, statuses: [String]? = nil) {
+            public var counts: [Int?]?
+            public var ratios: [Double?]?
+            public var flags: [Bool?]?
+            public var jsons: [String?]?
+            public var statuses: [String?]?
+            public init(strings: [String?]? = nil, ids: [String]? = nil, counts: [Int?]? = nil, ratios: [Double?]? = nil, flags: [Bool?]? = nil, jsons: [String?]? = nil, statuses: [String?]? = nil) {
                 self.strings = strings
                 self.ids = ids
                 self.counts = counts

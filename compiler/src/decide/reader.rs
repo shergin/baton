@@ -375,13 +375,12 @@ impl Readers {
             matches!(&member.selection, SelectionPlan::Linked { name, alias: None, .. } if name == "edges")
         })?;
         let SelectionPlan::Linked {
-            base_type,
-            selections,
-            ..
+            type_, selections, ..
         } = &edges.selection
         else {
             unreachable!("the edges member is a linked field");
         };
+        let base_type = type_.base_name();
         // The edges' lens names its members when it is decided; naming them
         // here the same way finds the name its node takes.
         let mut edge_members = self::members(selections);
@@ -781,10 +780,9 @@ fn scalar_read(
     context: Context<'_>,
 ) -> Read {
     let SelectionPlan::Scalar {
-        base_kind,
+        type_,
         non_null,
         semantic_non_null,
-        list,
         storage_key,
         required,
         catch,
@@ -809,7 +807,7 @@ fn scalar_read(
     };
     Read::Scalar(ScalarRead {
         slot: SlotAccess::of(type_name, type_is_abstract, storage_key),
-        shape: ScalarShape::of(*base_kind, *list),
+        shape: ScalarShape::of(type_),
         form,
     })
 }
@@ -824,10 +822,9 @@ fn linked_read(
     context: Context<'_>,
 ) -> Read {
     let SelectionPlan::Linked {
-        base_type,
+        type_,
         non_null,
         semantic_non_null,
-        plural,
         is_abstract,
         storage_key,
         connection,
@@ -840,13 +837,15 @@ fn linked_read(
     else {
         unreachable!("a linked member is a linked field");
     };
+    let base_type = type_.base_name().to_string();
+    let plural = type_.is_list();
     let lens = member.lens_name().to_string();
     let non_null =
         *non_null || required.is_some() || (*semantic_non_null && context.handles_errors());
     let catch_to = catch.as_ref().map(|catch| catch.to);
     let required_action = required.as_ref().map(|required| required.action);
     let path = required_path(required);
-    let form = if *plural {
+    let form = if plural {
         match (catch_to, required_action) {
             (Some(CatchTarget::Result), _) => LinkedForm::CaughtList { non_null },
             (_, Some(RequiredAction::Throw)) => LinkedForm::ThrowingList { path },

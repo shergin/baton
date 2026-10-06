@@ -5,6 +5,18 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- The plan IR carries a field's and a variable's type as one recursive
+  shape, a named type or a list of a type with nullability at every level,
+  built once in the lowering for the reader side and the normalization
+  side alike. With it, a list whose elements the schema types nullable
+  reads as an array of optionals, `[String?]`, and a null element reads as
+  nil where it was dropped before; a list of non-null elements reports an
+  element it cannot hold, a null or a value of another type, once, as a
+  scalar reports a value it cannot hold, and leaves it out. A variable
+  typed as such a list is a property of the same shape. Generated code of
+  this shape is format 2: code of format 1 fails to compile at its marker,
+  with a message that says to rebuild. The decision is
+  [A list's null elements are typed as the schema says](docs/decisions/a-lists-null-elements-are-typed.md).
 - The keys a session renders from its variables, one per id looked up and
   per cursor paged past, are numbered by the store that renders them, in
   `Keys`, where the process's registry numbered them for its own life: the

@@ -22,7 +22,7 @@ use super::plan::{
     ArgumentPlan, ArgumentValuePlan, CatchPlan, CatchTarget, ConditionClass, ConnectionPlan,
     ConstantPlan, EditKind, EditPlan, FragmentPlan, LookupPlan, OperationKind, OperationPlan,
     Origin, PaginationPlan, Plan, RefetchPlan, RequiredAction, RequiredPlan, SelectionPlan,
-    StorageKeyPlan, TypeKind, VariablePlan,
+    StorageKeyPlan, TypeKind, TypePlan, VariablePlan,
 };
 use crate::config::Config;
 
@@ -391,15 +391,7 @@ impl Lowering<'_> {
             .map(|variable| VariablePlan {
                 name: variable.name.item.0.lookup().to_string(),
                 origin: Origin::of(variable.name.location),
-                type_name: self.type_reference_name(&variable.type_),
-                base_type: self
-                    .schema
-                    .get_type_name(variable.type_.inner())
-                    .lookup()
-                    .to_string(),
-                base_kind: self.type_kind(variable.type_.inner()),
-                non_null: variable.type_.is_non_null(),
-                list: variable.type_.is_list(),
+                type_: self.type_plan(&variable.type_),
                 default_value: variable
                     .default_value
                     .as_ref()
@@ -669,16 +661,9 @@ impl Lowering<'_> {
             name: definition.name.item.lookup().to_string(),
             alias: field.alias.map(|alias| alias.item.lookup().to_string()),
             origin: Origin::of(field.alias_or_name_location()),
-            type_name: self.type_reference_name(&definition.type_),
-            base_type: self
-                .schema
-                .get_type_name(definition.type_.inner())
-                .lookup()
-                .to_string(),
-            base_kind: self.type_kind(definition.type_.inner()),
+            type_: self.type_plan(&definition.type_),
             non_null: self.non_null(definition),
             semantic_non_null: self.semantic_non_null(definition),
-            list: definition.type_.is_list(),
             storage_key: storage_key(definition.name.item.lookup(), &field.arguments),
             edit: self.edit(&field.directives),
             required: self.required(&field.directives),
@@ -713,12 +698,9 @@ impl Lowering<'_> {
             name: name.to_string(),
             alias: field.alias.map(|alias| alias.item.lookup().to_string()),
             origin: Origin::of(field.alias_or_name_location()),
-            type_name: self.type_reference_name(&definition.type_),
-            base_type: self.schema.get_type_name(target).lookup().to_string(),
-            base_kind: self.type_kind(target),
+            type_: self.type_plan(&definition.type_),
             non_null: self.non_null(definition),
             semantic_non_null: self.semantic_non_null(definition),
-            plural: definition.type_.is_list(),
             has_id: self.type_has_id(target),
             is_abstract: target.is_abstract_type(),
             possible_types: self.possible_types(target),
@@ -965,6 +947,27 @@ impl Lowering<'_> {
             Type::Interface(_) => TypeKind::Interface,
             Type::Union(_) => TypeKind::Union,
             Type::InputObject(_) => TypeKind::InputObject,
+        }
+    }
+
+    /// A type as the schema writes it, with nullability at every level: the
+    /// one shape the reader side and the normalization side are lowered from.
+    fn type_plan(&self, type_: &TypeReference<Type>) -> TypePlan {
+        self.type_plan_wrapped(type_, false)
+    }
+
+    fn type_plan_wrapped(&self, type_: &TypeReference<Type>, non_null: bool) -> TypePlan {
+        match type_ {
+            TypeReference::NonNull(inner) => self.type_plan_wrapped(inner, true),
+            TypeReference::List(inner) => TypePlan::List {
+                element: Box::new(self.type_plan_wrapped(inner, false)),
+                non_null,
+            },
+            TypeReference::Named(named) => TypePlan::Named {
+                name: self.schema.get_type_name(*named).lookup().to_string(),
+                kind: self.type_kind(*named),
+                non_null,
+            },
         }
     }
 

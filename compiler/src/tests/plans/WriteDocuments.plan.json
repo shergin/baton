@@ -18,12 +18,14 @@
           "kind": "scalar",
           "name": "id",
           "alias": null,
-          "type_name": "ID",
-          "base_type": "ID",
-          "base_kind": "id",
+          "type": {
+            "shape": "named",
+            "name": "ID",
+            "kind": "id",
+            "non_null": false
+          },
           "non_null": false,
           "semantic_non_null": false,
-          "list": false,
           "storage_key": {
             "name": "id",
             "arguments": []
@@ -37,12 +39,14 @@
           "kind": "scalar",
           "name": "name",
           "alias": null,
-          "type_name": "String",
-          "base_type": "String",
-          "base_kind": "string",
+          "type": {
+            "shape": "named",
+            "name": "String",
+            "kind": "string",
+            "non_null": false
+          },
           "non_null": false,
           "semantic_non_null": false,
-          "list": false,
           "storage_key": {
             "name": "name",
             "arguments": []
@@ -56,12 +60,14 @@
           "kind": "scalar",
           "name": "favorite",
           "alias": null,
-          "type_name": "Boolean",
-          "base_type": "Boolean",
-          "base_kind": "boolean",
+          "type": {
+            "shape": "named",
+            "name": "Boolean",
+            "kind": "boolean",
+            "non_null": false
+          },
           "non_null": false,
           "semantic_non_null": false,
-          "list": false,
           "storage_key": {
             "name": "favorite",
             "arguments": []
@@ -91,12 +97,14 @@
           "kind": "linked",
           "name": "rename",
           "alias": null,
-          "type_name": "FavoritePayload",
-          "base_type": "FavoritePayload",
-          "base_kind": "object",
+          "type": {
+            "shape": "named",
+            "name": "FavoritePayload",
+            "kind": "object",
+            "non_null": false
+          },
           "non_null": false,
           "semantic_non_null": false,
-          "plural": false,
           "has_id": false,
           "is_abstract": false,
           "possible_types": [
@@ -118,12 +126,14 @@
               "kind": "linked",
               "name": "character",
               "alias": null,
-              "type_name": "Character",
-              "base_type": "Character",
-              "base_kind": "object",
+              "type": {
+                "shape": "named",
+                "name": "Character",
+                "kind": "object",
+                "non_null": false
+              },
               "non_null": false,
               "semantic_non_null": false,
-              "plural": false,
               "has_id": true,
               "is_abstract": false,
               "possible_types": [
@@ -145,12 +155,14 @@
                   "kind": "scalar",
                   "name": "id",
                   "alias": null,
-                  "type_name": "ID",
-                  "base_type": "ID",
-                  "base_kind": "id",
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "id",
                     "arguments": []
@@ -164,12 +176,14 @@
                   "kind": "scalar",
                   "name": "name",
                   "alias": null,
-                  "type_name": "String",
-                  "base_type": "String",
-                  "base_kind": "string",
+                  "type": {
+                    "shape": "named",
+                    "name": "String",
+                    "kind": "string",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "name",
                     "arguments": []
@@ -196,11 +210,12 @@
       "variables": [
         {
           "name": "id",
-          "type_name": "ID!",
-          "base_type": "ID",
-          "base_kind": "id",
-          "non_null": true,
-          "list": false,
+          "type": {
+            "shape": "named",
+            "name": "ID",
+            "kind": "id",
+            "non_null": true
+          },
           "default_value": null
         }
       ],
@@ -215,12 +230,14 @@
           "kind": "linked",
           "name": "node",
           "alias": null,
-          "type_name": "Node",
-          "base_type": "Node",
-          "base_kind": "interface",
+          "type": {
+            "shape": "named",
+            "name": "Node",
+            "kind": "interface",
+            "non_null": false
+          },
           "non_null": false,
           "semantic_non_null": false,
-          "plural": false,
           "has_id": true,
           "is_abstract": true,
           "possible_types": [
@@ -266,12 +283,14 @@
               "kind": "scalar",
               "name": "__typename",
               "alias": null,
-              "type_name": "String!",
-              "base_type": "String",
-              "base_kind": "string",
+              "type": {
+                "shape": "named",
+                "name": "String",
+                "kind": "string",
+                "non_null": true
+              },
               "non_null": true,
               "semantic_non_null": false,
-              "list": false,
               "storage_key": {
                 "name": "__typename",
                 "arguments": []
@@ -300,12 +319,14 @@
                   "kind": "scalar",
                   "name": "id",
                   "alias": null,
-                  "type_name": "ID",
-                  "base_type": "ID",
-                  "base_kind": "id",
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "id",
                     "arguments": []
@@ -319,12 +340,14 @@
                   "kind": "scalar",
                   "name": "name",
                   "alias": null,
-                  "type_name": "String",
-                  "base_type": "String",
-                  "base_kind": "string",
+                  "type": {
+                    "shape": "named",
+                    "name": "String",
+                    "kind": "string",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "name",
                     "arguments": []
@@ -355,12 +378,14 @@
                   "kind": "scalar",
                   "name": "id",
                   "alias": null,
-                  "type_name": "ID",
-                  "base_type": "ID",
-                  "base_kind": "id",
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "id",
                     "arguments": []
@@ -374,12 +399,14 @@
                   "kind": "scalar",
                   "name": "name",
                   "alias": null,
-                  "type_name": "String",
-                  "base_type": "String",
-                  "base_kind": "string",
+                  "type": {
+                    "shape": "named",
+                    "name": "String",
+                    "kind": "string",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "name",
                     "arguments": []
@@ -399,12 +426,14 @@
           "kind": "linked",
           "name": "node",
           "alias": null,
-          "type_name": "Node",
-          "base_type": "Node",
-          "base_kind": "interface",
+          "type": {
+            "shape": "named",
+            "name": "Node",
+            "kind": "interface",
+            "non_null": false
+          },
           "non_null": false,
           "semantic_non_null": false,
-          "plural": false,
           "has_id": true,
           "is_abstract": true,
           "possible_types": [
@@ -450,12 +479,14 @@
               "kind": "scalar",
               "name": "__typename",
               "alias": null,
-              "type_name": "String!",
-              "base_type": "String",
-              "base_kind": "string",
+              "type": {
+                "shape": "named",
+                "name": "String",
+                "kind": "string",
+                "non_null": true
+              },
               "non_null": true,
               "semantic_non_null": false,
-              "list": false,
               "storage_key": {
                 "name": "__typename",
                 "arguments": []
@@ -469,12 +500,14 @@
               "kind": "scalar",
               "name": "id",
               "alias": null,
-              "type_name": "ID",
-              "base_type": "ID",
-              "base_kind": "id",
+              "type": {
+                "shape": "named",
+                "name": "ID",
+                "kind": "id",
+                "non_null": false
+              },
               "non_null": false,
               "semantic_non_null": false,
-              "list": false,
               "storage_key": {
                 "name": "id",
                 "arguments": []
@@ -503,12 +536,14 @@
                   "kind": "scalar",
                   "name": "name",
                   "alias": null,
-                  "type_name": "String",
-                  "base_type": "String",
-                  "base_kind": "string",
+                  "type": {
+                    "shape": "named",
+                    "name": "String",
+                    "kind": "string",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "name",
                     "arguments": []
@@ -539,12 +574,14 @@
                   "kind": "scalar",
                   "name": "name",
                   "alias": null,
-                  "type_name": "String",
-                  "base_type": "String",
-                  "base_kind": "string",
+                  "type": {
+                    "shape": "named",
+                    "name": "String",
+                    "kind": "string",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "name",
                     "arguments": []
@@ -569,20 +606,22 @@
       "variables": [
         {
           "name": "id",
-          "type_name": "ID!",
-          "base_type": "ID",
-          "base_kind": "id",
-          "non_null": true,
-          "list": false,
+          "type": {
+            "shape": "named",
+            "name": "ID",
+            "kind": "id",
+            "non_null": true
+          },
           "default_value": null
         },
         {
           "name": "name",
-          "type_name": "String!",
-          "base_type": "String",
-          "base_kind": "string",
-          "non_null": true,
-          "list": false,
+          "type": {
+            "shape": "named",
+            "name": "String",
+            "kind": "string",
+            "non_null": true
+          },
           "default_value": null
         }
       ],
@@ -597,12 +636,14 @@
           "kind": "linked",
           "name": "rename",
           "alias": null,
-          "type_name": "FavoritePayload",
-          "base_type": "FavoritePayload",
-          "base_kind": "object",
+          "type": {
+            "shape": "named",
+            "name": "FavoritePayload",
+            "kind": "object",
+            "non_null": false
+          },
           "non_null": false,
           "semantic_non_null": false,
-          "plural": false,
           "has_id": false,
           "is_abstract": false,
           "possible_types": [
@@ -624,12 +665,14 @@
               "kind": "linked",
               "name": "character",
               "alias": null,
-              "type_name": "Character",
-              "base_type": "Character",
-              "base_kind": "object",
+              "type": {
+                "shape": "named",
+                "name": "Character",
+                "kind": "object",
+                "non_null": false
+              },
               "non_null": false,
               "semantic_non_null": false,
-              "plural": false,
               "has_id": true,
               "is_abstract": false,
               "possible_types": [
@@ -651,12 +694,14 @@
                   "kind": "scalar",
                   "name": "id",
                   "alias": null,
-                  "type_name": "ID",
-                  "base_type": "ID",
-                  "base_kind": "id",
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "id",
                     "arguments": []
@@ -670,12 +715,14 @@
                   "kind": "scalar",
                   "name": "name",
                   "alias": null,
-                  "type_name": "String",
-                  "base_type": "String",
-                  "base_kind": "string",
+                  "type": {
+                    "shape": "named",
+                    "name": "String",
+                    "kind": "string",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "name",
                     "arguments": []
@@ -695,12 +742,14 @@
           "kind": "linked",
           "name": "rename",
           "alias": null,
-          "type_name": "FavoritePayload",
-          "base_type": "FavoritePayload",
-          "base_kind": "object",
+          "type": {
+            "shape": "named",
+            "name": "FavoritePayload",
+            "kind": "object",
+            "non_null": false
+          },
           "non_null": false,
           "semantic_non_null": false,
-          "plural": false,
           "has_id": false,
           "is_abstract": false,
           "possible_types": [
@@ -722,12 +771,14 @@
               "kind": "linked",
               "name": "character",
               "alias": null,
-              "type_name": "Character",
-              "base_type": "Character",
-              "base_kind": "object",
+              "type": {
+                "shape": "named",
+                "name": "Character",
+                "kind": "object",
+                "non_null": false
+              },
               "non_null": false,
               "semantic_non_null": false,
-              "plural": false,
               "has_id": true,
               "is_abstract": false,
               "possible_types": [
@@ -749,12 +800,14 @@
                   "kind": "scalar",
                   "name": "id",
                   "alias": null,
-                  "type_name": "ID",
-                  "base_type": "ID",
-                  "base_kind": "id",
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "id",
                     "arguments": []
@@ -768,12 +821,14 @@
                   "kind": "scalar",
                   "name": "name",
                   "alias": null,
-                  "type_name": "String",
-                  "base_type": "String",
-                  "base_kind": "string",
+                  "type": {
+                    "shape": "named",
+                    "name": "String",
+                    "kind": "string",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "name",
                     "arguments": []
@@ -798,20 +853,22 @@
       "variables": [
         {
           "name": "id",
-          "type_name": "ID!",
-          "base_type": "ID",
-          "base_kind": "id",
-          "non_null": true,
-          "list": false,
+          "type": {
+            "shape": "named",
+            "name": "ID",
+            "kind": "id",
+            "non_null": true
+          },
           "default_value": null
         },
         {
           "name": "name",
-          "type_name": "String!",
-          "base_type": "String",
-          "base_kind": "string",
-          "non_null": true,
-          "list": false,
+          "type": {
+            "shape": "named",
+            "name": "String",
+            "kind": "string",
+            "non_null": true
+          },
           "default_value": null
         }
       ],
@@ -834,12 +891,14 @@
           "kind": "linked",
           "name": "rename",
           "alias": null,
-          "type_name": "FavoritePayload",
-          "base_type": "FavoritePayload",
-          "base_kind": "object",
+          "type": {
+            "shape": "named",
+            "name": "FavoritePayload",
+            "kind": "object",
+            "non_null": false
+          },
           "non_null": false,
           "semantic_non_null": false,
-          "plural": false,
           "has_id": false,
           "is_abstract": false,
           "possible_types": [
@@ -861,12 +920,14 @@
               "kind": "linked",
               "name": "character",
               "alias": null,
-              "type_name": "Character",
-              "base_type": "Character",
-              "base_kind": "object",
+              "type": {
+                "shape": "named",
+                "name": "Character",
+                "kind": "object",
+                "non_null": false
+              },
               "non_null": false,
               "semantic_non_null": false,
-              "plural": false,
               "has_id": true,
               "is_abstract": false,
               "possible_types": [
@@ -888,12 +949,14 @@
                   "kind": "scalar",
                   "name": "id",
                   "alias": null,
-                  "type_name": "ID",
-                  "base_type": "ID",
-                  "base_kind": "id",
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "id",
                     "arguments": []
@@ -907,12 +970,14 @@
                   "kind": "scalar",
                   "name": "name",
                   "alias": null,
-                  "type_name": "String",
-                  "base_type": "String",
-                  "base_kind": "string",
+                  "type": {
+                    "shape": "named",
+                    "name": "String",
+                    "kind": "string",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "name",
                     "arguments": []
@@ -937,29 +1002,32 @@
       "variables": [
         {
           "name": "id",
-          "type_name": "ID!",
-          "base_type": "ID",
-          "base_kind": "id",
-          "non_null": true,
-          "list": false,
+          "type": {
+            "shape": "named",
+            "name": "ID",
+            "kind": "id",
+            "non_null": true
+          },
           "default_value": null
         },
         {
           "name": "name",
-          "type_name": "String!",
-          "base_type": "String",
-          "base_kind": "string",
-          "non_null": true,
-          "list": false,
+          "type": {
+            "shape": "named",
+            "name": "String",
+            "kind": "string",
+            "non_null": true
+          },
           "default_value": null
         },
         {
           "name": "withOrigin",
-          "type_name": "Boolean!",
-          "base_type": "Boolean",
-          "base_kind": "boolean",
-          "non_null": true,
-          "list": false,
+          "type": {
+            "shape": "named",
+            "name": "Boolean",
+            "kind": "boolean",
+            "non_null": true
+          },
           "default_value": null
         }
       ],
@@ -974,12 +1042,14 @@
           "kind": "linked",
           "name": "rename",
           "alias": null,
-          "type_name": "FavoritePayload",
-          "base_type": "FavoritePayload",
-          "base_kind": "object",
+          "type": {
+            "shape": "named",
+            "name": "FavoritePayload",
+            "kind": "object",
+            "non_null": false
+          },
           "non_null": false,
           "semantic_non_null": false,
-          "plural": false,
           "has_id": false,
           "is_abstract": false,
           "possible_types": [
@@ -1001,12 +1071,14 @@
               "kind": "linked",
               "name": "character",
               "alias": null,
-              "type_name": "Character",
-              "base_type": "Character",
-              "base_kind": "object",
+              "type": {
+                "shape": "named",
+                "name": "Character",
+                "kind": "object",
+                "non_null": false
+              },
               "non_null": false,
               "semantic_non_null": false,
-              "plural": false,
               "has_id": true,
               "is_abstract": false,
               "possible_types": [
@@ -1028,12 +1100,14 @@
                   "kind": "scalar",
                   "name": "id",
                   "alias": null,
-                  "type_name": "ID",
-                  "base_type": "ID",
-                  "base_kind": "id",
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "id",
                     "arguments": []
@@ -1047,12 +1121,14 @@
                   "kind": "scalar",
                   "name": "name",
                   "alias": null,
-                  "type_name": "String",
-                  "base_type": "String",
-                  "base_kind": "string",
+                  "type": {
+                    "shape": "named",
+                    "name": "String",
+                    "kind": "string",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "name",
                     "arguments": []
@@ -1071,12 +1147,14 @@
                       "kind": "linked",
                       "name": "origin",
                       "alias": null,
-                      "type_name": "Location",
-                      "base_type": "Location",
-                      "base_kind": "object",
+                      "type": {
+                        "shape": "named",
+                        "name": "Location",
+                        "kind": "object",
+                        "non_null": false
+                      },
                       "non_null": false,
                       "semantic_non_null": false,
-                      "plural": false,
                       "has_id": true,
                       "is_abstract": false,
                       "possible_types": [
@@ -1098,12 +1176,14 @@
                           "kind": "scalar",
                           "name": "id",
                           "alias": null,
-                          "type_name": "ID",
-                          "base_type": "ID",
-                          "base_kind": "id",
+                          "type": {
+                            "shape": "named",
+                            "name": "ID",
+                            "kind": "id",
+                            "non_null": false
+                          },
                           "non_null": false,
                           "semantic_non_null": false,
-                          "list": false,
                           "storage_key": {
                             "name": "id",
                             "arguments": []
@@ -1117,12 +1197,14 @@
                           "kind": "scalar",
                           "name": "name",
                           "alias": null,
-                          "type_name": "String",
-                          "base_type": "String",
-                          "base_kind": "string",
+                          "type": {
+                            "shape": "named",
+                            "name": "String",
+                            "kind": "string",
+                            "non_null": false
+                          },
                           "non_null": false,
                           "semantic_non_null": false,
-                          "list": false,
                           "storage_key": {
                             "name": "name",
                             "arguments": []
@@ -1146,12 +1228,14 @@
           "kind": "linked",
           "name": "rename",
           "alias": null,
-          "type_name": "FavoritePayload",
-          "base_type": "FavoritePayload",
-          "base_kind": "object",
+          "type": {
+            "shape": "named",
+            "name": "FavoritePayload",
+            "kind": "object",
+            "non_null": false
+          },
           "non_null": false,
           "semantic_non_null": false,
-          "plural": false,
           "has_id": false,
           "is_abstract": false,
           "possible_types": [
@@ -1173,12 +1257,14 @@
               "kind": "linked",
               "name": "character",
               "alias": null,
-              "type_name": "Character",
-              "base_type": "Character",
-              "base_kind": "object",
+              "type": {
+                "shape": "named",
+                "name": "Character",
+                "kind": "object",
+                "non_null": false
+              },
               "non_null": false,
               "semantic_non_null": false,
-              "plural": false,
               "has_id": true,
               "is_abstract": false,
               "possible_types": [
@@ -1200,12 +1286,14 @@
                   "kind": "scalar",
                   "name": "id",
                   "alias": null,
-                  "type_name": "ID",
-                  "base_type": "ID",
-                  "base_kind": "id",
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "id",
                     "arguments": []
@@ -1219,12 +1307,14 @@
                   "kind": "scalar",
                   "name": "name",
                   "alias": null,
-                  "type_name": "String",
-                  "base_type": "String",
-                  "base_kind": "string",
+                  "type": {
+                    "shape": "named",
+                    "name": "String",
+                    "kind": "string",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "name",
                     "arguments": []
@@ -1243,12 +1333,14 @@
                       "kind": "linked",
                       "name": "origin",
                       "alias": null,
-                      "type_name": "Location",
-                      "base_type": "Location",
-                      "base_kind": "object",
+                      "type": {
+                        "shape": "named",
+                        "name": "Location",
+                        "kind": "object",
+                        "non_null": false
+                      },
                       "non_null": false,
                       "semantic_non_null": false,
-                      "plural": false,
                       "has_id": true,
                       "is_abstract": false,
                       "possible_types": [
@@ -1270,12 +1362,14 @@
                           "kind": "scalar",
                           "name": "id",
                           "alias": null,
-                          "type_name": "ID",
-                          "base_type": "ID",
-                          "base_kind": "id",
+                          "type": {
+                            "shape": "named",
+                            "name": "ID",
+                            "kind": "id",
+                            "non_null": false
+                          },
                           "non_null": false,
                           "semantic_non_null": false,
-                          "list": false,
                           "storage_key": {
                             "name": "id",
                             "arguments": []
@@ -1289,12 +1383,14 @@
                           "kind": "scalar",
                           "name": "name",
                           "alias": null,
-                          "type_name": "String",
-                          "base_type": "String",
-                          "base_kind": "string",
+                          "type": {
+                            "shape": "named",
+                            "name": "String",
+                            "kind": "string",
+                            "non_null": false
+                          },
                           "non_null": false,
                           "semantic_non_null": false,
-                          "list": false,
                           "storage_key": {
                             "name": "name",
                             "arguments": []
@@ -1323,11 +1419,12 @@
       "variables": [
         {
           "name": "name",
-          "type_name": "String!",
-          "base_type": "String",
-          "base_kind": "string",
-          "non_null": true,
-          "list": false,
+          "type": {
+            "shape": "named",
+            "name": "String",
+            "kind": "string",
+            "non_null": true
+          },
           "default_value": null
         }
       ],
@@ -1342,12 +1439,18 @@
           "kind": "linked",
           "name": "search",
           "alias": null,
-          "type_name": "[SearchResult]",
-          "base_type": "SearchResult",
-          "base_kind": "union",
+          "type": {
+            "shape": "list",
+            "element": {
+              "shape": "named",
+              "name": "SearchResult",
+              "kind": "union",
+              "non_null": false
+            },
+            "non_null": false
+          },
           "non_null": false,
           "semantic_non_null": false,
-          "plural": true,
           "has_id": true,
           "is_abstract": true,
           "possible_types": [
@@ -1379,12 +1482,14 @@
               "kind": "scalar",
               "name": "__typename",
               "alias": null,
-              "type_name": "String!",
-              "base_type": "String",
-              "base_kind": "string",
+              "type": {
+                "shape": "named",
+                "name": "String",
+                "kind": "string",
+                "non_null": true
+              },
               "non_null": true,
               "semantic_non_null": false,
-              "list": false,
               "storage_key": {
                 "name": "__typename",
                 "arguments": []
@@ -1413,12 +1518,14 @@
                   "kind": "scalar",
                   "name": "id",
                   "alias": null,
-                  "type_name": "ID",
-                  "base_type": "ID",
-                  "base_kind": "id",
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "id",
                     "arguments": []
@@ -1432,12 +1539,14 @@
                   "kind": "scalar",
                   "name": "name",
                   "alias": null,
-                  "type_name": "String",
-                  "base_type": "String",
-                  "base_kind": "string",
+                  "type": {
+                    "shape": "named",
+                    "name": "String",
+                    "kind": "string",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "name",
                     "arguments": []
@@ -1468,12 +1577,14 @@
                   "kind": "scalar",
                   "name": "id",
                   "alias": null,
-                  "type_name": "ID",
-                  "base_type": "ID",
-                  "base_kind": "id",
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "id",
                     "arguments": []
@@ -1487,12 +1598,14 @@
                   "kind": "scalar",
                   "name": "name",
                   "alias": null,
-                  "type_name": "String",
-                  "base_type": "String",
-                  "base_kind": "string",
+                  "type": {
+                    "shape": "named",
+                    "name": "String",
+                    "kind": "string",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "name",
                     "arguments": []
@@ -1506,12 +1619,14 @@
                   "kind": "scalar",
                   "name": "dimension",
                   "alias": null,
-                  "type_name": "String",
-                  "base_type": "String",
-                  "base_kind": "string",
+                  "type": {
+                    "shape": "named",
+                    "name": "String",
+                    "kind": "string",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "dimension",
                     "arguments": []
@@ -1531,12 +1646,18 @@
           "kind": "linked",
           "name": "search",
           "alias": null,
-          "type_name": "[SearchResult]",
-          "base_type": "SearchResult",
-          "base_kind": "union",
+          "type": {
+            "shape": "list",
+            "element": {
+              "shape": "named",
+              "name": "SearchResult",
+              "kind": "union",
+              "non_null": false
+            },
+            "non_null": false
+          },
           "non_null": false,
           "semantic_non_null": false,
-          "plural": true,
           "has_id": true,
           "is_abstract": true,
           "possible_types": [
@@ -1568,12 +1689,14 @@
               "kind": "scalar",
               "name": "__typename",
               "alias": null,
-              "type_name": "String!",
-              "base_type": "String",
-              "base_kind": "string",
+              "type": {
+                "shape": "named",
+                "name": "String",
+                "kind": "string",
+                "non_null": true
+              },
               "non_null": true,
               "semantic_non_null": false,
-              "list": false,
               "storage_key": {
                 "name": "__typename",
                 "arguments": []
@@ -1602,12 +1725,14 @@
                   "kind": "scalar",
                   "name": "id",
                   "alias": null,
-                  "type_name": "ID",
-                  "base_type": "ID",
-                  "base_kind": "id",
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "id",
                     "arguments": []
@@ -1621,12 +1746,14 @@
                   "kind": "scalar",
                   "name": "name",
                   "alias": null,
-                  "type_name": "String",
-                  "base_type": "String",
-                  "base_kind": "string",
+                  "type": {
+                    "shape": "named",
+                    "name": "String",
+                    "kind": "string",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "name",
                     "arguments": []
@@ -1657,12 +1784,14 @@
                   "kind": "scalar",
                   "name": "id",
                   "alias": null,
-                  "type_name": "ID",
-                  "base_type": "ID",
-                  "base_kind": "id",
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "id",
                     "arguments": []
@@ -1676,12 +1805,14 @@
                   "kind": "scalar",
                   "name": "name",
                   "alias": null,
-                  "type_name": "String",
-                  "base_type": "String",
-                  "base_kind": "string",
+                  "type": {
+                    "shape": "named",
+                    "name": "String",
+                    "kind": "string",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "name",
                     "arguments": []
@@ -1695,12 +1826,14 @@
                   "kind": "scalar",
                   "name": "dimension",
                   "alias": null,
-                  "type_name": "String",
-                  "base_type": "String",
-                  "base_kind": "string",
+                  "type": {
+                    "shape": "named",
+                    "name": "String",
+                    "kind": "string",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "dimension",
                     "arguments": []
@@ -1733,12 +1866,14 @@
                   "kind": "scalar",
                   "name": "__typename",
                   "alias": "__isNode",
-                  "type_name": "String!",
-                  "base_type": "String",
-                  "base_kind": "string",
+                  "type": {
+                    "shape": "named",
+                    "name": "String",
+                    "kind": "string",
+                    "non_null": true
+                  },
                   "non_null": true,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "__typename",
                     "arguments": []
@@ -1752,12 +1887,14 @@
                   "kind": "scalar",
                   "name": "id",
                   "alias": null,
-                  "type_name": "ID",
-                  "base_type": "ID",
-                  "base_kind": "id",
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "id",
                     "arguments": []
@@ -1782,11 +1919,12 @@
       "variables": [
         {
           "name": "name",
-          "type_name": "String!",
-          "base_type": "String",
-          "base_kind": "string",
-          "non_null": true,
-          "list": false,
+          "type": {
+            "shape": "named",
+            "name": "String",
+            "kind": "string",
+            "non_null": true
+          },
           "default_value": null
         }
       ],
@@ -1801,12 +1939,18 @@
           "kind": "linked",
           "name": "search",
           "alias": null,
-          "type_name": "[SearchResult]",
-          "base_type": "SearchResult",
-          "base_kind": "union",
+          "type": {
+            "shape": "list",
+            "element": {
+              "shape": "named",
+              "name": "SearchResult",
+              "kind": "union",
+              "non_null": false
+            },
+            "non_null": false
+          },
           "non_null": false,
           "semantic_non_null": false,
-          "plural": true,
           "has_id": true,
           "is_abstract": true,
           "possible_types": [
@@ -1853,12 +1997,14 @@
                   "kind": "linked",
                   "name": "origin",
                   "alias": null,
-                  "type_name": "Location",
-                  "base_type": "Location",
-                  "base_kind": "object",
+                  "type": {
+                    "shape": "named",
+                    "name": "Location",
+                    "kind": "object",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "plural": false,
                   "has_id": true,
                   "is_abstract": false,
                   "possible_types": [
@@ -1880,12 +2026,14 @@
                       "kind": "scalar",
                       "name": "name",
                       "alias": null,
-                      "type_name": "String",
-                      "base_type": "String",
-                      "base_kind": "string",
+                      "type": {
+                        "shape": "named",
+                        "name": "String",
+                        "kind": "string",
+                        "non_null": false
+                      },
                       "non_null": false,
                       "semantic_non_null": false,
-                      "list": false,
                       "storage_key": {
                         "name": "name",
                         "arguments": []
@@ -1907,12 +2055,18 @@
           "kind": "linked",
           "name": "search",
           "alias": null,
-          "type_name": "[SearchResult]",
-          "base_type": "SearchResult",
-          "base_kind": "union",
+          "type": {
+            "shape": "list",
+            "element": {
+              "shape": "named",
+              "name": "SearchResult",
+              "kind": "union",
+              "non_null": false
+            },
+            "non_null": false
+          },
           "non_null": false,
           "semantic_non_null": false,
-          "plural": true,
           "has_id": true,
           "is_abstract": true,
           "possible_types": [
@@ -1944,12 +2098,14 @@
               "kind": "scalar",
               "name": "__typename",
               "alias": null,
-              "type_name": "String!",
-              "base_type": "String",
-              "base_kind": "string",
+              "type": {
+                "shape": "named",
+                "name": "String",
+                "kind": "string",
+                "non_null": true
+              },
               "non_null": true,
               "semantic_non_null": false,
-              "list": false,
               "storage_key": {
                 "name": "__typename",
                 "arguments": []
@@ -1978,12 +2134,14 @@
                   "kind": "linked",
                   "name": "origin",
                   "alias": null,
-                  "type_name": "Location",
-                  "base_type": "Location",
-                  "base_kind": "object",
+                  "type": {
+                    "shape": "named",
+                    "name": "Location",
+                    "kind": "object",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "plural": false,
                   "has_id": true,
                   "is_abstract": false,
                   "possible_types": [
@@ -2005,12 +2163,14 @@
                       "kind": "scalar",
                       "name": "name",
                       "alias": null,
-                      "type_name": "String",
-                      "base_type": "String",
-                      "base_kind": "string",
+                      "type": {
+                        "shape": "named",
+                        "name": "String",
+                        "kind": "string",
+                        "non_null": false
+                      },
                       "non_null": false,
                       "semantic_non_null": false,
-                      "list": false,
                       "storage_key": {
                         "name": "name",
                         "arguments": []
@@ -2024,12 +2184,14 @@
                       "kind": "scalar",
                       "name": "id",
                       "alias": null,
-                      "type_name": "ID",
-                      "base_type": "ID",
-                      "base_kind": "id",
+                      "type": {
+                        "shape": "named",
+                        "name": "ID",
+                        "kind": "id",
+                        "non_null": false
+                      },
                       "non_null": false,
                       "semantic_non_null": false,
-                      "list": false,
                       "storage_key": {
                         "name": "id",
                         "arguments": []
@@ -2064,12 +2226,14 @@
                   "kind": "scalar",
                   "name": "__typename",
                   "alias": "__isNode",
-                  "type_name": "String!",
-                  "base_type": "String",
-                  "base_kind": "string",
+                  "type": {
+                    "shape": "named",
+                    "name": "String",
+                    "kind": "string",
+                    "non_null": true
+                  },
                   "non_null": true,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "__typename",
                     "arguments": []
@@ -2083,12 +2247,14 @@
                   "kind": "scalar",
                   "name": "id",
                   "alias": null,
-                  "type_name": "ID",
-                  "base_type": "ID",
-                  "base_kind": "id",
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "id",
                     "arguments": []
@@ -2113,20 +2279,22 @@
       "variables": [
         {
           "name": "id",
-          "type_name": "ID!",
-          "base_type": "ID",
-          "base_kind": "id",
-          "non_null": true,
-          "list": false,
+          "type": {
+            "shape": "named",
+            "name": "ID",
+            "kind": "id",
+            "non_null": true
+          },
           "default_value": null
         },
         {
           "name": "favorite",
-          "type_name": "Boolean!",
-          "base_type": "Boolean",
-          "base_kind": "boolean",
-          "non_null": true,
-          "list": false,
+          "type": {
+            "shape": "named",
+            "name": "Boolean",
+            "kind": "boolean",
+            "non_null": true
+          },
           "default_value": null
         }
       ],
@@ -2141,12 +2309,14 @@
           "kind": "linked",
           "name": "setFavorite",
           "alias": null,
-          "type_name": "FavoritePayload",
-          "base_type": "FavoritePayload",
-          "base_kind": "object",
+          "type": {
+            "shape": "named",
+            "name": "FavoritePayload",
+            "kind": "object",
+            "non_null": false
+          },
           "non_null": false,
           "semantic_non_null": false,
-          "plural": false,
           "has_id": false,
           "is_abstract": false,
           "possible_types": [
@@ -2168,12 +2338,14 @@
               "kind": "linked",
               "name": "character",
               "alias": null,
-              "type_name": "Character",
-              "base_type": "Character",
-              "base_kind": "object",
+              "type": {
+                "shape": "named",
+                "name": "Character",
+                "kind": "object",
+                "non_null": false
+              },
               "non_null": false,
               "semantic_non_null": false,
-              "plural": false,
               "has_id": true,
               "is_abstract": false,
               "possible_types": [
@@ -2195,12 +2367,14 @@
                   "kind": "scalar",
                   "name": "id",
                   "alias": null,
-                  "type_name": "ID",
-                  "base_type": "ID",
-                  "base_kind": "id",
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "id",
                     "arguments": []
@@ -2214,12 +2388,14 @@
                   "kind": "scalar",
                   "name": "name",
                   "alias": null,
-                  "type_name": "String",
-                  "base_type": "String",
-                  "base_kind": "string",
+                  "type": {
+                    "shape": "named",
+                    "name": "String",
+                    "kind": "string",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "name",
                     "arguments": []
@@ -2233,12 +2409,14 @@
                   "kind": "scalar",
                   "name": "favorite",
                   "alias": null,
-                  "type_name": "Boolean",
-                  "base_type": "Boolean",
-                  "base_kind": "boolean",
+                  "type": {
+                    "shape": "named",
+                    "name": "Boolean",
+                    "kind": "boolean",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "favorite",
                     "arguments": []
@@ -2258,12 +2436,14 @@
           "kind": "linked",
           "name": "setFavorite",
           "alias": null,
-          "type_name": "FavoritePayload",
-          "base_type": "FavoritePayload",
-          "base_kind": "object",
+          "type": {
+            "shape": "named",
+            "name": "FavoritePayload",
+            "kind": "object",
+            "non_null": false
+          },
           "non_null": false,
           "semantic_non_null": false,
-          "plural": false,
           "has_id": false,
           "is_abstract": false,
           "possible_types": [
@@ -2285,12 +2465,14 @@
               "kind": "linked",
               "name": "character",
               "alias": null,
-              "type_name": "Character",
-              "base_type": "Character",
-              "base_kind": "object",
+              "type": {
+                "shape": "named",
+                "name": "Character",
+                "kind": "object",
+                "non_null": false
+              },
               "non_null": false,
               "semantic_non_null": false,
-              "plural": false,
               "has_id": true,
               "is_abstract": false,
               "possible_types": [
@@ -2312,12 +2494,14 @@
                   "kind": "scalar",
                   "name": "id",
                   "alias": null,
-                  "type_name": "ID",
-                  "base_type": "ID",
-                  "base_kind": "id",
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "id",
                     "arguments": []
@@ -2331,12 +2515,14 @@
                   "kind": "scalar",
                   "name": "name",
                   "alias": null,
-                  "type_name": "String",
-                  "base_type": "String",
-                  "base_kind": "string",
+                  "type": {
+                    "shape": "named",
+                    "name": "String",
+                    "kind": "string",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "name",
                     "arguments": []
@@ -2350,12 +2536,14 @@
                   "kind": "scalar",
                   "name": "favorite",
                   "alias": null,
-                  "type_name": "Boolean",
-                  "base_type": "Boolean",
-                  "base_kind": "boolean",
+                  "type": {
+                    "shape": "named",
+                    "name": "Boolean",
+                    "kind": "boolean",
+                    "non_null": false
+                  },
                   "non_null": false,
                   "semantic_non_null": false,
-                  "list": false,
                   "storage_key": {
                     "name": "favorite",
                     "arguments": []

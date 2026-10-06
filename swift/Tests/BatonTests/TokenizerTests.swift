@@ -76,7 +76,10 @@ struct TokenizerTests {
         store.commit(try Ingest.normalize(Spec.data("tokenizer/custom-tokens.json"), plan: plan))
         let data = TestTokenizerQuery.Data(anchor: Anchor(record: store.root, variables: .none, store: store))
         #expect(data.tokenizer?.json == #"{"b":1, "a":[true,null]}"#)
-        #expect(data.tokenizer?.jsons == ["text", "12345678901234567890", "1.50", "true", #"{"k":"v"}"#, "[1,2]", "-0.0"])
+        // The schema types the elements nullable, so the list reads `[String?]`
+        // and the response's null element reads as nil.
+        let jsons: [String?]? = data.tokenizer?.jsons
+        #expect(jsons == ["text", "12345678901234567890", "1.50", "true", #"{"k":"v"}"#, "[1,2]", "-0.0", nil])
     }
 
     @Test("a list of scalars that changes in one element is stored again, and an equal one notifies nothing", arguments: [

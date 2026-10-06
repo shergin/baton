@@ -7,7 +7,7 @@ use std::path::{Path, PathBuf};
 use super::*;
 use crate::config::Config;
 use crate::documents::Document;
-use crate::pipeline;
+use crate::pipeline::{self, TypeKind, TypePlan};
 
 /// The normalization of the one operation in `text`.
 fn decided(text: &str) -> NormalizationSelection {
@@ -240,6 +240,38 @@ fn a_field_the_initial_part_selects_goes_before_its_deferred_copy() {
     assert_eq!(origins, vec![None, Some("Probe$defer$later")]);
 }
 
+/// A named type of `kind`, nullable.
+fn named(kind: TypeKind) -> TypePlan {
+    TypePlan::Named {
+        name: format!("{kind:?}"),
+        kind,
+        non_null: false,
+    }
+}
+
+/// A nullable list of `element`.
+fn list_of(element: TypePlan) -> TypePlan {
+    TypePlan::List {
+        element: Box::new(element),
+        non_null: false,
+    }
+}
+
+/// `type_` made non-null.
+fn non_null(type_: TypePlan) -> TypePlan {
+    match type_ {
+        TypePlan::Named { name, kind, .. } => TypePlan::Named {
+            name,
+            kind,
+            non_null: true,
+        },
+        TypePlan::List { element, .. } => TypePlan::List {
+            element,
+            non_null: true,
+        },
+    }
+}
+
 #[test]
 fn an_id_an_enum_and_a_custom_scalar_are_kept_as_their_text() {
     for kind in [
@@ -249,7 +281,7 @@ fn an_id_an_enum_and_a_custom_scalar_are_kept_as_their_text() {
         TypeKind::CustomScalar,
     ] {
         assert_eq!(
-            ScalarShape::of(kind, false).primitive,
+            ScalarShape::of(&named(kind)).primitive,
             Primitive::String,
             "{kind:?}"
         );
@@ -259,40 +291,51 @@ fn an_id_an_enum_and_a_custom_scalar_are_kept_as_their_text() {
 #[test]
 fn a_float_is_kept_as_a_double_a_boolean_as_a_bool_and_an_int_as_an_int() {
     assert_eq!(
-        ScalarShape::of(TypeKind::Float, false).primitive,
+        ScalarShape::of(&named(TypeKind::Float)).primitive,
         Primitive::Double
     );
     assert_eq!(
-        ScalarShape::of(TypeKind::Boolean, false).primitive,
+        ScalarShape::of(&named(TypeKind::Boolean)).primitive,
         Primitive::Bool
     );
     assert_eq!(
-        ScalarShape::of(TypeKind::Int, false).primitive,
+        ScalarShape::of(&named(TypeKind::Int)).primitive,
         Primitive::Int
     );
 }
 
+/// Whether a scalar shape is a list, and if so whether its elements are
+/// non-null.
+fn elements_non_null(shape: ScalarShape) -> Option<bool> {
+    shape.list.map(|list| list.non_null)
+}
+
 #[test]
 fn a_scalar_shape_is_a_list_exactly_when_its_field_is() {
-    assert_eq!(
-        ScalarShape::of(TypeKind::Float, true),
-        ScalarShape {
-            primitive: Primitive::Double,
-            list: true
-        }
-    );
-    assert_eq!(
-        ScalarShape::of(TypeKind::Id, true),
-        ScalarShape {
-            primitive: Primitive::String,
-            list: true
-        }
-    );
-    assert_eq!(
-        ScalarShape::of(TypeKind::Id, false),
-        ScalarShape {
-            primitive: Primitive::String,
-            list: false
-        }
-    );
+    let float_list = ScalarShape::of(&list_of(named(TypeKind::Float)));
+    assert_eq!(float_list.primitive, Primitive::Double);
+    assert_eq!(elements_non_null(float_list), Some(false));
+    let id_list = ScalarShape::of(&non_null(list_of(non_null(named(TypeKind::Id)))));
+    assert_eq!(id_list.primitive, Primitive::String);
+    assert_eq!(elements_non_null(id_list), Some(true));
+    let id = ScalarShape::of(&non_null(named(TypeKind::Id)));
+    assert_eq!(id.primitive, Primitive::String);
+    assert_eq!(elements_non_null(id), None);
+}
+
+#[test]
+fn a_list_shape_follows_its_elements_nullability_not_its_own() {
+    let shapes = [
+        (list_of(named(TypeKind::String)), false),
+        (non_null(list_of(named(TypeKind::String))), false),
+        (list_of(non_null(named(TypeKind::String))), true),
+        (non_null(list_of(non_null(named(TypeKind::String)))), true),
+    ];
+    for (type_, expected) in shapes {
+        assert_eq!(
+            elements_non_null(ScalarShape::of(&type_)),
+            Some(expected),
+            "{type_:?}"
+        );
+    }
 }

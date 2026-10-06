@@ -12,7 +12,7 @@ mod plan;
 pub use plan::{
     ArgumentPlan, ArgumentValuePlan, CatchTarget, ConditionClass, ConnectionPlan, ConstantPlan,
     EditPlan, FragmentPlan, LookupPlan, OperationKind, OperationPlan, Origin, Plan, RefetchPlan,
-    RequiredAction, RequiredPlan, SelectionPlan, StorageKeyPlan, TypeKind, VariablePlan,
+    RequiredAction, RequiredPlan, SelectionPlan, StorageKeyPlan, TypeKind, TypePlan, VariablePlan,
 };
 
 use std::collections::BTreeMap;

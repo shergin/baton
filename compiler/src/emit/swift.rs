@@ -108,13 +108,13 @@ impl fmt::Display for SwiftType {
     }
 }
 
-/// A scalar's type: the primitive, or an array of it.
+/// A scalar's type: the primitive, or an array of it, of optionals when the
+/// schema types the elements nullable.
 pub(super) fn scalar_type(shape: ScalarShape) -> SwiftType {
     let primitive = primitive_type(shape.primitive);
-    if shape.list {
-        primitive.array()
-    } else {
-        primitive
+    match shape.list {
+        Some(list) => primitive.optional_if(!list.non_null).array(),
+        None => primitive,
     }
 }
 
@@ -127,17 +127,22 @@ fn primitive_type(primitive: Primitive) -> SwiftType {
     })
 }
 
-/// The anchor's reader for a scalar: `string`, `ints`.
+/// The anchor's reader for a scalar: `string`, `ints`, `nullableInts` for a
+/// list whose elements the schema types nullable.
 pub(super) fn scalar_reader(shape: ScalarShape) -> &'static str {
-    match (shape.primitive, shape.list) {
-        (Primitive::String, false) => "string",
-        (Primitive::Int, false) => "int",
-        (Primitive::Double, false) => "double",
-        (Primitive::Bool, false) => "bool",
-        (Primitive::String, true) => "strings",
-        (Primitive::Int, true) => "ints",
-        (Primitive::Double, true) => "doubles",
-        (Primitive::Bool, true) => "bools",
+    match (shape.primitive, shape.list.map(|list| list.non_null)) {
+        (Primitive::String, None) => "string",
+        (Primitive::Int, None) => "int",
+        (Primitive::Double, None) => "double",
+        (Primitive::Bool, None) => "bool",
+        (Primitive::String, Some(true)) => "strings",
+        (Primitive::Int, Some(true)) => "ints",
+        (Primitive::Double, Some(true)) => "doubles",
+        (Primitive::Bool, Some(true)) => "bools",
+        (Primitive::String, Some(false)) => "nullableStrings",
+        (Primitive::Int, Some(false)) => "nullableInts",
+        (Primitive::Double, Some(false)) => "nullableDoubles",
+        (Primitive::Bool, Some(false)) => "nullableBools",
     }
 }
 
@@ -149,10 +154,9 @@ pub(super) fn variable_type(variable: &VariableValue) -> SwiftType {
         VariableBase::Scalar(primitive) => primitive_type(primitive),
         VariableBase::Input => SwiftType::runtime("Variable"),
     };
-    let shape = if variable.shape.list {
-        base.array()
-    } else {
-        base
+    let shape = match variable.shape.list {
+        Some(list) => base.optional_if(!list.non_null).array(),
+        None => base,
     };
     shape.optional_if(!variable.non_null)
 }

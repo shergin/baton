@@ -34,7 +34,7 @@ pub use operation::{BuilderPlan, BuilderValue, OperationValue, VariableBase, Var
 
 use crate::names::{NameError, Reserved, Written};
 use crate::pipeline::{
-    ConnectionPlan, EditPlan, LookupPlan, Plan, SelectionPlan, StorageKeyPlan, TypeKind,
+    ConnectionPlan, EditPlan, LookupPlan, Plan, SelectionPlan, StorageKeyPlan, TypePlan,
 };
 
 /// Everything the emitters print, in the plan's order.
@@ -195,8 +195,9 @@ impl PartialEq for NormalizationField {
 #[derive(Debug, Clone, PartialEq)]
 pub enum NormalizationKind {
     Scalar {
-        base_kind: TypeKind,
-        list: bool,
+        /// The field's type, which the builder of an optimistic response
+        /// shapes its value by.
+        type_: TypePlan,
     },
     Linked {
         plural: bool,
@@ -429,10 +430,7 @@ fn field(
     let edit = members.iter().find_map(|member| edit(member.selection));
     match members[0].selection {
         SelectionPlan::Scalar {
-            storage_key,
-            base_kind,
-            list,
-            ..
+            storage_key, type_, ..
         } => NormalizationField {
             response_key,
             written,
@@ -442,14 +440,12 @@ fn field(
             caught,
             edit,
             kind: NormalizationKind::Scalar {
-                base_kind: *base_kind,
-                list: *list,
+                type_: type_.clone(),
             },
         },
         SelectionPlan::Linked {
             storage_key,
-            base_type,
-            plural,
+            type_,
             has_id,
             is_abstract,
             possible_types,
@@ -466,7 +462,14 @@ fn field(
                     continue;
                 };
                 let guard: &[Guard] = if differ { &member.guard } else { &[] };
-                collect(selections, base_type, guard, None, None, &mut children);
+                collect(
+                    selections,
+                    type_.base_name(),
+                    guard,
+                    None,
+                    None,
+                    &mut children,
+                );
             }
             NormalizationField {
                 response_key,
@@ -477,10 +480,16 @@ fn field(
                 caught,
                 edit,
                 kind: NormalizationKind::Linked {
-                    plural: *plural,
+                    plural: type_.is_list(),
                     lookup: lookup.clone(),
                     connection: connection.clone(),
-                    selection: decide(base_type, *has_id, *is_abstract, possible_types, &children),
+                    selection: decide(
+                        type_.base_name(),
+                        *has_id,
+                        *is_abstract,
+                        possible_types,
+                        &children,
+                    ),
                 },
             }
         }

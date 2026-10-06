@@ -524,3 +524,86 @@ fn the_list_of_lists_refusal_points_at_the_field_in_the_document() {
         ("Pipeline.swift", 4, 5)
     );
 }
+
+/// A schema whose `Shelf` has a scalar list of each nullability, and whose
+/// root field takes a list of nullable ids and a list of lists.
+const SHELF_SCHEMA: &str = "type Query { shelf(ids: [ID], cells: [[Int!]!]): Shelf }
+type Shelf { loose: [String] dense: [String!] full: [String!]! holey: [String]! }";
+
+/// The one Swift file compiling `text` against `SHELF_SCHEMA` emits.
+fn shelf_swift(text: &str) -> String {
+    let compiled = compile(
+        SHELF_SCHEMA,
+        "schema.graphql",
+        &[document(text)],
+        &Config::default(),
+    )
+    .unwrap_or_else(|errors| panic!("{errors:?}"));
+    let output = crate::emit::emit(&compiled.plan).expect("the plan emits");
+    output
+        .files
+        .into_values()
+        .next()
+        .expect("the operation has a file")
+}
+
+#[test]
+fn a_scalar_list_reads_its_elements_optional_exactly_when_the_schema_types_them_nullable() {
+    let file = shelf_swift("query Probe { shelf { loose dense full holey } }");
+    for accessor in [
+        "public var loose: [String?]? { anchor.nullableStrings(",
+        "public var dense: [String]? { anchor.strings(",
+        "public var full: [String] { anchor.requiredStrings(",
+        "public var holey: [String?] { anchor.requiredNullableStrings(",
+    ] {
+        assert!(file.contains(accessor), "{accessor}\n{file}");
+    }
+}
+
+#[test]
+fn a_list_variable_of_nullable_ids_is_a_property_of_optional_strings() {
+    let file = shelf_swift("query Probe($ids: [ID]) { shelf(ids: $ids) { loose } }");
+    assert!(file.contains("public var ids: [String?]?"), "{file}");
+}
+
+#[test]
+fn a_type_plan_keeps_every_list_and_the_nullability_of_each_level() {
+    let compiled = compile(
+        SHELF_SCHEMA,
+        "schema.graphql",
+        &[document(
+            "query Probe($cells: [[Int!]!]) { shelf(cells: $cells) { loose } }",
+        )],
+        &Config::default(),
+    )
+    .unwrap_or_else(|errors| panic!("{errors:?}"));
+    let type_ = &compiled.plan.operations[0].variables[0].type_;
+    let int = TypePlan::Named {
+        name: "Int".to_string(),
+        kind: TypeKind::Int,
+        non_null: true,
+    };
+    let row = TypePlan::List {
+        element: Box::new(int.clone()),
+        non_null: true,
+    };
+    assert_eq!(
+        *type_,
+        TypePlan::List {
+            element: Box::new(row),
+            non_null: false,
+        }
+    );
+    let mut depth = 0;
+    let mut level = type_;
+    while let Some(element) = level.element() {
+        depth += 1;
+        level = element;
+    }
+    assert_eq!(depth, 2);
+    assert_eq!(type_.base(), &int);
+    assert_eq!(type_.base_name(), "Int");
+    assert_eq!(type_.base_kind(), TypeKind::Int);
+    assert!(type_.is_list());
+    assert!(!type_.non_null());
+}

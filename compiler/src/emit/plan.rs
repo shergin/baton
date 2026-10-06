@@ -78,8 +78,9 @@ fn plan_fields(output: &mut String, type_name: &str, fields: &[NormalizationFiel
         let caught_argument = if field.caught { ", caught: true" } else { "" };
         let guards_argument = guards_expression(&field.guards);
         match &field.kind {
-            NormalizationKind::Scalar { base_kind, list } => {
-                let kind = match base_kind {
+            NormalizationKind::Scalar { type_ } => {
+                let list = type_.is_list();
+                let kind = match type_.base_kind() {
                     TypeKind::Int => "int",
                     TypeKind::Float => "double",
                     TypeKind::Boolean => "bool",

@@ -191,10 +191,63 @@ extension Anchor {
     public func bools(_ slot: Slot) -> [Bool]? { scalars(slot, nonNull: false) { if case .bool(let bool) = $0 { bool } else { nil } } }
     public func requiredBools(_ slot: Slot) -> [Bool] { scalars(slot, nonNull: true) { if case .bool(let bool) = $0 { bool } else { nil } } ?? [] }
 
+    /// Lists whose elements the schema types nullable: a null element reads
+    /// as nil, as Relay types it.
+    public func nullableStrings(_ slot: Slot) -> [String?]? { nullableScalars(slot, nonNull: false) { if case .string(let string) = $0 { string } else { nil } } }
+    public func requiredNullableStrings(_ slot: Slot) -> [String?] { nullableScalars(slot, nonNull: true) { if case .string(let string) = $0 { string } else { nil } } ?? [] }
+    public func nullableInts(_ slot: Slot) -> [Int?]? { nullableScalars(slot, nonNull: false) { if case .int(let int) = $0 { int } else { nil } } }
+    public func requiredNullableInts(_ slot: Slot) -> [Int?] { nullableScalars(slot, nonNull: true) { if case .int(let int) = $0 { int } else { nil } } ?? [] }
+    public func nullableDoubles(_ slot: Slot) -> [Double?]? { nullableScalars(slot, nonNull: false) { if case .double(let double) = $0 { double } else { nil } } }
+    public func requiredNullableDoubles(_ slot: Slot) -> [Double?] { nullableScalars(slot, nonNull: true) { if case .double(let double) = $0 { double } else { nil } } ?? [] }
+    public func nullableBools(_ slot: Slot) -> [Bool?]? { nullableScalars(slot, nonNull: false) { if case .bool(let bool) = $0 { bool } else { nil } } }
+    public func requiredNullableBools(_ slot: Slot) -> [Bool?] { nullableScalars(slot, nonNull: true) { if case .bool(let bool) = $0 { bool } else { nil } } ?? [] }
+
+    /// A list of scalars the schema types non-null. An element the list
+    /// cannot hold, a null or a value of another type, is reported once, as
+    /// a scalar reports a value it cannot hold, and left out.
     private func scalars<T>(_ slot: Slot, nonNull: Bool, _ transform: (Value) -> T?) -> [T]? {
         let value = record.read(slot)
         switch value {
-        case .list(let values): return values.compactMap(transform)
+        case .list(let values):
+            var items: [T] = []
+            items.reserveCapacity(values.count)
+            var reported = false
+            for element in values {
+                if let item = transform(element) {
+                    items.append(item)
+                } else if !reported {
+                    unexpected(slot, element)
+                    reported = true
+                }
+            }
+            return items
+        case .null: if nonNull { unexpected(slot, value) }; return nil
+        case .missing: missing(slot); return nil
+        default: unexpected(slot, value); return nil
+        }
+    }
+
+    /// A list of scalars the schema types nullable: a null element reads as
+    /// nil; a value of another type is reported once and reads as nil.
+    private func nullableScalars<T>(_ slot: Slot, nonNull: Bool, _ transform: (Value) -> T?) -> [T?]? {
+        let value = record.read(slot)
+        switch value {
+        case .list(let values):
+            var items: [T?] = []
+            items.reserveCapacity(values.count)
+            var reported = false
+            for element in values {
+                if case .null = element {
+                    items.append(nil)
+                } else if let item = transform(element) {
+                    items.append(item)
+                } else {
+                    if !reported { unexpected(slot, element) }
+                    reported = true
+                    items.append(nil)
+                }
+            }
+            return items
         case .null: if nonNull { unexpected(slot, value) }; return nil
         case .missing: missing(slot); return nil
         default: unexpected(slot, value); return nil

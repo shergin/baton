@@ -67,15 +67,15 @@ query TestTokenizerQuery {
             public static let typeName = "Tokenizer"
             @MainActor public var id: String? { anchor.string(Slots.Tokenizer.id) }
             @MainActor public var text: String? { anchor.string(Slots.Tokenizer.text) }
-            @MainActor public var strings: [String]? { anchor.strings(Slots.Tokenizer.strings) }
+            @MainActor public var strings: [String?]? { anchor.nullableStrings(Slots.Tokenizer.strings) }
             @MainActor public var count: Int? { anchor.int(Slots.Tokenizer.count) }
-            @MainActor public var counts: [Int]? { anchor.ints(Slots.Tokenizer.counts) }
+            @MainActor public var counts: [Int?]? { anchor.nullableInts(Slots.Tokenizer.counts) }
             @MainActor public var ratio: Double? { anchor.double(Slots.Tokenizer.ratio) }
-            @MainActor public var ratios: [Double]? { anchor.doubles(Slots.Tokenizer.ratios) }
+            @MainActor public var ratios: [Double?]? { anchor.nullableDoubles(Slots.Tokenizer.ratios) }
             @MainActor public var flag: Bool? { anchor.bool(Slots.Tokenizer.flag) }
-            @MainActor public var flags: [Bool]? { anchor.bools(Slots.Tokenizer.flags) }
+            @MainActor public var flags: [Bool?]? { anchor.nullableBools(Slots.Tokenizer.flags) }
             @MainActor public var json: String? { anchor.string(Slots.Tokenizer.json) }
-            @MainActor public var jsons: [String]? { anchor.strings(Slots.Tokenizer.jsons) }
+            @MainActor public var jsons: [String?]? { anchor.nullableStrings(Slots.Tokenizer.jsons) }
         }
     }
 }
