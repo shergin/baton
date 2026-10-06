@@ -88,6 +88,13 @@ jobs:
       - run: >
           swift build --target Baton
           -Xswiftc -enable-library-evolution -Xswiftc -emit-module-interface
+      # The runtime's API against the last release, reported in the log and
+      # not enforced: before 1.0 a breaking change is expected and listed in
+      # the changelog, and this is where a reviewer sees that the list is
+      # whole. The tags are fetched for it.
+      - run: git fetch --tags --quiet origin
+      - run: swift package diagnose-api-breaking-changes v0.7.0 --targets Baton
+        continue-on-error: true
 
   # The declared floor is a contract, so it is tested as one: the package
   # builds and its tests pass on Xcode 26.0, the first with Swift 6.2 tools.
