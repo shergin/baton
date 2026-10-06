@@ -732,6 +732,7 @@ query TestUnion(
                 public static let typeName = "Character"
                 @MainActor public var label: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var status: String? { anchor.string(Slots.Character.status) }
+                @MainActor public var name: String? { anchor.string(Slots.Character.name) }
             }
 
             nonisolated public struct AsLocation: Baton.Lens {
@@ -740,6 +741,7 @@ query TestUnion(
                 public static let typeName = "Location"
                 @MainActor public var label: String? { anchor.string(Slots.Location.dimension) }
                 @MainActor public var type: String? { anchor.string(Slots.Location.type) }
+                @MainActor public var name: String? { anchor.string(Slots.Location.name) }
             }
 
             nonisolated public struct AsEpisode: Baton.Lens {

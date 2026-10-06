@@ -5,6 +5,12 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- A concrete type's lens under an interface or union sees the conditions
+  on the interfaces and unions its type satisfies: `... on Character` reads
+  the fields `... on Named` selected beside it, under that condition's
+  `@include` and `@skip`, as Relay's generated types give each concrete
+  variant every field a matching condition selected. The set condition
+  keeps its own lens for the types the document does not name.
 - A variable of an input object type takes a Swift struct generated for
   the type, declared once per module in the shared file: a property per
   field typed as the schema types it, an initializer with a parameter per

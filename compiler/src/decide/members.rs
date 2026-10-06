@@ -63,7 +63,7 @@ pub(super) fn members(selections: &[SelectionPlan]) -> Vec<Member> {
             None => groups.push((identity, vec![(selection, guard)])),
         }
     }
-    groups
+    let members: Vec<Member> = groups
         .into_iter()
         .map(|(_, occurrences)| {
             let guards = any(occurrences.iter().map(|(_, guard)| guard.clone()).collect());
@@ -97,7 +97,109 @@ pub(super) fn members(selections: &[SelectionPlan]) -> Vec<Member> {
                 lens: None,
             }
         })
-        .collect()
+        .collect();
+    see_interface_conditions(members)
+}
+
+/// A concrete type's lens sees the conditions on the interfaces and unions
+/// its type satisfies, as Relay's generated types give each concrete variant
+/// every field a matching condition selected: the selections of each set
+/// condition whose types include the concrete type join the concrete
+/// condition's lens, under the set condition's guards. The set condition
+/// keeps its own lens for the types the document does not name.
+fn see_interface_conditions(mut members: Vec<Member>) -> Vec<Member> {
+    /// A set condition as a concrete condition's lens takes it: the types
+    /// that satisfy it, its guards and its selections.
+    struct SetCondition {
+        types: Vec<String>,
+        guards: Vec<Vec<Guard>>,
+        selections: Vec<SelectionPlan>,
+    }
+    let sets: Vec<SetCondition> = members
+        .iter()
+        .filter_map(|member| match &member.selection {
+            SelectionPlan::Inline {
+                condition_class: Some(ConditionClass::Set),
+                condition_types: Some(types),
+                selections,
+                alias: None,
+                deferred: None,
+                ..
+            } => Some(SetCondition {
+                types: types.clone(),
+                guards: member.guards.clone(),
+                selections: selections.clone(),
+            }),
+            _ => None,
+        })
+        .collect();
+    if sets.is_empty() {
+        return members;
+    }
+    for member in &mut members {
+        let SelectionPlan::Inline {
+            condition_class: Some(ConditionClass::Concrete(concrete)),
+            selections,
+            alias: None,
+            deferred: None,
+            ..
+        } = &mut member.selection
+        else {
+            continue;
+        };
+        for set in &sets {
+            if !set.types.contains(concrete) {
+                continue;
+            }
+            let resolved = resolved_for(concrete, &set.selections);
+            if set.guards.is_empty() {
+                selections.extend(resolved);
+            } else {
+                for conjunction in &set.guards {
+                    selections.extend(under(conjunction, resolved.clone()));
+                }
+            }
+        }
+    }
+    members
+}
+
+/// A set condition's selections as a concrete type reads them: a type
+/// condition nested inside that the type satisfies folds into the parent,
+/// so its fields merge with the concrete condition's own; one it does not
+/// satisfy is dropped, since the lens would always read nil. An aliased,
+/// deferred or caught inline fragment is a lens of its own and stays as it
+/// is; a condition on a directive keeps its children, resolved the same.
+fn resolved_for(concrete: &str, selections: &[SelectionPlan]) -> Vec<SelectionPlan> {
+    let mut resolved = Vec::new();
+    for selection in selections {
+        match selection {
+            SelectionPlan::Inline {
+                type_condition: Some(_),
+                condition_types: Some(types),
+                alias: None,
+                deferred: None,
+                catch: None,
+                selections: children,
+                ..
+            } => {
+                if types.iter().any(|type_name| type_name == concrete) {
+                    resolved.extend(resolved_for(concrete, children));
+                }
+            }
+            SelectionPlan::Condition {
+                variable,
+                passing,
+                selections: children,
+            } => resolved.push(SelectionPlan::Condition {
+                variable: variable.clone(),
+                passing: *passing,
+                selections: resolved_for(concrete, children),
+            }),
+            other => resolved.push(other.clone()),
+        }
+    }
+    resolved
 }
 
 /// The selections at a lens's own level, each with the conditions on the

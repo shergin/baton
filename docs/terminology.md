@@ -153,7 +153,16 @@ the build did not list takes its variant from the answers: the fields
 under each condition it satisfies with those every type reads, settled once
 per type and per set of conditions; a linked field selected under two
 conditions keeps the first's children. The image keeps the answers for the
-next launch. A lookup without a type probes the compiled members.
+next launch. A lookup without a type probes the compiled members. A
+concrete type's lens under an interface or union, `asCharacter`, sees the
+conditions on the interfaces and unions its type satisfies beside it: the
+fields `... on Named` selected read through `asCharacter` as well, under
+that condition's `@include` and `@skip`, as Relay's generated types give
+each concrete variant every field a matching condition selected; a type
+condition nested in the set condition folds in when the concrete type
+satisfies it and is left out when it does not, so the fields merge with the
+concrete condition's own; the set condition keeps its own lens, `asNamed`,
+for the types the document does not name.
 
 **Owner.** *Composition: lens, operation value.* Relay: the fragment owner,
 the request whose variables a fragment reference is read with. Here: the

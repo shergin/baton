@@ -223,6 +223,7 @@ query TestSpellings {
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
                 public static let typeName = "Baton"
                 @MainActor public var id: String? { anchor.string(Slots.Baton_.id) }
+                @MainActor public var label: String? { anchor.string(Slots.Baton_.label) }
             }
 
             nonisolated public struct AsType: Baton.Lens {
@@ -230,6 +231,7 @@ query TestSpellings {
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
                 public static let typeName = "Type"
                 @MainActor public var id: String? { anchor.string(Slots.Type_.id) }
+                @MainActor public var label: String? { anchor.string(Slots.Type_.label) }
             }
 
             nonisolated public struct AsProtocol: Baton.Lens {
@@ -237,6 +239,7 @@ query TestSpellings {
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
                 public static let typeName = "Protocol"
                 @MainActor public var id: String? { anchor.string(Slots.Protocol_.id) }
+                @MainActor public var label: String? { anchor.string(Slots.Protocol_.label) }
             }
 
             nonisolated public struct AsSet: Baton.Lens {
@@ -244,6 +247,7 @@ query TestSpellings {
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
                 public static let typeName = "Set"
                 @MainActor public var id: String? { anchor.string(Slots.Set.id) }
+                @MainActor public var label: String? { anchor.string(Slots.Set.label) }
             }
 
             nonisolated public struct AsAny: Baton.Lens {
@@ -251,6 +255,7 @@ query TestSpellings {
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
                 public static let typeName = "Any"
                 @MainActor public var id: String? { anchor.string(Slots.Any_.id) }
+                @MainActor public var label: String? { anchor.string(Slots.Any_.label) }
             }
         }
     }

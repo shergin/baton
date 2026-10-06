@@ -61,6 +61,7 @@ nonisolated enum Slots {
     }
     nonisolated enum Any_ {
         static let id = Baton.Registry.slot(Types.Any_, "id")
+        static let label = Baton.Registry.slot(Types.Any_, "label")
     }
     nonisolated enum Asset {
         static let id = Baton.Registry.slot(Types.Asset, "id")
@@ -75,6 +76,7 @@ nonisolated enum Slots {
     }
     nonisolated enum Baton_ {
         static let id = Baton.Registry.slot(Types.Baton_, "id")
+        static let label = Baton.Registry.slot(Types.Baton_, "label")
     }
     nonisolated enum Character {
         static let __HostileConnectionNodes_notes_connection = Baton.Registry.slot(Types.Character, "__HostileConnectionNodes_notes_connection")
@@ -205,6 +207,7 @@ nonisolated enum Slots {
     }
     nonisolated enum Protocol_ {
         static let id = Baton.Registry.slot(Types.Protocol_, "id")
+        static let label = Baton.Registry.slot(Types.Protocol_, "label")
     }
     nonisolated enum Query {
         static let asset_9e39ed = Baton.DynamicKey(Types.Query, "asset", [Baton.KeyArgument("uuid", [.variable("uuid")])])
@@ -260,6 +263,7 @@ nonisolated enum Slots {
     }
     nonisolated enum Set {
         static let id = Baton.Registry.slot(Types.Set, "id")
+        static let label = Baton.Registry.slot(Types.Set, "label")
     }
     nonisolated enum Spelling {
         static let __typename = Baton.Registry.slot(Types.Spelling, "__typename")
@@ -285,6 +289,7 @@ nonisolated enum Slots {
     }
     nonisolated enum Type_ {
         static let id = Baton.Registry.slot(Types.Type_, "id")
+        static let label = Baton.Registry.slot(Types.Type_, "label")
     }
     nonisolated enum Types_ {
         static let Any_ = Baton.Registry.slot(Types.Types, "Any")

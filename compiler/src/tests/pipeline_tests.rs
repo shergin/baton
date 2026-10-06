@@ -639,3 +639,6 @@ mod extension_tests;
 
 #[path = "transient_tests.rs"]
 mod transient_tests;
+
+#[path = "condition_lens_tests.rs"]
+mod condition_lens_tests;
