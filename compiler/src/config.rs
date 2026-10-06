@@ -1,6 +1,7 @@
 //! `baton.json`: the schema's location and the identity configuration the
 //! compiler bakes into plans.
 
+use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
 /// A root field that returns an entity addressable by one of its arguments.
@@ -16,6 +17,53 @@ pub struct Lookup {
     pub type_name: Option<String>,
     /// The argument that carries the entity's key, e.g. `id`.
     pub argument: String,
+}
+
+/// Which fields identify a record of a type: the list tried for every object
+/// type, and the types, or interfaces whose implementers, with a list of
+/// their own. A key is own scalar fields, in order, and does not rename: it
+/// is their values at the write.
+#[derive(Debug, Clone, PartialEq, Eq, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct Identity {
+    #[serde(default = "default_key")]
+    pub default: Vec<String>,
+    #[serde(default)]
+    pub types: BTreeMap<String, Vec<String>>,
+}
+
+impl Default for Identity {
+    fn default() -> Self {
+        Identity {
+            default: default_key(),
+            types: BTreeMap::new(),
+        }
+    }
+}
+
+impl Identity {
+    /// Whether the configuration keys as the runtime always did, by `id`,
+    /// so that the schema's digest stays what it was.
+    pub fn is_default(&self) -> bool {
+        *self == Identity::default()
+    }
+
+    /// The configuration as one text, for the digest an image is versioned
+    /// by: a new keying is a miss, not a merge of two.
+    pub fn canonical(&self) -> String {
+        let mut text = self.default.join(",");
+        for (name, fields) in &self.types {
+            text.push('\n');
+            text.push_str(name);
+            text.push(':');
+            text.push_str(&fields.join(","));
+        }
+        text
+    }
+}
+
+fn default_key() -> Vec<String> {
+    vec!["id".to_string()]
 }
 
 /// The GraphQL specification's `onError` values.
@@ -46,6 +94,9 @@ pub struct Config {
     pub schema: String,
     #[serde(default)]
     pub lookups: Vec<Lookup>,
+    /// The fields that key a record of each type.
+    #[serde(default)]
+    pub identity: Identity,
     /// The `onError` request parameter every operation sends: `PROPAGATE`,
     /// `NULL` or `ABORT`. Under `NULL` a server nulls an errored field in
     /// place, so a field the schema types non-null is typed by its semantic

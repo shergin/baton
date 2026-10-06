@@ -55,7 +55,11 @@
           },
           "non_null": false,
           "semantic_non_null": false,
-          "has_id": true,
+          "keys": {
+            "Character": [
+              "id"
+            ]
+          },
           "is_abstract": false,
           "possible_types": [
             "Character"
@@ -115,7 +119,7 @@
           },
           "non_null": false,
           "semantic_non_null": false,
-          "has_id": false,
+          "keys": {},
           "is_abstract": false,
           "possible_types": [
             "Characters"
@@ -152,7 +156,7 @@
               },
               "non_null": false,
               "semantic_non_null": false,
-              "has_id": false,
+              "keys": {},
               "is_abstract": false,
               "possible_types": [
                 "Info"
@@ -249,7 +253,17 @@
           },
           "non_null": false,
           "semantic_non_null": false,
-          "has_id": true,
+          "keys": {
+            "Character": [
+              "id"
+            ],
+            "Episode": [
+              "id"
+            ],
+            "Location": [
+              "id"
+            ]
+          },
           "is_abstract": true,
           "possible_types": [
             "Character",
@@ -314,7 +328,11 @@
           },
           "non_null": false,
           "semantic_non_null": false,
-          "has_id": true,
+          "keys": {
+            "Character": [
+              "id"
+            ]
+          },
           "is_abstract": false,
           "possible_types": [
             "Character"
@@ -394,7 +412,11 @@
           },
           "non_null": false,
           "semantic_non_null": false,
-          "has_id": true,
+          "keys": {
+            "Character": [
+              "id"
+            ]
+          },
           "is_abstract": false,
           "possible_types": [
             "Character"
@@ -466,7 +488,7 @@
           },
           "non_null": false,
           "semantic_non_null": false,
-          "has_id": false,
+          "keys": {},
           "is_abstract": false,
           "possible_types": [
             "Characters"
@@ -521,7 +543,7 @@
               },
               "non_null": false,
               "semantic_non_null": false,
-              "has_id": false,
+              "keys": {},
               "is_abstract": false,
               "possible_types": [
                 "Info"
@@ -581,7 +603,17 @@
           },
           "non_null": false,
           "semantic_non_null": false,
-          "has_id": true,
+          "keys": {
+            "Character": [
+              "id"
+            ],
+            "Episode": [
+              "id"
+            ],
+            "Location": [
+              "id"
+            ]
+          },
           "is_abstract": true,
           "possible_types": [
             "Character",
@@ -707,7 +739,11 @@
           },
           "non_null": false,
           "semantic_non_null": false,
-          "has_id": true,
+          "keys": {
+            "Character": [
+              "id"
+            ]
+          },
           "is_abstract": false,
           "possible_types": [
             "Character"
@@ -808,7 +844,11 @@
           },
           "non_null": false,
           "semantic_non_null": false,
-          "has_id": true,
+          "keys": {
+            "Character": [
+              "id"
+            ]
+          },
           "is_abstract": false,
           "possible_types": [
             "Character"
@@ -901,7 +941,7 @@
           },
           "non_null": false,
           "semantic_non_null": false,
-          "has_id": false,
+          "keys": {},
           "is_abstract": false,
           "possible_types": [
             "Characters"
@@ -956,7 +996,7 @@
               },
               "non_null": false,
               "semantic_non_null": false,
-              "has_id": false,
+              "keys": {},
               "is_abstract": false,
               "possible_types": [
                 "Info"
@@ -1047,7 +1087,7 @@
           },
           "non_null": false,
           "semantic_non_null": false,
-          "has_id": false,
+          "keys": {},
           "is_abstract": false,
           "possible_types": [
             "Characters"
@@ -1088,7 +1128,11 @@
               },
               "non_null": false,
               "semantic_non_null": false,
-              "has_id": true,
+              "keys": {
+                "Character": [
+                  "id"
+                ]
+              },
               "is_abstract": false,
               "possible_types": [
                 "Character"
@@ -1159,7 +1203,7 @@
                   },
                   "non_null": true,
                   "semantic_non_null": false,
-                  "has_id": false,
+                  "keys": {},
                   "is_abstract": false,
                   "possible_types": [
                     "NoteConnection"
@@ -1222,7 +1266,7 @@
                   },
                   "non_null": true,
                   "semantic_non_null": false,
-                  "has_id": false,
+                  "keys": {},
                   "is_abstract": false,
                   "possible_types": [
                     "NoteConnection"
@@ -1288,7 +1332,7 @@
           },
           "non_null": false,
           "semantic_non_null": false,
-          "has_id": false,
+          "keys": {},
           "is_abstract": false,
           "possible_types": [
             "Characters"
@@ -1329,7 +1373,11 @@
               },
               "non_null": false,
               "semantic_non_null": false,
-              "has_id": true,
+              "keys": {
+                "Character": [
+                  "id"
+                ]
+              },
               "is_abstract": false,
               "possible_types": [
                 "Character"
@@ -1400,7 +1448,7 @@
                   },
                   "non_null": true,
                   "semantic_non_null": false,
-                  "has_id": false,
+                  "keys": {},
                   "is_abstract": false,
                   "possible_types": [
                     "NoteConnection"
@@ -1463,7 +1511,7 @@
                   },
                   "non_null": true,
                   "semantic_non_null": false,
-                  "has_id": false,
+                  "keys": {},
                   "is_abstract": false,
                   "possible_types": [
                     "NoteConnection"
@@ -1564,7 +1612,11 @@
           },
           "non_null": false,
           "semantic_non_null": false,
-          "has_id": true,
+          "keys": {
+            "Character": [
+              "id"
+            ]
+          },
           "is_abstract": false,
           "possible_types": [
             "Character"
@@ -1634,7 +1686,7 @@
           },
           "non_null": false,
           "semantic_non_null": false,
-          "has_id": false,
+          "keys": {},
           "is_abstract": false,
           "possible_types": [
             "Characters"
@@ -1679,7 +1731,7 @@
               },
               "non_null": false,
               "semantic_non_null": false,
-              "has_id": false,
+              "keys": {},
               "is_abstract": false,
               "possible_types": [
                 "Info"
@@ -1786,7 +1838,11 @@
           },
           "non_null": false,
           "semantic_non_null": false,
-          "has_id": true,
+          "keys": {
+            "Character": [
+              "id"
+            ]
+          },
           "is_abstract": false,
           "possible_types": [
             "Character"
@@ -1877,7 +1933,7 @@
           },
           "non_null": false,
           "semantic_non_null": false,
-          "has_id": false,
+          "keys": {},
           "is_abstract": false,
           "possible_types": [
             "Characters"
@@ -1922,7 +1978,7 @@
               },
               "non_null": false,
               "semantic_non_null": false,
-              "has_id": false,
+              "keys": {},
               "is_abstract": false,
               "possible_types": [
                 "Info"
@@ -1980,7 +2036,11 @@
           },
           "non_null": false,
           "semantic_non_null": false,
-          "has_id": true,
+          "keys": {
+            "Character": [
+              "id"
+            ]
+          },
           "is_abstract": false,
           "possible_types": [
             "Character"
@@ -2073,7 +2133,7 @@
           },
           "non_null": false,
           "semantic_non_null": false,
-          "has_id": false,
+          "keys": {},
           "is_abstract": false,
           "possible_types": [
             "Characters"
@@ -2128,7 +2188,7 @@
               },
               "non_null": false,
               "semantic_non_null": false,
-              "has_id": false,
+              "keys": {},
               "is_abstract": false,
               "possible_types": [
                 "Info"

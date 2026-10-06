@@ -28,7 +28,11 @@ public enum Format4 {}
 public enum Format5 {}
 
 @_spi(Generated)
+@available(*, unavailable, message: "this generated code is of format 6 and the runtime reads format 7: a record's key is the fields the configuration names, in order; rebuild with the compiler of this release")
 public enum Format6 {}
+
+@_spi(Generated)
+public enum Format7 {}
 
 /// An operation's normalization plan, emitted by the compiler as static data:
 /// what the response contains and where each value is stored.
@@ -333,10 +337,14 @@ public final class Selection: Sendable {
         /// type the build did not list: its fields are those selected under
         /// the condition, with the ones every type reads.
         public let condition: TypeID?
+        /// The key of the listed types, where it differs from the selection's;
+        /// nil keys by the selection's.
+        public let key: [String]?
         public let fields: [PlanField]
 
-        public init(types: [TypeID]?, condition: TypeID? = nil, fields: [PlanField]) {
+        public init(types: [TypeID]?, key: [String]? = nil, condition: TypeID? = nil, fields: [PlanField]) {
             self.types = types
+            self.key = key
             self.condition = condition
             self.fields = fields
         }
@@ -355,10 +363,12 @@ public final class Selection: Sendable {
     }
 
     public let type: TypeID
-    /// The response key of the field that keys a record of the type, `id`,
-    /// or nil for a type keyed by its path. The ingest knows no field by
-    /// name: it reads the key the plan says.
-    public let key: String?
+    /// The response keys of the fields that key a record of the type, in the
+    /// order `baton.json` configures them; empty for a type keyed by its
+    /// path. On an interface or union, the key its members share, which a
+    /// type the build did not list is keyed by. The ingest knows no field by
+    /// name: it reads the keys the plan says.
+    public let key: [String]
     public let isAbstract: Bool
     /// The membership answers the response carries, for a record of a type
     /// the build did not list.
@@ -370,11 +380,11 @@ public final class Selection: Sendable {
     private let resolution = Mutex<ResolvedSelection?>(nil)
 
     /// A selection every type reads alike.
-    public convenience init(type: TypeID, key: String?, abstract: Bool = false, fields: [PlanField]) {
+    public convenience init(type: TypeID, key: [String], abstract: Bool = false, fields: [PlanField]) {
         self.init(type: type, key: key, abstract: abstract, variants: [Variant(types: nil, fields: fields)])
     }
 
-    public init(type: TypeID, key: String?, abstract: Bool = false, memberships: [MembershipAnswer] = [], variants: [Variant]) {
+    public init(type: TypeID, key: [String], abstract: Bool = false, memberships: [MembershipAnswer] = [], variants: [Variant]) {
         self.type = type
         self.key = key
         isAbstract = abstract
@@ -410,7 +420,7 @@ public final class Selection: Sendable {
                 continue
             }
             for concrete in types {
-                listed[concrete] = ResolvedVariant(type: concrete, fields: fields.map { $0.on(concrete, hold) })
+                listed[concrete] = ResolvedVariant(type: concrete, key: variant.key ?? key, fields: fields.map { $0.on(concrete, hold) })
             }
         }
         // A selection that reads no variables renders no key, and its
@@ -565,13 +575,8 @@ package final class ResolvedEdit: Sendable {
 /// that type reads, with their slots on it and their keys as bytes.
 package final class ResolvedSelection: Sendable {
     package let type: TypeID
-    /// The response key of the field that keys a record, as the plan says.
-    let key: String?
-    /// Whether records of the selection are keyed by a field.
-    package let hasID: Bool
-    /// The key's response key as bytes, which the ingest matches without a
-    /// name of its own.
-    let keyBytes: [UInt8]?
+    /// The response keys of the fields that key a record, as the plan says.
+    let key: [String]
     /// Whether a record's type comes from the payload's `__typename`.
     package let isAbstract: Bool
     /// The fields of a selection on an object type; on an abstract type,
@@ -579,6 +584,9 @@ package final class ResolvedSelection: Sendable {
     /// record whose payload names no type. Stored apart from a variant so
     /// the walks over object types read it without retaining it.
     let fields: [ResolvedField]
+    /// The variant of the selection's own type, made once: `fields` with
+    /// the lists the walks need and the key fields marked.
+    private let own: ResolvedVariant
     private let listed: [TypeID: ResolvedVariant]
     /// The fields selected under each interface or union condition, with
     /// the ones every type reads, for a type the plan did not list.
@@ -600,13 +608,12 @@ package final class ResolvedSelection: Sendable {
     /// shares.
     private let hold: Keys.Hold?
 
-    init(type: TypeID, key: String?, isAbstract: Bool, fields: [ResolvedField], listed: [TypeID: ResolvedVariant], conditions: [(TypeID, [ResolvedField])] = [], memberships: [Selection.MembershipAnswer] = [], hold: Keys.Hold?) {
+    init(type: TypeID, key: [String], isAbstract: Bool, fields: [ResolvedField], listed: [TypeID: ResolvedVariant], conditions: [(TypeID, [ResolvedField])] = [], memberships: [Selection.MembershipAnswer] = [], hold: Keys.Hold?) {
         self.type = type
         self.key = key
-        hasID = key != nil
-        keyBytes = key.map { Array($0.utf8) }
         self.isAbstract = isAbstract
         self.fields = fields
+        own = ResolvedVariant(type: type, key: key, fields: fields, typeName: type.name)
         self.listed = listed
         self.conditions = conditions
         membershipKeys = memberships.map { (Array($0.responseKey.utf8), $0.condition) }
@@ -622,7 +629,7 @@ package final class ResolvedSelection: Sendable {
     }
 
     @MainActor package func variant(for type: TypeID) -> ResolvedVariant {
-        if !isAbstract || type == self.type { return ResolvedVariant(type: self.type, fields: fields, typeName: typeName) }
+        if !isAbstract || type == self.type { return own }
         if let variant = listed[type] { return variant }
         return variant(forUnlisted: type) { condition in Membership.includes(type, condition) }
     }
@@ -631,7 +638,7 @@ package final class ResolvedSelection: Sendable {
     /// takes the variants of the conditions the response's membership
     /// answers say it satisfies.
     func variant(for type: TypeID, memberOf answers: [TypeID]) -> ResolvedVariant {
-        if !isAbstract || type == self.type { return ResolvedVariant(type: self.type, fields: fields, typeName: typeName) }
+        if !isAbstract || type == self.type { return own }
         if let variant = listed[type] { return variant }
         return variant(forUnlisted: type) { condition in answers.contains(condition) }
     }
@@ -656,7 +663,7 @@ package final class ResolvedSelection: Sendable {
                     merged.append(field)
                 }
             }
-            let variant = ResolvedVariant(type: type, fields: merged.map { $0.on(type, hold) })
+            let variant = ResolvedVariant(type: type, key: self.key, fields: merged.map { $0.on(type, hold) })
             cache[key] = variant
             return variant
         }
@@ -675,7 +682,7 @@ package final class ResolvedSelection: Sendable {
         deferredParts.withLock { cache in
             if let part = cache[label] { return part }
             func part(_ variant: ResolvedVariant) -> ResolvedVariant {
-                ResolvedVariant(type: variant.type, fields: variant.fields.filter { $0.deferred == label }.map { $0.undeferred() }, typeName: variant.typeName)
+                ResolvedVariant(type: variant.type, key: variant.key, fields: variant.fields.filter { $0.deferred == label }.map { $0.undeferred() }, typeName: variant.typeName)
             }
             let own = fields.filter { $0.deferred == label }.map { $0.undeferred() }
             let selection = ResolvedSelection(type: type, key: key, isAbstract: isAbstract, fields: own, listed: listed.mapValues(part), conditions: conditions.map { ($0.0, $0.1.filter { $0.deferred == label }.map { $0.undeferred() }) }, memberships: membershipKeys.map { Selection.MembershipAnswer(String(decoding: $0.bytes, as: UTF8.self), $0.condition) }, hold: hold)
@@ -692,6 +699,12 @@ package struct ResolvedVariant: Sendable {
     package let fields: [ResolvedField]
     /// The type's name, taken once, for the keys the ingest builds.
     let typeName: String
+    /// The response keys of the fields that key a record of the type, in
+    /// order; empty for a type keyed by its path.
+    let key: [String]
+    /// The same as bytes, which the ingest matches without a name of its
+    /// own; the fields in `read` that are among them carry their index.
+    let keys: [[UInt8]]
     /// The lists the walks need, made once here, so that no walk tests a
     /// field for what it is.
     /// The fields a response is read by: every field but `__typename`, which
@@ -710,11 +723,18 @@ package struct ResolvedVariant: Sendable {
     /// and the client links.
     let follows: [ResolvedField]
 
-    init(type: TypeID, fields: [ResolvedField], typeName: String? = nil) {
+    init(type: TypeID, key: [String], fields: [ResolvedField], typeName: String? = nil) {
         self.type = type
-        self.fields = fields
         self.typeName = typeName ?? type.name
-        let read = fields.filter { !$0.isTypename }
+        self.key = key
+        keys = key.map { Array($0.utf8) }
+        var marked = fields
+        for (index, name) in key.enumerated() {
+            guard let position = marked.firstIndex(where: { $0.responseKey == name && $0.deferred == nil }) else { continue }
+            marked[position].keyIndex = Int32(index)
+        }
+        self.fields = marked
+        let read = marked.filter { !$0.isTypename }
         self.read = read
         expected = read.indices.filter { read[$0].origin.isServer }
         waits = read.filter { $0.origin.isServer }
@@ -778,6 +798,10 @@ package struct ResolvedField: Sendable {
         if case .deferred(let label) = origin { return label }
         return nil
     }
+
+    /// Which of the record's key fields this is, or -1: set by the variant
+    /// the field is read in, since a field keys one type and not another.
+    var keyIndex: Int32 = -1
 
     init(responseKey: String, keyBytes: [UInt8], storageKey: String, rendered: Bool, slot: Slot, kind: Kind, edit: ResolvedEdit?, deferred: String?, caught: Bool, client: Bool = false) {
         self.responseKey = responseKey

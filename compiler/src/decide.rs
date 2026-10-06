@@ -14,6 +14,8 @@
 //! (`reader`), an operation an `OperationValue` with its optimistic
 //! builders (`operation`).
 
+use std::collections::{BTreeMap, BTreeSet};
+
 mod checks;
 mod collect;
 mod keys;
@@ -120,7 +122,12 @@ pub fn program(plan: &Plan) -> Result<Program, Vec<NameError>> {
 #[derive(Debug, Clone, PartialEq)]
 pub struct NormalizationSelection {
     pub type_name: String,
-    pub has_id: bool,
+    /// The fields that key a record of the selection's type, in order, as
+    /// `baton.json` configures them; empty for a type keyed by its path. On
+    /// an interface or union, the key its members share, which a type the
+    /// build did not list is keyed by; a member with another key has its own
+    /// variant.
+    pub key: Vec<String>,
     /// Whether the type is an interface or union: the payload's `__typename`
     /// names each record's type.
     pub is_abstract: bool,
@@ -144,6 +151,9 @@ pub struct NormalizationVariant {
     /// build did not list them: the fields under the condition, with those
     /// every type reads.
     pub condition: Option<String>,
+    /// The key of the listed types, where the variant lists them: it may
+    /// differ from the selection's. `None` keys by the selection's.
+    pub key: Option<Vec<String>>,
     pub fields: Vec<NormalizationField>,
 }
 
@@ -248,7 +258,7 @@ pub struct Guard {
 pub fn normalization(root_type: &str, selections: &[SelectionPlan]) -> NormalizationSelection {
     let mut occurrences = Vec::new();
     collect(selections, root_type, &[], None, None, &mut occurrences);
-    decide(root_type, false, false, &[], &occurrences)
+    decide(root_type, &BTreeMap::new(), false, &[], &occurrences)
 }
 
 /// A field as one place in the document selects it: under which conditions,
@@ -401,20 +411,29 @@ fn collect_under<'a>(
 /// own fields are served by the variant for every other type.
 fn decide(
     type_name: &str,
-    has_id: bool,
+    keys: &BTreeMap<String, Vec<String>>,
     is_abstract: bool,
     possible_types: &[String],
     occurrences: &[Occurrence],
 ) -> NormalizationSelection {
+    // The key the selection's records share: the type's own, or the one
+    // every keyed member of an abstract type has, which serves a type the
+    // build did not list as well.
+    let distinct: BTreeSet<&Vec<String>> = keys.values().collect();
+    let key: Vec<String> = match distinct.len() {
+        1 => distinct.into_iter().next().unwrap().clone(),
+        _ => Vec::new(),
+    };
     if !is_abstract {
         let all: Vec<&Occurrence> = occurrences.iter().collect();
         return NormalizationSelection {
             type_name: type_name.to_string(),
-            has_id,
+            key,
             is_abstract,
             variants: vec![NormalizationVariant {
                 types: None,
                 condition: None,
+                key: None,
                 fields: merge(&all),
             }],
             memberships: Vec::new(),
@@ -425,8 +444,9 @@ fn decide(
         .filter(|occurrence| occurrence.types.is_none())
         .collect();
     let others = merge(&own);
-    let mut groups: Vec<(Vec<String>, Vec<NormalizationField>)> = Vec::new();
+    let mut groups: Vec<(Vec<String>, Vec<String>, Vec<NormalizationField>)> = Vec::new();
     for concrete in possible_types {
+        let concrete_key: Vec<String> = keys.get(concrete).cloned().unwrap_or_default();
         let applicable: Vec<&Occurrence> = occurrences
             .iter()
             .filter(|occurrence| {
@@ -436,23 +456,28 @@ fn decide(
                     .is_none_or(|types| types.contains(concrete))
             })
             .collect();
-        if applicable.len() == own.len() {
+        // A type that reads what every type reads and is keyed as the
+        // selection keys is served by the variant for every other type.
+        if applicable.len() == own.len() && concrete_key == key {
             continue;
         }
         let fields = merge(&applicable);
-        if fields == others {
+        if fields == others && concrete_key == key {
             continue;
         }
-        match groups.iter_mut().find(|(_, existing)| *existing == fields) {
-            Some((types, _)) => types.push(concrete.clone()),
-            None => groups.push((vec![concrete.clone()], fields)),
+        match groups.iter_mut().find(|(_, existing_key, existing)| {
+            *existing_key == concrete_key && *existing == fields
+        }) {
+            Some((types, _, _)) => types.push(concrete.clone()),
+            None => groups.push((vec![concrete.clone()], concrete_key, fields)),
         }
     }
     let mut variants: Vec<NormalizationVariant> = groups
         .into_iter()
-        .map(|(types, fields)| NormalizationVariant {
+        .map(|(types, variant_key, fields)| NormalizationVariant {
             types: Some(types),
             condition: None,
+            key: Some(variant_key),
             fields,
         })
         .collect();
@@ -477,12 +502,14 @@ fn decide(
         variants.push(NormalizationVariant {
             types: None,
             condition: Some(condition.clone()),
+            key: None,
             fields: merge(&under),
         });
     }
     variants.push(NormalizationVariant {
         types: None,
         condition: None,
+        key: None,
         fields: others,
     });
     let mut memberships: Vec<(String, String)> = Vec::new();
@@ -504,7 +531,7 @@ fn decide(
     }
     NormalizationSelection {
         type_name: type_name.to_string(),
-        has_id,
+        key,
         is_abstract,
         variants,
         memberships,
@@ -583,7 +610,7 @@ fn field(
         SelectionPlan::Linked {
             storage_key,
             type_,
-            has_id,
+            keys,
             is_abstract,
             possible_types,
             lookup,
@@ -622,7 +649,7 @@ fn field(
                     connection: connection.clone(),
                     selection: decide(
                         type_.base_name(),
-                        *has_id,
+                        keys,
                         *is_abstract,
                         possible_types,
                         &children,

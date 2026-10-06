@@ -1,0 +1,18 @@
+{
+  "data": {
+    "assets": [
+      {
+        "name": "Portal gun",
+        "size": 3,
+        "uuid": "a1",
+        "id": "QXNzZXQ6YTE="
+      },
+      {
+        "name": "Plumbus",
+        "size": 1,
+        "uuid": "b2",
+        "id": "QXNzZXQ6YjI="
+      }
+    ]
+  }
+}

@@ -116,18 +116,19 @@ fn an_interface_whose_implementers_have_ids_is_keyed_by_id_though_it_declares_no
     )
     .unwrap_or_else(|errors| panic!("{errors:?}"));
     let SelectionPlan::Linked {
-        has_id,
-        is_abstract,
-        ..
+        keys, is_abstract, ..
     } = &compiled.plan.operations[0].normalization[0]
     else {
         panic!("namesake is a link");
     };
     assert!(*is_abstract);
-    assert!(
-        *has_id,
-        "Character and Location, which implement Named, have ids"
-    );
+    for member in ["Character", "Location"] {
+        assert_eq!(
+            keys.get(member),
+            Some(&vec!["id".to_string()]),
+            "{member}, which implements Named, is keyed by its id"
+        );
+    }
 }
 
 const RENAMED_ROOTS: &str = "
@@ -607,3 +608,6 @@ fn a_type_plan_keeps_every_list_and_the_nullability_of_each_level() {
     assert!(type_.is_list());
     assert!(!type_.non_null());
 }
+
+#[path = "identity_tests.rs"]
+mod identity_tests;

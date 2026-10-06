@@ -1,0 +1,7 @@
+{
+  "Asset:a1": {"__typename": "Asset", "id": "QXNzZXQ6YTE=", "name": "Portal gun", "owner": {"__ref": "Character:1"}, "uuid": "a1"},
+  "Character:1": {"__typename": "Character", "id": "1", "name": "Rick Sanchez"},
+  "client:root": {"__typename": "Query", "asset(uuid:\"a1\")": {"__ref": "Asset:a1"}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

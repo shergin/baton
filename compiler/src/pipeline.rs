@@ -6,6 +6,7 @@
 //! IR, the seam: emitters never see Relay types. `lower` turns Relay's
 //! programs into it.
 
+mod identity;
 mod lower;
 mod plan;
 
@@ -97,6 +98,7 @@ pub fn compile(
     if !errors.is_empty() {
         return Err(errors);
     }
+    let keys = identity::Keys::resolve(&schema, &config.identity, config_location(config))?;
     let root_names = root_names(&schema, schema_path)?;
 
     let started = Instant::now();
@@ -131,7 +133,7 @@ pub fn compile(
     timings.validate = started.elapsed();
 
     let started = Instant::now();
-    let programs = apply_transforms(
+    let mut programs = apply_transforms(
         &project_config,
         Arc::new(program),
         Arc::new(FragmentDefinitionNameSet::default()),
@@ -140,12 +142,20 @@ pub fn compile(
         None,
         Vec::new(),
     )?;
+    // The key fields join what the server is asked for and what the ingest
+    // reads, after Relay's own `id`, and never a lens: a lens reads what its
+    // author selected.
+    programs.normalization = Arc::new(identity::select_key_fields(&programs.normalization, &keys)?);
+    programs.operation_text = Arc::new(identity::select_key_fields(
+        &programs.operation_text,
+        &keys,
+    )?);
     timings.transform = started.elapsed();
 
     let started = Instant::now();
-    let mut plan = lower(&schema, &programs, config)?;
+    let mut plan = lower(&schema, &programs, config, &keys)?;
     plan.root_names = root_names;
-    plan.schema_digest = format!("{:x}", md5::compute(schema_sdl.as_bytes()));
+    plan.schema_digest = schema_digest(schema_sdl, &config.identity);
     timings.lower = started.elapsed();
 
     Ok(Compiled { plan, timings })
@@ -212,14 +222,33 @@ fn root_names(
     }
 }
 
+/// The digest an image is versioned by: the schema's text, and the identity
+/// configuration when it is not the default, so that records keyed another
+/// way are a miss and not a merge of two keyings. The default leaves the
+/// digest what it was before identity could be configured.
+fn schema_digest(schema_sdl: &str, identity: &crate::config::Identity) -> String {
+    if identity.is_default() {
+        return format!("{:x}", md5::compute(schema_sdl.as_bytes()));
+    }
+    let mut text = schema_sdl.to_string();
+    text.push_str("\n# identity\n");
+    text.push_str(&identity.canonical());
+    format!("{:x}", md5::compute(text.as_bytes()))
+}
+
+/// Where a diagnostic about the configuration points: the file itself.
+fn config_location(config: &Config) -> common::Location {
+    common::Location::new(
+        SourceLocationKey::standalone(&config.path.to_string_lossy()),
+        common::Span::new(0, 0),
+    )
+}
+
 /// Checks each lookup in `baton.json` against the schema: the root field
 /// exists and takes the argument, and `type` is the field's concrete return
 /// type, omitted only when the field returns an interface or a union.
 fn validate_lookups(schema: &SDLSchema, config: &Config) -> Vec<Diagnostic> {
-    let location = common::Location::new(
-        SourceLocationKey::standalone(&config.path.to_string_lossy()),
-        common::Span::new(0, 0),
-    );
+    let location = config_location(config);
     let mut errors = Vec::new();
     for lookup in &config.lookups {
         let mut fail = |message: String| errors.push(Diagnostic::error(message, location));

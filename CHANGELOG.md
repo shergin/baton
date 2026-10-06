@@ -5,6 +5,21 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- Identity is configured. `baton.json`'s `identity` names the fields that
+  key a record of each type: a `default` list, `["id"]` unless written, and
+  `types` entries for a type or for an interface, whose implementers take
+  it. A key is own scalar fields, in order, several of them for a composite
+  key, `Quote:base:quote`, each value escaped so that no two lists of values
+  meet; a key does not rename, since it is the values at the write. The
+  compiler selects the key fields wherever the type is read, as it selects
+  `id`, refuses a configuration naming a field a type lacks or cannot key
+  by, and the plan names each type's key; the ingest keys a record once
+  every key field is read, looking ahead past a link as it did for `id`. A
+  configuration other than the default joins the schema's digest, so an
+  image keyed the old way is a miss and not a merge. What names a record by
+  one value, `@deleteRecord`, `@deleteEdge`, a lookup without a type and
+  the image's forget, reaches single-field keys only. Generated code of this
+  shape is format 7.
 - An owner settles an `@include` or `@skip` condition once, as it resolves
   a key with variables once. Generated code declares each condition as a
   constant, `Guards.<variable>_<value>`, that the plan's fields and the

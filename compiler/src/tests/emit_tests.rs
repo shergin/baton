@@ -340,11 +340,11 @@ fn a_key_with_a_variable_is_written_as_its_field_name_and_its_arguments() {
 fn a_selection_names_the_field_that_keys_its_records_or_nil_for_a_type_without_one() {
     let swift = emitted("query ProbeQuery { characters { info { count } results { name } } }");
     assert!(
-        swift.contains("Baton.Selection(type: Types.Character, key: \"id\", "),
+        swift.contains("Baton.Selection(type: Types.Character, key: [\"id\"], "),
         "{swift}"
     );
     assert!(
-        swift.contains("Baton.Selection(type: Types.Characters, key: nil, "),
+        swift.contains("Baton.Selection(type: Types.Characters, key: [], "),
         "{swift}"
     );
     assert!(!swift.contains("hasID:"), "{swift}");
@@ -372,7 +372,7 @@ fn an_abstract_selection_carries_its_membership_answers_and_a_variant_per_condit
     );
     assert!(
         swift.contains(
-            "Baton.Selection(type: Types.SearchResult, key: \"id\", abstract: true, memberships: [.init(\"__isNamed\", Types.Named), .init(\"__isNode\", Types.Node)], variants: ["
+            "Baton.Selection(type: Types.SearchResult, key: [\"id\"], abstract: true, memberships: [.init(\"__isNamed\", Types.Named), .init(\"__isNode\", Types.Node)], variants: ["
         ),
         "{swift}"
     );

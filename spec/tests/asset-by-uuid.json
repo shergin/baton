@@ -1,0 +1,13 @@
+{
+  "data": {
+    "asset": {
+      "owner": {
+        "name": "Rick Sanchez",
+        "id": "1"
+      },
+      "uuid": "a1",
+      "name": "Portal gun",
+      "id": "QXNzZXQ6YTE="
+    }
+  }
+}

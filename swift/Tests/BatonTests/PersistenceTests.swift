@@ -830,8 +830,8 @@ struct PersistenceTests {
         let query = Registry.type("Query")
         let character = Registry.type("Character")
         let items = DynamicKey(character, "items", [KeyArgument("after", [.variable("cursor")])])
-        return Plan(root: Selection(type: query, key: nil, fields: [
-            .linked("sweepProbe", key: .fixed(Registry.slot(query, "sweepProbe")), plural: false, selection: Selection(type: character, key: "id", fields: [
+        return Plan(root: Selection(type: query, key: [], fields: [
+            .linked("sweepProbe", key: .fixed(Registry.slot(query, "sweepProbe")), plural: false, selection: Selection(type: character, key: ["id"], fields: [
                 .scalar("id", key: .fixed(Registry.slot(character, "id")), kind: .string, list: false),
                 .scalar("items", key: .dynamic(items), kind: .string, list: false),
             ])),

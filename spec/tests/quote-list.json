@@ -1,0 +1,21 @@
+{
+  "data": {
+    "quotes": [
+      {
+        "rate": 1.5,
+        "base": "BTC",
+        "quote": "USD"
+      },
+      {
+        "rate": 0.9,
+        "base": "EUR",
+        "quote": "USD"
+      },
+      {
+        "rate": 2,
+        "base": "A:B",
+        "quote": "C\\D"
+      }
+    ]
+  }
+}

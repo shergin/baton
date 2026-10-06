@@ -5,12 +5,13 @@
 nonisolated enum Types {
     /// The schema's digest: pass it as the image's `version`, so an image
     /// written under another schema starts again.
-    static let schemaDigest = "2cb6b467cf97a73189b684f6ccfc8ca2"
+    static let schemaDigest = "0156d604990af7a179ef6c8c2a687646"
     /// The format of this generated code, which the runtime that reads it
     /// declares; a runtime of another format fails to compile this line.
-    static let format = Baton.Format6.self
+    static let format = Baton.Format7.self
     static let AddNotePayload = Baton.Registry.type("AddNotePayload")
     static let Any_ = Baton.Registry.type("Any")
+    static let Asset = Baton.Registry.type("Asset")
     static let Baton_ = Baton.Registry.type("Baton")
     static let Character = Baton.Registry.type("Character")
     static let Characters = Baton.Registry.type("Characters")
@@ -29,6 +30,7 @@ nonisolated enum Types {
     static let PageInfo = Baton.Registry.type("PageInfo")
     static let Protocol_ = Baton.Registry.type("Protocol")
     static let Query = Baton.Registry.type("Query")
+    static let Quote = Baton.Registry.type("Quote")
     static let RemoveNotePayload = Baton.Registry.type("RemoveNotePayload")
     static let SearchResult = Baton.Registry.type("SearchResult")
     static let Set = Baton.Registry.type("Set")
@@ -54,6 +56,13 @@ nonisolated enum Slots {
     }
     nonisolated enum Any_ {
         static let id = Baton.Registry.slot(Types.Any_, "id")
+    }
+    nonisolated enum Asset {
+        static let id = Baton.Registry.slot(Types.Asset, "id")
+        static let name = Baton.Registry.slot(Types.Asset, "name")
+        static let owner = Baton.Registry.slot(Types.Asset, "owner")
+        static let size = Baton.Registry.slot(Types.Asset, "size")
+        static let uuid = Baton.Registry.slot(Types.Asset, "uuid")
     }
     nonisolated enum Baton_ {
         static let id = Baton.Registry.slot(Types.Baton_, "id")
@@ -181,6 +190,8 @@ nonisolated enum Slots {
         static let id = Baton.Registry.slot(Types.Protocol_, "id")
     }
     nonisolated enum Query {
+        static let asset_9e39ed = Baton.DynamicKey(Types.Query, "asset", [Baton.KeyArgument("uuid", [.variable("uuid")])])
+        static let assets = Baton.Registry.slot(Types.Query, "assets")
         static let character_4a2dfc = Baton.Registry.slot(Types.Query, "character(id:\"a,b\")")
         static let character_800bca = Baton.DynamicKey(Types.Query, "character", [Baton.KeyArgument("id", [.variable("a")])])
         static let character_ac9202 = Baton.DynamicKey(Types.Query, "character", [Baton.KeyArgument("id", [.variable("b")])])
@@ -198,6 +209,8 @@ nonisolated enum Slots {
         static let charactersMatching_ca82bd = Baton.DynamicKey(Types.Query, "charactersMatching", [Baton.KeyArgument("filters", [.variable("filters")])])
         static let namesake_9b6471 = Baton.DynamicKey(Types.Query, "namesake", [Baton.KeyArgument("name", [.variable("name")])])
         static let node_8f7d08 = Baton.DynamicKey(Types.Query, "node", [Baton.KeyArgument("id", [.variable("id")])])
+        static let quote_bd29fc = Baton.DynamicKey(Types.Query, "quote", [Baton.KeyArgument("base", [.variable("base")]), Baton.KeyArgument("quote", [.variable("quote")])])
+        static let quotes = Baton.Registry.slot(Types.Query, "quotes")
         static let search_6286a6 = Baton.Registry.slot(Types.Query, "search(name:\"$0.00\")")
         static let search_b80531 = Baton.Registry.slot(Types.Query, "search(name:\"\\\\\\\\#1\")")
         static let search_823c67 = Baton.DynamicKey(Types.Query, "search", [Baton.KeyArgument("name", [.variable("in")])])
@@ -205,6 +218,11 @@ nonisolated enum Slots {
         static let spellings = Baton.Registry.slot(Types.Query, "spellings")
         static let tokenizer = Baton.Registry.slot(Types.Query, "tokenizer")
         static let types = Baton.Registry.slot(Types.Query, "types")
+    }
+    nonisolated enum Quote {
+        static let base = Baton.Registry.slot(Types.Quote, "base")
+        static let quote = Baton.Registry.slot(Types.Quote, "quote")
+        static let rate = Baton.Registry.slot(Types.Quote, "rate")
     }
     nonisolated enum RemoveNotePayload {
         static let removedNoteId = Baton.Registry.slot(Types.RemoveNotePayload, "removedNoteId")

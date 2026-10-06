@@ -78,6 +78,10 @@ struct OracleOperation: Sendable {
         "TestRemoveNote": { try OracleOperation(TestRemoveNote(id: $0.string("id"), connections: $0.strings("connections")), reads: removeNoteReads) },
         "TestNoteAdded": { try OracleOperation(TestNoteAdded(characterId: $0.string("characterId"), connections: $0.strings("connections")), reads: noteAddedReads) },
         "TestTokenizerQuery": { _ in OracleOperation(TestTokenizerQuery(), reads: tokenizerReads) },
+        "TestAssetsQuery": { _ in OracleOperation(TestAssetsQuery(), reads: assetsReads) },
+        "TestAssetQuery": { try OracleOperation(TestAssetQuery(uuid: $0.string("uuid")), reads: assetReads) },
+        "TestQuotesQuery": { _ in OracleOperation(TestQuotesQuery(), reads: quotesReads) },
+        "TestQuoteQuery": { try OracleOperation(TestQuoteQuery(base: $0.string("base"), quote: $0.string("quote")), reads: quoteReads) },
     ]
 
     /// Binds a manifest case to its operation.
@@ -212,6 +216,31 @@ extension OracleOperation {
         "character.name": { $0.character?.name.manifestValue ?? .null },
         "charactersByIds.0.name": { $0.charactersByIds?.element(0)?.name.manifestValue ?? .null },
         "characters.info.count": { $0.characters?.info?.count.manifestValue ?? .null },
+    ]
+
+    static let assetsReads: [String: @MainActor @Sendable (TestAssetsQuery.Data) -> Manifest.Value] = [
+        "assets.0.name": { $0.assets?.element(0)?.name.manifestValue ?? .null },
+        "assets.0.size": { $0.assets?.element(0)?.size.manifestValue ?? .null },
+        "assets.1.name": { $0.assets?.element(1)?.name.manifestValue ?? .null },
+        "assets.1.size": { $0.assets?.element(1)?.size.manifestValue ?? .null },
+    ]
+
+    static let assetReads: [String: @MainActor @Sendable (TestAssetQuery.Data) -> Manifest.Value] = [
+        "asset.owner.name": { $0.asset?.owner?.name.manifestValue ?? .null },
+        "asset.uuid": { $0.asset?.uuid.manifestValue ?? .null },
+        "asset.name": { $0.asset?.name.manifestValue ?? .null },
+    ]
+
+    static let quotesReads: [String: @MainActor @Sendable (TestQuotesQuery.Data) -> Manifest.Value] = [
+        "quotes.0.rate": { $0.quotes?.element(0)?.rate.manifestValue ?? .null },
+        "quotes.1.rate": { $0.quotes?.element(1)?.rate.manifestValue ?? .null },
+        "quotes.2.rate": { $0.quotes?.element(2)?.rate.manifestValue ?? .null },
+    ]
+
+    static let quoteReads: [String: @MainActor @Sendable (TestQuoteQuery.Data) -> Manifest.Value] = [
+        "quote.base": { $0.quote?.base.manifestValue ?? .null },
+        "quote.quote": { $0.quote?.quote.manifestValue ?? .null },
+        "quote.rate": { $0.quote?.rate.manifestValue ?? .null },
     ]
 
     static let conditionsReads: [String: @MainActor @Sendable (TestConditions.Data) -> Manifest.Value] = [

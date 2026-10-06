@@ -1,6 +1,8 @@
 //! Lowering: Relay's reader and normalization programs into the plan IR.
 //! Everything here reads Relay's types and writes Baton's.
 
+use std::collections::BTreeMap;
+
 use common::{Diagnostic, DirectiveName, NamedItem, SourceLocationKey};
 use graphql_ir::{
     Condition, ConditionValue, Field, FragmentDefinition, FragmentSpread, InlineFragment,
@@ -18,12 +20,14 @@ use relay_transforms::{
 };
 use schema::{SDLSchema, Schema, Type, TypeReference};
 
+use super::identity::Keys;
 use super::plan::{
     ArgumentPlan, ArgumentValuePlan, CatchPlan, CatchTarget, ConditionClass, ConnectionPlan,
     ConstantPlan, EditKind, EditPlan, FragmentPlan, LookupPlan, OperationKind, OperationPlan,
     Origin, PaginationPlan, Plan, RefetchPlan, RequiredAction, RequiredPlan, SelectionPlan,
     StorageKeyPlan, TypeKind, TypePlan, VariablePlan,
 };
+
 use crate::config::Config;
 
 /// Which program a selection set comes from. The reader reads a connection
@@ -40,6 +44,8 @@ struct Lowering<'a> {
     schema: &'a SDLSchema,
     programs: &'a Programs,
     config: &'a Config,
+    /// The key fields of each keyed object type.
+    keys: &'a Keys,
     /// Errors found while lowering, reported together at the end.
     diagnostics: std::cell::RefCell<Vec<Diagnostic>>,
 }
@@ -53,11 +59,13 @@ pub(super) fn lower(
     schema: &SDLSchema,
     programs: &Programs,
     config: &Config,
+    keys: &Keys,
 ) -> Result<Plan, Vec<Diagnostic>> {
     let lowering = Lowering {
         schema,
         programs,
         config,
+        keys,
         diagnostics: std::cell::RefCell::new(Vec::new()),
     };
     let mut plan = Plan::default();
@@ -400,22 +408,17 @@ impl Lowering<'_> {
             .collect()
     }
 
-    /// Whether objects of this type are keyed by `id`: the type has an `id`
-    /// field, or it is abstract and a concrete type behind it has one; the
+    /// The key fields of each keyed concrete type behind the type: the type
+    /// itself, or, for an interface or union, every member with a key; the
     /// payload's `__typename` then names the type to key by.
-    fn type_has_id(&self, type_: Type) -> bool {
-        match type_ {
-            // An interface need not declare the `id` its implementers have:
-            // GitHub's `Actor` does not, and its users are still entities.
-            Type::Union(_) | Type::Interface(_) => {
-                self.possible_objects(type_).into_iter().any(|object| {
-                    self.schema
-                        .named_field(Type::Object(object), "id".intern())
-                        .is_some()
-                })
+    fn keys_of(&self, type_: Type) -> BTreeMap<String, Vec<String>> {
+        let mut keys = BTreeMap::new();
+        for name in self.possible_types(type_) {
+            if let Some(key) = self.keys.of(&name) {
+                keys.insert(name, key.to_vec());
             }
-            _ => self.schema.named_field(type_, "id".intern()).is_some(),
         }
+        keys
     }
 
     /// The concrete types a type admits, sorted by name: an object type is
@@ -701,7 +704,7 @@ impl Lowering<'_> {
             type_: self.type_plan(&definition.type_),
             non_null: self.non_null(definition),
             semantic_non_null: self.semantic_non_null(definition),
-            has_id: self.type_has_id(target),
+            keys: self.keys_of(target),
             is_abstract: target.is_abstract_type(),
             possible_types: self.possible_types(target),
             storage_key: field_storage_key,

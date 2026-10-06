@@ -215,9 +215,10 @@ then the road to 1.0. Each release is described in full in
 ## Using it
 
 Add the package and the plugin to a target, put `baton.json` with the schema
-path (and lookups, and `onError` if the server takes it) in the target's
-directory or at the package root, and build. The plugin runs `batonc` for every Swift file that declares GraphQL
-and reports schema errors at the GraphQL text. The generated files import
+path (and the identity of types not keyed by `id`, lookups, and `onError`
+if the server takes it) in the target's directory or at the package root,
+and build. The plugin runs `batonc` for every Swift file that declares
+GraphQL and reports schema errors at the GraphQL text. The generated files import
 the runtime's interface for generated code, `@_spi(Generated) import
 Baton`; the app's own files import `Baton` and need nothing more. Tests and
 previews add `BatonTesting`, a second product of the package, for a

@@ -55,6 +55,23 @@ public final class Record: Observable {
         typeName + ":" + id
     }
 
+    /// An entity's key from the values of its key fields in order. One value
+    /// is written as it is; several are each written with their backslashes
+    /// and colons escaped, `Type:a\:b:c`, so that no two value lists meet.
+    /// What names a record by one bare value reaches single-field keys only.
+    nonisolated static func entityKey(_ typeName: String, parts: [String]) -> String {
+        if parts.count == 1 { return entityKey(typeName, parts[0]) }
+        var key = typeName
+        for part in parts {
+            key.append(":")
+            for scalar in part.unicodeScalars {
+                if scalar == ":" || scalar == "\\" { key.unicodeScalars.append("\\") }
+                key.unicodeScalars.append(scalar)
+            }
+        }
+        return key
+    }
+
     /// Where the id starts in an entity's key of the type.
     nonisolated static func idOffset(ofType typeName: String) -> Int32 {
         Int32(typeName.utf8.count + 1)

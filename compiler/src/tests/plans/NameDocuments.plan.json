@@ -27,7 +27,7 @@
           },
           "non_null": false,
           "semantic_non_null": false,
-          "has_id": false,
+          "keys": {},
           "is_abstract": false,
           "possible_types": [
             "Types"
@@ -83,7 +83,7 @@
           },
           "non_null": false,
           "semantic_non_null": false,
-          "has_id": false,
+          "keys": {},
           "is_abstract": false,
           "possible_types": [
             "Types"
@@ -151,7 +151,7 @@
           },
           "non_null": false,
           "semantic_non_null": false,
-          "has_id": false,
+          "keys": {},
           "is_abstract": false,
           "possible_types": [
             "Types"
@@ -268,7 +268,7 @@
           },
           "non_null": false,
           "semantic_non_null": false,
-          "has_id": false,
+          "keys": {},
           "is_abstract": false,
           "possible_types": [
             "Types"
@@ -403,7 +403,26 @@
           },
           "non_null": false,
           "semantic_non_null": false,
-          "has_id": true,
+          "keys": {
+            "Any": [
+              "id"
+            ],
+            "Baton": [
+              "id"
+            ],
+            "Episode": [
+              "id"
+            ],
+            "Protocol": [
+              "id"
+            ],
+            "Set": [
+              "id"
+            ],
+            "Type": [
+              "id"
+            ]
+          },
           "is_abstract": true,
           "possible_types": [
             "Any",
@@ -676,7 +695,26 @@
           },
           "non_null": false,
           "semantic_non_null": false,
-          "has_id": true,
+          "keys": {
+            "Any": [
+              "id"
+            ],
+            "Baton": [
+              "id"
+            ],
+            "Episode": [
+              "id"
+            ],
+            "Protocol": [
+              "id"
+            ],
+            "Set": [
+              "id"
+            ],
+            "Type": [
+              "id"
+            ]
+          },
           "is_abstract": true,
           "possible_types": [
             "Any",

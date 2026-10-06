@@ -29,7 +29,7 @@ cache 1.0.9.
 | Memory | A release buffer. Forty-two pages plateau near +5 MB | Every record stays. Eviction has been the most-upvoted open issue since 2017 | A GC call you schedule, plus TTL and trimming | Retained operations, release buffer of 10, a sweep from each root |
 | Lists | `@connection`. Pages merge into one list. One notification per page | A separate package. One query watcher per page, concatenated for display | `@connection` in the new cache. Pages merge | `@connection`. Pages merge. Edge directives edit the list |
 | Optimistic write | A typed response, ingested like a server payload, rebased under later commits. The cycle is 0.4 ms | `perform` takes no optimistic response. A local-cache-mutation model can write the store by hand | Opt-in, off by default. Watchers are notified and re-run | An overlay the publish queue rebases onto every server payload |
-| Identity | `Type:id` when the type has `id`, a path otherwise | `@typePolicy`, field policies, or a function | Compiler-configured keys, with a typename scope | `id` by default, the field name configurable; a path otherwise |
+| Identity | `Type:` and the values of the fields `baton.json` names, `id` unless configured; a path otherwise | `@typePolicy`, field policies, or a function | Compiler-configured keys, with a typename scope | `id` by default, the field name configurable; a path otherwise |
 | Field errors | Stored on the record. `@required`, `@catch`, `@throwOnFieldError` | Travel with the response | Stored, and a partial cache read can return them | Stored on the record. The same directives |
 | On disk | System SQLite, one binary row a record. The check reads it when memory misses. Optimistic layers stay in memory | SQLite, one JSON string per record, no memory layer in front | Binary SQLite, a memory cache chained in front, with TTL and a trim | Not the runtime's job |
 | SwiftUI / Compose | `@Fragment`, `@Query`, `@Mutation` | None. The tutorial copies the result into a view model | Experimental helpers, last released July 2024. A colocation prototype is one commit from September 2025 | React hooks |
@@ -290,9 +290,10 @@ Cons:
   replaces the row and drops fields only the image held.
 - The floor is the 26 releases of Apple's platforms. Apollo iOS still
   supports iOS 15.
-- Identity is the field named `id`, or a path for an object without one.
-  Apollo configures key fields per type. A schema whose entities are keyed
-  on something else does not normalize until that is built.
+- Identity is `id` unless `baton.json` names other fields for a type, a
+  composite key among them, as Apollo configures key fields per type; a key
+  is own scalar fields, so an entity keyed only through a link does not
+  normalize yet.
 - The compiler emits a persisted id for every operation. The default
   transport still sends the query text.
 - Garbage collection runs on the main actor. Over about 9,000 records the

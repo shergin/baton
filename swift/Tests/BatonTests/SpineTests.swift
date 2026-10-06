@@ -197,8 +197,8 @@ struct SpineTests {
         var probe = 0
         while Registry.slot(character, "probe\(probe)").index & 15 != name.index & 15 { probe += 1 }
         let sibling = Registry.slot(character, "probe\(probe)")
-        let plan = Plan(root: Selection(type: query, key: nil, fields: [
-            .linked("probe", key: .fixed(Registry.slot(query, "probe")), plural: false, selection: Selection(type: character, key: "id", fields: [
+        let plan = Plan(root: Selection(type: query, key: [], fields: [
+            .linked("probe", key: .fixed(Registry.slot(query, "probe")), plural: false, selection: Selection(type: character, key: ["id"], fields: [
                 .scalar("id", key: .fixed(Registry.slot(character, "id")), kind: .string, list: false),
                 .scalar("probe\(probe)", key: .fixed(sibling), kind: .string, list: false),
             ])),
@@ -226,8 +226,8 @@ struct SpineTests {
         func field(_ type: TypeID, _ name: String) -> PlanField {
             .scalar(name, key: .fixed(Registry.slot(type, name)), kind: .string, list: false)
         }
-        let plan = Plan(root: Selection(type: query, key: nil, fields: [
-            .linked("shape", key: .fixed(Registry.slot(query, "shape_" + suffix)), plural: false, selection: Selection(type: shape, key: "id", abstract: true, memberships: [.init("__isRounded", rounded)], variants: [
+        let plan = Plan(root: Selection(type: query, key: [], fields: [
+            .linked("shape", key: .fixed(Registry.slot(query, "shape_" + suffix)), plural: false, selection: Selection(type: shape, key: ["id"], abstract: true, memberships: [.init("__isRounded", rounded)], variants: [
                 .init(types: [circle], fields: [field(circle, "__typename"), field(circle, "id"), field(circle, "label"), field(circle, "radius")]),
                 .init(types: nil, condition: rounded, fields: [field(shape, "__typename"), field(shape, "id"), field(shape, "label"), field(shape, "radius")]),
                 .init(types: nil, fields: [field(shape, "__typename"), field(shape, "id"), field(shape, "label")]),
@@ -269,8 +269,8 @@ struct SpineTests {
         #expect(store.storageKey(of: pages[57]) == #"items(after:"c57")"#, "the store names a slot it numbered")
 
         let link = Registry.slot(query, "paged" + paged.name)
-        let plan = Plan(root: Selection(type: query, key: nil, fields: [
-            .linked("paged", key: .fixed(link), plural: false, selection: Selection(type: paged, key: "id", fields: [
+        let plan = Plan(root: Selection(type: query, key: [], fields: [
+            .linked("paged", key: .fixed(link), plural: false, selection: Selection(type: paged, key: ["id"], fields: [
                 .scalar("id", key: .fixed(id), kind: .string, list: false),
                 .scalar("late", key: .fixed(late), kind: .string, list: false),
                 .scalar("items", key: .dynamic(items), kind: .string, list: false),
@@ -311,8 +311,8 @@ struct SpineTests {
         let keyed = Registry.type("Keyed_" + suffix)
         let query = Registry.type("Query")
         let fieldName = "keyed" + suffix
-        func plan(_ key: String?) -> Plan {
-            Plan(root: Selection(type: query, key: nil, fields: [
+        func plan(_ key: [String]) -> Plan {
+            Plan(root: Selection(type: query, key: [], fields: [
                 .linked(fieldName, key: .fixed(Registry.slot(query, fieldName)), plural: false, selection: Selection(type: keyed, key: key, fields: [
                     .scalar("id", key: .fixed(Registry.slot(keyed, "id")), kind: .string, list: false),
                     .scalar("name", key: .fixed(Registry.slot(keyed, "name")), kind: .string, list: false),
@@ -322,13 +322,13 @@ struct SpineTests {
         let response = Data(#"{"data":{"\#(fieldName)":{"id":"1","name":"Rick"}}}"#.utf8)
 
         let unkeyed = Store()
-        unkeyed.commit(try Ingest.normalize(response, plan: plan(nil).resolve(.none, in: unkeyed.keys)))
+        unkeyed.commit(try Ingest.normalize(response, plan: plan([]).resolve(.none, in: unkeyed.keys)))
         let byPath = try #require(unkeyed.existing(Store.rootKey + ":" + fieldName), "the record is keyed by its path")
         #expect(byPath.read(Registry.slot(keyed, "id")) == .string("1"), "the id is a field like any other")
         #expect(unkeyed.existing(keyed.name + ":1") == nil, "no field keys the record but the one the plan names")
 
         let identified = Store()
-        identified.commit(try Ingest.normalize(response, plan: plan("id").resolve(.none, in: identified.keys)))
+        identified.commit(try Ingest.normalize(response, plan: plan(["id"]).resolve(.none, in: identified.keys)))
         let byID = try #require(identified.existing(keyed.name + ":1"), "the record is keyed by its id")
         #expect(byID.read(Registry.slot(keyed, "name")) == .string("Rick"))
         #expect(identified.existing(Store.rootKey + ":" + fieldName) == nil)
@@ -343,7 +343,7 @@ struct SpineTests {
         let store = Store()
         // Numbered in this order, written in the reverse one.
         let keys = (0..<10).map { Owner(variables: variables($0), store: store).slot(key) }
-        let plan = Plan(root: Selection(type: query, key: nil, fields: [
+        let plan = Plan(root: Selection(type: query, key: [], fields: [
             .scalar("field", key: .dynamic(key), kind: .string, list: false),
         ]))
         func commit(_ number: Int, _ value: String, into store: Store) throws {
@@ -453,10 +453,10 @@ struct SpineTests {
         // reads it. Its root field is its own, so that no other test meets
         // the key as a constant.
         let query = Registry.type("Query")
-        let plan = Plan(root: Selection(type: query, key: nil, fields: [
-            .linked("character", key: .fixed(Registry.slot(query, "adopting_" + UUID().uuidString.replacingOccurrences(of: "-", with: ""))), plural: false, selection: Selection(type: character, key: "id", fields: [
+        let plan = Plan(root: Selection(type: query, key: [], fields: [
+            .linked("character", key: .fixed(Registry.slot(query, "adopting_" + UUID().uuidString.replacingOccurrences(of: "-", with: ""))), plural: false, selection: Selection(type: character, key: ["id"], fields: [
                 .scalar("id", key: .fixed(Registry.slot(character, "id")), kind: .string, list: false),
-                .linked("notes", key: .fixed(constant), plural: false, selection: Selection(type: Registry.type("NoteConnection"), key: nil, fields: [
+                .linked("notes", key: .fixed(constant), plural: false, selection: Selection(type: Registry.type("NoteConnection"), key: [], fields: [
                     .scalar("totalCount", key: .fixed(Registry.slot(Registry.type("NoteConnection"), "totalCount")), kind: .int, list: false),
                 ])),
             ])),
@@ -513,8 +513,8 @@ struct SpineTests {
         let constant = Registry.slot(row, "labels(first:3)")
         let labels = DynamicKey(row, "labels", [KeyArgument("first", [.variable("count")])])
         func plan(_ key: StorageKey) -> Plan {
-            Plan(root: Selection(type: query, key: nil, fields: [
-                .linked("labeled", key: .fixed(link), plural: false, selection: Selection(type: row, key: "id", fields: [
+            Plan(root: Selection(type: query, key: [], fields: [
+                .linked("labeled", key: .fixed(link), plural: false, selection: Selection(type: row, key: ["id"], fields: [
                     id,
                     .scalar("labels", key: key, kind: .string, list: false),
                 ])),
@@ -565,8 +565,8 @@ struct SpineTests {
         let concrete = Registry.type("TaggedThing_" + suffix)
         let query = Registry.type("Query")
         let tag = DynamicKey(abstract, "tag", [KeyArgument("size", [.variable("size")])])
-        let plan = Plan(root: Selection(type: query, key: nil, fields: [
-            .linked("tagged", key: .fixed(Registry.slot(query, "tagged" + abstract.name)), plural: false, selection: Selection(type: abstract, key: "id", abstract: true, fields: [
+        let plan = Plan(root: Selection(type: query, key: [], fields: [
+            .linked("tagged", key: .fixed(Registry.slot(query, "tagged" + abstract.name)), plural: false, selection: Selection(type: abstract, key: ["id"], abstract: true, fields: [
                 .scalar("id", key: .fixed(Registry.slot(abstract, "id")), kind: .string, list: false),
                 .scalar("tag", key: .dynamic(tag), kind: .string, list: false),
             ])),

@@ -467,11 +467,11 @@ mutation TestAddNote(
         hasher.combine(self.connections)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, key: nil, abstract: false, fields: [
-            .linked("addNote", key: .fixed(Slots.Mutation.addNote), plural: false, selection: Baton.Selection(type: Types.AddNotePayload, key: nil, abstract: false, fields: [
-                .linked("noteEdge", key: .fixed(Slots.AddNotePayload.noteEdge), plural: false, edit: Baton.Edit(kind: .appendEdge, connections: .variable("connections")), selection: Baton.Selection(type: Types.NoteEdge, key: nil, abstract: false, fields: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, key: [], abstract: false, fields: [
+            .linked("addNote", key: .fixed(Slots.Mutation.addNote), plural: false, selection: Baton.Selection(type: Types.AddNotePayload, key: [], abstract: false, fields: [
+                .linked("noteEdge", key: .fixed(Slots.AddNotePayload.noteEdge), plural: false, edit: Baton.Edit(kind: .appendEdge, connections: .variable("connections")), selection: Baton.Selection(type: Types.NoteEdge, key: [], abstract: false, fields: [
                     .scalar("cursor", key: .fixed(Slots.NoteEdge.cursor), kind: .string, list: false),
-                    .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
+                    .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
                         .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                         .scalar("text", key: .fixed(Slots.Note.text), kind: .string, list: false),
                     ])),
@@ -623,11 +623,11 @@ mutation TestAddNoteFirst(
         hasher.combine(self.connections)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, key: nil, abstract: false, fields: [
-            .linked("addNote", key: .fixed(Slots.Mutation.addNote), plural: false, selection: Baton.Selection(type: Types.AddNotePayload, key: nil, abstract: false, fields: [
-                .linked("noteEdge", key: .fixed(Slots.AddNotePayload.noteEdge), plural: false, edit: Baton.Edit(kind: .prependEdge, connections: .variable("connections")), selection: Baton.Selection(type: Types.NoteEdge, key: nil, abstract: false, fields: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, key: [], abstract: false, fields: [
+            .linked("addNote", key: .fixed(Slots.Mutation.addNote), plural: false, selection: Baton.Selection(type: Types.AddNotePayload, key: [], abstract: false, fields: [
+                .linked("noteEdge", key: .fixed(Slots.AddNotePayload.noteEdge), plural: false, edit: Baton.Edit(kind: .prependEdge, connections: .variable("connections")), selection: Baton.Selection(type: Types.NoteEdge, key: [], abstract: false, fields: [
                     .scalar("cursor", key: .fixed(Slots.NoteEdge.cursor), kind: .string, list: false),
-                    .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
+                    .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
                         .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                         .scalar("text", key: .fixed(Slots.Note.text), kind: .string, list: false),
                     ])),
@@ -776,9 +776,9 @@ mutation TestAddNoteNode(
         hasher.combine(self.connections)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, key: nil, abstract: false, fields: [
-            .linked("addNote", key: .fixed(Slots.Mutation.addNote), plural: false, selection: Baton.Selection(type: Types.AddNotePayload, key: nil, abstract: false, fields: [
-                .linked("note", key: .fixed(Slots.AddNotePayload.note), plural: false, edit: Baton.Edit(kind: .appendNode, connections: .variable("connections"), edgeType: Types.NoteEdge), selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, key: [], abstract: false, fields: [
+            .linked("addNote", key: .fixed(Slots.Mutation.addNote), plural: false, selection: Baton.Selection(type: Types.AddNotePayload, key: [], abstract: false, fields: [
+                .linked("note", key: .fixed(Slots.AddNotePayload.note), plural: false, edit: Baton.Edit(kind: .appendNode, connections: .variable("connections"), edgeType: Types.NoteEdge), selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                     .scalar("text", key: .fixed(Slots.Note.text), kind: .string, list: false),
                 ])),
@@ -902,9 +902,9 @@ mutation TestAddNoteNodeFirst(
         hasher.combine(self.connections)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, key: nil, abstract: false, fields: [
-            .linked("addNote", key: .fixed(Slots.Mutation.addNote), plural: false, selection: Baton.Selection(type: Types.AddNotePayload, key: nil, abstract: false, fields: [
-                .linked("note", key: .fixed(Slots.AddNotePayload.note), plural: false, edit: Baton.Edit(kind: .prependNode, connections: .variable("connections"), edgeType: Types.NoteEdge), selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, key: [], abstract: false, fields: [
+            .linked("addNote", key: .fixed(Slots.Mutation.addNote), plural: false, selection: Baton.Selection(type: Types.AddNotePayload, key: [], abstract: false, fields: [
+                .linked("note", key: .fixed(Slots.AddNotePayload.note), plural: false, edit: Baton.Edit(kind: .prependNode, connections: .variable("connections"), edgeType: Types.NoteEdge), selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                     .scalar("text", key: .fixed(Slots.Note.text), kind: .string, list: false),
                 ])),
@@ -1028,9 +1028,9 @@ mutation TestAddNoteNodeOfAnotherType(
         hasher.combine(self.connections)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, key: nil, abstract: false, fields: [
-            .linked("addNote", key: .fixed(Slots.Mutation.addNote), plural: false, selection: Baton.Selection(type: Types.AddNotePayload, key: nil, abstract: false, fields: [
-                .linked("note", key: .fixed(Slots.AddNotePayload.note), plural: false, edit: Baton.Edit(kind: .appendNode, connections: .variable("connections"), edgeType: Types.PageInfo), selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, key: [], abstract: false, fields: [
+            .linked("addNote", key: .fixed(Slots.Mutation.addNote), plural: false, selection: Baton.Selection(type: Types.AddNotePayload, key: [], abstract: false, fields: [
+                .linked("note", key: .fixed(Slots.AddNotePayload.note), plural: false, edit: Baton.Edit(kind: .appendNode, connections: .variable("connections"), edgeType: Types.PageInfo), selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                     .scalar("text", key: .fixed(Slots.Note.text), kind: .string, list: false),
                 ])),
@@ -1152,8 +1152,8 @@ fragment TestRow_character on Character {
         hasher.combine(self.id)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
-            .linked("character", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, key: "id", abstract: false, fields: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+            .linked("character", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
                 .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
                 .scalar("status", key: .fixed(Slots.Character.status), kind: .string, list: false),
                 .scalar("image", key: .fixed(Slots.Character.image), kind: .string, list: false),
@@ -1241,24 +1241,24 @@ fragment TestAuthorNotes_note_1G22uz on Note {
         hasher.combine(self.id)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
-            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, key: "id", abstract: true, variants: [
-                .init(types: [Types.Note], fields: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, key: ["id"], abstract: true, variants: [
+                .init(types: [Types.Note], key: ["id"], fields: [
                     .scalar("__typename", key: .fixed(Slots.Note.__typename), kind: .string, list: false),
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                    .linked("author", key: .fixed(Slots.Note.author), plural: false, selection: Baton.Selection(type: Types.Character, key: "id", abstract: false, fields: [
+                    .linked("author", key: .fixed(Slots.Note.author), plural: false, selection: Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
                         .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
                         .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                        .linked("notes", key: .dynamic(Slots.Character.notes_a9400e), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character.__TestAuthorNotes_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo), after: .variable("cursor")), selection: Baton.Selection(type: Types.NoteConnection, key: nil, abstract: false, fields: [
-                            .linked("edges", key: .fixed(Slots.NoteConnection.edges), plural: true, selection: Baton.Selection(type: Types.NoteEdge, key: nil, abstract: false, fields: [
-                                .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
+                        .linked("notes", key: .dynamic(Slots.Character.notes_a9400e), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character.__TestAuthorNotes_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo), after: .variable("cursor")), selection: Baton.Selection(type: Types.NoteConnection, key: [], abstract: false, fields: [
+                            .linked("edges", key: .fixed(Slots.NoteConnection.edges), plural: true, selection: Baton.Selection(type: Types.NoteEdge, key: [], abstract: false, fields: [
+                                .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
                                     .scalar("__typename", key: .fixed(Slots.Note.__typename), kind: .string, list: false),
                                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                                     .scalar("text", key: .fixed(Slots.Note.text), kind: .string, list: false),
                                 ])),
                                 .scalar("cursor", key: .fixed(Slots.NoteEdge.cursor), kind: .string, list: false),
                             ])),
-                            .linked("pageInfo", key: .fixed(Slots.NoteConnection.pageInfo), plural: false, selection: Baton.Selection(type: Types.PageInfo, key: nil, abstract: false, fields: [
+                            .linked("pageInfo", key: .fixed(Slots.NoteConnection.pageInfo), plural: false, selection: Baton.Selection(type: Types.PageInfo, key: [], abstract: false, fields: [
                                 .scalar("endCursor", key: .fixed(Slots.PageInfo.endCursor), kind: .string, list: false),
                                 .scalar("hasNextPage", key: .fixed(Slots.PageInfo.hasNextPage), kind: .bool, list: false),
                             ])),
@@ -1348,24 +1348,24 @@ fragment TestAuthorNotes_note on Note {
         hasher.combine(self.id)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
-            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, key: "id", abstract: true, variants: [
-                .init(types: [Types.Note], fields: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, key: ["id"], abstract: true, variants: [
+                .init(types: [Types.Note], key: ["id"], fields: [
                     .scalar("__typename", key: .fixed(Slots.Note.__typename), kind: .string, list: false),
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                    .linked("author", key: .fixed(Slots.Note.author), plural: false, selection: Baton.Selection(type: Types.Character, key: "id", abstract: false, fields: [
+                    .linked("author", key: .fixed(Slots.Note.author), plural: false, selection: Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
                         .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
                         .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                        .linked("notes", key: .fixed(Slots.Character.notes_29a6d8), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character.__TestAuthorNotes_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo)), selection: Baton.Selection(type: Types.NoteConnection, key: nil, abstract: false, fields: [
-                            .linked("edges", key: .fixed(Slots.NoteConnection.edges), plural: true, selection: Baton.Selection(type: Types.NoteEdge, key: nil, abstract: false, fields: [
-                                .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
+                        .linked("notes", key: .fixed(Slots.Character.notes_29a6d8), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character.__TestAuthorNotes_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo)), selection: Baton.Selection(type: Types.NoteConnection, key: [], abstract: false, fields: [
+                            .linked("edges", key: .fixed(Slots.NoteConnection.edges), plural: true, selection: Baton.Selection(type: Types.NoteEdge, key: [], abstract: false, fields: [
+                                .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
                                     .scalar("__typename", key: .fixed(Slots.Note.__typename), kind: .string, list: false),
                                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                                     .scalar("text", key: .fixed(Slots.Note.text), kind: .string, list: false),
                                 ])),
                                 .scalar("cursor", key: .fixed(Slots.NoteEdge.cursor), kind: .string, list: false),
                             ])),
-                            .linked("pageInfo", key: .fixed(Slots.NoteConnection.pageInfo), plural: false, selection: Baton.Selection(type: Types.PageInfo, key: nil, abstract: false, fields: [
+                            .linked("pageInfo", key: .fixed(Slots.NoteConnection.pageInfo), plural: false, selection: Baton.Selection(type: Types.PageInfo, key: [], abstract: false, fields: [
                                 .scalar("endCursor", key: .fixed(Slots.PageInfo.endCursor), kind: .string, list: false),
                                 .scalar("hasNextPage", key: .fixed(Slots.PageInfo.hasNextPage), kind: .bool, list: false),
                             ])),
@@ -1464,21 +1464,21 @@ fragment TestNoteText_note on Note {
         hasher.combine(self.id)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
-            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, key: "id", abstract: true, variants: [
-                .init(types: [Types.Character], fields: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, key: ["id"], abstract: true, variants: [
+                .init(types: [Types.Character], key: ["id"], fields: [
                     .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
                     .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .linked("notes", key: .dynamic(Slots.Character.notes_a9400e), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character.__TestDeferredNotes_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo), after: .variable("cursor")), selection: Baton.Selection(type: Types.NoteConnection, key: nil, abstract: false, fields: [
-                        .linked("edges", key: .fixed(Slots.NoteConnection.edges), plural: true, selection: Baton.Selection(type: Types.NoteEdge, key: nil, abstract: false, fields: [
-                            .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
+                    .linked("notes", key: .dynamic(Slots.Character.notes_a9400e), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character.__TestDeferredNotes_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo), after: .variable("cursor")), selection: Baton.Selection(type: Types.NoteConnection, key: [], abstract: false, fields: [
+                        .linked("edges", key: .fixed(Slots.NoteConnection.edges), plural: true, selection: Baton.Selection(type: Types.NoteEdge, key: [], abstract: false, fields: [
+                            .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
                                 .scalar("__typename", key: .fixed(Slots.Note.__typename), kind: .string, list: false),
                                 .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                                 .scalar("text", key: .fixed(Slots.Note.text), kind: .string, list: false, deferred: "TestDeferredNotes_character$defer$noteText"),
                             ])),
                             .scalar("cursor", key: .fixed(Slots.NoteEdge.cursor), kind: .string, list: false),
                         ])),
-                        .linked("pageInfo", key: .fixed(Slots.NoteConnection.pageInfo), plural: false, selection: Baton.Selection(type: Types.PageInfo, key: nil, abstract: false, fields: [
+                        .linked("pageInfo", key: .fixed(Slots.NoteConnection.pageInfo), plural: false, selection: Baton.Selection(type: Types.PageInfo, key: [], abstract: false, fields: [
                             .scalar("endCursor", key: .fixed(Slots.PageInfo.endCursor), kind: .string, list: false),
                             .scalar("hasNextPage", key: .fixed(Slots.PageInfo.hasNextPage), kind: .bool, list: false),
                         ])),
@@ -1542,8 +1542,8 @@ mutation TestDeleteNote(
         hasher.combine(self.id)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, key: nil, abstract: false, fields: [
-            .linked("removeNote", key: .fixed(Slots.Mutation.removeNote), plural: false, selection: Baton.Selection(type: Types.RemoveNotePayload, key: nil, abstract: false, fields: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, key: [], abstract: false, fields: [
+            .linked("removeNote", key: .fixed(Slots.Mutation.removeNote), plural: false, selection: Baton.Selection(type: Types.RemoveNotePayload, key: [], abstract: false, fields: [
                 .scalar("removedNoteId", key: .fixed(Slots.RemoveNotePayload.removedNoteId), kind: .string, list: false, edit: Baton.Edit(kind: .deleteRecord)),
             ])),
         ]))
@@ -1664,25 +1664,25 @@ fragment TestHiddenNotes_character_1G22uz on Character {
         hasher.combine(self.id)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
-            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, key: "id", abstract: true, variants: [
-                .init(types: [Types.Character], fields: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, key: ["id"], abstract: true, variants: [
+                .init(types: [Types.Character], key: ["id"], fields: [
                     .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
                     .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
                     .scalar("TestHiddenNotes_character", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("TestHiddenNotesPaginationQuery", key: .fixed(Slots.Character.status), kind: .string, list: false),
-                    .linked("notes", key: .dynamic(Slots.Character.notes_a9400e), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character.__TestHiddenNotes_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo), after: .variable("cursor")), selection: Baton.Selection(type: Types.NoteConnection, key: nil, abstract: false, fields: [
+                    .linked("notes", key: .dynamic(Slots.Character.notes_a9400e), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character.__TestHiddenNotes_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo), after: .variable("cursor")), selection: Baton.Selection(type: Types.NoteConnection, key: [], abstract: false, fields: [
                         .scalar("TestHiddenNotes_character", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
                         .scalar("TestHiddenNotesPaginationQuery", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .linked("edges", key: .fixed(Slots.NoteConnection.edges), plural: true, selection: Baton.Selection(type: Types.NoteEdge, key: nil, abstract: false, fields: [
-                            .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
+                        .linked("edges", key: .fixed(Slots.NoteConnection.edges), plural: true, selection: Baton.Selection(type: Types.NoteEdge, key: [], abstract: false, fields: [
+                            .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
                                 .scalar("__typename", key: .fixed(Slots.Note.__typename), kind: .string, list: false),
                                 .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                                 .scalar("text", key: .fixed(Slots.Note.text), kind: .string, list: false),
                             ])),
                             .scalar("cursor", key: .fixed(Slots.NoteEdge.cursor), kind: .string, list: false),
                         ])),
-                        .linked("pageInfo", key: .fixed(Slots.NoteConnection.pageInfo), plural: false, selection: Baton.Selection(type: Types.PageInfo, key: nil, abstract: false, fields: [
+                        .linked("pageInfo", key: .fixed(Slots.NoteConnection.pageInfo), plural: false, selection: Baton.Selection(type: Types.PageInfo, key: [], abstract: false, fields: [
                             .scalar("endCursor", key: .fixed(Slots.PageInfo.endCursor), kind: .string, list: false),
                             .scalar("hasNextPage", key: .fixed(Slots.PageInfo.hasNextPage), kind: .bool, list: false),
                         ])),
@@ -1770,22 +1770,22 @@ fragment TestHiddenNotes_character on Character {
         hasher.combine(self.id)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
-            .linked("character", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, key: "id", abstract: false, fields: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+            .linked("character", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
                 .scalar("TestHiddenNotes_character", key: .fixed(Slots.Character.name), kind: .string, list: false),
                 .scalar("TestHiddenNotesPaginationQuery", key: .fixed(Slots.Character.status), kind: .string, list: false),
-                .linked("notes", key: .fixed(Slots.Character.notes_29a6d8), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character.__TestHiddenNotes_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo)), selection: Baton.Selection(type: Types.NoteConnection, key: nil, abstract: false, fields: [
+                .linked("notes", key: .fixed(Slots.Character.notes_29a6d8), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character.__TestHiddenNotes_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo)), selection: Baton.Selection(type: Types.NoteConnection, key: [], abstract: false, fields: [
                     .scalar("TestHiddenNotes_character", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
                     .scalar("TestHiddenNotesPaginationQuery", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                    .linked("edges", key: .fixed(Slots.NoteConnection.edges), plural: true, selection: Baton.Selection(type: Types.NoteEdge, key: nil, abstract: false, fields: [
-                        .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
+                    .linked("edges", key: .fixed(Slots.NoteConnection.edges), plural: true, selection: Baton.Selection(type: Types.NoteEdge, key: [], abstract: false, fields: [
+                        .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
                             .scalar("__typename", key: .fixed(Slots.Note.__typename), kind: .string, list: false),
                             .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                             .scalar("text", key: .fixed(Slots.Note.text), kind: .string, list: false),
                         ])),
                         .scalar("cursor", key: .fixed(Slots.NoteEdge.cursor), kind: .string, list: false),
                     ])),
-                    .linked("pageInfo", key: .fixed(Slots.NoteConnection.pageInfo), plural: false, selection: Baton.Selection(type: Types.PageInfo, key: nil, abstract: false, fields: [
+                    .linked("pageInfo", key: .fixed(Slots.NoteConnection.pageInfo), plural: false, selection: Baton.Selection(type: Types.PageInfo, key: [], abstract: false, fields: [
                         .scalar("endCursor", key: .fixed(Slots.PageInfo.endCursor), kind: .string, list: false),
                         .scalar("hasNextPage", key: .fixed(Slots.PageInfo.hasNextPage), kind: .bool, list: false),
                     ])),
@@ -1875,23 +1875,23 @@ fragment TestHiddenRecentNotes_character_1G22uz on Character {
         hasher.combine(self.id)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
-            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, key: "id", abstract: true, variants: [
-                .init(types: [Types.Character], fields: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, key: ["id"], abstract: true, variants: [
+                .init(types: [Types.Character], key: ["id"], fields: [
                     .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
                     .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .linked("notes", key: .dynamic(Slots.Character.notes_d859b7), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character.__TestHiddenRecentNotes_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo), before: .variable("cursor")), selection: Baton.Selection(type: Types.NoteConnection, key: nil, abstract: false, fields: [
+                    .linked("notes", key: .dynamic(Slots.Character.notes_d859b7), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character.__TestHiddenRecentNotes_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo), before: .variable("cursor")), selection: Baton.Selection(type: Types.NoteConnection, key: [], abstract: false, fields: [
                         .scalar("TestHiddenRecentNotes_character", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
                         .scalar("TestHiddenRecentNotesPaginationQuery", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .linked("edges", key: .fixed(Slots.NoteConnection.edges), plural: true, selection: Baton.Selection(type: Types.NoteEdge, key: nil, abstract: false, fields: [
-                            .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
+                        .linked("edges", key: .fixed(Slots.NoteConnection.edges), plural: true, selection: Baton.Selection(type: Types.NoteEdge, key: [], abstract: false, fields: [
+                            .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
                                 .scalar("__typename", key: .fixed(Slots.Note.__typename), kind: .string, list: false),
                                 .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                                 .scalar("text", key: .fixed(Slots.Note.text), kind: .string, list: false),
                             ])),
                             .scalar("cursor", key: .fixed(Slots.NoteEdge.cursor), kind: .string, list: false),
                         ])),
-                        .linked("pageInfo", key: .fixed(Slots.NoteConnection.pageInfo), plural: false, selection: Baton.Selection(type: Types.PageInfo, key: nil, abstract: false, fields: [
+                        .linked("pageInfo", key: .fixed(Slots.NoteConnection.pageInfo), plural: false, selection: Baton.Selection(type: Types.PageInfo, key: [], abstract: false, fields: [
                             .scalar("hasPreviousPage", key: .fixed(Slots.PageInfo.hasPreviousPage), kind: .bool, list: false),
                             .scalar("startCursor", key: .fixed(Slots.PageInfo.startCursor), kind: .string, list: false),
                         ])),
@@ -1977,20 +1977,20 @@ fragment TestHiddenRecentNotes_character on Character {
         hasher.combine(self.id)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
-            .linked("character", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, key: "id", abstract: false, fields: [
-                .linked("notes", key: .fixed(Slots.Character.notes_01e6d2), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character.__TestHiddenRecentNotes_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo)), selection: Baton.Selection(type: Types.NoteConnection, key: nil, abstract: false, fields: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+            .linked("character", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
+                .linked("notes", key: .fixed(Slots.Character.notes_01e6d2), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character.__TestHiddenRecentNotes_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo)), selection: Baton.Selection(type: Types.NoteConnection, key: [], abstract: false, fields: [
                     .scalar("TestHiddenRecentNotes_character", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
                     .scalar("TestHiddenRecentNotesPaginationQuery", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                    .linked("edges", key: .fixed(Slots.NoteConnection.edges), plural: true, selection: Baton.Selection(type: Types.NoteEdge, key: nil, abstract: false, fields: [
-                        .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
+                    .linked("edges", key: .fixed(Slots.NoteConnection.edges), plural: true, selection: Baton.Selection(type: Types.NoteEdge, key: [], abstract: false, fields: [
+                        .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
                             .scalar("__typename", key: .fixed(Slots.Note.__typename), kind: .string, list: false),
                             .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                             .scalar("text", key: .fixed(Slots.Note.text), kind: .string, list: false),
                         ])),
                         .scalar("cursor", key: .fixed(Slots.NoteEdge.cursor), kind: .string, list: false),
                     ])),
-                    .linked("pageInfo", key: .fixed(Slots.NoteConnection.pageInfo), plural: false, selection: Baton.Selection(type: Types.PageInfo, key: nil, abstract: false, fields: [
+                    .linked("pageInfo", key: .fixed(Slots.NoteConnection.pageInfo), plural: false, selection: Baton.Selection(type: Types.PageInfo, key: [], abstract: false, fields: [
                         .scalar("hasPreviousPage", key: .fixed(Slots.PageInfo.hasPreviousPage), kind: .bool, list: false),
                         .scalar("startCursor", key: .fixed(Slots.PageInfo.startCursor), kind: .string, list: false),
                     ])),
@@ -2080,23 +2080,23 @@ fragment TestNotes_character_1G22uz on Character {
         hasher.combine(self.id)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
-            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, key: "id", abstract: true, variants: [
-                .init(types: [Types.Character], fields: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, key: ["id"], abstract: true, variants: [
+                .init(types: [Types.Character], key: ["id"], fields: [
                     .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
                     .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
                     .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .linked("notes", key: .dynamic(Slots.Character.notes_a9400e), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character.__TestNotes_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo), after: .variable("cursor")), selection: Baton.Selection(type: Types.NoteConnection, key: nil, abstract: false, fields: [
+                    .linked("notes", key: .dynamic(Slots.Character.notes_a9400e), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character.__TestNotes_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo), after: .variable("cursor")), selection: Baton.Selection(type: Types.NoteConnection, key: [], abstract: false, fields: [
                         .scalar("totalCount", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .linked("edges", key: .fixed(Slots.NoteConnection.edges), plural: true, selection: Baton.Selection(type: Types.NoteEdge, key: nil, abstract: false, fields: [
-                            .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
+                        .linked("edges", key: .fixed(Slots.NoteConnection.edges), plural: true, selection: Baton.Selection(type: Types.NoteEdge, key: [], abstract: false, fields: [
+                            .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
                                 .scalar("__typename", key: .fixed(Slots.Note.__typename), kind: .string, list: false),
                                 .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                                 .scalar("text", key: .fixed(Slots.Note.text), kind: .string, list: false),
                             ])),
                             .scalar("cursor", key: .fixed(Slots.NoteEdge.cursor), kind: .string, list: false),
                         ])),
-                        .linked("pageInfo", key: .fixed(Slots.NoteConnection.pageInfo), plural: false, selection: Baton.Selection(type: Types.PageInfo, key: nil, abstract: false, fields: [
+                        .linked("pageInfo", key: .fixed(Slots.NoteConnection.pageInfo), plural: false, selection: Baton.Selection(type: Types.PageInfo, key: [], abstract: false, fields: [
                             .scalar("endCursor", key: .fixed(Slots.PageInfo.endCursor), kind: .string, list: false),
                             .scalar("hasNextPage", key: .fixed(Slots.PageInfo.hasNextPage), kind: .bool, list: false),
                         ])),
@@ -2182,20 +2182,20 @@ fragment TestNotes_character on Character {
         hasher.combine(self.id)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
-            .linked("character", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, key: "id", abstract: false, fields: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+            .linked("character", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
                 .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .linked("notes", key: .fixed(Slots.Character.notes_29a6d8), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character.__TestNotes_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo)), selection: Baton.Selection(type: Types.NoteConnection, key: nil, abstract: false, fields: [
+                .linked("notes", key: .fixed(Slots.Character.notes_29a6d8), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character.__TestNotes_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo)), selection: Baton.Selection(type: Types.NoteConnection, key: [], abstract: false, fields: [
                     .scalar("totalCount", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                    .linked("edges", key: .fixed(Slots.NoteConnection.edges), plural: true, selection: Baton.Selection(type: Types.NoteEdge, key: nil, abstract: false, fields: [
-                        .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
+                    .linked("edges", key: .fixed(Slots.NoteConnection.edges), plural: true, selection: Baton.Selection(type: Types.NoteEdge, key: [], abstract: false, fields: [
+                        .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
                             .scalar("__typename", key: .fixed(Slots.Note.__typename), kind: .string, list: false),
                             .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                             .scalar("text", key: .fixed(Slots.Note.text), kind: .string, list: false),
                         ])),
                         .scalar("cursor", key: .fixed(Slots.NoteEdge.cursor), kind: .string, list: false),
                     ])),
-                    .linked("pageInfo", key: .fixed(Slots.NoteConnection.pageInfo), plural: false, selection: Baton.Selection(type: Types.PageInfo, key: nil, abstract: false, fields: [
+                    .linked("pageInfo", key: .fixed(Slots.NoteConnection.pageInfo), plural: false, selection: Baton.Selection(type: Types.PageInfo, key: [], abstract: false, fields: [
                         .scalar("endCursor", key: .fixed(Slots.PageInfo.endCursor), kind: .string, list: false),
                         .scalar("hasNextPage", key: .fixed(Slots.PageInfo.hasNextPage), kind: .bool, list: false),
                     ])),
@@ -2280,20 +2280,20 @@ fragment TestNotes_character_2H9PL on Character {
         hasher.combine(self.size)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
-            .linked("character", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, key: "id", abstract: false, fields: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+            .linked("character", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
                 .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .linked("notes", key: .dynamic(Slots.Character.notes_73b9e5), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character.__TestNotes_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo)), selection: Baton.Selection(type: Types.NoteConnection, key: nil, abstract: false, fields: [
+                .linked("notes", key: .dynamic(Slots.Character.notes_73b9e5), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character.__TestNotes_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo)), selection: Baton.Selection(type: Types.NoteConnection, key: [], abstract: false, fields: [
                     .scalar("totalCount", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                    .linked("edges", key: .fixed(Slots.NoteConnection.edges), plural: true, selection: Baton.Selection(type: Types.NoteEdge, key: nil, abstract: false, fields: [
-                        .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
+                    .linked("edges", key: .fixed(Slots.NoteConnection.edges), plural: true, selection: Baton.Selection(type: Types.NoteEdge, key: [], abstract: false, fields: [
+                        .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
                             .scalar("__typename", key: .fixed(Slots.Note.__typename), kind: .string, list: false),
                             .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                             .scalar("text", key: .fixed(Slots.Note.text), kind: .string, list: false),
                         ])),
                         .scalar("cursor", key: .fixed(Slots.NoteEdge.cursor), kind: .string, list: false),
                     ])),
-                    .linked("pageInfo", key: .fixed(Slots.NoteConnection.pageInfo), plural: false, selection: Baton.Selection(type: Types.PageInfo, key: nil, abstract: false, fields: [
+                    .linked("pageInfo", key: .fixed(Slots.NoteConnection.pageInfo), plural: false, selection: Baton.Selection(type: Types.PageInfo, key: [], abstract: false, fields: [
                         .scalar("endCursor", key: .fixed(Slots.PageInfo.endCursor), kind: .string, list: false),
                         .scalar("hasNextPage", key: .fixed(Slots.PageInfo.hasNextPage), kind: .bool, list: false),
                     ])),
@@ -2381,21 +2381,21 @@ fragment TestRecentNotes_character_1G22uz on Character {
         hasher.combine(self.id)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
-            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, key: "id", abstract: true, variants: [
-                .init(types: [Types.Character], fields: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, key: ["id"], abstract: true, variants: [
+                .init(types: [Types.Character], key: ["id"], fields: [
                     .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
                     .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .linked("notes", key: .dynamic(Slots.Character.notes_d859b7), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character.__TestRecentNotes_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo), before: .variable("cursor")), selection: Baton.Selection(type: Types.NoteConnection, key: nil, abstract: false, fields: [
-                        .linked("edges", key: .fixed(Slots.NoteConnection.edges), plural: true, selection: Baton.Selection(type: Types.NoteEdge, key: nil, abstract: false, fields: [
-                            .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
+                    .linked("notes", key: .dynamic(Slots.Character.notes_d859b7), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character.__TestRecentNotes_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo), before: .variable("cursor")), selection: Baton.Selection(type: Types.NoteConnection, key: [], abstract: false, fields: [
+                        .linked("edges", key: .fixed(Slots.NoteConnection.edges), plural: true, selection: Baton.Selection(type: Types.NoteEdge, key: [], abstract: false, fields: [
+                            .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
                                 .scalar("__typename", key: .fixed(Slots.Note.__typename), kind: .string, list: false),
                                 .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                                 .scalar("text", key: .fixed(Slots.Note.text), kind: .string, list: false),
                             ])),
                             .scalar("cursor", key: .fixed(Slots.NoteEdge.cursor), kind: .string, list: false),
                         ])),
-                        .linked("pageInfo", key: .fixed(Slots.NoteConnection.pageInfo), plural: false, selection: Baton.Selection(type: Types.PageInfo, key: nil, abstract: false, fields: [
+                        .linked("pageInfo", key: .fixed(Slots.NoteConnection.pageInfo), plural: false, selection: Baton.Selection(type: Types.PageInfo, key: [], abstract: false, fields: [
                             .scalar("hasPreviousPage", key: .fixed(Slots.PageInfo.hasPreviousPage), kind: .bool, list: false),
                             .scalar("startCursor", key: .fixed(Slots.PageInfo.startCursor), kind: .string, list: false),
                         ])),
@@ -2479,18 +2479,18 @@ fragment TestRecentNotes_character on Character {
         hasher.combine(self.id)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
-            .linked("character", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, key: "id", abstract: false, fields: [
-                .linked("notes", key: .fixed(Slots.Character.notes_01e6d2), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character.__TestRecentNotes_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo)), selection: Baton.Selection(type: Types.NoteConnection, key: nil, abstract: false, fields: [
-                    .linked("edges", key: .fixed(Slots.NoteConnection.edges), plural: true, selection: Baton.Selection(type: Types.NoteEdge, key: nil, abstract: false, fields: [
-                        .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+            .linked("character", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
+                .linked("notes", key: .fixed(Slots.Character.notes_01e6d2), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character.__TestRecentNotes_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo)), selection: Baton.Selection(type: Types.NoteConnection, key: [], abstract: false, fields: [
+                    .linked("edges", key: .fixed(Slots.NoteConnection.edges), plural: true, selection: Baton.Selection(type: Types.NoteEdge, key: [], abstract: false, fields: [
+                        .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
                             .scalar("__typename", key: .fixed(Slots.Note.__typename), kind: .string, list: false),
                             .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                             .scalar("text", key: .fixed(Slots.Note.text), kind: .string, list: false),
                         ])),
                         .scalar("cursor", key: .fixed(Slots.NoteEdge.cursor), kind: .string, list: false),
                     ])),
-                    .linked("pageInfo", key: .fixed(Slots.NoteConnection.pageInfo), plural: false, selection: Baton.Selection(type: Types.PageInfo, key: nil, abstract: false, fields: [
+                    .linked("pageInfo", key: .fixed(Slots.NoteConnection.pageInfo), plural: false, selection: Baton.Selection(type: Types.PageInfo, key: [], abstract: false, fields: [
                         .scalar("hasPreviousPage", key: .fixed(Slots.PageInfo.hasPreviousPage), kind: .bool, list: false),
                         .scalar("startCursor", key: .fixed(Slots.PageInfo.startCursor), kind: .string, list: false),
                     ])),
@@ -2553,8 +2553,8 @@ mutation TestRemoveNote(
         hasher.combine(self.connections)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, key: nil, abstract: false, fields: [
-            .linked("removeNote", key: .fixed(Slots.Mutation.removeNote), plural: false, selection: Baton.Selection(type: Types.RemoveNotePayload, key: nil, abstract: false, fields: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, key: [], abstract: false, fields: [
+            .linked("removeNote", key: .fixed(Slots.Mutation.removeNote), plural: false, selection: Baton.Selection(type: Types.RemoveNotePayload, key: [], abstract: false, fields: [
                 .scalar("removedNoteId", key: .fixed(Slots.RemoveNotePayload.removedNoteId), kind: .string, list: false, edit: Baton.Edit(kind: .deleteEdge, connections: .variable("connections"))),
                 .scalar("deleted", key: .fixed(Slots.RemoveNotePayload.removedNoteId), kind: .string, list: false, edit: Baton.Edit(kind: .deleteRecord)),
             ])),
@@ -2682,37 +2682,37 @@ query TestTwoPagesQuery(
         hasher.combine(self.id)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
-            .linked("character", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, key: "id", abstract: false, fields: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+            .linked("character", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
                 .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                .linked("notes", key: .fixed(Slots.Character.notes_29a6d8), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character.__TestTwoPages_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo)), selection: Baton.Selection(type: Types.NoteConnection, key: nil, abstract: false, fields: [
-                    .linked("edges", key: .fixed(Slots.NoteConnection.edges), plural: true, selection: Baton.Selection(type: Types.NoteEdge, key: nil, abstract: false, fields: [
-                        .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
+                .linked("notes", key: .fixed(Slots.Character.notes_29a6d8), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character.__TestTwoPages_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo)), selection: Baton.Selection(type: Types.NoteConnection, key: [], abstract: false, fields: [
+                    .linked("edges", key: .fixed(Slots.NoteConnection.edges), plural: true, selection: Baton.Selection(type: Types.NoteEdge, key: [], abstract: false, fields: [
+                        .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
                             .scalar("__typename", key: .fixed(Slots.Note.__typename), kind: .string, list: false),
                             .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                             .scalar("text", key: .fixed(Slots.Note.text), kind: .string, list: false),
                         ])),
                         .scalar("cursor", key: .fixed(Slots.NoteEdge.cursor), kind: .string, list: false),
                     ])),
-                    .linked("pageInfo", key: .fixed(Slots.NoteConnection.pageInfo), plural: false, selection: Baton.Selection(type: Types.PageInfo, key: nil, abstract: false, fields: [
+                    .linked("pageInfo", key: .fixed(Slots.NoteConnection.pageInfo), plural: false, selection: Baton.Selection(type: Types.PageInfo, key: [], abstract: false, fields: [
                         .scalar("endCursor", key: .fixed(Slots.PageInfo.endCursor), kind: .string, list: false),
                         .scalar("hasNextPage", key: .fixed(Slots.PageInfo.hasNextPage), kind: .bool, list: false),
                     ])),
                 ])),
             ])),
-            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, key: "id", abstract: true, variants: [
-                .init(types: [Types.Character], fields: [
+            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, key: ["id"], abstract: true, variants: [
+                .init(types: [Types.Character], key: ["id"], fields: [
                     .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
-                    .linked("notes", key: .fixed(Slots.Character.notes_8d6d15), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character.__TestTwoPages_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo), after: .literal), selection: Baton.Selection(type: Types.NoteConnection, key: nil, abstract: false, fields: [
-                        .linked("edges", key: .fixed(Slots.NoteConnection.edges), plural: true, selection: Baton.Selection(type: Types.NoteEdge, key: nil, abstract: false, fields: [
-                            .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
+                    .linked("notes", key: .fixed(Slots.Character.notes_8d6d15), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character.__TestTwoPages_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo), after: .literal), selection: Baton.Selection(type: Types.NoteConnection, key: [], abstract: false, fields: [
+                        .linked("edges", key: .fixed(Slots.NoteConnection.edges), plural: true, selection: Baton.Selection(type: Types.NoteEdge, key: [], abstract: false, fields: [
+                            .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
                                 .scalar("__typename", key: .fixed(Slots.Note.__typename), kind: .string, list: false),
                                 .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                                 .scalar("text", key: .fixed(Slots.Note.text), kind: .string, list: false),
                             ])),
                             .scalar("cursor", key: .fixed(Slots.NoteEdge.cursor), kind: .string, list: false),
                         ])),
-                        .linked("pageInfo", key: .fixed(Slots.NoteConnection.pageInfo), plural: false, selection: Baton.Selection(type: Types.PageInfo, key: nil, abstract: false, fields: [
+                        .linked("pageInfo", key: .fixed(Slots.NoteConnection.pageInfo), plural: false, selection: Baton.Selection(type: Types.PageInfo, key: [], abstract: false, fields: [
                             .scalar("endCursor", key: .fixed(Slots.PageInfo.endCursor), kind: .string, list: false),
                             .scalar("hasNextPage", key: .fixed(Slots.PageInfo.hasNextPage), kind: .bool, list: false),
                         ])),

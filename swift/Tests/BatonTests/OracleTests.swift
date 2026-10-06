@@ -128,7 +128,7 @@ struct OracleTests {
                 continue
             }
             let value = read(anchor)
-            if value != row.value {
+            if !value.isSameJSON(as: row.value) {
                 Issue.record("\(oracle.entry.name): the lens reads \(row.path) as \(value) where the manifest has \(row.value)")
             }
         }
@@ -167,6 +167,21 @@ struct OracleTests {
         let store = index < actual.count ? actual[index].description : "<end>"
         let response = index < expected.count ? expected[index].description : "<end>"
         Issue.record("\(stage): the store reads \(store) where the response has \(response) (leaf \(index) of \(expected.count))", sourceLocation: sourceLocation)
+    }
+}
+
+extension Manifest.Value {
+    /// Whether two values are the same JSON: a number is one number however
+    /// it is spelled, so a `Float` the lens reads as 2.0 is the manifest's 2.
+    func isSameJSON(as other: Manifest.Value) -> Bool {
+        switch (self, other) {
+        case (.int(let int), .double(let double)), (.double(let double), .int(let int)):
+            return Double(int) == double
+        case (.list(let items), .list(let others)):
+            return items.count == others.count && zip(items, others).allSatisfy { $0.isSameJSON(as: $1) }
+        default:
+            return self == other
+        }
     }
 }
 

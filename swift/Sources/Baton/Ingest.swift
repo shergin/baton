@@ -509,6 +509,9 @@ package enum Ingest {
         /// Which of the variant's fields the object being read has answered,
         /// per depth, for a complete response.
         var seen: [ContiguousArray<Bool>] = []
+        /// The values of the key fields the object being read has given, per
+        /// depth, by the field's place in the key, as spans of the response.
+        var keyParts: [ContiguousArray<(Int, Int, Bool)?>] = []
         /// Whether every field the plan selects must be answered: a server's
         /// response to an operation, where an object that omits one is
         /// malformed. Not for an optimistic response or a payload committed
@@ -668,22 +671,26 @@ package enum Ingest {
                 extra.append([])
                 linked.append([])
                 seen.append([])
+                keyParts.append([])
             } else {
                 scratch[depth].removeAll(keepingCapacity: true)
                 extra[depth].removeAll(keepingCapacity: true)
             }
             var record: Int32 = fixedRecord ?? -1
             var concreteType = fixedRecord.map { changes.recordTypes[Int($0)] } ?? plan.type
-            var pendingID: (Int, Int, Bool)? = nil
+            var found = 0
             var answers: [TypeID] = []
             if plan.isAbstract, fixedRecord == nil {
-                try identity(of: plan, afterValue: false, wantsID: false, concreteType: &concreteType, pendingID: &pendingID, answers: &answers)
+                try identity(of: plan, keys: [], afterValue: false, wantsID: false, concreteType: &concreteType, depth: depth, found: &found, answers: &answers)
             }
             var expected = 0
             let variant = plan.variant(for: concreteType, memberOf: answers)
             for condition in answers { changes.memberships.append((concreteType, condition)) }
             let fields = variant.read
             let fieldCount = fields.count
+            let keys = variant.keys
+            keyParts[depth].removeAll(keepingCapacity: true)
+            keyParts[depth].append(contentsOf: repeatElement(nil, count: keys.count))
             if complete {
                 seen[depth].removeAll(keepingCapacity: true)
                 seen[depth].append(contentsOf: repeatElement(false, count: fieldCount))
@@ -744,10 +751,20 @@ package enum Ingest {
                         scratch[depth].append((matched, .list(start: start, count: Int32(items))))
                         continue
                     }
+                    let start = position
                     let value = try scalarValue(scalar)
-                    if let keyBytes = plan.keyBytes, field.keyBytes == keyBytes,
-                       case .string(let start, let end, let escaped) = value, record < 0 {
-                        record = changes.record(for: Record.entityKey(variant.typeName, Ingest.materialize(base: base, Int(start), Int(end), escaped)), type: concreteType, idOffset: Record.idOffset(ofType: variant.typeName))
+                    if field.keyIndex >= 0, record < 0, keyParts[depth][Int(field.keyIndex)] == nil {
+                        // A key's value is its text: a string's contents, or
+                        // a number as the server wrote it.
+                        if case .string(let start, let end, let escaped) = value {
+                            keyParts[depth][Int(field.keyIndex)] = (Int(start), Int(end), escaped)
+                        } else {
+                            keyParts[depth][Int(field.keyIndex)] = (start, position, false)
+                        }
+                        found += 1
+                        if found == keys.count {
+                            record = entity(typeName: variant.typeName, type: concreteType, depth: depth)
+                        }
                     }
                     scratch[depth].append((matched, value))
                     if let edit = field.edit { deletion(edit, value) }
@@ -760,8 +777,8 @@ package enum Ingest {
                     if record < 0 {
                         // A child's key may be a path through this object, so the
                         // object's own key is settled before the child is read.
-                        try identity(of: plan, afterValue: true, wantsID: true, concreteType: &concreteType, pendingID: &pendingID, answers: &answers)
-                        record = settle(plan: plan, concreteType: concreteType, typeName: variant.typeName, pendingID: pendingID, parent: parent, storageKey: storageKey, listIndex: listIndex)
+                        try identity(of: plan, keys: keys, afterValue: true, wantsID: true, concreteType: &concreteType, depth: depth, found: &found, answers: &answers)
+                        record = settle(plan: plan, concreteType: concreteType, typeName: variant.typeName, keyCount: keys.count, found: found, depth: depth, parent: parent, storageKey: storageKey, listIndex: listIndex)
                     }
                     if plural {
                         try expect(0x5B)
@@ -804,7 +821,7 @@ package enum Ingest {
                 }
             }
             if record < 0 {
-                record = settle(plan: plan, concreteType: concreteType, typeName: variant.typeName, pendingID: pendingID, parent: parent, storageKey: storageKey, listIndex: listIndex)
+                record = settle(plan: plan, concreteType: concreteType, typeName: variant.typeName, keyCount: keys.count, found: found, depth: depth, parent: parent, storageKey: storageKey, listIndex: listIndex)
             }
             for (index, value) in scratch[depth] {
                 changes.entries.append(ChangeSet.Entry(record: record, slot: fields[index].slot, value: value))
@@ -859,12 +876,12 @@ package enum Ingest {
         /// Finds what an object's identity still lacks among its members, and
         /// leaves the cursor where it was: the `__typename` of an abstract
         /// selection, from the object's first member, before any key is
-        /// matched; the `id`, from the member after the one at the cursor,
-        /// which is a link's value. Without the id an entity whose `id`
-        /// follows a link would be keyed by its path, apart from the record
-        /// every other operation writes.
-        mutating func identity(of plan: ResolvedSelection, afterValue: Bool, wantsID: Bool, concreteType: inout TypeID, pendingID: inout (Int, Int, Bool)?, answers: inout [TypeID]) throws {
-            var needsID = wantsID && plan.keyBytes != nil && pendingID == nil
+        /// matched; the key fields not yet given, from the member after the
+        /// one at the cursor, which is a link's value. Without them an entity
+        /// whose key follows a link would be keyed by its path, apart from
+        /// the record every other operation writes.
+        mutating func identity(of plan: ResolvedSelection, keys: [[UInt8]], afterValue: Bool, wantsID: Bool, concreteType: inout TypeID, depth: Int, found: inout Int, answers: inout [TypeID]) throws {
+            var needsID = wantsID && !keys.isEmpty && found < keys.count
             var needsType = plan.isAbstract && concreteType == plan.type
             // Relay's membership answers are read while the type is: a type
             // the plan did not list takes its variant from them.
@@ -882,9 +899,14 @@ package enum Ingest {
                 let (keyStart, keyEnd, keyEscaped) = try scanString()
                 skipWhitespace(); try expect(0x3A); skipWhitespace()
                 let keyLength = keyEnd - keyStart
-                let isID = !keyEscaped && plan.keyBytes.map { key in
-                    key.count == keyLength && key.withUnsafeBufferPointer { memcmp(base + keyStart, $0.baseAddress!, keyLength) == 0 }
-                } ?? false
+                var keyIndex = -1
+                if needsID, !keyEscaped {
+                    for (index, key) in keys.enumerated() where key.count == keyLength && keyParts[depth][index] == nil
+                        && key.withUnsafeBufferPointer({ memcmp(base + keyStart, $0.baseAddress!, keyLength) == 0 }) {
+                        keyIndex = index
+                        break
+                    }
+                }
                 if needsAnswers, !keyEscaped, keyLength > 4, base[keyStart] == 0x5F, base[keyStart + 1] == 0x5F {
                     for answer in plan.membershipKeys where answer.bytes.count == keyLength
                         && answer.bytes.withUnsafeBufferPointer({ memcmp(base + keyStart, $0.baseAddress!, keyLength) == 0 }) {
@@ -893,20 +915,22 @@ package enum Ingest {
                     // The answers are found once the type is: a type the plan
                     // lists needs none, and the scan stops with the type.
                 }
-                // An id of a custom scalar may be a number: its text keys the
-                // record, as it does when the id comes before the link.
-                if needsID, isID, peek() == 0x2D || (peek() >= 0x30 && peek() <= 0x39) {
+                // A key of a custom scalar may be a number: its text keys the
+                // record, as it does when the key comes before the link.
+                if keyIndex >= 0, peek() == 0x2D || (peek() >= 0x30 && peek() <= 0x39) {
                     let start = position
                     try skipValue()
-                    pendingID = (start, position, false)
-                    needsID = false
+                    keyParts[depth][keyIndex] = (start, position, false)
+                    found += 1
+                    needsID = found < keys.count
                     continue
                 }
                 guard !keyEscaped, peek() == 0x22 else { try skipValue(); continue }
                 let (start, end, escaped) = try scanString()
-                if needsID, isID {
-                    pendingID = (start, end, escaped)
-                    needsID = false
+                if keyIndex >= 0 {
+                    keyParts[depth][keyIndex] = (start, end, escaped)
+                    found += 1
+                    needsID = found < keys.count
                 } else if needsType, keyLength == typename.utf8CodeUnitCount, memcmp(base + keyStart, typename.utf8Start, keyLength) == 0 {
                     concreteType = Registry.type(Ingest.materialize(base: base, start, end, escaped))
                     needsType = false
@@ -918,14 +942,32 @@ package enum Ingest {
             }
         }
 
-        /// The record for an object whose key is not settled yet: an entity key
-        /// when an id was seen, else a client id from the path. Under an
-        /// interface or union the path key ends in the concrete type, so a
-        /// payload of another type at the same path is another record.
+        /// The record of an entity whose key fields were all given: keyed by
+        /// their values in the key's order.
         @inline(__always)
-        mutating func settle(plan: ResolvedSelection, concreteType: TypeID, typeName: String, pendingID: (Int, Int, Bool)?, parent: Int32, storageKey: String?, listIndex: Int?) -> Int32 {
-            if let (start, end, escaped) = pendingID {
-                return changes.record(for: Record.entityKey(typeName, Ingest.materialize(base: base, start, end, escaped)), type: concreteType, idOffset: Record.idOffset(ofType: typeName))
+        mutating func entity(typeName: String, type: TypeID, depth: Int) -> Int32 {
+            let parts = keyParts[depth]
+            let key: String
+            if parts.count == 1, let (start, end, escaped) = parts[0] {
+                key = Record.entityKey(typeName, Ingest.materialize(base: base, start, end, escaped))
+            } else {
+                key = Record.entityKey(typeName, parts: parts.map { part in
+                    let (start, end, escaped) = part!
+                    return Ingest.materialize(base: base, start, end, escaped)
+                })
+            }
+            return changes.record(for: key, type: type, idOffset: Record.idOffset(ofType: typeName))
+        }
+
+        /// The record for an object whose key is not settled yet: an entity key
+        /// when every key field was seen, else a client id from the path.
+        /// Under an interface or union the path key ends in the concrete
+        /// type, so a payload of another type at the same path is another
+        /// record.
+        @inline(__always)
+        mutating func settle(plan: ResolvedSelection, concreteType: TypeID, typeName: String, keyCount: Int, found: Int, depth: Int, parent: Int32, storageKey: String?, listIndex: Int?) -> Int32 {
+            if keyCount > 0, found == keyCount {
+                return entity(typeName: typeName, type: concreteType, depth: depth)
             }
             var key = changes.recordKeys[Int(parent)] + ":" + (storageKey ?? "")
             if let listIndex { key += ":" + String(listIndex) }

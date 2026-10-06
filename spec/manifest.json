@@ -1803,6 +1803,143 @@
           "value": "December 9, 2013"
         }
       ]
+    },
+    {
+      "name": "tests/asset-list",
+      "operation": "TestAssetsQuery",
+      "kind": "query",
+      "document": "documents/TestAssetsQuery.graphql",
+      "variables": {},
+      "responses": [
+        "tests/asset-list.json"
+      ],
+      "records": "tests/asset-list.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "assets.0.name",
+          "value": "Portal gun"
+        },
+        {
+          "path": "assets.0.size",
+          "value": 3
+        },
+        {
+          "path": "assets.1.name",
+          "value": "Plumbus"
+        },
+        {
+          "path": "assets.1.size",
+          "value": 1
+        }
+      ],
+      "override": {
+        "paths": [
+          "assets.0.name"
+        ],
+        "value": "Portal gun mk2"
+      }
+    },
+    {
+      "name": "tests/asset-by-uuid",
+      "operation": "TestAssetQuery",
+      "kind": "query",
+      "document": "documents/TestAssetQuery.graphql",
+      "variables": {
+        "uuid": "a1"
+      },
+      "responses": [
+        "tests/asset-by-uuid.json"
+      ],
+      "records": "tests/asset-by-uuid.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "asset.owner.name",
+          "value": "Rick Sanchez"
+        },
+        {
+          "path": "asset.uuid",
+          "value": "a1"
+        },
+        {
+          "path": "asset.name",
+          "value": "Portal gun"
+        }
+      ],
+      "override": {
+        "paths": [
+          "asset.owner.name"
+        ],
+        "value": "Rick Prime"
+      }
+    },
+    {
+      "name": "tests/quote-list",
+      "operation": "TestQuotesQuery",
+      "kind": "query",
+      "document": "documents/TestQuotesQuery.graphql",
+      "variables": {},
+      "responses": [
+        "tests/quote-list.json"
+      ],
+      "records": "tests/quote-list.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "quotes.0.rate",
+          "value": 1.5
+        },
+        {
+          "path": "quotes.1.rate",
+          "value": 0.9
+        },
+        {
+          "path": "quotes.2.rate",
+          "value": 2
+        }
+      ],
+      "override": {
+        "paths": [
+          "quotes.0.rate"
+        ],
+        "value": 1.7
+      }
+    },
+    {
+      "name": "tests/quote-by-pair",
+      "operation": "TestQuoteQuery",
+      "kind": "query",
+      "document": "documents/TestQuoteQuery.graphql",
+      "variables": {
+        "base": "BTC",
+        "quote": "USD"
+      },
+      "responses": [
+        "tests/quote-by-pair.json"
+      ],
+      "records": "tests/quote-by-pair.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "quote.base",
+          "value": "BTC"
+        },
+        {
+          "path": "quote.rate",
+          "value": 1.6
+        },
+        {
+          "path": "quote.quote",
+          "value": "USD"
+        }
+      ],
+      "override": {
+        "paths": [
+          "quote.rate"
+        ],
+        "value": 1.7
+      }
     }
   ]
 }

@@ -1055,8 +1055,8 @@ func argumentBench() throws {
     func changes(_ kind: String, in store: Store, _ variables: Variables = .none, _ key: (TypeID, String) -> StorageKey) throws -> ChangeSet {
         let row = Registry.type("BenchRow" + kind)
         let fields = zip(["a", "b", "c"], names).map { PlanField.scalar($0, key: key(row, $1), kind: .int, list: false) }
-        let plan = Plan(root: Selection(type: query, key: nil, fields: [
-            .linked("rows", key: .fixed(Registry.slot(query, "benchRows" + kind)), plural: true, selection: Selection(type: row, key: "id", fields: [
+        let plan = Plan(root: Selection(type: query, key: [], fields: [
+            .linked("rows", key: .fixed(Registry.slot(query, "benchRows" + kind)), plural: true, selection: Selection(type: row, key: ["id"], fields: [
                 .scalar("id", key: .fixed(Registry.slot(row, "id")), kind: .string, list: false),
             ] + fields)),
         ]))

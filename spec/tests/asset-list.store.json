@@ -1,0 +1,7 @@
+{
+  "Asset:a1": {"__typename": "Asset", "id": "QXNzZXQ6YTE=", "name": "Portal gun", "size": 3, "uuid": "a1"},
+  "Asset:b2": {"__typename": "Asset", "id": "QXNzZXQ6YjI=", "name": "Plumbus", "size": 1, "uuid": "b2"},
+  "client:root": {"__typename": "Query", "assets": {"__refs": ["Asset:a1", "Asset:b2"]}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

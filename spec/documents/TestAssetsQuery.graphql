@@ -1,0 +1,8 @@
+query TestAssetsQuery {
+  assets {
+    name
+    size
+    id
+    uuid
+  }
+}

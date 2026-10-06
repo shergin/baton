@@ -1,0 +1,6 @@
+{
+  "Quote:BTC:USD": {"__typename": "Quote", "base": "BTC", "quote": "USD", "rate": 1.6},
+  "client:root": {"__typename": "Query", "quote(base:\"BTC\",quote:\"USD\")": {"__ref": "Quote:BTC:USD"}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

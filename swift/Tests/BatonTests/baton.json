@@ -1,9 +1,35 @@
 {
   "schema": "../../../spec/tests/schema.graphql",
+  "identity": {
+    "types": {
+      "Asset": [
+        "uuid"
+      ],
+      "Quote": [
+        "base",
+        "quote"
+      ]
+    }
+  },
   "lookups": [
-    { "field": "Query.character", "type": "Character", "argument": "id" },
-    { "field": "Query.location", "type": "Location", "argument": "id" },
-    { "field": "Query.episode", "type": "Episode", "argument": "id" },
-    { "field": "Query.node", "argument": "id" }
+    {
+      "field": "Query.character",
+      "type": "Character",
+      "argument": "id"
+    },
+    {
+      "field": "Query.location",
+      "type": "Location",
+      "argument": "id"
+    },
+    {
+      "field": "Query.episode",
+      "type": "Episode",
+      "argument": "id"
+    },
+    {
+      "field": "Query.node",
+      "argument": "id"
+    }
   ]
 }

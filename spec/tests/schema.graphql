@@ -5,8 +5,9 @@
 # list, a field that takes a list of input objects, and a cursor connection of notes on a character with the mutations
 # that edit it, a subscription, the `@defer` directive and a
 # `@semanticNonNull` field, the scalars the tokenizer fixture
-# (`spec/tokenizer/`) reads, and types and fields named as Swift and the
-# generated code name their own. Documents.swift compiles against it
+# (`spec/tokenizer/`) reads, types and fields named as Swift and the
+# generated code name their own, and two entities keyed otherwise than by
+# `id` in the tests' `baton.json`. Documents.swift compiles against it
 # unchanged; every document here would also be valid against the public
 # schema except those that use the additions.
 
@@ -38,6 +39,10 @@ type Query {
   types: Types
   spellings: [Spelling]
   charactersMatching(filters: [FilterCharacter!]!): [Character]
+  asset(uuid: String!): Asset
+  assets: [Asset]
+  quote(base: String!, quote: String!): Quote
+  quotes: [Quote]
 }
 
 type Mutation {
@@ -176,6 +181,25 @@ type Note implements Node {
   text: String
   created: String
   author: Character
+}
+
+"""
+An entity the tests' `baton.json` keys by `uuid`, though it has an `id` as
+well: the id other systems do not speak.
+"""
+type Asset {
+  id: ID
+  uuid: String!
+  name: String
+  size: Int
+  owner: Character
+}
+
+"""An entity the tests' `baton.json` keys by two fields, `base` and `quote`."""
+type Quote {
+  base: String!
+  quote: String!
+  rate: Float
 }
 
 type NoteConnection {

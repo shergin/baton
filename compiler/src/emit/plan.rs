@@ -28,11 +28,7 @@ fn write_selection(output: &mut String, selection: &NormalizationSelection, dept
         output,
         "Baton.Selection(type: {}, key: {}, abstract: {}",
         type_reference(type_name),
-        if selection.has_id {
-            swift_literal("id")
-        } else {
-            "nil".to_string()
-        },
+        key_expression(&selection.key),
         selection.is_abstract
     );
     if !selection.memberships.is_empty() {
@@ -66,6 +62,11 @@ fn write_selection(output: &mut String, selection: &NormalizationSelection, dept
             }
             None => "nil".to_string(),
         };
+        let key = variant
+            .key
+            .as_ref()
+            .map(|key| format!(", key: {}", key_expression(key)))
+            .unwrap_or_default();
         let condition = variant
             .condition
             .as_ref()
@@ -73,7 +74,7 @@ fn write_selection(output: &mut String, selection: &NormalizationSelection, dept
             .unwrap_or_default();
         let _ = write!(
             output,
-            "\n{pad}    .init(types: {types}{condition}, fields: ["
+            "\n{pad}    .init(types: {types}{key}{condition}, fields: ["
         );
         plan_fields(
             output,
@@ -84,6 +85,12 @@ fn write_selection(output: &mut String, selection: &NormalizationSelection, dept
         output.push_str("]),");
     }
     let _ = write!(output, "\n{pad}])");
+}
+
+/// The response keys of the fields that key a record, as a Swift array.
+fn key_expression(key: &[String]) -> String {
+    let fields: Vec<String> = key.iter().map(|field| swift_literal(field)).collect();
+    format!("[{}]", fields.join(", "))
 }
 
 /// The fields of one variant, their slots on `type_name`.

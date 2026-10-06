@@ -230,15 +230,29 @@ are told, and a payload that names it again revives it, told the same way;
 see
 [A deletion is announced by its commit](decisions/deletion-is-announced-by-its-commit.md).
 
-**Key.** *Composition: schema, record.* The field named `id`, combined with
-the typename: `Type:id`. Identity configured per type in `baton.json`, as
-Relay's `nodeInterfaceIdField` and beyond it, is *(planned)*. Objects without
-a key get a path-based client id, as in Relay; under an interface or union
-the path ends in the record's concrete type. The store has no index by id
-alone: a lookup without a type (`node(id:)`) and `@deleteRecord` probe
-`Type:id` for each possible type, and act only when exactly one live record
-has the id; an id that names live records of several types is reported
-through `Store.reportAmbiguousIdentity`, and nothing is done for it.
+**Key.** *Composition: schema, record.* The values of the fields
+`baton.json` names for the type, after the typename: `Type:id` by default,
+`Asset:uuid` for a type configured otherwise, `Quote:base:quote` for a
+composite key, each value escaped when there are several so that no two
+lists of values meet. The configuration's `identity` has a `default` list,
+tried for every object type, and `types` entries for a type or for an
+interface, whose implementers take it. A key is own scalar fields, in order,
+and does not rename: it is the values at the write, so a field that changes
+makes another record; a key through a link waits for an entity with no
+scalar key of its own. The compiler selects the key fields wherever the type
+is read, as Relay selects `id`, and the plan names each type's key, so the
+ingest knows no field by name. Objects whose fields do not include the key
+get a path-based client id, as in Relay; under an interface or union the
+path ends in the record's concrete type. The store has no index by id alone,
+and what names a record by one value, a lookup without a type (`node(id:)`),
+`@deleteRecord`, `@deleteEdge` and the image's forget, reaches single-field
+keys only: a lookup without a type and `@deleteRecord` probe `Type:id` for
+each possible type, and act only when exactly one live record has the id; an
+id that names live records of several types is reported through
+`Store.reportAmbiguousIdentity`, and nothing is done for it. A configuration
+other than the default joins the schema's digest, so an image keyed another
+way is a miss and not a merge. See
+[the decision](decisions/identity-is-configured.md).
 
 **Storage key, slot.** *Composition: record, plan.* Relay: a field name plus
 its serialized arguments, the key under which a value is stored; an

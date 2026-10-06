@@ -414,8 +414,10 @@ pub enum SelectionPlan {
         type_: TypePlan,
         non_null: bool,
         semantic_non_null: bool,
-        /// Whether the target type defines an `id` field (identity by typename and id).
-        has_id: bool,
+        /// The key fields of each keyed concrete type the field can return,
+        /// by the type's name, in the configured order; a type absent here is
+        /// keyed by its path.
+        keys: BTreeMap<String, Vec<String>>,
         /// Whether the target type is an interface or union: records are then
         /// keyed and sloted by the payload's `__typename`.
         is_abstract: bool,

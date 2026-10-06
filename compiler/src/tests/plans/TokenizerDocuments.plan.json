@@ -27,7 +27,11 @@
           },
           "non_null": false,
           "semantic_non_null": false,
-          "has_id": true,
+          "keys": {
+            "Tokenizer": [
+              "id"
+            ]
+          },
           "is_abstract": false,
           "possible_types": [
             "Tokenizer"
@@ -311,7 +315,11 @@
           },
           "non_null": false,
           "semantic_non_null": false,
-          "has_id": true,
+          "keys": {
+            "Tokenizer": [
+              "id"
+            ]
+          },
           "is_abstract": false,
           "possible_types": [
             "Tokenizer"
