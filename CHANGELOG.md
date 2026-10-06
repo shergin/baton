@@ -5,6 +5,13 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- Subscriptions over HTTP, with `graphql-sse` in its distinct-connections
+  mode: `URLSessionTransport` asks a subscription for `text/event-stream`
+  and yields the payload of each `next` event until `complete`, so the
+  environment's `subscriptions` may be the HTTP transport where a gateway
+  holds no sockets. `EventStreamParser` splits the events beside
+  `MultipartParser`'s parts, whatever the chunking. The single-connection
+  mode waits for a gateway that cannot do HTTP/2.
 - A subscription reconnects in its handle. A stream that ends by a failure
   while the handle is retained waits and opens again, by a fixed backoff: a
   step doubling from one second to thirty, jittered, reset by an event; the

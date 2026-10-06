@@ -120,8 +120,10 @@ public struct TransportError: Error, CustomStringConvertible, Sendable, Localize
 }
 
 /// POSTs operations as JSON to one endpoint. An operation with `@defer` asks
-/// for `multipart/mixed` and reads the parts as they arrive. Credentials are
-/// read per attempt, so a rotated token reaches the next request.
+/// for `multipart/mixed` and reads the parts as they arrive; a subscription
+/// asks for `text/event-stream` and reads its events, `graphql-sse` in its
+/// distinct-connections mode. Credentials are read per attempt, so a rotated
+/// token reaches the next request.
 public struct URLSessionTransport: Transport {
     public let url: URL
     public var headers: [String: String]
@@ -143,9 +145,13 @@ public struct URLSessionTransport: Transport {
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "POST"
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        let accept = request.incremental
-            ? "multipart/mixed; deferSpec=20220824, application/graphql-response+json, application/json"
-            : "application/graphql-response+json, application/json"
+        // A subscription asks for an event stream, `graphql-sse` in its
+        // distinct-connections mode; a deferred operation for multipart.
+        let accept = switch (request.kind, request.incremental) {
+        case (.subscription, _): "text/event-stream, application/graphql-response+json, application/json"
+        case (_, true): "multipart/mixed; deferSpec=20220824, application/graphql-response+json, application/json"
+        case (_, false): "application/graphql-response+json, application/json"
+        }
         urlRequest.setValue(accept, forHTTPHeaderField: "Accept")
         for (name, value) in headers { urlRequest.setValue(value, forHTTPHeaderField: name) }
         for (name, value) in try await credentials() { urlRequest.setValue(value, forHTTPHeaderField: name) }
@@ -158,33 +164,43 @@ public struct URLSessionTransport: Transport {
         return AsyncThrowingStream { continuation in
             let task = Task {
                 do {
-                    guard request.kind != .subscription else {
-                        throw TransportError(statusCode: 0, body: "a subscription over HTTP streams events, which this transport does not read; pass a subscription transport")
-                    }
                     let urlRequest = try await urlRequest(request)
                     var response: HTTPURLResponse?
-                    var parser: MultipartParser?
+                    // How the body is framed, by the response's content type:
+                    // multipart parts, an event stream's events, or one body.
+                    var parts: MultipartParser?
+                    var events: EventStreamParser?
                     var body = Data()
                     for try await delivery in Deliveries.of(urlRequest, on: session) {
                         switch delivery {
                         case .response(let received):
                             response = received as? HTTPURLResponse
                             let contentType = response?.value(forHTTPHeaderField: "Content-Type") ?? ""
-                            parser = MultipartParser.boundary(in: contentType).map(MultipartParser.init(boundary:))
+                            parts = MultipartParser.boundary(in: contentType).map(MultipartParser.init(boundary:))
+                            if EventStreamParser.frames(contentType) { events = EventStreamParser() }
                         case .chunk(let chunk):
-                            guard var reader = parser, let response, (200..<300).contains(response.statusCode) else {
+                            guard let response, (200..<300).contains(response.statusCode) else {
                                 body.append(chunk)
                                 continue
                             }
-                            for part in reader.push(chunk) { continuation.yield(part) }
-                            parser = reader
+                            if var reader = parts {
+                                for part in reader.push(chunk) { continuation.yield(part) }
+                                parts = reader
+                            } else if var reader = events {
+                                for payload in reader.push(chunk) { continuation.yield(payload) }
+                                events = reader
+                            } else {
+                                body.append(chunk)
+                            }
                         }
                     }
                     if let response, !(200..<300).contains(response.statusCode) {
                         throw TransportError(statusCode: response.statusCode, body: String(decoding: body, as: UTF8.self))
                     }
-                    if var reader = parser {
+                    if var reader = parts {
                         for part in reader.finish() { continuation.yield(part) }
+                    } else if var reader = events {
+                        for payload in reader.finish() { continuation.yield(payload) }
                     } else {
                         continuation.yield(body)
                     }
@@ -341,6 +357,115 @@ public struct MultipartParser: Sendable {
         }
         // No headers: the whole part is the body.
         return Data(bytes)
+    }
+}
+
+/// Splits a `text/event-stream` body into the payloads of its `next` events,
+/// however the bytes are chunked: `graphql-sse` in its distinct-connections
+/// mode, one response per operation, where a `next` event carries a response
+/// payload and `complete` ends the stream. A field is `name: value`, with
+/// one space after the colon dropped; the `data` lines of an event join with
+/// a line break; a blank line ends an event; a line beginning with a colon
+/// is a comment. `id`, `retry` and an event of another name are dropped.
+public struct EventStreamParser: Sendable {
+    private var buffer: [UInt8] = []
+    /// How far the buffer has been searched for a line end.
+    private var scanned = 0
+    /// The event being read: its name, and its data lines so far.
+    private var event: [UInt8] = []
+    private var data: [UInt8]?
+    /// Whether the stream's first bytes were seen, where a byte order mark
+    /// may sit.
+    private var opened = false
+    public private(set) var finished = false
+
+    public init() {}
+
+    /// Whether a content type is an event stream's.
+    public static func frames(_ contentType: String) -> Bool {
+        contentType.lowercased().trimmingCharacters(in: .whitespaces).hasPrefix("text/event-stream")
+    }
+
+    /// Feeds a chunk; returns the payloads of the `next` events completed
+    /// within it. A line ends at a line feed, with a carriage return before it
+    /// dropped; a byte order mark at the stream's start is skipped.
+    public mutating func push(_ chunk: some Collection<UInt8>) -> [Data] {
+        if finished { return [] }
+        buffer.append(contentsOf: chunk)
+        if !opened, buffer.count >= 3 {
+            opened = true
+            if buffer[0] == 0xEF, buffer[1] == 0xBB, buffer[2] == 0xBF { buffer.removeFirst(3) }
+        }
+        var payloads: [Data] = []
+        var lineStart = 0
+        while let newline = buffer[scanned...].firstIndex(of: 0x0A) {
+            var lineEnd = newline
+            if lineEnd > lineStart, buffer[lineEnd - 1] == 0x0D { lineEnd -= 1 }
+            if let payload = read(buffer[lineStart..<lineEnd]) { payloads.append(payload) }
+            lineStart = newline + 1
+            scanned = lineStart
+            if finished {
+                buffer = []
+                return payloads
+            }
+        }
+        // The lines read are let go once per chunk, not once per line.
+        buffer.removeSubrange(0..<lineStart)
+        scanned = buffer.count
+        return payloads
+    }
+
+    /// The event left open when the stream ended without a blank line.
+    public mutating func finish() -> [Data] {
+        if finished { return [] }
+        var payloads: [Data] = []
+        if !buffer.isEmpty {
+            var line = buffer[...]
+            if line.last == 0x0D { line = line.dropLast() }
+            if let payload = read(line) { payloads.append(payload) }
+            buffer = []
+        }
+        if !finished, let payload = dispatch() { payloads.append(payload) }
+        finished = true
+        return payloads
+    }
+
+    /// One line: a blank line dispatches the event; a comment is dropped; a
+    /// field sets the event's name or adds a data line.
+    private mutating func read(_ line: ArraySlice<UInt8>) -> Data? {
+        if line.isEmpty { return dispatch() }
+        if line.first == 0x3A { return nil }
+        let colon = line.firstIndex(of: 0x3A) ?? line.endIndex
+        let field = line[line.startIndex..<colon]
+        var value = colon < line.endIndex ? line[(colon + 1)...] : line[line.endIndex...]
+        if value.first == 0x20 { value = value.dropFirst() }
+        if field.elementsEqual("event".utf8) {
+            event = Array(value)
+        } else if field.elementsEqual("data".utf8) {
+            if var lines = data {
+                lines.append(0x0A)
+                lines.append(contentsOf: value)
+                data = lines
+            } else {
+                data = Array(value)
+            }
+        }
+        return nil
+    }
+
+    /// The event read so far: a `next` with data is a payload; `complete`
+    /// ends the stream; anything else is dropped.
+    private mutating func dispatch() -> Data? {
+        defer {
+            event = []
+            data = nil
+        }
+        if event.elementsEqual("complete".utf8) {
+            finished = true
+            return nil
+        }
+        guard event.elementsEqual("next".utf8), let data else { return nil }
+        return Data(data)
     }
 }
 

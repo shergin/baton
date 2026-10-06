@@ -59,23 +59,46 @@ struct TransportTests {
         return URLSessionTransport(url: URL(string: "https://stub.invalid/graphql")!, headers: ["X-Stub-Key": key], credentials: credentials, session: URLSession(configuration: configuration))
     }
 
-    @Test("URLSessionTransport fails a subscription with a transport error of status 0 and makes no request")
-    func url_session_transport_fails_a_subscription_without_a_request() async throws {
+    /// A transport over `EventStreamServer`, its requests marked with a key
+    /// of their own so tests running beside each other read only theirs.
+    func eventStreamTransport(key: String) -> URLSessionTransport {
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [EventStreamServer.self]
+        return URLSessionTransport(url: URL(string: "https://stub.invalid/graphql")!, headers: ["X-Stub-Key": key], session: URLSession(configuration: configuration))
+    }
+
+    @Test("URLSessionTransport asks a subscription for an event stream and reads it as one payload for each next event, finishing at complete")
+    func url_session_transport_reads_a_subscription_as_an_event_stream() async throws {
         let key = UUID().uuidString
-        let reads = Counter()
-        let transport = echoTransport(key: key) {
-            reads.increment()
-            return [:]
+        let transport = eventStreamTransport(key: key)
+        let value = TestNoteAdded(characterId: "1", connections: [])
+        let request = Request(operationName: TestNoteAdded.name, kind: .subscription, document: TestNoteAdded.document, variables: value.variables)
+        var received: [Data] = []
+        for try await payload in transport.send(request) { received.append(payload) }
+        #expect(received == EventStreamServer.payloads)
+        let accept = try #require(EventStreamServer.accept(for: key))
+        #expect(accept.contains("text/event-stream"))
+    }
+
+    @Test("an environment whose subscriptions are URLSessionTransport reads each next event of the stream, and ends at complete without opening it again")
+    func an_environment_subscribes_over_http() async throws {
+        let key = UUID().uuidString
+        let environment = Environment(transport: RecordedTransport(), subscriptions: eventStreamTransport(key: key))
+        environment.store.reportMissing = nil
+        let live = environment.subscriptionHandle(for: TestNoteAdded(characterId: "1", connections: []))
+        let retention = live.retain()
+        await until { live.events >= 2 }
+        await until { !live.isActive }
+        #expect(live.events == 2)
+        #expect(live.latest?.noteAdded?.noteEdge?.node?.text == "Second live note")
+        guard case .ended(nil) = live.stream else {
+            Issue.record("expected the stream ended with no failure, got \(live.stream)")
+            return
         }
-        let request = Request(operationName: TestNoteAdded.name, kind: .subscription, document: TestNoteAdded.document, variables: .none)
-        do {
-            for try await _ in transport.send(request) { Issue.record("a subscription over HTTP delivered a payload") }
-            Issue.record("a subscription over HTTP finished without failing")
-        } catch let error as TransportError {
-            #expect(error.statusCode == 0)
-        }
-        #expect(HeaderEcho.requests(for: key) == 0)
-        #expect(reads.value == 0, "no attempt read the credentials")
+        #expect(live.resumptions == 0)
+        #expect(live.error == nil)
+        #expect(EventStreamServer.requests(for: key) == 1)
+        _ = consume retention
     }
 
     @Test("URLSessionTransport reads its credentials for every attempt, so a rotated token reaches the next request")
@@ -206,6 +229,50 @@ final class HeaderEcho: URLProtocol, @unchecked Sendable {
         let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type": "application/json"])!
         client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
         client?.urlProtocol(self, didLoad: body ?? Data())
+        client?.urlProtocolDidFinishLoading(self)
+    }
+}
+
+/// A `graphql-sse` server in its distinct-connections mode: it answers every
+/// request with an event stream of two `next` events and `complete`, three
+/// bytes at a time, and records each request's `Accept` header by its
+/// `X-Stub-Key` header.
+final class EventStreamServer: URLProtocol, @unchecked Sendable {
+    private static let lock = NSLock()
+    nonisolated(unsafe) private static var accepts: [String: [String]] = [:]
+
+    /// The payloads the stream carries, recorded subscription events.
+    static let payloads = ["note-added-1", "note-added-2"].map {
+        Data(String(decoding: fixture($0), as: UTF8.self).trimmingCharacters(in: .whitespacesAndNewlines).utf8)
+    }
+
+    static func requests(for key: String) -> Int { lock.withLock { accepts[key]?.count ?? 0 } }
+    static func accept(for key: String) -> String? { lock.withLock { accepts[key]?.first } }
+
+    override class func canInit(with request: URLRequest) -> Bool { true }
+    override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
+    override func stopLoading() {}
+
+    override func startLoading() {
+        if let key = request.value(forHTTPHeaderField: "X-Stub-Key") {
+            let accept = request.value(forHTTPHeaderField: "Accept") ?? ""
+            Self.lock.withLock { Self.accepts[key, default: []].append(accept) }
+        }
+        var body = Data()
+        for payload in Self.payloads {
+            body.append(Data("event: next\ndata: ".utf8))
+            body.append(payload)
+            body.append(Data("\n\n".utf8))
+        }
+        body.append(Data("event: complete\ndata:\n\n".utf8))
+        let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type": "text/event-stream; charset=utf-8"])!
+        client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+        var offset = 0
+        while offset < body.count {
+            let end = min(offset + 3, body.count)
+            client?.urlProtocol(self, didLoad: body.subdata(in: offset..<end))
+            offset = end
+        }
         client?.urlProtocolDidFinishLoading(self)
     }
 }

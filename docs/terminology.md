@@ -611,11 +611,16 @@ HTTP body and the socket's subscribe payload alike; the standard one writes
 `documentId` for an id, and a server with another convention replaces the
 function on the built-in transports and keeps them. The built-in transports
 read credentials per attempt, from a closure, so a rotated token reaches the
-next request or connection. `URLSessionTransport` speaks HTTP and reads
-`multipart/mixed`; `GraphQLTransportWebSocket` speaks `graphql-transport-ws`
-for subscriptions and any operation sent over the socket; `MultipartParser`
-splits the parts. A response outside 2xx fails with `TransportError`, its
-HTTP status and body; a socket that closed under a subscription, a recorded
+next request or connection. `URLSessionTransport` speaks HTTP, reads
+`multipart/mixed` for a deferred response and `text/event-stream` for a
+subscription, `graphql-sse` in its distinct-connections mode, one response
+per operation whose `next` events carry payloads and whose `complete` ends
+it, so the environment's `subscriptions` may be an HTTP transport;
+`GraphQLTransportWebSocket` speaks `graphql-transport-ws` for subscriptions
+and any operation sent over the socket; `MultipartParser` splits the parts
+and `EventStreamParser` the events. The single-connection mode of
+`graphql-sse` waits for a gateway that cannot do HTTP/2. A response outside
+2xx fails with `TransportError`, its HTTP status and body; a socket that closed under a subscription, a recorded
 transport with nothing recorded and a transport that delivers no payload
 fail with one of status 0, which says what went wrong. `TransportError`
 stays the built-in transports' error, and is carried unchanged inside the
