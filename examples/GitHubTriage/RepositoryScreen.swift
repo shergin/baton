@@ -128,14 +128,14 @@ struct StarButton: View {
                 do {
                     if starred {
                         try await removeStar(
-                            input: .object(["starrableId": .string(id)]),
+                            input: RemoveStarInput(starrableId: id),
                             optimistic: .init(removeStar: .init(starrable: .init(
                                 __typename: "Repository", id: id, viewerHasStarred: false, stargazerCount: count - 1
                             )))
                         )
                     } else {
                         try await addStar(
-                            input: .object(["starrableId": .string(id)]),
+                            input: AddStarInput(starrableId: id),
                             optimistic: .init(addStar: .init(starrable: .init(
                                 __typename: "Repository", id: id, viewerHasStarred: true, stargazerCount: count + 1
                             )))

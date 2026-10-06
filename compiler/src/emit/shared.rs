@@ -4,13 +4,13 @@
 //! The shared enums name the runtime's module in expressions, which is safe
 //! here alone: their members are spelled off its name, as `names` decides.
 
-use super::swift::{runtime_value, swift_literal, type_reference};
+use super::swift::{input_field_type, runtime_value, swift_literal, type_reference};
 use super::writer::Writer;
 use super::{FORMAT, HEADER};
 use crate::decide::{KeyPart, Shared, SlotRef};
 use crate::names::{
-    enum_case_name, enum_type_name, guard_name, keyed_types, possible_types, slot_name,
-    type_constant,
+    enum_case_name, enum_type_name, guard_name, input_field_name, input_type_name, keyed_types,
+    possible_types, slot_name, type_constant,
 };
 
 /// `Types`, `Slots` and, when the module has any, `Sites` and
@@ -208,6 +208,79 @@ pub(super) fn shared_text(shared: &Shared) -> String {
                         writer.line("case .unknown(let text): text");
                     });
                 });
+            },
+        );
+    }
+    for (name, fields) in &shared.inputs {
+        writer.blank();
+        writer.doc(format!(
+            "The schema's input object `{name}`. A field left nil is absent from the request, as GraphQL distinguishes absent from null."
+        ));
+        writer.block(
+            format!(
+                "nonisolated public struct {}: {}",
+                input_type_name(name),
+                runtime_value("InputObject")
+            ),
+            |writer| {
+                let mut parameters: Vec<String> = Vec::new();
+                for field in fields {
+                    let property = input_field_name(&field.name);
+                    let swift_type = input_field_type(&field.type_);
+                    if field.indirect {
+                        // A field whose type contains this input is boxed: a
+                        // value type cannot hold itself. The box's name begins
+                        // with two underscores, which the specification keeps
+                        // from a schema's own names.
+                        writer.line(format!(
+                            "private var __{property}: {}<{swift_type}>",
+                            runtime_value("Indirect")
+                        ));
+                        writer.line(format!(
+                            "public var {property}: {swift_type} {{ get {{ __{property}.value }} set {{ __{property}.value = newValue }} }}"
+                        ));
+                    } else {
+                        writer.line(format!("public var {property}: {swift_type}"));
+                    }
+                    let default = if field.type_.non_null() { "" } else { " = nil" };
+                    parameters.push(format!("{property}: {swift_type}{default}"));
+                }
+                writer.blank();
+                writer.block(
+                    format!("public init({})", parameters.join(", ")),
+                    |writer| {
+                        for field in fields {
+                            let property = input_field_name(&field.name);
+                            if field.indirect {
+                                writer.line(format!("self.__{property} = .init({property})"));
+                            } else {
+                                writer.line(format!("self.{property} = {property}"));
+                            }
+                        }
+                    },
+                );
+                writer.blank();
+                writer.block(
+                    format!("public var variable: {}", runtime_value("Variable")),
+                    |writer| {
+                        writer.line(format!(
+                            "var fields: [String: {}] = [:]",
+                            runtime_value("Variable")
+                        ));
+                        for field in fields {
+                            let property = input_field_name(&field.name);
+                            let key = swift_literal(&field.name);
+                            if field.type_.non_null() {
+                                writer.line(format!("fields[{key}] = .init({property})"));
+                            } else {
+                                writer.line(format!(
+                                    "if let {property} {{ fields[{key}] = .init({property}) }}"
+                                ));
+                            }
+                        }
+                        writer.line("return .object(fields)");
+                    },
+                );
             },
         );
     }

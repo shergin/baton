@@ -510,6 +510,25 @@ of what does not outlive its process, over *ephemeral*, which says short
 lived rather than unwritten, and *volatile*, which names a kind of memory.
 See [the decision](decisions/what-may-reach-the-image.md).
 
+**Input object.** *Composition: schema, operation.* GraphQL: a type of
+named fields an argument or variable takes. Here: a Swift struct generated
+per input object the documents' variables name, declared once per module in
+the shared file, with a property per field typed as the schema types it, a
+scalar, an enum, a mapped scalar, a nested input or a list of one, optional
+unless non-null, and an initializer with a parameter per field. A variable
+of the type takes the struct, so a misspelled field is a compile error where
+it was a server's error before. A field left nil is absent from the request,
+as GraphQL distinguishes absent from null; a document that must send an
+explicit null for a field writes it as a constant in the document. The
+struct's `variable` is the object the request carries, as an optimistic
+response's builder renders itself; the struct is `Hashable`, since an
+operation value compares and hashes its variables. Named as the schema names it; one named
+like a shared enum or a standard library type takes `Input` after its name,
+and a field named `variable` takes an underscore. A field whose type contains
+the input itself, `input Filter { not: Filter }`, is boxed by `Baton.Indirect`,
+since a value type cannot hold itself; the struct reads and writes it as any
+other field.
+
 **Plan.** *Concept: plan.* Baton's word for the normalization artifact: the
 data a response is decoded by and a store is written from, one per
 operation, emitted by the compiler and interpreted by the runtime. Relay's

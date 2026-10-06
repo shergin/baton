@@ -172,7 +172,25 @@ fn plan_swift_tests() -> BTreeMap<String, String> {
     by_source
         .into_iter()
         .map(|(name, mut file_plan)| {
-            let named = enums_named(&serde_json::to_value(&file_plan).expect("a plan serializes"));
+            // An input's fields may name another input, so the inputs are
+            // gathered until they name no new one.
+            loop {
+                let value = serde_json::to_value(&file_plan).expect("a plan serializes");
+                let named = types_named(&value, "input_object");
+                if named.len() == file_plan.inputs.len() {
+                    break;
+                }
+                file_plan.inputs = plan
+                    .inputs
+                    .iter()
+                    .filter(|(name, _)| named.contains(name.as_str()))
+                    .map(|(name, fields)| (name.clone(), fields.clone()))
+                    .collect();
+            }
+            let named = types_named(
+                &serde_json::to_value(&file_plan).expect("a plan serializes"),
+                "enum",
+            );
             file_plan.enums = plan
                 .enums
                 .iter()
@@ -185,16 +203,17 @@ fn plan_swift_tests() -> BTreeMap<String, String> {
         .collect()
 }
 
-/// The enums a serialized plan's types name, so that one file's plan
-/// carries the enums its own documents read or pass and no other file's.
-fn enums_named(value: &serde_json::Value) -> BTreeSet<String> {
+/// The types of `kind` a serialized plan's types name, so that one file's
+/// plan carries the enums and inputs its own documents read or pass and no
+/// other file's.
+fn types_named(value: &serde_json::Value, kind: &str) -> BTreeSet<String> {
     let mut names = BTreeSet::new();
     let mut pending = vec![value];
     while let Some(value) = pending.pop() {
         match value {
             serde_json::Value::Array(items) => pending.extend(items),
             serde_json::Value::Object(fields) => {
-                if fields.get("kind").and_then(|kind| kind.as_str()) == Some("enum")
+                if fields.get("kind").and_then(|found| found.as_str()) == Some(kind)
                     && let Some(name) = fields.get("name").and_then(|name| name.as_str())
                 {
                     names.insert(name.to_string());

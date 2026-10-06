@@ -533,10 +533,10 @@ query TestCollidingRequired(
 
 /// Operation value for `query TestFilteredCharacters`.
 nonisolated public struct TestFilteredCharacters: Baton.Query {
-    public var filters: [Baton.Variable]
+    public var filters: [FilterCharacter]
     public var resolution: Baton.OperationHandle<Self>? = nil
 
-    public init(filters: [Baton.Variable]) {
+    public init(filters: [FilterCharacter]) {
         self.filters = filters
     }
 

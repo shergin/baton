@@ -9,7 +9,7 @@ nonisolated enum Types {
     static let schemaDigest = "6ebb62f12d31c6016642f7b201a78456"
     /// The format of this generated code, which the runtime that reads it
     /// declares; a runtime of another format fails to compile this line.
-    static let format = Baton.Format12.self
+    static let format = Baton.Format13.self
     static let AddNotePayload = Baton.Registry.type("AddNotePayload")
     static let Any_ = Baton.Registry.type("Any")
     static let Asset = Baton.Registry.type("Asset")
@@ -495,6 +495,33 @@ nonisolated public enum Status: Baton.GeneratedEnum {
             case .UNKNOWN: "UNKNOWN"
             case .unknown(let text): text
         }
+    }
+}
+
+/// The schema's input object `FilterCharacter`. A field left nil is absent from the request, as GraphQL distinguishes absent from null.
+nonisolated public struct FilterCharacter: Baton.InputObject {
+    public var name: String?
+    public var status: String?
+    public var species: String?
+    public var type: String?
+    public var gender: String?
+
+    public init(name: String? = nil, status: String? = nil, species: String? = nil, type: String? = nil, gender: String? = nil) {
+        self.name = name
+        self.status = status
+        self.species = species
+        self.type = type
+        self.gender = gender
+    }
+
+    public var variable: Baton.Variable {
+        var fields: [String: Baton.Variable] = [:]
+        if let name { fields["name"] = .init(name) }
+        if let status { fields["status"] = .init(status) }
+        if let species { fields["species"] = .init(species) }
+        if let type { fields["type"] = .init(type) }
+        if let gender { fields["gender"] = .init(gender) }
+        return .object(fields)
     }
 }
 

@@ -24,12 +24,59 @@ use schema::{SDLSchema, Schema, Type, TypeReference};
 use super::identity::Keys;
 use super::plan::{
     ArgumentPlan, ArgumentValuePlan, CatchPlan, CatchTarget, ConditionClass, ConnectionPlan,
-    ConstantPlan, EditKind, EditPlan, FragmentPlan, LookupArgumentPlan, LookupPlan, OperationKind,
-    OperationPlan, Origin, PaginationPlan, Plan, RefetchPlan, RequiredAction, RequiredPlan,
-    SelectionPlan, StorageKeyPlan, TypeKind, TypePlan, VariablePlan,
+    ConstantPlan, EditKind, EditPlan, FragmentPlan, InputFieldPlan, LookupArgumentPlan, LookupPlan,
+    OperationKind, OperationPlan, Origin, PaginationPlan, Plan, RefetchPlan, RequiredAction,
+    RequiredPlan, SelectionPlan, StorageKeyPlan, TypeKind, TypePlan, VariablePlan,
 };
 
 use crate::config::Config;
+
+/// Marks the fields of the input objects whose type reaches the input they
+/// belong to through other inputs' fields, outside lists: a Swift value type
+/// cannot contain itself, so the generated struct boxes such a field. Every
+/// edge of a cycle is marked, so no cycle is left whole.
+fn mark_indirect(inputs: &mut BTreeMap<String, Vec<InputFieldPlan>>) {
+    // The inputs each input's fields name directly, outside lists.
+    let direct: BTreeMap<String, Vec<String>> = inputs
+        .iter()
+        .map(|(name, fields)| {
+            let named = fields
+                .iter()
+                .filter(|field| {
+                    field.type_.base_kind() == TypeKind::InputObject && !field.type_.is_list()
+                })
+                .map(|field| field.type_.base_name().to_string())
+                .collect();
+            (name.clone(), named)
+        })
+        .collect();
+    fn reaches(
+        from: &str,
+        target: &str,
+        direct: &BTreeMap<String, Vec<String>>,
+        seen: &mut Vec<String>,
+    ) -> bool {
+        if from == target {
+            return true;
+        }
+        if seen.iter().any(|name| name == from) {
+            return false;
+        }
+        seen.push(from.to_string());
+        direct
+            .get(from)
+            .map(|named| named.iter().any(|next| reaches(next, target, direct, seen)))
+            .unwrap_or(false)
+    }
+    for (name, fields) in inputs.iter_mut() {
+        for field in fields.iter_mut() {
+            if field.type_.base_kind() != TypeKind::InputObject || field.type_.is_list() {
+                continue;
+            }
+            field.indirect = reaches(field.type_.base_name(), name, &direct, &mut Vec::new());
+        }
+    }
+}
 
 /// Which program a selection set comes from. The reader reads a connection
 /// through Relay's handle key and carries the required and catch metadata; the
@@ -51,6 +98,8 @@ struct Lowering<'a> {
     diagnostics: std::cell::RefCell<Vec<Diagnostic>>,
     /// The enums the documents' types name, with their values.
     enums: std::cell::RefCell<BTreeMap<String, Vec<String>>>,
+    /// The input objects the documents' variables name, with their fields.
+    inputs: std::cell::RefCell<BTreeMap<String, Vec<InputFieldPlan>>>,
 }
 
 fn directive_name(name: &str) -> DirectiveName {
@@ -71,6 +120,7 @@ pub(super) fn lower(
         keys,
         diagnostics: std::cell::RefCell::new(Vec::new()),
         enums: std::cell::RefCell::new(BTreeMap::new()),
+        inputs: std::cell::RefCell::new(BTreeMap::new()),
     };
     let mut plan = Plan::default();
     for fragment in programs.reader.fragments() {
@@ -85,6 +135,8 @@ pub(super) fn lower(
     plan.operations
         .sort_by(|left, right| left.name.cmp(&right.name));
     plan.enums = lowering.enums.borrow().clone();
+    plan.inputs = lowering.inputs.borrow().clone();
+    mark_indirect(&mut plan.inputs);
     // An operation is lowered twice, as its reader and as its
     // normalization, so a selection's error is found twice: once is told.
     let mut diagnostics: Vec<Diagnostic> = Vec::new();
@@ -1048,6 +1100,26 @@ impl Lowering<'_> {
                                 .map(|value| value.value.lookup().to_string())
                                 .collect()
                         });
+                }
+                if let Type::InputObject(id) = named {
+                    // The entry goes in before its fields are built, so an
+                    // input that names itself through a field ends here.
+                    let seen = self.inputs.borrow().contains_key(&name);
+                    if !seen {
+                        self.inputs.borrow_mut().insert(name.clone(), Vec::new());
+                        let fields: Vec<InputFieldPlan> = self
+                            .schema
+                            .input_object(*id)
+                            .fields
+                            .iter()
+                            .map(|argument| InputFieldPlan {
+                                name: argument.name.item.0.lookup().to_string(),
+                                type_: self.type_plan(&argument.type_),
+                                indirect: false,
+                            })
+                            .collect();
+                        self.inputs.borrow_mut().insert(name.clone(), fields);
+                    }
                 }
                 let mapped = (kind == TypeKind::CustomScalar)
                     .then(|| self.config.custom_scalar_types.get(&name).cloned())

@@ -631,6 +631,9 @@ mod scalar_tests;
 #[path = "enum_tests.rs"]
 mod enum_tests;
 
+#[path = "input_tests.rs"]
+mod input_tests;
+
 #[path = "extension_tests.rs"]
 mod extension_tests;
 

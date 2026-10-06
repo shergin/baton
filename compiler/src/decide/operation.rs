@@ -83,9 +83,8 @@ pub struct VariableShape {
 pub enum VariableBase {
     /// A scalar, as the accessors read it.
     Scalar(Primitive),
-    /// An input object, which the request carries as the runtime's variable
-    /// value.
-    Input,
+    /// An input object, read as the Swift struct generated for it.
+    Input(String),
 }
 
 /// An operation's value, its root lens decided by `readers`; the names it
@@ -403,7 +402,7 @@ fn variable_shape(variable: &VariablePlan) -> VariableShape {
         | TypeKind::Id
         | TypeKind::Enum
         | TypeKind::CustomScalar => VariableBase::Scalar(ScalarShape::primitive(&variable.type_)),
-        _ => VariableBase::Input,
+        _ => VariableBase::Input(variable.type_.base_name().to_string()),
     };
     VariableShape {
         base,

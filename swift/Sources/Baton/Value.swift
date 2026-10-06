@@ -61,6 +61,10 @@ public enum Variable: Hashable, Sendable {
     public init(_ value: [Bool?]?) { self = value.map { .list($0.map(Variable.init)) } ?? .null }
     public init(_ value: Variable?) { self = value ?? .null }
     public init(_ value: [Variable]?) { self = value.map(Variable.list) ?? .null }
+    /// An input object is sent as the object its struct renders.
+    public init<T: InputObject>(_ value: T?) { self = value?.variable ?? .null }
+    public init<T: InputObject>(_ value: [T]?) { self = value.map { .list($0.map(\.variable)) } ?? .null }
+    public init<T: InputObject>(_ value: [T?]?) { self = value.map { .list($0.map { Variable($0) }) } ?? .null }
     /// A mapped scalar is sent as its text.
     public init<T: MappedScalar>(_ value: T?) { self = value.map { .string($0.scalarText) } ?? .null }
     public init<T: MappedScalar>(_ value: [T]?) { self = value.map { .list($0.map { .string($0.scalarText) }) } ?? .null }
@@ -101,6 +105,38 @@ public enum Variable: Hashable, Sendable {
         }
         return output + "\""
     }
+}
+
+/// A Swift struct generated for a schema input object: a property per field,
+/// typed as the schema types it, and the object the request carries. A field
+/// left nil is absent from the request, as GraphQL distinguishes absent from
+/// null. Hashable, as the operation value whose variable it is compares and
+/// hashes its variables.
+public protocol InputObject: Hashable, Sendable {
+    var variable: Variable { get }
+}
+
+/// Boxes a field of an input object whose type contains the input itself,
+/// directly or through other inputs, which a value type cannot hold:
+/// `input Filter { not: Filter }`. Generated code stores such a field in one
+/// of these behind a property of the field's own type.
+public struct Indirect<Value: Hashable & Sendable>: Hashable, Sendable {
+    private final class Box: Sendable {
+        let value: Value
+        init(_ value: Value) { self.value = value }
+    }
+
+    private var box: Box
+
+    public init(_ value: Value) { box = Box(value) }
+
+    public var value: Value {
+        get { box.value }
+        set { box = Box(newValue) }
+    }
+
+    public static func == (lhs: Indirect, rhs: Indirect) -> Bool { lhs.box.value == rhs.box.value }
+    public func hash(into hasher: inout Hasher) { hasher.combine(box.value) }
 }
 
 /// An operation's variables by name.

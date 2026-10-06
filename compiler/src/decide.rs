@@ -34,7 +34,7 @@ pub use lens::{
 };
 pub use operation::{BuilderPlan, BuilderValue, OperationValue, VariableBase, VariableValue};
 
-use crate::names::{NameError, Reserved, Written, enum_type_name};
+use crate::names::{NameError, Reserved, Written, enum_type_name, input_type_name};
 use crate::pipeline::{
     ConditionClass, ConnectionPlan, EditPlan, LookupPlan, Plan, SelectionPlan, StorageKeyPlan,
     TypePlan,
@@ -64,7 +64,12 @@ pub struct FragmentLens {
 /// numbers argument sites.
 pub fn program(plan: &Plan) -> Result<Program, Vec<NameError>> {
     let mut readers = reader::Readers::new(plan);
-    let builder_names = Reserved::builders(plan.enums.keys().map(|name| enum_type_name(name)));
+    let builder_names = Reserved::builders(
+        plan.enums
+            .keys()
+            .map(|name| enum_type_name(name))
+            .chain(plan.inputs.keys().map(|name| input_type_name(name))),
+    );
     let mut duplicates = Vec::new();
     let fragments = plan
         .fragments

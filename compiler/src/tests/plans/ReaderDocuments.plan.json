@@ -9692,5 +9692,54 @@
         }
       ]
     }
-  ]
+  ],
+  "inputs": {
+    "FilterCharacter": [
+      {
+        "name": "name",
+        "type": {
+          "shape": "named",
+          "name": "String",
+          "kind": "string",
+          "non_null": false
+        }
+      },
+      {
+        "name": "status",
+        "type": {
+          "shape": "named",
+          "name": "String",
+          "kind": "string",
+          "non_null": false
+        }
+      },
+      {
+        "name": "species",
+        "type": {
+          "shape": "named",
+          "name": "String",
+          "kind": "string",
+          "non_null": false
+        }
+      },
+      {
+        "name": "type",
+        "type": {
+          "shape": "named",
+          "name": "String",
+          "kind": "string",
+          "non_null": false
+        }
+      },
+      {
+        "name": "gender",
+        "type": {
+          "shape": "named",
+          "name": "String",
+          "kind": "string",
+          "non_null": false
+        }
+      }
+    ]
+  }
 }

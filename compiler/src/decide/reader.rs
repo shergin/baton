@@ -24,7 +24,9 @@ use super::members::{
     selects_nodes, spread_accessor_names, written_accessor,
 };
 use super::written_key;
-use crate::names::{Kind, NameError, Reserved, Scope, enum_type_name, lower_camel};
+use crate::names::{
+    Kind, NameError, Reserved, Scope, enum_type_name, input_type_name, lower_camel,
+};
 use crate::pipeline::{
     ArgumentPlan, CatchTarget, ConditionClass, ConnectionPlan, ConstantPlan, FragmentPlan, Plan,
     RefetchPlan, RequiredAction, SelectionPlan, StorageKeyPlan, VariablePlan,
@@ -184,7 +186,8 @@ impl Readers {
                             .iter()
                             .map(|operation| operation.name.clone()),
                     )
-                    .chain(plan.enums.keys().map(|name| enum_type_name(name))),
+                    .chain(plan.enums.keys().map(|name| enum_type_name(name)))
+                    .chain(plan.inputs.keys().map(|name| input_type_name(name))),
             ),
             sites: BTreeSet::new(),
             duplicates: Vec::new(),

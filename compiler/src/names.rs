@@ -437,6 +437,22 @@ pub fn enum_type_name(name: &str) -> String {
     escape(name)
 }
 
+/// A schema input object's Swift struct, declared at the module's top level,
+/// named as an enum's is.
+pub fn input_type_name(name: &str) -> String {
+    if MODULE_RESERVED_NAMES.contains(&name) || STANDARD_LIBRARY_NAMES.contains(&name) {
+        return format!("{name}Input");
+    }
+    escape(name)
+}
+
+/// An input object's field as a property of its struct: its own name,
+/// escaped; `variable` takes an underscore, since the struct's own member
+/// has it.
+pub fn input_field_name(name: &str) -> String {
+    underscored(name, &["variable"])
+}
+
 /// A schema enum's value as a case of its Swift enum: the value's own
 /// spelling, escaped where Swift reads it as a keyword; `unknown` takes an
 /// underscore, since the case for a value the build does not know has it.

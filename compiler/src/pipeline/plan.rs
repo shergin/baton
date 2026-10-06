@@ -26,6 +26,23 @@ pub struct Plan {
     /// The object types whose records never reach the image.
     #[serde(skip_serializing_if = "BTreeSet::is_empty")]
     pub transient_types: BTreeSet<String>,
+    /// The schema's input objects the documents' variables name, with their
+    /// fields in the schema's order, each generated as a Swift struct.
+    #[serde(skip_serializing_if = "BTreeMap::is_empty")]
+    pub inputs: BTreeMap<String, Vec<InputFieldPlan>>,
+}
+
+/// A field of an input object, as the schema declares it.
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize)]
+pub struct InputFieldPlan {
+    pub name: String,
+    #[serde(rename = "type")]
+    pub type_: TypePlan,
+    /// The field's type contains the input itself, directly or through other
+    /// inputs, outside a list: a value type cannot hold it, so the generated
+    /// struct boxes the field.
+    #[serde(skip_serializing_if = "is_false")]
+    pub indirect: bool,
 }
 
 /// Where a document wrote a name it chose: the file, which of the file's

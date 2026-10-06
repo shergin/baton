@@ -5,6 +5,12 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- A variable of an input object type takes a Swift struct generated for
+  the type, declared once per module in the shared file: a property per
+  field typed as the schema types it, an initializer with a parameter per
+  field, nil for a field left absent, and `variable`, the object the
+  request carries. A field name is checked by the compiler where it was
+  checked by the server before. Generated code of this shape is format 13.
 - What may reach the image is configured. `baton.json`'s `transient` block
   names types whose records are never written and root fields, as
   `Query.search`, whose cells, storage keys and fetch stamps never are,

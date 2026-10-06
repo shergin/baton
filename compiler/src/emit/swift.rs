@@ -12,8 +12,10 @@ use std::fmt;
 
 use super::writer::Writer;
 use crate::decide::{Primitive, ScalarShape, VariableBase, VariableValue};
-use crate::names::{enum_type_name, escape, keyed_types, possible_types, type_constant};
-use crate::pipeline::{ArgumentValuePlan, ConstantPlan};
+use crate::names::{
+    enum_type_name, escape, input_type_name, keyed_types, possible_types, type_constant,
+};
+use crate::pipeline::{ArgumentValuePlan, ConstantPlan, TypeKind, TypePlan};
 
 /// The runtime's module.
 pub(super) const RUNTIME: &str = "Baton";
@@ -131,6 +133,21 @@ fn primitive_type(primitive: &Primitive) -> SwiftType {
     }
 }
 
+/// An input object's field as its struct types it: a scalar, an enum or a
+/// mapped scalar as an accessor reads it, a nested input as its struct, a
+/// list as an array, optional unless the schema types it non-null.
+pub(super) fn input_field_type(type_: &TypePlan) -> SwiftType {
+    let base = match type_.base_kind() {
+        TypeKind::InputObject => SwiftType::Named(input_type_name(type_.base_name())),
+        _ => primitive_type(&ScalarShape::primitive(type_)),
+    };
+    let shape = match type_.element() {
+        Some(element) => base.optional_if(!element.non_null()).array(),
+        None => base,
+    };
+    shape.optional_if(!type_.non_null())
+}
+
 /// The anchor's reader for a scalar: `string`, `ints`, `nullableInts` for a
 /// list whose elements the schema types nullable; `mapped` and its lists
 /// for a scalar converted at the read.
@@ -163,7 +180,7 @@ pub(super) fn scalar_reader(shape: &ScalarShape) -> &'static str {
 pub(super) fn variable_type(variable: &VariableValue) -> SwiftType {
     let base = match &variable.shape.base {
         VariableBase::Scalar(primitive) => primitive_type(primitive),
-        VariableBase::Input => SwiftType::runtime("Variable"),
+        VariableBase::Input(name) => SwiftType::Named(input_type_name(name)),
     };
     let shape = match variable.shape.list {
         Some(list) => base.optional_if(!list.non_null).array(),

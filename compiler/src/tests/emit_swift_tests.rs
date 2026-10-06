@@ -267,9 +267,9 @@ fn a_variable_is_typed_by_its_shape_and_is_optional_when_it_may_be_null() {
             "page: Int?",
             "ids: [String]",
             "someIds: [String]?",
-            "required: Baton.Variable",
-            "filter: Baton.Variable?",
-            "filters: [Baton.Variable]",
+            "required: FilterCharacter",
+            "filter: FilterCharacter?",
+            "filters: [FilterCharacter]",
         ]
     );
 }

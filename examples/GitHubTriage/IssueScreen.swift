@@ -130,7 +130,7 @@ struct CommentComposer: View {
                 Task {
                     do {
                         try await addComment(
-                            input: .object(["subjectId": .string(subjectID), "body": .string(body)]),
+                            input: AddCommentInput(body: body, subjectId: subjectID),
                             connections: [connectionID]
                         )
                         text = ""

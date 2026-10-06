@@ -52,7 +52,11 @@ public enum Format10 {}
 public enum Format11 {}
 
 @_spi(Generated)
+@available(*, unavailable, message: "this generated code is of format 12 and the runtime reads format 13: a variable of an input type takes the struct generated for it; rebuild with the compiler of this release")
 public enum Format12 {}
+
+@_spi(Generated)
+public enum Format13 {}
 
 /// An operation's normalization plan, emitted by the compiler as static data:
 /// what the response contains and where each value is stored.

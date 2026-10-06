@@ -12,10 +12,10 @@ use super::lens::{
 };
 use super::{Guard, NormalizationKind, NormalizationSelection, Program};
 use crate::names::{
-    Kind, NameError, Reserved, STANDARD_LIBRARY_NAMES, Scope, Written, enum_type_name, keyed_types,
-    possible_types, type_constant,
+    Kind, NameError, Reserved, STANDARD_LIBRARY_NAMES, Scope, Written, enum_type_name,
+    input_type_name, keyed_types, possible_types, type_constant,
 };
-use crate::pipeline::{OperationKind, Plan};
+use crate::pipeline::{InputFieldPlan, OperationKind, Plan};
 
 /// What the shared file declares.
 #[derive(Debug, Clone, Default, PartialEq)]
@@ -44,6 +44,9 @@ pub struct Shared {
     /// The schema's enums the documents read or pass, with their values,
     /// each declared as a Swift enum.
     pub enums: BTreeMap<String, Vec<String>>,
+    /// The schema's input objects the documents' variables name, with their
+    /// fields, each declared as a Swift struct.
+    pub inputs: BTreeMap<String, Vec<InputFieldPlan>>,
     /// The slots of the schema extensions' fields, which the registry marks
     /// as the client's: a lens reads one as absent, not missing, until a
     /// payload writes it.
@@ -62,6 +65,7 @@ impl Shared {
             schema_digest: plan.schema_digest.clone(),
             root_names: plan.root_names.clone(),
             enums: plan.enums.clone(),
+            inputs: plan.inputs.clone(),
             transient_types: plan.transient_types.clone(),
             ..Shared::default()
         };
@@ -263,6 +267,13 @@ impl Shared {
                 &enum_type_name(name),
                 Kind::Type,
                 format!("the schema's enum `{name}`"),
+            );
+        }
+        for name in self.inputs.keys() {
+            module.declare(
+                &input_type_name(name),
+                Kind::Type,
+                format!("the schema's input object `{name}`"),
             );
         }
         if !self.abstract_slots.is_empty() {
