@@ -5,6 +5,11 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- An image over its size limit evicts instead of starting over: the rows
+  of launches before the last go first, then the last launch's, and the
+  file shrinks; only a file still over the limit with nothing left to evict
+  starts again. Recency is the launch's, which the rows already record; no
+  rule per type. Recorded in `docs/decisions/the-image-evicts-by-launch.md`.
 - CI compares the benchmark suite's deterministic counts, the notifications
   a commit path fires and the events a commit logs, with
   `benchmarks/counts.txt`: `swift run -c release BatonBenchmarks --counts`

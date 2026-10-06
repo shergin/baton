@@ -6,10 +6,11 @@ import Synchronization
 /// for data it does not hold. One SQLite file through the system library.
 ///
 /// Memory stays the truth: a read from the image fills only what memory
-/// lacks. The image is a cache: a file of another format or version, a
-/// corrupt file and a file over its size limit are deleted and started again,
-/// and a record that goes a whole session unread is dropped at the next
-/// launch. An image is made for one store and lives as long as it: the
+/// lacks. The image is a cache: a file of another format or version and a
+/// corrupt file are deleted and started again; a file over its size limit
+/// evicts the rows of launches before the last, then the last launch's, and
+/// starts again only when nothing is left to evict; and a record that goes a
+/// whole session unread is dropped at the next launch. An image is made for one store and lives as long as it: the
 /// environment's end closes it and gives the file back, and the next
 /// environment makes its own, on that file or another. One process uses a
 /// file at a time, and one image in it: a second image made on a file

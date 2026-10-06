@@ -716,6 +716,35 @@ func persistenceBench(data: Data, edited: Data, variables: Variables) async {
         return elapsed
     }
 
+    // An image over its limit at open evicts the launches before the last and
+    // keeps the last launch's rows, where it used to start over: two launches
+    // write 898 characters and then 899 assets, and a third opens with a
+    // limit between one launch's rows and both.
+    let evicted = FileManager.default.temporaryDirectory.appendingPathComponent("baton-bench-evict-\(UUID().uuidString).sqlite")
+    func fileSize(_ url: URL) -> Int { ((try? FileManager.default.attributesOfItem(atPath: url.path))?[.size] as? Int) ?? 0 }
+    let first = Persistence(url: evicted)
+    let firstStore = Store(persistence: first)
+    firstStore.commit(changes(for: firstStore))
+    await first.close()
+    let afterFirst = fileSize(evicted)
+    let second = Persistence(url: evicted)
+    let secondStore = Store(persistence: second)
+    let assetsPlan = BenchAssetPrices.plan.resolve(BenchAssetPrices().variables, in: secondStore.keys)
+    secondStore.commit(try! Ingest.normalize(assetPrices(899), plan: assetsPlan, rootKey: Store.rootKey))
+    await second.close()
+    let afterSecond = fileSize(evicted)
+    let openStart = now()
+    let third = Persistence(url: evicted, sizeLimit: afterFirst + (afterSecond - afterFirst) / 2)
+    let thirdStore = Store(persistence: third)
+    let keptAssets = thirdStore.check(BenchAssetPrices.plan.resolve(BenchAssetPrices().variables, in: thirdStore.keys)) != .miss
+    let droppedCharacters = !checks(thirdStore)
+    let opened = now() - openStart
+    print("  open of an image over its limit, evicting a launch's 898 rows and keeping 899: \(String(format: "%.2f", Double(opened) / 1_000_000)) ms, \(afterSecond) -> \(fileSize(evicted)) bytes")
+    count("eviction-kept-the-last-launch", keptAssets ? 1 : 0, "    kept the last launch's rows: \(keptAssets), dropped the older launch's: \(droppedCharacters)")
+    if countsOnly { count("eviction-dropped-the-older-launch", droppedCharacters ? 1 : 0, "") }
+    await third.close()
+    try? FileManager.default.removeItem(at: evicted)
+
     measure("hydration: the check reads 898 rows into an empty store", iterations: 20) {
         precondition(checks(Store(persistence: persistence)))
     }

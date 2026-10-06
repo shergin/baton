@@ -18,6 +18,7 @@ principle, the proof belongs here.
 - [The report is what a dependent target's compilation would read](the-report-is-what-a-dependent-target-reads.md)
 - [The environment logs value-free events](the-environment-logs-value-free-events.md)
 - [Derived state is observed, not signaled](derived-state-is-observed-not-signaled.md)
+- [The image evicts by launch before it starts over](the-image-evicts-by-launch.md)
 - [Marker macros carry the GraphQL](marker-macros.md)
 - [Floors at the 26 releases](platform-floors.md)
 - [Lookups satisfy root fields from cached entities](lookups.md) (superseded)

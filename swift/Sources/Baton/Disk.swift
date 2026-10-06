@@ -225,15 +225,22 @@ final class Disk: @unchecked Sendable {
         // The protection is the file's from its creation: a file made under
         // another starts again, so that what the image states is true of it.
         if !fresh, try text("SELECT value FROM meta WHERE key = 'protection'") != protection?.rawValue { throw .unreadable }
-        // An image that outgrew its limit starts over.
-        if let size = (try? FileManager.default.attributesOfItem(atPath: path))?[.size] as? Int, size > sizeLimit {
-            throw .unreadable
-        }
-
         // Cache-grade durability: a commit does not wait for the disk, and a
         // checkpoint does not force the drive's own cache. A crash loses the
         // last moments; the file stays consistent.
         try exec("PRAGMA journal_mode=WAL; PRAGMA synchronous=NORMAL; PRAGMA checkpoint_fullfsync=OFF")
+        // An image that outgrew its limit evicts before it starts over: the
+        // rows no launch has used since the one before last go first, as the
+        // writer's first batch would drop them, then the previous launch's,
+        // and the file shrinks. Only a file still over the limit with nothing
+        // left to evict starts again. Recency is the launch's: the rows
+        // record the generation that last used them and nothing finer.
+        if !fresh, fileSize() > sizeLimit {
+            let previous = try integer("SELECT coalesce((SELECT value FROM meta WHERE key = 'generation'), 0)")
+            try evict(before: previous)
+            if fileSize() > sizeLimit { try evict(before: previous + 1) }
+            if fileSize() > sizeLimit { throw .unreadable }
+        }
         if fresh {
             try exec("""
                 BEGIN IMMEDIATE;
@@ -438,6 +445,24 @@ final class Disk: @unchecked Sendable {
         if status == SQLITE_OK { status = sqlite3_step(statement) }
         if status == SQLITE_ROW { return sqlite3_column_int64(statement, 0) == Disk.applicationID ? .image : .foreign }
         return failure(status) == .unreadable ? .image : .unavailable
+    }
+
+    /// Deletes the rows last used before `generation` and gives their space
+    /// back: the file is rebuilt, and its log emptied, so the size the limit
+    /// is checked against is the rows that remain.
+    private func evict(before generation: Int64) throws(Failure) {
+        try exec("""
+            DELETE FROM records WHERE used < \(generation);
+            DELETE FROM root WHERE used < \(generation);
+            DELETE FROM fetches WHERE used < \(generation);
+            VACUUM;
+            PRAGMA wal_checkpoint(TRUNCATE)
+            """)
+    }
+
+    /// The file's size on disk; 0 for a file that cannot be read.
+    private func fileSize() -> Int {
+        ((try? FileManager.default.attributesOfItem(atPath: path))?[.size] as? Int) ?? 0
     }
 
     /// Deletes the file and its journal: an image that cannot be read is a

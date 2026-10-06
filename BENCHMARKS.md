@@ -21,6 +21,29 @@ Best ingest and best commit of the fixture at each release below.
   <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
 
+## Unreleased, eviction in the image — 2026-10-11
+
+Revision: the working tree of the eviction change on top of `0c61554`, one
+`--quick` run. Machine: Apple M1 Pro (MacBook Pro), macOS 26.5.2, release
+build. Not a quiet machine; read the row against the plain first use beside
+it, from the same run.
+
+An image over its size limit evicts the rows of launches before the last and
+keeps the last launch's, where it used to delete the file
+(`docs/decisions/the-image-evicts-by-launch.md`). The entry writes the
+fixture's 898 characters in one launch and 899 assets in the next, then
+opens a third time with a limit between one launch's rows and both.
+
+| Measurement | Time | Rows |
+|---|---|---|
+| First use in the process (open, create, a read that misses) | 2.41 ms | none |
+| Open of an image over its limit, evicting 898 rows and keeping 899 | 3.23 ms | the last launch's kept; 237,568 to 90,112 bytes |
+
+The eviction costs under a millisecond over a plain open, the deletes and
+the `VACUUM` together, for a file that keeps the last launch's data instead
+of starting cold. Two counts in `benchmarks/counts.txt` fix the outcome:
+`eviction-kept-the-last-launch 1`, `eviction-dropped-the-older-launch 1`.
+
 ## Unreleased, the log — 2026-10-11
 
 Revision: the working tree of the log change on top of `477266f`, one

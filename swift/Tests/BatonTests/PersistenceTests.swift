@@ -1167,16 +1167,70 @@ struct PersistenceTests {
         _ = try stored(Fixture(page: 1), in: launch())
     }
 
-    @Test("an image past its size limit is a miss and starts again")
-    func overTheSizeLimit() async throws {
+    /// The size of the image's file, its write-ahead log aside. Measured
+    /// after `finish`, when the last connection has closed and folded the
+    /// log into the file, so the number is the rows the file holds.
+    func fileSize() throws -> Int {
+        try #require(try FileManager.default.attributesOfItem(atPath: image.url.path)[.size] as? Int)
+    }
+
+    /// The generation the image's file records, the launches it has seen
+    /// since it was made.
+    func storedGeneration() -> Int64 {
+        var db: OpaquePointer?
+        sqlite3_open(image.url.path, &db)
+        defer { sqlite3_close(db) }
+        var statement: OpaquePointer?
+        sqlite3_prepare_v2(db, "SELECT value FROM meta WHERE key = 'generation'", -1, &statement, nil)
+        defer { sqlite3_finalize(statement) }
+        #expect(sqlite3_step(statement) == SQLITE_ROW, "the image records a generation")
+        return sqlite3_column_int64(statement, 0)
+    }
+
+    @Test("an image over its size limit at open evicts the launches before the last and keeps the last launch's rows")
+    func an_image_over_its_size_limit_at_open_evicts_the_launches_before_the_last_and_keeps_the_last_launchs_rows() async throws {
+        // The first launch writes the characters, the second the assets and
+        // nothing of the first's; the third opens with a limit halfway
+        // between the second launch's rows alone and both launches' rows.
+        // The three assets fit in the pages the characters left free, so the
+        // file does not grow between launches and the benchmark's midpoint
+        // between the two would be no limit at all: the assets alone are
+        // measured on a file of their own instead.
+        let alone = TemporaryImage()
+        let assetsOnly = launch(at: alone.url)
+        try await assetsOnly.commitPayload(TestAssetPricesQuery(), fixture("asset-prices"))
+        await finish(assetsOnly)
+        let assetsSize = try #require(try FileManager.default.attributesOfItem(atPath: alone.url.path)[.size] as? Int)
+
         try await seed(launch())
-        let size = try #require(try FileManager.default.attributesOfItem(atPath: image.url.path)[.size] as? Int)
+        let second = launch()
+        try await second.commitPayload(TestAssetPricesQuery(), fixture("asset-prices"))
+        await finish(second)
+        let afterSecond = try fileSize()
+        try #require(afterSecond > assetsSize, "the first launch's rows take room the second's alone do not")
+
+        let third = launch(sizeLimit: assetsSize + (afterSecond - assetsSize) / 2)
+        let assets = try stored(TestAssetPricesQuery(), in: third)
+        #expect(assets.assets?.count == 3)
+        #expect(throws: NotStored.self) { try stored(Fixture(page: 1), in: third) }
+        await finish(third)
+        let afterThird = try fileSize()
+        #expect(afterThird < afterSecond, "the evicted rows gave their space back")
+        #expect(storedGeneration() == 3, "the file was kept, not made again")
+    }
+
+    @Test("an image whose last launch's rows alone are over its size limit evicts them all and starts again")
+    func an_image_whose_last_launchs_rows_alone_are_over_its_size_limit_evicts_them_all_and_starts_again() async throws {
+        try await seed(launch())
+        let size = try fileSize()
         #expect(size > 4096)
         let small = launch(sizeLimit: 4096)
         #expect(throws: NotStored.self) { try stored(Fixture(page: 1), in: small) }
         await finish(small)
-        let after = try #require(try FileManager.default.attributesOfItem(atPath: image.url.path)[.size] as? Int)
-        #expect(after < size, "the file was deleted and made again")
+        // An image with no rows is still over 4096 bytes, its tables' pages,
+        // so the open has nothing left to evict and makes the file again.
+        #expect(try fileSize() < size, "the file was deleted and made again")
+        #expect(storedGeneration() == 1, "the file made again counts its first launch")
     }
 
     @Test("a damaged row is read as far as it goes: a name past any table, a link to no type, lists nested in lists, a row cut short")
