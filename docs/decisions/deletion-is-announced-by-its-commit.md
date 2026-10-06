@@ -40,7 +40,9 @@ batch, which is what tells the bodies that read its fields.
   2026-10-03 (M1 Pro, macOS 26.5.2): a commit whose only edit is one
   `@deleteRecord`, in a store of 8,965 records, costs 2.2 ms best, against
   7 µs before the pass. That is within a frame on that machine; a phone's
-  number at the same store size is the reopening condition.
+  number at the same store size is the reopening condition. No iPhone
+  12-class device was at hand on 2026-10-05, when the plan's ground step
+  asked for it; the condition stands until one is.
 
 ## Not chosen
 

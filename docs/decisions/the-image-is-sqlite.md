@@ -5,7 +5,8 @@ Status: accepted, 2026-10-03. Serves
 [Two runtimes, one compiler](../principles/two-runtimes-one-compiler.md).
 Reopen if a measurement on a phone shows the engine, not the records, keeping
 a cached screen out of its first frame; or if a second process (an extension,
-a widget) has to share the image.
+a widget) has to share the image. No iPhone 12-class device was at hand on 2026-10-05, when the plan's
+ground step asked for the number; the line stands until one is.
 
 ## Context
 

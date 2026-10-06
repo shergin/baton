@@ -5,6 +5,15 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- The bench suite measures what the next steps move, so that each has its
+  number before it moves anything: a collection pass over one root that
+  reaches 50,000 records, over 300 roots, and the pass that clears a store
+  of 50,000 records because no root is left; the re-evaluation a commit
+  runs today for a retained `@throwOnFieldError` handle, against the verdict
+  a phase read would compute in a body's own tracking scope; and a commit
+  with the three report closures set. The numbers are in `BENCHMARKS.md`.
+  No iPhone 12-class device was at hand for the suite, and the three
+  decision records whose reopening lines wait for one now say so.
 - Small truths. `Persistence(name:)` resolves under the app's bundle
   identifier, or the process's name when it has none, so two apps on a Mac
   that both name their image `"Main"` no longer share one file; an app

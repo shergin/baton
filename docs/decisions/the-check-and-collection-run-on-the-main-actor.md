@@ -7,7 +7,8 @@ preloads off the main actor. Serves
 Reopen if, on an iPhone 12-class device, a collection pass over the
 lifetime bench's 9,000 records, or hydration of the fixture's 898 rows,
 takes longer than a frame (16.7 ms), or if the two together miss a frame
-on a screen the bench suite models.
+on a screen the bench suite models. No iPhone 12-class device was at hand on 2026-10-05, when the plan's
+ground step asked for the number; the line stands until one is.
 
 ## Context
 

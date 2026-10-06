@@ -98,6 +98,24 @@ struct BenchmarkDocuments {
         }
         """)
     var caught: BenchCaught_character
+
+    @Query("""
+        query BenchStrictFixture($page: Int) @throwOnFieldError {
+          characters(page: $page) {
+            info { count pages next prev }
+            results {
+              id name status species type gender image created
+              origin { id name type dimension created }
+              location { id name type dimension created }
+              episode {
+                id name air_date episode created
+                characters { id name image }
+              }
+            }
+          }
+        }
+        """)
+    var strict: BenchStrictFixture
 }
 
 /// `--quick`: three samples per measurement, so CI runs every bench once
@@ -374,6 +392,15 @@ func run() async throws {
 
     print("lifetime: 42 pages scrolled, release buffer of 10")
     try await scrollBench(data: data)
+
+    print("collection: a pass over 50,000 records, over 300 roots, and one that keeps none")
+    try await collectionBench()
+
+    print("re-evaluation: the fixture under @throwOnFieldError, 20 field errors landing")
+    try await reevaluationBench(data: data, errored: errored)
+
+    print("reports: the fixture committed with the three report closures set")
+    reportBench(changes: changes)
 
     print("persistence: the fixture's 898 records and the root, through the image")
     await persistenceBench(changes: changes, edited: editedChanges, plan: plan)
@@ -737,6 +764,139 @@ func connectionBench() async throws {
     try await handle.refetch()
     refetched.settle()
     print("    refetch of the first page: nodes \(character.notes.nodes.count), notifications \(refetched.fired)")
+}
+
+/// What the lifetime step moves: a collection pass over one root that
+/// reaches 50,000 records, over 300 roots beside it and over 300 roots
+/// alone, and the pass that clears a store of 50,000 records because no
+/// root is left, which is what an environment's end will do.
+@MainActor
+func collectionBench() async throws {
+    let count = 50_000
+    let roots = 300
+    let results = (0..<count).map { #"{"id":"g\#($0)","name":"Character \#($0)"}"# }.joined(separator: ",")
+    let large = Data(#"{"data":{"characters":{"results":[\#(results)]}}}"#.utf8)
+    let small = (0..<roots).map { Data(#"{"data":{"character":{"id":"r\#($0)","name":"Root \#($0)"}}}"#.utf8) }
+    let transport = RecordedTransport { request in
+        if request.operationName == BenchCharacterNames.name { return large }
+        guard case .string(let id)? = request.variables["id"], id.hasPrefix("r"), let number = Int(id.dropFirst()) else { return nil }
+        return small[number]
+    }
+    /// Retains a handle per small root and waits for each.
+    func retainRoots(in environment: Environment) async -> [OperationHandle<BenchCharacterQuery>] {
+        let handles = (0..<roots).map { number in
+            let handle = environment.handle(for: BenchCharacterQuery(id: "r\(number)"))
+            handle.retain()
+            return handle
+        }
+        for handle in handles { await handle.settle() }
+        return handles
+    }
+
+    let environment = Environment(transport: transport)
+    environment.store.reportMissing = nil
+    let handle = environment.handle(for: BenchCharacterNames(page: 7))
+    handle.retain()
+    await handle.settle()
+    measure("a pass over one root reaching \(environment.store.count) records", iterations: 20) {
+        environment.collect()
+    }
+    let beside = await retainRoots(in: environment)
+    measure("a pass over \(roots + 1) roots, \(environment.store.count) records", iterations: 20) {
+        environment.collect()
+    }
+    handle.release()
+    for root in beside { root.release() }
+
+    let few = Environment(transport: transport)
+    few.store.reportMissing = nil
+    let alone = await retainRoots(in: few)
+    measure("a pass over \(roots) roots reaching one record each", iterations: 20) {
+        few.collect()
+    }
+    for root in alone { root.release() }
+
+    await measureEach("a pass that keeps none of \(count) records (a release buffer of zero)", iterations: 10) {
+        let environment = Environment(transport: transport, releaseBufferSize: 0)
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: BenchCharacterNames(page: 7))
+        handle.retain()
+        await handle.settle()
+        handle.release()
+        let start = DispatchTime.now().uptimeNanoseconds
+        environment.collect()
+        let elapsed = DispatchTime.now().uptimeNanoseconds - start
+        precondition(environment.store.count == 3, "the three roots stay")
+        return elapsed
+    }
+}
+
+/// What the handle step moves: the re-evaluation a commit runs today for a
+/// retained `@throwOnFieldError` handle, against the verdict a phase read
+/// would compute in a body's own tracking scope.
+@MainActor
+func reevaluationBench(data: Data, errored: Data) async throws {
+    let operation = BenchStrictFixture(page: 1)
+    let plan = BenchStrictFixture.plan.resolve(operation.variables)
+    let clean = try Ingest.normalize(data, plan: plan, rootKey: Store.rootKey)
+    let failed = try Ingest.normalize(errored, plan: plan, rootKey: Store.rootKey)
+
+    let plain = Store()
+    plain.reportMissing = nil
+    measure("commit of the errors, no handle retained", iterations: 20, setup: { plain.commit(clean) }) {
+        plain.commit(failed)
+    }
+    let environment = Environment(transport: RecordedTransport([BenchStrictFixture.name: data]))
+    let store = environment.store
+    store.reportMissing = nil
+    let handle = environment.handle(for: operation)
+    handle.retain()
+    await handle.settle()
+    measure("the same commit, a @throwOnFieldError handle retained (settles its phase)", iterations: 20, setup: { store.commit(clean) }) {
+        store.commit(failed)
+    }
+    measure("the commit that clears them, the handle retained", iterations: 20, setup: { store.commit(failed) }) {
+        store.commit(clean)
+    }
+
+    let anchor = Anchor(record: store.root, variables: operation.variables, store: store)
+    store.commit(clean)
+    measure("the verdict: field errors of the operation's own selection, none present", iterations: 50) {
+        _ = BenchStrictFixture.Data.fieldErrors(anchor)
+    }
+    measure("the verdict, in a body's tracking scope", iterations: 50) {
+        withObservationTracking { _ = BenchStrictFixture.Data.fieldErrors(anchor) } onChange: {}
+    }
+    store.commit(failed)
+    measure("the verdict, 20 errors present", iterations: 50) {
+        _ = BenchStrictFixture.Data.fieldErrors(anchor)
+    }
+    store.commit(clean)
+    handle.release()
+}
+
+/// What a report costs a commit: the fixture into an empty store and again
+/// into the same one, with the three report closures set; the plain numbers
+/// are under "commit" above.
+@MainActor
+func reportBench(changes: ChangeSet) {
+    var reported = 0
+    func reporting() -> Store {
+        let store = Store()
+        store.reportMissing = { _, _ in reported += 1 }
+        store.reportUnexpected = { _, _, _ in reported += 1 }
+        store.reportAmbiguousIdentity = { _, _ in reported += 1 }
+        return store
+    }
+    measure("into an empty store with the three report closures set", iterations: 20) {
+        reporting().commit(changes)
+    }
+    let store = reporting()
+    store.commit(changes)
+    measure("same payload again with the closures set", iterations: 20) {
+        store.commit(changes)
+    }
+    if reported != 0 { print("    reports during the commits: \(reported)") }
 }
 
 /// The optimistic half of a mutation that appends an edge: the layer's commit

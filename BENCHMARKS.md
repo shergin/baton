@@ -21,6 +21,77 @@ Best ingest and best commit of the fixture at each release below.
   <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
 
+## Unreleased, the ground step — 2026-10-05
+
+Revision: `2dfae99` with the benches this entry adds, which land in the
+commit after it. Machine: Apple M1 Pro (MacBook Pro), macOS 26.5.2, Xcode
+26.6, Swift 6.3.3, release build. One run on a quiet machine, so these are
+the "before" numbers the plan's spine steps are measured against, not a
+record to beat; the entry below took three runs.
+
+No iPhone 12-class device was at hand. The three decision records whose
+reopening lines wait for a phone's number say so since this entry.
+
+### Collection, for the lifetime step
+
+| Measurement | Best | Median | Notes |
+|---|---|---|---|
+| A pass over one root reaching 50,004 records | 2.65 ms | 2.69 ms | marks every record, sweeps none |
+| A pass over 301 roots, 50,304 records | 2.68 ms | 2.75 ms | the 300 small roots add 60 µs |
+| A pass over 300 roots reaching one record each | 49.3 µs | 52.0 µs | |
+| A pass that keeps none of 50,000 records | 21.0 ms | 22.7 ms | a release buffer of zero: what an environment's end will do, above a frame of 16.7 ms |
+| 42 pages scrolled, release buffer of 10, the pass | 0.18 ms | 2.53 ms | worst 3.00 ms, as the entry below |
+
+### The re-evaluation a commit runs, for the handle step
+
+The fixture under `@throwOnFieldError`, 899 records, with 20 field errors
+landing on the rows' `image`.
+
+| Measurement | Best | Median | Notes |
+|---|---|---|---|
+| Commit of the errors, no handle retained | 135 µs | 136 µs | |
+| The same commit, a `@throwOnFieldError` handle retained | 930 µs | 939 µs | the commit settles the handle's phase: one walk of the selection's field errors |
+| The commit that clears them, the handle retained | 713 µs | 716 µs | |
+| The verdict: field errors of the operation's own selection, none present | 567 µs | 567 µs | what a derived phase would compute on a read |
+| The verdict, 20 errors present | 785 µs | 786 µs | |
+| The verdict, in a body's tracking scope | 4.50 ms | 4.56 ms | every slot the walk reads registers |
+
+The handle step's gate proposed a read of the phase under 50 µs on the
+largest strict operation in `spec/`. On this one it is 567 µs untracked
+and 4.56 ms tracked: the gate fails as proposed, and the step parks at its
+first half, the fetch as a value, unless the verdict is made to cost
+less than a walk of every record.
+
+### A commit with the report closures set, for the report
+
+| Measurement | Best | Median | Without the closures |
+|---|---|---|---|
+| The fixture into an empty store, the three report closures set | 625 µs | 633 µs | 648 µs (685) |
+| The same payload again, the closures set | 126 µs | 127 µs | 126 µs (130) |
+
+Setting the closures costs a commit nothing: a commit calls none of them.
+
+### The long session, at 50,000 lookups
+
+The bench's session is 50,000 root lookups by id and 500 pages after
+cursors, where the entry below's was 2,000.
+
+| Measurement | Best | Median | At 2,000 lookups (the entry below) |
+|---|---|---|---|
+| Root field with a variable argument, untracked read, at the start | 38.4 ns | 39.2 ns | 36.3 ns (37.0) |
+| The same after 50,000 lookups and 500 pages | 54.3 ns | 54.8 ns | 45.4 ns (55.7) after 2,000 |
+| A commit of one lookup of a new id, at the session's start and end | 1.83 µs, 2.00 µs | 2.00 µs, 2.21 µs | 1.75 µs, 1.88 µs (1.92, 2.04) |
+| A commit of a page of 10, the session's first 50 and last 50 | 20.0 µs, 202 µs | 29.8 µs, 211 µs | 19.6 µs, 196 µs (29.8, 211) |
+| 50,000 new characters given a field numbered before the session | 42.6 ms | 48.7 ms | +18.3 MB |
+| 50,000 new characters given a field numbered after it | 43.9 ms | 46.1 ms | +34.3 MB |
+
+The session interns keys on `Query` from 469 to 50,672, one per id looked
+up, for the life of the process; the root holds 50,202 values, one per
+key; and the footprint grows by 22.7 MB over its 61,308 records. The
+collector now takes a root's entry with the record it swept, which this
+session, retaining everything, never exercises; the table of the process
+keeps every key either way until the session-keys step.
+
 ## Unreleased at 2ba3d18 — 2026-10-04
 
 Revision: 2ba3d18, the review plan's last changes (#28, #29), before a
