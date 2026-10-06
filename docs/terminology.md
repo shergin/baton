@@ -296,10 +296,11 @@ fetched operation stale and refetches the retained ones; an operation's
 [cache expiration](#documents), or the store's default, does the same by
 age. Stale data stays readable. An
 invalidation also forgets the image's fetch times, so it outlives the
-launch. A handle stamps its operation's age after its own fetch today; the
-age kept by the store, stamped by the commit of every response and
-persisted as the image's fetch time, is *(planned)*, and so is the rule
-that data with no known age is stale wherever an expiration applies. See
+launch. The age is the root's, kept by the store and stamped by the commit
+of every response, a handle's fetch, a refetch, a page, `Environment.fetch`
+or `commitPayload`, whoever asked for it, and persisted as the image's fetch
+time; a handle reads it as `fetchTime`. Data with no known age is stale
+wherever an expiration applies, in memory as from the image. See
 [the decision](decisions/the-store-owns-roots-and-ages.md).
 
 **Persistence, image.** *Concept: store.* Baton's words; Relay's store lives

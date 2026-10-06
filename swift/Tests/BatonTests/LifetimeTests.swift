@@ -316,6 +316,60 @@ struct LifetimeTests {
         withExtendedLifetime((headerRetention, freshRetention)) {}
     }
 
+    @Test("every server write dates its operation, whoever asked for it: a handle's fetch, a fetch by type and variables, and a payload committed by hand")
+    func everyServerWriteDatesItsOperation() async throws {
+        // An expiration applies, so data with no known age would read stale.
+        let environment = Environment(transport: transport(), store: Store(cacheExpiration: .seconds(3600)))
+        let handle = environment.handle(for: TestHeaderQuery(id: "5"))
+        let retention = handle.retain()
+        #expect(handle.fetchTime == nil)
+        await handle.settle()
+        #expect(handle.fetchTime != nil, "the handle's fetch dated its operation")
+        #expect(!handle.isStale)
+
+        let beforeFetch = environment.store.rootCount
+        try await environment.fetch(TestHeaderQuery.self, variables: TestHeaderQuery(id: "11").variables)
+        #expect(environment.store.rootCount == beforeFetch + 1, "the query written that nothing retains waits in the release buffer")
+        let fetched = environment.handle(for: TestHeaderQuery(id: "11"), fetchPolicy: .storeOnly)
+        guard case .ready = fetched.phase else {
+            Issue.record("expected the fetched lookup from the store, got \(fetched.phase)")
+            return
+        }
+        #expect(fetched.fetchTime != nil, "the fetch by type dated the operation no handle asked for")
+        #expect(!fetched.isStale)
+
+        let beforeCommit = environment.store.rootCount
+        try await environment.commitPayload(Fixture(page: 1), fixtureData)
+        #expect(environment.store.rootCount == beforeCommit + 1, "the query committed by hand waits in the release buffer")
+        let committed = environment.handle(for: Fixture(page: 1), fetchPolicy: .storeOnly)
+        guard case .ready = committed.phase else {
+            Issue.record("expected the committed page from the store, got \(committed.phase)")
+            return
+        }
+        #expect(committed.fetchTime != nil, "the payload committed by hand dated its operation")
+        #expect(!committed.isStale)
+        withExtendedLifetime(retention) {}
+    }
+
+    @Test("data no fetch of its own operation dated is stale where an expiration applies, and fresh where none does")
+    func dataWithNoKnownAgeIsStaleUnderAnExpiration() async throws {
+        for expiration in [Duration.seconds(3600), nil] {
+            let environment = Environment(transport: transport(), store: Store(cacheExpiration: expiration))
+            let list = environment.handle(for: TestList(page: 1))
+            let retention = list.retain()
+            await list.settle()
+            // The list brought the character; its lookup was never fetched.
+            let header = environment.handle(for: TestHeaderQuery(id: "1"), fetchPolicy: .storeOnly)
+            guard case .ready = header.phase else {
+                Issue.record("expected the lookup answered by the list, got \(header.phase)")
+                return
+            }
+            #expect(header.fetchTime == nil)
+            #expect(header.isStale == (expiration != nil))
+            withExtendedLifetime(retention) {}
+        }
+    }
+
     @Test("a refetch during a fetch supersedes it: one fetch stays in flight, the superseded response is not committed, and the handle follows the refetch")
     func refetchDuringAFetch() async throws {
         let transport = GatedTransport()

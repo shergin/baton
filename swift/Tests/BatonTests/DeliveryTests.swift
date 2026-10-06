@@ -255,7 +255,14 @@ struct DeliveryTests {
             .replacingOccurrences(of: "\"status\":\"Alive\"", with: "\"status\":null")
         let plan = TestProfileQuery.plan.resolve(TestProfileQuery(id: "1").variables)
         store.commit(try Ingest.normalize(Data(unstated.utf8), plan: plan))
-        #expect(try profile(environment).testProfile == nil)
+        // Read through a handle, whose lenses know the environment to report
+        // to; a lens made by hand has none.
+        let handle = environment.handle(for: TestProfileQuery(id: "1"), fetchPolicy: .storeOnly)
+        guard case .ready(let profile) = handle.phase else {
+            Issue.record("expected the profile from the store, got \(handle.phase)")
+            return
+        }
+        #expect(try #require(profile.character).testProfile == nil)
         #expect(logged == ["status"])
 
         // THROW: the field's own accessor throws; the semantic field reads non-optional.
@@ -465,6 +472,20 @@ struct DeliveryTests {
             #expect((handle.fetchTime != nil) == completes)
             _ = consume retention
         }
+    }
+
+    @Test("a deferred response fetched by no handle dates its operation when its stream completes, not at its first part")
+    func deferredFetchDatesAtCompletion() async throws {
+        let transport = GatedParts(fixture("character-deferred-1"), fixture("character-deferred-2"))
+        let environment = Environment(transport: transport)
+        environment.store.reportMissing = nil
+        let fetching = Task { try await environment.fetch(TestProfileQuery(id: "1")) }
+        await until { environment.store.existing("Character:1") != nil }
+        let probe = environment.handle(for: TestProfileQuery(id: "1"), fetchPolicy: .storeOnly)
+        #expect(probe.fetchTime == nil, "the first part is not the whole response")
+        transport.release()
+        try await fetching.value
+        #expect(probe.fetchTime != nil, "the completed stream dated the operation")
     }
 
     @Test("a deferred fetch whose stream broke after the first part fetches again when a view attaches it under the default policy")

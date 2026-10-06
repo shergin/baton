@@ -19,8 +19,9 @@ public final class Store {
     /// The record subscription payloads hang off.
     package let subscriptionRoot: Record
     private var records: [String: Record] = [:]
-    /// The environment that owns the store, for lenses that fetch.
-    weak var environment: Environment?
+    /// Called once a batch that changed a null, an error or a link has
+    /// notified, for the phases that read them; the environment sets it.
+    var phasesNeedSettling: (() -> Void)?
 
     /// Called when a lens reads a slot the store never received. Debug builds
     /// print by default; a product can route it to its own reporting.
@@ -348,7 +349,7 @@ public final class Store {
     private func reevaluateIfNeeded() {
         guard nullsOrErrorsChanged else { return }
         nullsOrErrorsChanged = false
-        environment?.reevaluate()
+        phasesNeedSettling?()
     }
 
     /// Applies a server's payload and hands the image what it changed, and

@@ -23,7 +23,7 @@ public final class Environment {
         self.store = store
         self.transport = transport
         self.subscriptions = subscriptions
-        store.environment = self
+        store.phasesNeedSettling = { [weak self] in self?.reevaluate() }
         #if DEBUG
         requiredFieldMissing = { record, path in
             print("Baton: the @required field \(path) of \(record.key) is null; its lens reads as null")
@@ -156,17 +156,22 @@ public final class Environment {
     /// refuses, the commit stamps the operation's age, a report is raised.
     /// `complete` says whether the payload must answer every field the plan
     /// selects, as a server's response does; one committed by hand may not.
-    func commit(_ payload: Data, plan: ResolvedSelection, root: String, replacing layer: UUID? = nil, checkingCancellation: Bool = true, complete: Bool = true) async throws -> Committed {
-        let changes = try await Ingest.normalized(payload, plan: plan, rootKey: root, complete: complete)
+    /// `dating` is the root of the operation the payload answers, which the
+    /// commit stamps with the time, so that every server write dates its
+    /// operation, whoever asked for it.
+    func commit(_ payload: Data, plan: ResolvedSelection, root: Store.Root, replacing layer: UUID? = nil, checkingCancellation: Bool = true, complete: Bool = true) async throws -> Committed {
+        let changes = try await Ingest.normalized(payload, plan: plan, rootKey: root.record.key, complete: complete)
         if checkingCancellation { try Task.checkCancellation() }
-        return commit(changes, replacing: layer)
+        return commit(changes, replacing: layer, dating: root)
     }
 
-    /// The door's lower half: a change set committed as a server batch. The
-    /// parts of a deferred stream after the first arrive here as the change
-    /// sets the delivery assembled.
-    func commit(_ changes: ChangeSet, replacing layer: UUID? = nil) -> Committed {
+    /// The door's lower half: a change set committed as a server batch, and
+    /// the root dated when the change set completes its operation's response.
+    /// The parts of a deferred stream after the first arrive here as the
+    /// change sets the delivery assembled, and the last of them dates.
+    func commit(_ changes: ChangeSet, replacing layer: UUID? = nil, dating root: Store.Root? = nil) -> Committed {
         store.commit(changes, replacingOptimistic: layer)
+        if let root { evict(store.date(root)) }
         var committed = Committed()
         committed.add(changes)
         return committed
@@ -189,22 +194,22 @@ public final class Environment {
     /// it was. Under `@throwOnFieldError` the field errors no `@catch`
     /// handled are thrown, as a fetch throws them.
     public func commitPayload<Op: Operation>(_ operation: Op, _ payload: Data) async throws {
-        let resolved = Op.plan.resolve(operation.variables)
-        let committed = try await commit(payload, plan: resolved, root: Self.rootKey(of: Op.self), checkingCancellation: false, complete: false)
+        let root = store.root(Op.name + operation.variables.json, resolved: Op.plan.resolve(operation.variables), record: rootRecord(of: Op.self))
+        let committed = try await commit(payload, plan: root.resolved, root: root, checkingCancellation: false, complete: false)
         if Op.throwsOnFieldError, !committed.uncaught.isEmpty { throw FieldErrors(committed.uncaught) }
     }
 
     /// The record an operation's payload hangs off, by the operation's kind.
-    private static func rootKey<Op: Operation>(of operation: Op.Type) -> String {
-        if operation is any Mutation.Type { return Store.mutationRootKey }
-        if operation is any Subscription.Type { return Store.subscriptionRootKey }
-        return Store.rootKey
+    private func rootRecord<Op: Operation>(of operation: Op.Type) -> Record {
+        if operation is any Mutation.Type { return store.mutationRoot }
+        if operation is any Subscription.Type { return store.subscriptionRoot }
+        return store.root
     }
 
     /// Fetches an operation by its type and variables and commits the response.
-    /// No handle and no root come of it: refetches and pagination run this way,
-    /// and the records they fill stay alive through whatever reaches them.
-    /// Returns the field errors no `@catch` handled.
+    /// Refetches and pagination run this way: no handle comes of it, and the
+    /// operation's root, dated by the commit, waits in the release buffer if
+    /// nothing retains it. Returns the field errors no `@catch` handled.
     @discardableResult
     public func fetch<Op: Query>(_ operation: Op.Type, variables: Variables, firstPart: (() -> Void)? = nil) async throws -> [FieldError] {
         try await fetch(operation, variables: variables, resolved: Op.plan.resolve(variables), firstPart: firstPart.map { firstPart in { _ in firstPart() } }).uncaught
@@ -212,10 +217,13 @@ public final class Environment {
 
     private func fetch<Op: Query>(_ operation: Op.Type, variables: Variables, resolved: ResolvedSelection, firstPart: ((Committed) -> Void)?) async throws -> Committed {
         let request = request(Op.self, variables: variables)
+        // The operation's root: a handle's, or one made here, which waits in
+        // the release buffer once dated if nothing retains it.
+        let root = store.root(Op.name + variables.json, resolved: resolved, record: store.root)
         if !Op.hasDeferred {
             // A fetch superseded while its response was on the way or being
             // read must not land after the one that replaced it.
-            return try await commit(try await transport.execute(request), plan: resolved, root: Store.rootKey)
+            return try await commit(try await transport.execute(request), plan: resolved, root: root)
         }
         var committed = Committed()
         var delivery = Delivery(store: store, resolved: resolved)
@@ -243,6 +251,8 @@ public final class Environment {
             }
             if !incremental.hasNext { break }
         }
+        // A deferred response is fetched, and fresh, once its stream completes.
+        evict(store.date(root))
         return committed
     }
 
@@ -265,6 +275,7 @@ public final class Environment {
     /// an equal value, the same name and variables, takes its place.
     public func mutate<Op: Mutation>(_ operation: Op, optimistic: Variable? = nil) async throws -> Op.Data {
         let resolved = Op.plan.resolve(operation.variables)
+        let root = store.root(Op.name + operation.variables.json, resolved: resolved, record: store.mutationRoot)
         var layer: UUID?
         if let optimistic {
             let json = Data(("{\"data\":" + optimistic.json + "}").utf8)
@@ -280,14 +291,14 @@ public final class Environment {
             let request = request(Op.self, variables: operation.variables)
             let transport = transport
             let data = try await Task { try await transport.execute(request) }.value
-            uncaught = try await commit(data, plan: resolved, root: Store.mutationRootKey, replacing: layer, checkingCancellation: false).uncaught
+            uncaught = try await commit(data, plan: resolved, root: root, replacing: layer, checkingCancellation: false).uncaught
         } catch {
             if let layer { store.revertOptimistic(layer) }
             throw error
         }
-        store.keepCompleted(store.root(Op.name + operation.variables.json, resolved: resolved, record: store.mutationRoot))
+        store.keepCompleted(root)
         if Op.throwsOnFieldError, !uncaught.isEmpty { throw FieldErrors(uncaught) }
-        return Op.Data(anchor: Anchor(record: store.mutationRoot, variables: operation.variables, store: store))
+        return Op.Data(anchor: Anchor(record: store.mutationRoot, owner: Owner(variables: operation.variables, store: store, environment: self)))
     }
 
     /// The events of a subscription, as the transport delivers them.

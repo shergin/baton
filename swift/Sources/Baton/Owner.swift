@@ -21,13 +21,23 @@ public final class Owner {
     private var bound: [(site: ArgumentSite, owner: Owner)] = []
     private var inertOwner: Owner?
 
+    /// The environment that fetches for the scope's lenses: their refetches
+    /// and pages. None for a lens made by hand, which cannot fetch.
+    private(set) weak var environment: Environment?
+
     nonisolated public convenience init(variables: Variables, store: Store? = nil) {
-        self.init(variables: variables, store: store, reports: true)
+        self.init(variables: variables, store: store, environment: nil, reports: true)
     }
 
-    nonisolated private init(variables: Variables, store: Store?, reports: Bool) {
+    /// The scope of a handle's lenses, which fetch through its environment.
+    convenience init(variables: Variables, store: Store, environment: Environment) {
+        self.init(variables: variables, store: store, environment: environment, reports: true)
+    }
+
+    nonisolated private init(variables: Variables, store: Store?, environment: Environment?, reports: Bool) {
         self.variables = variables
         self.store = store
+        self.environment = environment
         self.reports = reports
     }
 
@@ -55,7 +65,7 @@ public final class Owner {
         for entry in bound where entry.site === site { return entry.owner }
         var merged = variables.values
         for (name, value) in values() { merged[name] = value ?? .null }
-        let owner = Owner(variables: Variables(merged), store: store, reports: reports)
+        let owner = Owner(variables: Variables(merged), store: store, environment: environment, reports: reports)
         bound.append((site, owner))
         return owner
     }
@@ -65,7 +75,7 @@ public final class Owner {
     /// non-null link below it reads the store's placeholder of its type.
     var inert: Owner {
         if let inertOwner { return inertOwner }
-        let owner = reports ? Owner(variables: variables, store: store, reports: false) : self
+        let owner = reports ? Owner(variables: variables, store: store, environment: environment, reports: false) : self
         inertOwner = owner
         return owner
     }

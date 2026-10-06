@@ -266,7 +266,7 @@ extension Anchor {
     /// placeholder holds it, whose link reported already; always false, so
     /// a guard can return it.
     public func requiredMissing(path: String, log: Bool) -> Bool {
-        if log, owner.reports { store?.environment?.requiredFieldMissing?(record, path) }
+        if log, owner.reports { owner.environment?.requiredFieldMissing?(record, path) }
         return false
     }
 
@@ -443,7 +443,7 @@ extension Anchor {
     }
 
     private func environment() throws -> Environment {
-        guard let environment = store?.environment else {
+        guard let environment = owner.environment else {
             throw EnvironmentError.outsideEnvironment
         }
         return environment

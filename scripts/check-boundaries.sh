@@ -20,7 +20,6 @@ cd "$root/swift/Sources/Baton"
 # Rules 3 and 4, as "<file> names <word>", one a line, with the step that
 # removes each after a colon.
 listed='
-Store.swift names Environment: the store reaches its environment to settle phases after a commit (SP1) and to fetch for lenses (SP3)
 '
 
 failures=0

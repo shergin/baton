@@ -4,6 +4,18 @@ import Foundation
 import Observation
 import Testing
 
+/// A transport that answers the notes query with its first page and holds
+/// every request after it until the test answers it, so a page load can be
+/// watched in flight on the environment that made the handle.
+final class GatedPages: Transport, Sendable {
+    let gate = GatedTransport()
+
+    func execute(_ request: Request) async throws -> Data {
+        if request.operationName == TestNotesQuery.name { return notesPage(1) }
+        return try await gate.execute(request)
+    }
+}
+
 @MainActor
 @Suite("Lists", .timeLimit(.minutes(1)))
 struct ListTests {
@@ -99,20 +111,36 @@ struct ListTests {
         try await character.notes.loadNext()
         #expect(transport.requestCount == 3, "nothing to load")
 
-        // The pagination fetches created no roots; the connection keeps its pages.
-        #expect(environment.store.rootCount == 1)
+        // Each page fetched is dated on a root of its own, which nothing
+        // retains and so waits in the release buffer; the connection keeps
+        // its pages through the notes query's root.
+        #expect(environment.store.rootCount == 3, "the notes query's root and the two pages' waiting in the buffer")
         environment.store.collect()
         #expect(character.notes.nodes.count == 5)
         #expect(environment.store.existing("Note:n5") != nil)
         withExtendedLifetime(retention) {}
     }
 
+    @Test("a lens pages through the environment that made its handle, not another made later over the same store")
+    func lensPagesThroughItsHandlesEnvironment() async throws {
+        let transport = notesTransport()
+        let (environment, character, retention) = try await seededEnvironment(transport)
+        let later = RecordedTransport()
+        let other = Environment(transport: later, store: environment.store)
+        try await character.notes.loadNext()
+        #expect(transport.requestCount == 2)
+        #expect(later.requestCount == 0)
+        #expect(character.notes.nodes.count == 4)
+        withExtendedLifetime((other, retention)) {}
+    }
+
     @Test("isLoadingNext is a client field on the connection record while the page is in flight")
     func loadingFlag() async throws {
-        let (environment, character, retention) = try await seededEnvironment()
-        let gate = GatedTransport()
-        // A second environment over the same store takes the lens's fetches.
-        let paging = Environment(transport: gate, store: environment.store)
+        // The lens pages through the environment that made its handle, whose
+        // transport holds the page until the test answers it.
+        let transport = GatedPages()
+        let gate = transport.gate
+        let (environment, character, retention) = try await seededEnvironment(transport)
         #expect(!character.notes.isLoadingNext)
         let loading = Task { try await character.notes.loadNext() }
         await until { gate.pending != 0 }
@@ -121,15 +149,15 @@ struct ListTests {
         try await loading.value
         #expect(!character.notes.isLoadingNext)
         #expect(character.notes.nodes.count == 4)
-        #expect(paging.store.rootCount == 1, "a page fetch is no root: the store's one root is the notes query's")
+        #expect(environment.store.rootCount == 2, "the notes query's root and the page's, dated and waiting in the buffer")
         withExtendedLifetime(retention) {}
     }
 
     @Test("the loading flag notifies its readers when a page load sets it and again when the load clears it")
     func loadingFlagNotifies() async throws {
-        let (environment, character, retention) = try await seededEnvironment()
-        let gate = GatedTransport()
-        let paging = Environment(transport: gate, store: environment.store)
+        let transport = GatedPages()
+        let gate = transport.gate
+        let (environment, character, retention) = try await seededEnvironment(transport)
         let (fired, track) = counter { _ = character.notes.isLoadingNext }
         track()
         let loading = Task { try await character.notes.loadNext() }
@@ -142,7 +170,7 @@ struct ListTests {
         try await loading.value
         #expect(fired() == 2, "the flag was cleared")
         #expect(!character.notes.isLoadingNext)
-        withExtendedLifetime(paging) {}
+        #expect(environment.store.rootCount == 2, "the notes query's root and the page's, dated and waiting in the buffer")
         withExtendedLifetime(retention) {}
     }
 
@@ -327,7 +355,7 @@ struct ListTests {
         #expect(first.text == "Wubba lubba dub dub!", "the lens over the same record reads the new value")
         #expect(fired() == 1)
         #expect(character.notes.nodes.count == 2)
-        #expect(environment.store.rootCount == 1, "the refetch is no root of its own")
+        #expect(environment.store.rootCount == 2, "the notes query's root and the refetch query's, dated and waiting in the buffer")
         withExtendedLifetime(retention) {}
     }
 

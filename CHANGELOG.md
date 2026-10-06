@@ -5,6 +5,17 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- The commit stamps an operation's age. Every server write dates its
+  operation, whoever asked for it: a handle's fetch, a refetch, a page,
+  `Environment.fetch` or `commitPayload`, and a deferred response when its
+  stream completes; the age is the root's, in the store, and a handle reads
+  it as `fetchTime`. A query just written that nothing retains waits in the
+  release buffer, as Relay's does. Data with no known age is stale wherever
+  an expiration applies, in memory as it already was from the image: an
+  operation never fetched whose data another operation brought refetches
+  under a `storeOrNetwork` attach when a cache expiration applies. The store
+  no longer names its environment: a lens fetches through its owner, and
+  the phases a commit settles are told through a hook.
 - The store owns what keeps records alive. A root, an operation's selection
   and the record it starts from, is the store's, with how many hold it;
   `retain()` returns a `Retention`, a token whose end releases, and

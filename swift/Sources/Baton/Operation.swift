@@ -155,9 +155,9 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
     /// failure and when it failed. A fetch that fails behind data leaves the
     /// phase as it was and is read here, by every view of the handle.
     public private(set) var fetch: Fetch = .idle
-    /// When this handle last committed a response.
-    public private(set) var fetchTime: ContinuousClock.Instant?
-    @ObservationIgnored private(set) var fetchEpoch = 0
+    /// When the store last committed the operation's response, in this launch
+    /// or, from the image, an earlier one: the root's age.
+    public var fetchTime: ContinuousClock.Instant? { root.fetchTime }
     /// The environment that made the handle. A view may release its handle
     /// after the environment is gone, which then does nothing.
     @ObservationIgnored private(set) weak var environment: Environment?
@@ -184,7 +184,7 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
         self.environment = environment
         store = environment.store
         root = environment.store.root(key, resolved: Op.plan.resolve(operation.variables), record: environment.store.root)
-        owner = Owner(variables: operation.variables, store: environment.store)
+        owner = Owner(variables: operation.variables, store: environment.store, environment: environment)
     }
 
     /// How many hold the handle's root; for the tests.
@@ -264,30 +264,12 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
     /// data in the store, and it ages as ready data does.
     public var isStale: Bool {
         guard showsData else { return false }
-        if fetchEpoch < store.invalidationEpoch { return true }
-        if let expiration = Op.cacheExpiration ?? store.cacheExpiration, let fetchTime, fetchTime + expiration < .now { return true }
-        return false
-    }
-
-    /// Notes a response that just committed: the handle's own clock, and the
-    /// image's, which a later launch reads the age from.
-    private func didFetch() {
-        fetchTime = .now
-        fetchEpoch = store.invalidationEpoch
-        store.persistence?.fetched(key, removals: store.imageRemovals)
-    }
-
-    /// Gives data this handle did not fetch the age the image knows: the time
-    /// since an earlier launch fetched it. Data that had to be read from the
-    /// image and has no such time is stale.
-    private func takeAge(hydrated: Bool) {
-        guard fetchTime == nil, let persistence = store.persistence else { return }
-        if let age = persistence.age(of: key, removals: store.imageRemovals) {
-            fetchTime = .now - .seconds(age)
-            fetchEpoch = store.invalidationEpoch
-        } else if hydrated {
-            fetchEpoch = store.invalidationEpoch - 1
-        }
+        if root.fetchEpoch < store.invalidationEpoch { return true }
+        guard let expiration = Op.cacheExpiration ?? store.cacheExpiration else { return false }
+        // Data with no known age is stale wherever an expiration applies: the
+        // rule hydration has, in memory too.
+        guard let fetchTime = root.fetchTime else { return true }
+        return fetchTime + expiration < .now
     }
 
     /// Applies a policy on attach: renders what the store allows, fetches
@@ -317,7 +299,7 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
         // The deferred parts the store holds half are cleared and fetched;
         // the initial part renders meanwhile.
         let partial = complete && Op.hasDeferred && !store.deferredPartsHold(resolved)
-        if complete { takeAge(hydrated: answer == .image) }
+        if complete { store.takeAge(root, hydrated: answer == .image) }
         if complete {
             switch phase {
             case .loading:
@@ -388,7 +370,6 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
             switch failure {
             case nil:
                 fetch = .idle
-                didFetch()
                 settle(evaluate())
                 // A response whose field errors fail the operation fails its
                 // refetch the same way.
@@ -564,7 +545,7 @@ public final class SubscriptionHandle<Op: Subscription>: AnyOperationHandle {
         self.environment = environment
         store = environment.store
         root = environment.store.root(key, resolved: Op.plan.resolve(operation.variables), record: environment.store.subscriptionRoot)
-        owner = Owner(variables: operation.variables, store: environment.store)
+        owner = Owner(variables: operation.variables, store: environment.store, environment: environment)
     }
 
     /// How many hold the stream open; for the tests.
@@ -587,7 +568,7 @@ public final class SubscriptionHandle<Op: Subscription>: AnyOperationHandle {
                     do {
                         // The door checks the task's cancellation before the
                         // commit: a stream commits until its task ends.
-                        _ = try await environment.commit(payload, plan: resolved, root: Store.subscriptionRootKey)
+                        _ = try await environment.commit(payload, plan: resolved, root: root)
                         events += 1
                         latest = Op.Data(anchor: Anchor(record: store.subscriptionRoot, owner: owner))
                         error = nil

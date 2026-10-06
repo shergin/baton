@@ -1,3 +1,5 @@
+import Observation
+
 /// What keeps records alive is the store's, since it is a fact about data.
 /// A root is an operation's selection and the record it starts from. It
 /// lives while a holder keeps it, then waits in the release buffer, oldest
@@ -7,19 +9,32 @@
 /// dropped a link.
 extension Store {
     /// A root entry: the operation's selection, the record it starts from,
-    /// and how many hold it.
+    /// how many hold it, and its age: when the store last received the
+    /// operation's response, and under which invalidation. Observable, so a
+    /// body that reads a handle's fetch time follows the commit that moves it.
     @MainActor
+    @Observable
     final class Root {
         /// The operation's name and variables, as the image names it.
-        let key: String
-        let resolved: ResolvedSelection
-        let record: Record
-        fileprivate(set) var holders = 0
+        @ObservationIgnored let key: String
+        @ObservationIgnored let resolved: ResolvedSelection
+        @ObservationIgnored let record: Record
+        @ObservationIgnored fileprivate(set) var holders = 0
+        /// When the store last committed the operation's response, in this
+        /// launch or, read from the image, an earlier one.
+        private(set) var fetchTime: ContinuousClock.Instant?
+        /// The invalidation the data was fetched under.
+        @ObservationIgnored fileprivate(set) var fetchEpoch = 0
 
         init(key: String, resolved: ResolvedSelection, record: Record) {
             self.key = key
             self.resolved = resolved
             self.record = record
+        }
+
+        fileprivate func stamp(_ time: ContinuousClock.Instant?, epoch: Int) {
+            fetchTime = time
+            fetchEpoch = epoch
         }
     }
 
@@ -99,6 +114,29 @@ extension Store {
         }
         completedMutations.removeFirst(completedMutations.count - releaseBufferSize)
         scheduleCollection()
+    }
+
+    /// Dates a root: the store just committed its operation's response, in
+    /// this launch, which the image is told. A query just written that
+    /// nothing retains waits in the release buffer, as Relay's does; the keys
+    /// of the roots pushed out are returned.
+    func date(_ root: Root) -> [String] {
+        root.stamp(.now, epoch: invalidationEpoch)
+        persistence?.fetched(root.key, removals: imageRemovals)
+        guard root.record === self.root, root.holders == 0, !releaseBuffer.contains(root.key) else { return [] }
+        return park(root.key)
+    }
+
+    /// Gives a root whose operation this launch has not fetched the age the
+    /// image knows: the time since an earlier launch fetched it. Data that
+    /// had to be read from the image and has no such time is stale.
+    func takeAge(_ root: Root, hydrated: Bool) {
+        guard root.fetchTime == nil, let persistence else { return }
+        if let age = persistence.age(of: root.key, removals: imageRemovals) {
+            root.stamp(.now - .seconds(age), epoch: invalidationEpoch)
+        } else if hydrated {
+            root.stamp(nil, epoch: invalidationEpoch - 1)
+        }
     }
 
     /// The roots: retained, waiting in the buffer, or a completed mutation's.
