@@ -109,12 +109,11 @@ jobs:
   # A package that depends on the latest release, resolved from a clean
   # clone of its tag as an app resolves it: nothing built in the checkout, so
   # the build plugin needs the compiler bundle the release published, and the
-  # runtime and the compiler are the pair that release shipped. Not a gate
-  # until a release has published a bundle; see the release workflow.
+  # runtime and the compiler are the pair that release shipped. A gate since
+  # 0.7.0, the first release that published a bundle.
   consumer:
     runs-on: macos-26
     timeout-minutes: 30
-    continue-on-error: true
     steps:
       - name: The latest release's tag
         id: release
