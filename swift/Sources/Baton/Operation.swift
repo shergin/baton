@@ -174,6 +174,11 @@ protocol AnyOperationHandle: AnyObject {
     /// null, for policies that read them.
     func reevaluate()
     func cancel()
+    /// The environment went inactive: a stream closes while its handle stays
+    /// retained; a query reads nothing of it.
+    func park()
+    /// The environment is active again: a parked stream opens again.
+    func resume()
 }
 
 /// The live side of an operation value: its phase, its fetch, its data, and
@@ -487,6 +492,10 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
         if root.allowsNetwork { fetchUnlessInFlight() }
     }
 
+    /// A query reads nothing of the environment's activity.
+    func park() {}
+    func resume() {}
+
     func reevaluate() {
         guard Op.throwsOnFieldError || Op.bubbles else { return }
         switch phase {
@@ -547,23 +556,44 @@ public struct MutationAction<Op: Mutation>: Sendable {
 // MARK: Subscriptions
 
 /// The stream a subscription handle holds, as a value read beside its
-/// events: not started, connecting until the first event, open, or ended,
-/// by the server's completion or by a failure. Not a phase: a subscription
-/// has no data of its own to wait for, so it has no loading. A stream that
-/// waits to reconnect is a case to come with reconnection.
+/// events: not started, or parked while the environment is inactive;
+/// connecting until the first event; open; waiting to reconnect after a
+/// failure, until the instant it tries again; or ended, by the server's
+/// completion or by the environment's end. Not a phase: a subscription has
+/// no data of its own to wait for, so it has no loading.
 public enum Stream: Sendable {
     case idle
     case connecting
     case open
-    /// The server completed the stream (`nil`), or a failure ended it.
+    /// A failure ended the stream, in `error`, and the handle opens it again
+    /// at the instant, by its fixed backoff.
+    case waiting(until: ContinuousClock.Instant)
+    /// The server completed the stream (`nil`), or a failure ended it for
+    /// good: the handle was not retained, or the environment ended.
     case ended(Failure?)
 
     /// Whether the stream is connecting or open.
     public var isActive: Bool {
         switch self {
         case .connecting, .open: true
-        case .idle, .ended: false
+        case .idle, .waiting, .ended: false
         }
+    }
+}
+
+/// The backoff before a failed stream is opened again: a step that doubles
+/// from one second to thirty, jittered to between half and the whole of it,
+/// reset by an event. Fixed: no server has shown constants of its own to be
+/// needed, and a settings bag is refused. The base is a package knob for
+/// tests alone.
+@MainActor
+package enum SubscriptionBackoff {
+    package static var base: Duration = .seconds(1)
+    static let cap: Duration = .seconds(30)
+
+    static func delay(_ attempt: Int) -> Duration {
+        let step = min(base * (1 << min(attempt, 10)), cap)
+        return step / 2 + step / 2 * Double.random(in: 0...1)
     }
 }
 
@@ -582,10 +612,19 @@ public final class SubscriptionHandle<Op: Subscription>: AnyOperationHandle {
     /// The error of the last event, cleared by the next good one, or the
     /// error that ended the stream.
     public private(set) var error: (any Error)?
-    /// The stream, as a value: idle, connecting, open, or ended.
+    /// The stream, as a value: idle, connecting, open, waiting to reconnect,
+    /// or ended.
     public private(set) var stream: Stream = .idle
     /// Whether the stream is connecting or open.
     public var isActive: Bool { stream.isActive }
+    /// How many times the stream was opened again after it had been open or
+    /// had failed: after a failure's backoff, or after the environment was
+    /// inactive. Events may have been missed across each; an owner that
+    /// observes the count refetches its baseline.
+    public private(set) var resumptions = 0
+    /// Whether the environment's inactivity closed the stream while the
+    /// handle stayed retained, so activity opens it again.
+    @ObservationIgnored private var parked = false
     /// The environment that made the handle; releasing the handle after it
     /// is gone does nothing.
     @ObservationIgnored private(set) weak var environment: Environment?
@@ -614,48 +653,119 @@ public final class SubscriptionHandle<Op: Subscription>: AnyOperationHandle {
     /// Opens the stream unless it is open, or its environment is gone.
     func start() {
         guard task == nil, let current = environment, !current.ended else { return }
+        // Retained while the environment is inactive: the stream waits parked
+        // for activity, as one closed by inactivity does.
+        guard current.isActive else {
+            parked = true
+            stream = .idle
+            return
+        }
+        parked = false
         stream = .connecting
         error = nil
         task = Task { [weak self] in
             guard let self, let environment else { return }
-            // How the stream ended, written once the task is known not to
-            // have been replaced: the stream a newer one replaced leaves
-            // the newer one's state be.
-            var ending: Stream = .ended(nil)
-            do {
-                for try await payload in environment.subscribe(operation) {
-                    guard !Task.isCancelled else { return }
-                    do {
-                        // The door checks the task's cancellation before the
-                        // commit: a stream commits until its task ends.
-                        _ = try await environment.commit(payload, plan: resolved, root: root)
-                        events += 1
-                        latest = Op.Data(anchor: Anchor(record: store.subscriptionRoot, owner: owner))
-                        error = nil
-                        stream = .open
-                    } catch let failure as GraphQLErrors {
-                        // An event with errors and no data is one bad event;
-                        // the stream goes on. The ingest runs to its end
-                        // whoever cancelled the task meanwhile.
+            var attempt = 0
+            while true {
+                // How the stream ended, written once the task is known not
+                // to have been replaced: the stream a newer one replaced
+                // leaves the newer one's state be.
+                var ending: Stream = .ended(nil)
+                var failed = false
+                do {
+                    for try await payload in environment.subscribe(operation) {
                         guard !Task.isCancelled else { return }
-                        error = failure
-                    } catch is CancellationError {
-                        return
+                        do {
+                            // The door checks the task's cancellation before
+                            // the commit: a stream commits until its task ends.
+                            _ = try await environment.commit(payload, plan: resolved, root: root)
+                            events += 1
+                            latest = Op.Data(anchor: Anchor(record: store.subscriptionRoot, owner: owner))
+                            error = nil
+                            stream = .open
+                            attempt = 0
+                        } catch let failure as GraphQLErrors {
+                            // An event with errors and no data is one bad event;
+                            // the stream goes on. The ingest runs to its end
+                            // whoever cancelled the task meanwhile.
+                            guard !Task.isCancelled else { return }
+                            error = failure
+                        } catch is CancellationError {
+                            return
+                        }
                     }
+                } catch is CancellationError {
+                    // A transport that cancelled its own work ended the
+                    // stream, with nothing to show; a cancellation of this
+                    // task returns below.
+                } catch {
+                    guard !Task.isCancelled else { return }
+                    self.error = error
+                    ending = .ended(Failure(error))
+                    failed = true
                 }
-            } catch is CancellationError {
-                // A transport that cancelled its own work ended the stream,
-                // with nothing to show; a cancellation of this task returns
-                // below.
-            } catch {
                 guard !Task.isCancelled else { return }
-                self.error = error
-                ending = .ended(Failure(error))
+                // A failure while the handle is retained is a wait, not an
+                // end: the stream is opened again by the backoff. The server's
+                // completion ends it, and so does a request error, the
+                // server's refusal of the operation as written, which a retry
+                // would only repeat.
+                let refused = if case .ended(.request?) = ending { true } else { false }
+                guard failed, !refused, retainCount > 0, !environment.ended else {
+                    task = nil
+                    stream = ending
+                    return
+                }
+                // Failed while the environment is inactive: parked, so that
+                // activity opens the stream again rather than the backoff.
+                guard environment.isActive else {
+                    task = nil
+                    parked = true
+                    stream = .idle
+                    return
+                }
+                let delay = SubscriptionBackoff.delay(attempt)
+                attempt += 1
+                stream = .waiting(until: .now + delay)
+                do {
+                    try await Task.sleep(for: delay)
+                } catch {
+                    // Cancelled by a release, a park, a retry or the end,
+                    // which set the state.
+                    return
+                }
+                // A cancellation that came after the sleep ended but before
+                // this task resumed is the canceller's to state: a retry's
+                // newer task or the environment's end is left be.
+                guard !Task.isCancelled else { return }
+                guard retainCount > 0 else {
+                    task = nil
+                    stream = .idle
+                    return
+                }
+                resumptions += 1
+                stream = .connecting
+                error = nil
             }
-            guard !Task.isCancelled else { return }
-            task = nil
-            stream = ending
         }
+    }
+
+    /// The environment went inactive: the stream closes while the handle
+    /// stays retained, and activity opens it again.
+    func park() {
+        guard task != nil else { return }
+        task?.cancel()
+        task = nil
+        parked = true
+        stream = .idle
+    }
+
+    /// The environment is active again: a stream parked by its inactivity is
+    /// opened again, counted as a resumption.
+    func resume() {
+        guard parked, retainCount > 0, task == nil else { return }
+        resumptions += 1
+        start()
     }
 
     /// Opens the stream again after it ended, by an error or the server's

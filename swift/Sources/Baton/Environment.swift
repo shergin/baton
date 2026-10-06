@@ -22,6 +22,19 @@ public final class Environment {
     /// Whether the session has ended: every later call fails with
     /// `EnvironmentError.gone`, and what is still held says so.
     public private(set) var ended = false
+    /// Whether the app is active, set by the app from its scene phase and by
+    /// hand in tests; true until set. While inactive every retained
+    /// subscription's stream is closed and its retention kept; activity opens
+    /// the streams again, each counted as a resumption. Queries read nothing
+    /// of it: `revalidate()` is the app's call on return.
+    public var isActive = true {
+        didSet {
+            guard isActive != oldValue, !ended else { return }
+            for handle in handles.values where handle.retainCount > 0 {
+                if isActive { handle.resume() } else { handle.park() }
+            }
+        }
+    }
 
     public init(transport: any Transport, subscriptions: (any Transport)? = nil, store: Store = Store()) {
         self.store = store

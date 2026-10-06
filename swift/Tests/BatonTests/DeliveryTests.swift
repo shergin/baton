@@ -102,6 +102,7 @@ struct DeliveryTests {
         case .idle: "idle"
         case .connecting: "connecting"
         case .open: "open"
+        case .waiting: "waiting"
         case .ended(nil): "ended"
         case .ended(.some(let failure)): "ended(\(failure))"
         }
@@ -846,7 +847,7 @@ struct DeliveryTests {
         #expect(!live.isActive)
     }
 
-    @Test("a stream the server completes reads ended with no failure, a retry reads connecting, and an error frame ends it with the request failure holding the frame's errors")
+    @Test("a stream the server completes reads ended with no failure, a retry reads connecting, and an error frame ends it with the request failure holding the frame's errors, with no reconnection")
     func streamEnds() async throws {
         let server = try SocketServer()
         let socket = GraphQLTransportWebSocket(url: try await server.start())
@@ -882,6 +883,7 @@ struct DeliveryTests {
         #expect(errors.errors.map(\.path) == ["noteAdded"])
         #expect(errors.errors.map(\.extensions) == [Self.extensions])
         #expect((live.error as? GraphQLErrors)?.messages == ["bad subscription"], "the error that ended the stream is the handle's error")
+        #expect(live.resumptions == 0, "a request error is not reconnected")
 
         live.retry()
         #expect(state(live.stream) == "connecting", "a retry after a failure reads connecting again")
@@ -968,6 +970,42 @@ struct DeliveryTests {
                 break
             }
         }
+    }
+
+    @Test("two subscriptions sent at once on a fresh socket whose credentials take a while share one connection, each under its own id, and each receives its events")
+    func concurrentSendsOnAFreshSocketShareOneConnection() async throws {
+        final class Log: @unchecked Sendable {
+            private let lock = NSLock()
+            private var payloads: [String: Int] = [:]
+
+            func add(to reader: String) { lock.withLock { payloads[reader, default: 0] += 1 } }
+            func count(of reader: String) -> Int { lock.withLock { payloads[reader] ?? 0 } }
+        }
+        let server = try SocketServer()
+        let socket = GraphQLTransportWebSocket(url: try await server.start(), credentials: {
+            // A suspension in the read, as a token refresh would make, during
+            // which the other request reaches the socket.
+            try await Task.sleep(for: .milliseconds(20))
+            return ["Authorization": "Bearer token"]
+        })
+        defer { server.stop() }
+        let value = TestNoteAdded(characterId: "1", connections: [])
+        let request = Request(operationName: TestNoteAdded.name, kind: TestNoteAdded.kind, document: TestNoteAdded.document, variables: value.variables)
+        let log = Log()
+        let readers = ["first", "second"].map { reader in
+            Task { for try await _ in socket.send(request) { log.add(to: reader) } }
+        }
+        defer { readers.forEach { $0.cancel() } }
+
+        await until { server.count(of: "subscribe") == 2 }
+        #expect(server.count(of: "connection_init") == 1, "one connection serves both")
+        let ids = server.ids(of: "subscribe")
+        #expect(Set(ids).count == 2, "each stream subscribes under its own id")
+        for id in Set(ids) {
+            server.send(#"{"id":"\#(id)","type":"next","payload":{"data":{"noteAdded":null}}}"#)
+        }
+        await until { log.count(of: "first") == 1 && log.count(of: "second") == 1 }
+        #expect(server.count(of: "connection_init") == 1)
     }
 
     @Test("a subscription whose reader goes away before the connection is acknowledged closes the socket it opened, and leaves to another the socket they both wait on")

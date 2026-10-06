@@ -5,6 +5,15 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- A subscription reconnects in its handle. A stream that ends by a failure
+  while the handle is retained waits and opens again, by a fixed backoff: a
+  step doubling from one second to thirty, jittered, reset by an event; the
+  stream's value says `waiting(until:)` meanwhile, and `retry()` skips the
+  wait; a request error, the server's refusal of the operation, ends the
+  stream instead. The handle counts `resumptions`, the times the stream was opened
+  again, so an owner that observes it refetches its baseline. The
+  environment's `isActive`, set from the app's scene phase, parks every
+  retained subscription while false and resumes them when true.
 - The transport has one verb. `Transport.send` takes a request and yields
   a stream of payloads: one for a query, the parts of a deferred response,
   the events of a subscription, so a wrapper wraps one method; `payload`

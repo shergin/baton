@@ -442,20 +442,27 @@ public actor GraphQLTransportWebSocket: Transport {
     private func connect(_ id: String) async throws {
         if acknowledged { return }
         if socket == nil {
-            var urlRequest = URLRequest(url: url)
-            for (name, value) in headers { urlRequest.setValue(value, forHTTPHeaderField: name) }
-            for (name, value) in try await credentials() { urlRequest.setValue(value, forHTTPHeaderField: name) }
-            urlRequest.setValue("graphql-transport-ws", forHTTPHeaderField: "Sec-WebSocket-Protocol")
-            let socket = session.webSocketTask(with: urlRequest)
-            self.socket = socket
-            socket.resume()
-            receiving = Task { await self.receive(from: socket) }
-            let payload = connectionParams.map { ",\"payload\":" + $0.json } ?? ""
-            try await send("{\"type\":\"connection_init\"\(payload)}")
-            // While the frame was on its way the socket may have failed, and
-            // then nothing would answer, or been acknowledged already.
-            guard self.socket === socket else { throw TransportError(statusCode: 0, body: "the socket is closed") }
+            // Read with a suspension, which lets another request onto the
+            // actor: it may have opened the socket meanwhile, and then this
+            // one joins it rather than opening a second.
+            let read = try await credentials()
             if acknowledged { return }
+            if socket == nil {
+                var urlRequest = URLRequest(url: url)
+                for (name, value) in headers { urlRequest.setValue(value, forHTTPHeaderField: name) }
+                for (name, value) in read { urlRequest.setValue(value, forHTTPHeaderField: name) }
+                urlRequest.setValue("graphql-transport-ws", forHTTPHeaderField: "Sec-WebSocket-Protocol")
+                let socket = session.webSocketTask(with: urlRequest)
+                self.socket = socket
+                socket.resume()
+                receiving = Task { await self.receive(from: socket) }
+                let payload = connectionParams.map { ",\"payload\":" + $0.json } ?? ""
+                try await send("{\"type\":\"connection_init\"\(payload)}")
+                // While the frame was on its way the socket may have failed,
+                // and then nothing would answer, or been acknowledged already.
+                guard self.socket === socket else { throw TransportError(statusCode: 0, body: "the socket is closed") }
+                if acknowledged { return }
+            }
         }
         // A stream that ends while it waits stops waiting, for the
         // acknowledgement may never come; one that ended before does not

@@ -636,9 +636,20 @@ import and its shipping binary does not; see
 an operation whose events arrive over time. Here: `@Subscription("…")`
 expands like `@Query`: the storage subscribes while the view lives and
 closes the stream when it goes; the handle exposes `events`, `latest`,
-`error`, and `stream`, the stream as a value: idle, connecting until the
-first event, open, or ended, by the server's completion or by a
-[failure](#runtime); `isActive` is connecting or open. Not a phase: a
+`error`, `resumptions` and `stream`, the stream as a value: idle, or parked
+while the environment is inactive; connecting until the first event; open;
+waiting to reconnect, until the instant the handle opens it again after a
+[failure](#runtime), by a fixed backoff, a step doubling from one second to
+thirty and jittered to between half and the whole of it, reset by an event;
+or ended, by the server's completion, by a request error (the server's
+refusal of the operation, which a retry would repeat) or by the environment's
+end. `isActive` is connecting or open; `retry()` opens a waiting or ended
+stream at once.
+`resumptions` counts the stream's reopenings, after a failure's wait or the
+environment's inactivity, since events may have been missed across each: an
+owner observes the count and refetches its baseline, with no callback. The
+environment's `isActive`, set by the app from its scene phase, parks every
+retained subscription while false and resumes them when true. Not a phase: a
 subscription has no data of its own to wait for, so it has no loading. Each
 event is normalized at the subscription root
 (`client:root:subscription`) and committed, so edge directives on its
