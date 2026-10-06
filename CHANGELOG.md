@@ -5,6 +5,20 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- A handle's fetch is a value beside its phase. `fetch` on a query value
+  and on `OperationHandle` reads `.idle`, `.inFlight`, or
+  `.failed(failure, at:)` with the failure and when it failed, so a fetch
+  that fails behind data is seen while the phase stays ready, by every view
+  of the handle; the next response replaces it. `isRefreshing` is data
+  present and a fetch in flight. The failure is a `Failure`, one of a closed
+  set of kinds: the transport's, carrying what the transport threw
+  unchanged; a request error (`GraphQLErrors`); a malformed response
+  (`IngestError`); the environment's (`EnvironmentError`). Field errors are
+  not among them. What `phase`'s failed case and `refetch()` carry is the
+  error as thrown, as before. Deriving the phase when it is read was decided
+  behind a gate, and the gate failed on the bench, so the phase stays
+  stored.
+
 ## 0.7.0 (Split Time) — 2026-10-05
 
 The ground before the spine: the module's boundaries held by a check, the

@@ -75,6 +75,23 @@ public enum Phase<Data> {
     case failed(any Error)
 }
 
+/// The last fetch of a handle, as a value read beside the phase: idle, in
+/// flight, or failed with its failure and when it failed. Not a phase: the
+/// phase is what the data deserves and the fetch is what the network did,
+/// so a fetch that fails behind data is read here while the phase stays
+/// ready. The handle's next response replaces it.
+public enum Fetch: Sendable {
+    case idle
+    case inFlight
+    case failed(Failure, at: ContinuousClock.Instant)
+
+    /// The failure, when the last fetch failed.
+    public var failure: Failure? {
+        if case .failed(let failure, _) = self { return failure }
+        return nil
+    }
+}
+
 /// A `storeOnly` operation whose data the store does not have.
 public struct MissingDataError: Error, CustomStringConvertible, Sendable, LocalizedError {
     public let operationName: String
@@ -88,6 +105,9 @@ extension Query {
 
     /// Whether a fetch is running while earlier data stays visible.
     @MainActor public var isRefreshing: Bool { resolution?.isRefreshing ?? false }
+
+    /// The last fetch: idle, in flight, or failed with its failure and when.
+    @MainActor public var fetch: Fetch { resolution?.fetch ?? .idle }
 
     /// Whether the data predates an invalidation or the cache expiration.
     @MainActor public var isStale: Bool { resolution?.isStale ?? false }
@@ -147,7 +167,10 @@ final class CompletedMutation {
 public final class OperationHandle<Op: Query>: AnyOperationHandle {
     public let operation: Op
     public private(set) var phase: Phase<Op.Data> = .loading
-    public private(set) var isRefreshing = false
+    /// The last fetch, as a value: idle, in flight, or failed with its
+    /// failure and when it failed. A fetch that fails behind data leaves the
+    /// phase as it was and is read here, by every view of the handle.
+    public private(set) var fetch: Fetch = .idle
     /// When this handle last committed a response.
     public private(set) var fetchTime: ContinuousClock.Instant?
     @ObservationIgnored private(set) var fetchEpoch = 0
@@ -198,6 +221,24 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
     /// Whether a fetch is in flight.
     var isFetching: Bool { task != nil }
 
+    /// Whether a fetch is running while earlier data stays visible: data
+    /// present and a fetch in flight. Nothing refreshes behind loading, nor
+    /// behind a failure with no data in the store.
+    public var isRefreshing: Bool {
+        guard case .inFlight = fetch else { return false }
+        return showsData
+    }
+
+    /// Whether the phase shows data: ready, or failed on field errors or a
+    /// `@required` null, whose data is in the store and ages as ready data
+    /// does.
+    private var showsData: Bool {
+        switch phase {
+        case .ready, .failed(is FieldErrors), .failed(is RequiredFieldError): true
+        case .loading, .failed: false
+        }
+    }
+
     private var anchor: Anchor {
         Anchor(record: store.root, owner: owner)
     }
@@ -231,12 +272,7 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
     /// has nothing to go stale; one failed on field errors or a `@required`
     /// null has its data in the store, and it ages as ready data does.
     public var isStale: Bool {
-        switch phase {
-        case .ready, .failed(is FieldErrors), .failed(is RequiredFieldError):
-            break
-        case .loading, .failed:
-            return false
-        }
+        guard showsData else { return false }
         if fetchEpoch < store.invalidationEpoch { return true }
         if let expiration = environment?.queryCacheExpiration, let fetchTime, fetchTime + expiration < .now { return true }
         return false
@@ -284,11 +320,8 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
             // What the store holds is not asked; a handle no one shows yet
             // waits for its own response, which may be a refetch in flight:
             // nothing shows behind it.
-            if retainCount == 0 {
-                phase = .loading
-                isRefreshing = false
-            }
-            fetch()
+            if retainCount == 0 { phase = .loading }
+            fetchUnlessInFlight()
             return
         }
         let answer = store.check(resolved)
@@ -318,14 +351,14 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
             // An error the last response carried with no field to hold it
             // is in no record a commit could clear; only a fetch clears it.
             let failsUnplaced = Op.throwsOnFieldError && !unplaced.isEmpty
-            if !complete || partial || isStale || failsUnplaced { fetch() }
+            if !complete || partial || isStale || failsUnplaced { fetchUnlessInFlight() }
         case .storeAndNetwork, .networkOnly:
-            fetch()
+            fetchUnlessInFlight()
         }
     }
 
     /// Starts a fetch unless one is in flight.
-    func fetch() {
+    func fetchUnlessInFlight() {
         guard task == nil else { return }
         start()
     }
@@ -336,22 +369,13 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
             // Nothing can fetch for a handle whose environment is gone: it
             // keeps the data it shows and says why it cannot load more.
             task = nil
-            isRefreshing = false
+            fetch = .failed(.environment(.gone), at: .now)
             if case .loading = phase {
                 phase = .failed(EnvironmentError.gone)
             }
             return
         }
-        // A view shows data while it refreshes: ready data, or the data a
-        // failure on field errors or a `@required` null has in the store.
-        // Behind loading or any other failure nothing shows, though the
-        // fetch this one replaces may have started behind data.
-        switch phase {
-        case .ready, .failed(is FieldErrors), .failed(is RequiredFieldError):
-            isRefreshing = true
-        case .loading, .failed:
-            isRefreshing = false
-        }
+        fetch = .inFlight
         task = Task { [weak self] in
             guard let self, let environment else { return nil }
             var failure: (any Error)?
@@ -373,26 +397,27 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
             // belongs to whoever cancelled it, however the fetch ended.
             guard !Task.isCancelled else { return nil }
             task = nil
-            isRefreshing = false
             switch failure {
             case nil:
+                fetch = .idle
                 didFetch()
                 settle(evaluate())
                 // A response whose field errors fail the operation fails its
                 // refetch the same way.
                 if case .failed(let error) = phase { return error }
             case is CancellationError:
+                // The transport cancelled its own work: nothing to show.
+                fetch = .idle
                 return nil
             case let error?:
-                // Earlier data stays visible; `refetch()` throws the failure.
-                // A failure with data behind it stays as well, so a later
-                // commit or attach can still settle it by that data.
-                switch phase {
-                case .ready, .failed(is FieldErrors), .failed(is RequiredFieldError):
-                    return error
-                case .loading, .failed:
-                    phase = .failed(error)
-                }
+                // The fetch records its failure and when, for every view of
+                // the handle; `refetch()` throws the error as well. Data
+                // behind the failure stays visible, and so does a failure the
+                // data is in the store for, which a later commit or attach
+                // can still settle by that data; with nothing to show, the
+                // phase fails.
+                fetch = .failed(Failure(error), at: .now)
+                if !showsData { phase = .failed(error) }
             }
             return failure
         }
@@ -418,12 +443,7 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
     /// transport leaves it for a later commit or attach to settle. Any other
     /// failure shows loading meanwhile.
     public func retry() {
-        switch phase {
-        case .ready, .loading, .failed(is FieldErrors), .failed(is RequiredFieldError):
-            break
-        case .failed:
-            phase = .loading
-        }
+        if case .failed = phase, !showsData { phase = .loading }
         start()
     }
 
@@ -445,7 +465,7 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
     }
 
     func refetchIfStale() {
-        if isStale { fetch() }
+        if isStale { fetchUnlessInFlight() }
     }
 
     func reevaluate() {
@@ -467,9 +487,10 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
     func cancel() {
         task?.cancel()
         task = nil
-        isRefreshing = false
+        fetch = .idle
     }
 }
+
 /// The in-flight state behind a mutation action, observable by the view.
 @MainActor
 @Observable

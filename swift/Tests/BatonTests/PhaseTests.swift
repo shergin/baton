@@ -688,4 +688,210 @@ struct PhaseTests {
         }
         #expect(errors.count == 12)
     }
+
+    @Test("a refetch that fails at the transport behind ready data leaves the phase ready, records the transport's error and when, and the next successful refetch reads idle again")
+    func aTransportFailureBehindDataIsReadBesideThePhase() async throws {
+        let attempts = Attempts()
+        let transport = RecordedTransport { _ in attempts.next() == 2 ? nil : fixtureData }
+        let environment = Environment(transport: transport)
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestList(page: 1))
+        handle.retain()
+        defer { handle.release() }
+        await settled(handle)
+        guard case .idle = handle.fetch else {
+            Issue.record("expected an idle fetch after the first response, got \(handle.fetch)")
+            return
+        }
+
+        let before = ContinuousClock.now
+        let thrown = await #expect(throws: TransportError.self) { try await handle.refetch() }
+        #expect(thrown?.statusCode == 0, "the refetch throws the error as the transport threw it")
+        guard case .ready = handle.phase else {
+            Issue.record("the data stays visible, got \(handle.phase)")
+            return
+        }
+        guard case .failed(.transport(let error as TransportError), let instant) = handle.fetch else {
+            Issue.record("expected a transport failure, got \(handle.fetch)")
+            return
+        }
+        #expect(error.statusCode == thrown?.statusCode)
+        #expect(error.body == thrown?.body)
+        #expect(instant >= before)
+        #expect(instant <= .now)
+        #expect(handle.fetch.failure?.error is TransportError)
+        #expect(!handle.isRefreshing)
+
+        try await handle.refetch()
+        #expect(transport.requestCount == 3)
+        guard case .ready = handle.phase, case .idle = handle.fetch else {
+            Issue.record("expected ready and an idle fetch after a successful refetch, got \(handle.phase) and \(handle.fetch)")
+            return
+        }
+        #expect(handle.fetch.failure == nil)
+    }
+
+    @Test("a fetch that fails with no data to show fails the phase with the error as thrown and the fetch with the same error, and a retry shows loading in flight until a response makes it ready and idle")
+    func aFailureWithoutDataFailsThePhaseAndTheFetch() async throws {
+        let attempts = Attempts()
+        let transport = RecordedTransport { _ in attempts.next() == 1 ? nil : fixtureData }
+        let environment = Environment(transport: transport)
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestList(page: 1))
+        handle.retain()
+        defer { handle.release() }
+        await settled(handle)
+        guard case .failed(let thrown as TransportError) = handle.phase else {
+            Issue.record("expected the transport's error, got \(handle.phase)")
+            return
+        }
+        guard case .failed(.transport(let recorded as TransportError), _) = handle.fetch else {
+            Issue.record("expected a transport failure, got \(handle.fetch)")
+            return
+        }
+        #expect(recorded.body == thrown.body)
+        #expect(!handle.isRefreshing)
+
+        handle.retry()
+        guard case .loading = handle.phase, case .inFlight = handle.fetch else {
+            Issue.record("expected loading and a fetch in flight, got \(handle.phase) and \(handle.fetch)")
+            return
+        }
+        #expect(!handle.isRefreshing, "nothing shows behind loading")
+        await handle.settle()
+        guard case .ready = handle.phase, case .idle = handle.fetch else {
+            Issue.record("expected ready and an idle fetch, got \(handle.phase) and \(handle.fetch)")
+            return
+        }
+    }
+
+    @Test("a fetch's failure is classified: errors and no data are a request failure, a response the plan cannot read is malformed, and a handle whose environment is gone fails on the environment")
+    func failureKinds() async throws {
+        let refused = Environment(transport: RecordedTransport([TestProfileQuery.name: fixture("not-authorized")]))
+        let request = refused.handle(for: TestProfileQuery(id: "1"))
+        request.retain()
+        await request.settle()
+        if case .failed(.request(let errors), _) = request.fetch {
+            #expect(errors.messages == ["not authorized"])
+        } else {
+            Issue.record("expected a request failure, got \(request.fetch)")
+        }
+        if case .failed(let error) = request.phase {
+            #expect(error is GraphQLErrors)
+        } else {
+            Issue.record("expected the phase to fail on the errors, got \(request.phase)")
+        }
+        request.release()
+
+        let truncated = Environment(transport: RecordedTransport([TestList.name: fixtureData.prefix(40)]))
+        truncated.store.reportMissing = nil
+        let malformed = truncated.handle(for: TestList(page: 1))
+        malformed.retain()
+        await malformed.settle()
+        if case .failed(.malformed, _) = malformed.fetch {
+            #expect(malformed.fetch.failure?.error is IngestError)
+        } else {
+            Issue.record("expected a malformed response, got \(malformed.fetch)")
+        }
+        if case .failed(let error) = malformed.phase {
+            #expect(error is IngestError)
+        } else {
+            Issue.record("expected the phase to fail on the response, got \(malformed.phase)")
+        }
+        malformed.release()
+
+        var environment: Baton.Environment? = Baton.Environment(transport: SilentTransport())
+        environment!.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
+        let orphan = environment!.handle(for: TestList(page: 1), fetchPolicy: .storeOnly)
+        orphan.retain()
+        environment = nil
+        try await orphan.refetch()
+        guard case .ready = orphan.phase else {
+            Issue.record("the data stays visible, got \(orphan.phase)")
+            return
+        }
+        if case .failed(.environment(let error), _) = orphan.fetch {
+            #expect(error == .gone)
+        } else {
+            Issue.record("expected the environment it lost, got \(orphan.fetch)")
+        }
+        #expect(!orphan.isRefreshing)
+        orphan.release()
+    }
+
+    @Test("a fetch in flight reads in flight behind loading and behind ready data, and refreshing only behind the data")
+    func aFetchInFlightReadsInFlight() async throws {
+        let gate = GatedTransport()
+        let environment = Environment(transport: gate)
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestList(page: 1))
+        handle.retain()
+        defer { handle.release() }
+        await until { gate.pending == 1 }
+        guard case .loading = handle.phase, case .inFlight = handle.fetch else {
+            Issue.record("expected loading and a fetch in flight, got \(handle.phase) and \(handle.fetch)")
+            return
+        }
+        #expect(!handle.isRefreshing, "nothing shows behind loading")
+        gate.respond(fixtureData)
+        await settled(handle)
+        guard case .idle = handle.fetch else {
+            Issue.record("expected an idle fetch after the response, got \(handle.fetch)")
+            return
+        }
+
+        let refetch = Task { try? await handle.refetch() }
+        await until { gate.pending == 1 }
+        guard case .ready = handle.phase, case .inFlight = handle.fetch else {
+            Issue.record("expected ready data and a fetch in flight, got \(handle.phase) and \(handle.fetch)")
+            return
+        }
+        #expect(handle.isRefreshing)
+        gate.respond(fixtureData)
+        await refetch.value
+        guard case .idle = handle.fetch else {
+            Issue.record("expected an idle fetch after the response, got \(handle.fetch)")
+            return
+        }
+        #expect(!handle.isRefreshing)
+    }
+
+    @Test("a query value reads its handle's fetch once resolved, and an idle fetch before")
+    func aQueryValueReadsTheFetch() async throws {
+        let gate = GatedTransport()
+        let environment = Environment(transport: gate)
+        environment.store.reportMissing = nil
+        var operation = TestList(page: 1)
+        guard case .idle = operation.fetch else {
+            Issue.record("expected an unresolved value to read idle, got \(operation.fetch)")
+            return
+        }
+        let handle = environment.handle(for: operation)
+        handle.retain()
+        defer { handle.release() }
+        operation.resolution = handle
+        await until { gate.pending == 1 }
+        gate.respond(fixtureData)
+        await settled(handle)
+
+        let refetch = Task { try? await handle.refetch() }
+        await until { gate.pending == 1 }
+        guard case .inFlight = operation.fetch else {
+            Issue.record("expected the value to read the fetch in flight, got \(operation.fetch)")
+            return
+        }
+        #expect(operation.isRefreshing)
+        gate.fail(URLError(.notConnectedToInternet))
+        await refetch.value
+        guard case .ready = operation.phase else {
+            Issue.record("the data stays visible, got \(operation.phase)")
+            return
+        }
+        guard case .failed(.transport(let error as URLError), _) = operation.fetch else {
+            Issue.record("expected the value to read the transport's failure, got \(operation.fetch)")
+            return
+        }
+        #expect(error.code == .notConnectedToInternet)
+        #expect(!operation.isRefreshing)
+    }
 }

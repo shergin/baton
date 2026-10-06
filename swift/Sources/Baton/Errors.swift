@@ -95,6 +95,56 @@ public struct GraphQLErrors: Error, Sendable, CustomStringConvertible, Localized
     public var errorDescription: String? { description }
 }
 
+/// Why a fetch or a stream did not deliver, in one of a closed set of kinds.
+/// Field errors are not among them: under `@throwOnFieldError` they fail the
+/// phase, as a `@required` field that bubbled does, but they are facts about
+/// the data, not failures of a fetch. The transport's kind carries what the
+/// transport threw, unchanged, so there is no second vocabulary beside the
+/// transport's to drift from it.
+public enum Failure: Error, Sendable, CustomStringConvertible, LocalizedError {
+    /// The transport threw: a `TransportError`, a `URLError`, or an app's own
+    /// transport's error, as it was thrown.
+    case transport(any Error)
+    /// The server answered errors and no data.
+    case request(GraphQLErrors)
+    /// A response the plan could not read.
+    case malformed(IngestError)
+    /// Nothing could send the request: no environment, no transport for the
+    /// operation's kind, or the environment that made the handle is gone.
+    case environment(EnvironmentError)
+
+    /// Classifies what a fetch threw.
+    init(_ error: any Error) {
+        switch error {
+        case let error as GraphQLErrors: self = .request(error)
+        case let error as IngestError: self = .malformed(error)
+        case let error as EnvironmentError: self = .environment(error)
+        default: self = .transport(error)
+        }
+    }
+
+    /// The error as it was thrown.
+    public var error: any Error {
+        switch self {
+        case .transport(let error): error
+        case .request(let error): error
+        case .malformed(let error): error
+        case .environment(let error): error
+        }
+    }
+
+    public var description: String {
+        switch self {
+        case .transport(let error): "the transport failed: \(error)"
+        case .request(let error): "the request failed: \(error)"
+        case .malformed(let error): "the response could not be read: \(error)"
+        case .environment(let error): error.description
+        }
+    }
+
+    public var errorDescription: String? { description }
+}
+
 /// The `onError` request parameter: how the server should treat field errors.
 /// Named in `baton.json` and sent with every operation the compiler emits
 /// under it; under `NULL` the compiler types the fields the schema calls

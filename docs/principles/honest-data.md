@@ -69,7 +69,10 @@ comes from and [Relay's words](relays-words.md) for the directive vocabulary.
 
 As of 0.6.0: `phase` on an operation value (`.loading`, `.ready(data)`,
 `.failed(error)`) with `isRefreshing` and `isStale`, which keep their meaning
-across a launch because the image stores when each operation fetched; field
+across a launch because the image stores when each operation fetched;
+since 0.7.0, `fetch` beside it, the last fetch as a value, idle, in flight
+or failed with a `Failure` of one of four kinds and the time it failed, so
+a fetch that fails behind data is seen without the data going; field
 errors stored beside the field, in memory and in the image, and read through
 `@catch(to:)` as a `Result`;
 `@required(action:)` bubbling at the lens boundary, logging through
