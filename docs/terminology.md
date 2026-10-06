@@ -601,8 +601,9 @@ metrics without logging anything a user typed. The cases are the fetch
 (started, completed with its duration, failed with its failure's kind), the
 commit (its kind and the slots it changed in records that existed), a field
 error a fetch's response carried that no `@catch` handled, by operation and
-response path, the image (opened, unavailable, written, failed) and missing
-data (a field read and never fetched, a value a reader's type cannot hold,
+response path, the image (opened, unavailable, written, failed), a deferred part dropped for
+naming a place the store or the plan does not have, and missing data (a
+field read and never fetched, a value a reader's type cannot hold,
 an id naming records of several types, a `@required(action: LOG)` field that
 is null), each by type and field name. Debug builds print the missing-data
 cases until `log` is set; a test sets `log = nil`. See [the

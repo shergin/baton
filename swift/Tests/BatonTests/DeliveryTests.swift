@@ -559,6 +559,68 @@ struct DeliveryTests {
         #expect(uncaught == ["character"], "the log hears the part's error once, at the announced path")
     }
 
+    /// The label the profile's deferred fragment is delivered under.
+    static let appearancesLabel = "TestProfileQuery$defer$TestAppearances_character"
+
+    /// Fetches the profile through `parts`, fixture names or the JSON of a
+    /// part written here, until the stream says it has no more, and returns
+    /// the paths of the parts the log heard dropped.
+    func droppedParts(_ parts: [String]) async throws -> [String] {
+        let data = parts.map { $0.hasPrefix("{") ? Data($0.utf8) : fixture($0) }
+        let environment = Environment(transport: OpenParts(data))
+        let events = LogTests.Events()
+        environment.log = events.log
+        try await environment.fetch(TestProfileQuery(id: "1"))
+        return events.all.compactMap { event in
+            guard case .partDropped(let path) = event else { return nil }
+            return path
+        }
+    }
+
+    @Test
+    func a_later_part_whose_path_names_a_record_the_first_part_created_logs_no_dropped_part() async throws {
+        #expect(try await droppedParts(["character-deferred-1", "character-deferred-2"]).isEmpty)
+        #expect(try await droppedParts(["character-deferred-1-pending", "character-deferred-2-pending"]).isEmpty)
+        #expect(try await droppedParts(["character-deferred-1-pending", "character-deferred-2-subpath", "character-deferred-3-subpath"]).isEmpty)
+        #expect(try await droppedParts(["character-deferred-1-pending", "character-deferred-2-failed"]).isEmpty)
+    }
+
+    @Test
+    func a_later_part_whose_path_names_a_field_the_first_part_did_not_create_logs_one_dropped_part_at_that_path() async throws {
+        let stray = #"{"incremental":[{"data":{"name":"Pilot"},"path":["character","nonexistent"],"label":"\#(Self.appearancesLabel)"}],"hasNext":true}"#
+        let dropped = try await droppedParts(["character-deferred-1", stray, "character-deferred-2"])
+        #expect(dropped == ["character.nonexistent"])
+    }
+
+    @Test
+    func a_later_part_whose_path_names_an_index_past_the_list_logs_one_dropped_part_with_the_index_rendered() async throws {
+        let stray = #"{"incremental":[{"id":"0","subPath":["episode",5],"data":{"air_date":"December 16, 2013"}}],"hasNext":false}"#
+        let dropped = try await droppedParts(["character-deferred-1-pending", "character-deferred-2-subpath", stray])
+        #expect(dropped == ["character.episode.5"])
+    }
+
+    @Test
+    func a_later_part_under_a_label_the_plan_does_not_know_logs_one_dropped_part_at_its_path() async throws {
+        let stray = #"{"incremental":[{"data":{"episode":[]},"path":["character"],"label":"TestProfileQuery$defer$Unknown_character"}],"hasNext":true}"#
+        let dropped = try await droppedParts(["character-deferred-1", stray, "character-deferred-2"])
+        #expect(dropped == ["character"])
+    }
+
+    @Test
+    func a_later_part_with_neither_a_path_and_label_nor_an_announced_id_logs_one_dropped_part_with_an_empty_path() async throws {
+        let stray = #"{"incremental":[{"data":{"episode":[]}}],"hasNext":true}"#
+        let dropped = try await droppedParts(["character-deferred-1", stray, "character-deferred-2"])
+        #expect(dropped == [""])
+    }
+
+    @Test
+    func a_completed_part_with_errors_whose_announced_path_reaches_no_record_logs_one_dropped_part_at_that_path() async throws {
+        let first = #"{"data":{"character":{"id":"1","name":"Rick Sanchez","origin":{"id":"1","name":"Earth (C-137)"},"status":"Alive","image":"rick.png","location":{"id":"20","name":"Earth (Replacement Dimension)","dimension":"Replacement Dimension"},"gender":"Male","species":"Human","type":"Genius"}},"pending":[{"id":"0","path":["character","nonexistent"],"label":"\#(Self.appearancesLabel)"}],"hasNext":true}"#
+        let failed = #"{"completed":[{"id":"0","errors":[{"message":"appearances unavailable","path":["character","nonexistent"]}]}],"hasNext":false}"#
+        let dropped = try await droppedParts([first, failed])
+        #expect(dropped == ["character.nonexistent"])
+    }
+
     @Test("a deferred fragment is absent after the first part and present after the second, in both incremental formats")
     func deferred() async throws {
         for (first, second) in [("character-deferred-1", "character-deferred-2"), ("character-deferred-1-pending", "character-deferred-2-pending")] {

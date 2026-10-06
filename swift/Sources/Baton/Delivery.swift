@@ -32,11 +32,20 @@ struct Delivery {
         for item in part.items {
             let base = item.path ?? item.id.flatMap { announced[$0]?.path }
             let label = item.label ?? item.id.flatMap { announced[$0]?.label }
-            guard let base, let label else { continue }
+            guard let base, let label else {
+                dropped(item.path ?? [])
+                continue
+            }
             let path = base + (item.subPath ?? [])
-            guard let (record, selection) = store.walk(path, resolved) else { continue }
+            guard let (record, selection) = store.walk(path, resolved) else {
+                dropped(path)
+                continue
+            }
             let plan = item.subPath?.isEmpty == false ? selection : selection.deferred(label)
-            guard let plan else { continue }
+            guard let plan else {
+                dropped(path)
+                continue
+            }
             objects.append(Ingest.ObjectPart(data: item.data, plan: plan, key: record.key, type: record.type, entity: record.isEntity, path: path, errors: item.errors))
         }
         return objects
@@ -50,9 +59,19 @@ struct Delivery {
             guard let pending = announced[completion.id], let label = pending.label,
                   let (record, selection) = store.walk(pending.path, resolved),
                   let deferred = selection.deferred(label)
-            else { continue }
+            else {
+                dropped(announced[completion.id]?.path ?? [])
+                continue
+            }
             failures.append(Ingest.failed(deferred, key: record.key, type: record.type, entity: record.isEntity, at: pending.path, errors: completion.errors))
         }
         return failures
+    }
+
+    /// A part that reaches no record, or no deferred selection, is dropped
+    /// and logged: the response named a place the plan or the store does not
+    /// have, which is the server's and the build's disagreement to see.
+    private func dropped(_ path: [Ingest.PathSegment]) {
+        store.log?(.partDropped(path: Ingest.render(path)))
     }
 }

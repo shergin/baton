@@ -50,6 +50,10 @@ public enum LogEvent: Sendable, Equatable {
     case ambiguousIdentity(id: String, types: [String])
     /// A `@required(action: LOG)` field is null; its lens reads as null.
     case requiredFieldMissing(type: String, path: String)
+    /// A part of a deferred response arrived for a place no earlier part
+    /// created, or under a label the plan does not know, and was dropped;
+    /// `path` is the response path it named.
+    case partDropped(path: String)
 
     /// The line a debug build prints for the missing-data cases, and nothing
     /// for the rest.

@@ -5,6 +5,9 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- A part of a deferred response that names a place no earlier part created,
+  or a label the plan does not know, is logged as `partDropped` with its
+  response path, where it was dropped without a word.
 - An image over its size limit evicts instead of starting over: the rows
   of launches before the last go first, then the last launch's, and the
   file shrinks; only a file still over the limit with nothing left to evict
