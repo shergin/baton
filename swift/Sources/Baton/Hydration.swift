@@ -12,8 +12,11 @@ extension Store {
         // response writes the record again.
         if forgotten(record) { return false }
         record.setHydrated()
-        // A record that held nothing has had no reader to notify.
+        // A record that held nothing has had no reader to notify. The slots
+        // filled are noted after the row is read, so the batch is not
+        // captured by the reading closure.
         let observed = !record.isEmpty
+        var filled: [Slot] = []
         let found = disk.record(record.key) { bytes in
             var reader = RowReader(bytes)
             guard let flags = reader.byte(), reader.varint() != nil else { return }
@@ -27,11 +30,10 @@ extension Store {
                 guard let name = reader.index(), let slot = disk.slot(name, on: record.type),
                       let (value, error) = value(&reader, disk)
                 else { return }
-                if record.fill(slot, value, error: error), observed {
-                    batch.touched(record, slot, value: .missing, error: nil)
-                }
+                if record.fill(slot, value, error: error), observed { filled.append(slot) }
             }
         }
+        for slot in filled { batch.touched(record, slot, value: .missing, error: nil) }
         if found { hydratedRecords += 1 }
         return found
     }

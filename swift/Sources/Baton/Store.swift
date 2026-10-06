@@ -744,16 +744,25 @@ public final class Store {
         let record = record ?? root
         // What the walk writes, a lookup's link bound, a link repaired, a
         // cell filled from the image, is one local batch, notified once the
-        // walk is over: nothing observes a walk in progress.
-        var batch = Batch(.local)
-        defer { _ = finish(batch) }
-        var met = false
-        if available(selection, at: record, from: nil, &met, &batch) { return met ? .image : .memory }
+        // walk is over: nothing observes a walk in progress. The walk's state
+        // is passed, never captured: a variable a closure captures is boxed,
+        // and every `inout` pass of it then pays a dynamic exclusivity check.
+        var walk = Walk(batch: Batch(.local))
+        defer { _ = finish(walk.batch) }
+        if available(selection, at: record, from: nil, &walk) { return walk.met ? .image : .memory }
         guard let persistence else { return .miss }
-        let found = persistence.reading(removals: imageRemovals) { disk in
-            available(selection, at: record, from: disk, &met, &batch)
+        let found = persistence.reading(removals: imageRemovals, &walk) { disk, walk in
+            available(selection, at: record, from: disk, &walk)
         }
         return found ? .image : .miss
+    }
+
+    /// The state of one availability walk: the local batch of what it
+    /// writes, and whether the walk in memory met a record or a root field
+    /// the image filled.
+    struct Walk {
+        var batch: Batch
+        var met = false
     }
 
     /// Whether every deferred part of a selection the check found is whole,
@@ -817,60 +826,58 @@ public final class Store {
     /// one, a record that lacks a field reads its row first, a link to a
     /// record the collector swept is pointed at the live record of that key,
     /// and a connection's client record is walked while it holds nothing.
-    private func available(_ selection: ResolvedSelection, at record: Record, from disk: Disk?, _ met: inout Bool, _ batch: inout Batch) -> Bool {
+    private func available(_ selection: ResolvedSelection, at record: Record, from disk: Disk?, _ walk: inout Walk) -> Bool {
         selection.isAbstract
-            ? available(selection.variant(for: record.type).fields, at: record, from: disk, &met, &batch)
-            : available(selection.fields, at: record, from: disk, &met, &batch)
+            ? available(selection.variant(for: record.type).fields, at: record, from: disk, &walk)
+            : available(selection.fields, at: record, from: disk, &walk)
     }
 
     /// The walk over one record's fields. They are taken as a parameter and
     /// read in place, so neither the list nor a field is retained per record.
-    /// `met` says whether the walk in memory met a record or a root field
-    /// the image filled.
-    private func available(_ fields: [ResolvedField], at record: Record, from disk: Disk?, _ met: inout Bool, _ batch: inout Batch) -> Bool {
+    private func available(_ fields: [ResolvedField], at record: Record, from disk: Disk?, _ walk: inout Walk) -> Bool {
         if disk == nil {
             if record.hydrated {
-                met = true
+                walk.met = true
             } else if record === root, !hydratedRootSlots.isEmpty, readsHydratedRootSlot(fields) {
-                met = true
+                walk.met = true
             }
         }
         for index in fields.indices {
             if fields[index].isTypename || fields[index].deferred != nil { continue }
             let slot = fields[index].slot
-            if let disk, case .missing = record.peek(slot) { hydrate(record, slot, from: disk, &batch) }
+            if let disk, case .missing = record.peek(slot) { hydrate(record, slot, from: disk, &walk.batch) }
             switch fields[index].kind {
             case .scalar:
                 if case .missing = record.peek(slot) { return false }
             case .linked(let child, let plural, let lookupKey, let connection):
                 switch record.peek(slot) {
                 case .missing:
-                    guard !plural, let lookupKey, let target = resolve(lookupKey, disk, &batch) else { return false }
-                    guard available(child, at: target, from: disk, &met, &batch) else { return false }
-                    set(record, slot, .ref(target), &batch)
+                    guard !plural, let lookupKey, let target = resolve(lookupKey, disk, &walk.batch) else { return false }
+                    guard available(child, at: target, from: disk, &walk) else { return false }
+                    set(record, slot, .ref(target), &walk.batch)
                 case .null:
                     break
                 case .ref(let found):
                     var target = found
                     if let disk {
-                        target = live(found, disk, &batch)
-                        if target !== found { set(record, slot, .ref(target), &batch) }
+                        target = live(found, disk, &walk.batch)
+                        if target !== found { set(record, slot, .ref(target), &walk.batch) }
                     }
-                    if !target.deleted, !available(child, at: target, from: disk, &met, &batch) { return false }
+                    if !target.deleted, !available(child, at: target, from: disk, &walk) { return false }
                 case .refs(var targets):
                     if let disk {
                         var moved = false
                         for position in targets.indices {
                             guard let found = targets[position] else { continue }
-                            let target = live(found, disk, &batch)
+                            let target = live(found, disk, &walk.batch)
                             if target !== found {
                                 targets[position] = target
                                 moved = true
                             }
                         }
-                        if moved { set(record, slot, .refs(targets), &batch) }
+                        if moved { set(record, slot, .refs(targets), &walk.batch) }
                     }
-                    for case let target? in targets where !target.deleted && !available(child, at: target, from: disk, &met, &batch) { return false }
+                    for case let target? in targets where !target.deleted && !available(child, at: target, from: disk, &walk) { return false }
                 default:
                     return false
                 }
@@ -883,9 +890,9 @@ public final class Store {
                 // stays a miss.
                 if let connection, case .ref(let found) = record.peek(connection.slot), found.swept || found.isEmpty {
                     guard let disk else { return false }
-                    let merged = live(found, disk, &batch)
-                    if merged !== found { set(record, connection.slot, .ref(merged), &batch) }
-                    if !merged.deleted, !available(child, at: merged, from: disk, &met, &batch) { return false }
+                    let merged = live(found, disk, &walk.batch)
+                    if merged !== found { set(record, connection.slot, .ref(merged), &walk.batch) }
+                    if !merged.deleted, !available(child, at: merged, from: disk, &walk) { return false }
                 }
             }
         }

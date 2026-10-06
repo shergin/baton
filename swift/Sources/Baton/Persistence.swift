@@ -256,12 +256,15 @@ public final class Persistence: Sendable {
     /// never meets an older row than memory held. False when the file
     /// cannot be opened, and once a removal has come since the store noted
     /// `removals`.
-    func reading(removals: Int, _ body: (Disk) -> Bool) -> Bool {
+    /// `state` is the caller's, handed through rather than captured: a
+    /// variable a closure captures is boxed, and its every `inout` pass pays
+    /// a dynamic exclusivity check.
+    func reading<State>(removals: Int, _ state: inout State, _ body: (Disk, inout State) -> Bool) -> Bool {
         var used: Work?
         let result = disk.withLock { disk in
             guard current(removals), opened(disk) else { return false }
             guard disk.beginRead() else { return false }
-            let result = body(disk)
+            let result = body(disk, &state)
             used = disk.endRead()
             return result
         }
