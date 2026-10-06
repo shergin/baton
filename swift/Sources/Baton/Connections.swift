@@ -58,7 +58,7 @@ extension Store {
         if case .ref(let existing) = connection.peek(slots.pageInfoLink) {
             pageInfo = existing
         } else {
-            pageInfo = record(key: connection.key + ":pageInfo", type: slots.pageInfo, entity: false)
+            pageInfo = record(key: connection.key + ":pageInfo", type: slots.pageInfo, idOffset: -1)
             set(connection, slots.pageInfoLink, .ref(pageInfo), &batch)
         }
         let existing = Store.edges(connection, slots.edges)
@@ -129,7 +129,7 @@ extension Store {
     func ownEdge(of connection: Record, _ slots: ConnectionSlots, _ batch: inout Batch) -> Record {
         let index: Int = if case .int(let index) = connection.peek(slots.nextEdgeIndex) { index } else { 0 }
         set(connection, slots.nextEdgeIndex, .int(index + 1), &batch)
-        return record(key: connection.key + ":edges:" + String(index), type: slots.edge, entity: false)
+        return record(key: connection.key + ":edges:" + String(index), type: slots.edge, idOffset: -1)
     }
 
     func contains(_ connection: Record, node: ObjectIdentifier?, _ slots: ConnectionSlots) -> Bool {

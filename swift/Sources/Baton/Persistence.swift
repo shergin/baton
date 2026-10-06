@@ -250,11 +250,8 @@ public final class Persistence: Sendable {
             return false
         }
 
-        /// The id inside an entity's key: what follows its type's name,
-        /// which holds no colon.
         private static func id(ofEntity key: String) -> String {
-            guard let separator = key.firstIndex(of: ":") else { return key }
-            return String(key[key.index(after: separator)...])
+            String(Record.id(ofEntityKey: key))
         }
     }
 

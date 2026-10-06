@@ -49,6 +49,10 @@ package struct ChangeSet: Sendable {
     package internal(set) var recordTypes: ContiguousArray<TypeID> = []
     /// Whether the record is an entity keyed `Type:id`, for the store's id index.
     package internal(set) var recordIsEntity: ContiguousArray<Bool> = []
+    /// Where each record's id starts in its key, or -1 for a record keyed
+    /// by its path: the store makes the record from it and asks nothing of
+    /// the registry.
+    package internal(set) var recordIDOffsets: ContiguousArray<Int32> = []
     /// Entries grouped by record, one per slot: the last value the response
     /// gave. In arrival order until the ingest groups them at its end.
     package internal(set) var entries: ContiguousArray<Entry> = []
@@ -73,6 +77,7 @@ package struct ChangeSet: Sendable {
         recordKeys.reserveCapacity(records)
         recordTypes.reserveCapacity(records)
         recordIsEntity.reserveCapacity(records)
+        recordIDOffsets.reserveCapacity(records)
         entries.reserveCapacity(bytes.count / 24 + 8)
         refs.reserveCapacity(bytes.count / 128 + 4)
     }
@@ -167,12 +172,13 @@ package struct ChangeSet: Sendable {
     }
 
     @inline(__always)
-    mutating func record(for key: String, type: TypeID, entity: Bool) -> Int32 {
+    mutating func record(for key: String, type: TypeID, idOffset: Int32) -> Int32 {
         if let id = index[key] { return id }
         let id = Int32(recordKeys.count)
         recordKeys.append(key)
         recordTypes.append(type)
-        recordIsEntity.append(entity)
+        recordIsEntity.append(idOffset >= 0)
+        recordIDOffsets.append(idOffset)
         index[key] = id
         return id
     }
@@ -331,7 +337,7 @@ package enum Ingest {
         return try bytes.withUnsafeBufferPointer { buffer in
             var cursor = Cursor(base: buffer.baseAddress!, count: buffer.count, changes: ChangeSet(bytes: bytes))
             cursor.skipWhitespace()
-            let rootID = cursor.changes.record(for: key, type: type, entity: entity)
+            let rootID = cursor.changes.record(for: key, type: type, idOffset: entity ? Record.idOffset(ofType: type.name) : -1)
             _ = try cursor.object(plan: plan, parent: rootID, storageKey: nil, listIndex: nil, depth: 0, fixedRecord: rootID)
             cursor.changes.group()
             if !errors.isEmpty {
@@ -369,7 +375,7 @@ package enum Ingest {
     /// weigh.
     nonisolated static func failed(_ plan: ResolvedSelection, key: String, type: TypeID, entity: Bool, at path: [PathSegment], errors: [ResponseError]) -> FailedPart {
         var changes = ChangeSet(bytes: [])
-        let record = changes.record(for: key, type: type, entity: entity)
+        let record = changes.record(for: key, type: type, idOffset: entity ? Record.idOffset(ofType: type.name) : -1)
         changes.group()
         let rendered = errors.map { FieldError(message: $0.message, path: Ingest.render($0.path ?? path), extensions: $0.extensions) }
         guard let first = rendered.first else { return FailedPart(changes: changes, uncaught: []) }
@@ -542,7 +548,7 @@ package enum Ingest {
                     if cursor.peek() == 0x6E {
                         try cursor.literal("null")
                     } else {
-                        rootID = cursor.changes.record(for: rootKey, type: root.type, entity: false)
+                        rootID = cursor.changes.record(for: rootKey, type: root.type, idOffset: -1)
                         _ = try cursor.object(plan: root, parent: rootID, storageKey: nil, listIndex: nil, depth: 0, fixedRecord: rootID)
                         sawData = true
                     }
@@ -742,7 +748,7 @@ package enum Ingest {
                     let value = try scalarValue(scalar)
                     if plan.hasID && field.keyBytes.count == 2 && field.keyBytes[0] == 0x69 && field.keyBytes[1] == 0x64,
                        case .string(let start, let end, let escaped) = value, record < 0 {
-                        record = changes.record(for: variant.typeName + ":" + Ingest.materialize(base: base, Int(start), Int(end), escaped), type: concreteType, entity: true)
+                        record = changes.record(for: Record.entityKey(variant.typeName, Ingest.materialize(base: base, Int(start), Int(end), escaped)), type: concreteType, idOffset: Record.idOffset(ofType: variant.typeName))
                     }
                     scratch[depth].append((matched, value))
                     if let edit = field.edit { deletion(edit, value) }
@@ -784,7 +790,7 @@ package enum Ingest {
                         if let connection {
                             // The page is the server's field; the connection record it
                             // merges into hangs off the parent by Relay's handle key.
-                            let connectionRecord = changes.record(for: changes.recordKeys[Int(record)] + ":" + connection.storageKey, type: child.type, entity: false)
+                            let connectionRecord = changes.record(for: changes.recordKeys[Int(record)] + ":" + connection.storageKey, type: child.type, idOffset: -1)
                             extra[depth].append((connection.storageKey, connection.slot, .ref(connectionRecord)))
                             changes.edits.append(.merge(connection: connectionRecord, page: childRecord, slots: connection.slots, mode: connection.mode))
                         }
@@ -904,12 +910,12 @@ package enum Ingest {
         @inline(__always)
         mutating func settle(plan: ResolvedSelection, concreteType: TypeID, typeName: String, pendingID: (Int, Int, Bool)?, parent: Int32, storageKey: String?, listIndex: Int?) -> Int32 {
             if let (start, end, escaped) = pendingID {
-                return changes.record(for: typeName + ":" + Ingest.materialize(base: base, start, end, escaped), type: concreteType, entity: true)
+                return changes.record(for: Record.entityKey(typeName, Ingest.materialize(base: base, start, end, escaped)), type: concreteType, idOffset: Record.idOffset(ofType: typeName))
             }
             var key = changes.recordKeys[Int(parent)] + ":" + (storageKey ?? "")
             if let listIndex { key += ":" + String(listIndex) }
             if plan.isAbstract { key += ":" + typeName }
-            return changes.record(for: key, type: concreteType, entity: false)
+            return changes.record(for: key, type: concreteType, idOffset: -1)
         }
 
         mutating func scalarValue(_ scalar: ScalarKind) throws -> ChangeSet.RawValue {

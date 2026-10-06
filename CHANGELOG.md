@@ -5,6 +5,11 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- A change set carries where each record's id starts in its key, so the
+  store makes the record from it and asks the registry nothing per record
+  it creates; an entity's key, `Type:id`, is built in one place, and what
+  names a record by a bare value, a deletion, a lookup or the image's
+  forget, reads the value part the one way it was written.
 - The plan IR carries a field's and a variable's type as one recursive
   shape, a named type or a list of a type with nullability at every level,
   built once in the lowering for the reader side and the normalization

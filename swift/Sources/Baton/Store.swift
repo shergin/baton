@@ -191,19 +191,19 @@ public final class Store {
     package var recordsByKey: [String: Record] { records }
 
     /// The record for a key, created on first sight.
-    func record(key: String, type: TypeID, entity: Bool) -> Record {
-        record(key: key, type: type, entity: entity).record
+    func record(key: String, type: TypeID, idOffset: Int32) -> Record {
+        record(key: key, type: type, idOffset: idOffset).record
     }
 
     /// The record for a key, and whether this call created it.
-    private func record(key: String, type: TypeID, entity: Bool) -> (record: Record, created: Bool) {
+    private func record(key: String, type: TypeID, idOffset: Int32) -> (record: Record, created: Bool) {
         if let record = records[key] {
             // A key names one type: an entity's starts with it, and a path
             // key under an interface or union ends with it.
             assert(record.type == type, "\(key) is a \(record.type.name), not a \(type.name)")
             return (record, false)
         }
-        let record = Record(type: type, key: key, idOffset: entity ? Int32(type.name.utf8.count + 1) : -1)
+        let record = Record(type: type, key: key, idOffset: idOffset)
         records[key] = record
         return (record, true)
     }
@@ -212,7 +212,10 @@ public final class Store {
     /// not, or a new empty one for the image to fill.
     func target(key: String, type: TypeID, entity: Bool) -> Record {
         if let record = records[key] { return record }
-        return record(key: key, type: type, entity: entity)
+        // A row says of a link's target that it is an entity, not where its
+        // id starts: the type's name gives that, once per target the image
+        // names that memory lacks.
+        return record(key: key, type: type, idOffset: entity ? Record.idOffset(ofType: type.name) : -1)
     }
 
     // MARK: Commits and optimistic layers
@@ -696,7 +699,7 @@ public final class Store {
         objects.reserveCapacity(changes.recordKeys.count)
         var created = [Bool](repeating: false, count: changes.recordKeys.count)
         for index in 0..<changes.recordKeys.count {
-            let found = record(key: changes.recordKeys[index], type: changes.recordTypes[index], entity: changes.recordIsEntity[index]) as (record: Record, created: Bool)
+            let found = record(key: changes.recordKeys[index], type: changes.recordTypes[index], idOffset: changes.recordIDOffsets[index]) as (record: Record, created: Bool)
             objects.append(found.record)
             created[index] = found.created
         }
@@ -1180,10 +1183,11 @@ public final class Store {
     /// from it. A record is registered only once the image had its row, so
     /// a miss leaves nothing behind.
     private func resolve(_ type: TypeID, _ id: String, _ disk: Disk?, _ batch: inout Batch) -> Record? {
-        let key = type.name + ":" + id
+        let typeName = type.name
+        let key = Record.entityKey(typeName, id)
         if let record = records[key] { return record.deleted ? nil : record }
         guard let disk else { return nil }
-        let candidate = Record(type: type, key: key, idOffset: Int32(type.name.utf8.count + 1))
+        let candidate = Record(type: type, key: key, idOffset: Record.idOffset(ofType: typeName))
         guard hydrate(candidate, from: disk, &batch) else { return nil }
         records[key] = candidate
         return candidate.deleted ? nil : candidate

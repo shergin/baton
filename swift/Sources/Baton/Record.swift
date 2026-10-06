@@ -48,6 +48,25 @@ public final class Record: Observable {
     /// Whether the record is an entity, keyed `Type:id`.
     nonisolated var isEntity: Bool { idOffset >= 0 }
 
+    /// An entity's key, `Type:id`, built here and nowhere else, so that what
+    /// names a record by a bare value, a deletion, a lookup or the image's
+    /// forget, reads the value part the one way it was written.
+    nonisolated static func entityKey(_ typeName: String, _ id: String) -> String {
+        typeName + ":" + id
+    }
+
+    /// Where the id starts in an entity's key of the type.
+    nonisolated static func idOffset(ofType typeName: String) -> Int32 {
+        Int32(typeName.utf8.count + 1)
+    }
+
+    /// The id in an entity's key: what follows the type's name, which holds
+    /// no colon.
+    nonisolated static func id(ofEntityKey key: String) -> Substring {
+        guard let separator = key.firstIndex(of: ":") else { return key[...] }
+        return key[key.index(after: separator)...]
+    }
+
     /// The id of an entity, for refetching by id; nil for a record keyed by
     /// its path.
     nonisolated public var entityID: String? {
