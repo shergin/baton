@@ -5,6 +5,12 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- `BatonInspector`, a third product of the package for a debug menu:
+  `StoreInspector(environment)` is a view over the store, its counts, its
+  records by type searchable by key, each record's slots with their values
+  and field errors, and a share button that exports the store in the dump
+  format `spec/` freezes, so a bug report can become a fixture. It reads
+  and never writes.
 - The compiler writes a report of what it compiled for a target:
   `batonc generate --report <file>`, and `Baton.report.json` in the build's
   output directory under the plugin. Every operation with its kind, source,

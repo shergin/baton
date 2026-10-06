@@ -228,7 +228,8 @@ for the people who register operations and review contract changes. The generate
 the runtime's interface for generated code, `@_spi(Generated) import
 Baton`; the app's own files import `Baton` and need nothing more. Tests and
 previews add `BatonTesting`, a second product of the package, for a
-transport that answers from recorded responses.
+transport that answers from recorded responses; a debug menu adds
+`BatonInspector`, a third, for a view over the store and its export.
 
 To keep the store across launches, give the environment an image:
 `Environment(url: endpoint, persistence: Persistence(name: "Main", version: Types.schemaDigest))`,

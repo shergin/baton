@@ -36,6 +36,10 @@ let package = Package(
         // The recorded and the silent transports, for an app's tests and
         // previews; nothing in it ships in the app.
         .library(name: "BatonTesting", targets: ["BatonTesting"]),
+        // A view over a store for a debug menu, and the store's export in
+        // the dump format `spec/` freezes; a product of its own, so a
+        // release build need not link it.
+        .library(name: "BatonInspector", targets: ["BatonInspector"]),
         .plugin(name: "BatonPlugin", targets: ["BatonPlugin"]),
     ],
     dependencies: [
@@ -52,6 +56,12 @@ let package = Package(
             name: "BatonTesting",
             dependencies: ["Baton"],
             path: "swift/Sources/BatonTesting",
+            swiftSettings: [.swiftLanguageMode(.v6)]
+        ),
+        .target(
+            name: "BatonInspector",
+            dependencies: ["Baton"],
+            path: "swift/Sources/BatonInspector",
             swiftSettings: [.swiftLanguageMode(.v6)]
         ),
         .macro(
@@ -78,7 +88,7 @@ let package = Package(
         ),
         .testTarget(
             name: "BatonTests",
-            dependencies: ["Baton", "BatonTesting", "BatonSpec", "Exchange"],
+            dependencies: ["Baton", "BatonTesting", "BatonInspector", "BatonSpec", "Exchange"],
             path: "swift/Tests/BatonTests",
             swiftSettings: [.swiftLanguageMode(.v6)],
             plugins: ["BatonPlugin"]

@@ -1,4 +1,5 @@
 @_spi(Generated) import Baton
+import BatonInspector
 import BatonSpec
 import BatonTesting
 import Foundation
@@ -366,7 +367,7 @@ struct WriteTests {
 
         let committed = Environment(transport: SilentTransport())
         try await committed.commitPayload(Fixture(page: 1), fixtureData)
-        #expect(StoreDump.text(of: committed.store) == StoreDump.text(of: fetched.store))
+        #expect(StoreExport.text(of: committed.store) == StoreExport.text(of: fetched.store))
 
         let handle = committed.handle(for: Fixture(page: 1), fetchPolicy: .storeOnly)
         guard case .ready(let data) = handle.phase else {
@@ -382,11 +383,11 @@ struct WriteTests {
         let environment = Environment(transport: SilentTransport())
         environment.store.reportMissing = nil
         try await environment.commitPayload(Fixture(page: 1), fixtureData)
-        let before = StoreDump.text(of: environment.store).split(separator: "\n")
+        let before = StoreExport.text(of: environment.store).split(separator: "\n")
 
         let payload = Data(#"{"data":{"character":{"id":"1","name":"Rick Prime"}}}"#.utf8)
         try await environment.commitPayload(TestHeaderQuery(id: "1"), payload)
-        let after = StoreDump.text(of: environment.store).split(separator: "\n")
+        let after = StoreExport.text(of: environment.store).split(separator: "\n")
 
         let rick = try #require(before.first { $0.hasPrefix(#"  "Character:1": "#) })
         #expect(rick.contains(#""name": "Rick Sanchez""#))
@@ -414,7 +415,7 @@ struct WriteTests {
         let mutation = TestAddNote(characterId: "1", text: "Appended", connections: [character.notes.connectionID])
         try await environment.commitPayload(mutation, fixture("add-note-n9"))
         #expect(character.notes.nodes.map(\.text) == ["Wubba lubba dub dub", "Portal gun needs charging", "Appended"])
-        let roots = StoreDump.text(of: environment.store).split(separator: "\n")
+        let roots = StoreExport.text(of: environment.store).split(separator: "\n")
         #expect(roots.contains { $0.hasPrefix(#"  "client:root:mutation": "#) && $0.contains("addNote") }, "the payload hangs off the mutation root")
         #expect(!roots.contains { $0.hasPrefix(#"  "client:root": "#) && $0.contains("addNote") })
         _ = consume retention
@@ -440,7 +441,7 @@ struct WriteTests {
         let store = environment.store
         let event = TestNoteAdded.Data(anchor: Anchor(record: store.subscriptionRoot, variables: subscription.variables, store: store))
         #expect(event.noteAdded?.noteEdge?.node?.text == "Live from the garage")
-        let roots = StoreDump.text(of: store).split(separator: "\n")
+        let roots = StoreExport.text(of: store).split(separator: "\n")
         #expect(roots.contains { $0.hasPrefix(#"  "client:root:subscription": "#) && $0.contains("noteAdded") })
         #expect(!roots.contains { $0.hasPrefix(#"  "client:root": "#) && $0.contains("noteAdded") }, "nothing hangs off the query root")
         _ = consume retention

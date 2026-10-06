@@ -646,6 +646,14 @@ backoff, a deadline across the attempts, is a wrapper over the one verb the
 app owns, not a library type; [the exchange recipe](recipes/exchange.md)
 walks through the one the GitHub sample sends through.
 
+**Inspector.** *Composition: store, record.* Baton's word for the view a
+debug build presents over an environment's store: its counts, its records
+by type, each record's slots with their values and field errors, and an
+export in the dump format `spec/` freezes, `StoreExport.text(of:)`, so a
+bug report can become a fixture. It reads and never writes: no provenance
+per slot, no action that evicts. `StoreInspector` lives in `BatonInspector`,
+a product of its own, so a release build need not link it.
+
 **Recorded transport, scripted transport.** *Concept: transport.* Baton's
 words. `RecordedTransport` answers from recorded responses by operation
 name, or from a function of the whole request, and keeps the requests it
