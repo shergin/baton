@@ -80,8 +80,8 @@ made. Nothing is passed at an attach, and no timer is armed. See
 Here: the field reads non-optional. NONE and LOG bubble at the lens
 boundary, as Relay nulls the enclosing object: the accessor that produces
 the lens produces nil when a required field in it is null (a generated
-`satisfied` checks), and LOG reports the path through
-`Environment.requiredFieldMissing`. THROW makes the field's accessor
+`satisfied` checks), and LOG logs the path as a `requiredFieldMissing`
+event. THROW makes the field's accessor
 `get throws`, raising `RequiredFieldError`. A root that bubbles fails the
 operation with a `RequiredFieldError` that names the operation and the path
 of the first required field that is null (a generated
@@ -257,8 +257,8 @@ and what names a record by one value, a lookup without a type (`node(id:)`),
 `@deleteRecord`, `@deleteEdge` and the image's forget, reaches single-field
 keys only: a lookup without a type and `@deleteRecord` probe `Type:id` for
 each possible type, and act only when exactly one live record has the id; an
-id that names live records of several types is reported through
-`Store.reportAmbiguousIdentity`, and nothing is done for it. A configuration
+id that names live records of several types is logged as an
+`ambiguousIdentity` event, and nothing is done for it. A configuration
 other than the default joins the schema's digest, so an image keyed another
 way is a miss and not a merge. See
 [the decision](decisions/identity-is-configured.md).
@@ -428,15 +428,14 @@ an app branches on the server's code and never on its message: see
 **Heal.** *Composition: store, operation value, environment.* Baton's word
 for the response to missing data: record the event, mark the owning
 operation stale, refetch. See [Honest data](principles/honest-data.md). A
-read that finds a slot the store never received reports it through
-`Store.reportMissing` and tells its owner's environment, which marks the
-owner's root stale and refetches it if a holder allows the network, once per
-fetch of that root; a field still missing after the heal's own refetch is
-reported through `Store.reportUnexpected` and healed no further. A lens made
-by hand has no root and is reported, not healed. A value the generated type
-cannot hold, a null in a field typed non-null or a value of another kind, is
-reported through `Store.reportUnexpected`; it is not a miss, so nothing
-heals it.
+read that finds a slot the store never received logs it as a `missing`
+event and tells its owner's environment, which marks the owner's root stale
+and refetches it if a holder allows the network, once per fetch of that
+root; a field still missing after the heal's own refetch is logged as
+`unexpected` and healed no further. A lens made by hand has no root and is
+logged, not healed. A value the generated type cannot hold, a null in a
+field typed non-null or a value of another kind, is logged as `unexpected`;
+it is not a miss, so nothing heals it.
 
 ## Compiler
 
@@ -587,6 +586,22 @@ the fragment's definition is there for; see
 [the decision](decisions/the-report-is-what-a-dependent-target-reads.md).
 
 ## Runtime
+
+**Log.** *Concept: environment.* Relay's word for the function an
+environment is given and calls with each event of its work (`LogEvent`); #15
+asked for it as an event sink. Here: `Environment.log`, a closure of
+`LogEvent`, a value-free enum of names and counts, never a record, a slot, a
+value, a variable or a response body, so an app routes it to its logging and
+metrics without logging anything a user typed. The cases are the fetch
+(started, completed with its duration, failed with its failure's kind), the
+commit (its kind and the slots it changed in records that existed), a field
+error a fetch's response carried that no `@catch` handled, by operation and
+response path, the image (opened, unavailable, written, failed) and missing
+data (a field read and never fetched, a value a reader's type cannot hold,
+an id naming records of several types, a `@required(action: LOG)` field that
+is null), each by type and field name. Debug builds print the missing-data
+cases until `log` is set; a test sets `log = nil`. See [the
+decision](decisions/the-environment-logs-value-free-events.md).
 
 **Environment.** *Concept: environment.* Relay's word for store plus network
 plus configuration. Here the same, injected through SwiftUI's environment as

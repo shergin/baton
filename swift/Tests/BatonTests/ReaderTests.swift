@@ -15,8 +15,14 @@ struct ReaderTests {
 
     func store(_ reports: Reports) -> Store {
         let store = Store()
-        store.reportMissing = { [unowned store] record, slot in reports.missing.append(record.key + "." + store.storageKey(of: slot)) }
-        store.reportUnexpected = { [unowned store] _, slot, value in reports.unexpected.append(store.storageKey(of: slot) + " = \(value)") }
+        store.log = { event in
+            switch event {
+            case .missing(let type, let field): reports.missing.append(type + "." + field)
+            case .unexpected(let type, let field): reports.unexpected.append(type + "." + field)
+            case .requiredFieldMissing(let type, let path): reports.logged.append(type + " " + path)
+            default: break
+            }
+        }
         return store
     }
 
@@ -28,7 +34,7 @@ struct ReaderTests {
         store.commit(try Ingest.normalize(fixture("notes-total-null"), plan: TestNotesQuery.plan.resolve(query.variables, in: store.keys)))
         let character = try #require(TestNotesQuery.Data(anchor: Anchor(record: store.root, variables: query.variables, store: store)).character)
         #expect(character.testNotes.notes.totalCount == 0)
-        #expect(reports.unexpected == ["totalCount = null"])
+        #expect(reports.unexpected == ["NoteConnection.totalCount"])
         #expect(reports.missing.isEmpty)
     }
 
@@ -44,7 +50,7 @@ struct ReaderTests {
         #expect(notes.totalCount == 0)
         #expect(notes.edges == nil)
         #expect(notes.pageInfo.hasNextPage == false)
-        #expect(reports.missing == ["Character:1.__TestNotes_notes_connection"], "the fields under the placeholder report nothing")
+        #expect(reports.missing == ["Character.__TestNotes_notes_connection"], "the fields under the placeholder report nothing")
         #expect(reports.unexpected.isEmpty)
         #expect(store.existing(notes.anchor.record.key) == nil, "the placeholder is not a record of the store")
 
@@ -59,13 +65,12 @@ struct ReaderTests {
     func loggedBelowAPlaceholder() throws {
         let reports = Reports()
         let environment = Environment(transport: SilentTransport(), store: store(reports))
-        environment.requiredFieldMissing = { record, path in reports.logged.append(record.key + " " + path) }
         environment.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables, in: environment.store.keys)))
         let record = try #require(environment.store.existing("Character:1"))
         let character = TestLoggedNotes_character(anchor: Anchor(record: record, variables: .none, store: environment.store))
 
         #expect(character.notes.testLogEdges == nil, "the placeholder has no edges, so the required field bubbles")
-        #expect(reports.missing == ["Character:1.notes(first:1)"])
+        #expect(reports.missing == ["Character.notes(first:1)"])
         #expect(reports.logged.isEmpty, "\(reports.logged)")
     }
 
@@ -73,7 +78,7 @@ struct ReaderTests {
     func caughtFailedPart(_ failed: String) async throws {
         let parts = [fixture("caught-part-1"), fixture(failed)]
         let environment = Environment(transport: DeliveryTests.OpenParts(parts))
-        environment.store.reportMissing = nil
+        environment.log = nil
         let query = TestCaughtPartQuery(id: "1")
         #expect(try await environment.fetch(TestCaughtPartQuery.self, variables: query.variables).isEmpty)
         try await environment.fetch(query)
@@ -102,7 +107,7 @@ struct ReaderTests {
     func uncaughtFailedPart(_ failed: String, _ sent: [String]) async throws {
         let parts = [fixture("uncaught-part-1"), fixture(failed)]
         let environment = Environment(transport: DeliveryTests.OpenParts(parts))
-        environment.store.reportMissing = nil
+        environment.log = nil
         let query = TestUncaughtPartQuery(id: "1")
         #expect(try await environment.fetch(TestUncaughtPartQuery.self, variables: query.variables).map(\.message) == sent)
         try await environment.fetch(query)
@@ -126,7 +131,7 @@ struct ReaderTests {
     func failedPartOfTwoFields(_ failed: String, _ sent: [String]) async throws {
         let parts = [fixture("two-field-part-1"), fixture(failed)]
         let environment = Environment(transport: DeliveryTests.OpenParts(parts))
-        environment.store.reportMissing = nil
+        environment.log = nil
         let uncaught = try await environment.fetch(TestTwoFieldPartQuery.self, variables: TestTwoFieldPartQuery(id: "1").variables)
         #expect(uncaught.map(\.message) == sent)
         let character = try #require(environment.store.existing("Character:1"))
@@ -139,7 +144,7 @@ struct ReaderTests {
     func failedPartWithoutFields() async throws {
         let parts = [fixture("node-deferred-episode-1"), fixture("character-deferred-2-failed")]
         let environment = Environment(transport: DeliveryTests.OpenParts(parts))
-        environment.store.reportMissing = nil
+        environment.log = nil
         let uncaught = try await environment.fetch(TestNodeDeferred.self, variables: TestNodeDeferred(id: "1").variables)
         #expect(uncaught.map(\.message) == ["appearances unavailable"])
     }
@@ -148,7 +153,7 @@ struct ReaderTests {
     func deletedRequiredLink() async throws {
         let transport = RecordedTransport { request in request.operationName == TestRequiredOrigin.name ? fixture("required-origin-1") : nil }
         let environment = Environment(transport: transport)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestRequiredOrigin(id: "1"))
         let retention = handle.retain()
         await until { if case .loading = handle.phase { false } else { true } }
@@ -185,7 +190,7 @@ struct ReaderTests {
             return
         }
         #expect(episodes.isEmpty)
-        #expect(reports.unexpected == ["episode = null"])
+        #expect(reports.unexpected == ["Character.episode"])
     }
 
     @Test("a value of another kind than the reader's reads nil and is reported")
@@ -213,7 +218,7 @@ struct ReaderTests {
     @Test("one owner keeps each key with variables and each spread with arguments apart")
     func ownerKeepsKeysApart() throws {
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables, in: store.keys)))
         for id in ["1", "2"] {
             #expect(store.check(TestHeaderQuery.plan.resolve(TestHeaderQuery(id: id).variables, in: store.keys)) != .miss, "the lookup binds character(id: \(id))")
@@ -232,7 +237,7 @@ struct ReaderTests {
     @Test("a spread's list and input object with a variable inside bind the keys the same arguments written in place wrote")
     func spreadArgumentsHoldingVariables() throws {
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         let keys = TestKeys(id: "7", name: "Rick")
         store.commit(try Ingest.normalize(fixture("keys-1"), plan: TestKeys.plan.resolve(keys.variables, in: store.keys)))
         let query = TestSpreadKeys(id: "7", name: "Rick")
@@ -255,7 +260,7 @@ struct ReaderTests {
     @Test("fields named like the module's shared enums get lenses of other names, so a spread with arguments inside them still binds")
     func reservedNames() throws {
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables, in: store.keys)))
         #expect(store.check(TestHeaderQuery.plan.resolve(TestHeaderQuery(id: "1").variables, in: store.keys)) != .miss)
         let query = TestReservedNames(id: "1")
@@ -269,7 +274,7 @@ struct ReaderTests {
     @Test("fields named like the Swift types, keywords and attribute a lens spells get lenses of other names, and every accessor reads")
     func swiftNames() throws {
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         let query = TestSwiftNames(id: "1")
         store.commit(try Ingest.normalize(fixture("swift-names-1"), plan: TestSwiftNames.plan.resolve(query.variables, in: store.keys)))
         let data = TestSwiftNames.Data(anchor: Anchor(record: store.root, variables: query.variables, store: store))
@@ -301,7 +306,7 @@ struct ReaderTests {
     @Test("of two fields whose lenses would take one name, the second is checked through its own lens for field errors and required fields")
     func collidingLensNames() throws {
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         let errors = TestCollidingErrors(id: "1")
         store.commit(try Ingest.normalize(fixture("colliding-lenses-name-hidden"), plan: TestCollidingErrors.plan.resolve(errors.variables, in: store.keys)))
         let errorsData = TestCollidingErrors.Data(anchor: Anchor(record: store.root, variables: errors.variables, store: store))
@@ -322,7 +327,7 @@ struct ReaderTests {
         let record = try #require(store.existing("Character:1"))
         let anchor = Anchor(record: record, variables: query.variables, store: store)
         #expect(!TestProfile_character.satisfied(anchor))
-        #expect(reports.missing == ["Character:1.origin"])
+        #expect(reports.missing == ["Character.origin"])
     }
 
     @Test("variables named like Swift's keywords are properties, parameters and request variables of those names")

@@ -11,7 +11,7 @@ struct InspectorTests {
     @Test("a store filled by a committed payload exports the dump spec/ freezes for that response")
     func aCommittedPayloadExportsItsDump() async throws {
         let environment = Environment(transport: SilentTransport())
-        environment.store.reportMissing = nil
+        environment.log = nil
         try await environment.commitPayload(Fixture(page: 1), fixtureData)
         let expected = try String(contentsOf: Spec.directory.appendingPathComponent("rickandmorty/characters-page-1.store.json"), encoding: .utf8)
         #expect(StoreExport.text(of: environment.store) == expected)
@@ -26,7 +26,7 @@ struct InspectorTests {
     @Test("a record @deleteRecord deleted exports as null")
     func aDeletedRecordExportsAsNull() throws {
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         store.commit(try Ingest.normalize(fixture("characters-7-8"), plan: TestList.plan.resolve(TestList(page: 1).variables, in: store.keys)))
         let removal = TestRemoveNote(id: "7", connections: [])
         store.commit(try Ingest.normalize(fixture("remove-note-7"), plan: TestRemoveNote.plan.resolve(removal.variables, in: store.keys), rootKey: Store.mutationRootKey))
@@ -38,7 +38,7 @@ struct InspectorTests {
     @Test("the export sorts its records by key and each record's fields by storage key")
     func theExportSortsRecordsAndFields() async throws {
         let environment = Environment(transport: SilentTransport())
-        environment.store.reportMissing = nil
+        environment.log = nil
         try await environment.commitPayload(Fixture(page: 1), fixtureData)
         let text = StoreExport.text(of: environment.store)
         let lines = text.split(separator: "\n").dropFirst().dropLast().map(String.init)

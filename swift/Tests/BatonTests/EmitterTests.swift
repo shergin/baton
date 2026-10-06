@@ -8,7 +8,7 @@ import Testing
 struct EmitterTests {
     /// The root lens of `query` over a store that holds the fixture `name`.
     func root<Query: Baton.Query>(_ query: Query, _ name: String, in store: Store) throws -> Anchor {
-        store.reportMissing = nil
+        store.log = nil
         store.commit(try Ingest.normalize(fixture(name), plan: Query.plan.resolve(query.variables, in: store.keys)))
         return Anchor(record: store.root, variables: query.variables, store: store)
     }
@@ -169,7 +169,7 @@ struct EmitterTests {
     @Test("payload fields named like the types an optimistic builder spells get builders of other names, which render and apply, and a variable named self is one")
     func builderNames() throws {
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         let mutation = TestBuilderNames(id: "1", favorite: true, self: "1")
         #expect(mutation.`self` == "1")
         #expect(mutation.variables == Variables(["id": .string("1"), "favorite": .bool(true), "self": .string("1")]))
@@ -203,7 +203,7 @@ struct EmitterTests {
     @Test("a payload field named Baton, and one named Baton under it, render through their builders and apply")
     func builderFieldsNamedLikeTheModule() throws {
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         let mutation = TestModuleNamedPayload(id: "1")
         let optimistic = TestModuleNamedPayload.OptimisticResponse(setFavorite: .init(Baton: .init(id: "1", Baton: "Rick Prime")))
         #expect(optimistic.variable == .object([
@@ -220,7 +220,7 @@ struct EmitterTests {
     @Test("a payload of every kind of scalar list, of strings, ids, ints, floats, booleans, a custom scalar and an enum, renders through its builder, applies and reads back")
     func builderLists() throws {
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         let mutation = TestListPayload()
         let optimistic = TestListPayload.OptimisticResponse(setLists: .init(
             strings: ["Rick", "Morty"],

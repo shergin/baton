@@ -30,7 +30,7 @@ struct PersistenceTests {
     /// `cacheExpiration` is the store's default.
     func launch(_ transport: any Transport = SilentTransport(), at url: URL? = nil, version: String = "", sizeLimit: Int = 64 << 20, protection: FileProtectionType? = nil, cacheExpiration: Duration? = nil, releaseBufferSize: Int = 10) -> Environment {
         let store = Store(persistence: Persistence(url: url ?? image.url, version: version, sizeLimit: sizeLimit, protection: protection), cacheExpiration: cacheExpiration, releaseBufferSize: releaseBufferSize)
-        store.reportMissing = nil
+        store.log = nil
         return Environment(transport: transport, store: store)
     }
 
@@ -1450,7 +1450,7 @@ struct PersistenceTests {
         let renamed = renamedFixture
         let transport = RecordedTransport { _ in renamed }
         let next = Environment(transport: transport, store: Store(persistence: Persistence(url: persistence.url)))
-        next.store.reportMissing = nil
+        next.log = nil
         #expect(throws: NotStored.self) { try stored(Fixture(page: 1), in: next) }
         #expect(next.store.hydratedRecords == 0, "the new image reads nothing")
         try await next.fetch(Fixture(page: 1))
@@ -1696,7 +1696,7 @@ struct PersistenceTests {
         for _ in 0..<12 {
             let image = TemporaryImage()
             let first = Store(persistence: Persistence(url: image.url))
-            first.reportMissing = nil
+            first.log = nil
             first.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables, in: first.keys)))
             await first.persistence?.flush()
             // The image's connection stays open while another moves its rows
@@ -1715,7 +1715,7 @@ struct PersistenceTests {
                 .replacingOccurrences(of: "\"name\":\"Morty Smith\"", with: "\"name\":\"Morty C-137\"")
             first.commit(try Ingest.normalize(Data(renamed.utf8), plan: Fixture.plan.resolve(Fixture(page: 1).variables, in: first.keys)))
             let second = Store(persistence: first.persistence)
-            second.reportMissing = nil
+            second.log = nil
             #expect(second.check(Fixture.plan.resolve(Fixture(page: 1).variables, in: second.keys)) == .miss)
             await first.persistence?.flush()
         }

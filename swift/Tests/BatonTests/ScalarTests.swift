@@ -19,8 +19,13 @@ struct ScalarTests {
     /// fixture.
     func store(_ reports: Reports, response: Data = fixture("asset-prices")) throws -> Store {
         let store = Store()
-        store.reportMissing = { [unowned store] record, slot in reports.missing.append(record.key + "." + store.storageKey(of: slot)) }
-        store.reportUnexpected = { [unowned store] record, slot, _ in reports.unexpected.append(record.key + "." + store.storageKey(of: slot)) }
+        store.log = { event in
+            switch event {
+            case .missing(let type, let field): reports.missing.append(type + "." + field)
+            case .unexpected(let type, let field): reports.unexpected.append(type + "." + field)
+            default: break
+            }
+        }
         let query = TestAssetPricesQuery()
         store.commit(try Ingest.normalize(response, plan: TestAssetPricesQuery.plan.resolve(query.variables, in: store.keys)))
         return store
@@ -72,9 +77,9 @@ struct ScalarTests {
         #expect(try asset(0, in: store).page == URL(string: "https://example.com/assets/a1"))
         #expect(reports.unexpected.isEmpty)
         #expect(try asset(1, in: store).page == nil)
-        #expect(reports.unexpected == ["Asset:b2.page"])
+        #expect(reports.unexpected == ["Asset.page"])
         #expect(try asset(2, in: store).page == nil, "a null page is a null, not a failure")
-        #expect(reports.unexpected == ["Asset:b2.page"])
+        #expect(reports.unexpected == ["Asset.page"])
         #expect(reports.missing.isEmpty)
     }
 
@@ -83,10 +88,10 @@ struct ScalarTests {
         let reports = Reports()
         let store = try store(reports)
         #expect(try asset(1, in: store).price == nil)
-        #expect(reports.unexpected == ["Asset:b2.price"])
+        #expect(reports.unexpected == ["Asset.price"])
         #expect(reports.missing.isEmpty, "a refetch would bring the same text")
         #expect(try asset(2, in: store).listedAt == nil)
-        #expect(reports.unexpected == ["Asset:b2.price", "Asset:c3.listedAt"])
+        #expect(reports.unexpected == ["Asset.price", "Asset.listedAt"])
     }
 
     @Test("a list of decimals reads each one, and an element that does not convert reads as nil beside the null, reported once")
@@ -98,7 +103,7 @@ struct ScalarTests {
         #expect(reports.unexpected.isEmpty)
         let mixed = try #require(try asset(1, in: store).prices)
         #expect(mixed == [Decimal(string: "3.25"), nil, nil], "the elements are nullable, so `many` reads as nil as the null does")
-        #expect(reports.unexpected == ["Asset:b2.prices"])
+        #expect(reports.unexpected == ["Asset.prices"])
         #expect(try asset(2, in: store).prices == nil)
     }
 
@@ -184,9 +189,9 @@ struct ScalarTests {
         let satisfied = try #require(try pricedAsset("a1", in: store).testRequiredPrice)
         #expect(try satisfied.price.scalarText == "12345678901234567890.123456789")
         #expect(try pricedAsset("b2", in: store).testRequiredPrice == nil)
-        #expect(reports.unexpected == ["Asset:b2.price"])
+        #expect(reports.unexpected == ["Asset.price"])
         #expect(try pricedAsset("c3", in: store).testRequiredPrice == nil)
-        #expect(reports.unexpected == ["Asset:b2.price"], "a null is not unexpected")
+        #expect(reports.unexpected == ["Asset.price"], "a null is not unexpected")
         #expect(reports.missing.isEmpty)
     }
 

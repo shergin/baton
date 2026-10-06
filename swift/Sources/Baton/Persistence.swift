@@ -84,6 +84,8 @@ public final class Persistence: Sendable {
 
     private let disk: Mutex<Disk>
     private let pending = Mutex(Pending())
+    /// The environment's log, the store's copy for the writer's thread.
+    private let log = Mutex<(@Sendable (LogEvent) -> Void)?>(nil)
     private let ages = Mutex(Ages())
 
     /// An image in the file at `url`; its directory is created when missing.
@@ -451,12 +453,24 @@ public final class Persistence: Sendable {
             // to be ready for it: the open its creation scheduled, or a
             // drain behind `close()`, must not take it from the next image.
             if work.isEmpty, !disk.holding { return }
-            guard opened(disk), disk.write(work) else {
+            guard opened(disk) else {
+                log.withLock { $0?(.imageUnavailable) }
                 if disk.off { finished(work) } else { keep(work, disk) }
                 return
             }
+            guard disk.write(work) else {
+                log.withLock { $0?(.imageWriteFailed) }
+                if disk.off { finished(work) } else { keep(work, disk) }
+                return
+            }
+            if !work.isEmpty { log.withLock { $0?(.imageWritten(batches: work.count)) } }
             finished(work)
         }
+    }
+
+    /// Gives the writer the environment's log.
+    package func setLog(_ log: (@Sendable (LogEvent) -> Void)?) {
+        self.log.withLock { $0 = log }
     }
 
     private func opened(_ disk: Disk) -> Bool {
@@ -466,6 +480,7 @@ public final class Persistence: Sendable {
         case .unavailable:
             return false
         case .opened(let times, let learned):
+            log.withLock { $0?(.imageOpened) }
             ages.withLock { ages in
                 if ages.cleared { return }
                 for (operation, time) in times where ages.times[operation] == nil { ages.times[operation] = time }

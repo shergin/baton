@@ -103,7 +103,7 @@ struct OracleTests {
         let persistence = Persistence(url: image.url)
         let store = Store(persistence: oracle.persisted ? persistence : nil)
         let plan = operation.plan.resolve(operation.variables, in: store.keys)
-        store.reportMissing = nil
+        store.log = nil
         try await oracle.commit(operation, into: store)
         // The response is walked after the commit: a type the build did not
         // list takes its variant from the memberships the response states,
@@ -117,7 +117,7 @@ struct OracleTests {
         if oracle.persisted {
             await persistence.close()
             let second = Store(persistence: Persistence(url: image.url))
-            second.reportMissing = nil
+            second.log = nil
             let environment = Environment(transport: SilentTransport(), store: second)
             let secondPlan = operation.plan.resolve(operation.variables, in: second.keys)
             let answered = environment.store.check(secondPlan)
@@ -153,7 +153,7 @@ struct OracleTests {
     func theLensAgreesWithTheManifest(_ oracle: OracleCase) async throws {
         let operation = try OracleOperation.bind(oracle.entry)
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         try await oracle.commit(operation, into: store)
         let anchor = Anchor(record: oracle.root(in: store), variables: operation.variables, store: store)
         for row in oracle.entry.reads {

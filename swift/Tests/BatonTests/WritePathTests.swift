@@ -26,7 +26,7 @@ struct WritePathTests {
     @Test("a server's field error survives an optimistic write to the field that fails")
     func errorsAreUndone() throws {
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         let profile = TestProfileQuery(id: "1")
         store.commit(try changes("character-errors", profile, in: store))
         let rick = try #require(store.existing("Character:1"))
@@ -44,7 +44,7 @@ struct WritePathTests {
     @Test("a record an optimistic response revives is deleted again when the layer fails")
     func revivalsAreUndone() async throws {
         let environment = Environment(transport: notesTransport())
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestNotesQuery(id: "1"))
         let retention = handle.retain()
         await handle.settle()
@@ -63,7 +63,7 @@ struct WritePathTests {
     @Test("a server commit under a layer that deletes a record notifies nothing it did not change")
     func commitsUnderADeletionLayer() throws {
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         let list = TestList(page: 1)
         store.commit(try changes("characters-7-8", list, in: store))
         let data = TestList.Data(anchor: Anchor(record: store.root, variables: list.variables, store: store))
@@ -82,7 +82,7 @@ struct WritePathTests {
     @Test("a body that reads only a connection's nodes is told when @deleteRecord deletes one, with no @deleteEdge")
     func deletionTellsConnections() async throws {
         let environment = Environment(transport: notesTransport())
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestNotesQuery(id: "1"))
         let retention = handle.retain()
         await handle.settle()
@@ -102,7 +102,7 @@ struct WritePathTests {
     @Test("a body that reads only a list is told when one of its records is deleted, and again when a payload revives it")
     func deletionTellsLists() throws {
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         let list = TestList(page: 1)
         store.commit(try changes("characters-7-8", list, in: store))
         let data = TestList.Data(anchor: Anchor(record: store.root, variables: list.variables, store: store))

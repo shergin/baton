@@ -15,8 +15,7 @@ struct IdentityTests {
     /// 7 and 8, recording the ids it reports as ambiguous.
     func store(_ ambiguities: Ambiguities) throws -> Store {
         let store = Store()
-        store.reportMissing = nil
-        store.reportAmbiguousIdentity = { id, _ in ambiguities.ids.append(id) }
+        store.log = { event in if case .ambiguousIdentity(let id, _) = event { ambiguities.ids.append(id) } }
         store.commit(try Ingest.normalize(fixture("search-1"), plan: TestSearch.plan.resolve(TestSearch(name: "1").variables, in: store.keys)))
         store.commit(try Ingest.normalize(fixture("characters-7-8"), plan: TestList.plan.resolve(TestList(page: 1).variables, in: store.keys)))
         return store
@@ -61,7 +60,7 @@ struct IdentityTests {
     @Test("an object under a union keyed by its path is a record per concrete type, so another type at the same path does not share one")
     func pathKeysCarryTheType() throws {
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         let search = TestUnion(name: "a")
         let plan = TestUnion.plan.resolve(search.variables, in: store.keys)
         let data = TestUnion.Data(anchor: Anchor(record: store.root, variables: search.variables, store: store))
@@ -88,7 +87,7 @@ struct IdentityTests {
     @Test("two operations reaching an asset by different paths write one record, and each lens reads what the other fetched")
     func two_operations_reaching_an_asset_by_different_paths_write_one_record() throws {
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         let list = TestAssetsQuery()
         let single = TestAssetQuery(uuid: "a1")
         try commit("asset-list", list, into: store)
@@ -112,7 +111,7 @@ struct IdentityTests {
     @Test("a quote keyed by two fields is one record across a list and a lookup by the pair, and the later commit's rate wins")
     func a_quote_keyed_by_two_fields_is_one_record_across_a_list_and_a_lookup() throws {
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         let list = TestQuotesQuery()
         try commit("quote-list", list, into: store)
         #expect(store.existing("Quote:BTC:USD")?.read(Slots.Quote.rate) == .double(1.5))
@@ -129,7 +128,7 @@ struct IdentityTests {
     @Test("a composite key escapes the backslashes and colons of each value, and a key of one value is written raw")
     func a_composite_key_escapes_its_values_and_a_single_value_stays_raw() throws {
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         try commit("quote-list", TestQuotesQuery(), into: store)
         let escaped = try #require(store.existing(#"Quote:A\:B:C\\D"#), "base A:B and quote C\\D")
         #expect(escaped.read(Slots.Quote.base) == .string("A:B"))
@@ -154,7 +153,7 @@ struct IdentityTests {
     @Test("a lookup by two arguments finds the quote a list cached, by its escaped composite key too, and renders it without a fetch")
     func a_lookup_by_two_arguments_finds_the_quote_a_list_cached() throws {
         let environment = Environment(transport: SilentTransport())
-        environment.store.reportMissing = nil
+        environment.log = nil
         try commit("quote-list", TestQuotesQuery(), into: environment.store)
 
         let plain = environment.handle(for: TestQuoteQuery(base: "BTC", quote: "USD"), fetchPolicy: .storeOnly)
@@ -177,7 +176,7 @@ struct IdentityTests {
     @Test("a lookup by a pair the store never cached is not satisfied, nor is one whose values join to a cached key only unescaped")
     func a_lookup_by_a_pair_the_store_never_cached_is_not_satisfied() throws {
         let environment = Environment(transport: SilentTransport())
-        environment.store.reportMissing = nil
+        environment.log = nil
         try commit("quote-list", TestQuotesQuery(), into: environment.store)
 
         for pair in [("BTC", "EUR"), ("USD", "BTC"), ("A", #"B:C\D"#)] {
@@ -194,7 +193,7 @@ struct IdentityTests {
     @Test("a lookup by one configured key field finds the asset a list cached and renders it without a fetch, and one for a uuid never cached loads")
     func a_lookup_by_one_configured_key_field_finds_the_asset_a_list_cached() throws {
         let environment = Environment(transport: SilentTransport())
-        environment.store.reportMissing = nil
+        environment.log = nil
         try commit("asset-list", TestAssetsQuery(), into: environment.store)
 
         let cached = environment.handle(for: TestAssetNameQuery(uuid: "a1"), fetchPolicy: .storeOnly)
@@ -215,7 +214,7 @@ struct IdentityTests {
     @Test("a lookup binds only an entity that satisfies the whole selection under it, so an asset the list fetched without its owner does not")
     func a_lookup_binds_only_an_entity_that_satisfies_its_selection() throws {
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         try commit("asset-list", TestAssetsQuery(), into: store)
 
         let single = TestAssetQuery(uuid: "a1")

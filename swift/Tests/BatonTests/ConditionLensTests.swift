@@ -9,8 +9,9 @@ struct ConditionLensTests {
     func concreteLensReadsTheInterfaceFields() throws {
         let search = TestUnion(name: "a")
         let store = Store()
-        var misses: [String] = []
-        store.reportMissing = { record, _ in misses.append(record.key) }
+        final class Misses: @unchecked Sendable { var types: [String] = [] }
+        let misses = Misses()
+        store.log = { event in if case .missing(let type, _) = event { misses.types.append(type) } }
         store.commit(try Ingest.normalize(fixture("union-1"), plan: TestUnion.plan.resolve(search.variables, in: store.keys)))
         let results = try #require(TestUnion.Data(anchor: Anchor(record: store.root, variables: search.variables, store: store)).search)
         #expect(results[0].asCharacter?.name == "Rick Sanchez")
@@ -20,7 +21,7 @@ struct ConditionLensTests {
         #expect(results[2].asEpisode?.air_date == "December 2, 2013", "an Episode is not Named and its lens has no name")
         #expect(results[0].asNamed?.name == "Rick Sanchez")
         #expect(results[1].asNamed?.name == "Earth (C-137)")
-        #expect(misses.isEmpty, "\(misses)")
+        #expect(misses.types.isEmpty, "\(misses.types)")
     }
 
     @Test("each concrete lens of a union reads the field of the interface every member implements")

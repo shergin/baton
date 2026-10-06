@@ -22,7 +22,7 @@ struct ExtensionTests {
 
     /// Records every missing read of the store into `misses`.
     func reporting(into misses: Misses, _ store: Store) {
-        store.reportMissing = { [unowned store] record, slot in misses.reads.append(record.key + "." + store.storageKey(of: slot)) }
+        store.log = { event in if case .missing(let type, let field) = event { misses.reads.append(type + "." + field) } }
     }
 
     func pinned(_ store: Store) throws -> TestPinnedCharacter.Data.Character {
@@ -58,7 +58,7 @@ struct ExtensionTests {
     func readingAnAbsentClientFieldDoesNotRefetch() async throws {
         let transport = RecordedTransport([TestPinnedCharacter.name: fixture("pinned-character")])
         let environment = Environment(transport: transport)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestPinnedCharacter(id: "1"))
         let retention = handle.retain()
         await handle.settle()
@@ -75,7 +75,7 @@ struct ExtensionTests {
     @Test("a payload committed by hand writes the client fields, and only the body that reads the changed one re-evaluates")
     func aPayloadCommittedByHandWritesTheClientFields() async throws {
         let environment = Environment(transport: SilentTransport())
-        environment.store.reportMissing = nil
+        environment.log = nil
         environment.store.commit(try Ingest.normalize(fixture("pinned-character"), plan: TestPinnedCharacter.plan.resolve(TestPinnedCharacter(id: "1").variables, in: environment.store.keys)))
         let character = try pinned(environment.store)
         #expect(character.isPinned == nil)
@@ -110,7 +110,7 @@ struct ExtensionTests {
     @Test("a draft's link to a character is the record a server's answer wrote, one record for both")
     func aDraftLinksTheServerCharacter() throws {
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         store.commit(try Ingest.normalize(fixture("drafts"), plan: TestDrafts.plan.resolve(TestDrafts().variables, in: store.keys)))
         let draft = try #require(store.existing("Draft:d1"))
         let character = try #require(store.existing("Character:1"))
@@ -132,12 +132,12 @@ struct ExtensionTests {
     func clientFieldsSurviveARelaunch() async throws {
         let image = TemporaryImage()
         let first = Environment(transport: SilentTransport(), store: Store(persistence: Persistence(url: image.url)))
-        first.store.reportMissing = nil
+        first.log = nil
         try await first.commitPayload(TestPinnedCharacter(id: "1"), fixture("pin-character"))
         await first.store.persistence?.close()
 
         let second = Environment(transport: SilentTransport(), store: Store(persistence: Persistence(url: image.url)))
-        second.store.reportMissing = nil
+        second.log = nil
         let handle = second.handle(for: TestPinnedCharacter(id: "1"), fetchPolicy: .storeOnly)
         guard case .ready(let data) = handle.phase else {
             Issue.record("expected the image to answer, got \(handle.phase)")
@@ -152,7 +152,7 @@ struct ExtensionTests {
     func clientRecordsSurviveARelaunch() async throws {
         let image = TemporaryImage()
         let first = Environment(transport: SilentTransport(), store: Store(persistence: Persistence(url: image.url)))
-        first.store.reportMissing = nil
+        first.log = nil
         try await first.commitPayload(TestDrafts(), fixture("drafts"))
         await first.store.persistence?.close()
 
@@ -174,7 +174,7 @@ struct ExtensionTests {
     @Test("a client field selected on an interface is not waited for on the concrete type a record has")
     func aClientFieldOnAnInterfaceIsNotWaitedFor() throws {
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         let query = Registry.type("Query")
         let node = Registry.type("Node")
         let character = Registry.type("Character")

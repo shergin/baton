@@ -153,7 +153,7 @@ struct LifetimeTests {
         }
         let environment = Environment(transport: transport, store: Store(releaseBufferSize: 0))
         let misses = Misses()
-        environment.store.reportMissing = { [unowned store = environment.store] record, slot in misses.reads.append(record.key + "." + store.storageKey(of: slot)) }
+        environment.log = { event in if case .missing(let type, let field) = event { misses.reads.append(type + "." + field) } }
         let root = environment.store.root
         let before = root.renderedKeyCount
 
@@ -542,7 +542,7 @@ struct LifetimeTests {
         for afterFirstPart in [false, true] {
             let transport = ManualStreams()
             let environment = Environment(transport: transport)
-            environment.store.reportMissing = nil
+            environment.log = nil
             let handle = environment.handle(for: TestProfileQuery(id: "1"))
             let retention = handle.retain()
             await until { transport.count == 1 }
@@ -608,7 +608,7 @@ struct LifetimeTests {
     @Test("collection keeps what a retained handle reads under a type condition")
     func collectionFollowsTheVariant() async throws {
         let environment = Environment(transport: RecordedTransport([TestSearchOrigins.name: fixture("search-origins-1")]))
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestSearchOrigins(name: "a"))
         let retention = handle.retain()
         await handle.settle()
@@ -669,7 +669,7 @@ struct LifetimeTests {
     @Test("a view's storage retains its handle while the view lives and releases it when the view goes away")
     func storageLifetime() async throws {
         let environment = Environment(transport: SilentTransport(), store: Store(releaseBufferSize: 0))
-        environment.store.reportMissing = nil
+        environment.log = nil
         environment.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables, in: environment.store.keys)))
         // The renderer installs the view's state, runs the storage's update
         // and draws once; the pool lets its view graph go when it ends.
@@ -772,7 +772,7 @@ struct LifetimeTests {
     func storageFollowsTheEnvironment() async throws {
         func environment() throws -> Baton.Environment {
             let environment = Baton.Environment(transport: SilentTransport(), store: Store(releaseBufferSize: 0))
-            environment.store.reportMissing = nil
+            environment.log = nil
             environment.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables, in: environment.store.keys)))
             return environment
         }
@@ -913,7 +913,7 @@ struct LifetimeTests {
     func aSubscriptionRetainedAgainClosesAtItsNextRelease() {
         let events = DeliveryTests.Events()
         let environment = Baton.Environment(transport: SilentTransport(), subscriptions: events)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let live = environment.subscriptionHandle(for: TestNoteAdded(characterId: "lifetime-\(#line)", connections: []))
         for _ in 0..<2 {
             do {
@@ -954,7 +954,7 @@ struct LifetimeTests {
         weak var weakEpisode: Record?
         do {
             let environment = Baton.Environment(transport: SilentTransport())
-            environment.store.reportMissing = nil
+            environment.log = nil
             let linked = try commitLinkedRecords(into: environment.store)
             weakStore = environment.store
             weakCharacter = linked.character
@@ -973,7 +973,7 @@ struct LifetimeTests {
             return fixture("character-header-\(id)")
         }
         let environment = Baton.Environment(transport: transport)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let query = Registry.type("Query")
         var retentions: [Retention] = []
         for id in ["5", "11"] {
@@ -991,7 +991,7 @@ struct LifetimeTests {
     @Test("an environment's end clears every record, even one something still holds, and leaves only the store's roots")
     func theEndClearsHeldRecords() async throws {
         let environment = Baton.Environment(transport: SilentTransport())
-        environment.store.reportMissing = nil
+        environment.log = nil
         let linked = try commitLinkedRecords(into: environment.store)
         #expect(!linked.character.storedSlots.isEmpty)
         await environment.end()
@@ -1007,7 +1007,7 @@ struct LifetimeTests {
     func heldHandlesReadGone() async throws {
         let events = DeliveryTests.Events()
         let environment = Baton.Environment(transport: SilentTransport(), subscriptions: events)
-        environment.store.reportMissing = nil
+        environment.log = nil
         environment.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables, in: environment.store.keys)))
         let handle = environment.handle(for: TestList(page: 1), fetchPolicy: .storeOnly)
         let retention = handle.retain()
@@ -1043,7 +1043,7 @@ struct LifetimeTests {
     func everyLaterCallFailsOnGone() async throws {
         let transport = transport()
         let environment = Baton.Environment(transport: transport)
-        environment.store.reportMissing = nil
+        environment.log = nil
         await environment.end()
         await environment.end()
         #expect(environment.ended, "a second end is the first's")
@@ -1102,7 +1102,7 @@ struct LifetimeTests {
     @Test("a lookup's key is freed when its root has left the buffer and a collection runs, and a retained lookup's key stays")
     func aReleasedLookupsKeyIsFreed() async throws {
         let environment = Environment(transport: headerTransport(), store: Store(releaseBufferSize: 0))
-        environment.store.reportMissing = nil
+        environment.log = nil
         let store = environment.store
         let query = Registry.type("Query")
 
@@ -1131,7 +1131,7 @@ struct LifetimeTests {
     @Test("a freed number is used again by the next rendering, and reads nothing of the old key")
     func aFreedNumberIsUsedAgain() async throws {
         let environment = Environment(transport: headerTransport(), store: Store(releaseBufferSize: 0))
-        environment.store.reportMissing = nil
+        environment.log = nil
         let store = environment.store
         let query = Registry.type("Query")
 

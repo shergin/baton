@@ -84,7 +84,7 @@ struct TransportTests {
     func an_environment_subscribes_over_http() async throws {
         let key = UUID().uuidString
         let environment = Environment(transport: RecordedTransport(), subscriptions: eventStreamTransport(key: key))
-        environment.store.reportMissing = nil
+        environment.log = nil
         let live = environment.subscriptionHandle(for: TestNoteAdded(characterId: "1", connections: []))
         let retention = live.retain()
         await until { live.events >= 2 }
@@ -122,7 +122,7 @@ struct TransportTests {
             TestCommitVariable.name: fixture("set-favorite-1"),
         ])
         let environment = Environment(transport: transport)
-        environment.store.reportMissing = nil
+        environment.log = nil
         _ = try await environment.fetch(TestProfileQuery(id: "1"))
         _ = try await environment.mutate(TestCommitVariable(commit: "1"))
         _ = try? await transport.payload(idRequest)
@@ -136,7 +136,7 @@ struct TransportTests {
     func the_environments_subscriptions_take_any_transport() async throws {
         let events = RecordedTransport([TestNoteAdded.name: fixture("note-added-1")])
         let environment = Environment(transport: SilentTransport(), subscriptions: events)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let live = environment.subscriptionHandle(for: TestNoteAdded(characterId: "1", connections: []))
         let retention = live.retain()
         await until { live.events >= 1 }

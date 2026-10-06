@@ -19,7 +19,7 @@ struct EnumTests {
     func aListOfAnEnumReadsEachValueAsItsCase() throws {
         let store = Store()
         let reports = Reports()
-        store.reportUnexpected = { [unowned store] record, slot, _ in reports.unexpected.append(record.key + "." + store.storageKey(of: slot)) }
+        store.log = { event in if case .unexpected(let type, let field) = event { reports.unexpected.append(type + "." + field) } }
         let mutation = TestSetStatuses()
         store.commit(try Ingest.normalize(fixture("lists-statuses"), plan: TestSetStatuses.plan.resolve(mutation.variables, in: store.keys), rootKey: Store.mutationRootKey))
         let root = try #require(store.existing(Store.mutationRootKey))

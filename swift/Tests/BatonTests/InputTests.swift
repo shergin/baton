@@ -41,7 +41,7 @@ struct InputTests {
     @Test("a document that writes an input object as a constant with a variable inside keys the field as the fixture's store does")
     func aDocumentPassingAnInputConstantStillKeysItsField() throws {
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         let query = TestKeys(id: "7", name: "Rick")
         store.commit(try Ingest.normalize(fixture("keys-1"), plan: TestKeys.plan.resolve(query.variables, in: store.keys)))
         let keys = store.root.storedSlots.map { store.storageKey(of: $0.slot) }

@@ -116,7 +116,7 @@ struct DeliveryTests {
     @Test("field errors land beside the field: a plain read sees null, @catch sees the error, @catch(to: NULL) sees nil, and a cached read agrees")
     func fieldErrors() async throws {
         let environment = Environment(transport: RecordedTransport([TestProfileQuery.name: fixture("character-errors")]))
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestProfileQuery(id: "1"))
         let retention = handle.retain()
         await handle.settle()
@@ -153,7 +153,7 @@ struct DeliveryTests {
     @Test("a payload that answers an errored field clears the error and notifies the field")
     func errorsClear() async throws {
         let environment = Environment(transport: RecordedTransport([TestProfileQuery.name: fixture("character-errors")]))
-        environment.store.reportMissing = nil
+        environment.log = nil
         _ = try await environment.fetch(TestProfileQuery.self, variables: TestProfileQuery(id: "1").variables)
         let character = try #require(try profile(environment).testProfile)
         let (fired, track) = counter { _ = character.image }
@@ -171,7 +171,7 @@ struct DeliveryTests {
     @Test("a payload that answers an errored field with the same value and no error clears the error; the same error again notifies nothing")
     func errorsClearWithoutAValueChange() async throws {
         let environment = Environment(transport: RecordedTransport([TestProfileQuery.name: fixture("character-errors")]))
-        environment.store.reportMissing = nil
+        environment.log = nil
         _ = try await environment.fetch(TestProfileQuery.self, variables: TestProfileQuery(id: "1").variables)
         let character = try #require(try profile(environment).testProfile)
         let plan = TestProfileQuery.plan.resolve(TestProfileQuery(id: "1").variables, in: environment.store.keys)
@@ -197,7 +197,7 @@ struct DeliveryTests {
     func errorsUnderANullParent() throws {
         let store = Store()
         let changes = try Ingest.normalize(fixture("character-origin-null"), plan: TestProfileQuery.plan.resolve(TestProfileQuery(id: "1").variables, in: store.keys))
-        store.reportMissing = nil
+        store.log = nil
         store.commit(changes)
         let character = try #require(store.existing("Character:1"))
         let type = Registry.type("Character")
@@ -235,7 +235,7 @@ struct DeliveryTests {
     @Test("@required: NONE drops the enclosing lens, LOG reports the path, THROW throws at the read")
     func required() async throws {
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         let roster = TestRosterQuery(page: 1)
         store.commit(try Ingest.normalize(fixtureData, plan: TestRosterQuery.plan.resolve(roster.variables, in: store.keys)))
         let data = TestRosterQuery.Data(anchor: Anchor(record: store.root, variables: roster.variables, store: store))
@@ -249,8 +249,9 @@ struct DeliveryTests {
 
         // LOG: the fragment reads as null and the environment is told.
         let environment = Environment(transport: SilentTransport(), store: store)
-        var logged: [String] = []
-        environment.requiredFieldMissing = { _, path in logged.append(path) }
+        final class Logged: @unchecked Sendable { var paths: [String] = [] }
+        let logged = Logged()
+        environment.log = { event in if case .requiredFieldMissing(_, let path) = event { logged.paths.append(path) } }
         let unstated = String(decoding: fixture("character-errors"), as: UTF8.self)
             .replacingOccurrences(of: "\"status\":\"Alive\"", with: "\"status\":null")
         let plan = TestProfileQuery.plan.resolve(TestProfileQuery(id: "1").variables, in: store.keys)
@@ -263,7 +264,7 @@ struct DeliveryTests {
             return
         }
         #expect(try #require(profile.character).testProfile == nil)
-        #expect(logged == ["status"])
+        #expect(logged.paths == ["status"])
 
         // THROW: the field's own accessor throws; the semantic field reads non-optional.
         let strict = TestStrict_character(anchor: Anchor(record: try #require(store.existing("Character:1")), variables: .none, store: store))
@@ -277,7 +278,7 @@ struct DeliveryTests {
     @Test("@throwOnFieldError: the spread throws on an uncaught error, the operation fails, and a caught error does not count")
     func throwOnFieldError() async throws {
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         let environment = Environment(transport: SilentTransport(), store: store)
         let plan = TestProfileQuery.plan.resolve(TestProfileQuery(id: "1").variables, in: store.keys)
         store.commit(try Ingest.normalize(fixture("character-errors"), plan: plan))
@@ -290,7 +291,7 @@ struct DeliveryTests {
 
         // An operation with @throwOnFieldError fails on an uncaught error inside its selection.
         let failing = Environment(transport: RecordedTransport([TestStrictQuery.name: fixture("character-name-hidden")]))
-        failing.store.reportMissing = nil
+        failing.log = nil
         let handle = failing.handle(for: TestStrictQuery(id: "1"))
         let retention = handle.retain()
         await handle.settle()
@@ -303,7 +304,7 @@ struct DeliveryTests {
 
         // The same error under @catch does not fail an operation without the directive.
         let caught = Environment(transport: RecordedTransport([TestProfileQuery.name: fixture("character-errors")]))
-        caught.store.reportMissing = nil
+        caught.log = nil
         let plain = caught.handle(for: TestProfileQuery(id: "1"))
         let plainRetention = plain.retain()
         await plain.settle()
@@ -317,7 +318,7 @@ struct DeliveryTests {
     @Test("a @throwOnFieldError operation fails when a later commit puts an error in its selection, and recovers when one clears it")
     func throwingPhaseFollowsCommits() async throws {
         let environment = Environment(transport: RecordedTransport([TestStrictQuery.name: fixture("character-deferred-1")]))
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestStrictQuery(id: "1"))
         let retention = handle.retain()
         await handle.settle()
@@ -342,7 +343,7 @@ struct DeliveryTests {
             TestThrowingSpread.name: fixture("character-name-hidden"),
             TestStrictQuery.name: fixture("character-name-hidden"),
         ]))
-        environment.store.reportMissing = nil
+        environment.log = nil
         try await environment.fetch(TestThrowingSpread(id: "1"))
         let handle = environment.handle(for: TestThrowingSpread(id: "1"), fetchPolicy: .storeOnly)
         guard case .ready = handle.phase else {
@@ -353,7 +354,7 @@ struct DeliveryTests {
         #expect(own?.errors.map(\.path) == ["character.name"])
 
         let unplaced = Environment(transport: RecordedTransport([TestStrictQuery.name: fixture("character-unplaced-error")]))
-        unplaced.store.reportMissing = nil
+        unplaced.log = nil
         let carried = await #expect(throws: FieldErrors.self) { try await unplaced.fetch(TestStrictQuery(id: "1")) }
         #expect(carried?.errors.map(\.message) == ["rate limited"])
     }
@@ -375,7 +376,7 @@ struct DeliveryTests {
     @Test("a field error's extensions read back through @catch as the JSON value the server sent, and an error without them reads nil")
     func fieldErrorExtensions() async throws {
         let environment = Environment(transport: RecordedTransport([TestProfileQuery.name: Data(Self.extensionsResponse.utf8)]))
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestProfileQuery(id: "1"))
         let retention = handle.retain()
         await handle.settle()
@@ -458,7 +459,7 @@ struct DeliveryTests {
         for completes in [true, false] {
             let transport = GatedParts(fixture("character-deferred-1"), fixture("character-deferred-2"))
             let environment = Environment(transport: transport)
-            environment.store.reportMissing = nil
+            environment.log = nil
             let handle = environment.handle(for: TestProfileQuery(id: "1"))
             let retention = handle.retain()
             await until { if case .loading = handle.phase { false } else { true } }
@@ -478,7 +479,7 @@ struct DeliveryTests {
     func deferredFetchDatesAtCompletion() async throws {
         let transport = GatedParts(fixture("character-deferred-1"), fixture("character-deferred-2"))
         let environment = Environment(transport: transport)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let fetching = Task { try await environment.fetch(TestProfileQuery(id: "1")) }
         await until { environment.store.existing("Character:1") != nil }
         let probe = environment.handle(for: TestProfileQuery(id: "1"), fetchPolicy: .storeOnly)
@@ -492,7 +493,7 @@ struct DeliveryTests {
     func brokenStreamFetchesAgain() async throws {
         let transport = GatedParts(fixture("character-deferred-1"), fixture("character-deferred-2"))
         let environment = Environment(transport: transport)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestProfileQuery(id: "1"))
         let retention = handle.retain()
         await until { if case .loading = handle.phase { false } else { true } }
@@ -521,7 +522,7 @@ struct DeliveryTests {
     /// store and the uncaught errors.
     func fetchProfile(_ parts: [String]) async throws -> (Store, [FieldError]) {
         let environment = Environment(transport: OpenParts(parts.map { fixture($0) }))
-        environment.store.reportMissing = nil
+        environment.log = nil
         final class Done: @unchecked Sendable { var uncaught: [FieldError]? }
         let done = Done()
         Task { done.uncaught = try await environment.fetch(TestProfileQuery.self, variables: TestProfileQuery(id: "1").variables) }
@@ -560,7 +561,7 @@ struct DeliveryTests {
             // Straight through `fetch`, so an error in the incremental path surfaces.
             let direct = GatedParts(fixture(first), fixture(second))
             let plain = Environment(transport: direct)
-            plain.store.reportMissing = nil
+            plain.log = nil
             let fetching = Task { try await plain.fetch(TestProfileQuery.self, variables: TestProfileQuery(id: "1").variables) }
             await until { direct.continuation != nil }
             direct.release()
@@ -570,7 +571,7 @@ struct DeliveryTests {
 
             let transport = GatedParts(fixture(first), fixture(second))
             let environment = Environment(transport: transport)
-            environment.store.reportMissing = nil
+            environment.log = nil
             let handle = environment.handle(for: TestProfileQuery(id: "1"))
             let retention = handle.retain()
             await until { if case .loading = handle.phase { false } else { true } }
@@ -600,7 +601,7 @@ struct DeliveryTests {
     func deferredPartMissingFromMemory() async throws {
         let transport = GatedParts(fixture("character-deferred-1"), fixture("character-deferred-2"))
         let environment = Environment(transport: transport)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let plan = TestProfileQuery.plan.resolve(TestProfileQuery(id: "1").variables, in: environment.store.keys)
         environment.store.commit(try Ingest.normalize(fixture("character-deferred-1"), plan: plan))
         let handle = environment.handle(for: TestProfileQuery(id: "1"))
@@ -622,7 +623,7 @@ struct DeliveryTests {
     @Test("an attach that fetches a deferred fragment memory lacks keeps the field the initial part selects outside the fragment")
     func deferredPartSharingAField() async throws {
         let environment = Environment(transport: SilentTransport())
-        environment.store.reportMissing = nil
+        environment.log = nil
         // The initial part: `episode { id }` arrived, the fragment's
         // `episode { name air_date }` is on its way.
         let plan = TestOverlapQuery.plan.resolve(TestOverlapQuery(id: "1").variables, in: environment.store.keys)
@@ -642,7 +643,7 @@ struct DeliveryTests {
     func subscription() async throws {
         let events = Events()
         let environment = Environment(transport: notesTransport(), subscriptions: events)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestNotesQuery(id: "1"))
         let retention = handle.retain()
         await handle.settle()
@@ -680,7 +681,7 @@ struct DeliveryTests {
     func aSubscriptionsKeyIsFreedWithIt() async throws {
         let events = Events()
         let environment = Environment(transport: SilentTransport(), subscriptions: events)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let store = environment.store
         let subscription = Registry.type("Subscription")
         do {
@@ -710,7 +711,7 @@ struct DeliveryTests {
     func badEvent() async throws {
         let events = Events()
         let environment = Environment(transport: SilentTransport(), subscriptions: events)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let live = environment.subscriptionHandle(for: TestNoteAdded(characterId: "events-\(#line)", connections: []))
         let liveRetention = live.retain()
         await until { events.continuation != nil }
@@ -728,7 +729,7 @@ struct DeliveryTests {
     func retrySubscription() async throws {
         let events = Events()
         let environment = Environment(transport: SilentTransport(), subscriptions: events)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let live = environment.subscriptionHandle(for: TestNoteAdded(characterId: "events-\(#line)", connections: []))
         let liveRetention = live.retain()
         await until { events.requests.count == 1 }
@@ -753,7 +754,7 @@ struct DeliveryTests {
     func badEventOfAReplacedStream() async throws {
         let events = Events()
         let environment = Environment(transport: RecordedTransport(), subscriptions: events)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let live = environment.subscriptionHandle(for: TestNoteAdded(characterId: "events-\(#line)", connections: []))
         let liveRetention = live.retain()
         await until { events.continuation != nil }
@@ -773,7 +774,7 @@ struct DeliveryTests {
     func eventInHandAtTheRelease() async throws {
         let events = Events()
         let environment = Environment(transport: notesTransport(), subscriptions: events)
-        environment.store.reportMissing = nil
+        environment.log = nil
         // The query keeps the connection the events append to, so a payload
         // that landed would stay in the store rather than be collected.
         let handle = environment.handle(for: TestNotesQuery(id: "1"))
@@ -811,7 +812,7 @@ struct DeliveryTests {
     func streamEndedByTheTransportsCancellation() async throws {
         let events = Events()
         let environment = Environment(transport: RecordedTransport(), subscriptions: events)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let live = environment.subscriptionHandle(for: TestNoteAdded(characterId: "events-\(#line)", connections: []))
         let liveRetention = live.retain()
         await until { events.requests.count == 1 }
@@ -829,7 +830,7 @@ struct DeliveryTests {
     func streamBeforeAndAfterTheFirstEvent() async throws {
         let events = Events()
         let environment = Environment(transport: SilentTransport(), subscriptions: events)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let live = environment.subscriptionHandle(for: TestNoteAdded(characterId: "events-\(#line)", connections: []))
         #expect(state(live.stream) == "idle")
         #expect(!live.isActive)
@@ -853,7 +854,7 @@ struct DeliveryTests {
         let socket = GraphQLTransportWebSocket(url: try await server.start())
         defer { server.stop() }
         let environment = Environment(transport: SilentTransport(), subscriptions: socket)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let live = environment.subscriptionHandle(for: TestNoteAdded(characterId: "events-\(#line)", connections: []))
         let liveRetention = live.retain()
         await until { server.count(of: "subscribe") == 1 }
@@ -1156,7 +1157,7 @@ struct DeliveryTests {
     @Test("a request with no response fails with an error that says what went wrong and names no HTTP status; one with an error status names it")
     func aFailureWithoutAResponse() async throws {
         let environment = Environment(transport: RecordedTransport())
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestList(page: 1))
         let retention = handle.retain()
         await handle.settle()

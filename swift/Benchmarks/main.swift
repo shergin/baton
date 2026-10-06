@@ -7,6 +7,7 @@ import BatonSpec
 import BatonTesting
 import Foundation
 import Observation
+import Synchronization
 
 @MainActor
 struct BenchmarkDocuments {
@@ -370,6 +371,14 @@ func run() async throws {
     measure("commit into the 899-record store, one field changing", iterations: 200, setup: { store.commit(back) }) {
         store.commit(answer)
     }
+    // The log's cost: the same commit with a sink counting every event.
+    let logged = Mutex(0)
+    store.log = { _ in logged.withLock { $0 &+= 1 } }
+    measure("the same commit, a counting log installed", iterations: 200, setup: { store.commit(back) }) {
+        store.commit(answer)
+    }
+    store.log = nil
+    print("    events logged: \(logged.withLock { $0 })")
     store.commit(back)
     let frame = Data(#"{"id":"1","type":"next","payload":{"data":{"noteAdded":{"id":"n9"}}}}"#.utf8)
     measure("a subscription frame (\(frame.count) bytes), its envelope read", iterations: 200) {
@@ -440,7 +449,7 @@ func run() async throws {
     print("re-evaluation: the fixture under @throwOnFieldError, 20 field errors landing")
     try await reevaluationBench(data: data, errored: errored)
 
-    print("reports: the fixture committed with the three report closures set")
+    print("reports: the fixture committed with a log set")
     reportBench(changes: changes)
 
     print("persistence: the fixture's 898 records and the root, through the image")
@@ -597,7 +606,7 @@ func rootFieldBench(store: Store, root: BenchFixture.Data) throws {
 @MainActor
 func deletionBench(data: Data, plan: ResolvedSelection) throws {
     let store = Store()
-    store.reportMissing = nil
+    store.log = nil
     for page in 0..<10 {
         store.commit(try Ingest.normalize(page == 0 ? data : shifted(data, by: page * 100_000), plan: plan, rootKey: Store.rootKey))
     }
@@ -776,7 +785,7 @@ func connectionBench() async throws {
     // as the connection grows, apart from what tracking every node costs.
     do {
         let environment = Environment(transport: transport)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: BenchNotesQuery(id: "1"))
         let retention = handle.retain()
         await handle.settle()
@@ -794,7 +803,7 @@ func connectionBench() async throws {
     }
 
     let environment = Environment(transport: transport)
-    environment.store.reportMissing = nil
+    environment.log = nil
     let handle = environment.handle(for: BenchNotesQuery(id: "1"))
     let retention = handle.retain()
     await handle.settle()
@@ -861,7 +870,7 @@ func collectionBench() async throws {
     }
 
     let environment = Environment(transport: transport)
-    environment.store.reportMissing = nil
+    environment.log = nil
     let handle = environment.handle(for: BenchCharacterNames(page: 7))
     let retention = handle.retain()
     await handle.settle()
@@ -875,7 +884,7 @@ func collectionBench() async throws {
     withExtendedLifetime((retention, beside)) {}
 
     let few = Environment(transport: transport)
-    few.store.reportMissing = nil
+    few.log = nil
     let alone = await retainRoots(in: few)
     measure("a pass over \(roots) roots reaching one record each", iterations: 20) {
         few.store.collect()
@@ -884,7 +893,7 @@ func collectionBench() async throws {
 
     await measureEach("a pass that keeps none of \(count) records (a release buffer of zero)", iterations: 10) {
         let environment = Environment(transport: transport, store: Store(releaseBufferSize: 0))
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: BenchCharacterNames(page: 7))
         do {
             // Released at the block's end: the root waits in a buffer of none.
@@ -913,14 +922,14 @@ func reevaluationBench(data: Data, errored: Data) async throws {
     }
 
     let plain = Store()
-    plain.reportMissing = nil
+    plain.log = nil
     let plainChanges = try changes(for: plain)
     measure("commit of the errors, no handle retained", iterations: 20, setup: { plain.commit(plainChanges.clean) }) {
         plain.commit(plainChanges.failed)
     }
     let environment = Environment(transport: RecordedTransport([BenchStrictFixture.name: data]))
     let store = environment.store
-    store.reportMissing = nil
+    store.log = nil
     let (clean, failed) = try changes(for: store)
     let handle = environment.handle(for: operation)
     let retention = handle.retain()
@@ -948,28 +957,30 @@ func reevaluationBench(data: Data, errored: Data) async throws {
     withExtendedLifetime(retention) {}
 }
 
-/// What a report costs a commit: the fixture into an empty store and again
-/// into the same one, with the three report closures set; the plain numbers
-/// are under "commit" above.
+/// What the log costs a commit: the fixture into an empty store and again
+/// into the same one, with a log set that counts the events other than the
+/// commits; the plain numbers are under "commit" above.
 @MainActor
 func reportBench(changes: ChangeSet) {
-    var reported = 0
+    let reported = Mutex(0)
     func reporting() -> Store {
         let store = Store()
-        store.reportMissing = { _, _ in reported += 1 }
-        store.reportUnexpected = { _, _, _ in reported += 1 }
-        store.reportAmbiguousIdentity = { _, _ in reported += 1 }
+        store.log = { event in
+            if case .committed = event { return }
+            reported.withLock { $0 &+= 1 }
+        }
         return store
     }
-    measure("into an empty store with the three report closures set", iterations: 20) {
+    measure("into an empty store with the log set", iterations: 20) {
         reporting().commit(changes)
     }
     let store = reporting()
     store.commit(changes)
-    measure("same payload again with the closures set", iterations: 20) {
+    measure("same payload again with the log set", iterations: 20) {
         store.commit(changes)
     }
-    if reported != 0 { print("    reports during the commits: \(reported)") }
+    let count = reported.withLock { $0 }
+    if count != 0 { print("    reports during the commits: \(count)") }
 }
 
 /// The optimistic half of a mutation that appends an edge: the layer's commit
@@ -978,7 +989,7 @@ func reportBench(changes: ChangeSet) {
 @MainActor
 func edgeBench() async throws {
     let environment = Environment(transport: RecordedTransport { _ in notesPage(1, of: 2, size: 50) })
-    environment.store.reportMissing = nil
+    environment.log = nil
     let handle = environment.handle(for: BenchNotesQuery(id: "1"))
     let retention = handle.retain()
     await handle.settle()
@@ -1156,7 +1167,7 @@ func longSessionBench() throws {
     let size = 10
     let fresh = 100
     let store = Store()
-    store.reportMissing = nil
+    store.log = nil
     let query = Registry.type("Query")
     let character = Registry.type("Character")
     let keysBefore = (query: store.keys.count(on: query), character: store.keys.count(on: character))

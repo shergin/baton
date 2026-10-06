@@ -9,7 +9,7 @@ struct ScriptedTransportTests {
     /// A store holding the first page of the fixture through the list plan.
     func seededStore() throws -> Store {
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables, in: store.keys)))
         return store
     }
@@ -69,7 +69,7 @@ struct ScriptedTransportTests {
         let transport = ScriptedTransport()
         transport.answer(TestHeaderQuery.name, with: fixture("character-header-5"))
         let environment = Environment(transport: transport)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestHeaderQuery(id: "5"))
         let retention = handle.retain()
         await handle.settle()
@@ -86,7 +86,7 @@ struct ScriptedTransportTests {
     func a_query_with_no_answer_fails_with_a_transport_error_naming_it() async throws {
         let transport = ScriptedTransport()
         let environment = Environment(transport: transport)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestHeaderQuery(id: "5"))
         let retention = handle.retain()
         await handle.settle()
@@ -105,7 +105,7 @@ struct ScriptedTransportTests {
         let transport = ScriptedTransport()
         transport.hold(TestHeaderQuery.name)
         let environment = Environment(transport: transport)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestHeaderQuery(id: "5"))
         let retention = handle.retain()
         await until { transport.held.count == 1 }
@@ -130,7 +130,7 @@ struct ScriptedTransportTests {
     /// and a subscription handle over `TestNoteAdded` in it.
     func subscription(_ transport: ScriptedTransport, line: Int = #line) -> (Environment, SubscriptionHandle<TestNoteAdded>) {
         let environment = Environment(transport: transport, subscriptions: transport)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.subscriptionHandle(for: TestNoteAdded(characterId: "scripted-\(line)", connections: []))
         return (environment, handle)
     }
@@ -186,7 +186,7 @@ struct ScriptedTransportTests {
             return fixture("character-header-\(id)")
         }
         let environment = Environment(transport: transport)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let jerry = environment.handle(for: TestHeaderQuery(id: "5"))
         let einstein = environment.handle(for: TestHeaderQuery(id: "11"))
         let retentions = (jerry.retain(), einstein.retain())
@@ -280,8 +280,8 @@ struct ScriptedTransportTests {
         let transport = ScriptedTransport()
         let firstEnvironment = Environment(transport: transport, subscriptions: transport)
         let secondEnvironment = Environment(transport: transport, subscriptions: transport)
-        firstEnvironment.store.reportMissing = nil
-        secondEnvironment.store.reportMissing = nil
+        firstEnvironment.log = nil
+        secondEnvironment.log = nil
         defer { withExtendedLifetime((firstEnvironment, secondEnvironment)) {} }
         let operation = TestNoteAdded(characterId: "scripted-equal", connections: [])
         let firstLive = firstEnvironment.subscriptionHandle(for: operation)
@@ -313,7 +313,7 @@ struct ScriptedTransportTests {
         let transport = ScriptedTransport()
         transport.hold(TestHeaderQuery.name)
         let environment = Environment(transport: transport)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestHeaderQuery(id: "5"))
         let retention = handle.retain()
         #expect(await wait(until: { transport.held.count == 1 }))

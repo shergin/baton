@@ -228,7 +228,7 @@ struct ExchangeTests {
         let transport = ScriptedTransport()
         transport.hold(TestHeaderQuery.name)
         let environment = Environment(transport: Exchange(base: transport, step: .milliseconds(1)))
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestHeaderQuery(id: "5"))
         let retention = handle.retain()
 
@@ -252,7 +252,7 @@ struct ExchangeTests {
         let transport = ScriptedTransport()
         transport.hold(TestHeaderQuery.name)
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables, in: store.keys)))
         let environment = Environment(transport: Exchange(base: transport, step: .milliseconds(1)), store: store)
         let rick = TestFavorite_character(anchor: Anchor(record: try #require(store.existing("Character:1")), variables: .none, store: store))

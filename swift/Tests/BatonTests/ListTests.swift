@@ -23,7 +23,7 @@ struct ListTests {
     /// retention keeps its root until the test lets it go.
     func seededEnvironment(_ transport: any Transport = notesTransport(), store: Store = Store()) async throws -> (Environment, TestNotes_character, Retention) {
         let environment = Environment(transport: transport, store: store)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestNotesQuery(id: "1"))
         let retention = handle.retain()
         await handle.settle()
@@ -270,7 +270,7 @@ struct ListTests {
             }
         }
         let environment = Environment(transport: transport)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestRecentNotesQuery(id: "1"))
         let retention = handle.retain()
         await handle.settle()
@@ -374,7 +374,7 @@ struct ListTests {
             return request.variables["cursor"] == .string("c2") ? fixture("author-notes-page-2") : fixture("author-notes-page-1")
         }
         let environment = Environment(transport: transport)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestAuthorNotesQuery(id: "n1"))
         let retention = handle.retain()
         await handle.settle()
@@ -445,7 +445,7 @@ struct ListTests {
             return request.variables["cursor"] == .string("c2") ? fixture("hidden-notes-page-2") : fixture("hidden-notes-refetch")
         }
         let environment = Environment(transport: transport)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestHiddenNotesQuery(id: "1"))
         let retention = handle.retain()
         await handle.settle()
@@ -478,7 +478,7 @@ struct ListTests {
             request.operationName == TestHiddenRecentNotesQuery.name ? fixture("hidden-recent-notes-page-1") : fixture("hidden-recent-notes-page-2")
         }
         let environment = Environment(transport: transport)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestHiddenRecentNotesQuery(id: "1"))
         let retention = handle.retain()
         await handle.settle()
@@ -497,7 +497,7 @@ struct ListTests {
     @Test("a spread with @arguments binds the fragment's variables once, so each read of it is the same lens; a spread without them takes the defaults")
     func fragmentArguments() async throws {
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         let sized = TestNotesSizedQuery(id: "1", size: 7)
         store.commit(try Ingest.normalize(notesPage(1), plan: TestNotesSizedQuery.plan.resolve(sized.variables, in: store.keys)))
         let data = TestNotesSizedQuery.Data(anchor: Anchor(record: store.root, variables: sized.variables, store: store))
@@ -515,7 +515,7 @@ struct ListTests {
     @Test("the first page fetched by a query with no cursor and the same page fetched by the refetch query given no cursor land on one record, keyed without the null cursor")
     func theFirstPageWithAndWithoutANullCursorIsOneRecord() throws {
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         let screen = TestNotesQuery(id: "1")
         store.commit(try Ingest.normalize(notesPage(1), plan: TestNotesQuery.plan.resolve(screen.variables, in: store.keys)))
         let refetch = TestNotesPaginationQuery(count: 2, cursor: nil, id: "1")
@@ -542,7 +542,7 @@ struct ListTests {
     @Test("a query whose page was fetched after a cursor is whole once its response is in, and a field error inside the page lands on the field it names")
     func pageAfterACursor() throws {
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         store.commit(try Ingest.normalize(notesPage(1), plan: TestNotesQuery.plan.resolve(TestNotesQuery(id: "1").variables, in: store.keys)))
         let plan = TestNotesPaginationQuery.plan.resolve(TestNotesPaginationQuery(count: 2, cursor: "c2", id: "1").variables, in: store.keys)
         #expect(store.check(plan) == .miss, "the first page does not answer the second")
@@ -558,7 +558,7 @@ struct ListTests {
     @Test("a deferred part under a page fetched after a cursor lands on the page's node, and a failed one leaves its error there")
     func deferredUnderAppendedPage() async throws {
         let environment = Environment(transport: Parts([fixture("deferred-notes-page-2-1"), fixture("deferred-notes-page-2-2")]))
-        environment.store.reportMissing = nil
+        environment.log = nil
         _ = try await environment.fetch(TestDeferredNotesPaginationQuery.self, variables: TestDeferredNotesPaginationQuery(count: 2, cursor: "c2", id: "1").variables)
         let text = Registry.slot(Registry.type("Note"), "text")
         #expect(environment.store.existing("Note:n3")?.read(text) == .string("Get Schwifty"))
@@ -569,7 +569,7 @@ struct ListTests {
     func errorInTheSecondPage() throws {
         let store = Store()
         let changes = try Ingest.normalize(fixture("two-notes-pages"), plan: TestTwoPagesQuery.plan.resolve(TestTwoPagesQuery(id: "1").variables, in: store.keys))
-        store.reportMissing = nil
+        store.log = nil
         store.commit(changes)
         let text = Registry.slot(Registry.type("Note"), "text")
         #expect(store.existing("Note:n3")?.error(text)?.message == "text hidden")
@@ -579,7 +579,7 @@ struct ListTests {
     @Test("@alias(as:) names the spread's accessor")
     func aliasRenames() throws {
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables, in: store.keys)))
         let query = TestAliasQuery(id: "1")
         #expect(store.check(TestAliasQuery.plan.resolve(query.variables, in: store.keys)) != .miss, "the lookup finds the character the list fetched")

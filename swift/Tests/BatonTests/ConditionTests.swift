@@ -12,7 +12,7 @@ struct ConditionTests {
 
     func store(_ misses: Misses) -> Store {
         let store = Store()
-        store.reportMissing = { [unowned store] record, slot in misses.reads.append(record.key + "." + store.storageKey(of: slot)) }
+        store.log = { event in if case .missing(let type, let field) = event { misses.reads.append(type + "." + field) } }
         return store
     }
 
@@ -96,7 +96,7 @@ struct ConditionTests {
 
         let search = TestUnion(name: "robot")
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         store.commit(try Ingest.normalize(response, plan: TestUnion.plan.resolve(search.variables, in: store.keys)))
         #expect(Types.Named_possible.includes(robot), "the response said it is Named")
         #expect(Types.Named_possible.includes(Registry.type("Character")))
@@ -108,7 +108,7 @@ struct ConditionTests {
         for (response, name) in [("node-fields-character", "Rick Sanchez" as String?), ("node-fields-episode", nil)] {
             let node = TestNodeFields(id: "1")
             let store = Store()
-            store.reportMissing = nil
+            store.log = nil
             store.commit(try Ingest.normalize(fixture(response), plan: TestNodeFields.plan.resolve(node.variables, in: store.keys)))
             #expect(store.check(TestNodeFields.plan.resolve(node.variables, in: store.keys)) != .miss)
             let data = try #require(TestNodeFields.Data(anchor: Anchor(record: store.root, variables: node.variables, store: store)).node)
@@ -120,7 +120,7 @@ struct ConditionTests {
     @Test("a fragment spread twice reads through one accessor, and once more under a condition through its alias")
     func twoSpreads() throws {
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         for again in [true, false] {
             let operation = TestTwoSpreads(id: "1", again: again)
             store.commit(try Ingest.normalize(fixture("two-spreads-1"), plan: TestTwoSpreads.plan.resolve(operation.variables, in: store.keys)))
@@ -134,7 +134,7 @@ struct ConditionTests {
     func caughtUnderCondition() throws {
         let fetched = TestStrictConditions(id: "1", withStatus: true)
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         store.commit(try Ingest.normalize(fixture("strict-conditions-caught"), plan: TestStrictConditions.plan.resolve(fetched.variables, in: store.keys)))
         let anchor = Anchor(record: store.root, variables: fetched.variables, store: store)
         #expect(TestStrictConditions.Data.fieldErrors(anchor).map(\.message) == ["species is private"], "the caught status and origin keep theirs")
@@ -159,7 +159,7 @@ struct ConditionTests {
     func spreadOnAnInterface() throws {
         for (file, id, name) in [("node-fields-character", "1", "Rick Sanchez" as String?), ("node-fields-episode", "1", nil)] {
             let store = Store()
-            store.reportMissing = nil
+            store.log = nil
             let query = TestNamedSpread(id: id)
             store.commit(try Ingest.normalize(fixture(file), plan: TestNamedSpread.plan.resolve(query.variables, in: store.keys)))
             let node = try #require(TestNamedSpread.Data(anchor: Anchor(record: store.root, variables: query.variables, store: store)).node)
@@ -171,7 +171,7 @@ struct ConditionTests {
     @Test("a type condition every type the parent admits satisfies folds into the parent's lens")
     func conditionThatAlwaysHolds() throws {
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         let query = TestFoldedNode(name: "1")
         store.commit(try Ingest.normalize(fixture("search-1"), plan: TestFoldedNode.plan.resolve(query.variables, in: store.keys)))
         let results = try #require(TestFoldedNode.Data(anchor: Anchor(record: store.root, variables: query.variables, store: store)).search)

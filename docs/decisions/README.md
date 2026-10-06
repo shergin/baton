@@ -16,6 +16,7 @@ principle, the proof belongs here.
 - [Native runtimes, not a shared core](native-runtimes.md)
 - [Relay's front end, pinned, behind our driver](relay-front-end.md)
 - [The report is what a dependent target's compilation would read](the-report-is-what-a-dependent-target-reads.md)
+- [The environment logs value-free events](the-environment-logs-value-free-events.md)
 - [Marker macros carry the GraphQL](marker-macros.md)
 - [Floors at the 26 releases](platform-floors.md)
 - [Lookups satisfy root fields from cached entities](lookups.md) (superseded)

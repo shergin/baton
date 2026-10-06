@@ -5,6 +5,19 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- The environment logs. `Environment.log` is one closure called with each
+  `LogEvent`, a value-free enum of names and counts: a fetch started,
+  completed with its duration or failed with its failure's kind; a commit
+  with its kind and the slots it changed in records that existed; a field error a fetch's response
+  carried that no `@catch` handled, by operation and response path, as
+  Relay's field logger reports them; the image opened, unavailable,
+  written with its batches or failed; a field read and never fetched, a value
+  a reader's type cannot hold, an id naming records of several types, a
+  `@required(action: LOG)` field that is null, each by type and field. It
+  replaces the four hooks, `reportMissing`, `reportUnexpected`,
+  `reportAmbiguousIdentity` and `requiredFieldMissing`, which handed out
+  records, slots and values. Debug builds print the missing-data cases
+  until `log` is set.
 - A query or subscription value's `resolution`, the handle a view resolved
   it to, is the mechanism's: declared behind `@_spi(Generated)` on the
   protocols and in generated code, read through `phase`, `fetch`,

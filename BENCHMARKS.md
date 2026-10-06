@@ -21,6 +21,30 @@ Best ingest and best commit of the fixture at each release below.
   <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
 
+## Unreleased, the log — 2026-10-11
+
+Revision: the working tree of the log change on top of `477266f`, one
+`--quick` run. Machine: Apple M1 Pro (MacBook Pro), macOS 26.5.2, release
+build. Not a quiet machine; read the second row against the first, measured
+back to back.
+
+The environment logs value-free events
+(`docs/decisions/the-environment-logs-value-free-events.md`); a commit logs
+one `committed` event when a log is installed. The entry commits a one-field
+change into the 899-record store with no log, then with a log that counts
+every event; the suite's "reports" rows, which installed the three hooks the
+log replaces, now install one counting log.
+
+| Measurement | Best | Median |
+|---|---|---|
+| Commit into the 899-record store, one field changing | 1.04 µs | 1.08 µs |
+| The same commit, a counting log installed | 1.00 µs | 1.00 µs |
+| Into an empty store with the log set (899 records) | 908 µs | 911 µs |
+| Same payload again with the log set | 132 µs | 135 µs |
+
+The log's cost is below the noise of the machine: one closure call per
+commit, and none when `log` is nil.
+
 ## Unreleased, mapped scalars — 2026-10-11
 
 Revision: the working tree of the mapped-scalars change on top of

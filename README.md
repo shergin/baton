@@ -241,7 +241,9 @@ To keep the store across launches, give the environment an image:
 where `Types.schemaDigest` is the generated digest of the schema, so a new
 schema starts the image again. `protection:` gives the file the platform's
 protection class at its creation; under `.complete` the writer waits for a
-locked file rather than lose its work. A sign-out is `await environment.end()`,
+locked file rather than lose its work. What the runtime did and what went wrong is one closure, `environment.log`,
+called with value-free events, names and counts and never a record or a
+value, for the app's own logging and metrics. A sign-out is `await environment.end()`,
 which cancels what the environment started, clears its records and closes
 the image, then `removeAll()` on the image, which the next open finishes if
 a crash interrupts it, then forgetting the credential; the next environment

@@ -20,7 +20,7 @@ struct PhaseTests {
     @Test("an error with no path fails an operation that throws, and an unrelated commit leaves it failed")
     func unplacedError() async throws {
         let environment = Environment(transport: RecordedTransport([TestStrictQuery.name: fixture("character-unplaced-error")]))
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestStrictQuery(id: "1"))
         let retention = handle.retain()
         await settled(handle)
@@ -40,7 +40,7 @@ struct PhaseTests {
     @Test("a root a @required field bubbled to fails with an error that names the operation and the path of the field that bubbled")
     func bubbledRootNamesTheField() async throws {
         let environment = Environment(transport: RecordedTransport([TestRequiredOrigin.name: fixture("required-origin-1-null")]))
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestRequiredOrigin(id: "1"))
         let retention = handle.retain()
         await settled(handle)
@@ -55,7 +55,7 @@ struct PhaseTests {
         _ = consume retention
 
         let absent = Environment(transport: RecordedTransport([TestRequiredOrigin.name: fixture("character-null")]))
-        absent.store.reportMissing = nil
+        absent.log = nil
         let root = absent.handle(for: TestRequiredOrigin(id: "1"))
         let rootRetention = root.retain()
         await settled(root)
@@ -70,9 +70,10 @@ struct PhaseTests {
     @Test("a root a @required(action: LOG) field bubbled to fails with the path of that field, and the environment is told of it and of the link it nulled")
     func loggedBubbledRootNamesTheField() async throws {
         let environment = Environment(transport: RecordedTransport([TestLoggedOrigin.name: fixture("required-origin-1-null")]))
-        environment.store.reportMissing = nil
-        var logged: [String] = []
-        environment.requiredFieldMissing = { _, path in logged.append(path) }
+        environment.log = nil
+        final class Logged: @unchecked Sendable { var paths: [String] = [] }
+        let logged = Logged()
+        environment.log = { event in if case .requiredFieldMissing(_, let path) = event { logged.paths.append(path) } }
         let handle = environment.handle(for: TestLoggedOrigin(id: "1"))
         let retention = handle.retain()
         await settled(handle)
@@ -81,14 +82,14 @@ struct PhaseTests {
             return
         }
         #expect(error.path == "character.origin")
-        #expect(Array(logged.prefix(2)) == ["character.origin", "character"])
+        #expect(Array(logged.paths.prefix(2)) == ["character.origin", "character"])
         _ = consume retention
     }
 
     @Test("a bubbling failure is not assigned again when an unrelated commit evaluates it to the same @required path")
     func bubblingFailureIsNotReassigned() async throws {
         let environment = Environment(transport: RecordedTransport([TestRequiredOrigin.name: fixture("required-origin-1-null")]))
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestRequiredOrigin(id: "1"))
         let retention = handle.retain()
         await settled(handle)
@@ -109,7 +110,7 @@ struct PhaseTests {
         let attempts = Attempts()
         let transport = RecordedTransport { _ in fixture(attempts.next() == 1 ? "character-unplaced-error" : "character-name-shown") }
         let environment = Environment(transport: transport)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestStrictQuery(id: "1"))
         let retention = handle.retain()
         await settled(handle)
@@ -138,7 +139,7 @@ struct PhaseTests {
         let attempts = Attempts()
         let transport = RecordedTransport { _ in fixture(attempts.next() == 1 ? "character-name-hidden" : "character-name-shown") }
         let environment = Environment(transport: transport)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestStrictQuery(id: "1"))
         let retention = handle.retain()
         await settled(handle)
@@ -201,12 +202,12 @@ struct PhaseTests {
     func aFailureWithDataRefreshes() async throws {
         let strict = GatedTransport()
         let environment = Environment(transport: strict)
-        environment.store.reportMissing = nil
+        environment.log = nil
         #expect(await refreshingWhileItRefetches(environment.handle(for: TestStrictQuery(id: "1")), failingOn: fixture("character-name-hidden"), answeredBy: fixture("character-name-shown"), through: strict))
 
         let required = GatedTransport()
         let bubbling = Environment(transport: required)
-        bubbling.store.reportMissing = nil
+        bubbling.log = nil
         #expect(await refreshingWhileItRefetches(bubbling.handle(for: TestRequiredOrigin(id: "1")), failingOn: fixture("required-origin-1-null"), answeredBy: fixture("required-origin-1"), through: required))
     }
 
@@ -214,12 +215,12 @@ struct PhaseTests {
     func aRetryOfAFailureWithDataRefreshes() async throws {
         let strict = GatedTransport()
         let environment = Environment(transport: strict)
-        environment.store.reportMissing = nil
+        environment.log = nil
         #expect(await refreshingWhileItRefetches(environment.handle(for: TestStrictQuery(id: "1")), failingOn: fixture("character-name-hidden"), answeredBy: fixture("character-name-shown"), through: strict, retrying: true))
 
         let required = GatedTransport()
         let bubbling = Environment(transport: required)
-        bubbling.store.reportMissing = nil
+        bubbling.log = nil
         #expect(await refreshingWhileItRefetches(bubbling.handle(for: TestRequiredOrigin(id: "1")), failingOn: fixture("required-origin-1-null"), answeredBy: fixture("required-origin-1"), through: required, retrying: true))
     }
 
@@ -228,7 +229,7 @@ struct PhaseTests {
         let attempts = Attempts()
         let transport = RecordedTransport { _ in attempts.next() == 1 ? fixture("character-name-hidden") : nil }
         let environment = Environment(transport: transport)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestStrictQuery(id: "1"))
         let retention = handle.retain()
         defer { withExtendedLifetime(retention) {} }
@@ -253,7 +254,7 @@ struct PhaseTests {
     func loadingIsNotRefreshing() async throws {
         let gate = GatedTransport()
         let environment = Environment(transport: gate)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestList(page: 1))
         let retention = handle.retain()
         await until { gate.pending == 1 }
@@ -294,7 +295,7 @@ struct PhaseTests {
         let attempts = Attempts()
         let transport = RecordedTransport { _ in attempts.next() == 1 ? fixture("character-name-hidden") : nil }
         let environment = Environment(transport: transport)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestStrictQuery(id: "1"))
         let retention = handle.retain()
         defer { withExtendedLifetime(retention) {} }
@@ -321,7 +322,7 @@ struct PhaseTests {
         let attempts = Attempts()
         let transport = RecordedTransport { _ in attempts.next() == 1 ? fixture("character-name-hidden") : nil }
         let environment = Environment(transport: transport)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestStrictQuery(id: "1"))
         let retention = handle.retain()
         await settled(handle)
@@ -346,7 +347,7 @@ struct PhaseTests {
     @Test("a failed phase is not assigned again when an unrelated commit evaluates it to the same failure")
     func failureIsNotReassigned() async throws {
         let environment = Environment(transport: RecordedTransport([TestStrictQuery.name: fixture("character-name-hidden")]))
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestStrictQuery(id: "1"))
         let retention = handle.retain()
         await settled(handle)
@@ -367,7 +368,7 @@ struct PhaseTests {
         let attempts = Attempts()
         let transport = RecordedTransport { _ in fixture(attempts.next() == 1 ? "character-name-shown" : "character-name-hidden") }
         let environment = Environment(transport: transport)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestStrictQuery(id: "1"))
         let retention = handle.retain()
         await settled(handle)
@@ -388,7 +389,7 @@ struct PhaseTests {
     func preloadThenInvalidate() async throws {
         let transport = RecordedTransport([TestList.name: fixtureData])
         let environment = Environment(transport: transport)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let preloaded = environment.preload(TestList(page: 1))
         await settled(preloaded)
         #expect(transport.requestCount == 1)
@@ -404,7 +405,7 @@ struct PhaseTests {
     func preloadSettlesOnTheFirstAttach() async throws {
         let transport = RecordedTransport([TestStrictQuery.name: fixture("character-name-shown"), TestRequiredOrigin.name: fixture("required-origin-1")])
         let environment = Environment(transport: transport)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let strict = environment.preload(TestStrictQuery(id: "1"))
         let bubbling = environment.preload(TestRequiredOrigin(id: "1"))
         await strict.settle()
@@ -439,7 +440,7 @@ struct PhaseTests {
     func preloadWithoutAFetch() async throws {
         let transport = RecordedTransport([TestList.name: fixtureData])
         let environment = Environment(transport: transport)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let first = environment.handle(for: TestList(page: 1))
         let firstRetention = first.retain()
         await settled(first)
@@ -455,7 +456,7 @@ struct PhaseTests {
     @Test("a parked handle that failed on a field error is ready when attached again after the error cleared")
     func parkedFailureClears() async throws {
         let environment = Environment(transport: RecordedTransport([TestStrictQuery.name: fixture("character-name-hidden")]))
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestStrictQuery(id: "1"), fetchPolicy: .storeOrNetwork)
         let retention = handle.retain()
         await settled(handle)
@@ -478,7 +479,7 @@ struct PhaseTests {
     @Test("a parked handle that was ready fails when attached again after a commit put a field error in its selection")
     func parkedReadyHandleFails() async throws {
         let environment = Environment(transport: RecordedTransport([TestStrictQuery.name: fixture("character-name-shown")]))
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestStrictQuery(id: "1"))
         let retention = handle.retain()
         await settled(handle)
@@ -502,7 +503,7 @@ struct PhaseTests {
     @Test("a parked bubbling handle that was ready fails when attached again after a commit nulled a field it requires")
     func parkedReadyHandleBubbles() async throws {
         let environment = Environment(transport: RecordedTransport([TestRequiredOrigin.name: fixture("required-origin-1")]))
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestRequiredOrigin(id: "1"))
         let retention = handle.retain()
         await settled(handle)
@@ -526,7 +527,7 @@ struct PhaseTests {
         for completes in [true, false] {
             let transport = DeliveryTests.GatedParts(fixture("strict-deferred-1-unplaced-error"), fixture("strict-deferred-2"))
             let environment = Environment(transport: transport)
-            environment.store.reportMissing = nil
+            environment.log = nil
             let handle = environment.handle(for: TestStrictDeferred(id: "1"))
             let retention = handle.retain()
             await settled(handle)
@@ -549,7 +550,7 @@ struct PhaseTests {
     func deferredFirstPartClears() async throws {
         let transport = LifetimeTests.ManualStreams()
         let environment = Environment(transport: transport)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestStrictDeferred(id: "1"))
         let retention = handle.retain()
         await until { transport.count == 1 }
@@ -578,7 +579,7 @@ struct PhaseTests {
     @Test("a commit that moves a link onto a record with a field error fails an operation that throws and reads through it")
     func movedLink() async throws {
         let environment = Environment(transport: RecordedTransport([TestStrictOrigin.name: fixture("strict-origin-1")]))
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestStrictOrigin(id: "1"))
         let retention = handle.retain()
         await settled(handle)
@@ -605,7 +606,7 @@ struct PhaseTests {
     @Test("a commit that swaps a list of links onto a record with a field error fails an operation that throws and reads through it")
     func movedLinks() async throws {
         let environment = Environment(transport: RecordedTransport([TestStrictEpisodes.name: fixture("strict-episodes-1")]))
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestStrictEpisodes(id: "1"))
         let retention = handle.retain()
         await settled(handle)
@@ -634,7 +635,7 @@ struct PhaseTests {
     @Test("a bubbling operation fails when another commit nulls a field it requires, with no error on it")
     func nullFailsABubblingOperation() async throws {
         let environment = Environment(transport: RecordedTransport([TestRequiredOrigin.name: fixture("required-origin-1")]))
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestRequiredOrigin(id: "1"))
         let retention = handle.retain()
         await settled(handle)
@@ -675,7 +676,7 @@ struct PhaseTests {
             errors.append(error)
         }
         let environment = Environment(transport: SilentTransport())
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestHeaderQuery(id: "1"), fetchPolicy: .storeOnly)
         guard case .failed(let missing as MissingDataError) = handle.phase else {
             Issue.record("expected missing data, got \(handle.phase)")
@@ -694,7 +695,7 @@ struct PhaseTests {
         let attempts = Attempts()
         let transport = RecordedTransport { _ in attempts.next() == 2 ? nil : fixtureData }
         let environment = Environment(transport: transport)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestList(page: 1))
         let retention = handle.retain()
         defer { withExtendedLifetime(retention) {} }
@@ -736,7 +737,7 @@ struct PhaseTests {
         let attempts = Attempts()
         let transport = RecordedTransport { _ in attempts.next() == 1 ? nil : fixtureData }
         let environment = Environment(transport: transport)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestList(page: 1))
         let retention = handle.retain()
         defer { withExtendedLifetime(retention) {} }
@@ -784,7 +785,7 @@ struct PhaseTests {
         _ = consume requestRetention
 
         let truncated = Environment(transport: RecordedTransport([TestList.name: fixtureData.prefix(40)]))
-        truncated.store.reportMissing = nil
+        truncated.log = nil
         let malformed = truncated.handle(for: TestList(page: 1))
         let malformedRetention = malformed.retain()
         await malformed.settle()
@@ -836,7 +837,7 @@ struct PhaseTests {
         ]
         for (member, message) in omissions {
             let environment = Environment(transport: RecordedTransport([TestHeaderQuery.name: try omitting(member, from: header)]))
-            environment.store.reportMissing = nil
+            environment.log = nil
             let handle = environment.handle(for: TestHeaderQuery(id: "5"))
             let retention = handle.retain()
             await handle.settle()
@@ -862,7 +863,7 @@ struct PhaseTests {
         let untyped = try omitting(#","__typename":"Character""#, from: try omitting(#""__typename":"Character","#, from: answered))
         for (response, typed) in [(answered, true), (untyped, false)] {
             let environment = Environment(transport: RecordedTransport([TestSearchOrigins.name: response]))
-            environment.store.reportMissing = nil
+            environment.log = nil
             let handle = environment.handle(for: TestSearchOrigins(name: "a"))
             let retention = handle.retain()
             await handle.settle()
@@ -882,7 +883,7 @@ struct PhaseTests {
     func aFetchInFlightReadsInFlight() async throws {
         let gate = GatedTransport()
         let environment = Environment(transport: gate)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestList(page: 1))
         let retention = handle.retain()
         defer { withExtendedLifetime(retention) {} }
@@ -919,7 +920,7 @@ struct PhaseTests {
     func aQueryValueReadsTheFetch() async throws {
         let gate = GatedTransport()
         let environment = Environment(transport: gate)
-        environment.store.reportMissing = nil
+        environment.log = nil
         var operation = TestList(page: 1)
         guard case .idle = operation.fetch else {
             Issue.record("expected an unresolved value to read idle, got \(operation.fetch)")
@@ -965,9 +966,12 @@ struct PhaseTests {
     func reporting(_ transport: any Transport) -> (Baton.Environment, Reports) {
         let environment = Environment(transport: transport)
         let reports = Reports()
-        environment.store.reportMissing = { [unowned store = environment.store] record, slot in reports.missing.append(record.key + "." + store.storageKey(of: slot)) }
-        environment.store.reportUnexpected = { [unowned store = environment.store] record, slot, value in
-            if case .missing = value { reports.unexpected.append(record.key + "." + store.storageKey(of: slot)) }
+        environment.log = { event in
+            switch event {
+            case .missing(let type, let field): reports.missing.append(type + "." + field)
+            case .unexpected(let type, let field): reports.unexpected.append(type + "." + field)
+            default: break
+            }
         }
         return (environment, reports)
     }
@@ -1009,7 +1013,7 @@ struct PhaseTests {
         try await retargetOrigin(environment)
         let missing = dimension(handle)
         #expect(missing == nil, "the location the link moved to has no dimension")
-        #expect(reports.missing == ["Location:99.dimension"])
+        #expect(reports.missing == ["Location.dimension"])
         #expect(handle.isStale, "the heal marked the operation stale")
         await handle.settle()
         #expect(transport.requestCount == 2, "the heal refetched the operation once")
@@ -1021,7 +1025,7 @@ struct PhaseTests {
         try await retargetOrigin(environment)
         #expect(dimension(handle) == nil)
         #expect(reports.missing.count == 2)
-        #expect(reports.unexpected == ["Location:99.dimension"])
+        #expect(reports.unexpected == ["Location.dimension"])
         await handle.settle()
         for _ in 0..<10 { await Task.yield() }
         #expect(transport.requestCount == 2, "no fetch for a miss under the heal's own data")
@@ -1052,13 +1056,13 @@ struct PhaseTests {
 
         try await retargetOrigin(environment)
         #expect(dimension(handle) == nil)
-        #expect(reports.missing == ["Location:99.dimension"])
+        #expect(reports.missing == ["Location.dimension"])
         #expect(handle.isStale, "the heal marked the operation stale")
         for _ in 0..<10 { await Task.yield() }
         #expect(transport.requestCount == 0, "no holder allows the network")
 
         #expect(dimension(handle) == nil)
-        #expect(reports.missing == ["Location:99.dimension", "Location:99.dimension"], "a second read reports the miss again")
+        #expect(reports.missing == ["Location.dimension", "Location.dimension"], "a second read reports the miss again")
         #expect(reports.unexpected.isEmpty)
         #expect(handle.isStale)
         for _ in 0..<10 { await Task.yield() }
@@ -1078,7 +1082,7 @@ struct PhaseTests {
         try await retargetOrigin(environment)
         let data = TestConditions.Data(anchor: Anchor(record: environment.store.root, variables: withOrigin.variables, store: environment.store))
         #expect(data.character?.origin?.dimension == nil)
-        #expect(reports.missing == ["Location:99.dimension"])
+        #expect(reports.missing == ["Location.dimension"])
         #expect(reports.unexpected.isEmpty)
         for _ in 0..<10 { await Task.yield() }
         #expect(transport.requestCount == 1, "a lens with no root heals nothing")

@@ -61,7 +61,7 @@ struct TokenizerTests {
             return
         }
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         store.commit(try Ingest.normalize(data, plan: plan))
         let leaves = Oracle.leaves(of: store.root, plan: plan)
         for expected in response.leaves {
@@ -72,7 +72,7 @@ struct TokenizerTests {
     @Test("a custom scalar keeps the text of its token: a string's contents, and any other token as the server wrote it")
     func customScalarsAreText() throws {
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         store.commit(try Ingest.normalize(Spec.data("tokenizer/custom-tokens.json"), plan: plan))
         let data = TestTokenizerQuery.Data(anchor: Anchor(record: store.root, variables: .none, store: store))
         #expect(data.tokenizer?.json == #"{"b":1, "a":[true,null]}"#)
@@ -90,7 +90,7 @@ struct TokenizerTests {
     ])
     func scalarListChanges(_ path: String, _ value: LeafValue) throws {
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         let response = Spec.data("tokenizer/response.json")
         store.commit(try Ingest.normalize(response, plan: plan))
         let tokenizer = try #require(store.existing("Tokenizer:t1"))
@@ -127,7 +127,7 @@ struct TokenizerTests {
     func numbersUnderADecimalComma(_ name: String) throws {
         try underADecimalComma {
             let store = Store()
-            store.reportMissing = nil
+            store.log = nil
             store.commit(try Ingest.normalize(Spec.data(name + ".json"), plan: plan))
             StoreDump.expectMatches(store, name)
         }

@@ -43,7 +43,7 @@ struct ReconnectTests {
     /// handle holds its environment weakly, so the test keeps it alive.
     func subscription(_ script: Script, line: Int = #line) -> (Environment, SubscriptionHandle<TestNoteAdded>) {
         let environment = Environment(transport: SilentTransport(), subscriptions: script)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.subscriptionHandle(for: TestNoteAdded(characterId: "reconnect-\(line)", connections: []))
         return (environment, handle)
     }
@@ -295,7 +295,7 @@ struct ReconnectTests {
             let transport = RecordedTransport([TestProfileQuery.name: fixture("character-errors")])
             let script = Script()
             let environment = Environment(transport: transport, subscriptions: script)
-            environment.store.reportMissing = nil
+            environment.log = nil
             let query = environment.handle(for: TestProfileQuery(id: "1"))
             let retention = query.retain()
             await query.settle()

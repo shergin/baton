@@ -106,14 +106,14 @@ extension Anchor {
         // absent until a payload writes it, and no server would answer a
         // heal for it.
         guard !record.deleted, owner.reports, !Registry.isClient(slot) else { return }
-        anchor.store?.reportMissing?(record, slot)
+        if let store = anchor.store { store.log?(.missing(type: record.type.name, field: store.storageKey(of: slot))) }
         owner.environment?.heal(owner.root, record, slot)
     }
 
     @inline(never)
     private func unexpected(_ slot: Slot, _ value: Value) {
-        guard owner.reports else { return }
-        store?.reportUnexpected?(record, slot, value)
+        guard owner.reports, let store else { return }
+        store.log?(.unexpected(type: record.type.name, field: store.storageKey(of: slot)))
     }
 
     private var anchor: Anchor { self }
@@ -447,7 +447,7 @@ extension Anchor {
     /// placeholder holds it, whose link reported already; always false, so
     /// a guard can return it.
     public func requiredMissing(path: String, log: Bool) -> Bool {
-        if log, owner.reports { owner.environment?.requiredFieldMissing?(record, path) }
+        if log, owner.reports { store?.log?(.requiredFieldMissing(type: record.type.name, path: path)) }
         return false
     }
 

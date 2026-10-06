@@ -70,7 +70,7 @@ struct WriteTests {
     /// A store holding the first page of the fixture through the list plan.
     func seededStore() throws -> Store {
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables, in: store.keys)))
         return store
     }
@@ -169,7 +169,7 @@ struct WriteTests {
             return fixture("rename-1")
         }
         let environment = Environment(transport: transport)
-        environment.store.reportMissing = nil
+        environment.log = nil
         let first = try await environment.mutate(TestRenameWithOrigin(id: "1", name: "Rick Prime", withOrigin: true))
         _ = try await environment.mutate(TestRenameWithOrigin(id: "1", name: "Rick Prime", withOrigin: false))
         environment.store.collect()
@@ -226,7 +226,7 @@ struct WriteTests {
     @Test("an optimistic layer's keys stay while the layer is applied and go when it lifts")
     func anOptimisticLayersKeysStayWhileApplied() throws {
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         let query = Registry.type("Query")
         let header = TestHeaderQuery(id: "9")
         // No mutation renders a key, its root field being keyed without its
@@ -348,7 +348,7 @@ struct WriteTests {
     @Test("node(id:) finds a cached entity by id across types")
     func nodeLookup() throws {
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         let list = fixture("characters-7-8")
         store.commit(try Ingest.normalize(list, plan: TestList.plan.resolve(TestList(page: 1).variables, in: store.keys)))
 
@@ -381,7 +381,7 @@ struct WriteTests {
     @Test("a payload that carries one field of one entity writes that field and leaves everything else as it was")
     func aPartialPayloadWritesOnlyWhatItCarries() async throws {
         let environment = Environment(transport: SilentTransport())
-        environment.store.reportMissing = nil
+        environment.log = nil
         try await environment.commitPayload(Fixture(page: 1), fixtureData)
         let before = StoreExport.text(of: environment.store).split(separator: "\n")
 
@@ -401,7 +401,7 @@ struct WriteTests {
     @Test("a mutation's payload committed by hand applies its @appendEdge to a connection the store holds")
     func aMutationPayloadCommittedByHandAppendsItsEdge() async throws {
         let environment = Environment(transport: notesTransport())
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestNotesQuery(id: "1"))
         let retention = handle.retain()
         await handle.settle()
@@ -424,7 +424,7 @@ struct WriteTests {
     @Test("a subscription's event committed by hand lands at the subscription root and appends through @appendEdge")
     func aSubscriptionEventCommittedByHandLandsAtTheSubscriptionRoot() async throws {
         let environment = Environment(transport: notesTransport())
-        environment.store.reportMissing = nil
+        environment.log = nil
         let handle = environment.handle(for: TestNotesQuery(id: "1"))
         let retention = handle.retain()
         await handle.settle()
@@ -450,7 +450,7 @@ struct WriteTests {
     @Test("under @throwOnFieldError a payload committed by hand throws its uncaught field errors, and one without errors does not")
     func aStrictPayloadCommittedByHandThrowsItsFieldErrors() async throws {
         let environment = Environment(transport: SilentTransport())
-        environment.store.reportMissing = nil
+        environment.log = nil
         let thrown = await #expect(throws: FieldErrors.self) {
             try await environment.commitPayload(TestStrictQuery(id: "1"), fixture("character-name-hidden"))
         }

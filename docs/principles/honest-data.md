@@ -75,13 +75,14 @@ or failed with a `Failure` of one of four kinds and the time it failed, so
 a fetch that fails behind data is seen without the data going; field
 errors stored beside the field, in memory and in the image, and read through
 `@catch(to:)` as a `Result`;
-`@required(action:)` bubbling at the lens boundary, logging through
-`Environment.requiredFieldMissing`, or throwing from the accessor;
+`@required(action:)` bubbling at the lens boundary, logging a
+`requiredFieldMissing` event, or throwing from the accessor;
 `@throwOnFieldError` failing the operation or throwing at the spread, with
 `@semanticNonNull` types under it; `onError` in `baton.json`, sent with every
 operation the target compiles;
-`Store.reportMissing` for missing data and `Store.reportUnexpected` for a
-null in a field typed non-null or a value of another kind, with zero values
+the environment's `log` with a `missing` event for missing data and an
+`unexpected` one for a null in a field typed non-null or a value of another
+kind, with zero values
 from the `required*` readers and one placeholder record per type behind a
 non-null link without data. A server's response that omits a field the
 operation selected fails the fetch as malformed, so missing data arises only

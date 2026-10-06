@@ -26,27 +26,19 @@ public final class Store {
     /// nothing more and reports nothing.
     package private(set) var ended = false
 
-    /// Called when a lens reads a slot the store never received. Debug builds
-    /// print by default; a product can route it to its own reporting.
-    public var reportMissing: ((Record, Slot) -> Void)?
-
-    /// Called when a lens reads a value its generated type cannot hold: a
-    /// null in a field typed non-null, or a value of another kind than the
-    /// field's. The read returns the type's zero value, or nil. Debug builds
-    /// print by default.
-    public var reportUnexpected: ((Record, Slot, Value) -> Void)?
+    /// The environment's log, called with each event of the store's and the
+    /// image's work; the image's writer gets its own copy, since it runs off
+    /// the main actor. Debug builds print the missing-data events until it
+    /// is set.
+    package var log: (@Sendable (LogEvent) -> Void)? {
+        didSet { persistence?.setLog(log) }
+    }
 
     /// The stand-in a non-null link without a record reads, one per type and
     /// never in `records`: its fields are all missing, and the anchor over it
     /// has no store, so a lens below reads zero values and reports nothing a
     /// second time.
     private var placeholders: [TypeID: Record] = [:]
-
-    /// Called when a bare id names live records of more than one type, so
-    /// `@deleteRecord` or a lookup without a type cannot tell which: the id
-    /// and the records. Nothing is deleted or resolved. Debug builds print
-    /// by default.
-    public var reportAmbiguousIdentity: ((String, [Record]) -> Void)?
 
     /// Bumped by `invalidate()`; handles fetched before it are stale.
     package private(set) var invalidationEpoch = 0
@@ -107,16 +99,10 @@ public final class Store {
         records[Store.mutationRootKey] = mutationRoot
         records[Store.subscriptionRootKey] = subscriptionRoot
         #if DEBUG
-        let keys = keys
-        reportMissing = { record, slot in
-            print("Baton: missing data: \(record.key).\(keys.text(of: slot)) was read but never fetched; the miss was recorded")
+        log = { event in
+            if let line = event.debugDescription { print(line) }
         }
-        reportUnexpected = { record, slot, value in
-            print("Baton: \(record.key).\(keys.text(of: slot)) holds \(value), which its reader's type cannot hold; it read as a zero value or nil")
-        }
-        reportAmbiguousIdentity = { id, records in
-            print("Baton: the id \(id) names \(records.map(\.key).joined(separator: ", ")); nothing was done for it")
-        }
+        persistence?.setLog(log)
         #endif
     }
 
@@ -133,9 +119,7 @@ public final class Store {
         for record in records.values { record.clear() }
         records = [Store.rootKey: root, Store.mutationRootKey: mutationRoot, Store.subscriptionRootKey: subscriptionRoot]
         placeholders.removeAll()
-        reportMissing = nil
-        reportUnexpected = nil
-        reportAmbiguousIdentity = nil
+        log = nil
         phasesNeedSettling = nil
     }
 
@@ -378,6 +362,13 @@ public final class Store {
             scheduleCollection()
         }
         let changed = batch.finish()
+        // A local batch is the runtime's own writing, as frequent as a read
+        // walk; the log hears of what the server and the app wrote.
+        switch batch.kind {
+        case .server: log?(.committed(kind: .server, changed: changed))
+        case .optimistic: log?(.committed(kind: .optimistic, changed: changed))
+        case .local: break
+        }
         let flipped = batch.flipped
         if !flipped.isEmpty {
             let targets = Set(flipped.map(ObjectIdentifier.init))
@@ -825,7 +816,7 @@ public final class Store {
                 switch found.count {
                 case 0: forgets?.ids.append(id)
                 case 1: delete(found[0], &batch)
-                default: reportAmbiguousIdentity?(id, found)
+                default: log?(.ambiguousIdentity(id: id, types: found.map(\.type.name)))
                 }
             }
         }
@@ -1208,7 +1199,7 @@ public final class Store {
             if let record = resolve(type, lookup.value, disk, &batch) { found.append(record) }
         }
         guard found.count == 1 else {
-            if found.count > 1 { reportAmbiguousIdentity?(lookup.value, found) }
+            if found.count > 1 { log?(.ambiguousIdentity(id: lookup.value, types: found.map(\.type.name))) }
             return nil
         }
         return found[0]
@@ -1233,7 +1224,7 @@ public final class Store {
     private func entity(id: String, among typeNames: [String]) -> Record? {
         let found = live(id: id, among: typeNames)
         guard found.count == 1 else {
-            if found.count > 1 { reportAmbiguousIdentity?(id, found) }
+            if found.count > 1 { log?(.ambiguousIdentity(id: id, types: found.map(\.type.name))) }
             return nil
         }
         return found[0]

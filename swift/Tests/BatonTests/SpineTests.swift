@@ -41,7 +41,7 @@ struct SpineTests {
     @Test("a document under the module-qualified marker in a raw literal compiles and reads")
     func qualifiedMarker() throws {
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables, in: store.keys)))
         let query = TestQualifiedQuery(id: "1")
         #expect(store.check(TestQualifiedQuery.plan.resolve(query.variables, in: store.keys)) != .miss)
@@ -234,7 +234,7 @@ struct SpineTests {
             ])),
         ]))
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         let resolved = plan.resolve(.none, in: store.keys)
         let payload = #"{"data":{"shape":{"__typename":"\#(blob.name)","id":"b1","label":"blob","radius":"3"}}}"#
         store.commit(try Ingest.normalize(Data(payload.utf8), plan: resolved))
@@ -431,7 +431,7 @@ struct SpineTests {
         // A count no other test renders or names, so that the store meets the
         // text as a rendering first.
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         let written = TestNoteCounts(page: 1, count: 96)
         store.commit(try Ingest.normalize(fixture("note-counts-1"), plan: TestNoteCounts.plan.resolve(written.variables, in: store.keys)))
         let rendering = try #require(store.existing("Character:1")).storedSlots.map(\.slot).first { store.storageKey(of: $0) == "notes(first:96)" }
@@ -471,7 +471,7 @@ struct SpineTests {
     @Test("a rendering made after the store adopted a constant takes the constant's slot")
     func aRenderingAfterAnAdoptionTakesTheConstantsSlot() throws {
         let store = Store()
-        store.reportMissing = nil
+        store.log = nil
         let written = TestNoteCounts(page: 1, count: 95)
         store.commit(try Ingest.normalize(fixture("note-counts-1"), plan: TestNoteCounts.plan.resolve(written.variables, in: store.keys)))
         let before = Owner(variables: written.variables, store: store).slot(Slots.Character.notes_041c11)
@@ -541,18 +541,17 @@ struct SpineTests {
         #expect(store.keys.count(on: row) == 0, "the store numbered nothing for a text the build names")
     }
 
-    @Test("a report names a slot the store numbered by its rendered key")
+    @Test("a missing-data event names a field the store numbered by its rendered key")
     func aReportNamesAStoreNumberedSlot() throws {
-        final class Misses: @unchecked Sendable { var slots: [Slot] = [] }
+        final class Misses: @unchecked Sendable { var fields: [String] = [] }
         let misses = Misses()
         let store = Store()
-        store.reportMissing = { _, slot in misses.slots.append(slot) }
+        store.log = { event in if case .missing(_, let field) = event { misses.fields.append(field) } }
         let header = TestHeaderQuery(id: "never-fetched")
         let data = TestHeaderQuery.Data(anchor: Anchor(record: store.root, variables: header.variables, store: store))
         #expect(data.character == nil)
-        let slot = try #require(misses.slots.first)
-        #expect(slot.index < 0, "a key rendered from a variable is the store's")
-        #expect(store.storageKey(of: slot) == #"character(id:"never-fetched")"#)
+        #expect(misses.fields == [#"character(id:"never-fetched")"#])
+        #expect(store.keys.count(on: store.root.type) == 1, "a key rendered from a variable is the store's")
     }
 
     @Test("a key rendered on a concrete type the plan did not list is numbered by the store where the response is read, and the process numbers only the type's constants")
@@ -587,28 +586,19 @@ struct SpineTests {
 
     @Test("a lens read never writes: a root field the store lacks reads nil until the check binds its lookup to the cached entity")
     func lookupBindsInTheCheck() throws {
-        final class Misses: @unchecked Sendable {
-            var reads: [String] = []
-            var slots: [Slot] = []
-        }
+        final class Misses: @unchecked Sendable { var reads: [String] = [] }
         let misses = Misses()
         let store = Store()
-        store.reportMissing = { [unowned store] record, slot in
-            misses.reads.append(record.key + "." + store.storageKey(of: slot))
-            misses.slots.append(slot)
-        }
+        store.log = { event in if case .missing(let type, let field) = event { misses.reads.append(type + "." + field) } }
         let variables = TestList(page: 1).variables
         store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(variables, in: store.keys)))
 
         let detail = TestHeaderQuery(id: "3")
+        let stored = store.root.storedSlots.count
         let data = TestHeaderQuery.Data(anchor: Anchor(record: store.root, variables: detail.variables, store: store))
         #expect(data.character == nil, "the read does not resolve the lookup")
-        #expect(misses.reads == [#"client:root.character(id:"3")"#])
-        let lookup = try #require(misses.slots.first)
-        guard case .missing = store.root.read(lookup) else {
-            Issue.record("the read wrote the link")
-            return
-        }
+        #expect(misses.reads == [#"Query.character(id:"3")"#])
+        #expect(store.root.storedSlots.count == stored, "the read wrote no link")
         #expect(store.check(TestHeaderQuery.plan.resolve(detail.variables, in: store.keys)) != .miss)
         #expect(data.character?.testHeader.name == "Summer Smith", "the check wrote the link")
     }
@@ -618,7 +608,7 @@ struct SpineTests {
         final class Misses: @unchecked Sendable { var reads: [String] = [] }
         let misses = Misses()
         let store = Store()
-        store.reportMissing = { [unowned store] record, slot in misses.reads.append(record.key + "." + store.storageKey(of: slot)) }
+        store.log = { event in if case .missing(let type, let field) = event { misses.reads.append(type + "." + field) } }
         store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables, in: store.keys)))
 
         // The detail's header renders from the store, through the lookup the

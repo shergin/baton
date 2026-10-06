@@ -17,7 +17,7 @@ struct TransientTests {
     /// An environment over the image, as a launch of the app makes one.
     func launch(_ transport: any Transport = SilentTransport()) -> Environment {
         let store = Store(persistence: Persistence(url: image.url))
-        store.reportMissing = nil
+        store.log = nil
         return Environment(transport: transport, store: store)
     }
 

@@ -12,9 +12,14 @@ public final class Environment {
     /// another that streams events.
     public let subscriptions: (any Transport)?
 
-    /// Called when a `@required(action: LOG)` field is null: the record and
-    /// Relay's path. Debug builds print by default.
-    public var requiredFieldMissing: ((Record, String) -> Void)?
+    /// What the runtime did and what went wrong, one `LogEvent` at a time,
+    /// for the app's own logging and metrics: names and counts, never a
+    /// record or a value. Debug builds print the missing-data events until
+    /// it is set; `nil` silences them.
+    public var log: (@Sendable (LogEvent) -> Void)? {
+        get { store.log }
+        set { store.log = newValue }
+    }
 
     /// The handles, by the operation's key, for as long as their roots are
     /// the store's: equal operation values share one.
@@ -41,11 +46,6 @@ public final class Environment {
         self.transport = transport
         self.subscriptions = subscriptions
         store.phasesNeedSettling = { [weak self] in self?.reevaluate() }
-        #if DEBUG
-        requiredFieldMissing = { record, path in
-            print("Baton: the @required field \(path) of \(record.key) is null; its lens reads as null")
-        }
-        #endif
     }
 
     /// An environment over HTTP. With `persistence`, the store keeps an image
@@ -152,7 +152,7 @@ public final class Environment {
     func heal(_ root: Store.Root?, _ record: Record, _ slot: Slot) {
         guard let root, !ended else { return }
         guard store.heal(root) else {
-            store.reportUnexpected?(record, slot, .missing)
+            store.log?(.unexpected(type: record.type.name, field: store.storageKey(of: slot)))
             return
         }
         handles[root.key]?.fetchForHeal()
@@ -288,6 +288,32 @@ public final class Environment {
     }
 
     private func fetch<Op: Query>(_ operation: Op.Type, variables: Variables, resolved: ResolvedSelection, firstPart: ((Committed) -> Void)?) async throws -> Committed {
+        log(.fetchStarted(operation: Op.name))
+        let started = ContinuousClock.now
+        do {
+            let committed = try await send(operation, variables: variables, resolved: resolved, firstPart: firstPart)
+            for error in committed.uncaught {
+                log(.fieldError(operation: Op.name, path: error.path))
+            }
+            log(.fetchCompleted(operation: Op.name, duration: .now - started))
+            return committed
+        } catch {
+            log(.fetchFailed(operation: Op.name, kind: LogEvent.FailureKind(error)))
+            throw error
+        }
+    }
+
+    /// Logs an event, unless the session has ended: a response that lands
+    /// after `end()` reaches neither the store nor the log, and the log is
+    /// read at each event so that a change to it during a fetch holds.
+    private func log(_ event: LogEvent) {
+        guard !ended else { return }
+        store.log?(event)
+    }
+
+    /// The fetch itself: the request sent, and the one payload or the parts
+    /// of a deferred response committed.
+    private func send<Op: Query>(_ operation: Op.Type, variables: Variables, resolved: ResolvedSelection, firstPart: ((Committed) -> Void)?) async throws -> Committed {
         let request = request(Op.self, variables: variables)
         // The operation's root: a handle's, or one made here, which waits in
         // the release buffer once dated if nothing retains it.
