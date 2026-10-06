@@ -64,10 +64,11 @@ the vocabulary is `docs/terminology.md`. These files outrank any default.
 
 ## Swift
 
-- Swift 6 language mode, strict concurrency. Every public and generated
-  declaration states its isolation explicitly (`@MainActor` or
-  `nonisolated`), because consumers may compile with default main-actor
-  isolation.
+- Swift 6 language mode, strict concurrency. Every generated declaration
+  states its isolation explicitly (`@MainActor` or `nonisolated`), because
+  it is compiled in the consumer's module, which may default to main-actor
+  isolation; the runtime's own declarations carry their isolation in its
+  interface.
 - The runtime depends on Foundation, Observation and the system's SQLite
   (`import SQLite3`) only; nothing is vendored. The macro package is the only
   target that may depend on swift-syntax.
