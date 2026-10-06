@@ -4,6 +4,7 @@
 //   swift run -c release BatonBenchmarks --quick   (three samples each, for CI)
 @_spi(Generated) import Baton
 import BatonSpec
+import BatonTesting
 import Foundation
 import Observation
 
@@ -186,14 +187,14 @@ func run() async throws {
 
     print("ingest")
     measure("response bytes -> change set", iterations: 30) {
-        _ = try! Ingest.normalize(data, plan: plan)
+        _ = try! Ingest.normalize(data, plan: plan, rootKey: Store.rootKey)
     }
     measure("resolve the fixture plan for a page, per resolution", iterations: 50, ops: 100) {
         for page in 1...100 { _ = BenchFixture.plan.resolve(BenchFixture(page: page).variables) }
     }
 
     print("commit")
-    let changes = try Ingest.normalize(data, plan: plan)
+    let changes = try Ingest.normalize(data, plan: plan, rootKey: Store.rootKey)
     measure("into an empty store (899 records)", iterations: 20) {
         Store().commit(changes)
     }
@@ -205,7 +206,7 @@ func run() async throws {
     let root = BenchFixture.Data(anchor: Anchor(record: store.root, variables: variables, store: store))
     let rows = Array(root.characters!.results!)
     let edited = String(decoding: data, as: UTF8.self).replacingOccurrences(of: "\"name\":\"Morty Smith\"", with: "\"name\":\"Morty C-137\"")
-    let editedChanges = try Ingest.normalize(Data(edited.utf8), plan: plan)
+    let editedChanges = try Ingest.normalize(Data(edited.utf8), plan: plan, rootKey: Store.rootKey)
     let names = Observer()
     measure("one field changed, 20 rows observing their name", iterations: 20, observer: names, setup: {
         store.commit(changes)
@@ -322,9 +323,9 @@ func run() async throws {
         + ",\"errors\":[" + (0..<20).map { "{\"message\":\"image unavailable\",\"path\":[\"characters\",\"results\",\($0),\"image\"]}" }.joined(separator: ",") + "]}"
     let errored = Data(erroredText.utf8)
     measure("ingest with 20 field errors (plain ingest above)", iterations: 30) {
-        _ = try! Ingest.normalize(errored, plan: plan)
+        _ = try! Ingest.normalize(errored, plan: plan, rootKey: Store.rootKey)
     }
-    let erroredChanges = try Ingest.normalize(errored, plan: plan)
+    let erroredChanges = try Ingest.normalize(errored, plan: plan, rootKey: Store.rootKey)
     print("    errors resolved: \(erroredChanges.fieldErrors.count), uncaught: \(erroredChanges.uncaughtFieldErrors.count)")
     let landed = Observer()
     measure("commit the errors, 20 rows observing their image", iterations: 20, observer: landed, setup: {
@@ -470,7 +471,7 @@ func readPathBench(store: Store, root: BenchFixture.Data) throws {
     }
 
     let node = BenchNodeQuery(id: "1")
-    store.commit(try Ingest.normalize(Data(#"{"data":{"node":{"__typename":"Character","id":"1"}}}"#.utf8), plan: BenchNodeQuery.plan.resolve(node.variables)))
+    store.commit(try Ingest.normalize(Data(#"{"data":{"node":{"__typename":"Character","id":"1"}}}"#.utf8), plan: BenchNodeQuery.plan.resolve(node.variables), rootKey: Store.rootKey))
     let character = try requireValue(BenchNodeQuery.Data(anchor: Anchor(record: store.root, variables: node.variables, store: store)).node)
     measure("field selected on an interface, untracked, per read", iterations: 50, ops: count) {
         var sink = 0
@@ -508,7 +509,7 @@ func rootFieldBench(store: Store, root: BenchFixture.Data) throws {
     let commits = try (1...others).map { offset in
         let character = BenchCharacterQuery(id: String(900_000 + offset))
         let payload = #"{"data":{"character":{"id":"\#(900_000 + offset)","name":"Other"}}}"#
-        return try Ingest.normalize(Data(payload.utf8), plan: BenchCharacterQuery.plan.resolve(character.variables))
+        return try Ingest.normalize(Data(payload.utf8), plan: BenchCharacterQuery.plan.resolve(character.variables), rootKey: Store.rootKey)
     }
     let reader = Observer()
     reader.observe([root]) { _ = $0.characters }
@@ -530,7 +531,7 @@ func deletionBench(data: Data, plan: ResolvedSelection) throws {
     let store = Store()
     store.reportMissing = nil
     for page in 0..<10 {
-        store.commit(try Ingest.normalize(page == 0 ? data : shifted(data, by: page * 100_000), plan: plan))
+        store.commit(try Ingest.normalize(page == 0 ? data : shifted(data, by: page * 100_000), plan: plan, rootKey: Store.rootKey))
     }
     let ids = (200..<1_000).map(String.init).filter { id in
         store.existing("Character:" + id) != nil && store.existing("Location:" + id) == nil && store.existing("Episode:" + id) == nil
@@ -856,7 +857,7 @@ func argumentBench() throws {
                 .scalar("id", key: .fixed(Registry.slot(row, "id")), kind: .string, list: false),
             ] + fields)),
         ]))
-        return try Ingest.normalize(data, plan: plan.resolve(variables))
+        return try Ingest.normalize(data, plan: plan.resolve(variables), rootKey: Store.rootKey)
     }
     let kinds = [
         ("labels", try changes("Plain") { row, name in .fixed(Registry.slot(row, name)) }),
@@ -921,7 +922,7 @@ func longSessionBench() throws {
 
     func lookup(_ id: String, name: String = "Character") throws -> ChangeSet {
         let payload = #"{"data":{"character":{"id":"\#(id)","name":"\#(name)"}}}"#
-        return try Ingest.normalize(Data(payload.utf8), plan: BenchCharacterQuery.plan.resolve(BenchCharacterQuery(id: id).variables))
+        return try Ingest.normalize(Data(payload.utf8), plan: BenchCharacterQuery.plan.resolve(BenchCharacterQuery(id: id).variables), rootKey: Store.rootKey)
     }
     /// The page of `long0`'s notes that starts at note `start`: the first
     /// through the screen's query, every other through the pagination query
@@ -933,16 +934,16 @@ func longSessionBench() throws {
         let notes = #"{"totalCount":100000,"edges":[\#(edges)],"pageInfo":{"endCursor":"long-c\#(start + count - 1)","hasNextPage":true}}"#
         if start == 0 {
             let payload = #"{"data":{"character":{"id":"long0","notes":\#(notes)}}}"#
-            return try Ingest.normalize(Data(payload.utf8), plan: BenchNotesQuery.plan.resolve(BenchNotesQuery(id: "long0").variables))
+            return try Ingest.normalize(Data(payload.utf8), plan: BenchNotesQuery.plan.resolve(BenchNotesQuery(id: "long0").variables), rootKey: Store.rootKey)
         }
         let operation = BenchNotesPaginationQuery(count: count, cursor: "long-c\(start - 1)", id: "long0")
         let payload = #"{"data":{"node":{"__typename":"Character","id":"long0","notes":\#(notes)}}}"#
-        return try Ingest.normalize(Data(payload.utf8), plan: BenchNotesPaginationQuery.plan.resolve(operation.variables))
+        return try Ingest.normalize(Data(payload.utf8), plan: BenchNotesPaginationQuery.plan.resolve(operation.variables), rootKey: Store.rootKey)
     }
     /// The session's characters, each with one field.
     func characters(_ field: String, _ value: String, plan: ResolvedSelection) throws -> ChangeSet {
         let results = (0..<lookups).map { #"{"id":"long\#($0)","\#(field)":\#(value)}"# }.joined(separator: ",")
-        return try Ingest.normalize(Data(#"{"data":{"characters":{"results":[\#(results)]}}}"#.utf8), plan: plan)
+        return try Ingest.normalize(Data(#"{"data":{"characters":{"results":[\#(results)]}}}"#.utf8), plan: plan, rootKey: Store.rootKey)
     }
     func megabytes(_ bytes: Int) -> String { String(format: "%+.1f MB", Double(bytes) / 1_048_576) }
     /// How many values a record has room for and how many of them hold one.

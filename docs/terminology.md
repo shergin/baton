@@ -441,7 +441,11 @@ transport's error is.
 `RecordedTransport` answers from recorded responses by operation name, or
 from a function of the whole request, and keeps the requests it was sent;
 for previews, tests and benchmarks. Not a mock: it is a transport like any
-other, and nothing behind it can tell.
+other, and nothing behind it can tell. Beside it, `SilentTransport` never
+answers, for a first body with no network behind it. Both live in
+`BatonTesting`, a product of the package that an app's tests and previews
+import and its shipping binary does not; see
+[the decision](decisions/one-runtime-module.md).
 
 **Subscription.** *Composition: store, operation value, transport.* GraphQL:
 an operation whose events arrive over time. Here: `@Subscription("…")`

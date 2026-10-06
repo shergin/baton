@@ -1,5 +1,5 @@
+import Foundation
 import Observation
-import SwiftUI
 
 /// What the store may answer and when the network is asked. Relay's four.
 public enum FetchPolicy: Sendable {
@@ -467,57 +467,6 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
         isRefreshing = false
     }
 }
-
-/// The handle a view's storage holds, kept in the view's state and released
-/// when SwiftUI drops that state. The deinit runs on the main actor, where
-/// the handle lives: in place when the last reference goes there, and
-/// enqueued on it otherwise.
-@MainActor
-final class RetainedHandle<Handle: AnyOperationHandle> {
-    var handle: Handle?
-
-    isolated deinit {
-        handle?.release()
-    }
-}
-
-/// What a `@Query` property expands to: owns the handle for the view's
-/// lifetime, retains it while the view lives, and hands out the operation
-/// value with the handle attached.
-@MainActor
-public struct OperationStorage<Op: Query>: DynamicProperty {
-    @SwiftUI.Environment(\.baton) private var environment
-    @State private var retained = RetainedHandle<OperationHandle<Op>>()
-    private let value: Op
-    private let fetchPolicy: FetchPolicy
-
-    public init(_ value: Op, fetchPolicy: FetchPolicy = .default) {
-        self.value = value
-        self.fetchPolicy = fetchPolicy
-    }
-
-    /// Resolves the value to a handle when the value or the environment the
-    /// view sees changed: a handle belongs to the environment that made it.
-    public nonisolated mutating func update() {
-        MainActor.assumeIsolated {
-            let current = Environment.resolve(environment)
-            if retained.handle?.operation != value || retained.handle?.environment !== current {
-                retained.handle?.release()
-                let handle = current.handle(for: value, fetchPolicy: fetchPolicy)
-                handle.retain()
-                retained.handle = handle
-            }
-        }
-    }
-
-    /// The value, resolved. Outside a view it is unresolved and reads as loading.
-    public var resolved: Op {
-        var resolved = value
-        resolved.resolution = retained.handle
-        return resolved
-    }
-}
-
 /// The in-flight state behind a mutation action, observable by the view.
 @MainActor
 @Observable
@@ -547,21 +496,6 @@ public struct MutationAction<Op: Mutation>: Sendable {
         return try await environment.mutate(operation, optimistic: optimistic)
     }
 }
-
-/// What a `@Mutation` property expands to: the environment and the in-flight
-/// state, handed out as an action.
-@MainActor
-public struct MutationStorage<Op: Mutation>: DynamicProperty {
-    @SwiftUI.Environment(\.baton) private var environment
-    @State private var state = MutationState()
-
-    public init() {}
-
-    public var action: MutationAction<Op> {
-        MutationAction(environment: environment, state: state)
-    }
-}
-
 // MARK: Subscriptions
 
 /// The live side of a subscription value: the stream it holds open, how many
@@ -685,40 +619,4 @@ public final class SubscriptionHandle<Op: Subscription>: AnyOperationHandle {
 extension Subscription {
     /// The live side, which the storage that resolved the value holds.
     @MainActor public var subscription: SubscriptionHandle<Self>? { resolution }
-}
-
-/// What a `@Subscription` property expands to: subscribes while the view
-/// lives, closes the stream when SwiftUI drops the view's state, and hands out
-/// the operation value with the handle attached.
-@MainActor
-public struct SubscriptionStorage<Op: Subscription>: DynamicProperty {
-    @SwiftUI.Environment(\.baton) private var environment
-    @State private var retained = RetainedHandle<SubscriptionHandle<Op>>()
-    private let value: Op
-
-    public init(_ value: Op) {
-        self.value = value
-    }
-
-    /// Resolves the value to a handle when the value or the environment the
-    /// view sees changed.
-    public nonisolated mutating func update() {
-        MainActor.assumeIsolated {
-            let current = Environment.resolve(environment)
-            if retained.handle?.operation != value || retained.handle?.environment !== current {
-                retained.handle?.release()
-                let handle = current.subscriptionHandle(for: value)
-                handle.retain()
-                retained.handle = handle
-            }
-        }
-    }
-
-    /// The value with its handle attached; `subscription` reaches the live
-    /// side through it.
-    public var resolved: Op {
-        var resolved = value
-        resolved.resolution = retained.handle
-        return resolved
-    }
 }

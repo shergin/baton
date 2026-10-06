@@ -30,8 +30,11 @@ that stops at a module's edge.
 
 ## Decision
 
-A boundary gets the strongest guard that costs nothing. All of it is
-*(planned)*.
+A boundary gets the strongest guard that costs nothing. Built 2026-10-05:
+the script, `scripts/check-boundaries.sh`, with the store's name for its
+environment as the one violation it lists; SwiftUI's part in one file;
+`BatonTesting`. Still *(planned)*: `BatonInspector`, and the end of the
+listed violation.
 
 - One runtime module holds records, plans, the ingest, the store, the
   environment, lenses and transports: what the read and the commit cross.

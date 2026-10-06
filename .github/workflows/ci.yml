@@ -16,6 +16,16 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
+  # The boundaries inside the runtime module, as the module decision draws
+  # them: which files may import SwiftUI and SQLite, and which may not name
+  # the store, the environment or a transport. A ratchet: the violations it
+  # tolerates are listed in the script, and the list can only shrink.
+  boundaries:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: scripts/check-boundaries.sh
+
   # The compiler: formatting, lints as errors, and the tests, the goldens of
   # the Swift emitter among them. On Linux, because nothing in the compiler is
   # Apple's and the Kotlin runtime's builds will run it there.

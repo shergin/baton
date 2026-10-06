@@ -1,4 +1,5 @@
 @_spi(Generated) import Baton
+import BatonTesting
 import Foundation
 import Testing
 

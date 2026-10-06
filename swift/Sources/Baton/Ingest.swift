@@ -278,7 +278,7 @@ package enum Ingest {
         let errors: [ResponseError]
     }
 
-    package static func normalize(_ data: Data, plan: ResolvedSelection, rootKey: String = Store.rootKey) throws -> ChangeSet {
+    package static func normalize(_ data: Data, plan: ResolvedSelection, rootKey: String) throws -> ChangeSet {
         let bytes = [UInt8](data)
         // The change set is made inside the cursor and moved out, so no copy
         // is held while the cursor appends and nothing is copied on write.
@@ -292,7 +292,7 @@ package enum Ingest {
     /// Normalizes a response off the caller's actor and inside the caller's
     /// task, so the caller's cancellation and priority reach it.
     @concurrent
-    nonisolated static func normalized(_ data: Data, plan: ResolvedSelection, rootKey: String = Store.rootKey) async throws -> ChangeSet {
+    nonisolated static func normalized(_ data: Data, plan: ResolvedSelection, rootKey: String) async throws -> ChangeSet {
         try normalize(data, plan: plan, rootKey: rootKey)
     }
 

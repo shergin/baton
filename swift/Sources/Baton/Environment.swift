@@ -1,4 +1,4 @@
-import SwiftUI
+import Foundation
 
 /// Store plus transport plus configuration, in Relay's sense. One per backend,
 /// injected through SwiftUI's environment as `\.baton`. It also owns the
@@ -160,7 +160,7 @@ public final class Environment {
         let request = request(Op.self, variables: variables)
         if !Op.hasDeferred {
             let data = try await transport.execute(request)
-            let changes = try await Ingest.normalized(data, plan: resolved)
+            let changes = try await Ingest.normalized(data, plan: resolved, rootKey: Store.rootKey)
             // A fetch superseded while its response was on the way or being
             // read must not land after the one that replaced it.
             try Task.checkCancellation()
@@ -175,7 +175,7 @@ public final class Environment {
         for try await part in transport.stream(request) {
             if first {
                 first = false
-                let changes = try await Ingest.normalized(part, plan: resolved)
+                let changes = try await Ingest.normalized(part, plan: resolved, rootKey: Store.rootKey)
                 try Task.checkCancellation()
                 store.commit(changes)
                 fetched.add(changes)
@@ -374,10 +374,4 @@ struct UnconfiguredTransport: Transport {
     func execute(_ request: Request) async throws -> Data {
         throw EnvironmentError.notInjected
     }
-}
-
-extension EnvironmentValues {
-    /// The Baton environment for this view tree. Set it on an ancestor:
-    /// `.environment(\.baton, environment)`.
-    @Entry public var baton: Baton.Environment? = nil
 }

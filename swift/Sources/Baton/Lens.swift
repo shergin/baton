@@ -1,5 +1,3 @@
-import SwiftUI
-
 /// Where a lens reads from: one record, the owner whose scope binds any
 /// argument-carrying storage key along its path, and the record it was
 /// reached from, which a connection needs for its owner's id. Two anchors
@@ -473,18 +471,4 @@ public struct List<Element: Lens>: RandomAccessCollection, Sendable {
     public var startIndex: Int { 0 }
     public var endIndex: Int { records.count }
     public subscript(position: Int) -> Element { Element(anchor: anchor.child(records[position])) }
-}
-
-extension ForEach where Content: View, ID == RecordID {
-    /// Iterates a list of lenses, identified by record.
-    @MainActor
-    public init<Element: Lens>(_ list: List<Element>, @ViewBuilder content: @escaping (Element) -> Content) where Data == List<Element> {
-        self.init(list, id: \.recordID, content: content)
-    }
-
-    /// Iterates lenses, identified by record; for a connection's `nodes`.
-    @MainActor
-    public init<Element: Lens>(_ lenses: [Element], @ViewBuilder content: @escaping (Element) -> Content) where Data == [Element] {
-        self.init(lenses, id: \.recordID, content: content)
-    }
 }

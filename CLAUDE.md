@@ -49,7 +49,7 @@ the vocabulary is `docs/terminology.md`. These files outrank any default.
   manifests and the changelog.
 - While the project is in rapid building, a pull request merges once the
   local checks pass; do not wait for GitHub CI. Run what CI runs:
-  `scripts/build-compiler.sh`, then
+  `scripts/check-boundaries.sh`, `scripts/build-compiler.sh`, then
   `BATON_COMPILER=local swift build --build-tests -Xswiftc -warnings-as-errors`,
   `BATON_COMPILER=local swift test -Xswiftc -warnings-as-errors`,
   `BATON_COMPILER=local swift test -c release`,

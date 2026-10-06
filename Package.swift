@@ -33,6 +33,9 @@ let package = Package(
     platforms: [.iOS(.v26), .macOS(.v26)],
     products: [
         .library(name: "Baton", targets: ["Baton"]),
+        // The recorded and the silent transports, for an app's tests and
+        // previews; nothing in it ships in the app.
+        .library(name: "BatonTesting", targets: ["BatonTesting"]),
         .plugin(name: "BatonPlugin", targets: ["BatonPlugin"]),
     ],
     dependencies: [
@@ -43,6 +46,12 @@ let package = Package(
             name: "Baton",
             dependencies: ["BatonMacros"],
             path: "swift/Sources/Baton",
+            swiftSettings: [.swiftLanguageMode(.v6)]
+        ),
+        .target(
+            name: "BatonTesting",
+            dependencies: ["Baton"],
+            path: "swift/Sources/BatonTesting",
             swiftSettings: [.swiftLanguageMode(.v6)]
         ),
         .macro(
@@ -69,7 +78,7 @@ let package = Package(
         ),
         .testTarget(
             name: "BatonTests",
-            dependencies: ["Baton", "BatonSpec"],
+            dependencies: ["Baton", "BatonTesting", "BatonSpec"],
             path: "swift/Tests/BatonTests",
             swiftSettings: [.swiftLanguageMode(.v6)],
             plugins: ["BatonPlugin"]
@@ -111,7 +120,7 @@ let package = Package(
         ),
         .executableTarget(
             name: "BatonBenchmarks",
-            dependencies: ["Baton", "BatonSpec"],
+            dependencies: ["Baton", "BatonTesting", "BatonSpec"],
             path: "swift/Benchmarks",
             swiftSettings: [.swiftLanguageMode(.v6)],
             plugins: ["BatonPlugin"]

@@ -5,6 +5,19 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- `RecordedTransport` and `SilentTransport` move to `BatonTesting`, a
+  library product of the package for an app's tests and previews, so that
+  neither ships in the app. A test or a preview that uses them adds
+  `import BatonTesting`.
+- The boundaries inside the runtime module are checked:
+  `scripts/check-boundaries.sh`, in CI and among the local checks, holds
+  the module decision's rules (one file imports SwiftUI, one imports
+  SQLite, the record, the plan and the ingest do not name the store, the
+  store's files do not name the environment or a transport, and the runtime
+  imports nothing else) as a ratchet whose list of tolerated violations
+  can only shrink. SwiftUI's part of the runtime, the environment value,
+  the storages behind the marker macros and the `ForEach` initializers,
+  now sits in one file.
 - A custom scalar is its text: a string's contents, or the bytes of any
   other token exactly as the server wrote it, so `1.50`, an integer past
   2^53 and an object or array all read back unchanged. Before, numbers were

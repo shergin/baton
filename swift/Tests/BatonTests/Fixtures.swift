@@ -1,5 +1,6 @@
 import Baton
 import BatonSpec
+import BatonTesting
 import Foundation
 
 /// The recorded response for `Fixture(page: 1)`.
@@ -25,5 +26,13 @@ func notesTransport() -> RecordedTransport {
         case .string("c4")?: return notesPage(3)
         default: return notesPage(1)
         }
+    }
+}
+
+extension Ingest {
+    /// Normalizes a response at the query root, where the tests read query
+    /// responses unless they say otherwise.
+    static func normalize(_ data: Data, plan: ResolvedSelection) throws -> ChangeSet {
+        try normalize(data, plan: plan, rootKey: Store.rootKey)
     }
 }
