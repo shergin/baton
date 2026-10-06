@@ -710,7 +710,7 @@ func connectionBench() async throws {
         let environment = Environment(transport: transport)
         environment.store.reportMissing = nil
         let handle = environment.handle(for: BenchNotesQuery(id: "1"))
-        handle.retain()
+        let retention = handle.retain()
         await handle.settle()
         guard case .ready(let data) = handle.phase, let character = data.character?.benchNotes else { return }
         var samples: [Double] = []
@@ -722,13 +722,13 @@ func connectionBench() async throws {
         let series = [2, 21, 41].filter { $0 - 2 < samples.count }.map { "page \($0) \(format(samples[$0 - 2]).trimmingCharacters(in: .whitespaces))" }
         report("loadNext with no body reading the nodes, per page of 50", samples, ops: 1)
         print("    by page: \(series.joined(separator: ", "))")
-        handle.release()
+        withExtendedLifetime(retention) {}
     }
 
     let environment = Environment(transport: transport)
     environment.store.reportMissing = nil
     let handle = environment.handle(for: BenchNotesQuery(id: "1"))
-    handle.retain()
+    let retention = handle.retain()
     await handle.settle()
     guard case .ready(let data) = handle.phase, let character = data.character?.benchNotes else { return }
 
@@ -756,7 +756,7 @@ func connectionBench() async throws {
     }
 
     let before = environment.store.count
-    environment.collect()
+    environment.store.collect()
     print("    records before collection \(before), after \(environment.store.count) (the pages' own records go; the connection keeps the edges and nodes)")
 
     let refetched = Observer()
@@ -764,6 +764,7 @@ func connectionBench() async throws {
     try await handle.refetch()
     refetched.settle()
     print("    refetch of the first page: nodes \(character.notes.nodes.count), notifications \(refetched.fired)")
+    withExtendedLifetime(retention) {}
 }
 
 /// What the lifetime step moves: a collection pass over one root that
@@ -782,49 +783,49 @@ func collectionBench() async throws {
         guard case .string(let id)? = request.variables["id"], id.hasPrefix("r"), let number = Int(id.dropFirst()) else { return nil }
         return small[number]
     }
-    /// Retains a handle per small root and waits for each.
-    func retainRoots(in environment: Environment) async -> [OperationHandle<BenchCharacterQuery>] {
-        let handles = (0..<roots).map { number in
-            let handle = environment.handle(for: BenchCharacterQuery(id: "r\(number)"))
-            handle.retain()
-            return handle
-        }
+    /// Retains a handle per small root and waits for each; the retentions
+    /// returned keep them.
+    func retainRoots(in environment: Environment) async -> [Retention] {
+        let handles = (0..<roots).map { number in environment.handle(for: BenchCharacterQuery(id: "r\(number)")) }
+        let retentions = handles.map { $0.retain() }
         for handle in handles { await handle.settle() }
-        return handles
+        return retentions
     }
 
     let environment = Environment(transport: transport)
     environment.store.reportMissing = nil
     let handle = environment.handle(for: BenchCharacterNames(page: 7))
-    handle.retain()
+    let retention = handle.retain()
     await handle.settle()
     measure("a pass over one root reaching \(environment.store.count) records", iterations: 20) {
-        environment.collect()
+        environment.store.collect()
     }
     let beside = await retainRoots(in: environment)
     measure("a pass over \(roots + 1) roots, \(environment.store.count) records", iterations: 20) {
-        environment.collect()
+        environment.store.collect()
     }
-    handle.release()
-    for root in beside { root.release() }
+    withExtendedLifetime((retention, beside)) {}
 
     let few = Environment(transport: transport)
     few.store.reportMissing = nil
     let alone = await retainRoots(in: few)
     measure("a pass over \(roots) roots reaching one record each", iterations: 20) {
-        few.collect()
+        few.store.collect()
     }
-    for root in alone { root.release() }
+    withExtendedLifetime(alone) {}
 
     await measureEach("a pass that keeps none of \(count) records (a release buffer of zero)", iterations: 10) {
-        let environment = Environment(transport: transport, releaseBufferSize: 0)
+        let environment = Environment(transport: transport, store: Store(releaseBufferSize: 0))
         environment.store.reportMissing = nil
         let handle = environment.handle(for: BenchCharacterNames(page: 7))
-        handle.retain()
-        await handle.settle()
-        handle.release()
+        do {
+            // Released at the block's end: the root waits in a buffer of none.
+            let retention = handle.retain()
+            await handle.settle()
+            withExtendedLifetime(retention) {}
+        }
         let start = DispatchTime.now().uptimeNanoseconds
-        environment.collect()
+        environment.store.collect()
         let elapsed = DispatchTime.now().uptimeNanoseconds - start
         precondition(environment.store.count == 3, "the three roots stay")
         return elapsed
@@ -850,7 +851,7 @@ func reevaluationBench(data: Data, errored: Data) async throws {
     let store = environment.store
     store.reportMissing = nil
     let handle = environment.handle(for: operation)
-    handle.retain()
+    let retention = handle.retain()
     await handle.settle()
     measure("the same commit, a @throwOnFieldError handle retained (settles its phase)", iterations: 20, setup: { store.commit(clean) }) {
         store.commit(failed)
@@ -872,7 +873,7 @@ func reevaluationBench(data: Data, errored: Data) async throws {
         _ = BenchStrictFixture.Data.fieldErrors(anchor)
     }
     store.commit(clean)
-    handle.release()
+    withExtendedLifetime(retention) {}
 }
 
 /// What a report costs a commit: the fixture into an empty store and again
@@ -907,7 +908,7 @@ func edgeBench() async throws {
     let environment = Environment(transport: RecordedTransport { _ in notesPage(1, of: 2, size: 50) })
     environment.store.reportMissing = nil
     let handle = environment.handle(for: BenchNotesQuery(id: "1"))
-    handle.retain()
+    let retention = handle.retain()
     await handle.settle()
     guard case .ready(let data) = handle.phase, let character = data.character?.benchNotes else { return }
     let store = environment.store
@@ -930,7 +931,7 @@ func edgeBench() async throws {
         store.revertOptimistic(layer)
     }
     precondition(character.notes.nodes.count == 50)
-    handle.release()
+    withExtendedLifetime(retention) {}
 }
 
 func footprint() -> Int {
@@ -966,22 +967,24 @@ func scrollBench(data: Data) async throws {
         guard case .int(let page)? = request.variables["page"] else { return nil }
         return pages[page - 1]
     }
-    let environment = Environment(transport: transport, releaseBufferSize: 10)
+    let environment = Environment(transport: transport, store: Store(releaseBufferSize: 10))
     var baseline = 0
     var report: [String] = []
     var collectionCost: [Double] = []
     for page in 1...42 {
         let handle = environment.handle(for: BenchFixture(page: page))
-        handle.retain()
-        await handle.settle()
-        handle.release()
+        do {
+            let retention = handle.retain()
+            await handle.settle()
+            withExtendedLifetime(retention) {}
+        }
         let start = DispatchTime.now().uptimeNanoseconds
-        environment.collect()
+        environment.store.collect()
         collectionCost.append(Double(DispatchTime.now().uptimeNanoseconds - start) / 1_000_000)
         if page == 1 { baseline = footprint() }
         if [1, 5, 10, 11, 20, 30, 42].contains(page) {
             let delta = Double(footprint() - baseline) / 1_048_576
-            report.append("  page \(String(page).padding(toLength: 2, withPad: " ", startingAt: 0)): \(String(environment.store.count).padding(toLength: 6, withPad: " ", startingAt: 0)) records, \(String(environment.rootCount).padding(toLength: 2, withPad: " ", startingAt: 0)) roots, footprint \(delta >= 0 ? "+" : "")\(String(format: "%.1f", delta)) MB since page 1")
+            report.append("  page \(String(page).padding(toLength: 2, withPad: " ", startingAt: 0)): \(String(environment.store.count).padding(toLength: 6, withPad: " ", startingAt: 0)) records, \(String(environment.store.rootCount).padding(toLength: 2, withPad: " ", startingAt: 0)) roots, footprint \(delta >= 0 ? "+" : "")\(String(format: "%.1f", delta)) MB since page 1")
         }
     }
     report.forEach { print($0) }

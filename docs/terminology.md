@@ -274,15 +274,20 @@ of what the operation selects. Client fields it alone writes are
 [the decision](decisions/client-data-is-described-and-committed.md).
 
 **Root, retain, release buffer.** *Composition: store, operation value,
-environment.* Relay's words. An operation whose handle is alive retains its
-records; a released root waits in a buffer (default ten) before its records
-become collectable. A completed mutation's payload is a root apart from the
-buffer, one per operation value (its name and variables) and as many as the
-buffer holds, so mutations push no released query out. The environment
-holds the roots, the buffer and the collector today; the store holding them
-is *(planned)*, with one way to keep records alive: a *retention*, a
-selection with the record it starts from or a set of records, which
-`retain()` returns as a token whose end releases. See
+environment.* Relay's words. A root is an operation's selection and the
+record it starts from, kept by the store with how many hold it; a record
+lives while a root reaches it. `retain()` on a handle returns a
+*retention*, `Retention`, a token whose end releases: `@Query`'s storage
+holds one for the view's life, a model or a view controller holds one in a
+property and lets it go with itself. A released root waits in the store's
+release buffer (`Store(releaseBufferSize:)`, default ten), oldest out first,
+before its records become collectable; a root pushed out takes its handle
+and the fetch it had in flight with it. A completed mutation's payload is a
+root apart from the buffer, one per operation value (its name and
+variables) and as many as the buffer holds, so mutations push no released
+query out. The store collects when a root left or a commit dropped a link,
+once per turn of the main actor, and marks from the roots, the optimistic
+layers and the image's write queue, and from nothing else. See
 [the decision](decisions/the-store-owns-roots-and-ages.md).
 
 **Invalidation, TTL.** *Composition: store, operation value, environment.*

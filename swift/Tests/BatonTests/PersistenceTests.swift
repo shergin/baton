@@ -29,9 +29,9 @@ struct PersistenceTests {
     /// each with `finish`. `url` spells the image's path another way;
     /// `cacheExpiration` is the store's default.
     func launch(_ transport: any Transport = SilentTransport(), at url: URL? = nil, version: String = "", sizeLimit: Int = 64 << 20, cacheExpiration: Duration? = nil, releaseBufferSize: Int = 10) -> Environment {
-        let store = Store(persistence: Persistence(url: url ?? image.url, version: version, sizeLimit: sizeLimit), cacheExpiration: cacheExpiration)
+        let store = Store(persistence: Persistence(url: url ?? image.url, version: version, sizeLimit: sizeLimit), cacheExpiration: cacheExpiration, releaseBufferSize: releaseBufferSize)
         store.reportMissing = nil
-        return Environment(transport: transport, store: store, releaseBufferSize: releaseBufferSize)
+        return Environment(transport: transport, store: store)
     }
 
     /// Waits until the launch has written what it owes the image, and ends
@@ -130,7 +130,7 @@ struct PersistenceTests {
             .replacingOccurrences(of: "\"name\":\"Morty Smith\"", with: "\"name\":\"Morty C-137\"")
         let second = launch(RecordedTransport { _ in Data(renamed.utf8) })
         let handle = second.handle(for: Fixture(page: 1))
-        handle.retain()
+        let retention = handle.retain()
         guard case .ready(let data) = handle.phase else {
             Issue.record("expected the image's data at once, got \(handle.phase)")
             return
@@ -145,6 +145,7 @@ struct PersistenceTests {
         let third = try stored(Fixture(page: 1), in: launch())
         #expect(third.characters?.results?[1].name == "Morty C-137")
         #expect(third.characters?.results?[1].image == morty.image)
+        withExtendedLifetime(retention) {}
     }
 
     @Test("a mutation's answer is in the image and an optimistic response never is")
@@ -178,7 +179,7 @@ struct PersistenceTests {
     func fieldErrorsSurvive() async throws {
         let first = launch(RecordedTransport([TestProfileQuery.name: fixture("character-errors")]))
         let fetched = first.handle(for: TestProfileQuery(id: "1"))
-        fetched.retain()
+        let fetchedRetention = fetched.retain()
         await fetched.settle()
         await finish(first)
 
@@ -195,13 +196,14 @@ struct PersistenceTests {
             return
         }
         #expect(location.errors.map(\.path) == ["character.location.name"])
+        withExtendedLifetime(fetchedRetention) {}
     }
 
     @Test("a field error's extensions survive a launch: @catch reads the value the first launch received, and an error without them reads nil")
     func fieldErrorExtensionsSurvive() async throws {
         let first = launch(RecordedTransport([TestProfileQuery.name: Data(DeliveryTests.extensionsResponse.utf8)]))
         let fetched = first.handle(for: TestProfileQuery(id: "1"))
-        fetched.retain()
+        let fetchedRetention = fetched.retain()
         await fetched.settle()
         await finish(first)
 
@@ -217,13 +219,14 @@ struct PersistenceTests {
             return
         }
         #expect(location.errors.map(\.extensions) == [nil])
+        withExtendedLifetime(fetchedRetention) {}
     }
 
     @Test("a connection's merged pages and a deletion survive a launch, and the loading flag does not")
     func connectionsSurvive() async throws {
         let first = launch(notesTransport())
         let fetched = first.handle(for: TestNotesQuery(id: "1"))
-        fetched.retain()
+        let fetchedRetention = fetched.retain()
         await fetched.settle()
         guard case .ready(let loaded) = fetched.phase, let notes = loaded.character?.testNotes.notes else {
             Issue.record("the first page did not arrive")
@@ -247,6 +250,7 @@ struct PersistenceTests {
         #expect(!restored.isLoadingNext)
         #expect(restored.connectionID == notes.connectionID)
         #expect(second.store.existing("Note:n2")?.deleted == true, "the first page still names the note, and it reads as deleted")
+        withExtendedLifetime(fetchedRetention) {}
     }
 
     @Test("an entity the image holds satisfies a lookup: a detail renders from a list an earlier launch fetched")
@@ -280,7 +284,7 @@ struct PersistenceTests {
         let transport = RecordedTransport { _ in fixtureData }
         let first = launch(transport)
         let fetched = first.handle(for: TestList(page: 1), fetchPolicy: .storeOrNetwork)
-        fetched.retain()
+        let fetchedRetention = fetched.retain()
         await fetched.settle()
         #expect(transport.requestCount == 1)
         await finish(first)
@@ -299,18 +303,18 @@ struct PersistenceTests {
 
         let third = launch(transport, cacheExpiration: .zero)
         let expired = third.handle(for: TestList(page: 1), fetchPolicy: .storeOrNetwork)
-        expired.retain()
+        let expiredRetention = expired.retain()
         #expect(expired.isStale)
         await expired.settle()
         #expect(transport.requestCount == 2, "expired data is")
-        expired.release()
+        _ = consume expiredRetention
         await finish(third)
 
         // The refetch wrote its own age: a launch without the expiration
         // reads it fresh.
         let fourth = launch(transport)
         let refetched = fourth.handle(for: TestList(page: 1), fetchPolicy: .storeOrNetwork)
-        refetched.retain()
+        let refetchedRetention = refetched.retain()
         #expect(!refetched.isStale)
         await refetched.settle()
         #expect(transport.requestCount == 2)
@@ -318,7 +322,7 @@ struct PersistenceTests {
         await refetched.settle()
         #expect(transport.requestCount == 3, "a retained handle refetches when everything is invalidated")
         // An invalidation that nothing refetched reaches the next launch.
-        refetched.release()
+        _ = consume refetchedRetention
         fourth.invalidate()
         await finish(fourth)
 
@@ -327,6 +331,7 @@ struct PersistenceTests {
         #expect(invalidated.isStale, "the invalidation outlived the launch")
         await invalidated.settle()
         #expect(transport.requestCount == 4)
+        withExtendedLifetime(fetchedRetention) {}
     }
 
     /// Reads an operation from the image, which keeps its rows for the next
@@ -338,9 +343,9 @@ struct PersistenceTests {
             Issue.record("expected the image's data, got \(handle.phase)")
             return
         }
-        handle.retain()
-        handle.release()
-        environment.collect()
+        let retention = handle.retain()
+        _ = consume retention
+        environment.store.collect()
     }
 
     @Test("a record @deleteRecord names that only the image holds does not come back at the next launch")
@@ -407,9 +412,9 @@ struct PersistenceTests {
     func deferredDataInTheImage() async throws {
         let first = launch(DeliveryTests.OpenParts([fixture("character-deferred-1"), fixture("character-deferred-2")]))
         let fetched = first.handle(for: TestProfileQuery(id: "1"), fetchPolicy: .networkOnly)
-        fetched.retain()
+        let fetchedRetention = fetched.retain()
         await until { first.store.existing("Episode:2") != nil && fetched.fetchTime != nil }
-        fetched.release()
+        _ = consume fetchedRetention
         await finish(first)
         // The episodes' rows are gone, as after an image that dropped them.
         sql("DELETE FROM records WHERE key LIKE 'Episode:%'")
@@ -430,7 +435,7 @@ struct PersistenceTests {
     func unwrittenRecordsStay() async throws {
         let environment = launch()
         environment.store.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables)))
-        environment.collect()
+        environment.store.collect()
         #expect(environment.store.check(Fixture.plan.resolve(Fixture(page: 1).variables)) != .miss)
         await finish(environment)
     }
@@ -470,15 +475,15 @@ struct PersistenceTests {
             Issue.record("expected the image's data, got \(list.phase)")
             return
         }
-        list.retain()
+        var listRetention: Retention? = list.retain()
         let detail = header("5")
         let jerry = try Ingest.normalize(fixture("character-header-5"), plan: detail)
         whileTheWriterWaits(in: second) {
             // The list read Jerry as the answer has him: only the root field
             // moves, and the batch holds no snapshot of him.
             #expect(second.store.commit(jerry) == 1)
-            list.release()
-            second.collect()
+            _ = listRetention.take()
+            second.store.collect()
             _ = second.store.check(detail)
         }
         let data = try stored(TestHeaderQuery(id: "5"), in: second)
@@ -606,7 +611,7 @@ struct PersistenceTests {
         let transport = RecordedTransport { _ in fixtureData }
         let first = launch(transport)
         let fetched = first.handle(for: TestList(page: 1), fetchPolicy: .storeOrNetwork)
-        fetched.retain()
+        let fetchedRetention = fetched.retain()
         await fetched.settle()
         await finish(first)
 
@@ -625,6 +630,7 @@ struct PersistenceTests {
         #expect(dated.fetchTime != nil, "the second launch's read kept the fetch time")
         #expect(!dated.isStale)
         #expect(transport.requestCount == 1)
+        withExtendedLifetime(fetchedRetention) {}
     }
 
     @Test("data read from the image without a fetch time is stale")
@@ -669,9 +675,9 @@ struct PersistenceTests {
         let environment = launch(releaseBufferSize: 0)
         try await seed(environment)
         let handle = environment.handle(for: Fixture(page: 1), fetchPolicy: .storeOnly)
-        handle.retain()
-        handle.release()
-        #expect(environment.collect() == 898)
+        let retention = handle.retain()
+        _ = consume retention
+        #expect(environment.store.collect() == 898)
         #expect(environment.store.count == 3)
 
         let data = try stored(Fixture(page: 1), in: environment)
@@ -886,12 +892,12 @@ struct PersistenceTests {
         let leaving = Environment(transport: gate, store: Store(persistence: persistence))
         leaving.store.reportMissing = nil
         let screen = leaving.handle(for: Fixture(page: 1))
-        screen.retain()
+        let screenRetention = screen.retain()
         await until { gate.pending == 1 }
 
         // The sign-out the README describes: the views go away, the image is
         // removed, and the next environment gets the same image.
-        screen.release()
+        _ = consume screenRetention
         persistence.removeAll()
         let renamed = renamedFixture
         let transport = RecordedTransport { _ in renamed }
@@ -903,7 +909,7 @@ struct PersistenceTests {
         await persistence.flush()
 
         let handle = next.handle(for: Fixture(page: 1))
-        handle.retain()
+        let retention = handle.retain()
         await handle.settle()
         #expect(transport.requestCount == 1, "the image had nothing to answer with")
         guard case .ready(let data) = handle.phase else {
@@ -911,7 +917,7 @@ struct PersistenceTests {
             return
         }
         #expect(data.characters?.results?[1].name == "Morty C-137")
-        handle.release()
+        _ = consume retention
         await persistence.close()
 
         let later = try stored(Fixture(page: 1), in: launch())
@@ -927,13 +933,13 @@ struct PersistenceTests {
         let next = Environment(transport: RecordedTransport { _ in fixtureData }, store: Store(persistence: persistence))
         next.store.reportMissing = nil
         let handle = next.handle(for: Fixture(page: 1))
-        handle.retain()
+        let retention = handle.retain()
         await handle.settle()
         await persistence.flush()
 
         #expect(leaving.store.check(Fixture.plan.resolve(Fixture(page: 1).variables)) == .miss, "the next user's rows")
         leaving.invalidate()
-        handle.release()
+        _ = consume retention
         await persistence.close()
 
         let later = launch()

@@ -55,7 +55,7 @@ $1 names $2"
 for file in Record.swift Plan.swift Ingest.swift; do
   code "$file" | grep -qw Store && note "$file" Store
 done
-for file in Store.swift Hydration.swift Connections.swift; do
+for file in Store.swift Hydration.swift Connections.swift Roots.swift; do
   code "$file" | grep -qw Environment && note "$file" Environment
   code "$file" | grep -q Transport && note "$file" Transport
 done

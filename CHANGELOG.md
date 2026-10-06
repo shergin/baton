@@ -5,6 +5,18 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- The store owns what keeps records alive. A root, an operation's selection
+  and the record it starts from, is the store's, with how many hold it;
+  `retain()` returns a `Retention`, a token whose end releases, and
+  `release()` is gone: `@Query`'s storage holds the token for the view's
+  life, and a model or a view controller holds one in a property. The
+  release buffer is `Store(releaseBufferSize:)`, and `collect()`,
+  `rootCount` and `collections` are the store's; `Environment` takes no
+  buffer size. The collector marks from the roots, the optimistic layers and
+  the image's write queue, and from nothing else, and runs when a root left
+  or a commit dropped a link: a screen that stays up and refetches is
+  collected without another view going away, and a release that only moves
+  a root into the buffer runs no pass.
 - A query states how old its data may be in its document:
   `@cacheExpiration(seconds:)`, the first directive that is not Relay's,
   which the compiler emits as a constant of the operation and leaves out of

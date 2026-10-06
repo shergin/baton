@@ -43,6 +43,25 @@ struct StorageProbe: View {
     }
 }
 
+/// A screen's model, as an app writes one outside SwiftUI: it holds the
+/// handle and the retention that keeps its records, and lets both go with
+/// itself.
+@MainActor
+final class CharactersModel {
+    let handle: OperationHandle<TestList>
+    private let retention: Retention
+
+    init(environment: Baton.Environment) {
+        handle = environment.handle(for: TestList(page: 1))
+        retention = handle.retain()
+    }
+
+    var firstName: String? {
+        guard case .ready(let data) = handle.phase else { return nil }
+        return data.characters?.results?.first?.testRow.name
+    }
+}
+
 @MainActor
 @Suite("Lifetime", .timeLimit(.minutes(1)))
 struct LifetimeTests {
@@ -61,32 +80,32 @@ struct LifetimeTests {
     @Test("a screen left and re-entered within the buffer makes no request")
     func reentryWithinTheBuffer() async {
         let transport = transport()
-        let environment = Environment(transport: transport, releaseBufferSize: 2)
+        let environment = Environment(transport: transport, store: Store(releaseBufferSize: 2))
 
         let first = environment.handle(for: TestList(page: 1), fetchPolicy: .storeOrNetwork)
-        first.retain()
+        let firstRetention = first.retain()
         await first.settle()
         #expect(transport.requestCount == 1)
-        first.release()
+        _ = consume firstRetention
 
         // Back within the buffer: same handle, complete and fresh, no request.
         let again = environment.handle(for: TestList(page: 1), fetchPolicy: .storeOrNetwork)
         #expect(again === first)
         guard case .ready = again.phase else { Issue.record("expected ready"); return }
         #expect(transport.requestCount == 1)
-        again.retain()
-        again.release()
+        let againRetention = again.retain()
+        _ = consume againRetention
 
         // Two more released handles push it out of a buffer of two.
         for page in 2...3 {
             let other = environment.handle(for: TestList(page: page), fetchPolicy: .storeOrNetwork)
-            other.retain()
+            let otherRetention = other.retain()
             await other.settle()
-            other.release()
+            _ = consume otherRetention
         }
         // Eviction schedules a collection; once it has run, page 1 is gone from
         // the store and the next attach must fetch again.
-        environment.collect()
+        environment.store.collect()
         #expect(environment.store.existing("Character:1") == nil)
         let evicted = environment.handle(for: TestList(page: 1), fetchPolicy: .storeOrNetwork)
         #expect(evicted !== first)
@@ -96,23 +115,23 @@ struct LifetimeTests {
 
     @Test("collection removes records no root reaches and keeps shared ones")
     func collection() async {
-        let environment = Environment(transport: transport(), releaseBufferSize: 0)
+        let environment = Environment(transport: transport(), store: Store(releaseBufferSize: 0))
 
         let page1 = environment.handle(for: TestList(page: 1))
-        page1.retain()
+        let page1Retention = page1.retain()
         await page1.settle()
         // The list plan stores what it selects: 20 characters and their origins.
         let afterPage1 = environment.store.count
         #expect(afterPage1 > 20)
 
         let page2 = environment.handle(for: TestList(page: 2))
-        page2.retain()
+        let page2Retention = page2.retain()
         await page2.settle()
         #expect(environment.store.count > afterPage1)
 
         // Releasing page 2 with an empty buffer evicts it; collection follows.
-        page2.release()
-        let removed = environment.collect()
+        _ = consume page2Retention
+        let removed = environment.store.collect()
         #expect(removed > 0)
         #expect(environment.store.count == afterPage1)
         #expect(environment.store.existing("Character:1") != nil)
@@ -121,6 +140,7 @@ struct LifetimeTests {
         // The retained page still reads.
         guard case .ready(let data) = page1.phase else { Issue.record("page 1 should stay ready"); return }
         #expect(data.characters?.results?.first?.testRow.name == "Rick Sanchez")
+        withExtendedLifetime(page1Retention) {}
     }
 
     @Test("a collected lookup by id takes its entry out of the root, a retained one keeps it, and the collected field reads as missing data")
@@ -130,25 +150,25 @@ struct LifetimeTests {
             guard case .string(let id)? = request.variables["id"] else { return nil }
             return fixture("character-header-\(id)")
         }
-        let environment = Environment(transport: transport, releaseBufferSize: 0)
+        let environment = Environment(transport: transport, store: Store(releaseBufferSize: 0))
         let misses = Misses()
         environment.store.reportMissing = { record, slot in misses.reads.append(record.key + "." + slot.storageKey) }
         let root = environment.store.root
         let before = root.renderedKeyCount
 
         let kept = environment.handle(for: TestHeaderQuery(id: "5"))
-        kept.retain()
+        let keptRetention = kept.retain()
         await kept.settle()
         let dropped = environment.handle(for: TestHeaderQuery(id: "11"))
-        dropped.retain()
+        let droppedRetention = dropped.retain()
         await dropped.settle()
         #expect(root.renderedKeyCount == before + 2, "one entry per id looked up")
         guard case .ready(let stale) = dropped.phase else { Issue.record("expected ready, got \(dropped.phase)"); return }
         #expect(stale.character?.testHeader.name == "Albert Einstein")
 
         // Released with an empty buffer, the lookup is evicted at once.
-        dropped.release()
-        environment.collect()
+        _ = consume droppedRetention
+        environment.store.collect()
         #expect(environment.store.existing("Character:11") == nil)
         #expect(environment.store.existing("Character:5") != nil)
         #expect(root.renderedKeyCount == before + 1, "the collected lookup's entry left with its record; the retained one stayed")
@@ -167,8 +187,8 @@ struct LifetimeTests {
 
         guard case .ready(let data) = kept.phase else { Issue.record("the retained lookup stays ready, got \(kept.phase)"); return }
         #expect(data.character?.testHeader.name == "Jerry Smith")
-        kept.release()
-        environment.collect()
+        _ = consume keptRetention
+        environment.store.collect()
         #expect(root.renderedKeyCount == before, "the root is back to what it was before either lookup")
     }
 
@@ -207,7 +227,7 @@ struct LifetimeTests {
         let transport = transport()
         let environment = Environment(transport: transport)
         let handle = environment.handle(for: TestList(page: 1), fetchPolicy: .storeOrNetwork)
-        handle.retain()
+        let retention = handle.retain()
         await handle.settle()
         #expect(transport.requestCount == 1)
         #expect(!handle.isStale)
@@ -218,6 +238,7 @@ struct LifetimeTests {
         await handle.settle()
         #expect(transport.requestCount == 2)
         #expect(!handle.isStale)
+        withExtendedLifetime(retention) {}
     }
 
     @Test("an expired handle refetches on attach under storeOrNetwork")
@@ -225,7 +246,7 @@ struct LifetimeTests {
         let transport = transport()
         let environment = Environment(transport: transport, store: Store(cacheExpiration: .zero))
         let handle = environment.handle(for: TestList(page: 1), fetchPolicy: .storeOrNetwork)
-        handle.retain()
+        let retention = handle.retain()
         await handle.settle()
         #expect(transport.requestCount == 1)
         #expect(handle.isStale)
@@ -233,6 +254,7 @@ struct LifetimeTests {
         _ = environment.handle(for: TestList(page: 1), fetchPolicy: .storeOrNetwork)
         await handle.settle()
         #expect(transport.requestCount == 2)
+        withExtendedLifetime(retention) {}
     }
 
     /// A transport that serves a character's header for a lookup by id,
@@ -255,8 +277,8 @@ struct LifetimeTests {
         let environment = Environment(transport: characterTransport(), store: Store(cacheExpiration: .zero))
         let header = environment.handle(for: TestHeaderQuery(id: "5"))
         let fresh = environment.handle(for: TestFreshCharacter(id: "5"))
-        header.retain()
-        fresh.retain()
+        let headerRetention = header.retain()
+        let freshRetention = fresh.retain()
         await header.settle()
         await fresh.settle()
         guard case .ready = header.phase, case .ready = fresh.phase else {
@@ -269,6 +291,7 @@ struct LifetimeTests {
         environment.invalidate()
         #expect(header.isStale)
         #expect(fresh.isStale, "an invalidation ages data whatever its expiration")
+        withExtendedLifetime((headerRetention, freshRetention)) {}
     }
 
     @Test("with no default in the store, neither an operation without a directive nor one with it is stale after its fetch, and an invalidation ages both")
@@ -276,8 +299,8 @@ struct LifetimeTests {
         let environment = Environment(transport: characterTransport())
         let header = environment.handle(for: TestHeaderQuery(id: "5"))
         let fresh = environment.handle(for: TestFreshCharacter(id: "5"))
-        header.retain()
-        fresh.retain()
+        let headerRetention = header.retain()
+        let freshRetention = fresh.retain()
         await header.settle()
         await fresh.settle()
         guard case .ready = header.phase, case .ready = fresh.phase else {
@@ -290,6 +313,7 @@ struct LifetimeTests {
         environment.invalidate()
         #expect(header.isStale)
         #expect(fresh.isStale)
+        withExtendedLifetime((headerRetention, freshRetention)) {}
     }
 
     @Test("a refetch during a fetch supersedes it: one fetch stays in flight, the superseded response is not committed, and the handle follows the refetch")
@@ -302,7 +326,7 @@ struct LifetimeTests {
 
         // Ready from the store, with the attach's fetch in flight.
         let handle = environment.handle(for: TestList(page: 1), fetchPolicy: .storeAndNetwork)
-        handle.retain()
+        let retention = handle.retain()
         await until { transport.pending >= 1 }
         #expect(handle.isRefreshing)
 
@@ -333,6 +357,7 @@ struct LifetimeTests {
         #expect(!handle.isRefreshing)
         #expect(transport.pending == 0)
         #expect(morty.name == "Morty Prime", "the refetch's response did")
+        withExtendedLifetime(retention) {}
     }
 
     /// A transport whose streams deliver the parts a test hands them, each
@@ -363,7 +388,7 @@ struct LifetimeTests {
             let environment = Environment(transport: transport)
             environment.store.reportMissing = nil
             let handle = environment.handle(for: TestProfileQuery(id: "1"))
-            handle.retain()
+            let retention = handle.retain()
             await until { transport.count == 1 }
             if afterFirstPart {
                 transport.deliver(fixture("character-deferred-1"), to: 0)
@@ -381,7 +406,7 @@ struct LifetimeTests {
                 #expect(environment.store.existing("Character:1") == nil, "the superseded first part did not land")
             }
             refetch.cancel()
-            handle.release()
+            _ = consume retention
         }
     }
 
@@ -391,7 +416,7 @@ struct LifetimeTests {
         let transport = RecordedTransport { _ in attempts.next() == 3 ? nil : fixtureData }
         let environment = Environment(transport: transport)
         let handle = environment.handle(for: TestList(page: 1))
-        handle.retain()
+        let retention = handle.retain()
         await handle.settle()
         guard case .ready = handle.phase else { Issue.record("expected ready, got \(handle.phase)"); return }
 
@@ -405,6 +430,7 @@ struct LifetimeTests {
         #expect(counter.fired == 0)
         guard case .ready = handle.phase else { Issue.record("the data stays visible, got \(handle.phase)"); return }
         #expect(!handle.isRefreshing)
+        withExtendedLifetime(retention) {}
     }
 
     @Test("networkOnly does not send a handle someone shows back to loading, and does not read the store to decide")
@@ -412,7 +438,7 @@ struct LifetimeTests {
         let transport = transport()
         let environment = Environment(transport: transport)
         let shown = environment.handle(for: TestList(page: 1), fetchPolicy: .networkOnly)
-        shown.retain()
+        let shownRetention = shown.retain()
         await shown.settle()
         guard case .ready = shown.phase else { Issue.record("expected ready, got \(shown.phase)"); return }
         let again = environment.handle(for: TestList(page: 1), fetchPolicy: .networkOnly)
@@ -420,6 +446,7 @@ struct LifetimeTests {
         guard case .ready = again.phase else { Issue.record("a second view's attach left the first one's data, got \(again.phase)"); return }
         await again.settle()
         #expect(transport.requestCount == 2)
+        withExtendedLifetime(shownRetention) {}
     }
 
     @Test("collection keeps what a retained handle reads under a type condition")
@@ -427,12 +454,12 @@ struct LifetimeTests {
         let environment = Environment(transport: RecordedTransport([TestSearchOrigins.name: fixture("search-origins-1")]))
         environment.store.reportMissing = nil
         let handle = environment.handle(for: TestSearchOrigins(name: "a"))
-        handle.retain()
+        let retention = handle.retain()
         await handle.settle()
         #expect(environment.store.existing("Location:1") != nil)
-        environment.collect()
+        environment.store.collect()
         #expect(environment.store.existing("Location:1") != nil, "Rick's origin is read through `... on Character`")
-        handle.release()
+        _ = consume retention
     }
 
     @Test("a preload's fetch serves the first attach, in flight or done")
@@ -455,7 +482,7 @@ struct LifetimeTests {
         let transport = transport()
         let environment = Environment(transport: transport)
         let preloaded = environment.preload(TestList(page: 1), fetchPolicy: .storeOrNetwork)
-        #expect(environment.rootCount == 1)
+        #expect(environment.store.rootCount == 1)
         await preloaded.settle()
 
         let attached = environment.handle(for: TestList(page: 1), fetchPolicy: .storeOrNetwork)
@@ -470,7 +497,7 @@ struct LifetimeTests {
         let transport = RecordedTransport { _ in attempts.next() == 1 ? nil : fixtureData }
         let environment = Environment(transport: transport)
         let handle = environment.handle(for: TestList(page: 1))
-        handle.retain()
+        let retention = handle.retain()
         await handle.settle()
         guard case .failed = handle.phase else { Issue.record("expected the first fetch to fail, got \(handle.phase)"); return }
 
@@ -480,11 +507,12 @@ struct LifetimeTests {
         guard case .ready(let data) = handle.phase else { Issue.record("expected ready after the retry, got \(handle.phase)"); return }
         #expect(data.characters?.results?.first?.testRow.name == "Rick Sanchez")
         #expect(transport.requestCount == 2)
+        withExtendedLifetime(retention) {}
     }
 
     @Test("a view's storage retains its handle while the view lives and releases it when the view goes away")
     func storageLifetime() async throws {
-        let environment = Environment(transport: SilentTransport(), releaseBufferSize: 0)
+        let environment = Environment(transport: SilentTransport(), store: Store(releaseBufferSize: 0))
         environment.store.reportMissing = nil
         environment.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
         // The renderer installs the view's state, runs the storage's update
@@ -501,7 +529,7 @@ struct LifetimeTests {
         let handle = try #require(held)
         guard case .ready = handle.phase else { Issue.record("expected ready from the store, got \(handle.phase)"); return }
         await until { handle.retainCount == 0 }
-        #expect(environment.rootCount == 0, "released with an empty buffer, the handle is no root")
+        #expect(environment.store.rootCount == 0, "released with an empty buffer, the handle is no root")
     }
 
     @Test("a subscription value reaches the handle the storage that resolved it holds, a bare value reaches none, and the stream closes when the view goes away")
@@ -538,8 +566,8 @@ struct LifetimeTests {
         let ready = environment!.handle(for: TestList(page: 1), fetchPolicy: .storeOnly)
         let empty = environment!.handle(for: TestList(page: 2), fetchPolicy: .storeOnly)
         let subscription = environment!.subscriptionHandle(for: TestNoteAdded(characterId: "1", connections: []))
-        ready.retain()
-        empty.retain()
+        let readyRetention = ready.retain()
+        let emptyRetention = empty.retain()
         environment = nil
 
         try await ready.refetch()
@@ -554,11 +582,11 @@ struct LifetimeTests {
             return
         }
 
-        subscription.retain()
+        let subscriptionRetention = subscription.retain()
         #expect(!subscription.isActive, "no stream opens without an environment")
-        subscription.release()
-        ready.release()
-        empty.release()
+        _ = consume subscriptionRetention
+        _ = consume readyRetention
+        _ = consume emptyRetention
     }
 
     @Test("a request with nothing to send it fails on what is missing: the view's environment, the lens's, or the subscription transport")
@@ -578,16 +606,16 @@ struct LifetimeTests {
 
         let environment = Baton.Environment(transport: SilentTransport())
         let subscription = environment.subscriptionHandle(for: TestNoteAdded(characterId: "1", connections: []))
-        subscription.retain()
+        let subscriptionRetention = subscription.retain()
         await until { !subscription.isActive }
         #expect(subscription.error as? EnvironmentError == .noSubscriptionTransport)
-        subscription.release()
+        _ = consume subscriptionRetention
     }
 
     @Test("a view whose environment is replaced resolves its operation again in the new one")
     func storageFollowsTheEnvironment() async throws {
         func environment() throws -> Baton.Environment {
-            let environment = Baton.Environment(transport: SilentTransport(), releaseBufferSize: 0)
+            let environment = Baton.Environment(transport: SilentTransport(), store: Store(releaseBufferSize: 0))
             environment.store.reportMissing = nil
             environment.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
             return environment
@@ -610,12 +638,136 @@ struct LifetimeTests {
         var environment: Baton.Environment? = Baton.Environment(transport: SilentTransport())
         let handle = environment!.handle(for: TestList(page: 1), fetchPolicy: .storeOnly)
         let subscription = environment!.subscriptionHandle(for: TestNoteAdded(characterId: "1", connections: []))
-        handle.retain()
-        subscription.retain()
+        let retention = handle.retain()
+        let subscriptionRetention = subscription.retain()
         environment = nil
-        handle.release()
-        subscription.release()
+        _ = consume retention
+        _ = consume subscriptionRetention
         #expect(handle.retainCount == 0)
         #expect(!subscription.isActive)
+    }
+
+    /// Lets the main actor turn often enough for a pass scheduled before to
+    /// have run.
+    func turns() async {
+        for _ in 0..<10 { await Task.yield() }
+    }
+
+    @Test("a screen that stays up and refetches has what its new response no longer reaches collected, with no release")
+    func aRefetchThatDropsLinksIsCollected() async throws {
+        let attempts = Attempts()
+        let transport = RecordedTransport { _ in attempts.next() == 1 ? fixtureData : shiftedFixture(by: 100_000) }
+        let environment = Environment(transport: transport)
+        let store = environment.store
+        let handle = environment.handle(for: TestList(page: 1))
+        let retention = handle.retain()
+        await handle.settle()
+        await turns()
+        #expect(store.existing("Character:1") != nil)
+        let collections = store.collections
+
+        // The same page answers with other characters: the list's links move
+        // off the first twenty, and nothing else reaches them.
+        try await handle.refetch()
+        #expect(store.existing("Character:100001") != nil)
+        await until { store.collections > collections }
+        #expect(store.collections == collections + 1, "one pass for the commit")
+        #expect(store.existing("Character:1") == nil, "the records the list dropped are collected")
+        #expect(store.existing("Character:100001") != nil, "the records it reaches now stay")
+        #expect(handle.retainCount == 1, "nothing was released")
+        guard case .ready(let data) = handle.phase else { Issue.record("expected ready, got \(handle.phase)"); return }
+        #expect(data.characters?.results?.count == 20)
+        withExtendedLifetime(retention) {}
+    }
+
+    @Test("a release that only moves a root into the buffer runs no pass, and the records stay")
+    func aReleaseIntoTheBufferRunsNoPass() async {
+        let environment = Environment(transport: transport(), store: Store(releaseBufferSize: 10))
+        let store = environment.store
+        let handle = environment.handle(for: TestList(page: 1))
+        let retention = handle.retain()
+        await handle.settle()
+        await turns()
+        let collections = store.collections
+
+        _ = consume retention
+        await turns()
+        #expect(handle.retainCount == 0)
+        #expect(store.rootCount == 1, "the root waits in the buffer")
+        #expect(store.collections == collections, "no root left, so no pass ran")
+        #expect(store.existing("Character:1") != nil)
+    }
+
+    @Test("a release that pushes a root out of the buffer runs a pass that sweeps its records")
+    func anEvictionRunsAPass() async {
+        let environment = Environment(transport: transport(), store: Store(releaseBufferSize: 0))
+        let store = environment.store
+        let handle = environment.handle(for: TestList(page: 1))
+        let retention = handle.retain()
+        await handle.settle()
+        await turns()
+        #expect(store.existing("Character:1") != nil)
+        let collections = store.collections
+
+        _ = consume retention
+        await until { store.collections > collections }
+        #expect(store.rootCount == 0)
+        #expect(store.existing("Character:1") == nil, "the evicted root's records are swept")
+    }
+
+    @Test("a model that holds a retention releases its operation when it goes away")
+    func aModelsRetentionEndsWithIt() async throws {
+        let environment = Environment(transport: transport(), store: Store(releaseBufferSize: 0))
+        let store = environment.store
+        var model: CharactersModel? = CharactersModel(environment: environment)
+        let handle = try #require(model?.handle)
+        await handle.settle()
+        await turns()
+        #expect(model?.firstName == "Rick Sanchez")
+        #expect(handle.retainCount == 1)
+        let collections = store.collections
+
+        model = nil
+        await until { store.collections > collections }
+        #expect(handle.retainCount == 0)
+        #expect(store.existing("Character:1") == nil, "with an empty buffer, the model's records are swept")
+    }
+
+    @Test("a retention released at the end of its scope releases its operation")
+    func aRetentionEndsWithItsScope() async {
+        let environment = Environment(transport: transport(), store: Store(releaseBufferSize: 0))
+        let store = environment.store
+        let handle = environment.handle(for: TestList(page: 1))
+        let collections: Int
+        do {
+            let retention = handle.retain()
+            await handle.settle()
+            await turns()
+            #expect(handle.retainCount == 1)
+            #expect(store.existing("Character:1") != nil)
+            collections = store.collections
+            withExtendedLifetime(retention) {}
+        }
+        await until { store.collections > collections }
+        #expect(handle.retainCount == 0)
+        #expect(store.existing("Character:1") == nil, "with an empty buffer, the records are swept")
+    }
+
+    @Test("a subscription retained again after its release closes its stream at the next release")
+    func aSubscriptionRetainedAgainClosesAtItsNextRelease() {
+        let events = DeliveryTests.Events()
+        let environment = Baton.Environment(transport: SilentTransport(), subscriptions: events)
+        environment.store.reportMissing = nil
+        let live = environment.subscriptionHandle(for: TestNoteAdded(characterId: "lifetime-\(#line)", connections: []))
+        for _ in 0..<2 {
+            do {
+                let retention = live.retain()
+                #expect(live.isActive)
+                #expect(live.retainCount == 1)
+                withExtendedLifetime(retention) {}
+            }
+            #expect(!live.isActive, "the release closed the stream")
+            #expect(live.retainCount == 0)
+        }
     }
 }

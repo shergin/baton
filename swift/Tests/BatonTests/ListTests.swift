@@ -7,14 +7,16 @@ import Testing
 @MainActor
 @Suite("Lists", .timeLimit(.minutes(1)))
 struct ListTests {
-    func seededEnvironment(_ transport: any Transport = notesTransport()) async throws -> (Environment, TestNotes_character) {
+    /// The notes query, fetched and held as a view on screen holds it: the
+    /// retention keeps its root until the test lets it go.
+    func seededEnvironment(_ transport: any Transport = notesTransport()) async throws -> (Environment, TestNotes_character, Retention) {
         let environment = Environment(transport: transport)
         environment.store.reportMissing = nil
         let handle = environment.handle(for: TestNotesQuery(id: "1"))
-        handle.retain()
+        let retention = handle.retain()
         await handle.settle()
         guard case .ready(let data) = handle.phase else { throw TransportError(statusCode: 0, body: "the first page did not arrive") }
-        return (environment, try #require(data.character?.testNotes))
+        return (environment, try #require(data.character?.testNotes), retention)
     }
 
     func counter(_ body: @escaping @MainActor () -> Void) -> (fired: () -> Int, track: () -> Void) {
@@ -28,7 +30,7 @@ struct ListTests {
 
     @Test("two pages merge into one connection, in order, with the page info of the last one")
     func pagesMerge() async throws {
-        let (environment, character) = try await seededEnvironment()
+        let (environment, character, retention) = try await seededEnvironment()
         #expect(character.notes.nodes.map(\.text) == ["Wubba lubba dub dub", "Portal gun needs charging"])
         #expect(character.notes.totalCount == 5)
         #expect(character.notes.hasNext)
@@ -47,11 +49,12 @@ struct ListTests {
         let stale = Variables(["id": .string("1"), "count": .int(2), "cursor": .string("c1")])
         environment.store.commit(try Ingest.normalize(notesPage(3), plan: TestNotesPaginationQuery.plan.resolve(stale)))
         #expect(character.notes.nodes.count == 4)
+        withExtendedLifetime(retention) {}
     }
 
     @Test("refetching the first page replaces the merged list, and an equal page notifies nothing")
     func refetchReplaces() async throws {
-        let (environment, character) = try await seededEnvironment()
+        let (environment, character, retention) = try await seededEnvironment()
         let (fired, track) = counter { _ = character.notes.nodes }
         let variables = Variables(["id": .string("1"), "count": .int(2), "cursor": .string("c2")])
         track()
@@ -68,12 +71,13 @@ struct ListTests {
         track()
         environment.store.commit(try Ingest.normalize(notesPage(1), plan: TestNotesQuery.plan.resolve(TestNotesQuery(id: "1").variables)))
         #expect(fired() == 2, "the same first page again: same edges, no notification")
+        withExtendedLifetime(retention) {}
     }
 
     @Test("loadNext fetches after the end cursor, appends, and is a no-op at the end")
     func loadNext() async throws {
         let transport = notesTransport()
-        let (environment, character) = try await seededEnvironment(transport)
+        let (environment, character, retention) = try await seededEnvironment(transport)
         #expect(transport.requestCount == 1)
 
         try await character.notes.loadNext()
@@ -96,15 +100,16 @@ struct ListTests {
         #expect(transport.requestCount == 3, "nothing to load")
 
         // The pagination fetches created no roots; the connection keeps its pages.
-        #expect(environment.rootCount == 1)
-        environment.collect()
+        #expect(environment.store.rootCount == 1)
+        environment.store.collect()
         #expect(character.notes.nodes.count == 5)
         #expect(environment.store.existing("Note:n5") != nil)
+        withExtendedLifetime(retention) {}
     }
 
     @Test("isLoadingNext is a client field on the connection record while the page is in flight")
     func loadingFlag() async throws {
-        let (environment, character) = try await seededEnvironment()
+        let (environment, character, retention) = try await seededEnvironment()
         let gate = GatedTransport()
         // A second environment over the same store takes the lens's fetches.
         let paging = Environment(transport: gate, store: environment.store)
@@ -116,12 +121,13 @@ struct ListTests {
         try await loading.value
         #expect(!character.notes.isLoadingNext)
         #expect(character.notes.nodes.count == 4)
-        #expect(paging.rootCount == 0, "a page fetch is no root")
+        #expect(paging.store.rootCount == 1, "a page fetch is no root: the store's one root is the notes query's")
+        withExtendedLifetime(retention) {}
     }
 
     @Test("the loading flag notifies its readers when a page load sets it and again when the load clears it")
     func loadingFlagNotifies() async throws {
-        let (environment, character) = try await seededEnvironment()
+        let (environment, character, retention) = try await seededEnvironment()
         let gate = GatedTransport()
         let paging = Environment(transport: gate, store: environment.store)
         let (fired, track) = counter { _ = character.notes.isLoadingNext }
@@ -137,11 +143,12 @@ struct ListTests {
         #expect(fired() == 2, "the flag was cleared")
         #expect(!character.notes.isLoadingNext)
         withExtendedLifetime(paging) {}
+        withExtendedLifetime(retention) {}
     }
 
     @Test("@appendEdge and @prependEdge insert the payload's edge into the connection named by the variable")
     func edgeDirectives() async throws {
-        let (environment, character) = try await seededEnvironment()
+        let (environment, character, retention) = try await seededEnvironment()
         let connections = [character.notes.connectionID]
         let (fired, track) = counter { _ = character.notes.nodes }
 
@@ -160,12 +167,13 @@ struct ListTests {
         // The same node again is not inserted twice.
         environment.store.commit(try Ingest.normalize(payload, plan: TestAddNote.plan.resolve(appended.variables), rootKey: Store.mutationRootKey))
         #expect(character.notes.nodes.count == 4)
+        withExtendedLifetime(retention) {}
     }
 
     @Test("an optimistic @appendEdge shows at once, survives a page under it, and is replaced by the server's edge")
     func optimisticEdge() async throws {
         let gate = GatedTransport()
-        let (environment, character) = try await seededEnvironment()
+        let (environment, character, retention) = try await seededEnvironment()
         let mutating = Environment(transport: gate, store: environment.store)
         let connections = [character.notes.connectionID]
         let optimistic = TestAddNote.OptimisticResponse(addNote: .init(noteEdge: .init(node: .init(id: "client:new", text: "Pending"))))
@@ -192,11 +200,12 @@ struct ListTests {
         gate.fail(TransportError(statusCode: 500, body: "no"))
         await #expect(throws: TransportError.self) { try await failing.value }
         #expect(character.notes.nodes.count == 5)
+        withExtendedLifetime(retention) {}
     }
 
     @Test("@deleteEdge removes the node's edge and @deleteRecord makes the record read as null")
     func deleteDirectives() async throws {
-        let (environment, character) = try await seededEnvironment()
+        let (environment, character, retention) = try await seededEnvironment()
         let second = try #require(character.notes.nodes.last)
         #expect(second.text == "Portal gun needs charging")
         let (fired, track) = counter { _ = second.text }
@@ -213,6 +222,7 @@ struct ListTests {
 
         // The edges list lost the edge, not only the node behind it.
         #expect(character.notes.edges?.count == 1)
+        withExtendedLifetime(retention) {}
     }
 
     @Test("loadPrevious fetches before the start cursor, prepends, and is a no-op at the start")
@@ -228,7 +238,7 @@ struct ListTests {
         let environment = Environment(transport: transport)
         environment.store.reportMissing = nil
         let handle = environment.handle(for: TestRecentNotesQuery(id: "1"))
-        handle.retain()
+        let retention = handle.retain()
         await handle.settle()
         guard case .ready(let data) = handle.phase else { throw TransportError(statusCode: 0, body: "the last page did not arrive") }
         let notes = try #require(data.character?.testRecentNotes.notes)
@@ -250,11 +260,12 @@ struct ListTests {
 
         try await notes.loadPrevious()
         #expect(transport.requestCount == 3, "nothing before the start")
+        withExtendedLifetime(retention) {}
     }
 
     @Test("@appendNode and @prependNode wrap the payload's node in an edge of the connection named by the variable")
     func nodeDirectives() async throws {
-        let (environment, character) = try await seededEnvironment()
+        let (environment, character, retention) = try await seededEnvironment()
         let connections = [character.notes.connectionID]
         let (fired, track) = counter { _ = character.notes.nodes }
 
@@ -272,26 +283,29 @@ struct ListTests {
         // The same node again is not wrapped twice.
         environment.store.commit(try Ingest.normalize(fixture("add-note-node-n7"), plan: TestAddNoteNode.plan.resolve(appended.variables), rootKey: Store.mutationRootKey))
         #expect(character.notes.nodes.count == 4)
+        withExtendedLifetime(retention) {}
     }
 
     @Test("an edge directive that names a record no connection field made leaves the record alone")
     func edgeDirectiveOnARecordThatIsNotAConnection() async throws {
-        let (environment, character) = try await seededEnvironment()
+        let (environment, character, retention) = try await seededEnvironment()
         let entity = try #require(environment.store.existing("Character:1"))
         let appended = TestAddNote(characterId: "1", text: "Appended", connections: ["Character:1"])
         environment.store.commit(try Ingest.normalize(fixture("add-note-n9"), plan: TestAddNote.plan.resolve(appended.variables), rootKey: Store.mutationRootKey))
         #expect(environment.store.existing("Character:1:edges:0") == nil, "no edge was made for it")
         #expect(entity.read(Registry.slot(entity.type, "edges")) == .missing)
         #expect(character.notes.nodes.map(\.text) == ["Wubba lubba dub dub", "Portal gun needs charging"])
+        withExtendedLifetime(retention) {}
     }
 
     @Test("@appendNode whose edge type is not the connection's inserts no edge")
     func nodeDirectiveOfAnotherEdgeType() async throws {
-        let (environment, character) = try await seededEnvironment()
+        let (environment, character, retention) = try await seededEnvironment()
         let appended = TestAddNoteNodeOfAnotherType(characterId: "1", text: "Node appended", connections: [character.notes.connectionID])
         environment.store.commit(try Ingest.normalize(fixture("add-note-node-n7"), plan: TestAddNoteNodeOfAnotherType.plan.resolve(appended.variables), rootKey: Store.mutationRootKey))
         #expect(character.notes.edges?.count == 2)
         #expect(character.notes.nodes.map(\.text) == ["Wubba lubba dub dub", "Portal gun needs charging"])
+        withExtendedLifetime(retention) {}
     }
 
     @Test("refetch fetches the fragment again with its variables and the owner's id, and the records update in place")
@@ -299,7 +313,7 @@ struct ListTests {
         let transport = RecordedTransport { request in
             request.operationName == TestNotesQuery.name ? notesPage(1) : fixture("notes-refetch")
         }
-        let (environment, character) = try await seededEnvironment(transport)
+        let (environment, character, retention) = try await seededEnvironment(transport)
         let first = try #require(character.notes.nodes.first)
         #expect(first.text == "Wubba lubba dub dub")
         let (fired, track) = counter { _ = first.text }
@@ -313,7 +327,8 @@ struct ListTests {
         #expect(first.text == "Wubba lubba dub dub!", "the lens over the same record reads the new value")
         #expect(fired() == 1)
         #expect(character.notes.nodes.count == 2)
-        #expect(environment.rootCount == 1, "the refetch is no root of its own")
+        #expect(environment.store.rootCount == 1, "the refetch is no root of its own")
+        withExtendedLifetime(retention) {}
     }
 
     @Test("fields named like a refetchable fragment and its refetch query, in its lens and in its connection's, leave refetch and loadNext fetching through the query")
@@ -325,7 +340,7 @@ struct ListTests {
         let environment = Environment(transport: transport)
         environment.store.reportMissing = nil
         let handle = environment.handle(for: TestHiddenNotesQuery(id: "1"))
-        handle.retain()
+        let retention = handle.retain()
         await handle.settle()
         guard case .ready(let data) = handle.phase else { throw TransportError(statusCode: 0, body: "the first page did not arrive") }
         let character = try #require(data.character?.testHiddenNotes)
@@ -347,6 +362,7 @@ struct ListTests {
         #expect(request.variables["count"] == .int(2))
         #expect(character.notes.nodes.first?.text == "Wubba lubba dub dub!")
         #expect(transport.requestCount == 3)
+        withExtendedLifetime(retention) {}
     }
 
     @Test("fields named like a refetchable fragment and its refetch query in its connection's lens leave loadPrevious fetching through the query")
@@ -357,7 +373,7 @@ struct ListTests {
         let environment = Environment(transport: transport)
         environment.store.reportMissing = nil
         let handle = environment.handle(for: TestHiddenRecentNotesQuery(id: "1"))
-        handle.retain()
+        let retention = handle.retain()
         await handle.settle()
         guard case .ready(let data) = handle.phase else { throw TransportError(statusCode: 0, body: "the last page did not arrive") }
         let notes = try #require(data.character?.testHiddenRecentNotes.notes)
@@ -368,6 +384,7 @@ struct ListTests {
         #expect(transport.requests.last?.operationName == "TestHiddenRecentNotesPaginationQuery")
         #expect(transport.requests.last?.variables["cursor"] == .string("c4"))
         #expect(notes.nodes.map(\.id) == ["n2", "n3", "n4", "n5"])
+        withExtendedLifetime(retention) {}
     }
 
     @Test("a spread with @arguments binds the fragment's variables once, so each read of it is the same lens; a spread without them takes the defaults")

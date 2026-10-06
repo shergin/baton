@@ -57,6 +57,22 @@ public final class Store {
     /// operation whose document states no `@cacheExpiration` of its own;
     /// `nil` is forever. Given when the store is made, where Relay gives it.
     public let cacheExpiration: Duration?
+    /// How many released roots keep their records alive, oldest out first,
+    /// and how many completed mutations keep their payloads, apart from them.
+    public let releaseBufferSize: Int
+    /// The roots, by the operation's key: retained, waiting in the release
+    /// buffer, or a completed mutation's.
+    var roots: [String: Root] = [:]
+    /// Released roots, oldest first.
+    var releaseBuffer: [String] = []
+    /// Completed mutations' roots, oldest first, apart from the buffer.
+    var completedMutations: [String] = []
+    var collectionScheduled = false
+    /// How many collections have run; for tests and benchmarks.
+    package internal(set) var collections = 0
+    /// Whether the batch in progress moved or dropped a link, which may have
+    /// orphaned what the link reached: a pass follows the batch.
+    private var linkDropped = false
     /// How many times the image had been removed when this store was made.
     /// The store hands it over with everything it asks of the image, so a
     /// store from before a sign-out's `removeAll()` reads, writes and dates
@@ -74,9 +90,10 @@ public final class Store {
     /// bubbling `@required` read.
     private var nullsOrErrorsChanged = false
 
-    public init(persistence: Persistence? = nil, cacheExpiration: Duration? = nil) {
+    public init(persistence: Persistence? = nil, cacheExpiration: Duration? = nil, releaseBufferSize: Int = 10) {
         self.persistence = persistence
         self.cacheExpiration = cacheExpiration
+        self.releaseBufferSize = releaseBufferSize
         imageRemovals = persistence?.removals ?? 0
         root = Record(type: Registry.type("Query"), key: Store.rootKey)
         mutationRoot = Record(type: Registry.type("Mutation"), key: Store.mutationRootKey)
@@ -285,6 +302,10 @@ public final class Store {
     /// them, since a link to a deleted record reads as null and a list skips
     /// it. Returns how many slots changed.
     private func finish(_ batch: Batch) -> Int {
+        if linkDropped {
+            linkDropped = false
+            scheduleCollection()
+        }
         let changed = batch.finish()
         let flipped = batch.flipped
         if !flipped.isEmpty {
@@ -537,13 +558,12 @@ public final class Store {
     @inline(__always)
     private func noteNulls(_ previous: Value, _ value: Value) {
         switch (previous, value) {
+        case (.ref, _), (.refs, _):
+            // A link that moved, was nulled or was cleared may have left what
+            // it reached unreachable.
+            linkDropped = true
+            nullsOrErrorsChanged = true
         case (.null, _), (_, .null):
-            nullsOrErrorsChanged = true
-        // A link moved onto another record brings that record's errors and
-        // nulls into every selection that reads through it.
-        case (.ref(let old), .ref(let new)) where old !== new:
-            nullsOrErrorsChanged = true
-        case (.refs, .refs):
             nullsOrErrorsChanged = true
         default:
             return

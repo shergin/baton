@@ -1,9 +1,9 @@
 import Foundation
 
 /// Store plus transport plus configuration, in Relay's sense. One per backend,
-/// injected through SwiftUI's environment as `\.baton`. It also owns the
-/// operations' lifetime: retained handles and the release buffer are the roots
-/// that keep records alive.
+/// injected through SwiftUI's environment as `\.baton`. It holds the live
+/// side of the operations: their handles, with the fetches in flight; what
+/// keeps records alive is the store's.
 @MainActor
 public final class Environment {
     public let store: Store
@@ -11,26 +11,18 @@ public final class Environment {
     /// The transport subscriptions run over, when the backend has one.
     public let subscriptions: (any SubscriptionTransport)?
 
-    /// How many released queries keep their data alive, oldest out first;
-    /// as many completed mutations keep theirs, apart from them.
-    public let releaseBufferSize: Int
     /// Called when a `@required(action: LOG)` field is null: the record and
     /// Relay's path. Debug builds print by default.
     public var requiredFieldMissing: ((Record, String) -> Void)?
 
-    private var handles: [AnyHashable: any AnyOperationHandle] = [:]
-    private var releaseBuffer: [AnyHashable] = []
-    /// The mutations that completed, oldest first and one per operation value.
-    private var completedMutations: [CompletedMutation] = []
-    private var collectionScheduled = false
-    /// How many collections have run; for tests and benchmarks.
-    package private(set) var collections = 0
+    /// The handles, by the operation's key, for as long as their roots are
+    /// the store's: equal operation values share one.
+    private var handles: [String: any AnyOperationHandle] = [:]
 
-    public init(transport: any Transport, subscriptions: (any SubscriptionTransport)? = nil, store: Store = Store(), releaseBufferSize: Int = 10) {
+    public init(transport: any Transport, subscriptions: (any SubscriptionTransport)? = nil, store: Store = Store()) {
         self.store = store
         self.transport = transport
         self.subscriptions = subscriptions
-        self.releaseBufferSize = releaseBufferSize
         store.environment = self
         #if DEBUG
         requiredFieldMissing = { record, path in
@@ -44,19 +36,19 @@ public final class Environment {
     /// `cacheExpiration` is the store's default for operations that state
     /// none of their own.
     public convenience init(url: URL, headers: [String: String] = [:], subscriptions: (any SubscriptionTransport)? = nil, persistence: Persistence? = nil, cacheExpiration: Duration? = nil, releaseBufferSize: Int = 10) {
-        self.init(transport: URLSessionTransport(url: url, headers: headers), subscriptions: subscriptions, store: Store(persistence: persistence, cacheExpiration: cacheExpiration), releaseBufferSize: releaseBufferSize)
+        self.init(transport: URLSessionTransport(url: url, headers: headers), subscriptions: subscriptions, store: Store(persistence: persistence, cacheExpiration: cacheExpiration, releaseBufferSize: releaseBufferSize))
     }
 
     /// The handle for an operation value, shared by every view that holds an
     /// equal value. The policy is applied on every attach.
     public func handle<Op: Query>(for operation: Op, fetchPolicy: FetchPolicy = .default) -> OperationHandle<Op> {
-        let key = AnyHashable(operation)
+        let key = Op.name + operation.variables.json
         let handle: OperationHandle<Op>
         if let existing = handles[key] as? OperationHandle<Op> {
             handle = existing
         } else {
-            // Registered as a root until its first release; the caller retains it.
-            handle = OperationHandle(operation: operation, environment: self)
+            // A root until its first release; the caller retains it.
+            handle = OperationHandle(operation: operation, key: key, environment: self)
             handles[key] = handle
         }
         handle.apply(fetchPolicy)
@@ -66,14 +58,14 @@ public final class Environment {
     /// The handle for a subscription value, shared by equal values; a root
     /// while retained.
     public func subscriptionHandle<Op: Subscription>(for operation: Op) -> SubscriptionHandle<Op> {
-        let key = AnyHashable(operation)
+        let key = Op.name + operation.variables.json
         if let existing = handles[key] as? SubscriptionHandle<Op> { return existing }
-        let handle = SubscriptionHandle(operation: operation, environment: self)
+        let handle = SubscriptionHandle(operation: operation, key: key, environment: self)
         handles[key] = handle
         return handle
     }
 
-    /// Starts fetching before any view asks; the handle waits in the release
+    /// Starts fetching before any view asks; the root waits in the release
     /// buffer for a view to attach, and that attach makes no request of its
     /// own.
     @discardableResult
@@ -81,7 +73,7 @@ public final class Environment {
         let handle = handle(for: operation, fetchPolicy: fetchPolicy)
         // Only a fetch the preload made can serve the first attach.
         handle.preloaded = handle.isFetching
-        if handle.retainCount == 0 { park(handle.key) }
+        if handle.retainCount == 0 { evict(store.park(handle.key)) }
         return handle
     }
 
@@ -293,7 +285,7 @@ public final class Environment {
             if let layer { store.revertOptimistic(layer) }
             throw error
         }
-        keep(CompletedMutation(key: AnyHashable(operation), store: store, resolved: resolved))
+        store.keepCompleted(store.root(Op.name + operation.variables.json, resolved: resolved, record: store.mutationRoot))
         if Op.throwsOnFieldError, !uncaught.isEmpty { throw FieldErrors(uncaught) }
         return Op.Data(anchor: Anchor(record: store.mutationRoot, variables: operation.variables, store: store))
     }
@@ -310,86 +302,25 @@ public final class Environment {
 
     // MARK: Lifetime
 
+    /// A handle retained: it is among the environment's again if its root
+    /// had left.
     func didRetain(_ handle: any AnyOperationHandle) {
-        releaseBuffer.removeAll { $0 == handle.key }
-        // A handle retained after eviction becomes a root again.
         if handles[handle.key] == nil { handles[handle.key] = handle }
     }
 
-    func didRelease(_ handle: any AnyOperationHandle) {
-        park(handle.key)
-    }
-
-    /// A subscription released: its stream closed, it leaves the roots at once.
+    /// A subscription released to no holder: its stream closed and its root
+    /// left the store at once.
     func didEnd(_ handle: any AnyOperationHandle) {
         handles.removeValue(forKey: handle.key)
-        scheduleCollection()
     }
 
-    private func park(_ key: AnyHashable) {
-        releaseBuffer.removeAll { $0 == key }
-        releaseBuffer.append(key)
-        while releaseBuffer.count > releaseBufferSize {
-            let evicted = releaseBuffer.removeFirst()
-            handles[evicted]?.cancel()
-            handles.removeValue(forKey: evicted)
+    /// Drops the handles of roots the store pushed out, with the fetches they
+    /// had in flight.
+    func evict(_ keys: [String]) {
+        for key in keys {
+            handles[key]?.cancel()
+            handles.removeValue(forKey: key)
         }
-        scheduleCollection()
-    }
-
-    /// Keeps a completed mutation's payload alive as a root, apart from the
-    /// release buffer, so mutations push no released query out of it. A
-    /// mutation's root fields are keyed by response key, so an earlier
-    /// completion of an equal operation value, whose selection is the same,
-    /// keeps what the latest one does, and the latest takes its place. One
-    /// with other variables keeps its own: its selection may reach records
-    /// the latest one's does not, through `@include`, `@skip` or an argument
-    /// below the root field.
-    private func keep(_ completed: CompletedMutation) {
-        completedMutations.removeAll { $0.key == completed.key }
-        completedMutations.append(completed)
-        guard completedMutations.count > releaseBufferSize else { return }
-        completedMutations.removeFirst(completedMutations.count - releaseBufferSize)
-        scheduleCollection()
-    }
-
-    /// Handles that are roots for collection: retained or buffered.
-    package var rootCount: Int { handles.count }
-
-    private func scheduleCollection() {
-        guard !collectionScheduled else { return }
-        collectionScheduled = true
-        Task { @MainActor in
-            self.collectionScheduled = false
-            self.collect()
-        }
-    }
-
-    /// Removes every record no root reaches. Returns how many were removed.
-    /// For the tests and the benchmarks, until the store owns its collector.
-    @discardableResult
-    package func collect() -> Int {
-        var reachable = Set<ObjectIdentifier>()
-        reachable.reserveCapacity(store.count)
-        for handle in handles.values {
-            handle.mark(into: &reachable)
-        }
-        for completed in completedMutations {
-            completed.mark(into: &reachable)
-        }
-        // Records whose rows wait to be written stay, so the image, which a
-        // read does not write first, is never older than memory.
-        for record in store.persistence?.unwrittenRecords(removals: store.imageRemovals) ?? [] {
-            reachable.insert(ObjectIdentifier(record))
-        }
-        // Records an optimistic layer wrote stay until the layer is resolved.
-        for layer in store.optimisticLayers {
-            for key in layer.changes.recordKeys {
-                if let record = store.existing(key) { reachable.insert(ObjectIdentifier(record)) }
-            }
-        }
-        collections += 1
-        return store.sweep(keeping: reachable)
     }
 
     /// A placeholder for views outside any `.environment(\.baton, …)`.

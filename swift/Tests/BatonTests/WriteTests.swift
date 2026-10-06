@@ -120,10 +120,10 @@ struct WriteTests {
     @Test("the data a mutation returns stays readable through a collection while the environment keeps the mutation, and not after")
     func mutationResultLives() async throws {
         for bufferSize in [10, 0] {
-            let environment = Environment(transport: RecordedTransport([TestRename.name: fixture("rename-1")]), releaseBufferSize: bufferSize)
+            let environment = Environment(transport: RecordedTransport([TestRename.name: fixture("rename-1")]), store: Store(releaseBufferSize: bufferSize))
             let data = try await environment.mutate(TestRename(id: "1", name: "Rick Prime"))
             #expect(data.rename?.character?.name == "Rick Prime")
-            environment.collect()
+            environment.store.collect()
             if bufferSize > 0 {
                 #expect(data.rename?.character?.name == "Rick Prime", "the completed mutation keeps its payload")
             } else {
@@ -135,17 +135,17 @@ struct WriteTests {
     @Test("mutations push no released query out of the release buffer, and a mutation made again takes the place it had")
     func mutationsKeepTheirOwnPlaces() async throws {
         let transport = RecordedTransport([TestList.name: fixtureData, TestRename.name: fixture("rename-1"), TestSetFavorite.name: fixture("set-favorite-1")])
-        let environment = Environment(transport: transport, releaseBufferSize: 2)
+        let environment = Environment(transport: transport, store: Store(releaseBufferSize: 2))
         let list = environment.handle(for: TestList(page: 1), fetchPolicy: .storeOrNetwork)
-        list.retain()
+        let listRetention = list.retain()
         await list.settle()
-        list.release()
+        _ = consume listRetention
 
         let favorited = try await environment.mutate(TestSetFavorite(id: "1", favorite: true))
         for _ in 0..<3 {
             _ = try await environment.mutate(TestRename(id: "1", name: "Rick Prime"))
         }
-        environment.collect()
+        environment.store.collect()
         #expect(environment.store.existing("Character:2") != nil, "the released list keeps its records")
         let again = environment.handle(for: TestList(page: 1), fetchPolicy: .storeOrNetwork)
         #expect(again === list)
@@ -164,18 +164,18 @@ struct WriteTests {
         environment.store.reportMissing = nil
         let first = try await environment.mutate(TestRenameWithOrigin(id: "1", name: "Rick Prime", withOrigin: true))
         _ = try await environment.mutate(TestRenameWithOrigin(id: "1", name: "Rick Prime", withOrigin: false))
-        environment.collect()
+        environment.store.collect()
         #expect(environment.store.existing("Location:L1") != nil, "only the first completion's selection reaches the origin")
         #expect(first.rename?.character?.origin?.name == "Earth (C-137)")
     }
 
     @Test("a mutation pushed out of the buffer has its payload collected without a call to collect")
     func mutationPushedOutIsCollected() async throws {
-        let environment = Environment(transport: RecordedTransport([TestRename.name: fixture("rename-1"), TestSetFavorite.name: fixture("set-favorite-1")]), releaseBufferSize: 1)
+        let environment = Environment(transport: RecordedTransport([TestRename.name: fixture("rename-1"), TestSetFavorite.name: fixture("set-favorite-1")]), store: Store(releaseBufferSize: 1))
         let renamed = try await environment.mutate(TestRename(id: "1", name: "Rick Prime"))
-        let collections = environment.collections
+        let collections = environment.store.collections
         let favorited = try await environment.mutate(TestSetFavorite(id: "1", favorite: true))
-        await until { environment.collections > collections }
+        await until { environment.store.collections > collections }
         #expect(renamed.rename == nil, "the rename was pushed out and its payload collected")
         #expect(favorited.setFavorite?.character?.favorite == true)
     }
@@ -369,7 +369,7 @@ struct WriteTests {
         let environment = Environment(transport: notesTransport())
         environment.store.reportMissing = nil
         let handle = environment.handle(for: TestNotesQuery(id: "1"))
-        handle.retain()
+        let retention = handle.retain()
         await handle.settle()
         guard case .ready(let data) = handle.phase else {
             Issue.record("expected .ready, got \(handle.phase)")
@@ -384,7 +384,7 @@ struct WriteTests {
         let roots = StoreDump.text(of: environment.store).split(separator: "\n")
         #expect(roots.contains { $0.hasPrefix(#"  "client:root:mutation": "#) && $0.contains("addNote") }, "the payload hangs off the mutation root")
         #expect(!roots.contains { $0.hasPrefix(#"  "client:root": "#) && $0.contains("addNote") })
-        handle.release()
+        _ = consume retention
     }
 
     @Test("a subscription's event committed by hand lands at the subscription root and appends through @appendEdge")
@@ -392,7 +392,7 @@ struct WriteTests {
         let environment = Environment(transport: notesTransport())
         environment.store.reportMissing = nil
         let handle = environment.handle(for: TestNotesQuery(id: "1"))
-        handle.retain()
+        let retention = handle.retain()
         await handle.settle()
         guard case .ready(let data) = handle.phase else {
             Issue.record("expected .ready, got \(handle.phase)")
@@ -410,7 +410,7 @@ struct WriteTests {
         let roots = StoreDump.text(of: store).split(separator: "\n")
         #expect(roots.contains { $0.hasPrefix(#"  "client:root:subscription": "#) && $0.contains("noteAdded") })
         #expect(!roots.contains { $0.hasPrefix(#"  "client:root": "#) && $0.contains("noteAdded") }, "nothing hangs off the query root")
-        handle.release()
+        _ = consume retention
     }
 
     @Test("under @throwOnFieldError a payload committed by hand throws its uncaught field errors, and one without errors does not")

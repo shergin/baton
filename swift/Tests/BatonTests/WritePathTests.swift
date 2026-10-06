@@ -46,7 +46,7 @@ struct WritePathTests {
         let environment = Environment(transport: notesTransport())
         environment.store.reportMissing = nil
         let handle = environment.handle(for: TestNotesQuery(id: "1"))
-        handle.retain()
+        let retention = handle.retain()
         await handle.settle()
         let store = environment.store
         store.commit(try changes("delete-note-n2", TestDeleteNote(id: "n2"), root: Store.mutationRootKey))
@@ -57,6 +57,7 @@ struct WritePathTests {
         #expect(!note.deleted, "the layer names the note again")
         store.revertOptimistic(layer)
         #expect(note.deleted, "and lifting it deletes it again")
+        withExtendedLifetime(retention) {}
     }
 
     @Test("a server commit under a layer that deletes a record notifies nothing it did not change")
@@ -83,7 +84,7 @@ struct WritePathTests {
         let environment = Environment(transport: notesTransport())
         environment.store.reportMissing = nil
         let handle = environment.handle(for: TestNotesQuery(id: "1"))
-        handle.retain()
+        let retention = handle.retain()
         await handle.settle()
         guard case .ready(let data) = handle.phase, let character = data.character?.testNotes else {
             Issue.record("the first page did not arrive")
@@ -95,6 +96,7 @@ struct WritePathTests {
         environment.store.commit(try changes("delete-note-n2", TestDeleteNote(id: "n2"), root: Store.mutationRootKey))
         #expect(notifications.fired == 1)
         #expect(character.notes.nodes.map(\.id) == ["n1"])
+        withExtendedLifetime(retention) {}
     }
 
     @Test("a body that reads only a list is told when one of its records is deleted, and again when a payload revives it")

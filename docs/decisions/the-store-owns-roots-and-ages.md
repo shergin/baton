@@ -43,7 +43,11 @@ Every fact has one home, chosen by what it is about. What is about data is
 the store's: the records, what keeps them, and how old each operation's
 data is. What is about the network is the environment's: fetches in flight,
 their failures, streams, credentials. A handle holds its retention and
-reads the rest. All of the following is *(planned)*.
+reads the rest. Built 2026-10-06: the roots, the release buffer and the
+collector in the store, the retention token, and the collector's schedule
+(a root left, or a commit dropped a link). Still *(planned)*: the age
+stamped by the commit, the unknown age read as stale in memory, and the
+end of the store's pointer to its environment.
 
 - A record lives while a retention reaches it. A retention is a selection
   with the record it starts from, or a set of records. A view, a model, a

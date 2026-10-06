@@ -129,38 +129,18 @@ extension Query {
 /// Type-erased view of a handle, for the environment's bookkeeping.
 @MainActor
 protocol AnyOperationHandle: AnyObject {
+    /// The operation's name and variables, as the image names it.
+    var key: String { get }
+    /// The handle's root among the store's.
+    var root: Store.Root { get }
     var retainCount: Int { get }
-    var key: AnyHashable { get }
+    /// One holder fewer: a retention ended.
     func release()
-    func mark(into reachable: inout Set<ObjectIdentifier>)
     func refetchIfStale()
     /// Settles the phase again after a commit changed a field error or a
     /// null, for policies that read them.
     func reevaluate()
     func cancel()
-}
-
-/// A mutation that committed, kept by the environment as a root, so the data
-/// `mutate` returned stays readable until later mutations push it out. A
-/// root field of the mutation root holds the latest payload of its field,
-/// and that is what it keeps, by the selection its own variables resolved.
-@MainActor
-final class CompletedMutation {
-    /// The operation value, under which a later completion of an equal value
-    /// takes its place.
-    let key: AnyHashable
-    private let store: Store
-    private let resolved: ResolvedSelection
-
-    init(key: AnyHashable, store: Store, resolved: ResolvedSelection) {
-        self.key = key
-        self.store = store
-        self.resolved = resolved
-    }
-
-    func mark(into reachable: inout Set<ObjectIdentifier>) {
-        store.mark(resolved, from: store.mutationRoot, into: &reachable)
-    }
 }
 
 /// The live side of an operation value: its phase, its fetch, its data, and
@@ -182,12 +162,15 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
     /// after the environment is gone, which then does nothing.
     @ObservationIgnored private(set) weak var environment: Environment?
     @ObservationIgnored private let store: Store
+    /// The operation's name and variables, as the image names it.
+    @ObservationIgnored let key: String
+    /// The handle's root among the store's: what keeps its records alive.
+    @ObservationIgnored let root: Store.Root
     /// The fetch in flight; its value is the failure it ended with.
     @ObservationIgnored private var task: Task<(any Error)?, Never>?
-    @ObservationIgnored let resolved: ResolvedSelection
+    @ObservationIgnored var resolved: ResolvedSelection { root.resolved }
     /// The scope every lens of the handle reads in.
     @ObservationIgnored private let owner: Owner
-    @ObservationIgnored package internal(set) var retainCount = 0
     /// Set by a `preload` that fetched: the first attach finds the fetch
     /// made, or on the way.
     @ObservationIgnored var preloaded = false
@@ -195,15 +178,17 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
     /// which `@throwOnFieldError` counts until the next fetch.
     @ObservationIgnored private var unplaced: [FieldError] = []
 
-    init(operation: Op, environment: Environment) {
+    init(operation: Op, key: String, environment: Environment) {
         self.operation = operation
+        self.key = key
         self.environment = environment
         store = environment.store
-        resolved = Op.plan.resolve(operation.variables)
+        root = environment.store.root(key, resolved: Op.plan.resolve(operation.variables), record: environment.store.root)
         owner = Owner(variables: operation.variables, store: environment.store)
     }
 
-    var key: AnyHashable { AnyHashable(operation) }
+    /// How many hold the handle's root; for the tests.
+    package var retainCount: Int { root.holders }
 
     /// Moves to the next phase. Ready after ready is no change: both carry a
     /// lens over the same root, so a fetch that changed nothing re-runs no
@@ -284,15 +269,12 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
         return false
     }
 
-    /// The operation as the image names it: its name and its variables.
-    private var imageKey: String { Op.name + operation.variables.json }
-
     /// Notes a response that just committed: the handle's own clock, and the
     /// image's, which a later launch reads the age from.
     private func didFetch() {
         fetchTime = .now
         fetchEpoch = store.invalidationEpoch
-        store.persistence?.fetched(imageKey, removals: store.imageRemovals)
+        store.persistence?.fetched(key, removals: store.imageRemovals)
     }
 
     /// Gives data this handle did not fetch the age the image knows: the time
@@ -300,7 +282,7 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
     /// image and has no such time is stale.
     private func takeAge(hydrated: Bool) {
         guard fetchTime == nil, let persistence = store.persistence else { return }
-        if let age = persistence.age(of: imageKey, removals: store.imageRemovals) {
+        if let age = persistence.age(of: key, removals: store.imageRemovals) {
             fetchTime = .now - .seconds(age)
             fetchEpoch = store.invalidationEpoch
         } else if hydrated {
@@ -453,21 +435,20 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
         start()
     }
 
-    /// Keeps the operation's records alive. `@Query` does this for a view's
-    /// lifetime; other owners (view models, UIKit controllers) call it directly
-    /// and must balance it with `release()`.
-    public func retain() {
-        retainCount += 1
+    /// Keeps the operation's records alive until the retention ends. `@Query`
+    /// holds one for a view's lifetime; a model or a view controller holds
+    /// one in a property and lets it go with itself.
+    public func retain() -> Retention {
+        store.retain(root)
         environment?.didRetain(self)
+        return Retention(self)
     }
 
-    /// Balances `retain()`. At zero the handle enters the release buffer.
-    public func release() {
-        retainCount -= 1
-        if retainCount <= 0 {
-            retainCount = 0
-            environment?.didRelease(self)
-        }
+    /// A retention ended. At no holder the root enters the release buffer,
+    /// and the handles of the roots it pushes out go with their fetches.
+    func release() {
+        let evicted = store.release(root)
+        environment?.evict(evicted)
     }
 
     func refetchIfStale() {
@@ -484,10 +465,6 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
         default:
             settle(evaluate())
         }
-    }
-
-    func mark(into reachable: inout Set<ObjectIdentifier>) {
-        store.mark(resolved, into: &reachable)
     }
 
     func cancel() {
@@ -573,20 +550,25 @@ public final class SubscriptionHandle<Op: Subscription>: AnyOperationHandle {
     @ObservationIgnored private(set) weak var environment: Environment?
     @ObservationIgnored private let store: Store
     @ObservationIgnored private var task: Task<Void, Never>?
-    @ObservationIgnored let resolved: ResolvedSelection
+    /// The operation's name and variables, as the image names it.
+    @ObservationIgnored let key: String
+    /// The handle's root among the store's, while retained.
+    @ObservationIgnored let root: Store.Root
+    @ObservationIgnored var resolved: ResolvedSelection { root.resolved }
     /// The scope every event's lens reads in.
     @ObservationIgnored private let owner: Owner
-    @ObservationIgnored package internal(set) var retainCount = 0
 
-    init(operation: Op, environment: Environment) {
+    init(operation: Op, key: String, environment: Environment) {
         self.operation = operation
+        self.key = key
         self.environment = environment
         store = environment.store
-        resolved = Op.plan.resolve(operation.variables)
+        root = environment.store.root(key, resolved: Op.plan.resolve(operation.variables), record: environment.store.subscriptionRoot)
         owner = Owner(variables: operation.variables, store: environment.store)
     }
 
-    var key: AnyHashable { AnyHashable(operation) }
+    /// How many hold the stream open; for the tests.
+    package var retainCount: Int { root.holders }
 
     /// Opens the stream unless it is open, or its environment is gone.
     func start() {
@@ -643,30 +625,27 @@ public final class SubscriptionHandle<Op: Subscription>: AnyOperationHandle {
         start()
     }
 
-    /// Keeps the stream open and the latest event's records alive.
-    public func retain() {
-        retainCount += 1
+    /// Keeps the stream open and the latest event's records alive until the
+    /// retention ends.
+    public func retain() -> Retention {
+        store.retain(root)
         environment?.didRetain(self)
         start()
+        return Retention(self)
     }
 
-    /// Balances `retain()`. At zero the stream closes; nothing is buffered.
-    public func release() {
-        retainCount -= 1
-        if retainCount <= 0 {
-            retainCount = 0
-            cancel()
-            environment?.didEnd(self)
-        }
+    /// A retention ended. At no holder the stream closes and the root leaves
+    /// at once; nothing is buffered.
+    func release() {
+        _ = store.release(root, buffering: false)
+        guard root.holders == 0 else { return }
+        cancel()
+        environment?.didEnd(self)
     }
 
     func refetchIfStale() {}
 
     func reevaluate() {}
-
-    func mark(into reachable: inout Set<ObjectIdentifier>) {
-        store.mark(resolved, from: store.subscriptionRoot, into: &reachable)
-    }
 
     func cancel() {
         task?.cancel()

@@ -14,17 +14,13 @@ extension EnvironmentValues {
 
 // MARK: Storages
 
-/// The handle a view's storage holds, kept in the view's state and released
-/// when SwiftUI drops that state. The deinit runs on the main actor, where
-/// the handle lives: in place when the last reference goes there, and
-/// enqueued on it otherwise.
+/// The handle a view's storage holds, with the retention that keeps its
+/// records alive, kept in the view's state and let go when SwiftUI drops
+/// that state.
 @MainActor
 final class RetainedHandle<Handle: AnyOperationHandle> {
     var handle: Handle?
-
-    isolated deinit {
-        handle?.release()
-    }
+    var retention: Retention?
 }
 
 /// What a `@Query` property expands to: owns the handle for the view's
@@ -48,9 +44,8 @@ public struct OperationStorage<Op: Query>: DynamicProperty {
         MainActor.assumeIsolated {
             let current = Environment.resolve(environment)
             if retained.handle?.operation != value || retained.handle?.environment !== current {
-                retained.handle?.release()
                 let handle = current.handle(for: value, fetchPolicy: fetchPolicy)
-                handle.retain()
+                retained.retention = handle.retain()
                 retained.handle = handle
             }
         }
@@ -97,9 +92,8 @@ public struct SubscriptionStorage<Op: Subscription>: DynamicProperty {
         MainActor.assumeIsolated {
             let current = Environment.resolve(environment)
             if retained.handle?.operation != value || retained.handle?.environment !== current {
-                retained.handle?.release()
                 let handle = current.subscriptionHandle(for: value)
-                handle.retain()
+                retained.retention = handle.retain()
                 retained.handle = handle
             }
         }

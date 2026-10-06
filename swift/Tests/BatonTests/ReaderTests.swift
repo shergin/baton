@@ -79,7 +79,7 @@ struct ReaderTests {
         try await environment.fetch(query)
 
         let handle = environment.handle(for: query)
-        handle.retain()
+        let retention = handle.retain()
         await handle.settle()
         guard case .ready = handle.phase else {
             Issue.record("expected ready, got \(handle.phase)")
@@ -92,6 +92,7 @@ struct ReaderTests {
             return
         }
         #expect(caught.errors.map(\.message) == ["appearances unavailable"])
+        withExtendedLifetime(retention) {}
     }
 
     @Test("a deferred spread the server could not deliver, with a field under no @catch, reports each error it sent once, and in a handle or a throwing fetch is the spread's to weigh however many it sent", arguments: [
@@ -107,7 +108,7 @@ struct ReaderTests {
         try await environment.fetch(query)
 
         let handle = environment.handle(for: query)
-        handle.retain()
+        let retention = handle.retain()
         await handle.settle()
         guard case .ready = handle.phase else {
             Issue.record("expected ready, got \(handle.phase)")
@@ -115,6 +116,7 @@ struct ReaderTests {
         }
         let character = try #require(environment.store.existing("Character:1"))
         #expect(character.error(Registry.slot(character.type, "episode"))?.message == "appearances unavailable", "the field keeps the first error")
+        withExtendedLifetime(retention) {}
     }
 
     @Test("a deferred spread the server could not deliver reports each error it sent once, however many fields under no @catch hold the first", arguments: [
@@ -148,7 +150,7 @@ struct ReaderTests {
         let environment = Environment(transport: transport)
         environment.store.reportMissing = nil
         let handle = environment.handle(for: TestRequiredOrigin(id: "1"))
-        handle.retain()
+        let retention = handle.retain()
         await until { if case .loading = handle.phase { false } else { true } }
         guard case .ready(let data) = handle.phase else {
             Issue.record("expected ready, got \(handle.phase)")
@@ -168,7 +170,7 @@ struct ReaderTests {
             Issue.record("expected the bubbling operation to fail, got \(handle.phase)")
             return
         }
-        handle.release()
+        _ = consume retention
     }
 
     @Test("a non-null list under @catch that the server sent null reads empty and is reported")

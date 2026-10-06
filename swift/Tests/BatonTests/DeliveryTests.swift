@@ -118,7 +118,7 @@ struct DeliveryTests {
         let environment = Environment(transport: RecordedTransport([TestProfileQuery.name: fixture("character-errors")]))
         environment.store.reportMissing = nil
         let handle = environment.handle(for: TestProfileQuery(id: "1"))
-        handle.retain()
+        let retention = handle.retain()
         await handle.settle()
         guard case .ready(let data) = handle.phase else {
             Issue.record("expected .ready, got \(handle.phase)")
@@ -147,6 +147,7 @@ struct DeliveryTests {
         let record = try #require(environment.store.existing("Character:1"))
         #expect(record.error(Registry.slot(Registry.type("Character"), "image"))?.message == "image service unavailable")
         #expect(record.error(Registry.slot(Registry.type("Character"), "name")) == nil)
+        withExtendedLifetime(retention) {}
     }
 
     @Test("a payload that answers an errored field clears the error and notifies the field")
@@ -284,7 +285,7 @@ struct DeliveryTests {
         let failing = Environment(transport: RecordedTransport([TestStrictQuery.name: fixture("character-name-hidden")]))
         failing.store.reportMissing = nil
         let handle = failing.handle(for: TestStrictQuery(id: "1"))
-        handle.retain()
+        let retention = handle.retain()
         await handle.settle()
         guard case .failed(let error) = handle.phase, let errors = error as? FieldErrors else {
             Issue.record("expected .failed(FieldErrors), got \(handle.phase)")
@@ -297,12 +298,13 @@ struct DeliveryTests {
         let caught = Environment(transport: RecordedTransport([TestProfileQuery.name: fixture("character-errors")]))
         caught.store.reportMissing = nil
         let plain = caught.handle(for: TestProfileQuery(id: "1"))
-        plain.retain()
+        let plainRetention = plain.retain()
         await plain.settle()
         guard case .ready = plain.phase else {
             Issue.record("expected .ready, got \(plain.phase)")
             return
         }
+        withExtendedLifetime((retention, plainRetention)) {}
     }
 
     @Test("a @throwOnFieldError operation fails when a later commit puts an error in its selection, and recovers when one clears it")
@@ -310,7 +312,7 @@ struct DeliveryTests {
         let environment = Environment(transport: RecordedTransport([TestStrictQuery.name: fixture("character-deferred-1")]))
         environment.store.reportMissing = nil
         let handle = environment.handle(for: TestStrictQuery(id: "1"))
-        handle.retain()
+        let retention = handle.retain()
         await handle.settle()
         guard case .ready = handle.phase else { Issue.record("expected ready, got \(handle.phase)"); return }
 
@@ -324,6 +326,7 @@ struct DeliveryTests {
 
         environment.store.commit(try Ingest.normalize(fixture("character-deferred-1"), plan: plan))
         guard case .ready = handle.phase else { Issue.record("expected ready again, got \(handle.phase)"); return }
+        withExtendedLifetime(retention) {}
     }
 
     @Test("Environment.fetch of an operation that throws throws the field errors its handle fails on, and not an error inside a spread")
@@ -352,13 +355,14 @@ struct DeliveryTests {
     func requestErrors() async throws {
         let environment = Environment(transport: RecordedTransport([TestProfileQuery.name: fixture("not-authorized")]))
         let handle = environment.handle(for: TestProfileQuery(id: "1"))
-        handle.retain()
+        let retention = handle.retain()
         await handle.settle()
         guard case .failed(let error) = handle.phase, let errors = error as? GraphQLErrors else {
             Issue.record("expected .failed(GraphQLErrors), got \(handle.phase)")
             return
         }
         #expect(errors.messages == ["not authorized"])
+        withExtendedLifetime(retention) {}
     }
 
     @Test("a field error's extensions read back through @catch as the JSON value the server sent, and an error without them reads nil")
@@ -366,7 +370,7 @@ struct DeliveryTests {
         let environment = Environment(transport: RecordedTransport([TestProfileQuery.name: Data(Self.extensionsResponse.utf8)]))
         environment.store.reportMissing = nil
         let handle = environment.handle(for: TestProfileQuery(id: "1"))
-        handle.retain()
+        let retention = handle.retain()
         await handle.settle()
         let character = try #require(try profile(environment).testProfile)
         guard case .failure(let image) = character.image else {
@@ -380,6 +384,7 @@ struct DeliveryTests {
             return
         }
         #expect(location.errors.map(\.extensions) == [nil])
+        withExtendedLifetime(retention) {}
     }
 
     @Test("a response with errors and no data fails the fetch with GraphQL errors that keep their extensions beside their messages")
@@ -387,7 +392,7 @@ struct DeliveryTests {
         let response = #"{"data":null,"errors":[{"message":"not authorized","extensions":{"code":"FORBIDDEN","retryAfter":30,"ratio":0.5,"flags":[true,null],"nested":{"a":"b"}}},{"message":"try again"}]}"#
         let environment = Environment(transport: RecordedTransport([TestProfileQuery.name: Data(response.utf8)]))
         let handle = environment.handle(for: TestProfileQuery(id: "1"))
-        handle.retain()
+        let retention = handle.retain()
         await handle.settle()
         guard case .failed(let error) = handle.phase, let errors = error as? GraphQLErrors else {
             Issue.record("expected .failed(GraphQLErrors), got \(handle.phase)")
@@ -396,6 +401,7 @@ struct DeliveryTests {
         #expect(errors.messages == ["not authorized", "try again"])
         #expect(errors.errors.map(\.extensions) == [Self.extensions, nil])
         #expect(errors.errors.map(\.path) == ["", ""])
+        withExtendedLifetime(retention) {}
     }
 
     @Test("the scanner reads any JSON value as a variable: objects, lists, strings, booleans, null, ints, and doubles for fractions, exponents and numbers past Int")
@@ -447,7 +453,7 @@ struct DeliveryTests {
             let environment = Environment(transport: transport)
             environment.store.reportMissing = nil
             let handle = environment.handle(for: TestProfileQuery(id: "1"))
-            handle.retain()
+            let retention = handle.retain()
             await until { if case .loading = handle.phase { false } else { true } }
             #expect(handle.fetchTime == nil, "the first part is not the whole response")
             if completes { transport.release() } else { transport.fail() }
@@ -457,7 +463,7 @@ struct DeliveryTests {
                 return
             }
             #expect((handle.fetchTime != nil) == completes)
-            handle.release()
+            _ = consume retention
         }
     }
 
@@ -467,17 +473,17 @@ struct DeliveryTests {
         let environment = Environment(transport: transport)
         environment.store.reportMissing = nil
         let handle = environment.handle(for: TestProfileQuery(id: "1"))
-        handle.retain()
+        let retention = handle.retain()
         await until { if case .loading = handle.phase { false } else { true } }
         transport.fail()
         await handle.settle()
         #expect(handle.fetchTime == nil)
         #expect(!handle.isStale, "an operation never fetched whole has no age")
-        handle.release()
+        _ = consume retention
 
         let again = environment.handle(for: TestProfileQuery(id: "1"))
         #expect(again === handle)
-        again.retain()
+        let againRetention = again.retain()
         await until { transport.requests.count == 2 }
         transport.release()
         await again.settle()
@@ -487,7 +493,7 @@ struct DeliveryTests {
         }
         #expect(data.character?.testAppearances?.episode.map(\.name) == ["Pilot", "Lawnmower Dog"])
         #expect(again.fetchTime != nil)
-        again.release()
+        _ = consume againRetention
     }
 
     /// Fetches the profile through parts in the 2024 format and returns the
@@ -545,7 +551,7 @@ struct DeliveryTests {
             let environment = Environment(transport: transport)
             environment.store.reportMissing = nil
             let handle = environment.handle(for: TestProfileQuery(id: "1"))
-            handle.retain()
+            let retention = handle.retain()
             await until { if case .loading = handle.phase { false } else { true } }
             guard case .ready(let data) = handle.phase else {
                 Issue.record("expected .ready after the first part, got \(handle.phase)")
@@ -565,6 +571,7 @@ struct DeliveryTests {
             let appearances = try #require(character.testAppearances)
             #expect(appearances.episode.map(\.name) == ["Pilot", "Lawnmower Dog"])
             #expect(environment.store.existing("Episode:2") != nil)
+            withExtendedLifetime(retention) {}
         }
     }
 
@@ -576,7 +583,7 @@ struct DeliveryTests {
         let plan = TestProfileQuery.plan.resolve(TestProfileQuery(id: "1").variables)
         environment.store.commit(try Ingest.normalize(fixture("character-deferred-1"), plan: plan))
         let handle = environment.handle(for: TestProfileQuery(id: "1"))
-        handle.retain()
+        let retention = handle.retain()
         guard case .ready(let data) = handle.phase else {
             Issue.record("the initial part renders from memory, got \(handle.phase)")
             return
@@ -588,7 +595,7 @@ struct DeliveryTests {
         await handle.settle()
         #expect(transport.requests.count == 1)
         #expect(data.character?.testAppearances?.episode.map(\.name) == ["Pilot", "Lawnmower Dog"])
-        handle.release()
+        _ = consume retention
     }
 
     @Test("an attach that fetches a deferred fragment memory lacks keeps the field the initial part selects outside the fragment")
@@ -600,14 +607,14 @@ struct DeliveryTests {
         let plan = TestOverlapQuery.plan.resolve(TestOverlapQuery(id: "1").variables)
         environment.store.commit(try Ingest.normalize(fixture("character-overlap-1"), plan: plan))
         let handle = environment.handle(for: TestOverlapQuery(id: "1"))
-        handle.retain()
+        let retention = handle.retain()
         guard case .ready(let data) = handle.phase else {
             Issue.record("the initial part renders from memory, got \(handle.phase)")
             return
         }
         #expect(data.character?.episode.map(\.id) == ["1", "2"])
         #expect(handle.isRefreshing, "the fragment is fetched")
-        handle.release()
+        _ = consume retention
     }
 
     @Test("a subscription's events commit at the subscription root and append through @appendEdge")
@@ -616,7 +623,7 @@ struct DeliveryTests {
         let environment = Environment(transport: notesTransport(), subscriptions: events)
         environment.store.reportMissing = nil
         let handle = environment.handle(for: TestNotesQuery(id: "1"))
-        handle.retain()
+        let retention = handle.retain()
         await handle.settle()
         guard case .ready(let data) = handle.phase else {
             Issue.record("expected .ready, got \(handle.phase)")
@@ -626,7 +633,7 @@ struct DeliveryTests {
         #expect(character.notes.nodes.count == 2)
 
         let live = environment.subscriptionHandle(for: TestNoteAdded(characterId: "1", connections: [character.notes.connectionID]))
-        live.retain()
+        let liveRetention = live.retain()
         #expect(live.isActive)
         await until { events.continuation != nil }
         #expect(events.requests.first?.operationName == "TestNoteAdded")
@@ -639,12 +646,13 @@ struct DeliveryTests {
         events.send(fixture("note-added-2"))
         await until { live.events >= 2 }
         #expect(character.notes.nodes.count == 4)
-        #expect(environment.rootCount == 2, "the subscription is a root while retained")
+        #expect(environment.store.rootCount == 2, "the subscription is a root while retained")
 
-        live.release()
+        _ = consume liveRetention
         #expect(!live.isActive)
         await until { events.ended }
-        #expect(environment.rootCount == 1)
+        #expect(environment.store.rootCount == 1)
+        withExtendedLifetime(retention) {}
     }
 
     @Test("an event with errors and no data is one bad event: the subscription shows it and goes on, and the next good event clears it")
@@ -653,7 +661,7 @@ struct DeliveryTests {
         let environment = Environment(transport: SilentTransport(), subscriptions: events)
         environment.store.reportMissing = nil
         let live = environment.subscriptionHandle(for: TestNoteAdded(characterId: "events-\(#line)", connections: []))
-        live.retain()
+        let liveRetention = live.retain()
         await until { events.continuation != nil }
         events.send(fixture("not-authorized"))
         await until { live.error != nil }
@@ -662,7 +670,7 @@ struct DeliveryTests {
         events.send(fixture("note-added-1"))
         await until { live.events == 1 }
         #expect(live.error == nil)
-        live.release()
+        _ = consume liveRetention
     }
 
     @Test("retry opens a stream the server ended, and the stream it replaces leaves the new one's state alone")
@@ -671,7 +679,7 @@ struct DeliveryTests {
         let environment = Environment(transport: SilentTransport(), subscriptions: events)
         environment.store.reportMissing = nil
         let live = environment.subscriptionHandle(for: TestNoteAdded(characterId: "events-\(#line)", connections: []))
-        live.retain()
+        let liveRetention = live.retain()
         await until { events.requests.count == 1 }
         events.continuation?.finish()
         await until { !live.isActive }
@@ -687,7 +695,7 @@ struct DeliveryTests {
         #expect(live.isActive)
         events.send(fixture("note-added-1"))
         await until { live.events == 1 }
-        live.release()
+        _ = consume liveRetention
     }
 
     @Test("a bad event the replaced stream was reading leaves no error on the stream that replaced it")
@@ -696,7 +704,7 @@ struct DeliveryTests {
         let environment = Environment(transport: RecordedTransport(), subscriptions: events)
         environment.store.reportMissing = nil
         let live = environment.subscriptionHandle(for: TestNoteAdded(characterId: "events-\(#line)", connections: []))
-        live.retain()
+        let liveRetention = live.retain()
         await until { events.continuation != nil }
         events.send(fixture("not-authorized"))
         // One turn of the main actor hands the event to the ingest, off the
@@ -707,7 +715,7 @@ struct DeliveryTests {
         try await Task.sleep(for: .milliseconds(50))
         #expect(live.error == nil, "the replaced stream's bad event is not the new stream's")
         #expect(live.isActive)
-        live.release()
+        _ = consume liveRetention
     }
 
     @Test("an event in hand when its subscription is released is not committed, while the events before it are")
@@ -718,7 +726,7 @@ struct DeliveryTests {
         // The query keeps the connection the events append to, so a payload
         // that landed would stay in the store rather than be collected.
         let handle = environment.handle(for: TestNotesQuery(id: "1"))
-        handle.retain()
+        let retention = handle.retain()
         await handle.settle()
         guard case .ready(let data) = handle.phase else {
             Issue.record("expected .ready, got \(handle.phase)")
@@ -726,7 +734,7 @@ struct DeliveryTests {
         }
         let character = try #require(data.character?.testNotes)
         let live = environment.subscriptionHandle(for: TestNoteAdded(characterId: "1", connections: [character.notes.connectionID]))
-        live.retain()
+        let liveRetention = live.retain()
         await until { events.continuation != nil }
 
         events.send(fixture("note-added-1"))
@@ -738,14 +746,14 @@ struct DeliveryTests {
         // it, and the commit finds the task cancelled.
         events.send(fixture("note-added-2"))
         await Task.yield()
-        live.release()
+        _ = consume liveRetention
         // Long past the few milliseconds the event takes to read: had it
         // been committed, it would be in the store by now.
         try await Task.sleep(for: .milliseconds(200))
         #expect(live.events == 1)
         #expect(environment.store.existing("Note:n7") == nil, "the event in hand at the release did not land")
         #expect(character.notes.nodes.count == 3)
-        handle.release()
+        _ = consume retention
     }
 
     @Test("a stream the transport ends with a cancellation of its own ends the subscription, and a later retain opens it again")
@@ -754,16 +762,16 @@ struct DeliveryTests {
         let environment = Environment(transport: RecordedTransport(), subscriptions: events)
         environment.store.reportMissing = nil
         let live = environment.subscriptionHandle(for: TestNoteAdded(characterId: "events-\(#line)", connections: []))
-        live.retain()
+        let liveRetention = live.retain()
         await until { events.requests.count == 1 }
         events.continuation?.finish(throwing: CancellationError())
         await until { !live.isActive }
         #expect(live.error == nil, "a cancellation is no error to show")
-        live.retain()
+        let againRetention = live.retain()
         await until { events.requests.count == 2 }
         #expect(live.isActive)
-        live.release()
-        live.release()
+        _ = consume againRetention
+        _ = consume liveRetention
     }
 
     @Test("a subscription's stream is idle until retained, connecting until its first event, open after it, and idle once released")
@@ -774,7 +782,7 @@ struct DeliveryTests {
         let live = environment.subscriptionHandle(for: TestNoteAdded(characterId: "events-\(#line)", connections: []))
         #expect(state(live.stream) == "idle")
         #expect(!live.isActive)
-        live.retain()
+        let liveRetention = live.retain()
         #expect(state(live.stream) == "connecting")
         #expect(live.isActive)
         await until { events.continuation != nil }
@@ -783,7 +791,7 @@ struct DeliveryTests {
         await until { live.events == 1 }
         #expect(state(live.stream) == "open")
         #expect(live.isActive)
-        live.release()
+        _ = consume liveRetention
         #expect(state(live.stream) == "idle")
         #expect(!live.isActive)
     }
@@ -796,7 +804,7 @@ struct DeliveryTests {
         let environment = Environment(transport: SilentTransport(), subscriptions: socket)
         environment.store.reportMissing = nil
         let live = environment.subscriptionHandle(for: TestNoteAdded(characterId: "events-\(#line)", connections: []))
-        live.retain()
+        let liveRetention = live.retain()
         await until { server.count(of: "subscribe") == 1 }
         let first = try #require(server.ids(of: "subscribe").first)
         server.send(#"{"id":"\#(first)","type":"next","payload":{"data":{"noteAdded":null}}}"#)
@@ -817,7 +825,7 @@ struct DeliveryTests {
         await until { !live.isActive }
         guard case .ended(.request(let errors)?) = live.stream else {
             Issue.record("expected the stream ended by a request failure, got \(state(live.stream))")
-            live.release()
+            _ = consume liveRetention
             return
         }
         #expect(errors.messages == ["bad subscription"])
@@ -828,7 +836,7 @@ struct DeliveryTests {
         live.retry()
         #expect(state(live.stream) == "connecting", "a retry after a failure reads connecting again")
         await until { server.count(of: "subscribe") == 3 }
-        live.release()
+        _ = consume liveRetention
         #expect(state(live.stream) == "idle")
     }
 
@@ -1062,7 +1070,7 @@ struct DeliveryTests {
         let environment = Environment(transport: RecordedTransport())
         environment.store.reportMissing = nil
         let handle = environment.handle(for: TestList(page: 1))
-        handle.retain()
+        let retention = handle.retain()
         await handle.settle()
         guard case .failed(let error as TransportError) = handle.phase else {
             Issue.record("expected a transport error, got \(handle.phase)")
@@ -1071,7 +1079,7 @@ struct DeliveryTests {
         #expect(error.statusCode == 0)
         #expect(error.description == "no recorded response for TestList")
         #expect(TransportError(statusCode: 502, body: "bad gateway").description == "HTTP 502: bad gateway")
-        handle.release()
+        _ = consume retention
     }
 
     @Test("a recorded transport's requests, read while requests arrive off the main actor, are each time those sent so far, each read keeping the one before")
