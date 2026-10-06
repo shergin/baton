@@ -5,6 +5,7 @@
 /// nothing. A handle keeps one owner for its lifetime.
 @_spi(Generated)
 @MainActor
+@_spi(Generated)
 public final class Owner {
     nonisolated public let variables: Variables
     nonisolated let store: Store?

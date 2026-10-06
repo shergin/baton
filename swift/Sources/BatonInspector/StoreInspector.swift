@@ -1,4 +1,4 @@
-import Baton
+@_spi(Generated) import Baton
 import SwiftUI
 
 /// A view over an environment's store, for a debug menu: the store's counts,

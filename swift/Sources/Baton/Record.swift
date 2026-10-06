@@ -4,6 +4,7 @@ import Observation
 /// tracks. A view body that reads a slot is invalidated when that slot of this
 /// record changes, through that slot's own invalidation channel.
 @MainActor
+@_spi(Generated)
 public final class Record: Observable {
     nonisolated public let type: TypeID
     /// `Type:id` for entities with a key, a path-based client id otherwise.

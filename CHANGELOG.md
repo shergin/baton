@@ -5,6 +5,10 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- `Record`, `Value`, `Slot`, `TypeID`, `Owner` and `Members` are generated
+  code's interface, behind `@_spi(Generated)`, now that no hook hands them
+  out; an app's own files see lenses, handles, the environment, the log,
+  transports and persistence.
 - The GitHub sample keeps its store in an image across launches and signs
   out from the toolbar: the environment ends, the image's file is removed,
   and a new environment takes over, as the README describes.

@@ -1,6 +1,7 @@
 import Synchronization
 
 /// An interned schema type.
+@_spi(Generated)
 public struct TypeID: Hashable, Sendable {
     /// The number the process gave the type.
     @_spi(Generated) public let raw: Int32
@@ -19,6 +20,7 @@ public struct TypeID: Hashable, Sendable {
 /// written to it, so the keys a session makes never widen the records of
 /// their type. Generated code holds slots as `static let`s; an app meets
 /// one only in the store's reports, and the store names it by its key.
+@_spi(Generated)
 public struct Slot: Hashable, Sendable {
     @_spi(Generated) public let type: TypeID
     @_spi(Generated) public let index: Int32

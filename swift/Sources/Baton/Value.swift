@@ -2,6 +2,7 @@ import Foundation
 
 /// What a record's slot holds. `missing` means the store never received the
 /// field; `null` means the server said so.
+@_spi(Generated)
 public enum Value {
     case missing
     case null

@@ -565,8 +565,8 @@ types, and the anchor and initializer of every lens. That interface has a
 format with a number, which the target's shared file names as
 `Types.format` and the runtime declares as a marker type, so generated code
 of another format fails to compile at that one line. An app's own files
-import `Baton` and see lenses, handles, the environment, transports and
-persistence.
+import `Baton` and see lenses, handles, the environment, the log, transports
+and persistence; records, values, slots and type ids are the interface's.
 
 **Report.** *Composition: document, schema.* Baton's word for what the
 compiler compiled for one target, written by `batonc generate --report` as

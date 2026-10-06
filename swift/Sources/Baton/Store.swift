@@ -139,7 +139,7 @@ public final class Store {
 
     /// The storage key a slot stands for: the field's name with its
     /// arguments rendered, as a report names it.
-    public func storageKey(of slot: Slot) -> String {
+    @_spi(Generated) public func storageKey(of slot: Slot) -> String {
         keys.text(of: slot)
     }
 

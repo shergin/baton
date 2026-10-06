@@ -1,4 +1,4 @@
-import Baton
+@_spi(Generated) import Baton
 import Foundation
 
 /// The store as `spec/` freezes it: every record by key, each a map from
