@@ -9,7 +9,6 @@
       "root_type": "Query",
       "variables": [],
       "text": "query TestDrafts {\n  character(id: \"1\") {\n    id\n    name\n  }\n}",
-      "id": "c7ae5975fdad208e8459c7a23b072420",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -608,7 +607,6 @@
         }
       ],
       "text": "query TestPinnedCharacter(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    name\n    status\n  }\n}",
-      "id": "f758b85eb4fac6833a700fbc9ffa319d",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,

@@ -1,10 +1,24 @@
 import Foundation
 
+/// What a request carries of its operation: the text the compiler printed,
+/// or the id a server registered it under. Never both: the build decides,
+/// under `persistConfig`, and the binary holds no text to fall back to.
+public enum Document: Hashable, Sendable {
+    case text(String)
+    case id(String)
+}
+
 /// One operation execution over the wire.
 public struct Request: Sendable {
+    /// The kind of operation, so a wrapper never retries a mutation the
+    /// server may have received.
+    public enum Kind: Sendable {
+        case query, mutation, subscription
+    }
+
     public let operationName: String
-    public let text: String
-    public let persistedID: String
+    public let kind: Kind
+    public let document: Document
     public let variables: Variables
     /// The `onError` request parameter, when the environment sets one.
     public let errorBehavior: ErrorBehavior?
@@ -12,39 +26,65 @@ public struct Request: Sendable {
     /// asks for and reads an incremental response.
     public let incremental: Bool
 
-    public init(operationName: String, text: String, persistedID: String, variables: Variables, errorBehavior: ErrorBehavior? = nil, incremental: Bool = false) {
+    public init(operationName: String, kind: Kind, document: Document, variables: Variables, errorBehavior: ErrorBehavior? = nil, incremental: Bool = false) {
         self.operationName = operationName
-        self.text = text
-        self.persistedID = persistedID
+        self.kind = kind
+        self.document = document
         self.variables = variables
         self.errorBehavior = errorBehavior
         self.incremental = incremental
     }
 
-    /// The GraphQL-over-HTTP JSON body.
-    public var body: Data {
-        var json = "{\"operationName\":" + Variable.quote(operationName)
-        json += ",\"query\":" + Variable.quote(text)
-        json += ",\"variables\":" + variables.json
-        if let errorBehavior { json += ",\"onError\":" + Variable.quote(errorBehavior.rawValue) }
+    /// The JSON a server receives for the request, by the standard encoding.
+    public var body: Data { Encoding.standard.body(self) }
+}
+
+/// The one function from a request to the JSON a server receives, for the
+/// HTTP body and the socket's subscribe payload alike. The standard one
+/// writes `operationName`, `variables`, `onError` when set, and `query` for
+/// a text or `documentId` for an id, after the GraphQL-over-HTTP working
+/// group's proposal. A server with another convention replaces the function
+/// and keeps the built-in transports.
+public struct Encoding: Sendable {
+    public let body: @Sendable (Request) -> Data
+
+    public init(body: @escaping @Sendable (Request) -> Data) { self.body = body }
+
+    public static let standard = Encoding { request in
+        var json = "{\"operationName\":" + Variable.quote(request.operationName)
+        switch request.document {
+        case .text(let text): json += ",\"query\":" + Variable.quote(text)
+        case .id(let id): json += ",\"documentId\":" + Variable.quote(id)
+        }
+        json += ",\"variables\":" + request.variables.json
+        if let errorBehavior = request.errorBehavior { json += ",\"onError\":" + Variable.quote(errorBehavior.rawValue) }
         json += "}"
         return Data(json.utf8)
     }
 }
 
+/// One verb: a request yields a stream of payloads, each a GraphQL response
+/// body. A query's stream carries one payload; a deferred response's its
+/// parts, the first with `data`; a subscription's its events. A wrapper
+/// wraps one method, whatever the operation's kind.
 public protocol Transport: Sendable {
-    func execute(_ request: Request) async throws -> Data
-    /// The parts of an incremental response, the first being the one with
-    /// `data`. A transport without incremental delivery answers once.
-    func stream(_ request: Request) -> AsyncThrowingStream<Data, any Error>
+    func send(_ request: Request) -> AsyncThrowingStream<Data, any Error>
 }
 
 extension Transport {
-    public func stream(_ request: Request) -> AsyncThrowingStream<Data, any Error> {
+    /// The one payload of a request that answers once: the stream's first,
+    /// or the failure a stream that delivers none is.
+    public func payload(_ request: Request) async throws -> Data {
+        for try await payload in send(request) { return payload }
+        throw TransportError(statusCode: 0, body: "the transport delivered no payload for \(request.operationName)")
+    }
+
+    /// A stream of one payload, for a transport that answers once.
+    public static func once(_ answer: @escaping @Sendable () async throws -> Data) -> AsyncThrowingStream<Data, any Error> {
         AsyncThrowingStream { continuation in
             let task = Task {
                 do {
-                    continuation.yield(try await execute(request))
+                    continuation.yield(try await answer())
                     continuation.finish()
                 } catch {
                     continuation.finish(throwing: error)
@@ -53,11 +93,6 @@ extension Transport {
             continuation.onTermination = { _ in task.cancel() }
         }
     }
-}
-
-/// The events of a subscription, each a GraphQL response payload.
-public protocol SubscriptionTransport: Sendable {
-    func subscribe(_ request: Request) -> AsyncThrowingStream<Data, any Error>
 }
 
 /// A response with an HTTP status outside 200 to 299, or, with status 0, a
@@ -85,19 +120,26 @@ public struct TransportError: Error, CustomStringConvertible, Sendable, Localize
 }
 
 /// POSTs operations as JSON to one endpoint. An operation with `@defer` asks
-/// for `multipart/mixed` and reads the parts as they arrive.
+/// for `multipart/mixed` and reads the parts as they arrive. Credentials are
+/// read per attempt, so a rotated token reaches the next request.
 public struct URLSessionTransport: Transport {
     public let url: URL
     public var headers: [String: String]
+    /// Headers read for every attempt, after the fixed ones: a credential a
+    /// session rotates reaches each request as it is made.
+    public let credentials: @Sendable () async throws -> [String: String]
+    public let encoding: Encoding
     let session: URLSession
 
-    public init(url: URL, headers: [String: String] = [:], session: URLSession = .shared) {
+    public init(url: URL, headers: [String: String] = [:], credentials: @escaping @Sendable () async throws -> [String: String] = { [:] }, encoding: Encoding = .standard, session: URLSession = .shared) {
         self.url = url
         self.headers = headers
+        self.credentials = credentials
+        self.encoding = encoding
         self.session = session
     }
 
-    private func urlRequest(_ request: Request) -> URLRequest {
+    private func urlRequest(_ request: Request) async throws -> URLRequest {
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "POST"
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -106,24 +148,20 @@ public struct URLSessionTransport: Transport {
             : "application/graphql-response+json, application/json"
         urlRequest.setValue(accept, forHTTPHeaderField: "Accept")
         for (name, value) in headers { urlRequest.setValue(value, forHTTPHeaderField: name) }
-        urlRequest.httpBody = request.body
+        for (name, value) in try await credentials() { urlRequest.setValue(value, forHTTPHeaderField: name) }
+        urlRequest.httpBody = encoding.body(request)
         return urlRequest
     }
 
-    public func execute(_ request: Request) async throws -> Data {
-        let (data, response) = try await session.data(for: urlRequest(request))
-        if let http = response as? HTTPURLResponse, !(200..<300).contains(http.statusCode) {
-            throw TransportError(statusCode: http.statusCode, body: String(decoding: data, as: UTF8.self))
-        }
-        return data
-    }
-
-    public func stream(_ request: Request) -> AsyncThrowingStream<Data, any Error> {
-        let urlRequest = urlRequest(request)
+    public func send(_ request: Request) -> AsyncThrowingStream<Data, any Error> {
         let session = session
         return AsyncThrowingStream { continuation in
             let task = Task {
                 do {
+                    guard request.kind != .subscription else {
+                        throw TransportError(statusCode: 0, body: "a subscription over HTTP streams events, which this transport does not read; pass a subscription transport")
+                    }
+                    let urlRequest = try await urlRequest(request)
                     var response: HTTPURLResponse?
                     var parser: MultipartParser?
                     var body = Data()
@@ -306,12 +344,17 @@ public struct MultipartParser: Sendable {
     }
 }
 
-/// Subscriptions over `graphql-transport-ws`: one WebSocket per transport,
-/// opened on the first subscription, with `connection_init` and
-/// `connection_ack`, then `subscribe`, `next`, `error` and `complete` by id.
-public actor GraphQLTransportWebSocket: SubscriptionTransport {
+/// Operations over `graphql-transport-ws`: one WebSocket per transport,
+/// opened on the first request, with `connection_init` and `connection_ack`,
+/// then `subscribe`, `next`, `error` and `complete` by id. A subscription's
+/// stream is its events; a query's or mutation's the one payload the server
+/// completes after.
+public actor GraphQLTransportWebSocket: Transport {
     public let url: URL
     public let headers: [String: String]
+    /// Headers read when a connection is opened, after the fixed ones.
+    public let credentials: @Sendable () async throws -> [String: String]
+    public let encoding: Encoding
     /// The `payload` of `connection_init`, for authentication.
     public let connectionParams: Variable?
     private let session: URLSession
@@ -326,14 +369,16 @@ public actor GraphQLTransportWebSocket: SubscriptionTransport {
     private var receiving: Task<Void, Never>?
     private var subscribers: [String: AsyncThrowingStream<Data, any Error>.Continuation] = [:]
 
-    public init(url: URL, headers: [String: String] = [:], connectionParams: Variable? = nil, session: URLSession = .shared) {
+    public init(url: URL, headers: [String: String] = [:], credentials: @escaping @Sendable () async throws -> [String: String] = { [:] }, encoding: Encoding = .standard, connectionParams: Variable? = nil, session: URLSession = .shared) {
         self.url = url
         self.headers = headers
+        self.credentials = credentials
+        self.encoding = encoding
         self.connectionParams = connectionParams
         self.session = session
     }
 
-    public nonisolated func subscribe(_ request: Request) -> AsyncThrowingStream<Data, any Error> {
+    public nonisolated func send(_ request: Request) -> AsyncThrowingStream<Data, any Error> {
         // Every stream is a subscription of its own, under its own id: equal
         // requests must not stand in for one another when one of them ends.
         let id = UUID().uuidString
@@ -366,9 +411,7 @@ public actor GraphQLTransportWebSocket: SubscriptionTransport {
             return
         }
         subscribers[id] = continuation
-        let payload = "{\"query\":" + Variable.quote(request.text)
-            + ",\"operationName\":" + Variable.quote(request.operationName)
-            + ",\"variables\":" + request.variables.json + "}"
+        let payload = String(decoding: encoding.body(request), as: UTF8.self)
         do {
             try await send("{\"id\":\"\(id)\",\"type\":\"subscribe\",\"payload\":\(payload)}")
         } catch {
@@ -401,6 +444,7 @@ public actor GraphQLTransportWebSocket: SubscriptionTransport {
         if socket == nil {
             var urlRequest = URLRequest(url: url)
             for (name, value) in headers { urlRequest.setValue(value, forHTTPHeaderField: name) }
+            for (name, value) in try await credentials() { urlRequest.setValue(value, forHTTPHeaderField: name) }
             urlRequest.setValue("graphql-transport-ws", forHTTPHeaderField: "Sec-WebSocket-Protocol")
             let socket = session.webSocketTask(with: urlRequest)
             self.socket = socket

@@ -241,9 +241,7 @@ struct Parts: Transport {
 
     init(_ parts: [Data]) { self.parts = parts }
 
-    func execute(_ request: Request) async throws -> Data { parts[0] }
-
-    func stream(_ request: Request) -> AsyncThrowingStream<Data, any Error> {
+    func send(_ request: Request) -> AsyncThrowingStream<Data, any Error> {
         AsyncThrowingStream { continuation in
             for part in parts { continuation.yield(part) }
             continuation.finish()

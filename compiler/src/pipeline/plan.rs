@@ -118,8 +118,13 @@ pub struct OperationPlan {
     pub kind: OperationKind,
     pub root_type: String,
     pub variables: Vec<VariablePlan>,
+    /// The operation's text as the compiler printed it, which a server
+    /// receives or registers.
     pub text: String,
-    pub id: String,
+    /// The id the operation is sent by, under `persistConfig`; without it
+    /// the text is sent and no id exists.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub id: Option<String>,
     /// `@throwOnFieldError`: an uncaught field error fails the operation.
     pub throws_on_field_error: bool,
     /// Whether a `@required` field at the root can null the whole result.

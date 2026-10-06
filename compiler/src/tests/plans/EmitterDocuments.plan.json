@@ -818,7 +818,6 @@
         }
       ],
       "text": "mutation TestBuilderNames(\n  $id: ID!\n  $favorite: Boolean!\n  $self: ID!\n) {\n  type: setFavorite(id: $id, favorite: $favorite) {\n    character {\n      id\n      favorite\n    }\n  }\n  self: setFavorite(id: $self, favorite: $favorite) {\n    character {\n      id\n      favorite\n    }\n  }\n  string: setFavorite(id: $id, favorite: $favorite) {\n    character {\n      id\n      name\n    }\n  }\n  sendable: setFavorite(id: $id, favorite: $favorite) {\n    character {\n      id\n      favorite\n    }\n  }\n}",
-      "id": "257b27e016fc51dd507f48551b1bc353",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -1799,7 +1798,6 @@
         }
       ],
       "text": "query TestCaughtSpreads(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    ...TestCaughtProfile_character\n    ...TestCaughtStrict_character\n  }\n  node(id: $id) {\n    __typename\n    id\n    ... on Character {\n      ...TestCaughtProfile_character\n    }\n  }\n}\n\nfragment TestCaughtProfile_character on Character {\n  name\n  origin {\n    name\n    id\n  }\n}\n\nfragment TestCaughtStrict_character on Character {\n  species\n}",
-      "id": "0d9fb324ff48b3e70d0bcc6c3e3df062",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -2530,7 +2528,6 @@
         }
       ],
       "text": "mutation TestCommitVariable(\n  $commit: ID!\n) {\n  setFavorite(id: $commit, favorite: true) {\n    character {\n      id\n      name\n      favorite\n    }\n  }\n}",
-      "id": "74901df28f2929f51d2e12a1d300c09c",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -2827,7 +2824,6 @@
         }
       ],
       "text": "query TestConditionNames(\n  $id: ID!\n  $name: String!\n) {\n  namesake(name: $name) {\n    __typename\n    asCharacter: name\n    ... on Character {\n      status\n    }\n    ... on Node {\n      __isNode: __typename\n      id\n    }\n  }\n  node(id: $id) {\n    __typename\n    id\n    ... on Episode {\n      name\n    }\n    ... on Character {\n      name\n    }\n  }\n}",
-      "id": "996d89a10b1bacf5ca5f86cf7ad861e3",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -3509,7 +3505,6 @@
         }
       ],
       "text": "query TestEdgesNamesQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    ...TestEdgesNames_character\n    id\n  }\n}\n\nfragment TestEdgesNames_character on Character {\n  notes(first: 2) {\n    Edges: pageInfo {\n      hasNextPage\n    }\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}",
-      "id": "92a753811dab9a0b66fc8f686e451eb4",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -3999,7 +3994,6 @@
       "root_type": "Query",
       "variables": [],
       "text": "query TestEscapedText {\n  search(name: \"\\\\#1\") {\n    __typename\n    ... on Node {\n      __isNode: __typename\n      id\n    }\n  }\n}",
-      "id": "e45d6792260fea7beb23f33fa5369c96",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -4247,7 +4241,6 @@
         }
       ],
       "text": "query TestFragmentNamedFields(\n  $id: ID!\n) {\n  character(id: $id) {\n    TestCaughtProfile_character: name\n    TestCaughtStrict_character: species\n    ...TestCaughtProfile_character\n    ...TestCaughtStrict_character\n    Fragment: status\n    ...Fragment\n    id\n  }\n}\n\nfragment Fragment on Character {\n  status\n}\n\nfragment TestCaughtProfile_character on Character {\n  name\n  origin {\n    name\n    id\n  }\n}\n\nfragment TestCaughtStrict_character on Character {\n  species\n}",
-      "id": "67a56714d3b957a723ef0e58f0161910",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -4749,7 +4742,6 @@
         }
       ],
       "text": "query TestHasherVariable(\n  $hasher: ID!\n) {\n  character(id: $hasher) {\n    id\n    name\n  }\n}",
-      "id": "2c80978abfd935e0e3e0bd9006ff6e49",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -4965,7 +4957,6 @@
       "root_type": "Mutation",
       "variables": [],
       "text": "mutation TestListPayload {\n  setLists {\n    strings\n    ids\n    counts\n    ratios\n    flags\n    jsons\n    statuses\n  }\n}",
-      "id": "e514975665a261c9f916bec907cd2b6b",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -5406,7 +5397,6 @@
         }
       ],
       "text": "query TestLowercaseSpreads(\n  $id: ID!\n) {\n  character(id: $id) {\n    ...testLowercase\n    ...testLowercaseRequired\n    id\n  }\n}\n\nfragment testLowercase on Character {\n  name\n}\n\nfragment testLowercaseRequired on Character {\n  origin {\n    name\n    id\n  }\n}",
-      "id": "bcd9d385f91dc14b5bc18b85c9a1ae84",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -5680,7 +5670,6 @@
         }
       ],
       "text": "mutation TestModuleNamedPayload(\n  $id: ID!\n) {\n  setFavorite(id: $id, favorite: true) {\n    Baton: character {\n      id\n      Baton: name\n    }\n  }\n}",
-      "id": "d0ecd0de4ae40d2122dbcbeeab23d20b",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -5925,7 +5914,6 @@
         }
       ],
       "text": "query TestProgramNamesQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    ...TestProgramNames_character\n    id\n  }\n}\n\nfragment TestCaughtProfile_character on Character {\n  name\n  origin {\n    name\n    id\n  }\n}\n\nfragment TestProgramNames_character on Character {\n  testProgramNamesRefetchQuery: origin {\n    name\n    id\n  }\n  testCaughtProfile_character: location {\n    name\n    id\n  }\n  ...TestCaughtProfile_character\n  id\n}",
-      "id": "a1b90f4a3947b5e81ef88954bdf187a3",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -6347,7 +6335,6 @@
         }
       ],
       "text": "query TestProgramNamesRefetchQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...TestProgramNames_character\n    id\n  }\n}\n\nfragment TestCaughtProfile_character on Character {\n  name\n  origin {\n    name\n    id\n  }\n}\n\nfragment TestProgramNames_character on Character {\n  testProgramNamesRefetchQuery: origin {\n    name\n    id\n  }\n  testCaughtProfile_character: location {\n    name\n    id\n  }\n  ...TestCaughtProfile_character\n  id\n}",
-      "id": "34337398903367958287f89c6e28d4f2",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -6837,7 +6824,6 @@
         }
       ],
       "text": "query TestSpreadNames(\n  $id: ID!\n) {\n  character(id: $id) {\n    testCaughtStrict: species\n    ...TestCaughtStrict_character\n    id\n  }\n}\n\nfragment TestCaughtStrict_character on Character {\n  species\n}",
-      "id": "2fe130f1c33827440491d07eada160bf",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,

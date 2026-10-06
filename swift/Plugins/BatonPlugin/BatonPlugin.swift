@@ -64,6 +64,9 @@ struct BatonPlugin: BuildToolPlugin {
             "--shared", shared.path(percentEncoded: false),
         ]
         var outputs: [URL] = []
+        if let persist = configuration.persistConfig {
+            outputs.append(outputDirectory.appending(path: URL(filePath: persist.file).lastPathComponent))
+        }
         for source in sources {
             inputs.append(source)
             arguments.append(source.path(percentEncoded: false))
@@ -120,11 +123,19 @@ struct BatonPlugin: BuildToolPlugin {
 struct Configuration: Decodable {
     var schema: String
     var schemaExtensions: [String]?
+    var persistConfig: PersistConfiguration?
 
     static func load(at url: URL) throws -> Configuration {
         let data = try Data(contentsOf: url)
         return try JSONDecoder().decode(Configuration.self, from: data)
     }
+}
+
+/// Relay's `persistConfig`: under it the compiler writes the map from id to
+/// text, into the output directory under the build, where the sandbox keeps
+/// the source tree.
+struct PersistConfiguration: Decodable {
+    var file: String
 }
 
 #if canImport(XcodeProjectPlugin)

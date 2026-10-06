@@ -45,8 +45,7 @@ nonisolated public struct TestNode: Baton.Query {
     }
 
     public static let name = "TestNode"
-    public static let persistedID = "2304788bc851c146c51814dfce6bce4d"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestNode(
   $id: ID!
 ) {
@@ -63,7 +62,7 @@ query TestNode(
     id
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -134,8 +133,7 @@ nonisolated public struct TestRename: Baton.Mutation {
     }
 
     public static let name = "TestRename"
-    public static let persistedID = "bbbb03578f7d58a0b3956defbc951f96"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 mutation TestRename(
   $id: ID!
   $name: String!
@@ -147,7 +145,7 @@ mutation TestRename(
     }
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id), "name": Baton.Variable(self.name)])
@@ -257,8 +255,7 @@ nonisolated public struct TestRenameThroughFragment: Baton.Mutation {
     }
 
     public static let name = "TestRenameThroughFragment"
-    public static let persistedID = "9e2e336fcd7c22f650f9acdf7c7f81e4"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 mutation TestRenameThroughFragment(
   $id: ID!
   $name: String!
@@ -274,7 +271,7 @@ fragment TestRenamePayload_mutation on Mutation {
     }
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id), "name": Baton.Variable(self.name)])
@@ -371,8 +368,7 @@ nonisolated public struct TestRenameWithOrigin: Baton.Mutation {
     }
 
     public static let name = "TestRenameWithOrigin"
-    public static let persistedID = "8457c567f89b7b5a3ed8f3f5c8364841"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 mutation TestRenameWithOrigin(
   $id: ID!
   $name: String!
@@ -389,7 +385,7 @@ mutation TestRenameWithOrigin(
     }
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id), "name": Baton.Variable(self.name), "withOrigin": Baton.Variable(self.withOrigin)])
@@ -531,8 +527,7 @@ nonisolated public struct TestSearch: Baton.Query {
     }
 
     public static let name = "TestSearch"
-    public static let persistedID = "813ee13fc31b31a05b576bb247d1db8b"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestSearch(
   $name: String!
 ) {
@@ -553,7 +548,7 @@ query TestSearch(
     }
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["name": Baton.Variable(self.name)])
@@ -637,8 +632,7 @@ nonisolated public struct TestSearchOrigins: Baton.Query {
     }
 
     public static let name = "TestSearchOrigins"
-    public static let persistedID = "ef63ee320f68af412c96bcdec49f9223"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestSearchOrigins(
   $name: String!
 ) {
@@ -656,7 +650,7 @@ query TestSearchOrigins(
     }
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["name": Baton.Variable(self.name)])
@@ -734,8 +728,7 @@ nonisolated public struct TestSetFavorite: Baton.Mutation {
     }
 
     public static let name = "TestSetFavorite"
-    public static let persistedID = "26a88e1bfd6ec2eaa6508d193effadc7"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 mutation TestSetFavorite(
   $id: ID!
   $favorite: Boolean!
@@ -748,7 +741,7 @@ mutation TestSetFavorite(
     }
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id), "favorite": Baton.Variable(self.favorite)])

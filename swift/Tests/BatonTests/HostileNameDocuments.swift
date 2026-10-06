@@ -44,7 +44,7 @@ struct HostileNameDocuments {
           rhs: name hasher: name optimistic: name selfValue: name Fragment: name Spread: name
           Owner: name Query: name Operation: name RefetchQuery: name
           # What an operation value, a mutation's action and its optimistic response declare.
-          variables: name resolution: name name: name persistedID: name text: name plan: name
+          variables: name resolution: name name: name document: name text: name plan: name
           errorBehavior: name throwsOnFieldError: name bubbles: name hasDeferred: name cacheExpiration: name Data: name
           Action: name OptimisticResponse: name hash: name commit: name callAsFunction: name Op: name
           variable: name
@@ -99,7 +99,7 @@ struct HostileNameDocuments {
           Operation: origin { id } RefetchQuery: origin { id }
           # What an operation value, a mutation's action and its optimistic response declare.
           variables: origin { id } resolution: origin { id } name: origin { id }
-          persistedID: origin { id } text: origin { id } plan: origin { id }
+          document: origin { id } text: origin { id } plan: origin { id }
           errorBehavior: origin { id } throwsOnFieldError: origin { id } bubbles: origin { id }
           hasDeferred: origin { id } cacheExpiration: origin { id } Data: origin { id } Action: origin { id }
           OptimisticResponse: origin { id } hash: origin { id } commit: origin { id }
@@ -179,7 +179,7 @@ struct HostileNameDocuments {
           ... @alias(as: "RefetchQuery") { name }
           # What an operation value, a mutation's action and its optimistic response declare.
           ... @alias(as: "variables") { name } ... @alias(as: "resolution") { name }
-          ... @alias(as: "name") { name } ... @alias(as: "persistedID") { name }
+          ... @alias(as: "name") { name } ... @alias(as: "document") { name }
           ... @alias(as: "text") { name } ... @alias(as: "plan") { name }
           ... @alias(as: "errorBehavior") { name } ... @alias(as: "throwsOnFieldError") { name }
           ... @alias(as: "bubbles") { name } ... @alias(as: "hasDeferred") { name } ... @alias(as: "cacheExpiration") { name }
@@ -332,7 +332,7 @@ struct HostileNameDocuments {
           ... @alias(as: "variables") { ...HostileSpreadTarget_character }
           ... @alias(as: "resolution") { ...HostileSpreadTarget_character }
           ... @alias(as: "name") { ...HostileSpreadTarget_character }
-          ... @alias(as: "persistedID") { ...HostileSpreadTarget_character }
+          ... @alias(as: "document") { ...HostileSpreadTarget_character }
           ... @alias(as: "text") { ...HostileSpreadTarget_character }
           ... @alias(as: "plan") { ...HostileSpreadTarget_character }
           ... @alias(as: "errorBehavior") { ...HostileSpreadTarget_character }
@@ -436,7 +436,7 @@ struct HostileNameDocuments {
           rhs: name hasher: name optimistic: name selfValue: name Fragment: name Spread: name
           Owner: name Query: name Operation: name RefetchQuery: name
           # What an operation value, a mutation's action and its optimistic response declare.
-          variables: name resolution: name name: name persistedID: name text: name plan: name
+          variables: name resolution: name name: name document: name text: name plan: name
           errorBehavior: name throwsOnFieldError: name bubbles: name hasDeferred: name cacheExpiration: name Data: name
           Action: name OptimisticResponse: name hash: name commit: name callAsFunction: name Op: name
           variable: name
@@ -494,7 +494,7 @@ struct HostileNameDocuments {
             selfValue: totalCount Fragment: totalCount Spread: totalCount Owner: totalCount
             Query: totalCount Operation: totalCount RefetchQuery: totalCount
             # What an operation value, a mutation's action and its optimistic response declare.
-            variables: totalCount resolution: totalCount name: totalCount persistedID: totalCount
+            variables: totalCount resolution: totalCount name: totalCount document: totalCount
             text: totalCount plan: totalCount errorBehavior: totalCount throwsOnFieldError: totalCount
             bubbles: totalCount hasDeferred: totalCount cacheExpiration: totalCount Data: totalCount Action: totalCount
             OptimisticResponse: totalCount hash: totalCount commit: totalCount
@@ -571,7 +571,7 @@ struct HostileNameDocuments {
             rhs: name hasher: name optimistic: name selfValue: name Fragment: name Spread: name
             Owner: name Query: name Operation: name RefetchQuery: name
             # What an operation value, a mutation's action and its optimistic response declare.
-            variables: name resolution: name name: name persistedID: name text: name plan: name
+            variables: name resolution: name name: name document: name text: name plan: name
             errorBehavior: name throwsOnFieldError: name bubbles: name hasDeferred: name cacheExpiration: name Data: name
             Action: name OptimisticResponse: name hash: name commit: name callAsFunction: name Op: name
             variable: name
@@ -613,7 +613,7 @@ struct HostileNameDocuments {
           optimistic: id selfValue: id Fragment: id Spread: id Owner: id Query: id Operation: id
           RefetchQuery: id
           # What an operation value, a mutation's action and its optimistic response declare.
-          variables: id resolution: id name: id persistedID: id text: id plan: id errorBehavior: id
+          variables: id resolution: id name: id document: id text: id plan: id errorBehavior: id
           throwsOnFieldError: id bubbles: id hasDeferred: id cacheExpiration: id Data: id Action: id OptimisticResponse: id
           hash: id commit: id callAsFunction: id Op: id variable: id
           # What the runtime's protocols give a generated type.
@@ -658,7 +658,7 @@ struct HostileNameDocuments {
           $rhs: ID!, $hasher: ID!, $optimistic: ID!, $selfValue: ID!, $Fragment: ID!, $Spread: ID!,
           $Owner: ID!, $Query: ID!, $Operation: ID!, $RefetchQuery: ID!,
           # What an operation value, a mutation's action and its optimistic response declare.
-          $name: ID!, $persistedID: ID!, $text: ID!, $plan: ID!, $errorBehavior: ID!,
+          $name: ID!, $document: ID!, $text: ID!, $plan: ID!, $errorBehavior: ID!,
           $throwsOnFieldError: ID!, $bubbles: ID!, $hasDeferred: ID!, $cacheExpiration: ID!, $Action: ID!,
           $OptimisticResponse: ID!, $hash: ID!, $commit: ID!, $callAsFunction: ID!, $Op: ID!,
           $variable: ID!,
@@ -689,7 +689,7 @@ struct HostileNameDocuments {
             $bound, $errors, $child, $missing, $count, $fields, $lhs, $rhs, $hasher, $optimistic,
             $selfValue, $Fragment, $Spread, $Owner, $Query, $Operation, $RefetchQuery,
             # What an operation value, a mutation's action and its optimistic response declare.
-            $name, $persistedID, $text, $plan, $errorBehavior, $throwsOnFieldError, $bubbles,
+            $name, $document, $text, $plan, $errorBehavior, $throwsOnFieldError, $bubbles,
             $hasDeferred, $cacheExpiration, $Action, $OptimisticResponse, $hash, $commit, $callAsFunction, $Op, $variable,
             # What the runtime's protocols give a generated type.
             $retry, $subscription,
@@ -739,7 +739,7 @@ struct HostileNameDocuments {
           $Fragment: Boolean!, $Spread: Boolean!, $Owner: Boolean!, $Query: Boolean!,
           $Operation: Boolean!, $RefetchQuery: Boolean!,
           # What an operation value, a mutation's action and its optimistic response declare.
-          $resolution: Boolean!, $name: Boolean!, $persistedID: Boolean!, $text: Boolean!,
+          $resolution: Boolean!, $name: Boolean!, $document: Boolean!, $text: Boolean!,
           $plan: Boolean!, $errorBehavior: Boolean!, $throwsOnFieldError: Boolean!, $bubbles: Boolean!,
           $hasDeferred: Boolean!, $cacheExpiration: Boolean!, $hash: Boolean!, $commit: Boolean!, $callAsFunction: Boolean!,
           $Op: Boolean!, $variable: Boolean!,
@@ -816,7 +816,7 @@ struct HostileNameDocuments {
               ... @include(if: $Operation) { name } ... @include(if: $RefetchQuery) { name }
               # What an operation value, a mutation's action and its optimistic response declare.
               ... @include(if: $resolution) { name } ... @include(if: $name) { name }
-              ... @include(if: $persistedID) { name } ... @include(if: $text) { name }
+              ... @include(if: $document) { name } ... @include(if: $text) { name }
               ... @include(if: $plan) { name } ... @include(if: $errorBehavior) { name }
               ... @include(if: $throwsOnFieldError) { name } ... @include(if: $bubbles) { name }
               ... @include(if: $hasDeferred) { name } ... @include(if: $cacheExpiration) { name } ... @include(if: $hash) { name }
@@ -887,7 +887,7 @@ struct HostileNameDocuments {
           $selfValue: Boolean!, $Fragment: Boolean!, $Spread: Boolean!, $Owner: Boolean!,
           $Query: Boolean!, $Operation: Boolean!, $RefetchQuery: Boolean!,
           # What an operation value, a mutation's action and its optimistic response declare.
-          $name: Boolean!, $persistedID: Boolean!, $text: Boolean!, $plan: Boolean!,
+          $name: Boolean!, $document: Boolean!, $text: Boolean!, $plan: Boolean!,
           $errorBehavior: Boolean!, $throwsOnFieldError: Boolean!, $bubbles: Boolean!,
           $hasDeferred: Boolean!, $cacheExpiration: Boolean!, $Action: Boolean!, $OptimisticResponse: Boolean!, $hash: Boolean!,
           $commit: Boolean!, $callAsFunction: Boolean!, $Op: Boolean!, $variable: Boolean!,
@@ -964,7 +964,7 @@ struct HostileNameDocuments {
               ... @include(if: $Query) { cursor } ... @include(if: $Operation) { cursor }
               ... @include(if: $RefetchQuery) { cursor }
               # What an operation value, a mutation's action and its optimistic response declare.
-              ... @include(if: $name) { cursor } ... @include(if: $persistedID) { cursor }
+              ... @include(if: $name) { cursor } ... @include(if: $document) { cursor }
               ... @include(if: $text) { cursor } ... @include(if: $plan) { cursor }
               ... @include(if: $errorBehavior) { cursor }
               ... @include(if: $throwsOnFieldError) { cursor } ... @include(if: $bubbles) { cursor }
@@ -1110,7 +1110,7 @@ struct HostileNameDocuments {
           RefetchQuery: {type: "Boolean", defaultValue: true},
           # What an operation value, a mutation's action and its optimistic response declare.
           name: {type: "Boolean", defaultValue: true},
-          persistedID: {type: "Boolean", defaultValue: true},
+          document: {type: "Boolean", defaultValue: true},
           text: {type: "Boolean", defaultValue: true},
           plan: {type: "Boolean", defaultValue: true},
           errorBehavior: {type: "Boolean", defaultValue: true},
@@ -1207,7 +1207,7 @@ struct HostileNameDocuments {
           ... @include(if: $Query) { name } ... @include(if: $Operation) { name }
           ... @include(if: $RefetchQuery) { name }
           # What an operation value, a mutation's action and its optimistic response declare.
-          ... @include(if: $name) { name } ... @include(if: $persistedID) { name }
+          ... @include(if: $name) { name } ... @include(if: $document) { name }
           ... @include(if: $text) { name } ... @include(if: $plan) { name }
           ... @include(if: $errorBehavior) { name } ... @include(if: $throwsOnFieldError) { name }
           ... @include(if: $bubbles) { name } ... @include(if: $hasDeferred) { name } ... @include(if: $cacheExpiration) { name }
@@ -1262,7 +1262,7 @@ struct HostileNameDocuments {
               hasher: name optimistic: name selfValue: name Fragment: name Spread: name Owner: name
               Query: name Operation: name RefetchQuery: name fields: name
               # What an operation value, a mutation's action and its optimistic response declare.
-              variables: name resolution: name name: name persistedID: name text: name plan: name
+              variables: name resolution: name name: name document: name text: name plan: name
               errorBehavior: name throwsOnFieldError: name bubbles: name hasDeferred: name cacheExpiration: name Data: name
               Action: name OptimisticResponse: name hash: name commit: name callAsFunction: name
               Op: name
@@ -1311,7 +1311,7 @@ struct HostileNameDocuments {
             Owner: note { id } Query: note { id } Operation: note { id } RefetchQuery: note { id }
             fields: note { id }
             # What an operation value, a mutation's action and its optimistic response declare.
-            variables: note { id } resolution: note { id } name: note { id } persistedID: note { id }
+            variables: note { id } resolution: note { id } name: note { id } document: note { id }
             text: note { id } plan: note { id } errorBehavior: note { id }
             throwsOnFieldError: note { id } bubbles: note { id } hasDeferred: note { id } cacheExpiration: note { id }
             Data: note { id } Action: note { id } OptimisticResponse: note { id } hash: note { id }

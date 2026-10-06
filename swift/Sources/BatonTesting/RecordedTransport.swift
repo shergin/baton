@@ -24,12 +24,19 @@ public final class RecordedTransport: Transport, @unchecked Sendable {
     }
 
     /// The requests the transport was sent, in order. Read under the lock
-    /// `execute` appends under, from any thread.
+    /// `send` appends under, from any thread.
     public var requests: [Request] { lock.withLock { sent } }
 
     public var requestCount: Int { lock.withLock { sent.count } }
 
-    public func execute(_ request: Request) async throws -> Data {
+    /// Records the request as it is sent, so the order of `requests` is the
+    /// order of the calls, and answers on the stream.
+    public func send(_ request: Request) -> AsyncThrowingStream<Data, any Error> {
+        let answer = Result { try self.answer(request) }
+        return Self.once { try answer.get() }
+    }
+
+    private func answer(_ request: Request) throws -> Data {
         try lock.withLock {
             sent.append(request)
             if let responder, let data = responder(request) { return data }

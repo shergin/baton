@@ -546,11 +546,16 @@ generically.
 
 **Persisted id.** *Composition: document, transport.* Relay and the GraphQL
 community's word for the hash a server accepts in place of operation text.
-Here: emitted for every operation by default, an MD5 of its text, and sent
-by no built-in transport. Sending it is *(planned)*: under Relay's
-`persistConfig` an artifact carries the id and no text, without it the text
-and no id, so the build decides which a request carries and no transport
-has a mode. See
+Here: under Relay's `persistConfig` in `baton.json`, `file` and `algorithm`
+(`MD5`, `SHA256` or `SHA1`), an artifact carries the id, the text's hash in
+lowercase hexadecimal, and no text, and `batonc generate` writes the file,
+Relay's map from id to text with the ids in order, beside the configuration
+when run by hand and into the build's output directory under the SwiftPM
+plugin; without `persistConfig` the artifact carries the text and no id. So
+the build decides what a request carries, the operation's `document` says
+which, text or id and never both, and no transport has a mode or a fallback.
+The standard encoding writes an id as `documentId`, after the GraphQL over
+HTTP working group's proposal. See
 [the decision](decisions/an-operation-is-sent-as-text-or-id.md).
 
 **Artifact.** *Composition: document, lens, plan.* Everything the compiler
@@ -592,15 +597,30 @@ not the end. The order of a sign-out is the app's: end the environment,
 remove the image, forget the credential last. See
 [the decision](decisions/the-environment-is-the-session.md).
 
-**Transport.** *Concept: transport.* The protocol behind which HTTP and
-multipart incremental delivery live: `execute` answers once, `stream` yields
-the parts of a deferred response. `URLSessionTransport` implements both;
-`MultipartParser` splits the parts. A response outside 2xx fails with
-`TransportError`, its HTTP status and body; a socket that closed under a
-subscription and a recorded transport with nothing recorded fail with one of
-status 0, which says what went wrong. `TransportError` stays the built-in
-transports' error, and is carried unchanged inside the transport's kind of
-[failure](#runtime), as a `URLError` or an app's own transport's error is.
+**Transport.** *Concept: transport.* The protocol behind which HTTP,
+multipart incremental delivery and the socket live, with one verb: `send`,
+a request yielding a stream of payloads, one for a query, the parts of a
+deferred response, the events of a subscription, so a wrapper wraps one
+method whatever the operation's kind; `payload` reads the one payload of a
+request that answers once. A `Request` says its kind, query, mutation or
+subscription, so a wrapper never retries a mutation a server may have
+received, and carries the operation's `document`, text or id. One function,
+an `Encoding`, turns a request into the JSON a server receives, for the
+HTTP body and the socket's subscribe payload alike; the standard one writes
+`operationName`, `variables`, `onError` when set, and `query` for a text or
+`documentId` for an id, and a server with another convention replaces the
+function on the built-in transports and keeps them. The built-in transports
+read credentials per attempt, from a closure, so a rotated token reaches the
+next request or connection. `URLSessionTransport` speaks HTTP and reads
+`multipart/mixed`; `GraphQLTransportWebSocket` speaks `graphql-transport-ws`
+for subscriptions and any operation sent over the socket; `MultipartParser`
+splits the parts. A response outside 2xx fails with `TransportError`, its
+HTTP status and body; a socket that closed under a subscription, a recorded
+transport with nothing recorded and a transport that delivers no payload
+fail with one of status 0, which says what went wrong. `TransportError`
+stays the built-in transports' error, and is carried unchanged inside the
+transport's kind of [failure](#runtime), as a `URLError` or an app's own
+transport's error is.
 
 **Recorded transport.** *Concept: transport.* Baton's word.
 `RecordedTransport` answers from recorded responses by operation name, or
@@ -622,7 +642,8 @@ first event, open, or ended, by the server's completion or by a
 subscription has no data of its own to wait for, so it has no loading. Each
 event is normalized at the subscription root
 (`client:root:subscription`) and committed, so edge directives on its
-payload work. `SubscriptionTransport` is the protocol;
+payload work. The environment's `subscriptions` transport carries them,
+through the one verb every [transport](#runtime) has;
 `GraphQLTransportWebSocket` speaks `graphql-transport-ws`.
 
 **Error behavior.** *Composition: schema, lens, transport.* The GraphQL

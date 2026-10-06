@@ -20,7 +20,6 @@
         }
       ],
       "text": "query TestAssetNameQuery(\n  $uuid: String!\n) {\n  asset(uuid: $uuid) {\n    name\n    id\n    uuid\n  }\n}",
-      "id": "78cdff70b45310a221c727b9d738e35f",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -247,7 +246,6 @@
         }
       ],
       "text": "query TestAssetQuery(\n  $uuid: String!\n) {\n  asset(uuid: $uuid) {\n    owner {\n      name\n      id\n    }\n    uuid\n    name\n    id\n  }\n}",
-      "id": "fe8e3c28a4e3bec795a33437b7bd0d51",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -617,7 +615,6 @@
       "root_type": "Query",
       "variables": [],
       "text": "query TestAssetsQuery {\n  assets {\n    name\n    size\n    id\n    uuid\n  }\n}",
-      "id": "f95642b0100a1450e86315dad58df25b",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -860,7 +857,6 @@
         }
       ],
       "text": "query TestQuoteQuery(\n  $base: String!\n  $quote: String!\n) {\n  quote(base: $base, quote: $quote) {\n    base\n    quote\n    rate\n  }\n}",
-      "id": "3d4096a22f4b01601197a105609351a3",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -1148,7 +1144,6 @@
       "root_type": "Query",
       "variables": [],
       "text": "query TestQuotesQuery {\n  quotes {\n    rate\n    base\n    quote\n  }\n}",
-      "id": "a28149b1db47f0dcbdd489fc57a2cdd5",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,

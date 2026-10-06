@@ -44,8 +44,7 @@ nonisolated public struct TestKeys: Baton.Query {
     }
 
     public static let name = "TestKeys"
-    public static let persistedID = "620898ed47f113ee21ff882045dcf004"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestKeys(
   $id: ID!
   $name: String
@@ -71,7 +70,7 @@ query TestKeys(
     }
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id), "name": Baton.Variable(self.name)])
@@ -172,8 +171,7 @@ nonisolated public struct TestNoteCounts: Baton.Query {
     }
 
     public static let name = "TestNoteCounts"
-    public static let persistedID = "fd6f3ecc66f1ef8fe25827eed8595243"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestNoteCounts(
   $page: Int
   $count: Int
@@ -191,7 +189,7 @@ query TestNoteCounts(
     }
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["page": Baton.Variable(self.page), "count": Baton.Variable(self.count)])
@@ -272,8 +270,7 @@ nonisolated public struct TestSpreadKeys: Baton.Query {
     }
 
     public static let name = "TestSpreadKeys"
-    public static let persistedID = "8c9035fa459246c0b90b58aa1601f17e"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestSpreadKeys(
   $id: ID!
   $name: String
@@ -301,7 +298,7 @@ fragment TestKeyArguments_query_p86SO on Query {
     }
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id), "name": Baton.Variable(self.name)])

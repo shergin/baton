@@ -10,8 +10,7 @@ nonisolated public struct TestCharacterSecret: Baton.Query {
     }
 
     public static let name = "TestCharacterSecret"
-    public static let persistedID = "61476e21a4e42da55c26edd07d1ec2af"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestCharacterSecret {
   character(id: "1") {
     id
@@ -22,7 +21,7 @@ query TestCharacterSecret {
     }
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables([:])
@@ -81,8 +80,7 @@ nonisolated public struct TestSecrets: Baton.Query {
     }
 
     public static let name = "TestSecrets"
-    public static let persistedID = "5c59784e43ab2e5898651c38ee0a2897"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestSecrets(
   $code: String!
 ) {
@@ -95,7 +93,7 @@ query TestSecrets(
     name
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["code": Baton.Variable(self.code)])

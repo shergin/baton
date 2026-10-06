@@ -352,16 +352,12 @@ fn a_cache_expiration_on_a_mutation_or_from_a_variable_is_an_error() {
 }
 
 #[test]
-fn a_persisted_id_is_the_hash_of_the_text_the_app_holds() {
+fn the_text_an_operation_holds_ends_at_its_last_brace() {
     let (sdl, path) = schema();
     let compiled = compile(&sdl, &path, &[], &[document(QUERY)], &Config::default())
         .unwrap_or_else(|errors| panic!("{errors:?}"));
     let operation = &compiled.plan.operations[0];
     assert_eq!(operation.text, operation.text.trim_end());
-    assert_eq!(
-        operation.id,
-        format!("{:x}", md5::compute(operation.text.as_bytes()))
-    );
 }
 
 #[test]
@@ -642,3 +638,6 @@ mod transient_tests;
 
 #[path = "condition_lens_tests.rs"]
 mod condition_lens_tests;
+
+#[path = "persist_tests.rs"]
+mod persist_tests;

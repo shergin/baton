@@ -436,8 +436,7 @@ nonisolated public struct TestAddNote: Baton.Mutation {
     }
 
     public static let name = "TestAddNote"
-    public static let persistedID = "5a07754467a5f4de707c49c03c103b1b"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 mutation TestAddNote(
   $characterId: ID!
   $text: String!
@@ -452,7 +451,7 @@ mutation TestAddNote(
     }
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["characterId": Baton.Variable(self.characterId), "text": Baton.Variable(self.text), "connections": Baton.Variable(self.connections)])
@@ -592,8 +591,7 @@ nonisolated public struct TestAddNoteFirst: Baton.Mutation {
     }
 
     public static let name = "TestAddNoteFirst"
-    public static let persistedID = "0f4a65f28de5eb79da63f815e2673c66"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 mutation TestAddNoteFirst(
   $characterId: ID!
   $text: String!
@@ -608,7 +606,7 @@ mutation TestAddNoteFirst(
     }
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["characterId": Baton.Variable(self.characterId), "text": Baton.Variable(self.text), "connections": Baton.Variable(self.connections)])
@@ -748,8 +746,7 @@ nonisolated public struct TestAddNoteNode: Baton.Mutation {
     }
 
     public static let name = "TestAddNoteNode"
-    public static let persistedID = "fd16be3f9e54a4d8b90dbd6c2540e125"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 mutation TestAddNoteNode(
   $characterId: ID!
   $text: String!
@@ -761,7 +758,7 @@ mutation TestAddNoteNode(
     }
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["characterId": Baton.Variable(self.characterId), "text": Baton.Variable(self.text), "connections": Baton.Variable(self.connections)])
@@ -874,8 +871,7 @@ nonisolated public struct TestAddNoteNodeFirst: Baton.Mutation {
     }
 
     public static let name = "TestAddNoteNodeFirst"
-    public static let persistedID = "430e5437a3d09a6cc59e8e6680c73775"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 mutation TestAddNoteNodeFirst(
   $characterId: ID!
   $text: String!
@@ -887,7 +883,7 @@ mutation TestAddNoteNodeFirst(
     }
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["characterId": Baton.Variable(self.characterId), "text": Baton.Variable(self.text), "connections": Baton.Variable(self.connections)])
@@ -1000,8 +996,7 @@ nonisolated public struct TestAddNoteNodeOfAnotherType: Baton.Mutation {
     }
 
     public static let name = "TestAddNoteNodeOfAnotherType"
-    public static let persistedID = "885c273dca4ff16d95895158300708f8"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 mutation TestAddNoteNodeOfAnotherType(
   $characterId: ID!
   $text: String!
@@ -1013,7 +1008,7 @@ mutation TestAddNoteNodeOfAnotherType(
     }
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["characterId": Baton.Variable(self.characterId), "text": Baton.Variable(self.text), "connections": Baton.Variable(self.connections)])
@@ -1123,8 +1118,7 @@ nonisolated public struct TestAliasQuery: Baton.Query {
     }
 
     public static let name = "TestAliasQuery"
-    public static let persistedID = "b06f7b4d33bcb11443b3596c68b4a660"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestAliasQuery(
   $id: ID!
 ) {
@@ -1139,7 +1133,7 @@ fragment TestRow_character on Character {
   status
   image
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -1191,8 +1185,7 @@ nonisolated public struct TestAuthorNotesPaginationQuery: Baton.Query {
     }
 
     public static let name = "TestAuthorNotesPaginationQuery"
-    public static let persistedID = "5f32bc98387fea0353633cf9adf8a1b8"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestAuthorNotesPaginationQuery(
   $count: Int = 2
   $cursor: String
@@ -1226,7 +1219,7 @@ fragment TestAuthorNotes_note_1G22uz on Note {
     }
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["count": Baton.Variable(self.count), "cursor": Baton.Variable(self.cursor), "id": Baton.Variable(self.id)])
@@ -1302,8 +1295,7 @@ nonisolated public struct TestAuthorNotesQuery: Baton.Query {
     }
 
     public static let name = "TestAuthorNotesQuery"
-    public static let persistedID = "e4fe381d13bc863a96beb253c47ecddb"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestAuthorNotesQuery(
   $id: ID!
 ) {
@@ -1335,7 +1327,7 @@ fragment TestAuthorNotes_note on Note {
     }
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -1413,9 +1405,7 @@ nonisolated public struct TestDeferredNotesPaginationQuery: Baton.Query {
     }
 
     public static let name = "TestDeferredNotesPaginationQuery"
-    public static let persistedID = "b783fa1069867f31cbeab6bf8e7a8aa6"
-    @_spi(Generated) public static let hasDeferred = true
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestDeferredNotesPaginationQuery(
   $count: Int = 2
   $cursor: String
@@ -1449,7 +1439,8 @@ fragment TestDeferredNotes_character_1G22uz on Character {
 fragment TestNoteText_note on Note {
   text
 }
-"""#
+"""#)
+    @_spi(Generated) public static let hasDeferred = true
 
     public var variables: Baton.Variables {
         Baton.Variables(["count": Baton.Variable(self.count), "cursor": Baton.Variable(self.cursor), "id": Baton.Variable(self.id)])
@@ -1520,8 +1511,7 @@ nonisolated public struct TestDeleteNote: Baton.Mutation {
     }
 
     public static let name = "TestDeleteNote"
-    public static let persistedID = "c7cf4459c400adc68e490e0bc8e9cddc"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 mutation TestDeleteNote(
   $id: ID!
 ) {
@@ -1529,7 +1519,7 @@ mutation TestDeleteNote(
     removedNoteId
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -1614,8 +1604,7 @@ nonisolated public struct TestHiddenNotesPaginationQuery: Baton.Query {
     }
 
     public static let name = "TestHiddenNotesPaginationQuery"
-    public static let persistedID = "da3a1b33a584b4ac9adec1c33fcaa9ee"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestHiddenNotesPaginationQuery(
   $count: Int = 2
   $cursor: String
@@ -1649,7 +1638,7 @@ fragment TestHiddenNotes_character_1G22uz on Character {
   }
   id
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["count": Baton.Variable(self.count), "cursor": Baton.Variable(self.cursor), "id": Baton.Variable(self.id)])
@@ -1725,8 +1714,7 @@ nonisolated public struct TestHiddenNotesQuery: Baton.Query {
     }
 
     public static let name = "TestHiddenNotesQuery"
-    public static let persistedID = "7da75c7b3f2c38f029fbfb737ab23a94"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestHiddenNotesQuery(
   $id: ID!
 ) {
@@ -1757,7 +1745,7 @@ fragment TestHiddenNotes_character on Character {
   }
   id
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -1827,8 +1815,7 @@ nonisolated public struct TestHiddenRecentNotesPaginationQuery: Baton.Query {
     }
 
     public static let name = "TestHiddenRecentNotesPaginationQuery"
-    public static let persistedID = "902b16c3c4a5987a7ff3ee89277b4f16"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestHiddenRecentNotesPaginationQuery(
   $count: Int = 2
   $cursor: String
@@ -1860,7 +1847,7 @@ fragment TestHiddenRecentNotes_character_1G22uz on Character {
   }
   id
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["count": Baton.Variable(self.count), "cursor": Baton.Variable(self.cursor), "id": Baton.Variable(self.id)])
@@ -1934,8 +1921,7 @@ nonisolated public struct TestHiddenRecentNotesQuery: Baton.Query {
     }
 
     public static let name = "TestHiddenRecentNotesQuery"
-    public static let persistedID = "a11081a7c38b46dfb5358d13ee978417"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestHiddenRecentNotesQuery(
   $id: ID!
 ) {
@@ -1964,7 +1950,7 @@ fragment TestHiddenRecentNotes_character on Character {
   }
   id
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -2032,8 +2018,7 @@ nonisolated public struct TestNotesPaginationQuery: Baton.Query {
     }
 
     public static let name = "TestNotesPaginationQuery"
-    public static let persistedID = "5d9969b436413f5c9c550b52bc769c88"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestNotesPaginationQuery(
   $count: Int = 2
   $cursor: String
@@ -2065,7 +2050,7 @@ fragment TestNotes_character_1G22uz on Character {
   }
   id
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["count": Baton.Variable(self.count), "cursor": Baton.Variable(self.cursor), "id": Baton.Variable(self.id)])
@@ -2139,8 +2124,7 @@ nonisolated public struct TestNotesQuery: Baton.Query {
     }
 
     public static let name = "TestNotesQuery"
-    public static let persistedID = "379fb818f58f3f0a471674832450dd6e"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestNotesQuery(
   $id: ID!
 ) {
@@ -2169,7 +2153,7 @@ fragment TestNotes_character on Character {
   }
   id
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -2235,8 +2219,7 @@ nonisolated public struct TestNotesSizedQuery: Baton.Query {
     }
 
     public static let name = "TestNotesSizedQuery"
-    public static let persistedID = "acab01211ce6326e2f3fc479099a653d"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestNotesSizedQuery(
   $id: ID!
   $size: Int
@@ -2266,7 +2249,7 @@ fragment TestNotes_character_2H9PL on Character {
   }
   id
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id), "size": Baton.Variable(self.size)])
@@ -2335,8 +2318,7 @@ nonisolated public struct TestRecentNotesPaginationQuery: Baton.Query {
     }
 
     public static let name = "TestRecentNotesPaginationQuery"
-    public static let persistedID = "4c01794506d90fcca71068bb79a1743f"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestRecentNotesPaginationQuery(
   $count: Int = 2
   $cursor: String
@@ -2366,7 +2348,7 @@ fragment TestRecentNotes_character_1G22uz on Character {
   }
   id
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["count": Baton.Variable(self.count), "cursor": Baton.Variable(self.cursor), "id": Baton.Variable(self.id)])
@@ -2438,8 +2420,7 @@ nonisolated public struct TestRecentNotesQuery: Baton.Query {
     }
 
     public static let name = "TestRecentNotesQuery"
-    public static let persistedID = "818da2ddf28252508a6269de7bae304b"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestRecentNotesQuery(
   $id: ID!
 ) {
@@ -2466,7 +2447,7 @@ fragment TestRecentNotes_character on Character {
   }
   id
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -2529,8 +2510,7 @@ nonisolated public struct TestRemoveNote: Baton.Mutation {
     }
 
     public static let name = "TestRemoveNote"
-    public static let persistedID = "73769fd47c8321b438a68e9b694b3640"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 mutation TestRemoveNote(
   $id: ID!
 ) {
@@ -2539,7 +2519,7 @@ mutation TestRemoveNote(
     deleted: removedNoteId
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id), "connections": Baton.Variable(self.connections)])
@@ -2626,8 +2606,7 @@ nonisolated public struct TestTwoPagesQuery: Baton.Query {
     }
 
     public static let name = "TestTwoPagesQuery"
-    public static let persistedID = "9ca573bd1668abfeb89b9b8438036eb4"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestTwoPagesQuery(
   $id: ID!
 ) {
@@ -2669,7 +2648,7 @@ query TestTwoPagesQuery(
     id
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])

@@ -79,7 +79,6 @@
         }
       ],
       "text": "query TestConditions(\n  $id: ID!\n  $withOrigin: Boolean!\n  $hideStatus: Boolean!\n) {\n  character(id: $id) {\n    name\n    origin {\n      id\n    }\n    origin @include(if: $withOrigin) {\n      name\n      dimension\n      id\n    }\n    species @include(if: $withOrigin)\n    status @skip(if: $hideStatus)\n    id\n  }\n}",
-      "id": "b744f5f82542704904ffc2bd588dbc4a",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -684,7 +683,6 @@
         }
       ],
       "text": "query TestFoldedNode(\n  $name: String!\n) {\n  search(name: $name) {\n    __typename\n    ... on Node {\n      __isNode: __typename\n      id\n    }\n  }\n}",
-      "id": "a20560ae59e29301e7e9efb7b1d7686c",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -945,7 +943,6 @@
         }
       ],
       "text": "query TestNamedSpread(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    id\n    ...TestNamed_named\n  }\n}\n\nfragment TestNamed_named on Named {\n  __isNamed: __typename\n  name\n}",
-      "id": "b7c1cf1f05ff696dd1ba8265d8dd6ada",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -1263,7 +1260,6 @@
         }
       ],
       "text": "query TestNodeDeferred(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    id\n    ... on Character {\n      name\n    }\n    ...TestAppearances_character @defer(label: \"TestNodeDeferred$defer$TestAppearances_character\")\n  }\n}\n\nfragment TestAppearances_character on Character {\n  episode {\n    name\n    air_date\n    id\n  }\n}",
-      "id": "40ae4f9b4a16ce35c2e62b019947a9a4",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": true,
@@ -1741,7 +1737,6 @@
         }
       ],
       "text": "query TestNodeFields(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    id\n    ... on Character {\n      name\n    }\n  }\n}",
-      "id": "7a25c9b541f82a48734066087e59edb8",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -2063,7 +2058,6 @@
         }
       ],
       "text": "query TestStrictConditions(\n  $id: ID!\n  $withStatus: Boolean!\n) {\n  character(id: $id) {\n    name\n    __typename @include(if: $withStatus)\n    species @include(if: $withStatus)\n    status @include(if: $withStatus)\n    origin @include(if: $withStatus) {\n      name\n      id\n    }\n    id\n  }\n}",
-      "id": "284da68207ad97edbf5841e7d2de4371",
       "throws_on_field_error": true,
       "bubbles": false,
       "has_deferred": false,
@@ -2556,7 +2550,6 @@
         }
       ],
       "text": "query TestTwoSpreads(\n  $id: ID!\n  $again: Boolean!\n) {\n  character(id: $id) {\n    ...TestRow_character\n    ...TestRow_character @include(if: $again)\n    id\n  }\n}\n\nfragment TestRow_character on Character {\n  name\n  status\n  image\n}",
-      "id": "e1ba3ed612febdf5f5d91e49497312a3",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -2818,7 +2811,6 @@
         }
       ],
       "text": "query TestUnion(\n  $name: String!\n) {\n  search(name: $name) {\n    __typename\n    ... on Character {\n      label: name\n      status\n    }\n    ... on Location {\n      label: dimension\n      type\n    }\n    ... on Episode {\n      air_date\n    }\n    ... on Named {\n      __isNamed: __typename\n      name\n    }\n    ... on Node {\n      __isNode: __typename\n      id\n    }\n  }\n}",
-      "id": "72b0ff272fd2b4d85080300653ac6d2a",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,

@@ -5,6 +5,22 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- The transport has one verb. `Transport.send` takes a request and yields
+  a stream of payloads: one for a query, the parts of a deferred response,
+  the events of a subscription, so a wrapper wraps one method; `payload`
+  reads the one payload of a request that answers once. `execute`, `stream`
+  and `SubscriptionTransport` are gone, and the environment's
+  `subscriptions` is a `Transport`. A `Request` says its `kind` and carries
+  the operation's `document`, text or id and never both; the operation's
+  `text` and `persistedID` are its `document`, with `text` an optional
+  convenience. One `Encoding` turns a request into the JSON a server
+  receives, for the HTTP body and the socket's payload alike; the standard
+  one writes `query` or `documentId`, and the built-in transports take
+  another. They also read `credentials` per attempt, from a closure. Under
+  Relay's `persistConfig` in `baton.json` the artifact carries the id,
+  hashed with `MD5`, `SHA256` or `SHA1`, and no text, and `batonc generate`
+  writes the map from id to text; without it the text and no id. Generated
+  code of this shape is format 14.
 - A concrete type's lens under an interface or union sees the conditions
   on the interfaces and unions its type satisfies: `... on Character` reads
   the fields `... on Named` selected beside it, under that condition's

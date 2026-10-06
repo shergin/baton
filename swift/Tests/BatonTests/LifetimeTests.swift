@@ -526,9 +526,7 @@ struct LifetimeTests {
 
         var count: Int { lock.withLock { streams.count } }
 
-        func execute(_ request: Request) async throws -> Data { throw TransportError(statusCode: 0, body: "streams only") }
-
-        func stream(_ request: Request) -> AsyncThrowingStream<Data, any Error> {
+        func send(_ request: Request) -> AsyncThrowingStream<Data, any Error> {
             let (stream, continuation) = AsyncThrowingStream<Data, any Error>.makeStream()
             lock.withLock { streams.append(continuation) }
             return stream

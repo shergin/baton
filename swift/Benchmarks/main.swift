@@ -498,12 +498,12 @@ func multipartBench() async throws {
     let configuration = URLSessionConfiguration.ephemeral
     configuration.protocolClasses = [MultipartStub.self]
     let transport = URLSessionTransport(url: URL(string: "https://stub.invalid/graphql")!, session: URLSession(configuration: configuration))
-    let request = Request(operationName: "Stub", text: "query Stub { a }", persistedID: "", variables: .none, incremental: true)
+    let request = Request(operationName: "Stub", kind: .query, document: .text("query Stub { a }"), variables: .none, incremental: true)
     await measureEach("read it through URLSessionTransport, every part", iterations: 10) {
         let start = DispatchTime.now().uptimeNanoseconds
         var count = 0
         do {
-            for try await _ in transport.stream(request) { count += 1 }
+            for try await _ in transport.send(request) { count += 1 }
         } catch {
             print("    failed: \(error)")
         }

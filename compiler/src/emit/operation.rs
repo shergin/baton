@@ -85,9 +85,15 @@ fn value_members(
         "public static let name = {}",
         swift_literal(&operation.name)
     ));
+    // Text or id, never both: the build decided, and the binary holds no
+    // text to fall back to under `persistConfig`.
+    let document = match &operation.id {
+        Some(id) => format!(".id({})", swift_literal(id)),
+        None => format!(".text({})", raw_multiline_literal(&operation.text)),
+    };
     writer.line(format!(
-        "public static let persistedID = {}",
-        swift_literal(&operation.id)
+        "public static let document: {} = {document}",
+        SwiftType::runtime("Document")
     ));
     if let Some(behavior) = &operation.error_behavior {
         writer.line(format!(
@@ -110,10 +116,6 @@ fn value_members(
             writer.line(format!("@_spi(Generated) public static let {flag} = true"));
         }
     }
-    writer.line(format!(
-        "public static let text = {}",
-        raw_multiline_literal(&operation.text)
-    ));
     writer.blank();
     let variables = SwiftType::runtime("Variables");
     writer.block(format!("public var variables: {variables}"), |writer| {

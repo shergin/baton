@@ -27,7 +27,8 @@ struct OracleOperation: Sendable {
     init<Op: Baton.Operation>(_ operation: Op, reads: [String: @MainActor @Sendable (Op.Data) -> Manifest.Value], spellings: [String: Spelling] = [:]) {
         self.spellings = spellings
         name = Op.name
-        text = Op.text
+        // The test target sets no `persistConfig`, so every operation holds its text.
+        text = Op.text ?? ""
         plan = Op.plan
         variables = operation.variables
         readers = reads.mapValues { read -> Reader in { anchor in read(Op.Data(anchor: anchor)) } }

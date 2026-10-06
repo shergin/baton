@@ -24,8 +24,7 @@ nonisolated public struct TestConditions: Baton.Query {
     }
 
     public static let name = "TestConditions"
-    public static let persistedID = "b744f5f82542704904ffc2bd588dbc4a"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestConditions(
   $id: ID!
   $withOrigin: Boolean!
@@ -46,7 +45,7 @@ query TestConditions(
     id
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id), "withOrigin": Baton.Variable(self.withOrigin), "hideStatus": Baton.Variable(self.hideStatus)])
@@ -113,8 +112,7 @@ nonisolated public struct TestFoldedNode: Baton.Query {
     }
 
     public static let name = "TestFoldedNode"
-    public static let persistedID = "a20560ae59e29301e7e9efb7b1d7686c"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestFoldedNode(
   $name: String!
 ) {
@@ -126,7 +124,7 @@ query TestFoldedNode(
     }
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["name": Baton.Variable(self.name)])
@@ -181,8 +179,7 @@ nonisolated public struct TestNamedSpread: Baton.Query {
     }
 
     public static let name = "TestNamedSpread"
-    public static let persistedID = "b7c1cf1f05ff696dd1ba8265d8dd6ada"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestNamedSpread(
   $id: ID!
 ) {
@@ -197,7 +194,7 @@ fragment TestNamed_named on Named {
   __isNamed: __typename
   name
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -259,9 +256,7 @@ nonisolated public struct TestNodeDeferred: Baton.Query {
     }
 
     public static let name = "TestNodeDeferred"
-    public static let persistedID = "40ae4f9b4a16ce35c2e62b019947a9a4"
-    @_spi(Generated) public static let hasDeferred = true
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestNodeDeferred(
   $id: ID!
 ) {
@@ -282,7 +277,8 @@ fragment TestAppearances_character on Character {
     id
   }
 }
-"""#
+"""#)
+    @_spi(Generated) public static let hasDeferred = true
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -360,8 +356,7 @@ nonisolated public struct TestNodeFields: Baton.Query {
     }
 
     public static let name = "TestNodeFields"
-    public static let persistedID = "7a25c9b541f82a48734066087e59edb8"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestNodeFields(
   $id: ID!
 ) {
@@ -373,7 +368,7 @@ query TestNodeFields(
     }
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -436,9 +431,7 @@ nonisolated public struct TestStrictConditions: Baton.Query {
     }
 
     public static let name = "TestStrictConditions"
-    public static let persistedID = "284da68207ad97edbf5841e7d2de4371"
-    @_spi(Generated) public static let throwsOnFieldError = true
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestStrictConditions(
   $id: ID!
   $withStatus: Boolean!
@@ -455,7 +448,8 @@ query TestStrictConditions(
     id
   }
 }
-"""#
+"""#)
+    @_spi(Generated) public static let throwsOnFieldError = true
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id), "withStatus": Baton.Variable(self.withStatus)])
@@ -563,8 +557,7 @@ nonisolated public struct TestTwoSpreads: Baton.Query {
     }
 
     public static let name = "TestTwoSpreads"
-    public static let persistedID = "e1ba3ed612febdf5f5d91e49497312a3"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestTwoSpreads(
   $id: ID!
   $again: Boolean!
@@ -581,7 +574,7 @@ fragment TestRow_character on Character {
   status
   image
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id), "again": Baton.Variable(self.again)])
@@ -634,8 +627,7 @@ nonisolated public struct TestUnion: Baton.Query {
     }
 
     public static let name = "TestUnion"
-    public static let persistedID = "72b0ff272fd2b4d85080300653ac6d2a"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestUnion(
   $name: String!
 ) {
@@ -662,7 +654,7 @@ query TestUnion(
     }
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["name": Baton.Variable(self.name)])

@@ -149,8 +149,7 @@ nonisolated public struct TestCaughtEpisodes: Baton.Query {
     }
 
     public static let name = "TestCaughtEpisodes"
-    public static let persistedID = "e909dfbed5bf572c69adaf400ab82e12"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestCaughtEpisodes(
   $id: ID!
 ) {
@@ -162,7 +161,7 @@ query TestCaughtEpisodes(
     }
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -232,10 +231,7 @@ nonisolated public struct TestCaughtPartQuery: Baton.Query {
     }
 
     public static let name = "TestCaughtPartQuery"
-    public static let persistedID = "f779f357ef03c8fd43d2fc6ac13b0d35"
-    @_spi(Generated) public static let throwsOnFieldError = true
-    @_spi(Generated) public static let hasDeferred = true
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestCaughtPartQuery(
   $id: ID!
 ) {
@@ -252,7 +248,9 @@ fragment TestCaughtAppearances_character on Character {
     id
   }
 }
-"""#
+"""#)
+    @_spi(Generated) public static let throwsOnFieldError = true
+    @_spi(Generated) public static let hasDeferred = true
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -335,9 +333,7 @@ nonisolated public struct TestCollidingErrors: Baton.Query {
     }
 
     public static let name = "TestCollidingErrors"
-    public static let persistedID = "f435e25fff567f9c6d3e15abea43b260"
-    @_spi(Generated) public static let throwsOnFieldError = true
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestCollidingErrors(
   $id: ID!
 ) {
@@ -349,7 +345,8 @@ query TestCollidingErrors(
     name
   }
 }
-"""#
+"""#)
+    @_spi(Generated) public static let throwsOnFieldError = true
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -448,9 +445,7 @@ nonisolated public struct TestCollidingRequired: Baton.Query {
     }
 
     public static let name = "TestCollidingRequired"
-    public static let persistedID = "ceffad17b6388a394ec240bd865f61da"
-    @_spi(Generated) public static let bubbles = true
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestCollidingRequired(
   $id: ID!
 ) {
@@ -462,7 +457,8 @@ query TestCollidingRequired(
     name
   }
 }
-"""#
+"""#)
+    @_spi(Generated) public static let bubbles = true
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -541,8 +537,7 @@ nonisolated public struct TestFilteredCharacters: Baton.Query {
     }
 
     public static let name = "TestFilteredCharacters"
-    public static let persistedID = "dedd00157463c6921fd1dd45d90622a4"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestFilteredCharacters(
   $filters: [FilterCharacter!]!
 ) {
@@ -551,7 +546,7 @@ query TestFilteredCharacters(
     name
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["filters": Baton.Variable(self.filters)])
@@ -600,8 +595,7 @@ nonisolated public struct TestKeywordVariables: Baton.Query {
     }
 
     public static let name = "TestKeywordVariables"
-    public static let persistedID = "2a7fc66a9e145b5ac34591fc662c22e5"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestKeywordVariables(
   $where: ID!
   $in: String!
@@ -617,7 +611,7 @@ query TestKeywordVariables(
     }
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["where": Baton.Variable(self.`where`), "in": Baton.Variable(self.`in`)])
@@ -683,9 +677,7 @@ nonisolated public struct TestLoggedOrigin: Baton.Query {
     }
 
     public static let name = "TestLoggedOrigin"
-    public static let persistedID = "162893bcb25f9ff0cdc7e12c2b356db8"
-    @_spi(Generated) public static let bubbles = true
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestLoggedOrigin(
   $id: ID!
 ) {
@@ -697,7 +689,8 @@ query TestLoggedOrigin(
     }
   }
 }
-"""#
+"""#)
+    @_spi(Generated) public static let bubbles = true
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -776,9 +769,7 @@ nonisolated public struct TestRequiredOrigin: Baton.Query {
     }
 
     public static let name = "TestRequiredOrigin"
-    public static let persistedID = "235cb310643a9e9fa1f02a857ffe6a89"
-    @_spi(Generated) public static let bubbles = true
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestRequiredOrigin(
   $id: ID!
 ) {
@@ -790,7 +781,8 @@ query TestRequiredOrigin(
     }
   }
 }
-"""#
+"""#)
+    @_spi(Generated) public static let bubbles = true
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -869,8 +861,7 @@ nonisolated public struct TestReservedNames: Baton.Query {
     }
 
     public static let name = "TestReservedNames"
-    public static let persistedID = "7c64f918dc54753ad9f26e4fe258c6c8"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestReservedNames(
   $id: ID!
 ) {
@@ -905,7 +896,7 @@ fragment TestNotes_character_35kO5h on Character {
   }
   id
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -992,9 +983,7 @@ nonisolated public struct TestStrictEpisodes: Baton.Query {
     }
 
     public static let name = "TestStrictEpisodes"
-    public static let persistedID = "5936ceb2a732300faf719ab652de9ffd"
-    @_spi(Generated) public static let throwsOnFieldError = true
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestStrictEpisodes(
   $id: ID!
 ) {
@@ -1006,7 +995,8 @@ query TestStrictEpisodes(
     }
   }
 }
-"""#
+"""#)
+    @_spi(Generated) public static let throwsOnFieldError = true
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -1105,9 +1095,7 @@ nonisolated public struct TestStrictOrigin: Baton.Query {
     }
 
     public static let name = "TestStrictOrigin"
-    public static let persistedID = "d7eedac34bcf237d983981fca1f53360"
-    @_spi(Generated) public static let throwsOnFieldError = true
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestStrictOrigin(
   $id: ID!
 ) {
@@ -1119,7 +1107,8 @@ query TestStrictOrigin(
     }
   }
 }
-"""#
+"""#)
+    @_spi(Generated) public static let throwsOnFieldError = true
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -1218,8 +1207,7 @@ nonisolated public struct TestSwiftNames: Baton.Query {
     }
 
     public static let name = "TestSwiftNames"
-    public static let persistedID = "fd6562c0ef382f9fa42f63f3cc301777"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestSwiftNames(
   $id: ID!
 ) {
@@ -1279,7 +1267,7 @@ query TestSwiftNames(
     id
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -1519,9 +1507,7 @@ nonisolated public struct TestThrowingNode: Baton.Query {
     }
 
     public static let name = "TestThrowingNode"
-    public static let persistedID = "96fc39563fe0cb4857d8ee11a1488869"
-    @_spi(Generated) public static let throwsOnFieldError = true
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestThrowingNode(
   $id: ID!
 ) {
@@ -1533,7 +1519,8 @@ query TestThrowingNode(
     }
   }
 }
-"""#
+"""#)
+    @_spi(Generated) public static let throwsOnFieldError = true
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -1634,9 +1621,7 @@ nonisolated public struct TestTwoFieldPartQuery: Baton.Query {
     }
 
     public static let name = "TestTwoFieldPartQuery"
-    public static let persistedID = "0ba7fc850677d55161d5265c797e6747"
-    @_spi(Generated) public static let hasDeferred = true
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestTwoFieldPartQuery(
   $id: ID!
 ) {
@@ -1657,7 +1642,8 @@ fragment TestOriginAndEpisode_character on Character {
     id
   }
 }
-"""#
+"""#)
+    @_spi(Generated) public static let hasDeferred = true
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -1719,8 +1705,7 @@ nonisolated public struct TestTwoScopes: Baton.Query {
     }
 
     public static let name = "TestTwoScopes"
-    public static let persistedID = "64dff497dac89da38b66ce3d636da558"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestTwoScopes(
   $a: ID!
   $b: ID!
@@ -1776,7 +1761,7 @@ fragment TestNotes_character_41grAF on Character {
   }
   id
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["a": Baton.Variable(self.a), "b": Baton.Variable(self.b)])
@@ -1875,10 +1860,7 @@ nonisolated public struct TestUncaughtPartQuery: Baton.Query {
     }
 
     public static let name = "TestUncaughtPartQuery"
-    public static let persistedID = "903008e8ba8485cc95e841c0c2b3f2e4"
-    @_spi(Generated) public static let throwsOnFieldError = true
-    @_spi(Generated) public static let hasDeferred = true
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestUncaughtPartQuery(
   $id: ID!
 ) {
@@ -1896,7 +1878,9 @@ fragment TestAppearances_character on Character {
     id
   }
 }
-"""#
+"""#)
+    @_spi(Generated) public static let throwsOnFieldError = true
+    @_spi(Generated) public static let hasDeferred = true
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])

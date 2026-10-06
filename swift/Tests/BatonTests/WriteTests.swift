@@ -13,9 +13,11 @@ final class GatedTransport: Transport, @unchecked Sendable {
 
     var pending: Int { lock.withLock { waiting.count } }
 
-    func execute(_ request: Request) async throws -> Data {
-        try await withCheckedThrowingContinuation { continuation in
-            lock.withLock { waiting.append(continuation) }
+    func send(_ request: Request) -> AsyncThrowingStream<Data, any Error> {
+        Self.once {
+            try await withCheckedThrowingContinuation { continuation in
+                self.lock.withLock { self.waiting.append(continuation) }
+            }
         }
     }
 
@@ -36,7 +38,11 @@ final class CancellableGate: Transport, @unchecked Sendable {
 
     var pending: Bool { lock.withLock { waiting != nil } }
 
-    func execute(_ request: Request) async throws -> Data {
+    func send(_ request: Request) -> AsyncThrowingStream<Data, any Error> {
+        Self.once { try await self.answer() }
+    }
+
+    private func answer() async throws -> Data {
         try await withTaskCancellationHandler {
             try await withCheckedThrowingContinuation { continuation in
                 lock.withLock { waiting = continuation }

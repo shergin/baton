@@ -659,6 +659,8 @@ struct SpineTests {
         #expect(a == b)
         #expect(a.hashValue == b.hashValue)
         #expect(TestHeaderQuery(id: "2") != a)
-        #expect(TestHeaderQuery.persistedID.count == 32)
+        #expect(TestHeaderQuery.kind == .query)
+        #expect(TestHeaderQuery.text?.hasPrefix("query TestHeaderQuery") == true)
+        #expect(TestHeaderQuery.document == .text(TestHeaderQuery.text ?? ""))
     }
 }

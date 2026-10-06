@@ -294,8 +294,10 @@ Cons:
   composite key among them, as Apollo configures key fields per type; a key
   is own scalar fields, so an entity keyed only through a link does not
   normalize yet.
-- The compiler emits a persisted id for every operation. The default
-  transport still sends the query text.
+- An operation is sent as its text, or, under Relay's `persistConfig`, as
+  the id the build hashed and the registration file carries; never both,
+  and no transport has a mode. The standard encoding writes `documentId`,
+  after the GraphQL over HTTP working group's open proposal.
 - Garbage collection runs on the main actor. Over about 9,000 records the
   pass is under a millisecond at best and a few milliseconds at the median.
 - There is no install base, no IDE plugin and no language server. Apollo has

@@ -8,8 +8,9 @@ import Foundation
 public final class Environment {
     public let store: Store
     public let transport: any Transport
-    /// The transport subscriptions run over, when the backend has one.
-    public let subscriptions: (any SubscriptionTransport)?
+    /// The transport subscriptions go through, when one is given: a socket, or
+    /// another that streams events.
+    public let subscriptions: (any Transport)?
 
     /// Called when a `@required(action: LOG)` field is null: the record and
     /// Relay's path. Debug builds print by default.
@@ -22,7 +23,7 @@ public final class Environment {
     /// `EnvironmentError.gone`, and what is still held says so.
     public private(set) var ended = false
 
-    public init(transport: any Transport, subscriptions: (any SubscriptionTransport)? = nil, store: Store = Store()) {
+    public init(transport: any Transport, subscriptions: (any Transport)? = nil, store: Store = Store()) {
         self.store = store
         self.transport = transport
         self.subscriptions = subscriptions
@@ -38,7 +39,7 @@ public final class Environment {
     /// on disk and a launch renders from it before the network answers;
     /// `cacheExpiration` is the store's default for operations that state
     /// none of their own.
-    public convenience init(url: URL, headers: [String: String] = [:], subscriptions: (any SubscriptionTransport)? = nil, persistence: Persistence? = nil, cacheExpiration: Duration? = nil, releaseBufferSize: Int = 10) {
+    public convenience init(url: URL, headers: [String: String] = [:], subscriptions: (any Transport)? = nil, persistence: Persistence? = nil, cacheExpiration: Duration? = nil, releaseBufferSize: Int = 10) {
         self.init(transport: URLSessionTransport(url: url, headers: headers), subscriptions: subscriptions, store: Store(persistence: persistence, cacheExpiration: cacheExpiration, releaseBufferSize: releaseBufferSize))
     }
 
@@ -147,8 +148,8 @@ public final class Environment {
     private func request<Op: Operation>(_ operation: Op.Type, variables: Variables) -> Request {
         Request(
             operationName: Op.name,
-            text: Op.text,
-            persistedID: Op.persistedID,
+            kind: Op.kind,
+            document: Op.document,
             variables: variables,
             errorBehavior: Op.errorBehavior,
             incremental: Op.hasDeferred
@@ -281,12 +282,12 @@ public final class Environment {
         if !Op.hasDeferred {
             // A fetch superseded while its response was on the way or being
             // read must not land after the one that replaced it.
-            return try await commit(try await transport.execute(request), plan: resolved, root: root)
+            return try await commit(try await transport.payload(request), plan: resolved, root: root)
         }
         var committed = Committed()
         var delivery = Delivery(store: store, resolved: resolved)
         var first = true
-        for try await part in transport.stream(request) {
+        for try await part in transport.send(request) {
             if first {
                 first = false
                 let opening = try await Ingest.normalizedFirstPart(part, plan: resolved, rootKey: Store.rootKey, complete: true)
@@ -349,7 +350,7 @@ public final class Environment {
             // waiting, and no cancellation check stands before the commit.
             let request = request(Op.self, variables: operation.variables)
             let transport = transport
-            let data = try await Task { try await transport.execute(request) }.value
+            let data = try await Task { try await transport.payload(request) }.value
             uncaught = try await commit(data, plan: resolved, root: root, replacing: layer, checkingCancellation: false).uncaught
         } catch {
             if let layer { store.revertOptimistic(layer) }
@@ -368,7 +369,7 @@ public final class Environment {
                 continuation.finish(throwing: failure)
             }
         }
-        return subscriptions.subscribe(request(Op.self, variables: operation.variables))
+        return subscriptions.send(request(Op.self, variables: operation.variables))
     }
 
     // MARK: Lifetime
@@ -402,7 +403,7 @@ public final class Environment {
 }
 
 struct UnconfiguredTransport: Transport {
-    func execute(_ request: Request) async throws -> Data {
-        throw EnvironmentError.notInjected
+    func send(_ request: Request) -> AsyncThrowingStream<Data, any Error> {
+        Self.once { throw EnvironmentError.notInjected }
     }
 }

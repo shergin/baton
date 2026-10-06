@@ -224,7 +224,6 @@
         }
       ],
       "text": "query TestNode(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ... on Character {\n      id\n      name\n    }\n    ... on Episode {\n      id\n      name\n    }\n    id\n  }\n}",
-      "id": "2304788bc851c146c51814dfce6bce4d",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -664,7 +663,6 @@
         }
       ],
       "text": "mutation TestRename(\n  $id: ID!\n  $name: String!\n) {\n  rename(id: $id, name: $name) {\n    character {\n      id\n      name\n    }\n  }\n}",
-      "id": "bbbb03578f7d58a0b3956defbc951f96",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -919,7 +917,6 @@
         }
       ],
       "text": "mutation TestRenameThroughFragment(\n  $id: ID!\n  $name: String!\n) {\n  ...TestRenamePayload_mutation\n}\n\nfragment TestRenamePayload_mutation on Mutation {\n  rename(id: $id, name: $name) {\n    character {\n      id\n      name\n    }\n  }\n}",
-      "id": "9e2e336fcd7c22f650f9acdf7c7f81e4",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -1082,7 +1079,6 @@
         }
       ],
       "text": "mutation TestRenameWithOrigin(\n  $id: ID!\n  $name: String!\n  $withOrigin: Boolean!\n) {\n  rename(id: $id, name: $name) {\n    character {\n      id\n      name\n      origin @include(if: $withOrigin) {\n        id\n        name\n      }\n    }\n  }\n}",
-      "id": "8457c567f89b7b5a3ed8f3f5c8364841",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -1495,7 +1491,6 @@
         }
       ],
       "text": "query TestSearch(\n  $name: String!\n) {\n  search(name: $name) {\n    __typename\n    ... on Character {\n      id\n      name\n    }\n    ... on Location {\n      id\n      name\n      dimension\n    }\n    ... on Node {\n      __isNode: __typename\n      id\n    }\n  }\n}",
-      "id": "813ee13fc31b31a05b576bb247d1db8b",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -2015,7 +2010,6 @@
         }
       ],
       "text": "query TestSearchOrigins(\n  $name: String!\n) {\n  search(name: $name) {\n    __typename\n    ... on Character {\n      origin {\n        name\n        id\n      }\n    }\n    ... on Node {\n      __isNode: __typename\n      id\n    }\n  }\n}",
-      "id": "ef63ee320f68af412c96bcdec49f9223",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -2413,7 +2407,6 @@
         }
       ],
       "text": "mutation TestSetFavorite(\n  $id: ID!\n  $favorite: Boolean!\n) {\n  setFavorite(id: $id, favorite: $favorite) {\n    character {\n      id\n      name\n      favorite\n    }\n  }\n}",
-      "id": "26a88e1bfd6ec2eaa6508d193effadc7",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,

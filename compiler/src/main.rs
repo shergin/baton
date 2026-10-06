@@ -344,6 +344,28 @@ fn generate(arguments: &[String]) -> Result<(), DriverError> {
         write_output(shared_path, &output.shared)?;
         written.push(shared_path);
     }
+    // Under `persistConfig`, Relay's map from id to text, which a
+    // registration step consumes: beside the configuration when run by
+    // hand, or in the output directory under the build, whose sandbox keeps
+    // the source tree.
+    let persist_path = sources
+        .config
+        .persist_config
+        .as_ref()
+        .map(|persist| match &out_dir {
+            Some(out_dir) => out_dir.join(Path::new(&persist.file).file_name().unwrap_or_default()),
+            None => options
+                .values
+                .get("config")
+                .map(Path::new)
+                .and_then(Path::parent)
+                .map(Path::to_path_buf)
+                .unwrap_or_default()
+                .join(&persist.file),
+        });
+    if let Some(persist_path) = &persist_path {
+        write_output(persist_path, &persisted_documents(&plan))?;
+    }
     if let Some(out_dir) = &out_dir {
         remove_stale_outputs(out_dir, &written)?;
     }
@@ -356,6 +378,26 @@ fn generate(arguments: &[String]) -> Result<(), DriverError> {
     } else {
         Ok(())
     }
+}
+
+/// Relay's persisted-documents file: a JSON object from each operation's id
+/// to its text, the ids in order, so a review reads it and a registration
+/// step consumes it.
+fn persisted_documents(plan: &pipeline::Plan) -> String {
+    let mut entries: Vec<(&str, &str)> = plan
+        .operations
+        .iter()
+        .filter_map(|operation| Some((operation.id.as_deref()?, operation.text.as_str())))
+        .collect();
+    entries.sort();
+    let mut map = serde_json::Map::new();
+    for (id, text) in entries {
+        map.insert(id.to_string(), serde_json::Value::String(text.to_string()));
+    }
+    let mut text =
+        serde_json::to_string_pretty(&serde_json::Value::Object(map)).unwrap_or_default();
+    text.push('\n');
+    text
 }
 
 /// Removes from `out_dir` every generated file this run did not write: the

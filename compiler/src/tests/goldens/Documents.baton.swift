@@ -41,8 +41,7 @@ nonisolated public struct Fixture: Baton.Query {
     }
 
     public static let name = "Fixture"
-    public static let persistedID = "3d9dc678bfac56c131a97a41a12a85aa"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query Fixture(
   $page: Int
 ) {
@@ -91,7 +90,7 @@ query Fixture(
     }
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["page": Baton.Variable(self.page)])
@@ -248,8 +247,7 @@ nonisolated public struct TestEpisodesQuery: Baton.Query {
     }
 
     public static let name = "TestEpisodesQuery"
-    public static let persistedID = "d3ca7bbeabf349fc8eb63ff4d3479894"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestEpisodesQuery(
   $id: ID!
 ) {
@@ -261,7 +259,7 @@ query TestEpisodesQuery(
     id
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -318,9 +316,7 @@ nonisolated public struct TestFreshCharacter: Baton.Query {
     }
 
     public static let name = "TestFreshCharacter"
-    public static let persistedID = "b3ee450bfbadfec4314447e5caa05999"
-    @_spi(Generated) public static let cacheExpiration: Swift.Duration? = .seconds(30)
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestFreshCharacter(
   $id: ID!
 ) {
@@ -329,7 +325,8 @@ query TestFreshCharacter(
     name
   }
 }
-"""#
+"""#)
+    @_spi(Generated) public static let cacheExpiration: Swift.Duration? = .seconds(30)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -376,8 +373,7 @@ nonisolated public struct TestHeaderQuery: Baton.Query {
     }
 
     public static let name = "TestHeaderQuery"
-    public static let persistedID = "fef41cbb99eebe5a4620d97ef4e6b842"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestHeaderQuery(
   $id: ID!
 ) {
@@ -397,7 +393,7 @@ fragment TestHeader_character on Character {
     id
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -450,8 +446,7 @@ nonisolated public struct TestList: Baton.Query {
     }
 
     public static let name = "TestList"
-    public static let persistedID = "f632fca9890e6241cddd433536ada6c0"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestList(
   $page: Int
 ) {
@@ -480,7 +475,7 @@ fragment TestRow_character on Character {
   status
   image
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["page": Baton.Variable(self.page)])
@@ -543,8 +538,7 @@ nonisolated public struct TestQualifiedQuery: Baton.Query {
     }
 
     public static let name = "TestQualifiedQuery"
-    public static let persistedID = "d00b5af3f9af93edfb6091841f8fc923"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestQualifiedQuery(
   $id: ID!
 ) {
@@ -553,7 +547,7 @@ query TestQualifiedQuery(
     name
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])

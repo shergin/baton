@@ -91,3 +91,17 @@ The build decides what an operation is sent as. All of it is *(planned)*.
   its proposal.
 - A hash made by the runtime, or a prefix it adds: the id is the compiler's
   output, and one string everywhere cannot drift.
+
+## Built, 2026-10-11
+
+As decided: `persistConfig` with `file` and `algorithm`; the artifact's
+`document` is the text or the id, never both; the standard encoding writes
+`query` or `documentId`; one encoding function serves the HTTP body and the
+socket's payload and is replaced on the built-in transports; `batonc
+generate` writes the file, beside the configuration by hand and into the
+build's output directory under the SwiftPM plugin, whose sandbox keeps the
+source tree. The id is the hash's lowercase hexadecimal with no prefix, as
+Relay writes it; a server wanting the working group's `sha256:` prefix adds
+it in its encoding. The transport's one verb and the request's kind landed
+in the same change, and the credentials are read per attempt, so the exact
+shape this record deferred to #19 is settled with it.

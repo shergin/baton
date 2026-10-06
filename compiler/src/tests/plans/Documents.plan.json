@@ -256,7 +256,6 @@
         }
       ],
       "text": "query Fixture(\n  $page: Int\n) {\n  characters(page: $page) {\n    info {\n      count\n      pages\n      next\n      prev\n    }\n    results {\n      id\n      name\n      status\n      species\n      type\n      gender\n      image\n      created\n      origin {\n        id\n        name\n        type\n        dimension\n        created\n      }\n      location {\n        id\n        name\n        type\n        dimension\n        created\n      }\n      episode {\n        id\n        name\n        air_date\n        episode\n        created\n        characters {\n          id\n          name\n          image\n        }\n      }\n    }\n  }\n}",
-      "id": "3d9dc678bfac56c131a97a41a12a85aa",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -2059,7 +2058,6 @@
         }
       ],
       "text": "query TestEpisodesQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    episode {\n      id\n      name\n    }\n    id\n  }\n}",
-      "id": "d3ca7bbeabf349fc8eb63ff4d3479894",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -2385,7 +2383,6 @@
         }
       ],
       "text": "query TestFreshCharacter(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    name\n  }\n}",
-      "id": "b3ee450bfbadfec4314447e5caa05999",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -2613,7 +2610,6 @@
         }
       ],
       "text": "query TestHeaderQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    ...TestHeader_character\n    id\n  }\n}\n\nfragment TestHeader_character on Character {\n  name\n  status\n  species\n  image\n  origin {\n    name\n    id\n  }\n}",
-      "id": "fef41cbb99eebe5a4620d97ef4e6b842",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -2944,7 +2940,6 @@
         }
       ],
       "text": "query TestList(\n  $page: Int\n) {\n  characters(page: $page) {\n    results {\n      ...TestRow_character\n      ...TestHeader_character\n      id\n    }\n  }\n}\n\nfragment TestHeader_character on Character {\n  name\n  status\n  species\n  image\n  origin {\n    name\n    id\n  }\n}\n\nfragment TestRow_character on Character {\n  name\n  status\n  image\n}",
-      "id": "f632fca9890e6241cddd433536ada6c0",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -3323,7 +3318,6 @@
         }
       ],
       "text": "query TestQualifiedQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    name\n  }\n}",
-      "id": "d00b5af3f9af93edfb6091841f8fc923",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,

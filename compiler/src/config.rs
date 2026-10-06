@@ -113,6 +113,44 @@ impl Transient {
     }
 }
 
+/// Relay's `persistConfig`: where the map from id to text is written, and
+/// the hash the id is.
+#[derive(Debug, Clone, PartialEq, Eq, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct PersistConfig {
+    pub file: String,
+    #[serde(default)]
+    pub algorithm: Algorithm,
+}
+
+/// The hash a persisted id is, as Relay names them; MD5 is Relay's default.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, serde::Deserialize)]
+#[serde(rename_all = "UPPERCASE")]
+pub enum Algorithm {
+    #[default]
+    Md5,
+    Sha256,
+    Sha1,
+}
+
+impl Algorithm {
+    /// The id of a text: its hash in lowercase hexadecimal, one string in the
+    /// artifact, in the file and on the wire.
+    pub fn id(self, text: &str) -> String {
+        match self {
+            Algorithm::Md5 => format!("{:x}", md5::compute(text.as_bytes())),
+            Algorithm::Sha256 => {
+                use sha2::Digest;
+                format!("{:x}", sha2::Sha256::digest(text.as_bytes()))
+            }
+            Algorithm::Sha1 => {
+                use sha1::Digest;
+                format!("{:x}", sha1::Sha1::digest(text.as_bytes()))
+            }
+        }
+    }
+}
+
 /// The GraphQL specification's `onError` values.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Deserialize)]
 #[serde(rename_all = "UPPERCASE")]
@@ -155,6 +193,12 @@ pub struct Config {
     /// Memory is unaffected; the next launch misses and fetches.
     #[serde(default)]
     pub transient: Transient,
+    /// Relay's `persistConfig`: under it an artifact carries each operation's
+    /// id, hashed from its text with the algorithm, and no text, and
+    /// `generate` writes the file, Relay's map from id to text, for the
+    /// registration step. Without it the text and no id.
+    #[serde(rename = "persistConfig", default)]
+    pub persist_config: Option<PersistConfig>,
     /// Relay's `customScalarTypes`: the Swift type a custom scalar reads as,
     /// by the scalar's name, e.g. `"Decimal": "Foundation.Decimal"`. The
     /// store keeps the text; the accessor converts at the read, and says the

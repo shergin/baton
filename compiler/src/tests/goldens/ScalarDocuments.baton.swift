@@ -57,8 +57,7 @@ nonisolated public struct TestAssetPricesQuery: Baton.Query {
     }
 
     public static let name = "TestAssetPricesQuery"
-    public static let persistedID = "7a4c1866da6137b56436994b9c9b36af"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestAssetPricesQuery {
   assets {
     uuid
@@ -69,7 +68,7 @@ query TestAssetPricesQuery {
     id
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables([:])
@@ -124,8 +123,7 @@ nonisolated public struct TestPricedAssetsQuery: Baton.Query {
     }
 
     public static let name = "TestPricedAssetsQuery"
-    public static let persistedID = "def93858d0a87ae2ad5fc91a2ab1fb51"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestPricedAssetsQuery(
   $price: Decimal!
   $among: [Decimal!]
@@ -153,7 +151,7 @@ fragment TestThrowingPrices_asset on Asset {
   price
   prices
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["price": Baton.Variable(self.price), "among": Baton.Variable(self.among)])

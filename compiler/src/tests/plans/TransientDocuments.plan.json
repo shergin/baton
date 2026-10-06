@@ -9,7 +9,6 @@
       "root_type": "Query",
       "variables": [],
       "text": "query TestCharacterSecret {\n  character(id: \"1\") {\n    id\n    name\n    secret {\n      id\n      body\n    }\n  }\n}",
-      "id": "61476e21a4e42da55c26edd07d1ec2af",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -402,7 +401,6 @@
         }
       ],
       "text": "query TestSecrets(\n  $code: String!\n) {\n  secrets(code: $code) {\n    id\n    body\n  }\n  character(id: \"1\") {\n    id\n    name\n  }\n}",
-      "id": "5c59784e43ab2e5898651c38ee0a2897",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,

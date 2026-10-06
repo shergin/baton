@@ -96,14 +96,15 @@ struct ExtensionTests {
     }
 
     @Test("the text a server receives leaves the client fields out, and an operation of a client list keeps its server field")
-    func theTextLeavesTheClientFieldsOut() {
-        let pinned = TestPinnedCharacter.text
+    func theTextLeavesTheClientFieldsOut() throws {
+        let pinned = try #require(TestPinnedCharacter.text)
+        let drafts = try #require(TestDrafts.text)
         #expect(pinned.contains("name"))
         #expect(pinned.contains("status"))
         #expect(!pinned.contains("isPinned"))
         #expect(!pinned.contains("note"))
-        #expect(TestDrafts.text.contains("character"))
-        #expect(!TestDrafts.text.contains("drafts"))
+        #expect(drafts.contains("character"))
+        #expect(!drafts.contains("drafts"))
     }
 
     @Test("a draft's link to a character is the record a server's answer wrote, one record for both")

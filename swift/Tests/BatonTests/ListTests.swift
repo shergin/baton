@@ -10,9 +10,9 @@ import Testing
 final class GatedPages: Transport, Sendable {
     let gate = GatedTransport()
 
-    func execute(_ request: Request) async throws -> Data {
-        if request.operationName == TestNotesQuery.name { return notesPage(1) }
-        return try await gate.execute(request)
+    func send(_ request: Request) -> AsyncThrowingStream<Data, any Error> {
+        if request.operationName == TestNotesQuery.name { return Self.once { notesPage(1) } }
+        return gate.send(request)
     }
 }
 

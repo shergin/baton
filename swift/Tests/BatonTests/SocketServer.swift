@@ -11,6 +11,8 @@ final class SocketServer: @unchecked Sendable {
     private let lock = NSLock()
     private var connection: NWConnection?
     private var received: [(type: String, id: String?)] = []
+    /// The `payload` of each `subscribe` frame, as the client wrote it.
+    private var subscribePayloads: [Data] = []
     private var closes = 0
     private let handshake = Handshake()
     /// Whether `connection_init` is acknowledged as it arrives.
@@ -72,6 +74,10 @@ final class SocketServer: @unchecked Sendable {
         lock.withLock { received.filter { $0.type == type }.compactMap(\.id) }
     }
 
+    /// The `payload` of each `subscribe` frame the client has sent, in order,
+    /// re-serialized with sorted keys.
+    var subscriptionPayloads: [Data] { lock.withLock { subscribePayloads } }
+
     /// How many times the client closed its connection.
     var closed: Int { lock.withLock { closes } }
 
@@ -111,7 +117,11 @@ final class SocketServer: @unchecked Sendable {
             // frame reader, so a fault in that reader shows instead of being
             // read the same way on both ends.
             if let frame = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any], let type = frame["type"] as? String {
-                lock.withLock { received.append((type, frame["id"] as? String)) }
+                let payload = type == "subscribe" ? frame["payload"].flatMap { try? JSONSerialization.data(withJSONObject: $0, options: .sortedKeys) } : nil
+                lock.withLock {
+                    received.append((type, frame["id"] as? String))
+                    if let payload { subscribePayloads.append(payload) }
+                }
                 if type == "connection_init", acknowledges { acknowledge() }
             }
             receive(on: connection)

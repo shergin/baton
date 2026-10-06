@@ -362,7 +362,11 @@ impl Lowering<'_> {
             },
             root_type,
             variables: self.variables(&operation.variable_definitions),
-            id: format!("{:x}", md5::compute(text.as_bytes())),
+            id: self
+                .config
+                .persist_config
+                .as_ref()
+                .map(|persist| persist.algorithm.id(&text)),
             text,
             throws_on_field_error: operation
                 .directives

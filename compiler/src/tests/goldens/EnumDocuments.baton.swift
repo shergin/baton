@@ -14,8 +14,7 @@ nonisolated public struct TestCharactersWithStatus: Baton.Query {
     }
 
     public static let name = "TestCharactersWithStatus"
-    public static let persistedID = "62f7376a8075372523611fb83b48083d"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestCharactersWithStatus(
   $status: Status!
   $any: [Status!]
@@ -25,7 +24,7 @@ query TestCharactersWithStatus(
     id
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["status": Baton.Variable(self.status), "any": Baton.Variable(self.`any`)])
@@ -69,14 +68,13 @@ nonisolated public struct TestSetStatuses: Baton.Mutation {
     }
 
     public static let name = "TestSetStatuses"
-    public static let persistedID = "433463231ee85f8c76dcbd796d45d6dc"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 mutation TestSetStatuses {
   setLists {
     statuses
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables([:])

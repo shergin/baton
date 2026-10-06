@@ -18,7 +18,8 @@ pub struct OperationValue {
     pub source: String,
     pub kind: OperationKind,
     pub variables: Vec<VariableValue>,
-    pub id: String,
+    /// The id the operation is sent by, under `persistConfig`.
+    pub id: Option<String>,
     pub text: String,
     /// `Baton.ErrorBehavior`'s case.
     pub error_behavior: Option<String>,
@@ -216,7 +217,7 @@ fn operation_scope(
             format!("the `{name}` every {} value has", operation.kind),
         );
     }
-    for name in ["name", "persistedID", "text", "plan"] {
+    for name in ["name", "document", "text", "plan"] {
         scope.declare(name, Kind::Static, format!("the operation's `{name}`"));
     }
     let flags = [

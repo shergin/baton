@@ -225,9 +225,11 @@ struct IdentityTests {
     }
 
     @Test("the compiler selects the configured key fields an operation leaves out")
-    func the_compiler_selects_the_configured_key_fields_an_operation_leaves_out() {
-        #expect(TestAssetsQuery.text.contains("    uuid\n"), "\(TestAssetsQuery.text)")
-        #expect(TestQuotesQuery.text.contains("    base\n"), "\(TestQuotesQuery.text)")
-        #expect(TestQuotesQuery.text.contains("    quote\n"), "\(TestQuotesQuery.text)")
+    func the_compiler_selects_the_configured_key_fields_an_operation_leaves_out() throws {
+        let assets = try #require(TestAssetsQuery.text)
+        let quotes = try #require(TestQuotesQuery.text)
+        #expect(assets.contains("    uuid\n"), "\(assets)")
+        #expect(quotes.contains("    base\n"), "\(quotes)")
+        #expect(quotes.contains("    quote\n"), "\(quotes)")
     }
 }

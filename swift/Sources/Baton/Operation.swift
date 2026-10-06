@@ -25,8 +25,11 @@ public enum FetchPolicy: Sendable {
 public protocol Operation: Hashable, Sendable {
     associatedtype Data: Lens
     static var name: String { get }
-    static var text: String { get }
-    static var persistedID: String { get }
+    /// What a request carries of the operation: its text, or the id it was
+    /// registered under, as the build decided.
+    static var document: Document { get }
+    /// The kind of operation, which a request says.
+    static var kind: Request.Kind { get }
     @_spi(Generated) static var plan: Plan { get }
     /// `@throwOnFieldError`: an uncaught field error fails the operation.
     @_spi(Generated) static var throwsOnFieldError: Bool { get }
@@ -48,14 +51,35 @@ public protocol Query: Operation {
     var resolution: OperationHandle<Self>? { get set }
 }
 
+extension Query {
+    public static var kind: Request.Kind { .query }
+}
+
 /// A mutation value: called as an action through `@Mutation`, or committed
 /// with `Environment.mutate`.
 public protocol Mutation: Operation {}
+
+extension Mutation {
+    public static var kind: Request.Kind { .mutation }
+}
 
 /// A subscription value: inside a view it resolves to a handle through
 /// `@Subscription`, which holds the stream of events open.
 public protocol Subscription: Operation {
     var resolution: SubscriptionHandle<Self>? { get set }
+}
+
+extension Subscription {
+    public static var kind: Request.Kind { .subscription }
+}
+
+extension Operation {
+    /// The operation's text, when the build left it in the artifact; nil
+    /// under `persistConfig`, where only the id ships.
+    public static var text: String? {
+        if case .text(let text) = document { return text }
+        return nil
+    }
 }
 
 extension Operation {

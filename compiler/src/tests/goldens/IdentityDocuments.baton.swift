@@ -12,8 +12,7 @@ nonisolated public struct TestAssetNameQuery: Baton.Query {
     }
 
     public static let name = "TestAssetNameQuery"
-    public static let persistedID = "78cdff70b45310a221c727b9d738e35f"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestAssetNameQuery(
   $uuid: String!
 ) {
@@ -23,7 +22,7 @@ query TestAssetNameQuery(
     uuid
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["uuid": Baton.Variable(self.uuid)])
@@ -70,8 +69,7 @@ nonisolated public struct TestAssetQuery: Baton.Query {
     }
 
     public static let name = "TestAssetQuery"
-    public static let persistedID = "fe8e3c28a4e3bec795a33437b7bd0d51"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestAssetQuery(
   $uuid: String!
 ) {
@@ -85,7 +83,7 @@ query TestAssetQuery(
     id
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["uuid": Baton.Variable(self.uuid)])
@@ -143,8 +141,7 @@ nonisolated public struct TestAssetsQuery: Baton.Query {
     }
 
     public static let name = "TestAssetsQuery"
-    public static let persistedID = "f95642b0100a1450e86315dad58df25b"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestAssetsQuery {
   assets {
     name
@@ -153,7 +150,7 @@ query TestAssetsQuery {
     uuid
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables([:])
@@ -203,8 +200,7 @@ nonisolated public struct TestQuoteQuery: Baton.Query {
     }
 
     public static let name = "TestQuoteQuery"
-    public static let persistedID = "3d4096a22f4b01601197a105609351a3"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestQuoteQuery(
   $base: String!
   $quote: String!
@@ -215,7 +211,7 @@ query TestQuoteQuery(
     rate
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["base": Baton.Variable(self.base), "quote": Baton.Variable(self.quote)])
@@ -263,8 +259,7 @@ nonisolated public struct TestQuotesQuery: Baton.Query {
     }
 
     public static let name = "TestQuotesQuery"
-    public static let persistedID = "a28149b1db47f0dcbdd489fc57a2cdd5"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestQuotesQuery {
   quotes {
     rate
@@ -272,7 +267,7 @@ query TestQuotesQuery {
     quote
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables([:])

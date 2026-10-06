@@ -112,8 +112,7 @@ nonisolated public struct TestNoteAdded: Baton.Subscription {
     }
 
     public static let name = "TestNoteAdded"
-    public static let persistedID = "cf0998ad43d615f1abc7fa2f45eaf960"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 subscription TestNoteAdded(
   $characterId: ID!
 ) {
@@ -127,7 +126,7 @@ subscription TestNoteAdded(
     }
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["characterId": Baton.Variable(self.characterId), "connections": Baton.Variable(self.connections)])
@@ -195,8 +194,7 @@ nonisolated public struct TestNullsOnError: Baton.Query {
     }
 
     public static let name = "TestNullsOnError"
-    public static let persistedID = "4d4a2bbc05b4baf85072c8ea0a966a6e"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestNullsOnError(
   $id: ID!
 ) {
@@ -205,7 +203,7 @@ query TestNullsOnError(
     id
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -251,9 +249,7 @@ nonisolated public struct TestOverlapQuery: Baton.Query {
     }
 
     public static let name = "TestOverlapQuery"
-    public static let persistedID = "d59e47adcb8688a4b735c48a8fc3633b"
-    @_spi(Generated) public static let hasDeferred = true
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestOverlapQuery(
   $id: ID!
 ) {
@@ -274,7 +270,8 @@ fragment TestAppearances_character on Character {
     id
   }
 }
-"""#
+"""#)
+    @_spi(Generated) public static let hasDeferred = true
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -341,9 +338,7 @@ nonisolated public struct TestProfileQuery: Baton.Query {
     }
 
     public static let name = "TestProfileQuery"
-    public static let persistedID = "70ad694748252a110b96ae2b4033bc12"
-    @_spi(Generated) public static let hasDeferred = true
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestProfileQuery(
   $id: ID!
 ) {
@@ -383,7 +378,8 @@ fragment TestStrict_character on Character {
   species
   type
 }
-"""#
+"""#)
+    @_spi(Generated) public static let hasDeferred = true
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -458,8 +454,7 @@ nonisolated public struct TestRosterQuery: Baton.Query {
     }
 
     public static let name = "TestRosterQuery"
-    public static let persistedID = "9cf4d40da7eb0a96233db2f98c79b140"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestRosterQuery(
   $page: Int
 ) {
@@ -471,7 +466,7 @@ query TestRosterQuery(
     }
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["page": Baton.Variable(self.page)])
@@ -534,10 +529,7 @@ nonisolated public struct TestStrictDeferred: Baton.Query {
     }
 
     public static let name = "TestStrictDeferred"
-    public static let persistedID = "ea3e24dc105cc1d95925812f6c36a8b9"
-    @_spi(Generated) public static let throwsOnFieldError = true
-    @_spi(Generated) public static let hasDeferred = true
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestStrictDeferred(
   $id: ID!
 ) {
@@ -555,7 +547,9 @@ fragment TestAppearances_character on Character {
     id
   }
 }
-"""#
+"""#)
+    @_spi(Generated) public static let throwsOnFieldError = true
+    @_spi(Generated) public static let hasDeferred = true
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -639,9 +633,7 @@ nonisolated public struct TestStrictQuery: Baton.Query {
     }
 
     public static let name = "TestStrictQuery"
-    public static let persistedID = "8db65463081ccceb09383a40aced3a00"
-    @_spi(Generated) public static let throwsOnFieldError = true
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestStrictQuery(
   $id: ID!
 ) {
@@ -651,7 +643,8 @@ query TestStrictQuery(
     id
   }
 }
-"""#
+"""#)
+    @_spi(Generated) public static let throwsOnFieldError = true
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -726,9 +719,7 @@ nonisolated public struct TestThrowingSpread: Baton.Query {
     }
 
     public static let name = "TestThrowingSpread"
-    public static let persistedID = "0d892586aa8c04543bf793d9eae35b89"
-    @_spi(Generated) public static let throwsOnFieldError = true
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestThrowingSpread(
   $id: ID!
 ) {
@@ -742,7 +733,8 @@ query TestThrowingSpread(
 fragment TestName_character on Character {
   name
 }
-"""#
+"""#)
+    @_spi(Generated) public static let throwsOnFieldError = true
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])

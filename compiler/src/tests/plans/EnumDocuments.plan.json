@@ -34,7 +34,6 @@
         }
       ],
       "text": "query TestCharactersWithStatus(\n  $status: Status!\n  $any: [Status!]\n) {\n  charactersWithStatus(status: $status, any: $any) {\n    name\n    id\n  }\n}",
-      "id": "62f7376a8075372523611fb83b48083d",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -223,7 +222,6 @@
       "root_type": "Mutation",
       "variables": [],
       "text": "mutation TestSetStatuses {\n  setLists {\n    statuses\n  }\n}",
-      "id": "433463231ee85f8c76dcbd796d45d6dc",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,

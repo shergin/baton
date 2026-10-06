@@ -10,8 +10,7 @@ nonisolated public struct TestTokenizerQuery: Baton.Query {
     }
 
     public static let name = "TestTokenizerQuery"
-    public static let persistedID = "69704a29c1f5d9c37d6359e8993cc0bc"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestTokenizerQuery {
   tokenizer {
     id
@@ -27,7 +26,7 @@ query TestTokenizerQuery {
     jsons
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables([:])

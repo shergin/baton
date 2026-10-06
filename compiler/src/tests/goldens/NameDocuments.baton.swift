@@ -10,14 +10,13 @@ nonisolated public struct TestCaughtNames: Baton.Query {
     }
 
     public static let name = "TestCaughtNames"
-    public static let persistedID = "4ee7fb2eb14761be7c4f9aa1191574b3"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestCaughtNames {
   types {
     Baton
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables([:])
@@ -72,8 +71,7 @@ nonisolated public struct TestNames: Baton.Query {
     }
 
     public static let name = "TestNames"
-    public static let persistedID = "f80468c3bd6f67ad159a99b53afae0f4"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestNames {
   types {
     Type
@@ -82,7 +80,7 @@ query TestNames {
     Any
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables([:])
@@ -130,8 +128,7 @@ nonisolated public struct TestSpellings: Baton.Query {
     }
 
     public static let name = "TestSpellings"
-    public static let persistedID = "893428989104274048d66226fef98695"
-    public static let text = #"""
+    public static let document: Baton.Document = .text(#"""
 query TestSpellings {
   spellings {
     __typename
@@ -160,7 +157,7 @@ query TestSpellings {
     }
   }
 }
-"""#
+"""#)
 
     public var variables: Baton.Variables {
         Baton.Variables([:])

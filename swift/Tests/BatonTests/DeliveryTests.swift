@@ -19,15 +19,16 @@ struct DeliveryTests {
             self.second = second
         }
 
-        func execute(_ request: Request) async throws -> Data {
-            requests.append(request)
-            return first
-        }
-
-        func stream(_ request: Request) -> AsyncThrowingStream<Data, any Error> {
+        /// An operation that answers once gets the first part alone; a
+        /// deferred one the first part now and the second on `release`.
+        func send(_ request: Request) -> AsyncThrowingStream<Data, any Error> {
             requests.append(request)
             return AsyncThrowingStream { continuation in
                 continuation.yield(first)
+                guard request.incremental else {
+                    continuation.finish()
+                    return
+                }
                 self.continuation = continuation
             }
         }
@@ -48,9 +49,7 @@ struct DeliveryTests {
         let parts: [Data]
         init(_ parts: [Data]) { self.parts = parts }
 
-        func execute(_ request: Request) async throws -> Data { parts[0] }
-
-        func stream(_ request: Request) -> AsyncThrowingStream<Data, any Error> {
+        func send(_ request: Request) -> AsyncThrowingStream<Data, any Error> {
             AsyncThrowingStream { continuation in
                 for part in parts { continuation.yield(part) }
             }
@@ -58,12 +57,12 @@ struct DeliveryTests {
     }
 
     /// Delivers subscription events when told.
-    final class Events: SubscriptionTransport, @unchecked Sendable {
+    final class Events: Transport, @unchecked Sendable {
         var continuation: AsyncThrowingStream<Data, any Error>.Continuation?
         var requests: [Request] = []
         var ended = false
 
-        func subscribe(_ request: Request) -> AsyncThrowingStream<Data, any Error> {
+        func send(_ request: Request) -> AsyncThrowingStream<Data, any Error> {
             requests.append(request)
             return AsyncThrowingStream { continuation in
                 self.continuation = continuation
@@ -897,13 +896,13 @@ struct DeliveryTests {
         let socket = GraphQLTransportWebSocket(url: try await server.start())
         defer { server.stop() }
         let value = TestNoteAdded(characterId: "1", connections: [])
-        let request = Request(operationName: TestNoteAdded.name, text: TestNoteAdded.text, persistedID: TestNoteAdded.persistedID, variables: value.variables)
+        let request = Request(operationName: TestNoteAdded.name, kind: TestNoteAdded.kind, document: TestNoteAdded.document, variables: value.variables)
 
         final class Outcome: @unchecked Sendable { var messages: [String]? }
         let outcome = Outcome()
         let failing = Task {
             do {
-                for try await _ in socket.subscribe(request) {}
+                for try await _ in socket.send(request) {}
             } catch {
                 outcome.messages = (error as? GraphQLErrors)?.messages ?? ["\(error)"]
             }
@@ -916,7 +915,7 @@ struct DeliveryTests {
         await failing.value
         await until { server.closed == 1 }
 
-        let reader = Task { for try await _ in socket.subscribe(request) {} }
+        let reader = Task { for try await _ in socket.send(request) {} }
         await until { server.count(of: "subscribe") == 2 }
         reader.cancel()
         await until { server.count(of: "complete") == 1 }
@@ -937,7 +936,7 @@ struct DeliveryTests {
             var finished: Bool { lock.withLock { ended } }
         }
         let value = TestNoteAdded(characterId: "1", connections: [])
-        let request = Request(operationName: TestNoteAdded.name, text: TestNoteAdded.text, persistedID: TestNoteAdded.persistedID, variables: value.variables)
+        let request = Request(operationName: TestNoteAdded.name, kind: TestNoteAdded.kind, document: TestNoteAdded.document, variables: value.variables)
         // The closed socket's read fails a few milliseconds after the close,
         // and a subscription that opens a socket within them is the case, so
         // the sequence runs until one has met it or long enough that one
@@ -946,7 +945,7 @@ struct DeliveryTests {
             let server = try SocketServer()
             let socket = GraphQLTransportWebSocket(url: try await server.start())
             defer { server.stop() }
-            let first = Task { for try await _ in socket.subscribe(request) {} }
+            let first = Task { for try await _ in socket.send(request) {} }
             await until { server.count(of: "subscribe") == 1 }
             first.cancel()
             await until { server.count(of: "complete") == 1 }
@@ -954,7 +953,7 @@ struct DeliveryTests {
             let reader = Reader()
             let second = Task {
                 do {
-                    for try await _ in socket.subscribe(request) { reader.receive() }
+                    for try await _ in socket.send(request) { reader.receive() }
                 } catch {}
                 reader.end()
             }
@@ -974,7 +973,7 @@ struct DeliveryTests {
     @Test("a subscription whose reader goes away before the connection is acknowledged closes the socket it opened, and leaves to another the socket they both wait on")
     func subscriptionEndedBeforeTheAcknowledgement() async throws {
         let value = TestNoteAdded(characterId: "1", connections: [])
-        let request = Request(operationName: TestNoteAdded.name, text: TestNoteAdded.text, persistedID: TestNoteAdded.persistedID, variables: value.variables)
+        let request = Request(operationName: TestNoteAdded.name, kind: TestNoteAdded.kind, document: TestNoteAdded.document, variables: value.variables)
 
         // Alone, it closes the socket whether the acknowledgement never comes
         // or comes as the reader goes.
@@ -982,7 +981,7 @@ struct DeliveryTests {
             let server = try SocketServer(acknowledges: false)
             let socket = GraphQLTransportWebSocket(url: try await server.start())
             defer { server.stop() }
-            let leaving = Task { for try await _ in socket.subscribe(request) {} }
+            let leaving = Task { for try await _ in socket.send(request) {} }
             await until { server.count(of: "connection_init") == 1 }
             leaving.cancel()
             if acknowledged { server.acknowledge() }
@@ -1003,9 +1002,9 @@ struct DeliveryTests {
         let socket = GraphQLTransportWebSocket(url: try await server.start())
         defer { server.stop() }
         let reader = Reader()
-        let staying = Task { for try await _ in socket.subscribe(request) { reader.receive() } }
+        let staying = Task { for try await _ in socket.send(request) { reader.receive() } }
         await until { server.count(of: "connection_init") == 1 }
-        let leaving = Task { for try await _ in socket.subscribe(request) {} }
+        let leaving = Task { for try await _ in socket.send(request) {} }
         // Time for it to wait beside the first, as it would in an app.
         try await Task.sleep(for: .milliseconds(20))
         leaving.cancel()
@@ -1038,11 +1037,11 @@ struct DeliveryTests {
         let socket = GraphQLTransportWebSocket(url: try await server.start())
         defer { server.stop() }
         let value = TestNoteAdded(characterId: "1", connections: [])
-        let request = Request(operationName: TestNoteAdded.name, text: TestNoteAdded.text, persistedID: TestNoteAdded.persistedID, variables: value.variables)
+        let request = Request(operationName: TestNoteAdded.name, kind: TestNoteAdded.kind, document: TestNoteAdded.document, variables: value.variables)
         let log = Log()
         let readers = Dictionary(uniqueKeysWithValues: ["first", "second"].map { reader in
             (reader, Task {
-                for try await payload in socket.subscribe(request) { log.add(payload, to: reader) }
+                for try await payload in socket.send(request) { log.add(payload, to: reader) }
                 log.end(reader)
             })
         })
@@ -1104,10 +1103,10 @@ struct DeliveryTests {
         configuration.protocolClasses = [ChunkedStub.self]
         configuration.httpAdditionalHeaders = ["X-Stub-Content-Type": contentType, "X-Stub-Status": String(status), "X-Stub-Body": Data(body.utf8).base64EncodedString()]
         let transport = URLSessionTransport(url: URL(string: "https://stub.invalid/graphql")!, session: URLSession(configuration: configuration))
-        let request = Request(operationName: "Stub", text: "query Stub { a }", persistedID: "", variables: .none, incremental: true)
+        let request = Request(operationName: "Stub", kind: .query, document: .text("query Stub { a }"), variables: .none, incremental: true)
         var received: [String] = []
         do {
-            for try await part in transport.stream(request) { received.append(String(decoding: part, as: UTF8.self)) }
+            for try await part in transport.send(request) { received.append(String(decoding: part, as: UTF8.self)) }
             #expect(status == 200)
         } catch let error as TransportError {
             #expect(error.statusCode == status)
@@ -1141,7 +1140,7 @@ struct DeliveryTests {
             await withTaskGroup(of: Void.self) { group in
                 for index in 0..<count {
                     group.addTask {
-                        _ = try? await transport.execute(Request(operationName: "Op\(index)", text: "", persistedID: "", variables: .none))
+                        _ = try? await transport.payload(Request(operationName: "Op\(index)", kind: .query, document: .text(""), variables: .none))
                     }
                 }
             }
