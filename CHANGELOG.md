@@ -5,6 +5,13 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- A response that omits a field the operation selected fails the fetch as
+  malformed, an `IngestError` naming the field and its type, where before
+  the handle settled ready and the first read of the field reported missing
+  data: a server answers every field it was asked for, so the plan was not
+  made for the response. A deferred field is expected in its part, and an
+  optimistic response or a payload committed by hand may carry part of the
+  selection, as before.
 - `Environment.commitPayload(operation, payload)` commits a payload for an
   operation that some other road delivered, a REST response, a socket's
   tick, a preview's fixture or a test's seed, through the same door a

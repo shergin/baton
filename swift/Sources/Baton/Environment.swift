@@ -162,8 +162,10 @@ public final class Environment {
     /// mutation does not, since the server applied it, and a subscription
     /// commits until its task ends. Later steps stand here: an ended store
     /// refuses, the commit stamps the operation's age, a report is raised.
-    func commit(_ payload: Data, plan: ResolvedSelection, root: String, replacing layer: UUID? = nil, checkingCancellation: Bool = true) async throws -> Committed {
-        let changes = try await Ingest.normalized(payload, plan: plan, rootKey: root)
+    /// `complete` says whether the payload must answer every field the plan
+    /// selects, as a server's response does; one committed by hand may not.
+    func commit(_ payload: Data, plan: ResolvedSelection, root: String, replacing layer: UUID? = nil, checkingCancellation: Bool = true, complete: Bool = true) async throws -> Committed {
+        let changes = try await Ingest.normalized(payload, plan: plan, rootKey: root, complete: complete)
         if checkingCancellation { try Task.checkCancellation() }
         return commit(changes, replacing: layer)
     }
@@ -196,7 +198,7 @@ public final class Environment {
     /// handled are thrown, as a fetch throws them.
     public func commitPayload<Op: Operation>(_ operation: Op, _ payload: Data) async throws {
         let resolved = Op.plan.resolve(operation.variables)
-        let committed = try await commit(payload, plan: resolved, root: Self.rootKey(of: Op.self), checkingCancellation: false)
+        let committed = try await commit(payload, plan: resolved, root: Self.rootKey(of: Op.self), checkingCancellation: false, complete: false)
         if Op.throwsOnFieldError, !committed.uncaught.isEmpty { throw FieldErrors(committed.uncaught) }
     }
 
@@ -229,7 +231,7 @@ public final class Environment {
         for try await part in transport.stream(request) {
             if first {
                 first = false
-                let opening = try await Ingest.normalizedFirstPart(part, plan: resolved, rootKey: Store.rootKey)
+                let opening = try await Ingest.normalizedFirstPart(part, plan: resolved, rootKey: Store.rootKey, complete: true)
                 try Task.checkCancellation()
                 committed.add(commit(opening.changes))
                 delivery.announce(opening.pending)

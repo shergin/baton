@@ -281,34 +281,40 @@ package enum Ingest {
         package var hasNext: Bool
     }
 
-    /// The change set a response normalizes to: what the store writes.
-    package static func normalize(_ data: Data, plan: ResolvedSelection, rootKey: String) throws -> ChangeSet {
-        try normalizeFirstPart(data, plan: plan, rootKey: rootKey).changes
+    /// The change set a response normalizes to: what the store writes. A
+    /// `complete` response answers every field the plan selects, as a server
+    /// answers an operation: an object that omits one is malformed, and the
+    /// response fails. A payload may be partial where that is the point, an
+    /// optimistic response or one committed by hand, and then only what it
+    /// carries is written.
+    package static func normalize(_ data: Data, plan: ResolvedSelection, rootKey: String, complete: Bool = false) throws -> ChangeSet {
+        try normalizeFirstPart(data, plan: plan, rootKey: rootKey, complete: complete).changes
     }
 
     /// Normalizes a response off the caller's actor and inside the caller's
     /// task, so the caller's cancellation and priority reach it.
     @concurrent
-    nonisolated static func normalized(_ data: Data, plan: ResolvedSelection, rootKey: String) async throws -> ChangeSet {
-        try normalize(data, plan: plan, rootKey: rootKey)
+    nonisolated static func normalized(_ data: Data, plan: ResolvedSelection, rootKey: String, complete: Bool = false) async throws -> ChangeSet {
+        try normalize(data, plan: plan, rootKey: rootKey, complete: complete)
     }
 
     /// A response, or the first part of an incremental one, with what it
     /// says of the parts to follow.
-    package static func normalizeFirstPart(_ data: Data, plan: ResolvedSelection, rootKey: String) throws -> FirstPart {
+    package static func normalizeFirstPart(_ data: Data, plan: ResolvedSelection, rootKey: String, complete: Bool = false) throws -> FirstPart {
         let bytes = [UInt8](data)
         // The change set is made inside the cursor and moved out, so no copy
         // is held while the cursor appends and nothing is copied on write.
         return try bytes.withUnsafeBufferPointer { buffer in
             var cursor = Cursor(base: buffer.baseAddress!, count: buffer.count, changes: ChangeSet(bytes: bytes))
+            cursor.complete = complete
             try cursor.run(root: plan, rootKey: rootKey)
             return FirstPart(changes: cursor.changes, pending: cursor.pending, hasNext: cursor.hasNext)
         }
     }
 
     @concurrent
-    nonisolated static func normalizedFirstPart(_ data: Data, plan: ResolvedSelection, rootKey: String) async throws -> FirstPart {
-        try normalizeFirstPart(data, plan: plan, rootKey: rootKey)
+    nonisolated static func normalizedFirstPart(_ data: Data, plan: ResolvedSelection, rootKey: String, complete: Bool = false) async throws -> FirstPart {
+        try normalizeFirstPart(data, plan: plan, rootKey: rootKey, complete: complete)
     }
 
     /// Normalizes one object, as a deferred part delivers it: the selection
@@ -491,6 +497,14 @@ package enum Ingest {
         /// The records of a plural link being read, per depth, reused as the
         /// scratch buffers are.
         var linked: [ContiguousArray<Int32>] = []
+        /// Which of the variant's fields the object being read has answered,
+        /// per depth, for a complete response.
+        var seen: [ContiguousArray<Bool>] = []
+        /// Whether every field the plan selects must be answered: a server's
+        /// response to an operation, where an object that omits one is
+        /// malformed. Not for an optimistic response or a payload committed
+        /// by hand, which may carry part of the selection.
+        var complete = false
         /// How deep a selection may nest.
         static let depthLimit = 24
         /// The response's `errors`, as read; resolved against the plan at the end.
@@ -635,6 +649,7 @@ package enum Ingest {
         /// Relay prints the `id` it adds last, and an optimistic response
         /// sorts its keys.
         mutating func object(plan: ResolvedSelection, parent: Int32, storageKey: String?, listIndex: Int?, depth: Int, fixedRecord: Int32?) throws -> Int32 {
+            let opening = position
             try expect(0x7B)
             guard depth < Cursor.depthLimit else { throw IngestError(offset: position, message: "selection nested deeper than 24 levels") }
             if depth == scratch.count {
@@ -643,6 +658,7 @@ package enum Ingest {
                 scratch.append(buffer)
                 extra.append([])
                 linked.append([])
+                seen.append([])
             } else {
                 scratch[depth].removeAll(keepingCapacity: true)
                 extra[depth].removeAll(keepingCapacity: true)
@@ -657,6 +673,10 @@ package enum Ingest {
             let variant = plan.variant(for: concreteType)
             let fields = variant.fields
             let fieldCount = fields.count
+            if complete {
+                seen[depth].removeAll(keepingCapacity: true)
+                seen[depth].append(contentsOf: repeatElement(false, count: fieldCount))
+            }
             while true {
                 skipWhitespace()
                 let byte = peek()
@@ -680,6 +700,7 @@ package enum Ingest {
                     }
                 }
                 guard matched >= 0 else { try skipValue(); continue }
+                if complete { seen[depth][matched] = true }
                 let field = fields[matched]
 
                 if field.isTypename {
@@ -769,6 +790,13 @@ package enum Ingest {
                         }
                         if let edit = field.edit { insertion(edit, childRecord) }
                     }
+                }
+            }
+            if complete {
+                // A deferred field arrives in a later part, and `__typename`
+                // is the object's identity rather than its data.
+                for index in 0..<fieldCount where !seen[depth][index] && !fields[index].isTypename && fields[index].deferred == nil {
+                    throw IngestError(offset: opening, message: "the response omits `\(fields[index].responseKey)` of `\(variant.typeName)`, which the operation selected")
                 }
             }
             if record < 0 {

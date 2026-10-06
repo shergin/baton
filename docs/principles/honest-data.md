@@ -83,5 +83,8 @@ operation the target compiles;
 `Store.reportMissing` for missing data and `Store.reportUnexpected` for a
 null in a field typed non-null or a value of another kind, with zero values
 from the `required*` readers and one placeholder record per type behind a
-non-null link without data. Still planned: the heal's refetch of the owning operation. This
-section may rot; the rest must not.
+non-null link without data. A server's response that omits a field the
+operation selected fails the fetch as malformed, so missing data arises only
+when a link is retargeted; an optimistic response and `commitPayload` may
+carry part of a selection. Still planned: the heal's refetch of the owning
+operation. This section may rot; the rest must not.

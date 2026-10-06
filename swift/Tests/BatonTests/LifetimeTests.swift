@@ -46,9 +46,13 @@ struct StorageProbe: View {
 @MainActor
 @Suite("Lifetime", .timeLimit(.minutes(1)))
 struct LifetimeTests {
-    /// A transport that serves the fixture for any page, shifted by page number.
+    /// A transport that serves the fixture for any page, shifted by page
+    /// number, and a character's header for a lookup by id.
     func transport() -> RecordedTransport {
         RecordedTransport { request in
+            if request.operationName == TestHeaderQuery.name, case .string(let id)? = request.variables["id"] {
+                return fixture("character-header-\(id)")
+            }
             guard case .int(let page)? = request.variables["page"] else { return fixtureData }
             return page == 1 ? fixtureData : shiftedFixture(by: page * 100_000)
         }
@@ -179,13 +183,13 @@ struct LifetimeTests {
         await quiet.settle()
         #expect(transport.requestCount == 0)
 
-        let eager = environment.handle(for: TestHeaderQuery(id: "1"), fetchPolicy: .storeAndNetwork)
+        let eager = environment.handle(for: TestHeaderQuery(id: "5"), fetchPolicy: .storeAndNetwork)
         guard case .ready = eager.phase else { Issue.record("expected ready from the lookup"); return }
         #expect(eager.isRefreshing)
         await eager.settle()
         #expect(transport.requestCount == 1)
 
-        let networkOnly = environment.handle(for: TestHeaderQuery(id: "2"), fetchPolicy: .networkOnly)
+        let networkOnly = environment.handle(for: TestHeaderQuery(id: "11"), fetchPolicy: .networkOnly)
         guard case .loading = networkOnly.phase else { Issue.record("networkOnly must not render from the store"); return }
         await networkOnly.settle()
         guard case .ready = networkOnly.phase else { Issue.record("networkOnly should be ready after its fetch"); return }

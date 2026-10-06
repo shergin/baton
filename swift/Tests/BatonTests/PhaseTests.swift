@@ -819,6 +819,65 @@ struct PhaseTests {
         orphan.release()
     }
 
+    /// A recorded response with one member taken out, as a server that
+    /// skipped a field would send it.
+    func omitting(_ member: String, from data: Data) throws -> Data {
+        let text = String(decoding: data, as: UTF8.self)
+        try #require(text.contains(member), "the fixture carries \(member)")
+        return Data(text.replacingOccurrences(of: member, with: "").utf8)
+    }
+
+    @Test("a response that omits a scalar or a linked field the operation selected is malformed: the phase fails with an ingest error naming the field and its type, and the fetch reads malformed")
+    func aResponseThatOmitsASelectedFieldIsMalformed() async throws {
+        let header = fixture("character-header-5")
+        let omissions = [
+            (#""species":"Human","#, "the response omits `species` of `Character`, which the operation selected"),
+            (#""origin":{"name":"Earth (Replacement Dimension)","id":"20"},"#, "the response omits `origin` of `Character`, which the operation selected"),
+        ]
+        for (member, message) in omissions {
+            let environment = Environment(transport: RecordedTransport([TestHeaderQuery.name: try omitting(member, from: header)]))
+            environment.store.reportMissing = nil
+            let handle = environment.handle(for: TestHeaderQuery(id: "5"))
+            handle.retain()
+            await handle.settle()
+            guard case .failed(let error as IngestError) = handle.phase else {
+                Issue.record("expected the phase to fail on the response, got \(handle.phase)")
+                handle.release()
+                continue
+            }
+            #expect(error.message == message)
+            guard case .failed(.malformed(let recorded), _) = handle.fetch else {
+                Issue.record("expected a malformed response, got \(handle.fetch)")
+                handle.release()
+                continue
+            }
+            #expect(recorded.message == message)
+            handle.release()
+        }
+    }
+
+    @Test("a response that answers every field the operation selected, some with null, is complete, and so is one that omits the __typename the compiler added to an abstract selection")
+    func aResponseThatAnswersEveryFieldIsComplete() async throws {
+        let answered = fixture("search-origins-1")
+        let untyped = try omitting(#","__typename":"Character""#, from: try omitting(#""__typename":"Character","#, from: answered))
+        for (response, typed) in [(answered, true), (untyped, false)] {
+            let environment = Environment(transport: RecordedTransport([TestSearchOrigins.name: response]))
+            environment.store.reportMissing = nil
+            let handle = environment.handle(for: TestSearchOrigins(name: "a"))
+            handle.retain()
+            await handle.settle()
+            guard case .ready = handle.phase, case .idle = handle.fetch else {
+                Issue.record("expected ready and an idle fetch, got \(handle.phase) and \(handle.fetch)")
+                handle.release()
+                continue
+            }
+            // Without `__typename` the record is keyed by the abstract type,
+            // since nothing names the concrete one.
+            #expect((environment.store.existing("Character:2") != nil) == typed)
+            handle.release()
+        }
+    }
+
     @Test("a fetch in flight reads in flight behind loading and behind ready data, and refreshing only behind the data")
     func aFetchInFlightReadsInFlight() async throws {
         let gate = GatedTransport()
