@@ -190,3 +190,37 @@ fn check_names_each_output_that_differs_and_writes_nothing() {
     assert_eq!(out.contents(), before, "the check writes nothing");
     assert_eq!(std::fs::read_to_string(&shared).ok(), Some(edited));
 }
+
+#[test]
+fn validate_warns_at_the_name_of_a_fragment_no_operation_spreads_and_succeeds() {
+    let directory = Scratch::new("unused");
+    let document = directory.join("Unused.graphql");
+    std::fs::write(
+        &document,
+        "query Spread { character(id: 1) { id ...Spread_character } }\n\
+         fragment Spread_character on Character { name }\n\
+         \n\
+         fragment Unused_character on Character { name }\n",
+    )
+    .expect("the document is written");
+    let path = document.to_string_lossy().into_owned();
+    let output = batonc(&[
+        "validate",
+        "--schema",
+        "spec/rickandmorty/schema.graphql",
+        &path,
+    ]);
+    assert!(output.status.success(), "{}", stderr(&output));
+    let errors = stderr(&output);
+    let warnings: Vec<&str> = errors
+        .lines()
+        .filter(|line| line.contains("warning:"))
+        .collect();
+    assert_eq!(
+        warnings,
+        [format!(
+            "{path}:4:10: warning: fragment `Unused_character` is spread by no operation; nothing can read its lens"
+        )],
+        "{errors}"
+    );
+}

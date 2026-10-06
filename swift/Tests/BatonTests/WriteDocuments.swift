@@ -87,4 +87,13 @@ struct WriteDocuments {
         }
         """)
     var node: TestNode
+
+    /// The query that reaches `TestFavorite_character`, so its lens has an
+    /// operation to be read from; it exists only to be compiled.
+    @Query("""
+        query TestFavoriteQuery($id: ID!) {
+          character(id: $id) { id ...TestFavorite_character }
+        }
+        """)
+    var favoriteQuery: TestFavoriteQuery
 }

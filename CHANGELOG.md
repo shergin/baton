@@ -5,6 +5,10 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- A fragment no operation reaches, directly or through another fragment,
+  is a warning at its definition: nothing can read its lens, and the code
+  generated for it is dead. The test target's fragments now all reach an
+  operation.
 - `batonc validate`, the same compilation with no output, for an editor or a
   hook; `batonc print <Name>`, one operation's text and id as the app sends
   them; and `batonc generate --check`, which writes nothing and names every

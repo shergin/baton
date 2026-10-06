@@ -323,7 +323,8 @@ fn compile_documents(options: &Options) -> Result<Compilation, DriverError> {
     if !errors.is_empty() {
         return Err(DriverError::Reported);
     }
-    let rendered = check_property_types(&documents, &plan);
+    let mut rendered = check_property_types(&documents, &plan);
+    rendered.extend(unused_fragments(&documents, &plan));
     Ok(Compilation {
         sources,
         documents,
@@ -520,6 +521,29 @@ fn print(arguments: &[String]) -> Result<(), DriverError> {
     }
     println!("{}", operation.text);
     Ok(())
+}
+
+/// A fragment no operation reaches, directly or through another fragment,
+/// warned at its definition: nothing can read its lens, and the code
+/// generated for it is dead.
+fn unused_fragments(documents: &[Document], plan: &pipeline::Plan) -> Vec<Rendered> {
+    let reach = report::reach(plan);
+    let reached: BTreeSet<&str> = reach.values().flatten().map(String::as_str).collect();
+    plan.fragments
+        .iter()
+        .filter(|fragment| !reached.contains(fragment.name.as_str()))
+        .filter_map(|fragment| {
+            let origin = fragment.origin.as_ref()?;
+            Some(diagnostics::warning_at(
+                origin,
+                documents,
+                format!(
+                    "fragment `{}` is spread by no operation; nothing can read its lens",
+                    fragment.name
+                ),
+            ))
+        })
+        .collect()
 }
 
 /// Relay's persisted-documents file: a JSON object from each operation's id
@@ -841,3 +865,7 @@ fn report_timings(timings: &pipeline::Timings, document_count: usize) {
 #[cfg(test)]
 #[path = "tests/driver_tests.rs"]
 mod driver_tests;
+
+#[cfg(test)]
+#[path = "tests/unused_fragment_tests.rs"]
+mod unused_fragment_tests;

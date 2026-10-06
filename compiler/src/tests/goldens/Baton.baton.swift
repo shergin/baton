@@ -233,6 +233,7 @@ nonisolated enum Slots {
         static let drafts = Baton.Registry.clientSlot(Types.Query, "drafts")
         static let namesake_9b6471 = Baton.DynamicKey(Types.Query, "namesake", [Baton.KeyArgument("name", [.variable("name")])])
         static let node_8f7d08 = Baton.DynamicKey(Types.Query, "node", [Baton.KeyArgument("id", [.variable("id")])])
+        static let node_c27cc2 = Baton.Registry.slot(Types.Query, "node(id:1)")
         static let quote_bd29fc = Baton.DynamicKey(Types.Query, "quote", [Baton.KeyArgument("base", [.variable("base")]), Baton.KeyArgument("quote", [.variable("quote")])])
         static let quotes = Baton.Registry.slot(Types.Query, "quotes")
         static let search_6286a6 = Baton.Registry.slot(Types.Query, "search(name:\"$0.00\")")

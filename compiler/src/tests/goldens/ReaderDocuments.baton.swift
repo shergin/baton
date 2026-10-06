@@ -973,6 +973,108 @@ fragment TestNotes_character_35kO5h on Character {
     }
 }
 
+/// Operation value for `query TestStandaloneFragmentsQuery`.
+nonisolated public struct TestStandaloneFragmentsQuery: Baton.Query {
+    public var id: String
+    public var resolution: Baton.OperationHandle<Self>? = nil
+
+    public init(id: String) {
+        self.id = id
+    }
+
+    public static let name = "TestStandaloneFragmentsQuery"
+    public static let document: Baton.Document = .text(#"""
+query TestStandaloneFragmentsQuery(
+  $id: ID!
+) {
+  character(id: $id) {
+    id
+    ...TestThrowingOrigin_character
+    ...TestLoggedNotes_character
+    notes(first: 1) {
+      ...TestLogEdges_connection
+    }
+  }
+}
+
+fragment TestLogEdges_connection on NoteConnection {
+  edges {
+    cursor
+  }
+}
+
+fragment TestLoggedNotes_character on Character {
+  notes(first: 1) {
+    totalCount
+    ...TestLogEdges_connection
+  }
+}
+
+fragment TestThrowingOrigin_character on Character {
+  origin {
+    name
+    id
+  }
+}
+"""#)
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["id": Baton.Variable(self.id)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.id)
+    }
+
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+            .linked("character", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: [.variable("id")]), selection: Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
+                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+                .linked("origin", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
+                    .scalar("name", key: .fixed(Slots.Location.name), kind: .string, list: false),
+                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
+                ])),
+                .linked("notes", key: .fixed(Slots.Character.notes_f89852), plural: false, selection: Baton.Selection(type: Types.NoteConnection, key: [], abstract: false, fields: [
+                    .scalar("totalCount", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+                    .linked("edges", key: .fixed(Slots.NoteConnection.edges), plural: true, selection: Baton.Selection(type: Types.NoteEdge, key: [], abstract: false, fields: [
+                        .scalar("cursor", key: .fixed(Slots.NoteEdge.cursor), kind: .string, list: false),
+                    ])),
+                ])),
+            ])),
+        ]), transient: Types.transient)
+
+    nonisolated public struct Data: Baton.Lens {
+        @_spi(Generated) public let anchor: Baton.Anchor
+        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        public static let typeName = "Query"
+        @MainActor public var character: Character? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(Character.init(anchor:)) }
+
+        nonisolated public struct Character: Baton.Lens {
+            @_spi(Generated) public let anchor: Baton.Anchor
+            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Character"
+            @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+            @MainActor public var testThrowingOrigin: TestThrowingOrigin_character { get throws { try .throwing(anchor.entering()) } }
+            @MainActor public var testLoggedNotes: TestLoggedNotes_character { .init(anchor: anchor.entering()) }
+            @MainActor public var notes: Notes { Notes(anchor: anchor.requiredLinked(Slots.Character.notes_f89852, type: Types.NoteConnection)) }
+
+            nonisolated public struct Notes: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                public static let typeName = "NoteConnection"
+                @MainActor public var testLogEdges: TestLogEdges_connection? {
+                    typealias Fragment = TestLogEdges_connection
+                    guard Fragment.satisfied(anchor) else { return nil }
+                    return .init(anchor: anchor.entering())
+                }
+            }
+        }
+    }
+}
+
 /// Operation value for `query TestStrictEpisodes`.
 nonisolated public struct TestStrictEpisodes: Baton.Query {
     public var id: String

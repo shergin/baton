@@ -100,6 +100,13 @@ struct BenchmarkDocuments {
     var caught: BenchCaught_character
 
     @Query("""
+        query BenchCaughtQuery($id: ID!) {
+          character(id: $id) { ...BenchCaught_character }
+        }
+        """)
+    var caughtQuery: BenchCaughtQuery
+
+    @Query("""
         query BenchStrictFixture($page: Int) @throwOnFieldError {
           characters(page: $page) {
             info { count pages next prev }

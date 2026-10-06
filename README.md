@@ -224,8 +224,9 @@ GraphQL and reports schema errors at the GraphQL text. It also writes
 `Baton.report.json` into the build's output directory, what the target
 compiled: every operation with its text, id and the fragments it reaches,
 every fragment with the operations that reach it, by name and deterministic,
-for the people who register operations and review contract changes.
-Outside SwiftPM, the same compiler runs by hand or from a Bazel rule, and a
+for the people who register operations and review contract changes. A
+fragment no operation reaches is a warning at its definition. Outside
+SwiftPM, the same compiler runs by hand or from a Bazel rule, and a
 team that commits its generated code gates with `batonc generate --check`;
 [the command's contract](docs/recipes/batonc.md) has the arguments, the
 exit codes and the examples. The generated files import

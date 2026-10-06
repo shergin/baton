@@ -471,6 +471,21 @@
       "text": "query TestEscapedText {\n  search(name: \"\\\\#1\") {\n    __typename\n    ... on Node {\n      __isNode: __typename\n      id\n    }\n  }\n}"
     },
     {
+      "name": "TestFavoriteQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/WriteDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [
+        "TestFavorite_character"
+      ],
+      "text": "query TestFavoriteQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    ...TestFavorite_character\n  }\n}\n\nfragment TestFavorite_character on Character {\n  id\n  name\n  favorite\n}"
+    },
+    {
       "name": "TestFilteredCharacters",
       "kind": "query",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
@@ -1294,6 +1309,23 @@
       "text": "query TestSpreadNames(\n  $id: ID!\n) {\n  character(id: $id) {\n    testCaughtStrict: species\n    ...TestCaughtStrict_character\n    id\n  }\n}\n\nfragment TestCaughtStrict_character on Character {\n  species\n}"
     },
     {
+      "name": "TestStandaloneFragmentsQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [
+        "TestLogEdges_connection",
+        "TestLoggedNotes_character",
+        "TestThrowingOrigin_character"
+      ],
+      "text": "query TestStandaloneFragmentsQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    ...TestThrowingOrigin_character\n    ...TestLoggedNotes_character\n    notes(first: 1) {\n      ...TestLogEdges_connection\n    }\n  }\n}\n\nfragment TestLogEdges_connection on NoteConnection {\n  edges {\n    cursor\n  }\n}\n\nfragment TestLoggedNotes_character on Character {\n  notes(first: 1) {\n    totalCount\n    ...TestLogEdges_connection\n  }\n}\n\nfragment TestThrowingOrigin_character on Character {\n  origin {\n    name\n    id\n  }\n}"
+    },
+    {
       "name": "TestStrictConditions",
       "kind": "query",
       "source": "swift/Tests/BatonTests/ConditionDocuments.swift",
@@ -1604,7 +1636,9 @@
       "name": "TestFavorite_character",
       "type": "Character",
       "source": "swift/Tests/BatonTests/WriteDocuments.swift",
-      "operations": [],
+      "operations": [
+        "TestFavoriteQuery"
+      ],
       "text": "fragment TestFavorite_character on Character {\n  id\n  name\n  favorite\n}"
     },
     {
@@ -1650,14 +1684,18 @@
       "name": "TestLogEdges_connection",
       "type": "NoteConnection",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
-      "operations": [],
+      "operations": [
+        "TestStandaloneFragmentsQuery"
+      ],
       "text": "fragment TestLogEdges_connection on NoteConnection {\n  edges @required(action: LOG) {\n    cursor\n  }\n}"
     },
     {
       "name": "TestLoggedNotes_character",
       "type": "Character",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
-      "operations": [],
+      "operations": [
+        "TestStandaloneFragmentsQuery"
+      ],
       "text": "fragment TestLoggedNotes_character on Character {\n  notes(first: 1) {\n    totalCount\n    ...TestLogEdges_connection\n  }\n}"
     },
     {
@@ -1780,7 +1818,9 @@
       "name": "TestThrowingOrigin_character",
       "type": "Character",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
-      "operations": [],
+      "operations": [
+        "TestStandaloneFragmentsQuery"
+      ],
       "text": "fragment TestThrowingOrigin_character on Character @throwOnFieldError {\n  origin @required(action: THROW) {\n    name\n  }\n}"
     },
     {

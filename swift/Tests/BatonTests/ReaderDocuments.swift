@@ -189,4 +189,19 @@ struct ReaderDocuments {
         }
         """)
     var twoFieldPart: TestTwoFieldPartQuery
+
+    /// The query that reaches the fragments the tests read on their own, so
+    /// each lens has an operation to be read from; it exists only to be
+    /// compiled.
+    @Query("""
+        query TestStandaloneFragmentsQuery($id: ID!) {
+          character(id: $id) {
+            id
+            ...TestThrowingOrigin_character
+            ...TestLoggedNotes_character
+            notes(first: 1) { ...TestLogEdges_connection }
+          }
+        }
+        """)
+    var standaloneFragments: TestStandaloneFragmentsQuery
 }

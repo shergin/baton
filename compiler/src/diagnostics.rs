@@ -121,6 +121,20 @@ fn embedded(path: &str, index: usize, offset: usize, documents: &[Document]) -> 
 /// An error at a name the document wrote, which the compiler found after
 /// the front end.
 pub fn at(origin: &Origin, documents: &[Document], message: impl Into<String>) -> Rendered {
+    positioned(origin, documents, "error", message)
+}
+
+/// A warning at a name the document wrote.
+pub fn warning_at(origin: &Origin, documents: &[Document], message: impl Into<String>) -> Rendered {
+    positioned(origin, documents, "warning", message)
+}
+
+fn positioned(
+    origin: &Origin,
+    documents: &[Document],
+    severity: &'static str,
+    message: impl Into<String>,
+) -> Rendered {
     let (path, line, column) = embedded(
         &origin.path,
         origin.document,
@@ -131,7 +145,7 @@ pub fn at(origin: &Origin, documents: &[Document], message: impl Into<String>) -
         path,
         line,
         column,
-        severity: "error",
+        severity,
         message: message.into(),
         notes: Vec::new(),
     }

@@ -4030,6 +4030,446 @@
       ]
     },
     {
+      "name": "TestStandaloneFragmentsQuery",
+      "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
+      "document": 21,
+      "kind": "query",
+      "root_type": "Query",
+      "variables": [
+        {
+          "name": "id",
+          "type": {
+            "shape": "named",
+            "name": "ID",
+            "kind": "id",
+            "non_null": true
+          },
+          "default_value": null
+        }
+      ],
+      "text": "query TestStandaloneFragmentsQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    ...TestThrowingOrigin_character\n    ...TestLoggedNotes_character\n    notes(first: 1) {\n      ...TestLogEdges_connection\n    }\n  }\n}\n\nfragment TestLogEdges_connection on NoteConnection {\n  edges {\n    cursor\n  }\n}\n\nfragment TestLoggedNotes_character on Character {\n  notes(first: 1) {\n    totalCount\n    ...TestLogEdges_connection\n  }\n}\n\nfragment TestThrowingOrigin_character on Character {\n  origin {\n    name\n    id\n  }\n}",
+      "throws_on_field_error": false,
+      "bubbles": false,
+      "has_deferred": false,
+      "error_behavior": null,
+      "reader": [
+        {
+          "kind": "linked",
+          "name": "character",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Character",
+            "kind": "object",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "keys": {
+            "Character": [
+              "id"
+            ]
+          },
+          "is_abstract": false,
+          "possible_types": [
+            "Character"
+          ],
+          "storage_key": {
+            "name": "character",
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
+          },
+          "lookup": {
+            "type_name": "Character",
+            "possible_types": [
+              "Character"
+            ],
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
+          },
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "id",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "ID",
+                "kind": "id",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "id",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "spread",
+              "fragment": "TestThrowingOrigin_character",
+              "type_condition": "Character",
+              "arguments": []
+            },
+            {
+              "kind": "spread",
+              "fragment": "TestLoggedNotes_character",
+              "type_condition": "Character",
+              "arguments": []
+            },
+            {
+              "kind": "linked",
+              "name": "notes",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "NoteConnection",
+                "kind": "object",
+                "non_null": true
+              },
+              "non_null": true,
+              "semantic_non_null": false,
+              "keys": {},
+              "is_abstract": false,
+              "possible_types": [
+                "NoteConnection"
+              ],
+              "storage_key": {
+                "name": "notes",
+                "arguments": [
+                  {
+                    "name": "first",
+                    "value": {
+                      "kind": "constant",
+                      "value": {
+                        "kind": "int",
+                        "value": 1
+                      }
+                    }
+                  }
+                ]
+              },
+              "lookup": null,
+              "connection": null,
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "spread",
+                  "fragment": "TestLogEdges_connection",
+                  "type_condition": "NoteConnection",
+                  "arguments": []
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "normalization": [
+        {
+          "kind": "linked",
+          "name": "character",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Character",
+            "kind": "object",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "keys": {
+            "Character": [
+              "id"
+            ]
+          },
+          "is_abstract": false,
+          "possible_types": [
+            "Character"
+          ],
+          "storage_key": {
+            "name": "character",
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
+          },
+          "lookup": {
+            "type_name": "Character",
+            "possible_types": [
+              "Character"
+            ],
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
+          },
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "id",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "ID",
+                "kind": "id",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "id",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "linked",
+              "name": "origin",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Location",
+                "kind": "object",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "keys": {
+                "Location": [
+                  "id"
+                ]
+              },
+              "is_abstract": false,
+              "possible_types": [
+                "Location"
+              ],
+              "storage_key": {
+                "name": "origin",
+                "arguments": []
+              },
+              "lookup": null,
+              "connection": null,
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "name",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "String",
+                    "kind": "string",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "name",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "linked",
+              "name": "notes",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "NoteConnection",
+                "kind": "object",
+                "non_null": true
+              },
+              "non_null": true,
+              "semantic_non_null": false,
+              "keys": {},
+              "is_abstract": false,
+              "possible_types": [
+                "NoteConnection"
+              ],
+              "storage_key": {
+                "name": "notes",
+                "arguments": [
+                  {
+                    "name": "first",
+                    "value": {
+                      "kind": "constant",
+                      "value": {
+                        "kind": "int",
+                        "value": 1
+                      }
+                    }
+                  }
+                ]
+              },
+              "lookup": null,
+              "connection": null,
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "totalCount",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "Int",
+                    "kind": "int",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "totalCount",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "linked",
+                  "name": "edges",
+                  "alias": null,
+                  "type": {
+                    "shape": "list",
+                    "element": {
+                      "shape": "named",
+                      "name": "NoteEdge",
+                      "kind": "object",
+                      "non_null": false
+                    },
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "keys": {},
+                  "is_abstract": false,
+                  "possible_types": [
+                    "NoteEdge"
+                  ],
+                  "storage_key": {
+                    "name": "edges",
+                    "arguments": []
+                  },
+                  "lookup": null,
+                  "connection": null,
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false,
+                  "bubbles": false,
+                  "selections": [
+                    {
+                      "kind": "scalar",
+                      "name": "cursor",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "String",
+                        "kind": "string",
+                        "non_null": true
+                      },
+                      "non_null": true,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "cursor",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "TestStrictEpisodes",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
       "document": 11,

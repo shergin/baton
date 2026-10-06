@@ -1330,4 +1330,21 @@ struct HostileNameDocuments {
         }
         """)
     var payload: HostilePayload.Action
+
+    /// The query that reaches the fragments no other document spreads, so
+    /// each lens has an operation to be read from; it exists only to be
+    /// compiled. Each spread sits under a field of its own, since the
+    /// fragments give one alias to different fields.
+    @Query("""
+        query HostileReach {
+          scalarsCharacter: character(id: 1) { ...HostileScalars_character }
+          linksCharacter: character(id: 1) { ...HostileLinks_character }
+          selectionsCharacter: character(id: 1) { ...HostileSelections_character }
+          spreadTargetCharacter: character(id: 1) { ...HostileSpreadTarget_character }
+          spreadsCharacter: character(id: 1) { ...HostileSpreads_character }
+          connectionNodesCharacter: character(id: 1) { ...HostileConnectionNodes_character }
+          abstractNode: node(id: 1) { ...HostileAbstract_node }
+        }
+        """)
+    var reach: HostileReach
 }
