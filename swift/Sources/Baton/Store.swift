@@ -295,14 +295,23 @@ public final class Store {
     /// changed.
     @discardableResult
     package func commit(_ changes: ChangeSet) -> Int {
+        commit(changes, replacingOptimistic: nil)
+    }
+
+    /// The server's commit: the one server batch. With `id`, the server's
+    /// answer to an optimistic mutation replaces the layer in the same
+    /// batch.
+    @discardableResult
+    package func commit(_ changes: ChangeSet, replacingOptimistic id: UUID?) -> Int {
         defer { reevaluateIfNeeded() }
-        if optimisticLayers.isEmpty {
+        if id == nil, optimisticLayers.isEmpty {
             var batch = Batch(.server, direct: true)
             applyServer(changes, into: &batch)
             return finish(batch)
         }
         var batch = Batch(.server)
         revertLayers(from: 0, into: &batch)
+        if let id { optimisticLayers.removeAll { $0.id == id } }
         applyServer(changes, into: &batch)
         reapplyLayers(from: 0, into: &batch)
         return finish(batch)
@@ -442,19 +451,6 @@ public final class Store {
         optimisticLayers.remove(at: index)
         reapplyLayers(from: index, into: &batch)
         _ = finish(batch)
-    }
-
-    /// Commits the server's answer to an optimistic mutation: the layer is
-    /// replaced by the payload in one batch.
-    @discardableResult
-    package func commit(_ changes: ChangeSet, replacingOptimistic id: UUID) -> Int {
-        defer { reevaluateIfNeeded() }
-        var batch = Batch(.server)
-        revertLayers(from: 0, into: &batch)
-        optimisticLayers.removeAll { $0.id == id }
-        applyServer(changes, into: &batch)
-        reapplyLayers(from: 0, into: &batch)
-        return finish(batch)
     }
 
     private func revertLayers(from index: Int, into batch: inout Batch) {

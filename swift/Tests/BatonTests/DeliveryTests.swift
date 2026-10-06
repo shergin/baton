@@ -710,6 +710,44 @@ struct DeliveryTests {
         live.release()
     }
 
+    @Test("an event in hand when its subscription is released is not committed, while the events before it are")
+    func eventInHandAtTheRelease() async throws {
+        let events = Events()
+        let environment = Environment(transport: notesTransport(), subscriptions: events)
+        environment.store.reportMissing = nil
+        // The query keeps the connection the events append to, so a payload
+        // that landed would stay in the store rather than be collected.
+        let handle = environment.handle(for: TestNotesQuery(id: "1"))
+        handle.retain()
+        await handle.settle()
+        guard case .ready(let data) = handle.phase else {
+            Issue.record("expected .ready, got \(handle.phase)")
+            return
+        }
+        let character = try #require(data.character?.testNotes)
+        let live = environment.subscriptionHandle(for: TestNoteAdded(characterId: "1", connections: [character.notes.connectionID]))
+        live.retain()
+        await until { events.continuation != nil }
+
+        events.send(fixture("note-added-1"))
+        await until { live.events == 1 }
+        #expect(character.notes.nodes.map(\.text).last == "Live from the garage", "the event before the release landed")
+
+        // One turn of the main actor hands the event to the ingest, off the
+        // main actor; the release lands before the handle hears back from
+        // it, and the commit finds the task cancelled.
+        events.send(fixture("note-added-2"))
+        await Task.yield()
+        live.release()
+        // Long past the few milliseconds the event takes to read: had it
+        // been committed, it would be in the store by now.
+        try await Task.sleep(for: .milliseconds(200))
+        #expect(live.events == 1)
+        #expect(environment.store.existing("Note:n7") == nil, "the event in hand at the release did not land")
+        #expect(character.notes.nodes.count == 3)
+        handle.release()
+    }
+
     @Test("a stream the transport ends with a cancellation of its own ends the subscription, and a later retain opens it again")
     func streamEndedByTheTransportsCancellation() async throws {
         let events = Events()

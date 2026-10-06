@@ -118,19 +118,20 @@ public final class Environment {
     /// commits, so a view renders before the rest arrives. An operation with
     /// `@throwOnFieldError` throws the field errors its handle fails on.
     public func fetch<Op: Query>(_ operation: Op, firstPart: (() -> Void)? = nil) async throws {
-        let fetched = try await fetch(Op.self, variables: operation.variables, resolved: Op.plan.resolve(operation.variables), firstPart: firstPart.map { firstPart in { _ in firstPart() } })
+        let committed = try await fetch(Op.self, variables: operation.variables, resolved: Op.plan.resolve(operation.variables), firstPart: firstPart.map { firstPart in { _ in firstPart() } })
         guard Op.throwsOnFieldError else { return }
         // The handle's reading: the operation's own selection, where an error
         // inside a spread is the fragment's to weigh, and the errors the
         // response carried with no field to hold them.
         let anchor = Anchor(record: store.root, variables: operation.variables, store: store)
-        let errors = fetched.unplaced + Op.Data.fieldErrors(anchor)
+        let errors = committed.unplaced + Op.Data.fieldErrors(anchor)
         if !errors.isEmpty { throw FieldErrors(errors) }
     }
 
-    /// What a fetch committed besides its records: the field errors no
-    /// `@catch` handled, and those no field in the store holds.
-    struct Fetched {
+    /// What a commit left for the operation's reading besides its records:
+    /// the field errors no `@catch` handled, and those no field in the store
+    /// holds.
+    struct Committed {
         var uncaught: [FieldError] = []
         var unplaced: [FieldError] = []
 
@@ -144,12 +145,43 @@ public final class Environment {
             uncaught.append(contentsOf: failure.uncaught)
             unplaced.append(contentsOf: failure.changes.unplacedErrors)
         }
+
+        mutating func add(_ other: Committed) {
+            uncaught.append(contentsOf: other.uncaught)
+            unplaced.append(contentsOf: other.unplaced)
+        }
+    }
+
+    /// The one door from a payload to slots. The payload is read by the plan
+    /// off the main actor into a change set, and the change set is committed
+    /// here as a server batch at the root the operation hangs off. A query's
+    /// fetch, a deferred stream's first part, a mutation, a subscription's
+    /// event and a page all pass through it; each keeps its own rule for a
+    /// caller cancelled on the way: a query's fetch checks before the
+    /// commit, so a response superseded while it was read never lands, a
+    /// mutation does not, since the server applied it, and a subscription
+    /// commits until its task ends. Later steps stand here: an ended store
+    /// refuses, the commit stamps the operation's age, a report is raised.
+    func commit(_ payload: Data, plan: ResolvedSelection, root: String, replacing layer: UUID? = nil, checkingCancellation: Bool = true) async throws -> Committed {
+        let changes = try await Ingest.normalized(payload, plan: plan, rootKey: root)
+        if checkingCancellation { try Task.checkCancellation() }
+        return commit(changes, replacing: layer)
+    }
+
+    /// The door's lower half: a change set committed as a server batch. The
+    /// parts of a deferred stream after the first arrive here as the change
+    /// sets the delivery assembled.
+    func commit(_ changes: ChangeSet, replacing layer: UUID? = nil) -> Committed {
+        store.commit(changes, replacingOptimistic: layer)
+        var committed = Committed()
+        committed.add(changes)
+        return committed
     }
 
     /// Fetches with a plan already resolved, as a handle holds it. The field
     /// errors are the handle's to weigh, so none is thrown; `firstPart` is
     /// handed what the first part committed besides its records.
-    func fetch<Op: Query>(_ operation: Op, resolved: ResolvedSelection, firstPart: ((Fetched) -> Void)? = nil) async throws -> Fetched {
+    func fetch<Op: Query>(_ operation: Op, resolved: ResolvedSelection, firstPart: ((Committed) -> Void)? = nil) async throws -> Committed {
         try await fetch(Op.self, variables: operation.variables, resolved: resolved, firstPart: firstPart)
     }
 
@@ -162,20 +194,14 @@ public final class Environment {
         try await fetch(operation, variables: variables, resolved: Op.plan.resolve(variables), firstPart: firstPart.map { firstPart in { _ in firstPart() } }).uncaught
     }
 
-    private func fetch<Op: Query>(_ operation: Op.Type, variables: Variables, resolved: ResolvedSelection, firstPart: ((Fetched) -> Void)?) async throws -> Fetched {
+    private func fetch<Op: Query>(_ operation: Op.Type, variables: Variables, resolved: ResolvedSelection, firstPart: ((Committed) -> Void)?) async throws -> Committed {
         let request = request(Op.self, variables: variables)
         if !Op.hasDeferred {
-            let data = try await transport.execute(request)
-            let changes = try await Ingest.normalized(data, plan: resolved, rootKey: Store.rootKey)
             // A fetch superseded while its response was on the way or being
             // read must not land after the one that replaced it.
-            try Task.checkCancellation()
-            store.commit(changes)
-            var fetched = Fetched()
-            fetched.add(changes)
-            return fetched
+            return try await commit(try await transport.execute(request), plan: resolved, root: Store.rootKey)
         }
-        var fetched = Fetched()
+        var committed = Committed()
         var delivery = Delivery(store: store, resolved: resolved)
         var first = true
         for try await part in transport.stream(request) {
@@ -183,10 +209,9 @@ public final class Environment {
                 first = false
                 let opening = try await Ingest.normalizedFirstPart(part, plan: resolved, rootKey: Store.rootKey)
                 try Task.checkCancellation()
-                store.commit(opening.changes)
-                fetched.add(opening.changes)
+                committed.add(commit(opening.changes))
                 delivery.announce(opening.pending)
-                firstPart?(fetched)
+                firstPart?(committed)
                 if !opening.hasNext { break }
                 continue
             }
@@ -195,17 +220,14 @@ public final class Environment {
             let changes = try await Ingest.normalized(delivery.objects(of: incremental))
             let failures = delivery.failures(of: incremental)
             try Task.checkCancellation()
-            for change in changes {
-                store.commit(change)
-                fetched.add(change)
-            }
+            for change in changes { committed.add(commit(change)) }
             for failure in failures {
-                store.commit(failure.changes)
-                fetched.add(failure)
+                _ = commit(failure.changes)
+                committed.add(failure)
             }
             if !incremental.hasNext { break }
         }
-        return fetched
+        return committed
     }
 
     /// Fetches a page of a connection: the loading flag on the connection
@@ -242,13 +264,7 @@ public final class Environment {
             let request = request(Op.self, variables: operation.variables)
             let transport = transport
             let data = try await Task { try await transport.execute(request) }.value
-            let changes = try await Ingest.normalized(data, plan: resolved, rootKey: Store.mutationRootKey)
-            if let layer {
-                store.commit(changes, replacingOptimistic: layer)
-            } else {
-                store.commit(changes)
-            }
-            uncaught = changes.uncaughtFieldErrors
+            uncaught = try await commit(data, plan: resolved, root: Store.mutationRootKey, replacing: layer, checkingCancellation: false).uncaught
         } catch {
             if let layer { store.revertOptimistic(layer) }
             throw error

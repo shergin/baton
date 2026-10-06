@@ -197,7 +197,8 @@ struct WriteTests {
         try await Task.sleep(for: .milliseconds(50))
         #expect(transport.pending, "the request was not cancelled with its caller")
         transport.respond(fixture("rename-1"))
-        _ = try? await caller.value
+        let renamed = try await caller.value
+        #expect(renamed.rename?.character?.name == "Rick Prime", "the caller that stopped waiting is handed the result")
         let rick = try #require(environment.store.existing("Character:1"))
         #expect(rick.read(Registry.slot(rick.type, "name")) == .string("Rick Prime"))
     }

@@ -5,6 +5,15 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- One door from a payload to slots. A query's fetch, a deferred stream, a
+  mutation, a subscription's event and a page each normalized and
+  committed on their own; every payload now passes through one function of
+  the environment, which reads it by the plan off the main actor and
+  commits it as a server batch, and each entrance keeps only its rule for a
+  caller cancelled on the way: a query checks before the commit, a mutation
+  does not, since the server applied it, a subscription commits until its
+  task ends. An ended store will refuse at that door, the commit will stamp
+  the operation's age there, and a report will be raised there.
 - The ingest returns what it normalized and no more: a change set holds
   what the store writes, and the parts an incremental response announces,
   whether more follow, and the errors of a part the server could not

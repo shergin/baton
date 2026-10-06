@@ -380,7 +380,7 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
             guard let self, let environment else { return nil }
             var failure: (any Error)?
             do {
-                let fetched = try await environment.fetch(operation, resolved: resolved) { [weak self] firstPart in
+                let committed = try await environment.fetch(operation, resolved: resolved) { [weak self] firstPart in
                     // A deferred response renders its first part at once, by
                     // the errors that part carried with no field to hold
                     // them; it is fetched, and fresh, once the stream
@@ -389,7 +389,7 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
                     unplaced = firstPart.unplaced
                     settle(evaluate())
                 }
-                if !Task.isCancelled { unplaced = fetched.unplaced }
+                if !Task.isCancelled { unplaced = committed.unplaced }
             } catch {
                 failure = error
             }
@@ -597,9 +597,9 @@ public final class SubscriptionHandle<Op: Subscription>: AnyOperationHandle {
                 for try await payload in environment.subscribe(operation) {
                     guard !Task.isCancelled else { return }
                     do {
-                        let changes = try await Ingest.normalized(payload, plan: resolved, rootKey: Store.subscriptionRootKey)
-                        guard !Task.isCancelled else { return }
-                        store.commit(changes)
+                        // The door checks the task's cancellation before the
+                        // commit: a stream commits until its task ends.
+                        _ = try await environment.commit(payload, plan: resolved, root: Store.subscriptionRootKey)
                         events += 1
                         latest = Op.Data(anchor: Anchor(record: store.subscriptionRoot, owner: owner))
                         error = nil
@@ -610,6 +610,8 @@ public final class SubscriptionHandle<Op: Subscription>: AnyOperationHandle {
                         // whoever cancelled the task meanwhile.
                         guard !Task.isCancelled else { return }
                         error = failure
+                    } catch is CancellationError {
+                        return
                     }
                 }
             } catch is CancellationError {
