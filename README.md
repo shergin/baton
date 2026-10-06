@@ -200,6 +200,11 @@ will break freely until 1.0.
 - **0.6.0 (Anchor Leg).** The store's image on disk through the system's
   SQLite, written behind every commit and read back by the availability
   check, with ages that survive a launch.
+- **0.7.0 (Split Time).** The ground before the spine: the runtime's
+  boundaries checked as a ratchet, the test transports in `BatonTesting`,
+  lists of lists refused by the compiler, the plugin's inputs and outputs
+  told truly, the hostile-name sweep in CI, the numbers the next steps are
+  measured against, and the first published compiler bundle.
 
 Still to come: the architecture the [decision records](docs/decisions/)
 describe, built

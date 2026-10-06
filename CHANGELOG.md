@@ -5,6 +5,15 @@ are expected and listed without apology.
 
 ## Unreleased
 
+## 0.7.0 (Split Time) — 2026-10-05
+
+The ground before the spine: the module's boundaries held by a check, the
+compiler refusing what the runtime cannot hold, the plugin telling the truth
+about its inputs and outputs, and the numbers the next steps are measured
+against, taken before any of them moves anything. The first release that
+publishes the compiler's bundle, so a package can depend on Baton by its
+tag.
+
 - The bench suite measures what the next steps move, so that each has its
   number before it moves anything: a collection pass over one root that
   reaches 50,000 records, over 300 roots, and the pass that clears a store
