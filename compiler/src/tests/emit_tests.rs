@@ -406,5 +406,39 @@ fn a_lens_tests_a_union_member_set_by_its_members_the_build_and_the_responses_kn
     assert!(!swift.contains("_possible.contains("), "{swift}");
 }
 
+#[test]
+fn a_fragment_spread_enters_its_fragment_and_an_inline_fragment_does_not() {
+    let swift = emitted(
+        r#"fragment ProbePlain_character on Character { name } fragment ProbeBound_character on Character @argumentDefinitions(flag: {type: "Boolean!", defaultValue: true}) { name @include(if: $flag) } fragment ProbeStrict_character on Character @throwOnFieldError { species } fragment ProbeCaught_character on Character { status } fragment Probe_character on Character { ...ProbePlain_character ...ProbeBound_character @arguments(flag: false) ...ProbeStrict_character ... @alias(as: "caughtSpread") @catch { ...ProbeCaught_character } } query ProbeQuery { search(name: "a") { __typename ... on Character { id } } }"#,
+    );
+    assert!(
+        swift.contains(
+            "public var probePlain: ProbePlain_character { .init(anchor: anchor.entering()) }"
+        ),
+        "{swift}"
+    );
+    assert!(
+        swift.contains("return .init(anchor: bound.entering())"),
+        "{swift}"
+    );
+    assert!(
+        swift.contains("try .throwing(anchor.entering())"),
+        "{swift}"
+    );
+    assert!(
+        swift.contains(".success(.init(anchor: anchor.entering()))"),
+        "{swift}"
+    );
+    assert!(
+        swift.contains("AsCharacter(anchor: anchor) : nil }"),
+        "{swift}"
+    );
+    let inline = swift
+        .lines()
+        .find(|line| line.contains("public var asCharacter:"))
+        .expect("the abstract selection reads its inline fragment as `asCharacter`");
+    assert!(!inline.contains(".entering()"), "{inline}");
+}
+
 #[path = "hostile_name_tests.rs"]
 mod hostile_names;

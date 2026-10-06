@@ -5,6 +5,13 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- An anchor's third word is the record its fragment starts at. A fragment
+  spread enters its record as the anchor's origin, and a connection below
+  it, however many links down, paginates with that record's id, as its
+  fragment's query takes it; before, it passed the id of the record it
+  hung from, which a connection one link below its fragment's type got
+  wrong. Generated code of this shape is format 5. The test schema's
+  `Note` gains `author: Character` for the fixture.
 - Membership comes from the response. Whether a type satisfies an
   interface or union condition is a table by the type's number, filled
   from the sets the build compiled and from what responses say in Relay's

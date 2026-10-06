@@ -175,6 +175,7 @@ type Note implements Node {
   id: ID
   text: String
   created: String
+  author: Character
 }
 
 type NoteConnection {

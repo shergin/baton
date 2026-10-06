@@ -152,7 +152,7 @@ nonisolated public struct TestProgramNames_character: Baton.Lens {
     public static let typeName = "Character"
     @MainActor public var testProgramNamesRefetchQuery: TestProgramNamesRefetchQueryLens? { anchor.linked(Slots.Character.origin).map(TestProgramNamesRefetchQueryLens.init(anchor:)) }
     @MainActor public var testCaughtProfile_character: TestCaughtProfile_characterLens? { anchor.linked(Slots.Character.location).map(TestCaughtProfile_characterLens.init(anchor:)) }
-    @MainActor public var testCaughtProfile: TestCaughtProfile_character { .init(anchor: anchor) }
+    @MainActor public var testCaughtProfile: TestCaughtProfile_character { .init(anchor: anchor.entering()) }
     @MainActor public var id: String? { anchor.string(Slots.Character.id) }
     /// How the fragment is fetched again: `TestProgramNamesRefetchQuery` with the lens's variables.
     @_spi(Generated) public static let refetchable: Baton.Refetch = .init(variables: ["id"], identifier: "id", identity: Slots.Character.id, first: nil, after: nil, last: nil, before: nil)
@@ -608,22 +608,22 @@ fragment TestCaughtStrict_character on Character {
             @MainActor public var profile: Result<TestCaughtProfile_character, Baton.FieldErrors> {
                 typealias Fragment = TestCaughtProfile_character
                 let errors = Fragment.fieldErrors(anchor)
-                return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+                return errors.isEmpty ? .success(.init(anchor: anchor.entering())) : .failure(.init(errors))
             }
             @MainActor public var nulledProfile: TestCaughtProfile_character? {
                 typealias Fragment = TestCaughtProfile_character
                 guard Fragment.fieldErrors(anchor).isEmpty else { return nil }
-                return .init(anchor: anchor)
+                return .init(anchor: anchor.entering())
             }
             @MainActor public var strict: Result<TestCaughtStrict_character, Baton.FieldErrors> {
                 typealias Fragment = TestCaughtStrict_character
                 let errors = Fragment.fieldErrors(anchor)
-                return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+                return errors.isEmpty ? .success(.init(anchor: anchor.entering())) : .failure(.init(errors))
             }
             @MainActor public var nulledStrict: TestCaughtStrict_character? {
                 typealias Fragment = TestCaughtStrict_character
                 guard Fragment.fieldErrors(anchor).isEmpty else { return nil }
-                return .init(anchor: anchor)
+                return .init(anchor: anchor.entering())
             }
         }
 
@@ -636,7 +636,7 @@ fragment TestCaughtStrict_character on Character {
                 typealias Fragment = TestCaughtProfile_character
                 guard anchor.record.is(Types.Character) else { return .success(nil) }
                 let errors = Fragment.fieldErrors(anchor)
-                return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+                return errors.isEmpty ? .success(.init(anchor: anchor.entering())) : .failure(.init(errors))
             }
         }
     }
@@ -992,7 +992,7 @@ fragment TestEdgesNames_character on Character {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Character"
-            @MainActor public var testEdgesNames: TestEdgesNames_character { .init(anchor: anchor) }
+            @MainActor public var testEdgesNames: TestEdgesNames_character { .init(anchor: anchor.entering()) }
         }
     }
 }
@@ -1142,23 +1142,23 @@ fragment TestCaughtStrict_character on Character {
             public static let typeName = "Character"
             @MainActor public var TestCaughtProfile_character: String? { anchor.string(Slots.Character.name) }
             @MainActor public var TestCaughtStrict_character: String? { anchor.string(Slots.Character.species) }
-            @MainActor public var testCaughtProfile: TestCaughtProfile_character { .init(anchor: anchor) }
-            @MainActor public var testCaughtStrict: TestCaughtStrict_character { get throws { try .throwing(anchor) } }
+            @MainActor public var testCaughtProfile: TestCaughtProfile_character { .init(anchor: anchor.entering()) }
+            @MainActor public var testCaughtStrict: TestCaughtStrict_character { get throws { try .throwing(anchor.entering()) } }
             @MainActor public var caughtProfile: Result<TestCaughtProfile_character, Baton.FieldErrors> {
                 typealias Fragment = TestCaughtProfile_character
                 let errors = Fragment.fieldErrors(anchor)
-                return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+                return errors.isEmpty ? .success(.init(anchor: anchor.entering())) : .failure(.init(errors))
             }
             @MainActor public var nulledProfile: TestCaughtProfile_character? {
                 typealias Fragment = TestCaughtProfile_character
                 guard Fragment.fieldErrors(anchor).isEmpty else { return nil }
-                return .init(anchor: anchor)
+                return .init(anchor: anchor.entering())
             }
             @MainActor public var Fragment: String? { anchor.string(Slots.Character.status) }
             @MainActor public var nulledFragment: Fragment? {
                 typealias Spread = Fragment
                 guard Spread.fieldErrors(anchor).isEmpty else { return nil }
-                return .init(anchor: anchor)
+                return .init(anchor: anchor.entering())
             }
         }
     }
@@ -1408,11 +1408,11 @@ fragment testLowercaseRequired on Character {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Character"
-            @MainActor public var testLowercase: testLowercase { .init(anchor: anchor) }
+            @MainActor public var testLowercase: testLowercase { .init(anchor: anchor.entering()) }
             @MainActor public var testLowercaseRequired: testLowercaseRequired? {
                 typealias Fragment = testLowercaseRequired
                 guard Fragment.satisfied(anchor) else { return nil }
-                return .init(anchor: anchor)
+                return .init(anchor: anchor.entering())
             }
         }
     }
@@ -1621,7 +1621,7 @@ fragment TestProgramNames_character on Character {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Character"
-            @MainActor public var testProgramNames: TestProgramNames_character { .init(anchor: anchor) }
+            @MainActor public var testProgramNames: TestProgramNames_character { .init(anchor: anchor.entering()) }
         }
     }
 }
@@ -1720,7 +1720,7 @@ fragment TestProgramNames_character on Character {
             public static let typeName = "Node"
             @MainActor public var testProgramNames: TestProgramNames_character? {
                 guard anchor.record.is(Types.Character) else { return nil }
-                return .init(anchor: anchor)
+                return .init(anchor: anchor.entering())
             }
         }
     }
@@ -1784,7 +1784,7 @@ fragment TestCaughtStrict_character on Character {
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Character"
             @MainActor public var testCaughtStrict: String? { anchor.string(Slots.Character.species) }
-            @MainActor public var testCaughtStrict_character: TestCaughtStrict_character { get throws { try .throwing(anchor) } }
+            @MainActor public var testCaughtStrict_character: TestCaughtStrict_character { get throws { try .throwing(anchor.entering()) } }
         }
     }
 }

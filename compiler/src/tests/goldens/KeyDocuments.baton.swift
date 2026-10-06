@@ -344,7 +344,7 @@ fragment TestKeyArguments_query_p86SO on Query {
         @MainActor public var named: Named? { anchor.linked(anchor.owner.slot(Slots.Query.characters_192531)).map(Named.init(anchor:)) }
         @MainActor public var testKeyArguments: TestKeyArguments_query {
             let bound = anchor.binding(Sites.TestSpreadKeys_testKeyArguments) { () -> [String: Baton.Variable?] in ["ids": .list([anchor.variables["id"] ?? .null, .string("2")]), "filter": .object(["status": .string("Alive"), "name": anchor.variables["name"] ?? .null])] }
-            return .init(anchor: bound)
+            return .init(anchor: bound.entering())
         }
 
         nonisolated public struct Character: Baton.Lens {

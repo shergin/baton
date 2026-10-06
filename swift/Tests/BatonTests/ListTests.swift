@@ -365,6 +365,79 @@ struct ListTests {
         withExtendedLifetime(retention) {}
     }
 
+    /// The author-notes query, fetched and held, answering the pagination
+    /// query with the page after the cursor it carries and a refetch with
+    /// the first page again.
+    func authorNotesEnvironment() async throws -> (Environment, RecordedTransport, TestAuthorNotes_note, Retention) {
+        let transport = RecordedTransport { request in
+            if request.operationName == TestAuthorNotesQuery.name { return fixture("author-notes-page-1") }
+            return request.variables["cursor"] == .string("c2") ? fixture("author-notes-page-2") : fixture("author-notes-page-1")
+        }
+        let environment = Environment(transport: transport)
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestAuthorNotesQuery(id: "n1"))
+        let retention = handle.retain()
+        await handle.settle()
+        guard case .ready(let data) = handle.phase else { throw TransportError(statusCode: 0, body: "the first page did not arrive") }
+        return (environment, transport, try #require(data.node?.note), retention)
+    }
+
+    @Test("a connection one link below its fragment's type paginates with the fragment's record's id, not the record it hangs from")
+    func connectionBelowItsFragmentPaginatesByTheFragmentsRecord() async throws {
+        let (environment, transport, note, retention) = try await authorNotesEnvironment()
+        let author = try #require(note.author)
+        #expect(author.id == "1")
+        #expect(author.notes.nodes.map(\.id) == ["n1", "n2"])
+
+        try await author.notes.loadNext()
+        let request = try #require(transport.requests.last)
+        #expect(request.operationName == "TestAuthorNotesPaginationQuery")
+        #expect(request.variables["id"] == .string("n1"), "the note's id, not the author's")
+        #expect(request.variables["cursor"] == .string("c2"))
+        #expect(request.variables["count"] == .int(2))
+        #expect(author.notes.nodes.map(\.id) == ["n1", "n2", "n3", "n4"])
+
+        try await note.refetch()
+        let refetch = try #require(transport.requests.last)
+        #expect(refetch.operationName == "TestAuthorNotesPaginationQuery")
+        #expect(refetch.variables["id"] == .string("n1"))
+        #expect(refetch.variables["cursor"] == nil || refetch.variables["cursor"] == .null)
+        #expect(transport.requestCount == 3)
+        withExtendedLifetime((environment, retention)) {}
+    }
+
+    @Test("a fragment spread enters its record as the anchor's origin, and child fields and connection nodes keep it")
+    func aSpreadEntersItsRecordAsTheOrigin() async throws {
+        let (environment, _, note, retention) = try await authorNotesEnvironment()
+        let noteRecord = note.anchor.record
+        let owner = note.anchor.owner
+        #expect(note.anchor == Anchor(record: noteRecord, owner: owner, origin: noteRecord), "the spread's lens starts at its own record")
+        #expect(note.anchor != Anchor(record: noteRecord, owner: owner), "an anchor without the origin differs")
+
+        let author = try #require(note.author)
+        let authorRecord = author.anchor.record
+        #expect(author.anchor == Anchor(record: authorRecord, owner: owner, origin: noteRecord), "a child field keeps the fragment's record")
+        #expect(author.anchor != Anchor(record: authorRecord, owner: owner, origin: authorRecord))
+
+        let second = try #require(author.notes.nodes.last)
+        #expect(second.anchor == Anchor(record: second.anchor.record, owner: owner, origin: noteRecord), "a connection's node keeps it too")
+        withExtendedLifetime((environment, retention)) {}
+    }
+
+    @Test("entering makes an anchor's own record its origin, and anchors that differ only in origin are not equal")
+    func enteringSetsTheOrigin() async throws {
+        let (environment, _, note, retention) = try await authorNotesEnvironment()
+        let author = try #require(note.author)
+        let record = author.anchor.record
+        let owner = author.anchor.owner
+        let plain = Anchor(record: record, owner: owner)
+        #expect(plain.entering() == Anchor(record: record, owner: owner, origin: record))
+        #expect(plain.entering() != plain)
+        #expect(plain.entering().entering() == plain.entering(), "entering twice is entering once")
+        #expect(Anchor(record: record, owner: owner, origin: note.anchor.record) != plain.entering())
+        withExtendedLifetime((environment, retention)) {}
+    }
+
     @Test("fields named like a refetchable fragment and its refetch query, in its lens and in its connection's, leave refetch and loadNext fetching through the query")
     func refetchAndLoadNextPastFieldsNamedLikeThem() async throws {
         let transport = RecordedTransport { request in
@@ -396,7 +469,7 @@ struct ListTests {
         #expect(request.variables["count"] == .int(2))
         #expect(character.notes.nodes.first?.text == "Wubba lubba dub dub!")
         #expect(transport.requestCount == 3)
-        withExtendedLifetime(retention) {}
+        withExtendedLifetime((environment, retention)) {}
     }
 
     @Test("fields named like a refetchable fragment and its refetch query in its connection's lens leave loadPrevious fetching through the query")

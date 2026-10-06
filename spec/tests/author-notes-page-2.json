@@ -1,0 +1,1 @@
+{"data":{"node":{"__typename":"Note","id":"n1","author":{"id":"1","name":"Rick Sanchez","notes":{"edges":[{"cursor":"c3","node":{"__typename":"Note","id":"n3","text":"Get Schwifty"}},{"cursor":"c4","node":{"__typename":"Note","id":"n4","text":"Avoid the Citadel"}}],"pageInfo":{"endCursor":"c4","hasNextPage":true}}}}}}

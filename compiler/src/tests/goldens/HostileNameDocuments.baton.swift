@@ -334,17 +334,17 @@ nonisolated public struct HostileBodies_character: Baton.Lens {
         typealias Fragment = HostileBound_character
         let bound = anchor.binding(Sites.HostileBodies_character_hostileBound) { () -> [String: Baton.Variable?] in ["flag": .bool(false)] }
         guard Fragment.satisfied(bound) else { return nil }
-        return .init(anchor: bound)
+        return .init(anchor: bound.entering())
     }
     @MainActor public var hostileDeferred: HostileDeferred_character? {
         typealias Fragment = HostileDeferred_character
         guard Fragment.isPresent(anchor) else { return nil }
-        return .init(anchor: anchor)
+        return .init(anchor: anchor.entering())
     }
     @MainActor public var caughtSpread: Result<HostileCaught_character, Baton.FieldErrors> {
         typealias Fragment = HostileCaught_character
         let errors = Fragment.fieldErrors(anchor)
-        return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        return errors.isEmpty ? .success(.init(anchor: anchor.entering())) : .failure(.init(errors))
     }
     @MainActor public var id: String? { anchor.string(Slots.Character.id) }
     /// How the fragment is fetched again: `HostileBodiesRefetchQuery` with the lens's variables.
@@ -3404,155 +3404,155 @@ nonisolated public struct HostileSpreads_character: Baton.Lens {
     @_spi(Generated) public let anchor: Baton.Anchor
     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
     public static let typeName = "Character"
-    @MainActor public var `Type`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `Protocol`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `Any`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `self`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `Self`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `init`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `deinit`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `subscript`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `class`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `struct`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `enum`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `func`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `var`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `let`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `import`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `extension`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `operator`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `static`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `default`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `case`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `switch`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `if`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `else`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `for`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `in`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `while`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `repeat`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `return`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `break`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `continue`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `where`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `is`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `as`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `try`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `throw`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `throws`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `guard`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `defer`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `do`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `catch`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `true`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `false`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `nil`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `super`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `internal`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `private`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `public`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `fileprivate`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `open`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `inout`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `typealias`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `associatedtype`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `protocol`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `some`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `any`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `rethrows`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `fallthrough`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `precedencegroup`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `_`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var async: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `await`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `borrowing`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var consume: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `consuming`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var copy: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var discard: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `each`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `isolated`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var `sending`: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var then: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var unsafe: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var typeName: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var satisfied: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var missingRequiredField: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var fieldErrors: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var isPresent: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var throwing: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var caught: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var refetchable: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var refetch: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var connection: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var nodes: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var hasNext: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var hasPrevious: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var isLoadingNext: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var isLoadingPrevious: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var connectionID: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var loadNext: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var loadPrevious: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var bound: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var errors: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var child: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var missing: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var count: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var fields: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var lhs: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var rhs: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var hasher: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var optimistic: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var selfValue: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var Fragment: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var Spread: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var Owner: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var Query: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var Operation: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var RefetchQuery: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var variables: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var resolution: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var name: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var persistedID: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var text: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var plan: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var errorBehavior: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var throwsOnFieldError: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var bubbles: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var hasDeferred: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var cacheExpiration: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var Data: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var Action: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var OptimisticResponse: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var hash: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var commit: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var callAsFunction: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var Op: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var variable: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var hashValue: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var phase: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var isRefreshing: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var isStale: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var retry: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var subscription: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var Types: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var Slots: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var Sites: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var AbstractSlots: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var schemaDigest: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var format: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var Baton: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var Swift: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var Set: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var Result: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var Optional: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var String: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var Int: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var Double: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var Bool: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var MainActor: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var Hasher: HostileSpreadTarget_character { .init(anchor: anchor) }
-    @MainActor public var Sendable: HostileSpreadTarget_character { .init(anchor: anchor) }
+    @MainActor public var `Type`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `Protocol`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `Any`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `self`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `Self`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `init`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `deinit`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `subscript`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `class`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `struct`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `enum`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `func`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `var`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `let`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `import`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `extension`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `operator`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `static`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `default`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `case`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `switch`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `if`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `else`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `for`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `in`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `while`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `repeat`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `return`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `break`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `continue`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `where`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `is`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `as`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `try`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `throw`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `throws`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `guard`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `defer`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `do`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `catch`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `true`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `false`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `nil`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `super`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `internal`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `private`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `public`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `fileprivate`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `open`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `inout`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `typealias`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `associatedtype`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `protocol`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `some`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `any`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `rethrows`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `fallthrough`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `precedencegroup`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `_`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var async: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `await`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `borrowing`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var consume: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `consuming`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var copy: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var discard: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `each`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `isolated`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var `sending`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var then: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var unsafe: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var typeName: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var satisfied: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var missingRequiredField: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var fieldErrors: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var isPresent: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var throwing: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var caught: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var refetchable: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var refetch: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var connection: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var nodes: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var hasNext: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var hasPrevious: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var isLoadingNext: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var isLoadingPrevious: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var connectionID: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var loadNext: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var loadPrevious: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var bound: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var errors: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var child: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var missing: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var count: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var fields: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var lhs: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var rhs: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var hasher: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var optimistic: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var selfValue: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var Fragment: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var Spread: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var Owner: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var Query: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var Operation: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var RefetchQuery: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var variables: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var resolution: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var name: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var persistedID: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var text: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var plan: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var errorBehavior: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var throwsOnFieldError: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var bubbles: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var hasDeferred: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var cacheExpiration: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var Data: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var Action: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var OptimisticResponse: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var hash: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var commit: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var callAsFunction: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var Op: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var variable: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var hashValue: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var phase: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var isRefreshing: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var isStale: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var retry: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var subscription: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var Types: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var Slots: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var Sites: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var AbstractSlots: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var schemaDigest: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var format: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var Baton: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var Swift: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var Set: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var Result: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var Optional: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var String: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var Int: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var Double: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var Bool: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var MainActor: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var Hasher: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var Sendable: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
 }
 
 /// Lens for `fragment _hostileHidden on Character`.
@@ -4329,7 +4329,7 @@ fragment HostileArguments_character_JsX7i on Character {
             @MainActor public var hostileArguments: HostileArguments_character? {
                 let bound = anchor.binding(Sites.HostileArgumentsRefetchQuery_hostileArguments) { () -> [String: Baton.Variable?] in ["Type": anchor.variables["Type"], "Protocol": anchor.variables["Protocol"], "Any": anchor.variables["Any"], "self": anchor.variables["self"], "Self": anchor.variables["Self"], "init": anchor.variables["init"], "deinit": anchor.variables["deinit"], "subscript": anchor.variables["subscript"], "class": anchor.variables["class"], "struct": anchor.variables["struct"], "enum": anchor.variables["enum"], "func": anchor.variables["func"], "var": anchor.variables["var"], "let": anchor.variables["let"], "import": anchor.variables["import"], "extension": anchor.variables["extension"], "operator": anchor.variables["operator"], "static": anchor.variables["static"], "default": anchor.variables["default"], "case": anchor.variables["case"], "switch": anchor.variables["switch"], "if": anchor.variables["if"], "else": anchor.variables["else"], "for": anchor.variables["for"], "in": anchor.variables["in"], "while": anchor.variables["while"], "repeat": anchor.variables["repeat"], "return": anchor.variables["return"], "break": anchor.variables["break"], "continue": anchor.variables["continue"], "where": anchor.variables["where"], "is": anchor.variables["is"], "as": anchor.variables["as"], "try": anchor.variables["try"], "throw": anchor.variables["throw"], "throws": anchor.variables["throws"], "guard": anchor.variables["guard"], "defer": anchor.variables["defer"], "do": anchor.variables["do"], "catch": anchor.variables["catch"], "true": anchor.variables["true"], "false": anchor.variables["false"], "nil": anchor.variables["nil"], "super": anchor.variables["super"], "internal": anchor.variables["internal"], "private": anchor.variables["private"], "public": anchor.variables["public"], "fileprivate": anchor.variables["fileprivate"], "open": anchor.variables["open"], "inout": anchor.variables["inout"], "typealias": anchor.variables["typealias"], "associatedtype": anchor.variables["associatedtype"], "protocol": anchor.variables["protocol"], "some": anchor.variables["some"], "any": anchor.variables["any"], "rethrows": anchor.variables["rethrows"], "fallthrough": anchor.variables["fallthrough"], "precedencegroup": anchor.variables["precedencegroup"], "_": anchor.variables["_"], "async": anchor.variables["async"], "borrowing": anchor.variables["borrowing"], "consume": anchor.variables["consume"], "consuming": anchor.variables["consuming"], "copy": anchor.variables["copy"], "discard": anchor.variables["discard"], "each": anchor.variables["each"], "isolated": anchor.variables["isolated"], "sending": anchor.variables["sending"], "then": anchor.variables["then"], "unsafe": anchor.variables["unsafe"], "await": anchor.variables["await"], "anchor": anchor.variables["anchor"], "recordID": anchor.variables["recordID"], "typeName": anchor.variables["typeName"], "satisfied": anchor.variables["satisfied"], "missingRequiredField": anchor.variables["missingRequiredField"], "fieldErrors": anchor.variables["fieldErrors"], "isPresent": anchor.variables["isPresent"], "throwing": anchor.variables["throwing"], "caught": anchor.variables["caught"], "refetchable": anchor.variables["refetchable"], "refetch": anchor.variables["refetch"], "connection": anchor.variables["connection"], "nodes": anchor.variables["nodes"], "hasNext": anchor.variables["hasNext"], "hasPrevious": anchor.variables["hasPrevious"], "isLoadingNext": anchor.variables["isLoadingNext"], "isLoadingPrevious": anchor.variables["isLoadingPrevious"], "connectionID": anchor.variables["connectionID"], "loadNext": anchor.variables["loadNext"], "loadPrevious": anchor.variables["loadPrevious"], "bound": anchor.variables["bound"], "errors": anchor.variables["errors"], "child": anchor.variables["child"], "missing": anchor.variables["missing"], "count": anchor.variables["count"], "fields": anchor.variables["fields"], "lhs": anchor.variables["lhs"], "rhs": anchor.variables["rhs"], "hasher": anchor.variables["hasher"], "optimistic": anchor.variables["optimistic"], "selfValue": anchor.variables["selfValue"], "Fragment": anchor.variables["Fragment"], "Spread": anchor.variables["Spread"], "Owner": anchor.variables["Owner"], "Query": anchor.variables["Query"], "Operation": anchor.variables["Operation"], "RefetchQuery": anchor.variables["RefetchQuery"], "name": anchor.variables["name"], "persistedID": anchor.variables["persistedID"], "text": anchor.variables["text"], "plan": anchor.variables["plan"], "errorBehavior": anchor.variables["errorBehavior"], "throwsOnFieldError": anchor.variables["throwsOnFieldError"], "bubbles": anchor.variables["bubbles"], "hasDeferred": anchor.variables["hasDeferred"], "cacheExpiration": anchor.variables["cacheExpiration"], "Action": anchor.variables["Action"], "OptimisticResponse": anchor.variables["OptimisticResponse"], "hash": anchor.variables["hash"], "commit": anchor.variables["commit"], "callAsFunction": anchor.variables["callAsFunction"], "Op": anchor.variables["Op"], "variable": anchor.variables["variable"], "retry": anchor.variables["retry"], "subscription": anchor.variables["subscription"], "AbstractSlots": anchor.variables["AbstractSlots"], "schemaDigest": anchor.variables["schemaDigest"], "format": anchor.variables["format"], "Swift": anchor.variables["Swift"], "Set": anchor.variables["Set"], "Result": anchor.variables["Result"], "Optional": anchor.variables["Optional"], "String": anchor.variables["String"], "Int": anchor.variables["Int"], "Double": anchor.variables["Double"], "Bool": anchor.variables["Bool"], "MainActor": anchor.variables["MainActor"], "Hasher": anchor.variables["Hasher"], "Sendable": anchor.variables["Sendable"]] }
                 guard anchor.record.is(Types.Character) else { return nil }
-                return .init(anchor: bound)
+                return .init(anchor: bound.entering())
             }
         }
     }
@@ -4720,7 +4720,7 @@ fragment HostileDeferred_character on Character {
                 get throws {
                     typealias Fragment = HostileBodies_character
                     guard anchor.record.is(Types.Character), Fragment.satisfied(anchor) else { return nil }
-                    return try .throwing(anchor)
+                    return try .throwing(anchor.entering())
                 }
             }
         }
@@ -5106,7 +5106,7 @@ fragment HostileConnection_character_1G22uz on Character {
             @MainActor public var hostileConnection: HostileConnection_character? {
                 let bound = anchor.binding(Sites.HostileConnectionRefetchQuery_hostileConnection) { () -> [String: Baton.Variable?] in ["count": anchor.variables["count"], "cursor": anchor.variables["cursor"]] }
                 guard anchor.record.is(Types.Character) else { return nil }
-                return .init(anchor: bound)
+                return .init(anchor: bound.entering())
             }
         }
     }
@@ -5162,7 +5162,7 @@ fragment _hostileHidden on Character {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Character"
-            @MainActor public var _hostileHidden: _hostileHidden { .init(anchor: anchor) }
+            @MainActor public var _hostileHidden: _hostileHidden { .init(anchor: anchor.entering()) }
         }
     }
 }

@@ -66,7 +66,7 @@ nonisolated public struct TestLoggedNotes_character: Baton.Lens {
         @MainActor public var testLogEdges: TestLogEdges_connection? {
             typealias Fragment = TestLogEdges_connection
             guard Fragment.satisfied(anchor) else { return nil }
-            return .init(anchor: anchor)
+            return .init(anchor: anchor.entering())
         }
     }
 }
@@ -304,7 +304,7 @@ fragment TestCaughtAppearances_character on Character {
             @MainActor public var testCaughtAppearances: TestCaughtAppearances_character? {
                 typealias Fragment = TestCaughtAppearances_character
                 guard Fragment.isPresent(anchor) else { return nil }
-                return .init(anchor: anchor)
+                return .init(anchor: anchor.entering())
             }
             /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
             @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
@@ -961,7 +961,7 @@ fragment TestNotes_character_35kO5h on Character {
             @MainActor public var id: String? { anchor.string(Slots.Character.id) }
             @MainActor public var testNotes: TestNotes_character {
                 let bound = anchor.binding(Sites.TestReservedNames_testNotes) { () -> [String: Baton.Variable?] in ["count": .int(1), "cursor": .null] }
-                return .init(anchor: bound)
+                return .init(anchor: bound.entering())
             }
         }
 
@@ -1700,7 +1700,7 @@ fragment TestOriginAndEpisode_character on Character {
             @MainActor public var testOriginAndEpisode: TestOriginAndEpisode_character? {
                 typealias Fragment = TestOriginAndEpisode_character
                 guard Fragment.isPresent(anchor) else { return nil }
-                return .init(anchor: anchor)
+                return .init(anchor: anchor.entering())
             }
         }
     }
@@ -1846,7 +1846,7 @@ fragment TestNotes_character_41grAF on Character {
             @MainActor public var name: String? { anchor.string(Slots.Character.name) }
             @MainActor public var testNotes: TestNotes_character {
                 let bound = anchor.binding(Sites.TestTwoScopes_testNotes) { () -> [String: Baton.Variable?] in ["count": .int(1), "cursor": .null] }
-                return .init(anchor: bound)
+                return .init(anchor: bound.entering())
             }
         }
 
@@ -1858,7 +1858,7 @@ fragment TestNotes_character_41grAF on Character {
             @MainActor public var name: String? { anchor.string(Slots.Character.name) }
             @MainActor public var testNotes: TestNotes_character {
                 let bound = anchor.binding(Sites.TestTwoScopes_testNotes_2) { () -> [String: Baton.Variable?] in ["count": .int(3), "cursor": .null] }
-                return .init(anchor: bound)
+                return .init(anchor: bound.entering())
             }
         }
     }
@@ -1949,7 +1949,7 @@ fragment TestAppearances_character on Character {
             @MainActor public var testAppearances: TestAppearances_character? {
                 typealias Fragment = TestAppearances_character
                 guard Fragment.isPresent(anchor) else { return nil }
-                return .init(anchor: anchor)
+                return .init(anchor: anchor.entering())
             }
             /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
             @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {

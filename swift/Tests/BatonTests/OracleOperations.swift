@@ -45,6 +45,7 @@ struct OracleOperation: Sendable {
         "TestNotesPaginationQuery": {
             try OracleOperation(TestNotesPaginationQuery(count: $0.optionalInt("count"), cursor: $0.optionalString("cursor"), id: $0.string("id")), reads: notesPaginationReads)
         },
+        "TestAuthorNotesQuery": { try OracleOperation(TestAuthorNotesQuery(id: $0.string("id")), reads: authorNotesReads) },
         "TestRecentNotesQuery": { try OracleOperation(TestRecentNotesQuery(id: $0.string("id")), reads: recentNotesReads) },
         "TestRecentNotesPaginationQuery": {
             try OracleOperation(TestRecentNotesPaginationQuery(count: $0.optionalInt("count"), cursor: $0.optionalString("cursor"), id: $0.string("id")), reads: recentNotesPaginationReads)
@@ -166,6 +167,15 @@ extension OracleOperation {
         "node.notes.edges.0.node.text": { $0.node?.testNotes?.notes.edges?.element(0)?.node?.text.manifestValue ?? .null },
         "node.notes.edges.0.cursor": { $0.node?.testNotes?.notes.edges?.element(0)?.cursor.manifestValue ?? .null },
         "node.notes.pageInfo.hasNextPage": { $0.node?.testNotes?.notes.pageInfo.hasNextPage.manifestValue ?? .null },
+    ]
+
+    static let authorNotesReads: [String: @MainActor @Sendable (TestAuthorNotesQuery.Data) -> Manifest.Value] = [
+        "node.id": { $0.node?.note?.id.manifestValue ?? .null },
+        "node.author.id": { $0.node?.note?.author?.id.manifestValue ?? .null },
+        "node.author.name": { $0.node?.note?.author?.name.manifestValue ?? .null },
+        "node.author.notes.edges.0.node.id": { $0.node?.note?.author?.notes.edges?.element(0)?.node?.id.manifestValue ?? .null },
+        "node.author.notes.edges.0.node.text": { $0.node?.note?.author?.notes.edges?.element(0)?.node?.text.manifestValue ?? .null },
+        "node.author.notes.edges.1.node.text": { $0.node?.note?.author?.notes.edges?.element(1)?.node?.text.manifestValue ?? .null },
     ]
 
     static let recentNotesReads: [String: @MainActor @Sendable (TestRecentNotesQuery.Data) -> Manifest.Value] = [

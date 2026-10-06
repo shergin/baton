@@ -317,7 +317,7 @@ fragment TestAppearances_character on Character {
             @MainActor public var testAppearances: TestAppearances_character? {
                 typealias Fragment = TestAppearances_character
                 guard Fragment.isPresent(anchor) else { return nil }
-                return .init(anchor: anchor)
+                return .init(anchor: anchor.entering())
             }
 
             nonisolated public struct Episode: Baton.Lens {
@@ -435,13 +435,13 @@ fragment TestStrict_character on Character {
             @MainActor public var testProfile: TestProfile_character? {
                 typealias Fragment = TestProfile_character
                 guard Fragment.satisfied(anchor) else { return nil }
-                return .init(anchor: anchor)
+                return .init(anchor: anchor.entering())
             }
-            @MainActor public var strict: TestStrict_character { get throws { try .throwing(anchor) } }
+            @MainActor public var strict: TestStrict_character { get throws { try .throwing(anchor.entering()) } }
             @MainActor public var testAppearances: TestAppearances_character? {
                 typealias Fragment = TestAppearances_character
                 guard Fragment.isPresent(anchor) else { return nil }
-                return .init(anchor: anchor)
+                return .init(anchor: anchor.entering())
             }
         }
     }
@@ -608,7 +608,7 @@ fragment TestAppearances_character on Character {
             @MainActor public var testAppearances: TestAppearances_character? {
                 typealias Fragment = TestAppearances_character
                 guard Fragment.isPresent(anchor) else { return nil }
-                return .init(anchor: anchor)
+                return .init(anchor: anchor.entering())
             }
             /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
             @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
@@ -787,7 +787,7 @@ fragment TestName_character on Character {
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Character"
             @MainActor public var species: String { anchor.requiredString(Slots.Character.species) }
-            @MainActor public var testName: TestName_character { .init(anchor: anchor) }
+            @MainActor public var testName: TestName_character { .init(anchor: anchor.entering()) }
             /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
             @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
                 var errors: [Baton.FieldError] = []

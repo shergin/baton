@@ -5,10 +5,10 @@
 nonisolated enum Types {
     /// The schema's digest: pass it as the image's `version`, so an image
     /// written under another schema starts again.
-    static let schemaDigest = "b170ac848059eae3fac3ca0b9c8de535"
+    static let schemaDigest = "2cb6b467cf97a73189b684f6ccfc8ca2"
     /// The format of this generated code, which the runtime that reads it
     /// declares; a runtime of another format fails to compile this line.
-    static let format = Baton.Format4.self
+    static let format = Baton.Format5.self
     static let AddNotePayload = Baton.Registry.type("AddNotePayload")
     static let Any_ = Baton.Registry.type("Any")
     static let Baton_ = Baton.Registry.type("Baton")
@@ -61,6 +61,7 @@ nonisolated enum Slots {
     nonisolated enum Character {
         static let __HostileConnectionNodes_notes_connection = Baton.Registry.slot(Types.Character, "__HostileConnectionNodes_notes_connection")
         static let __HostileConnection_notes_connection = Baton.Registry.slot(Types.Character, "__HostileConnection_notes_connection")
+        static let __TestAuthorNotes_notes_connection = Baton.Registry.slot(Types.Character, "__TestAuthorNotes_notes_connection")
         static let __TestDeferredNotes_notes_connection = Baton.Registry.slot(Types.Character, "__TestDeferredNotes_notes_connection")
         static let __TestEdgesNames_notes_connection = Baton.Registry.slot(Types.Character, "__TestEdgesNames_notes_connection")
         static let __TestHiddenNotes_notes_connection = Baton.Registry.slot(Types.Character, "__TestHiddenNotes_notes_connection")
@@ -154,6 +155,7 @@ nonisolated enum Slots {
     }
     nonisolated enum Note {
         static let __typename = Baton.Registry.slot(Types.Note, "__typename")
+        static let author = Baton.Registry.slot(Types.Note, "author")
         static let id = Baton.Registry.slot(Types.Note, "id")
         static let text = Baton.Registry.slot(Types.Note, "text")
     }
@@ -253,6 +255,8 @@ nonisolated enum Sites {
     static let HostileArgumentsRefetchQuery_hostileArguments = Baton.ArgumentSite()
     static let HostileBodies_character_hostileBound = Baton.ArgumentSite()
     static let HostileConnectionRefetchQuery_hostileConnection = Baton.ArgumentSite()
+    static let TestAuthorNotesPaginationQuery_testAuthorNotes = Baton.ArgumentSite()
+    static let TestAuthorNotesQuery_note = Baton.ArgumentSite()
     static let TestDeferredNotesPaginationQuery_testDeferredNotes = Baton.ArgumentSite()
     static let TestHiddenNotesPaginationQuery_testHiddenNotes = Baton.ArgumentSite()
     static let TestHiddenNotesQuery_testHiddenNotes = Baton.ArgumentSite()

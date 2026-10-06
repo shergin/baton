@@ -1,6 +1,422 @@
 {
   "fragments": [
     {
+      "name": "TestAuthorNotes_note",
+      "source": "swift/Tests/BatonTests/ListDocuments.swift",
+      "document": 20,
+      "type_condition": "Note",
+      "type_is_abstract": false,
+      "possible_types": [
+        "Note"
+      ],
+      "arguments": [
+        {
+          "name": "count",
+          "type": {
+            "shape": "named",
+            "name": "Int",
+            "kind": "int",
+            "non_null": false
+          },
+          "default_value": {
+            "kind": "int",
+            "value": 2
+          }
+        },
+        {
+          "name": "cursor",
+          "type": {
+            "shape": "named",
+            "name": "String",
+            "kind": "string",
+            "non_null": false
+          },
+          "default_value": null
+        }
+      ],
+      "refetch": {
+        "operation": "TestAuthorNotesPaginationQuery",
+        "variables": [
+          "count",
+          "cursor",
+          "id"
+        ],
+        "identifier": "id",
+        "connection": {
+          "path": [
+            "author",
+            "notes"
+          ],
+          "first": "count",
+          "after": "cursor",
+          "last": null,
+          "before": null
+        }
+      },
+      "throws_on_field_error": false,
+      "bubbles": false,
+      "reader": [
+        {
+          "kind": "scalar",
+          "name": "id",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "ID",
+            "kind": "id",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "storage_key": {
+            "name": "id",
+            "arguments": []
+          },
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false
+        },
+        {
+          "kind": "linked",
+          "name": "author",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Character",
+            "kind": "object",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "has_id": true,
+          "is_abstract": false,
+          "possible_types": [
+            "Character"
+          ],
+          "storage_key": {
+            "name": "author",
+            "arguments": []
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "id",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "ID",
+                "kind": "id",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "id",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "name",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "String",
+                "kind": "string",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "name",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "linked",
+              "name": "notes",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "NoteConnection",
+                "kind": "object",
+                "non_null": true
+              },
+              "non_null": true,
+              "semantic_non_null": false,
+              "has_id": false,
+              "is_abstract": false,
+              "possible_types": [
+                "NoteConnection"
+              ],
+              "storage_key": {
+                "name": "__TestAuthorNotes_notes_connection",
+                "arguments": []
+              },
+              "lookup": null,
+              "connection": {
+                "key": "TestAuthorNotes_notes",
+                "storage_key": {
+                  "name": "__TestAuthorNotes_notes_connection",
+                  "arguments": []
+                },
+                "edge_type": "NoteEdge",
+                "page_info_type": "PageInfo",
+                "after": null,
+                "before": null
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "linked",
+                  "name": "edges",
+                  "alias": null,
+                  "type": {
+                    "shape": "list",
+                    "element": {
+                      "shape": "named",
+                      "name": "NoteEdge",
+                      "kind": "object",
+                      "non_null": false
+                    },
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "has_id": false,
+                  "is_abstract": false,
+                  "possible_types": [
+                    "NoteEdge"
+                  ],
+                  "storage_key": {
+                    "name": "edges",
+                    "arguments": []
+                  },
+                  "lookup": null,
+                  "connection": null,
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false,
+                  "bubbles": false,
+                  "selections": [
+                    {
+                      "kind": "linked",
+                      "name": "node",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "Note",
+                        "kind": "object",
+                        "non_null": false
+                      },
+                      "non_null": false,
+                      "semantic_non_null": false,
+                      "has_id": true,
+                      "is_abstract": false,
+                      "possible_types": [
+                        "Note"
+                      ],
+                      "storage_key": {
+                        "name": "node",
+                        "arguments": []
+                      },
+                      "lookup": null,
+                      "connection": null,
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false,
+                      "bubbles": false,
+                      "selections": [
+                        {
+                          "kind": "scalar",
+                          "name": "id",
+                          "alias": null,
+                          "type": {
+                            "shape": "named",
+                            "name": "ID",
+                            "kind": "id",
+                            "non_null": false
+                          },
+                          "non_null": false,
+                          "semantic_non_null": false,
+                          "storage_key": {
+                            "name": "id",
+                            "arguments": []
+                          },
+                          "edit": null,
+                          "required": null,
+                          "catch": null,
+                          "caught": false
+                        },
+                        {
+                          "kind": "scalar",
+                          "name": "text",
+                          "alias": null,
+                          "type": {
+                            "shape": "named",
+                            "name": "String",
+                            "kind": "string",
+                            "non_null": false
+                          },
+                          "non_null": false,
+                          "semantic_non_null": false,
+                          "storage_key": {
+                            "name": "text",
+                            "arguments": []
+                          },
+                          "edit": null,
+                          "required": null,
+                          "catch": null,
+                          "caught": false
+                        },
+                        {
+                          "kind": "scalar",
+                          "name": "__typename",
+                          "alias": null,
+                          "type": {
+                            "shape": "named",
+                            "name": "String",
+                            "kind": "string",
+                            "non_null": true
+                          },
+                          "non_null": true,
+                          "semantic_non_null": false,
+                          "storage_key": {
+                            "name": "__typename",
+                            "arguments": []
+                          },
+                          "edit": null,
+                          "required": null,
+                          "catch": null,
+                          "caught": false
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "scalar",
+                      "name": "cursor",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "String",
+                        "kind": "string",
+                        "non_null": true
+                      },
+                      "non_null": true,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "cursor",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    }
+                  ]
+                },
+                {
+                  "kind": "linked",
+                  "name": "pageInfo",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "PageInfo",
+                    "kind": "object",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "has_id": false,
+                  "is_abstract": false,
+                  "possible_types": [
+                    "PageInfo"
+                  ],
+                  "storage_key": {
+                    "name": "pageInfo",
+                    "arguments": []
+                  },
+                  "lookup": null,
+                  "connection": null,
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false,
+                  "bubbles": false,
+                  "selections": [
+                    {
+                      "kind": "scalar",
+                      "name": "endCursor",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "String",
+                        "kind": "string",
+                        "non_null": false
+                      },
+                      "non_null": false,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "endCursor",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    },
+                    {
+                      "kind": "scalar",
+                      "name": "hasNextPage",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "Boolean",
+                        "kind": "boolean",
+                        "non_null": true
+                      },
+                      "non_null": true,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "hasNextPage",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "TestDeferredNotes_character",
       "source": "swift/Tests/BatonTests/ListDocuments.swift",
       "document": 13,
@@ -3690,6 +4106,1181 @@
               "required": null,
               "catch": null,
               "caught": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TestAuthorNotesPaginationQuery",
+      "source": "swift/Tests/BatonTests/ListDocuments.swift",
+      "document": 20,
+      "kind": "query",
+      "root_type": "Query",
+      "variables": [
+        {
+          "name": "count",
+          "type": {
+            "shape": "named",
+            "name": "Int",
+            "kind": "int",
+            "non_null": false
+          },
+          "default_value": {
+            "kind": "int",
+            "value": 2
+          }
+        },
+        {
+          "name": "cursor",
+          "type": {
+            "shape": "named",
+            "name": "String",
+            "kind": "string",
+            "non_null": false
+          },
+          "default_value": null
+        },
+        {
+          "name": "id",
+          "type": {
+            "shape": "named",
+            "name": "ID",
+            "kind": "id",
+            "non_null": true
+          },
+          "default_value": null
+        }
+      ],
+      "text": "query TestAuthorNotesPaginationQuery(\n  $count: Int = 2\n  $cursor: String\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...TestAuthorNotes_note_1G22uz\n    id\n  }\n}\n\nfragment TestAuthorNotes_note_1G22uz on Note {\n  id\n  author {\n    id\n    name\n    notes(first: $count, after: $cursor) {\n      edges {\n        node {\n          id\n          text\n          __typename\n        }\n        cursor\n      }\n      pageInfo {\n        endCursor\n        hasNextPage\n      }\n    }\n  }\n}",
+      "id": "5f32bc98387fea0353633cf9adf8a1b8",
+      "throws_on_field_error": false,
+      "bubbles": false,
+      "has_deferred": false,
+      "error_behavior": null,
+      "reader": [
+        {
+          "kind": "linked",
+          "name": "node",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Node",
+            "kind": "interface",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "has_id": true,
+          "is_abstract": true,
+          "possible_types": [
+            "Character",
+            "Episode",
+            "Location",
+            "Note"
+          ],
+          "storage_key": {
+            "name": "node",
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
+          },
+          "lookup": {
+            "type_name": null,
+            "possible_types": [
+              "Character",
+              "Episode",
+              "Location",
+              "Note"
+            ],
+            "argument": "id",
+            "value": {
+              "kind": "variable",
+              "value": "id"
+            }
+          },
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "spread",
+              "fragment": "TestAuthorNotes_note",
+              "type_condition": "Note",
+              "arguments": [
+                {
+                  "name": "count",
+                  "value": {
+                    "kind": "variable",
+                    "value": "count"
+                  }
+                },
+                {
+                  "name": "cursor",
+                  "value": {
+                    "kind": "variable",
+                    "value": "cursor"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "normalization": [
+        {
+          "kind": "linked",
+          "name": "node",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Node",
+            "kind": "interface",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "has_id": true,
+          "is_abstract": true,
+          "possible_types": [
+            "Character",
+            "Episode",
+            "Location",
+            "Note"
+          ],
+          "storage_key": {
+            "name": "node",
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
+          },
+          "lookup": {
+            "type_name": null,
+            "possible_types": [
+              "Character",
+              "Episode",
+              "Location",
+              "Note"
+            ],
+            "argument": "id",
+            "value": {
+              "kind": "variable",
+              "value": "id"
+            }
+          },
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "__typename",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "String",
+                "kind": "string",
+                "non_null": true
+              },
+              "non_null": true,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "__typename",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "id",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "ID",
+                "kind": "id",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "id",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "inline",
+              "type_condition": "Note",
+              "condition_types": [
+                "Note"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "Note"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "linked",
+                  "name": "author",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "Character",
+                    "kind": "object",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "has_id": true,
+                  "is_abstract": false,
+                  "possible_types": [
+                    "Character"
+                  ],
+                  "storage_key": {
+                    "name": "author",
+                    "arguments": []
+                  },
+                  "lookup": null,
+                  "connection": null,
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false,
+                  "bubbles": false,
+                  "selections": [
+                    {
+                      "kind": "scalar",
+                      "name": "id",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "ID",
+                        "kind": "id",
+                        "non_null": false
+                      },
+                      "non_null": false,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "id",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    },
+                    {
+                      "kind": "scalar",
+                      "name": "name",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "String",
+                        "kind": "string",
+                        "non_null": false
+                      },
+                      "non_null": false,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "name",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    },
+                    {
+                      "kind": "linked",
+                      "name": "notes",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "NoteConnection",
+                        "kind": "object",
+                        "non_null": true
+                      },
+                      "non_null": true,
+                      "semantic_non_null": false,
+                      "has_id": false,
+                      "is_abstract": false,
+                      "possible_types": [
+                        "NoteConnection"
+                      ],
+                      "storage_key": {
+                        "name": "notes",
+                        "arguments": [
+                          {
+                            "name": "after",
+                            "value": {
+                              "kind": "variable",
+                              "value": "cursor"
+                            }
+                          },
+                          {
+                            "name": "first",
+                            "value": {
+                              "kind": "variable",
+                              "value": "count"
+                            }
+                          }
+                        ]
+                      },
+                      "lookup": null,
+                      "connection": {
+                        "key": "TestAuthorNotes_notes",
+                        "storage_key": {
+                          "name": "__TestAuthorNotes_notes_connection",
+                          "arguments": []
+                        },
+                        "edge_type": "NoteEdge",
+                        "page_info_type": "PageInfo",
+                        "after": {
+                          "kind": "variable",
+                          "value": "cursor"
+                        },
+                        "before": null
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false,
+                      "bubbles": false,
+                      "selections": [
+                        {
+                          "kind": "linked",
+                          "name": "edges",
+                          "alias": null,
+                          "type": {
+                            "shape": "list",
+                            "element": {
+                              "shape": "named",
+                              "name": "NoteEdge",
+                              "kind": "object",
+                              "non_null": false
+                            },
+                            "non_null": false
+                          },
+                          "non_null": false,
+                          "semantic_non_null": false,
+                          "has_id": false,
+                          "is_abstract": false,
+                          "possible_types": [
+                            "NoteEdge"
+                          ],
+                          "storage_key": {
+                            "name": "edges",
+                            "arguments": []
+                          },
+                          "lookup": null,
+                          "connection": null,
+                          "edit": null,
+                          "required": null,
+                          "catch": null,
+                          "caught": false,
+                          "bubbles": false,
+                          "selections": [
+                            {
+                              "kind": "linked",
+                              "name": "node",
+                              "alias": null,
+                              "type": {
+                                "shape": "named",
+                                "name": "Note",
+                                "kind": "object",
+                                "non_null": false
+                              },
+                              "non_null": false,
+                              "semantic_non_null": false,
+                              "has_id": true,
+                              "is_abstract": false,
+                              "possible_types": [
+                                "Note"
+                              ],
+                              "storage_key": {
+                                "name": "node",
+                                "arguments": []
+                              },
+                              "lookup": null,
+                              "connection": null,
+                              "edit": null,
+                              "required": null,
+                              "catch": null,
+                              "caught": false,
+                              "bubbles": false,
+                              "selections": [
+                                {
+                                  "kind": "scalar",
+                                  "name": "id",
+                                  "alias": null,
+                                  "type": {
+                                    "shape": "named",
+                                    "name": "ID",
+                                    "kind": "id",
+                                    "non_null": false
+                                  },
+                                  "non_null": false,
+                                  "semantic_non_null": false,
+                                  "storage_key": {
+                                    "name": "id",
+                                    "arguments": []
+                                  },
+                                  "edit": null,
+                                  "required": null,
+                                  "catch": null,
+                                  "caught": false
+                                },
+                                {
+                                  "kind": "scalar",
+                                  "name": "text",
+                                  "alias": null,
+                                  "type": {
+                                    "shape": "named",
+                                    "name": "String",
+                                    "kind": "string",
+                                    "non_null": false
+                                  },
+                                  "non_null": false,
+                                  "semantic_non_null": false,
+                                  "storage_key": {
+                                    "name": "text",
+                                    "arguments": []
+                                  },
+                                  "edit": null,
+                                  "required": null,
+                                  "catch": null,
+                                  "caught": false
+                                },
+                                {
+                                  "kind": "scalar",
+                                  "name": "__typename",
+                                  "alias": null,
+                                  "type": {
+                                    "shape": "named",
+                                    "name": "String",
+                                    "kind": "string",
+                                    "non_null": true
+                                  },
+                                  "non_null": true,
+                                  "semantic_non_null": false,
+                                  "storage_key": {
+                                    "name": "__typename",
+                                    "arguments": []
+                                  },
+                                  "edit": null,
+                                  "required": null,
+                                  "catch": null,
+                                  "caught": false
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "scalar",
+                              "name": "cursor",
+                              "alias": null,
+                              "type": {
+                                "shape": "named",
+                                "name": "String",
+                                "kind": "string",
+                                "non_null": true
+                              },
+                              "non_null": true,
+                              "semantic_non_null": false,
+                              "storage_key": {
+                                "name": "cursor",
+                                "arguments": []
+                              },
+                              "edit": null,
+                              "required": null,
+                              "catch": null,
+                              "caught": false
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "linked",
+                          "name": "pageInfo",
+                          "alias": null,
+                          "type": {
+                            "shape": "named",
+                            "name": "PageInfo",
+                            "kind": "object",
+                            "non_null": true
+                          },
+                          "non_null": true,
+                          "semantic_non_null": false,
+                          "has_id": false,
+                          "is_abstract": false,
+                          "possible_types": [
+                            "PageInfo"
+                          ],
+                          "storage_key": {
+                            "name": "pageInfo",
+                            "arguments": []
+                          },
+                          "lookup": null,
+                          "connection": null,
+                          "edit": null,
+                          "required": null,
+                          "catch": null,
+                          "caught": false,
+                          "bubbles": false,
+                          "selections": [
+                            {
+                              "kind": "scalar",
+                              "name": "endCursor",
+                              "alias": null,
+                              "type": {
+                                "shape": "named",
+                                "name": "String",
+                                "kind": "string",
+                                "non_null": false
+                              },
+                              "non_null": false,
+                              "semantic_non_null": false,
+                              "storage_key": {
+                                "name": "endCursor",
+                                "arguments": []
+                              },
+                              "edit": null,
+                              "required": null,
+                              "catch": null,
+                              "caught": false
+                            },
+                            {
+                              "kind": "scalar",
+                              "name": "hasNextPage",
+                              "alias": null,
+                              "type": {
+                                "shape": "named",
+                                "name": "Boolean",
+                                "kind": "boolean",
+                                "non_null": true
+                              },
+                              "non_null": true,
+                              "semantic_non_null": false,
+                              "storage_key": {
+                                "name": "hasNextPage",
+                                "arguments": []
+                              },
+                              "edit": null,
+                              "required": null,
+                              "catch": null,
+                              "caught": false
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TestAuthorNotesQuery",
+      "source": "swift/Tests/BatonTests/ListDocuments.swift",
+      "document": 21,
+      "kind": "query",
+      "root_type": "Query",
+      "variables": [
+        {
+          "name": "id",
+          "type": {
+            "shape": "named",
+            "name": "ID",
+            "kind": "id",
+            "non_null": true
+          },
+          "default_value": null
+        }
+      ],
+      "text": "query TestAuthorNotesQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...TestAuthorNotes_note\n    id\n  }\n}\n\nfragment TestAuthorNotes_note on Note {\n  id\n  author {\n    id\n    name\n    notes(first: 2) {\n      edges {\n        node {\n          id\n          text\n          __typename\n        }\n        cursor\n      }\n      pageInfo {\n        endCursor\n        hasNextPage\n      }\n    }\n  }\n}",
+      "id": "e4fe381d13bc863a96beb253c47ecddb",
+      "throws_on_field_error": false,
+      "bubbles": false,
+      "has_deferred": false,
+      "error_behavior": null,
+      "reader": [
+        {
+          "kind": "linked",
+          "name": "node",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Node",
+            "kind": "interface",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "has_id": true,
+          "is_abstract": true,
+          "possible_types": [
+            "Character",
+            "Episode",
+            "Location",
+            "Note"
+          ],
+          "storage_key": {
+            "name": "node",
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
+          },
+          "lookup": {
+            "type_name": null,
+            "possible_types": [
+              "Character",
+              "Episode",
+              "Location",
+              "Note"
+            ],
+            "argument": "id",
+            "value": {
+              "kind": "variable",
+              "value": "id"
+            }
+          },
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "inline",
+              "type_condition": "Note",
+              "condition_types": [
+                "Note"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "Note"
+              },
+              "alias": "note",
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "spread",
+                  "fragment": "TestAuthorNotes_note",
+                  "type_condition": "Note",
+                  "arguments": []
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "normalization": [
+        {
+          "kind": "linked",
+          "name": "node",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Node",
+            "kind": "interface",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "has_id": true,
+          "is_abstract": true,
+          "possible_types": [
+            "Character",
+            "Episode",
+            "Location",
+            "Note"
+          ],
+          "storage_key": {
+            "name": "node",
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
+          },
+          "lookup": {
+            "type_name": null,
+            "possible_types": [
+              "Character",
+              "Episode",
+              "Location",
+              "Note"
+            ],
+            "argument": "id",
+            "value": {
+              "kind": "variable",
+              "value": "id"
+            }
+          },
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "__typename",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "String",
+                "kind": "string",
+                "non_null": true
+              },
+              "non_null": true,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "__typename",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "id",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "ID",
+                "kind": "id",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "id",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "inline",
+              "type_condition": "Note",
+              "condition_types": [
+                "Note"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "Note"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "linked",
+                  "name": "author",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "Character",
+                    "kind": "object",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "has_id": true,
+                  "is_abstract": false,
+                  "possible_types": [
+                    "Character"
+                  ],
+                  "storage_key": {
+                    "name": "author",
+                    "arguments": []
+                  },
+                  "lookup": null,
+                  "connection": null,
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false,
+                  "bubbles": false,
+                  "selections": [
+                    {
+                      "kind": "scalar",
+                      "name": "id",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "ID",
+                        "kind": "id",
+                        "non_null": false
+                      },
+                      "non_null": false,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "id",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    },
+                    {
+                      "kind": "scalar",
+                      "name": "name",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "String",
+                        "kind": "string",
+                        "non_null": false
+                      },
+                      "non_null": false,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "name",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    },
+                    {
+                      "kind": "linked",
+                      "name": "notes",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "NoteConnection",
+                        "kind": "object",
+                        "non_null": true
+                      },
+                      "non_null": true,
+                      "semantic_non_null": false,
+                      "has_id": false,
+                      "is_abstract": false,
+                      "possible_types": [
+                        "NoteConnection"
+                      ],
+                      "storage_key": {
+                        "name": "notes",
+                        "arguments": [
+                          {
+                            "name": "after",
+                            "value": {
+                              "kind": "constant",
+                              "value": {
+                                "kind": "null"
+                              }
+                            }
+                          },
+                          {
+                            "name": "first",
+                            "value": {
+                              "kind": "constant",
+                              "value": {
+                                "kind": "int",
+                                "value": 2
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "lookup": null,
+                      "connection": {
+                        "key": "TestAuthorNotes_notes",
+                        "storage_key": {
+                          "name": "__TestAuthorNotes_notes_connection",
+                          "arguments": []
+                        },
+                        "edge_type": "NoteEdge",
+                        "page_info_type": "PageInfo",
+                        "after": null,
+                        "before": null
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false,
+                      "bubbles": false,
+                      "selections": [
+                        {
+                          "kind": "linked",
+                          "name": "edges",
+                          "alias": null,
+                          "type": {
+                            "shape": "list",
+                            "element": {
+                              "shape": "named",
+                              "name": "NoteEdge",
+                              "kind": "object",
+                              "non_null": false
+                            },
+                            "non_null": false
+                          },
+                          "non_null": false,
+                          "semantic_non_null": false,
+                          "has_id": false,
+                          "is_abstract": false,
+                          "possible_types": [
+                            "NoteEdge"
+                          ],
+                          "storage_key": {
+                            "name": "edges",
+                            "arguments": []
+                          },
+                          "lookup": null,
+                          "connection": null,
+                          "edit": null,
+                          "required": null,
+                          "catch": null,
+                          "caught": false,
+                          "bubbles": false,
+                          "selections": [
+                            {
+                              "kind": "linked",
+                              "name": "node",
+                              "alias": null,
+                              "type": {
+                                "shape": "named",
+                                "name": "Note",
+                                "kind": "object",
+                                "non_null": false
+                              },
+                              "non_null": false,
+                              "semantic_non_null": false,
+                              "has_id": true,
+                              "is_abstract": false,
+                              "possible_types": [
+                                "Note"
+                              ],
+                              "storage_key": {
+                                "name": "node",
+                                "arguments": []
+                              },
+                              "lookup": null,
+                              "connection": null,
+                              "edit": null,
+                              "required": null,
+                              "catch": null,
+                              "caught": false,
+                              "bubbles": false,
+                              "selections": [
+                                {
+                                  "kind": "scalar",
+                                  "name": "id",
+                                  "alias": null,
+                                  "type": {
+                                    "shape": "named",
+                                    "name": "ID",
+                                    "kind": "id",
+                                    "non_null": false
+                                  },
+                                  "non_null": false,
+                                  "semantic_non_null": false,
+                                  "storage_key": {
+                                    "name": "id",
+                                    "arguments": []
+                                  },
+                                  "edit": null,
+                                  "required": null,
+                                  "catch": null,
+                                  "caught": false
+                                },
+                                {
+                                  "kind": "scalar",
+                                  "name": "text",
+                                  "alias": null,
+                                  "type": {
+                                    "shape": "named",
+                                    "name": "String",
+                                    "kind": "string",
+                                    "non_null": false
+                                  },
+                                  "non_null": false,
+                                  "semantic_non_null": false,
+                                  "storage_key": {
+                                    "name": "text",
+                                    "arguments": []
+                                  },
+                                  "edit": null,
+                                  "required": null,
+                                  "catch": null,
+                                  "caught": false
+                                },
+                                {
+                                  "kind": "scalar",
+                                  "name": "__typename",
+                                  "alias": null,
+                                  "type": {
+                                    "shape": "named",
+                                    "name": "String",
+                                    "kind": "string",
+                                    "non_null": true
+                                  },
+                                  "non_null": true,
+                                  "semantic_non_null": false,
+                                  "storage_key": {
+                                    "name": "__typename",
+                                    "arguments": []
+                                  },
+                                  "edit": null,
+                                  "required": null,
+                                  "catch": null,
+                                  "caught": false
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "scalar",
+                              "name": "cursor",
+                              "alias": null,
+                              "type": {
+                                "shape": "named",
+                                "name": "String",
+                                "kind": "string",
+                                "non_null": true
+                              },
+                              "non_null": true,
+                              "semantic_non_null": false,
+                              "storage_key": {
+                                "name": "cursor",
+                                "arguments": []
+                              },
+                              "edit": null,
+                              "required": null,
+                              "catch": null,
+                              "caught": false
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "linked",
+                          "name": "pageInfo",
+                          "alias": null,
+                          "type": {
+                            "shape": "named",
+                            "name": "PageInfo",
+                            "kind": "object",
+                            "non_null": true
+                          },
+                          "non_null": true,
+                          "semantic_non_null": false,
+                          "has_id": false,
+                          "is_abstract": false,
+                          "possible_types": [
+                            "PageInfo"
+                          ],
+                          "storage_key": {
+                            "name": "pageInfo",
+                            "arguments": []
+                          },
+                          "lookup": null,
+                          "connection": null,
+                          "edit": null,
+                          "required": null,
+                          "catch": null,
+                          "caught": false,
+                          "bubbles": false,
+                          "selections": [
+                            {
+                              "kind": "scalar",
+                              "name": "endCursor",
+                              "alias": null,
+                              "type": {
+                                "shape": "named",
+                                "name": "String",
+                                "kind": "string",
+                                "non_null": false
+                              },
+                              "non_null": false,
+                              "semantic_non_null": false,
+                              "storage_key": {
+                                "name": "endCursor",
+                                "arguments": []
+                              },
+                              "edit": null,
+                              "required": null,
+                              "catch": null,
+                              "caught": false
+                            },
+                            {
+                              "kind": "scalar",
+                              "name": "hasNextPage",
+                              "alias": null,
+                              "type": {
+                                "shape": "named",
+                                "name": "Boolean",
+                                "kind": "boolean",
+                                "non_null": true
+                              },
+                              "non_null": true,
+                              "semantic_non_null": false,
+                              "storage_key": {
+                                "name": "hasNextPage",
+                                "arguments": []
+                              },
+                              "edit": null,
+                              "required": null,
+                              "catch": null,
+                              "caught": false
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }

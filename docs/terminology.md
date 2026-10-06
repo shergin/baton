@@ -164,12 +164,14 @@ per owner, and a spread with arguments binds its scope once per owner, so
 later reads render, hash and allocate nothing.
 
 **Anchor.** *Composition: lens, record, operation value.* Baton's word.
-Where a lens reads: its record, its [owner](#generated), and the record it
-was reached through, which a connection needs for its owner's id. Relay's
-fragment reference carries a record id and an owner; an anchor holds the
-record itself. Two anchors are equal when the three are the same objects. A
-handle makes the root anchor its data reads from, as `mutate` does for the
-data it returns, and generated accessors derive every anchor below it.
+Where a lens reads: its record, its [owner](#generated), and the record the
+fragment it is in starts at, its origin, whose id a connection's pagination
+and a refetch pass to the fragment's query wherever below it they read.
+Relay's fragment reference carries a record id and an owner; an anchor
+holds the records themselves. Two anchors are equal when the three are the
+same objects. A handle makes the root anchor its data reads from, as
+`mutate` does for the data it returns, a fragment spread enters its record
+as the origin, and generated accessors derive every anchor below it.
 Generated code's alone: an app's code never holds one (see
 [artifact](#compiler)).
 

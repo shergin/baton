@@ -16,11 +16,15 @@ public enum Format1 {}
 public enum Format2 {}
 
 @_spi(Generated)
-@available(*, unavailable, message: "this generated code is of format 3 and the runtime reads format 4: a type condition is tested against members the build compiled and a response said, and a selection carries Relay's membership answers; rebuild with the compiler of this release")
+@available(*, unavailable, message: "this generated code is of format 3 and the runtime reads format 5; rebuild with the compiler of this release")
 public enum Format3 {}
 
 @_spi(Generated)
+@available(*, unavailable, message: "this generated code is of format 4 and the runtime reads format 5: a fragment spread enters its record as the anchor's origin, which a connection below it paginates by; rebuild with the compiler of this release")
 public enum Format4 {}
+
+@_spi(Generated)
+public enum Format5 {}
 
 /// An operation's normalization plan, emitted by the compiler as static data:
 /// what the response contains and where each value is stored.

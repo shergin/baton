@@ -262,10 +262,12 @@ fn spread_accessor(writer: &mut Writer, name: &str, read: &SpreadRead) {
     // A catch reads the errors through what every lens has,
     // `fieldErrors` and `init(anchor:)`: only a fragment with an error
     // policy of its own has `caught`.
+    // A spread enters its fragment: the record becomes the anchor's origin,
+    // which a connection below it paginates by.
     let make = match read.form {
         SpreadForm::Caught => None,
-        SpreadForm::Throwing => Some(format!("try .throwing({anchor})")),
-        SpreadForm::Plain => Some(format!(".init(anchor: {anchor})")),
+        SpreadForm::Throwing => Some(format!("try .throwing({anchor}.entering())")),
+        SpreadForm::Plain => Some(format!(".init(anchor: {anchor}.entering())")),
     };
     let miss = if read.form == SpreadForm::Caught {
         ".success(nil)"
@@ -317,7 +319,7 @@ fn spread_accessor(writer: &mut Writer, name: &str, read: &SpreadRead) {
             None => {
                 writer.line(format!("let errors = {alias}.fieldErrors({anchor})"));
                 writer.line(format!(
-                    "return errors.isEmpty ? .success(.init(anchor: {anchor})) : .failure(.init(errors))"
+                    "return errors.isEmpty ? .success(.init(anchor: {anchor}.entering())) : .failure(.init(errors))"
                 ));
             }
         }

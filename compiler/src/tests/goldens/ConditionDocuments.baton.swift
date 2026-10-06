@@ -242,7 +242,7 @@ fragment TestNamed_named on Named {
             @MainActor public var id: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
             @MainActor public var named: TestNamed_named? {
                 guard Types.Named_possible.includes(anchor.record.type) else { return nil }
-                return .init(anchor: anchor)
+                return .init(anchor: anchor.entering())
             }
         }
     }
@@ -342,7 +342,7 @@ fragment TestAppearances_character on Character {
                 @MainActor public var testAppearances: TestAppearances_character? {
                     typealias Fragment = TestAppearances_character
                     guard Fragment.isPresent(anchor) else { return nil }
-                    return .init(anchor: anchor)
+                    return .init(anchor: anchor.entering())
                 }
             }
         }
@@ -614,10 +614,10 @@ fragment TestRow_character on Character {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Character"
-            @MainActor public var testRow: TestRow_character { .init(anchor: anchor) }
+            @MainActor public var testRow: TestRow_character { .init(anchor: anchor.entering()) }
             @MainActor public var again: TestRow_character? {
                 guard anchor.selects("again", true) else { return nil }
-                return .init(anchor: anchor)
+                return .init(anchor: anchor.entering())
             }
         }
     }

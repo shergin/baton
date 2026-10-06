@@ -1,18 +1,21 @@
 /// Where a lens reads from: one record, the owner whose scope binds any
-/// argument-carrying storage key along its path, and the record it was
-/// reached from, which a connection needs for its owner's id. Two anchors
-/// are equal when the three are the same objects. Generated code's alone:
-/// an app reads through lenses and never holds an anchor.
+/// argument-carrying storage key along its path, and the record the
+/// fragment the lens is in starts at, whose id a connection's pagination
+/// and a refetch pass to the fragment's query wherever below it they read.
+/// Two anchors are equal when the three are the same objects. Generated
+/// code's alone: an app reads through lenses and never holds an anchor.
 @_spi(Generated)
 public struct Anchor: Sendable, Equatable {
     public let record: Record
     public let owner: Owner
-    @usableFromInline let parent: Record?
+    /// The record the enclosing fragment starts at; nil at an operation's
+    /// root, where no fragment has been entered.
+    @usableFromInline let origin: Record?
 
-    public init(record: Record, owner: Owner, parent: Record? = nil) {
+    public init(record: Record, owner: Owner, origin: Record? = nil) {
         self.record = record
         self.owner = owner
-        self.parent = parent
+        self.origin = origin
     }
 
     /// An anchor in a scope of its own, for a lens made by hand.
@@ -25,11 +28,17 @@ public struct Anchor: Sendable, Equatable {
     @usableFromInline var store: Store? { owner.store }
 
     func child(_ record: Record) -> Anchor {
-        Anchor(record: record, owner: owner, parent: self.record)
+        Anchor(record: record, owner: owner, origin: origin)
+    }
+
+    /// The anchor a fragment spread reads through: the same record and
+    /// scope, with this record as the fragment's own.
+    public func entering() -> Anchor {
+        Anchor(record: record, owner: owner, origin: record)
     }
 
     public static func == (lhs: Anchor, rhs: Anchor) -> Bool {
-        lhs.record === rhs.record && lhs.owner === rhs.owner && lhs.parent === rhs.parent
+        lhs.record === rhs.record && lhs.owner === rhs.owner && lhs.origin === rhs.origin
     }
 }
 
@@ -39,7 +48,7 @@ extension Anchor {
     /// the fragment's arguments bound over them, as Relay's fragment
     /// variables. The owner binds each site once.
     public func binding(_ site: ArgumentSite, _ values: () -> [String: Variable?]) -> Anchor {
-        Anchor(record: record, owner: owner.binding(site, values), parent: parent)
+        Anchor(record: record, owner: owner.binding(site, values), origin: origin)
     }
 }
 
@@ -427,7 +436,8 @@ extension Anchor {
 
 /// Connections: the state Relay keeps on the connection record, read from the
 /// store, and the fetches that extend or refresh it. The anchor's record is
-/// the connection record; its parent is the fragment's owner.
+/// the connection record; its origin is the fragment's, whose id the
+/// fragment's query takes, however far below it the connection is.
 @MainActor
 extension Anchor {
     private func pageInfo(_ slots: ConnectionSlots) -> Record? {
@@ -451,7 +461,7 @@ extension Anchor {
         nodes.reserveCapacity(edges.count)
         for case let edge? in edges where !edge.deleted {
             guard case .ref(let node) = edge.read(slots.node), !node.deleted else { continue }
-            let anchor = Anchor(record: node, owner: owner, parent: edge)
+            let anchor = Anchor(record: node, owner: owner, origin: origin)
             if let keep, !keep(anchor) { continue }
             nodes.append(Element(anchor: anchor))
         }
@@ -469,7 +479,7 @@ extension Anchor {
     public func loadNext<Op: Query>(_ operation: Op.Type, _ slots: ConnectionSlots, _ refetch: Refetch, count: Int) async throws {
         guard let first = refetch.first, let after = refetch.after else { return }
         guard hasNext(slots), !isLoadingNext(slots), let pageInfo = pageInfo(slots), case .string(let cursor) = pageInfo.peek(slots.endCursor) else { return }
-        var values = refetchVariables(refetch, owner: parent)
+        var values = refetchVariables(refetch, owner: origin ?? record)
         values[first] = .int(count)
         values[after] = .string(cursor)
         try await environment().paginate(operation, variables: Variables(values), connection: record, loading: slots.isLoadingNext)
@@ -480,7 +490,7 @@ extension Anchor {
     public func loadPrevious<Op: Query>(_ operation: Op.Type, _ slots: ConnectionSlots, _ refetch: Refetch, count: Int) async throws {
         guard let last = refetch.last, let before = refetch.before else { return }
         guard hasPrevious(slots), !isLoadingPrevious(slots), let pageInfo = pageInfo(slots), case .string(let cursor) = pageInfo.peek(slots.startCursor) else { return }
-        var values = refetchVariables(refetch, owner: parent)
+        var values = refetchVariables(refetch, owner: origin ?? record)
         values[last] = .int(count)
         values[before] = .string(cursor)
         try await environment().paginate(operation, variables: Variables(values), connection: record, loading: slots.isLoadingPrevious)

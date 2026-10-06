@@ -434,7 +434,7 @@ fragment TestHeader_character on Character {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Character"
-            @MainActor public var testHeader: TestHeader_character { .init(anchor: anchor) }
+            @MainActor public var testHeader: TestHeader_character { .init(anchor: anchor.entering()) }
         }
     }
 }
@@ -525,8 +525,8 @@ fragment TestRow_character on Character {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
                 public static let typeName = "Character"
-                @MainActor public var testRow: TestRow_character { .init(anchor: anchor) }
-                @MainActor public var testHeader: TestHeader_character { .init(anchor: anchor) }
+                @MainActor public var testRow: TestRow_character { .init(anchor: anchor.entering()) }
+                @MainActor public var testHeader: TestHeader_character { .init(anchor: anchor.entering()) }
             }
         }
     }

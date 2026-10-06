@@ -8,7 +8,8 @@ import Baton
 /// connection whose nodes defer a fragment, a query that fetches two
 /// pages of one connection, and refetchable fragments paginating forward
 /// and backward with fields named like the fragment and its refetch query,
-/// in its lens and in the connection's.
+/// in its lens and in the connection's, and a refetchable fragment on a
+/// note paginating its author's notes, a link below the fragment's type.
 @MainActor
 struct ListDocuments {
     @Fragment("""
@@ -197,4 +198,27 @@ struct ListDocuments {
         }
         """)
     var hiddenRecentNotesQuery: TestHiddenRecentNotesQuery
+
+    @Fragment("""
+        fragment TestAuthorNotes_note on Note
+        @refetchable(queryName: "TestAuthorNotesPaginationQuery")
+        @argumentDefinitions(count: {type: "Int", defaultValue: 2}, cursor: {type: "String"}) {
+          id
+          author {
+            id
+            name
+            notes(first: $count, after: $cursor) @connection(key: "TestAuthorNotes_notes") {
+              edges { node { id text } }
+            }
+          }
+        }
+        """)
+    var authorNotes: TestAuthorNotes_note
+
+    @Query("""
+        query TestAuthorNotesQuery($id: ID!) {
+          node(id: $id) { ...TestAuthorNotes_note @alias(as: "note") }
+        }
+        """)
+    var authorNotesQuery: TestAuthorNotesQuery
 }
