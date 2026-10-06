@@ -2051,6 +2051,151 @@
           "DEAD"
         ]
       }
+    },
+    {
+      "name": "tests/pinned-character",
+      "operation": "TestPinnedCharacter",
+      "kind": "query",
+      "document": "documents/TestPinnedCharacter.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "tests/pinned-character.json"
+      ],
+      "records": "tests/pinned-character.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "character.id",
+          "value": "1"
+        },
+        {
+          "path": "character.name",
+          "value": "Rick Sanchez"
+        },
+        {
+          "path": "character.status",
+          "value": "Alive"
+        },
+        {
+          "path": "character.isPinned",
+          "value": null,
+          "note": "`isPinned` is a client field, which no server sends: it reads as absent until a payload committed by hand writes it, and the check does not wait for it"
+        },
+        {
+          "path": "character.note",
+          "value": null,
+          "note": "`note` is a client field, which no server sends: it reads as absent until a payload committed by hand writes it, and the check does not wait for it"
+        }
+      ],
+      "override": {
+        "paths": [
+          "character.name"
+        ],
+        "value": "Rick Prime"
+      }
+    },
+    {
+      "name": "tests/pin-character",
+      "operation": "TestPinnedCharacter",
+      "kind": "query",
+      "document": "documents/TestPinnedCharacter.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "tests/pin-character.json"
+      ],
+      "records": "tests/pin-character.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "character.id",
+          "value": "1"
+        },
+        {
+          "path": "character.name",
+          "value": "Rick Sanchez"
+        },
+        {
+          "path": "character.status",
+          "value": "Alive"
+        },
+        {
+          "path": "character.isPinned",
+          "value": true,
+          "note": "`isPinned` is a client field: this response is a payload committed by hand, which writes it like any field"
+        },
+        {
+          "path": "character.note",
+          "value": "the one who built the portal gun",
+          "note": "`note` is a client field: this response is a payload committed by hand, which writes it like any field"
+        }
+      ],
+      "override": {
+        "paths": [
+          "character.isPinned"
+        ],
+        "value": false
+      }
+    },
+    {
+      "name": "tests/drafts",
+      "operation": "TestDrafts",
+      "kind": "query",
+      "document": "documents/TestDrafts.graphql",
+      "variables": {},
+      "responses": [
+        "tests/drafts.json"
+      ],
+      "records": "tests/drafts.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "drafts.0.id",
+          "value": "d1",
+          "note": "`drafts` is a client field: this response is a payload committed by hand, which writes it like any field"
+        },
+        {
+          "path": "drafts.0.text",
+          "value": "Ask about the citadel"
+        },
+        {
+          "path": "drafts.0.about.id",
+          "value": "1"
+        },
+        {
+          "path": "drafts.0.about.name",
+          "value": "Rick Sanchez"
+        },
+        {
+          "path": "drafts.1.id",
+          "value": "d2"
+        },
+        {
+          "path": "drafts.1.text",
+          "value": "Plumbus care"
+        },
+        {
+          "path": "drafts.1.about",
+          "value": null
+        },
+        {
+          "path": "character.id",
+          "value": "1"
+        },
+        {
+          "path": "character.name",
+          "value": "Rick Sanchez"
+        }
+      ],
+      "override": {
+        "paths": [
+          "drafts.0.text"
+        ],
+        "value": "Edited"
+      }
     }
   ]
 }

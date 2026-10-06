@@ -6,16 +6,17 @@ import Foundation
 nonisolated enum Types {
     /// The schema's digest: pass it as the image's `version`, so an image
     /// written under another schema starts again.
-    static let schemaDigest = "706c73074c8964ce187f560dba49fe83"
+    static let schemaDigest = "3021e396ee4032bddb0a8c672c05a1bb"
     /// The format of this generated code, which the runtime that reads it
     /// declares; a runtime of another format fails to compile this line.
-    static let format = Baton.Format10.self
+    static let format = Baton.Format11.self
     static let AddNotePayload = Baton.Registry.type("AddNotePayload")
     static let Any_ = Baton.Registry.type("Any")
     static let Asset = Baton.Registry.type("Asset")
     static let Baton_ = Baton.Registry.type("Baton")
     static let Character = Baton.Registry.type("Character")
     static let Characters = Baton.Registry.type("Characters")
+    static let Draft = Baton.Registry.type("Draft")
     static let Episode = Baton.Registry.type("Episode")
     static let FavoritePayload = Baton.Registry.type("FavoritePayload")
     static let Info = Baton.Registry.type("Info")
@@ -90,8 +91,10 @@ nonisolated enum Slots {
         static let gender = Baton.Registry.slot(Types.Character, "gender")
         static let id = Baton.Registry.slot(Types.Character, "id")
         static let image = Baton.Registry.slot(Types.Character, "image")
+        static let isPinned = Baton.Registry.clientSlot(Types.Character, "isPinned")
         static let location = Baton.Registry.slot(Types.Character, "location")
         static let name = Baton.Registry.slot(Types.Character, "name")
+        static let note = Baton.Registry.clientSlot(Types.Character, "note")
         static let notes_8d6d15 = Baton.Registry.slot(Types.Character, "notes(after:\"c2\",first:2)")
         static let notes_a9400e = Baton.DynamicKey(Types.Character, "notes", [Baton.KeyArgument("after", [.variable("cursor")]), Baton.KeyArgument("first", [.variable("count")])])
         static let notes_d859b7 = Baton.DynamicKey(Types.Character, "notes", [Baton.KeyArgument("before", [.variable("cursor")]), Baton.KeyArgument("last", [.variable("count")])])
@@ -110,6 +113,11 @@ nonisolated enum Slots {
     nonisolated enum Characters {
         static let info = Baton.Registry.slot(Types.Characters, "info")
         static let results = Baton.Registry.slot(Types.Characters, "results")
+    }
+    nonisolated enum Draft {
+        static let about = Baton.Registry.clientSlot(Types.Draft, "about")
+        static let id = Baton.Registry.clientSlot(Types.Draft, "id")
+        static let text = Baton.Registry.clientSlot(Types.Draft, "text")
     }
     nonisolated enum Episode {
         static let __typename = Baton.Registry.slot(Types.Episode, "__typename")
@@ -198,6 +206,7 @@ nonisolated enum Slots {
         static let asset_9e39ed = Baton.DynamicKey(Types.Query, "asset", [Baton.KeyArgument("uuid", [.variable("uuid")])])
         static let assets = Baton.Registry.slot(Types.Query, "assets")
         static let assetsPricedAbove_914469 = Baton.DynamicKey(Types.Query, "assetsPricedAbove", [Baton.KeyArgument("among", [.variable("among")]), Baton.KeyArgument("price", [.variable("price")])])
+        static let character_9e6829 = Baton.Registry.slot(Types.Query, "character(id:\"1\")")
         static let character_4a2dfc = Baton.Registry.slot(Types.Query, "character(id:\"a,b\")")
         static let character_800bca = Baton.DynamicKey(Types.Query, "character", [Baton.KeyArgument("id", [.variable("a")])])
         static let character_ac9202 = Baton.DynamicKey(Types.Query, "character", [Baton.KeyArgument("id", [.variable("b")])])
@@ -214,6 +223,7 @@ nonisolated enum Slots {
         static let charactersByIds_0b7f7b = Baton.DynamicKey(Types.Query, "charactersByIds", [Baton.KeyArgument("ids", [.literal("["), .variable("id"), .literal(",\"2\"]")])])
         static let charactersMatching_ca82bd = Baton.DynamicKey(Types.Query, "charactersMatching", [Baton.KeyArgument("filters", [.variable("filters")])])
         static let charactersWithStatus_deb51f = Baton.DynamicKey(Types.Query, "charactersWithStatus", [Baton.KeyArgument("any", [.variable("any")]), Baton.KeyArgument("status", [.variable("status")])])
+        static let drafts = Baton.Registry.clientSlot(Types.Query, "drafts")
         static let namesake_9b6471 = Baton.DynamicKey(Types.Query, "namesake", [Baton.KeyArgument("name", [.variable("name")])])
         static let node_8f7d08 = Baton.DynamicKey(Types.Query, "node", [Baton.KeyArgument("id", [.variable("id")])])
         static let quote_bd29fc = Baton.DynamicKey(Types.Query, "quote", [Baton.KeyArgument("base", [.variable("base")]), Baton.KeyArgument("quote", [.variable("quote")])])

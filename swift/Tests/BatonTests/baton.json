@@ -1,5 +1,8 @@
 {
   "schema": "../../../spec/tests/schema.graphql",
+  "schemaExtensions": [
+    "../../../spec/tests/extensions.graphql"
+  ],
   "identity": {
     "types": {
       "Asset": [

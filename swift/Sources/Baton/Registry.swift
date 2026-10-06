@@ -83,6 +83,9 @@ public enum Registry {
         var slotKeys: [[String]] = []
         /// The slots of each connection type a plan describes, by `TypeID.raw`.
         var connections: [ConnectionSlots?] = []
+        /// The slots of the schema extensions' fields, the client's: by type,
+        /// the indices a payload committed by hand alone writes.
+        var clientSlots: [Set<Int32>] = []
     }
 
     private static let state = Mutex(State())
@@ -99,6 +102,7 @@ public enum Registry {
             state.typeNames.append(name)
             state.slotIndices.append([:])
             state.slotKeys.append([])
+            state.clientSlots.append([])
             return id
         }
     }
@@ -116,6 +120,21 @@ public enum Registry {
             denseTotal.wrappingAdd(1, ordering: .relaxed)
             return Slot(type: type, index: index)
         }
+    }
+
+    /// A slot of a schema extension's field: interned as any slot, and marked
+    /// as the client's, so that a lens reading it absent reports nothing
+    /// missing and asks for no heal; a payload committed by hand alone
+    /// writes it.
+    public static func clientSlot(_ type: TypeID, _ storageKey: String) -> Slot {
+        let slot = slot(type, storageKey)
+        state.withLock { _ = $0.clientSlots[Int(type.raw)].insert(slot.index) }
+        return slot
+    }
+
+    /// Whether the slot is a schema extension's, which no server answers.
+    static func isClient(_ slot: Slot) -> Bool {
+        state.withLock { $0.clientSlots[Int(slot.type.raw)].contains(slot.index) }
     }
 
     /// The build's keys numbered since `counts` last described each type's

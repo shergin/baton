@@ -5,6 +5,16 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- Client schema extensions, under Relay's key `schemaExtensions` in
+  `baton.json`: files, or directories of `.graphql` files, that give server
+  types client fields or declare types the server does not have. A client
+  field is written by `commitPayload` for an operation that selects it,
+  read by a lens like any field, left out of the text and the id a server
+  receives, and neither waited for by the availability check nor healed.
+  The plan marks each client field; the extensions fold into the schema's
+  digest. A non-null client field is refused at its line, and an operation
+  of client fields alone at its name. The SwiftPM plugin regenerates when
+  an extension changes. Generated code of this shape is format 11.
 - A schema enum reads as a Swift enum generated for it, declared once per
   module in the shared file: a case per value the build knows, spelled as
   the schema spells it, and `unknown(String)` for a value it does not, so a

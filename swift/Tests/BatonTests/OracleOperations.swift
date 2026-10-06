@@ -90,6 +90,8 @@ struct OracleOperation: Sendable {
         "TestQuoteQuery": { try OracleOperation(TestQuoteQuery(base: $0.string("base"), quote: $0.string("quote")), reads: quoteReads) },
         "TestAssetPricesQuery": { _ in OracleOperation(TestAssetPricesQuery(), reads: assetPricesReads, spellings: assetPricesSpellings) },
         "TestSetStatuses": { _ in OracleOperation(TestSetStatuses(), reads: setStatusesReads, spellings: setStatusesSpellings) },
+        "TestPinnedCharacter": { try OracleOperation(TestPinnedCharacter(id: $0.string("id")), reads: pinnedCharacterReads) },
+        "TestDrafts": { _ in OracleOperation(TestDrafts(), reads: draftsReads) },
     ]
 
     /// Binds a manifest case to its operation.
@@ -293,6 +295,30 @@ extension OracleOperation {
         default: value
         }
     }
+
+    /// A character's server fields and its two client fields, which read as
+    /// nil until a payload committed by hand writes them.
+    static let pinnedCharacterReads: [String: @MainActor @Sendable (TestPinnedCharacter.Data) -> Manifest.Value] = [
+        "character.id": { $0.character?.id.manifestValue ?? .null },
+        "character.name": { $0.character?.name.manifestValue ?? .null },
+        "character.status": { $0.character?.status.manifestValue ?? .null },
+        "character.isPinned": { $0.character?.isPinned.manifestValue ?? .null },
+        "character.note": { $0.character?.note.manifestValue ?? .null },
+    ]
+
+    /// The client-only list of drafts, one linking a server character, and
+    /// that character read beside it.
+    static let draftsReads: [String: @MainActor @Sendable (TestDrafts.Data) -> Manifest.Value] = [
+        "drafts.0.id": { $0.drafts?.element(0)?.id.manifestValue ?? .null },
+        "drafts.0.text": { $0.drafts?.element(0)?.text.manifestValue ?? .null },
+        "drafts.0.about.id": { $0.drafts?.element(0)?.about?.id.manifestValue ?? .null },
+        "drafts.0.about.name": { $0.drafts?.element(0)?.about?.name.manifestValue ?? .null },
+        "drafts.1.id": { $0.drafts?.element(1)?.id.manifestValue ?? .null },
+        "drafts.1.text": { $0.drafts?.element(1)?.text.manifestValue ?? .null },
+        "drafts.1.about": { $0.drafts?.element(1)?.about.map { _ in .object([:]) } ?? .null },
+        "character.id": { $0.character?.id.manifestValue ?? .null },
+        "character.name": { $0.character?.name.manifestValue ?? .null },
+    ]
 
     static let quotesReads: [String: @MainActor @Sendable (TestQuotesQuery.Data) -> Manifest.Value] = [
         "quotes.0.rate": { $0.quotes?.element(0)?.rate.manifestValue ?? .null },

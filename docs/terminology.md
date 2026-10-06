@@ -438,12 +438,19 @@ app's own tooling.
 
 **Client schema extension, client field.** *Concept: schema.* Relay:
 `schemaExtensions`, files that give server types client fields or declare
-types the server does not have. Here: *(planned)*; the compiler passes
-Relay's front end no extensions today, and the only client data is the
-runtime's own, a connection's record and the three roots. A client field
-will be written by a [commit payload](#store) for an operation that selects
-it and by nothing else, read by a lens like any field, and left out of the
-text a server receives. Baton computes none: no resolvers. See
+types the server does not have. Here the same key in `baton.json`, files or
+directories of `.graphql` beside it, read with the schema and folded into
+its digest. A client field is nullable, since no server promises it; it is
+written by a [commit payload](#store) for an operation that selects it and
+by nothing else, read by a lens like any field, left out of the text and
+the id a server receives, and neither waited for by the availability check
+nor healed: the registry marks a client slot, so a lens reads it as absent
+until a payload writes it and reports nothing missing. An operation of
+client fields alone is refused, since a server answers one field at least.
+The plan marks each client field, the origin a walk reads beside the
+server's and a `@defer` label's; the check hydrates client fields from the
+image without waiting for them. Client records live and reach the image as
+any record does. Baton computes none: no resolvers. See
 [the decision](decisions/client-data-is-described-and-committed.md).
 
 **Custom scalar, mapped scalar.** *Composition: schema, lens.* GraphQL: a

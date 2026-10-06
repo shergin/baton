@@ -1,0 +1,11 @@
+{
+  "data": {
+    "character": {
+      "id": "1",
+      "name": "Rick Sanchez",
+      "status": "Alive",
+      "isPinned": true,
+      "note": "the one who built the portal gun"
+    }
+  }
+}

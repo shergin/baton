@@ -33,7 +33,7 @@ fn errors(config: &str, text: &str) -> Vec<String> {
     let (sdl, path) = schema();
     let mut config: Config = serde_json::from_str(config).expect("the configuration parses");
     config.path = PathBuf::from("baton.json");
-    match compile(&sdl, &path, &[document(text)], &config) {
+    match compile(&sdl, &path, &[], &[document(text)], &config) {
         Ok(_) => Vec::new(),
         Err(diagnostics) => diagnostics
             .iter()
@@ -111,6 +111,7 @@ fn an_interface_whose_implementers_have_ids_is_keyed_by_id_though_it_declares_no
     let compiled = compile(
         &sdl,
         &path,
+        &[],
         &[document("query Probe { namesake(name: \"a\") { name } }")],
         &Config::default(),
     )
@@ -144,6 +145,7 @@ fn a_root_type_the_schema_names_otherwise_is_interned_by_the_store_root_name() {
     let compiled = compile(
         RENAMED_ROOTS,
         "schema.graphql",
+        &[],
         &[
             document("query Probe { character(id: \"1\") { name } }"),
             document("mutation Rename { rename(id: \"1\", name: \"a\") { name } }"),
@@ -169,6 +171,7 @@ fn a_type_named_like_a_store_root_beside_a_root_named_otherwise_is_an_error() {
     let Err(errors) = compile(
         &sdl,
         "schema.graphql",
+        &[],
         &[document("query Probe { character(id: \"1\") { name } }")],
         &Config::default(),
     ) else {
@@ -218,6 +221,7 @@ fn a_root_named_otherwise_that_an_interface_or_union_reaches_is_an_error() {
         let Err(errors) = compile(
             &sdl,
             "schema.graphql",
+            &[],
             &[document("query Probe { character(id: \"1\") { name } }")],
             &Config::default(),
         ) else {
@@ -246,6 +250,7 @@ fn an_error_in_a_selection_is_told_once_though_the_operation_is_lowered_twice() 
     let Err(errors) = compile(
         sdl,
         "schema.graphql",
+        &[],
         &[document("query Probe { person { name } }")],
         &config,
     ) else {
@@ -261,7 +266,7 @@ fn on_error_null_sends_the_value_and_types_non_null_fields_by_their_semantic_nul
         serde_json::from_str(r#"{"onError": "NULL"}"#).expect("the configuration parses");
     config.path = PathBuf::from("baton.json");
     let text = "query Probe { character(id: \"1\") { name notes(first: 1) @connection(key: \"Probe_notes\") { totalCount edges { node { id } } } } }";
-    let compiled = compile(&sdl, &path, &[document(text)], &config)
+    let compiled = compile(&sdl, &path, &[], &[document(text)], &config)
         .unwrap_or_else(|errors| panic!("{errors:?}"));
     let operation = &compiled.plan.operations[0];
     assert_eq!(operation.error_behavior.as_deref(), Some("null"));
@@ -277,7 +282,7 @@ fn on_error_null_sends_the_value_and_types_non_null_fields_by_their_semantic_nul
         "`Int!` reads optional outside `@catch` and `@throwOnFieldError`"
     );
 
-    let plain = compile(&sdl, &path, &[document(text)], &Config::default())
+    let plain = compile(&sdl, &path, &[], &[document(text)], &Config::default())
         .unwrap_or_else(|errors| panic!("{errors:?}"));
     let plain_file = crate::emit::emit(&plain.plan).expect("the plan emits");
     let plain_file = plain_file
@@ -293,7 +298,7 @@ fn on_error_null_sends_the_value_and_types_non_null_fields_by_their_semantic_nul
 fn a_query_states_its_cache_expiration_in_its_plan_and_its_swift_and_not_in_the_text_it_sends() {
     let (sdl, path) = schema();
     let text = "query Probe @cacheExpiration(seconds: 30) { character(id: \"1\") { name } }";
-    let compiled = compile(&sdl, &path, &[document(text)], &Config::default())
+    let compiled = compile(&sdl, &path, &[], &[document(text)], &Config::default())
         .unwrap_or_else(|errors| panic!("{errors:?}"));
     let operation = &compiled.plan.operations[0];
     assert_eq!(operation.cache_expiration, Some(30.0));
@@ -312,7 +317,7 @@ fn a_query_states_its_cache_expiration_in_its_plan_and_its_swift_and_not_in_the_
         "@_spi(Generated) public static let cacheExpiration: Swift.Duration? = .seconds(30)"
     ));
 
-    let plain = compile(&sdl, &path, &[document(QUERY)], &Config::default())
+    let plain = compile(&sdl, &path, &[], &[document(QUERY)], &Config::default())
         .unwrap_or_else(|errors| panic!("{errors:?}"));
     assert_eq!(plain.plan.operations[0].cache_expiration, None);
     let plain_output = crate::emit::emit(&plain.plan).expect("the plan emits");
@@ -349,7 +354,7 @@ fn a_cache_expiration_on_a_mutation_or_from_a_variable_is_an_error() {
 #[test]
 fn a_persisted_id_is_the_hash_of_the_text_the_app_holds() {
     let (sdl, path) = schema();
-    let compiled = compile(&sdl, &path, &[document(QUERY)], &Config::default())
+    let compiled = compile(&sdl, &path, &[], &[document(QUERY)], &Config::default())
         .unwrap_or_else(|errors| panic!("{errors:?}"));
     let operation = &compiled.plan.operations[0];
     assert_eq!(operation.text, operation.text.trim_end());
@@ -365,6 +370,7 @@ fn slots_are_nested_per_type_so_a_type_and_a_field_never_run_together() {
     let compiled = compile(
         sdl,
         "schema.graphql",
+        &[],
         &[document("query Probe { a { b_c } a_b { c } }")],
         &Config::default(),
     )
@@ -386,6 +392,7 @@ fn a_linked_field_named_like_a_swift_type_gets_a_lens_of_another_name() {
     let compiled = compile(
         sdl,
         "schema.graphql",
+        &[],
         &[document("query Probe { type { a } self { a } }")],
         &Config::default(),
     )
@@ -407,6 +414,7 @@ fn a_type_constant_swift_would_misread_takes_an_underscore_and_meets_no_other() 
     let compiled = compile(
         sdl,
         "schema.graphql",
+        &[],
         &[document("query Probe { a { id } b { id } c { id } }")],
         &Config::default(),
     )
@@ -437,6 +445,7 @@ fn a_slot_name_swift_would_misread_takes_an_underscore_and_meets_no_other() {
     let compiled = compile(
         sdl,
         "schema.graphql",
+        &[],
         &[document("query Probe { types { Type Type_ Baton name } }")],
         &Config::default(),
     )
@@ -468,6 +477,7 @@ fn grid_diagnostics(text: &str) -> Vec<common::Diagnostic> {
     match compile(
         GRID_SCHEMA,
         "schema.graphql",
+        &[],
         &[document(text)],
         &Config::default(),
     ) {
@@ -536,6 +546,7 @@ fn shelf_swift(text: &str) -> String {
     let compiled = compile(
         SHELF_SCHEMA,
         "schema.graphql",
+        &[],
         &[document(text)],
         &Config::default(),
     )
@@ -572,6 +583,7 @@ fn a_type_plan_keeps_every_list_and_the_nullability_of_each_level() {
     let compiled = compile(
         SHELF_SCHEMA,
         "schema.graphql",
+        &[],
         &[document(
             "query Probe($cells: [[Int!]!]) { shelf(cells: $cells) { loose } }",
         )],
@@ -618,3 +630,6 @@ mod scalar_tests;
 
 #[path = "enum_tests.rs"]
 mod enum_tests;
+
+#[path = "extension_tests.rs"]
+mod extension_tests;

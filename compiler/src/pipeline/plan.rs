@@ -153,6 +153,10 @@ pub struct VariablePlan {
     pub default_value: Option<ConstantPlan>,
 }
 
+fn is_false(flag: &bool) -> bool {
+    !*flag
+}
+
 /// A field's or a variable's type as the schema writes it: a named type, or
 /// a list of a type, each non-null or not. Built once, in the lowering, for
 /// the reader side and the normalization side alike, so the two cannot
@@ -428,6 +432,14 @@ pub enum SelectionPlan {
         /// Whether the field or an ancestor carries `@catch`, so an error on
         /// it does not fail a `@throwOnFieldError` operation.
         caught: bool,
+        /// A client field, from a schema extension: written by a payload
+        /// committed by hand, never asked of a server nor waited for.
+        #[serde(skip_serializing_if = "is_false")]
+        client: bool,
+        /// The field itself is a schema extension's, whatever path reached
+        /// it: its slot is a client slot wherever it is read.
+        #[serde(skip_serializing_if = "is_false")]
+        extension: bool,
     },
     Linked {
         name: String,
@@ -455,6 +467,12 @@ pub enum SelectionPlan {
         required: Option<RequiredPlan>,
         catch: Option<CatchPlan>,
         caught: bool,
+        /// A client field, from a schema extension.
+        #[serde(skip_serializing_if = "is_false")]
+        client: bool,
+        /// The field itself is a schema extension's.
+        #[serde(skip_serializing_if = "is_false")]
+        extension: bool,
         /// Whether a `@required` child can null this field.
         bubbles: bool,
         selections: Vec<SelectionPlan>,

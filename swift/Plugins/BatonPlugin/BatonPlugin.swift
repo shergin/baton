@@ -44,6 +44,19 @@ struct BatonPlugin: BuildToolPlugin {
         // outputs there it did not write, so a source renamed or removed
         // leaves no file behind.
         var inputs: [URL] = [schema, configurationFile, tool]
+        // A client schema extension is part of the schema: an edit to one
+        // regenerates, as an edit to the schema does.
+        let configurationDirectory = configurationFile.deletingLastPathComponent()
+        for entry in configuration.schemaExtensions ?? [] {
+            let url = configurationDirectory.appending(path: entry)
+            var isDirectory: ObjCBool = false
+            if FileManager.default.fileExists(atPath: url.path(percentEncoded: false), isDirectory: &isDirectory), isDirectory.boolValue {
+                let files = (try? FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: nil)) ?? []
+                inputs.append(contentsOf: files.filter { $0.pathExtension == "graphql" }.sorted { $0.path() < $1.path() })
+            } else {
+                inputs.append(url)
+            }
+        }
         var arguments = [
             "generate",
             "--config", configurationFile.path(percentEncoded: false),
@@ -106,6 +119,7 @@ struct BatonPlugin: BuildToolPlugin {
 
 struct Configuration: Decodable {
     var schema: String
+    var schemaExtensions: [String]?
 
     static func load(at url: URL) throws -> Configuration {
         let data = try Data(contentsOf: url)

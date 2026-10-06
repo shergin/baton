@@ -1008,6 +1008,36 @@ public final class Store {
                 }
             }
         }
+        // A client field is never waited for, but the image holds what a
+        // payload wrote: it is hydrated here, and the records behind a client
+        // link brought back, without a miss for what no server sends.
+        if let disk {
+            for field in variant.payloadFields {
+                let slot = field.slot
+                if case .missing = record.peek(slot) { hydrate(record, slot, from: disk, &walk.batch) }
+                guard case .linked(let child, _, _, _) = field.kind else { continue }
+                switch record.peek(slot) {
+                case .ref(let found):
+                    let target = live(found, disk, &walk.batch)
+                    if target !== found { set(record, slot, .ref(target), &walk.batch) }
+                    if !target.deleted { _ = available(child, at: target, from: disk, &walk) }
+                case .refs(var targets):
+                    var moved = false
+                    for position in targets.indices {
+                        guard let found = targets[position] else { continue }
+                        let target = live(found, disk, &walk.batch)
+                        if target !== found {
+                            targets[position] = target
+                            moved = true
+                        }
+                    }
+                    if moved { set(record, slot, .refs(targets), &walk.batch) }
+                    for case let target? in targets where !target.deleted { _ = available(child, at: target, from: disk, &walk) }
+                default:
+                    break
+                }
+            }
+        }
         // Lenses read a connection through its client record, which the walk
         // above does not pass. A merge always fills it, so one that holds
         // nothing, swept or never filled, is not in memory: the image may

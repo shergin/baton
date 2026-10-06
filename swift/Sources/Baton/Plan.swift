@@ -44,7 +44,11 @@ public enum Format8 {}
 public enum Format9 {}
 
 @_spi(Generated)
+@available(*, unavailable, message: "this generated code is of format 10 and the runtime reads format 11: a client field is marked in the plan; rebuild with the compiler of this release")
 public enum Format10 {}
+
+@_spi(Generated)
+public enum Format11 {}
 
 /// An operation's normalization plan, emitted by the compiler as static data:
 /// what the response contains and where each value is stored.
@@ -288,6 +292,9 @@ public struct PlanField: Sendable {
     /// Whether the field or an ancestor carries `@catch`, so an error on it
     /// does not fail a `@throwOnFieldError` operation.
     public let caught: Bool
+    /// A client field, from a schema extension: no server is asked for it
+    /// and none is waited for; a payload committed by hand writes it.
+    public let client: Bool
     /// Alternatives of conjunctions of `@include` and `@skip` conditions: the
     /// field is fetched when any alternative holds. Empty when it always is.
     public let guards: [[Guard]]
@@ -299,13 +306,14 @@ public struct PlanField: Sendable {
     /// lookup, its connection or its edit, or a field below it.
     let readsVariables: Bool
 
-    init(responseKey: String, key: StorageKey, kind: Kind, edit: Edit?, deferred: String?, caught: Bool, guards: [[Guard]]) {
+    init(responseKey: String, key: StorageKey, kind: Kind, edit: Edit?, deferred: String?, caught: Bool, client: Bool, guards: [[Guard]]) {
         self.responseKey = responseKey
         self.key = key
         self.kind = kind
         self.edit = edit
         self.deferred = deferred
         self.caught = caught
+        self.client = client
         self.guards = guards
         keyBytes = Array(responseKey.utf8)
         var readsVariables = !guards.isEmpty
@@ -322,12 +330,12 @@ public struct PlanField: Sendable {
         self.readsVariables = readsVariables
     }
 
-    public static func scalar(_ responseKey: String, key: StorageKey, kind: ScalarKind, list: Bool, edit: Edit? = nil, deferred: String? = nil, caught: Bool = false, guards: [[Guard]] = []) -> PlanField {
-        PlanField(responseKey: responseKey, key: key, kind: .scalar(kind, list: list), edit: edit, deferred: deferred, caught: caught, guards: guards)
+    public static func scalar(_ responseKey: String, key: StorageKey, kind: ScalarKind, list: Bool, edit: Edit? = nil, deferred: String? = nil, caught: Bool = false, client: Bool = false, guards: [[Guard]] = []) -> PlanField {
+        PlanField(responseKey: responseKey, key: key, kind: .scalar(kind, list: list), edit: edit, deferred: deferred, caught: caught, client: client, guards: guards)
     }
 
-    public static func linked(_ responseKey: String, key: StorageKey, plural: Bool, lookup: Lookup? = nil, connection: ConnectionPlan? = nil, edit: Edit? = nil, deferred: String? = nil, caught: Bool = false, guards: [[Guard]] = [], selection: Selection) -> PlanField {
-        PlanField(responseKey: responseKey, key: key, kind: .linked(selection, plural: plural, lookup: lookup, connection: connection), edit: edit, deferred: deferred, caught: caught, guards: guards)
+    public static func linked(_ responseKey: String, key: StorageKey, plural: Bool, lookup: Lookup? = nil, connection: ConnectionPlan? = nil, edit: Edit? = nil, deferred: String? = nil, caught: Bool = false, client: Bool = false, guards: [[Guard]] = [], selection: Selection) -> PlanField {
+        PlanField(responseKey: responseKey, key: key, kind: .linked(selection, plural: plural, lookup: lookup, connection: connection), edit: edit, deferred: deferred, caught: caught, client: client, guards: guards)
     }
 
     /// Whether the variables select the field.
@@ -487,7 +495,8 @@ public final class Selection: Sendable {
                 )
             },
             deferred: field.deferred,
-            caught: field.caught
+            caught: field.caught,
+            client: field.client
         )
     }
 
@@ -739,6 +748,9 @@ package struct ResolvedVariant: Sendable {
     /// The links the collector follows: every linked field, deferred or not,
     /// and the client links.
     let follows: [ResolvedField]
+    /// The client fields, which a payload committed by hand writes: the
+    /// check hydrates them from the image and waits for none.
+    let payloadFields: [ResolvedField]
 
     init(type: TypeID, key: [String], fields: [ResolvedField], typeName: String? = nil) {
         self.type = type
@@ -755,6 +767,7 @@ package struct ResolvedVariant: Sendable {
         self.read = read
         expected = read.indices.filter { read[$0].origin.isServer }
         waits = read.filter { $0.origin.isServer }
+        payloadFields = read.filter { $0.origin == .client }
         var clientLinks: [ResolvedField] = []
         var follows: [ResolvedField] = []
         for field in read {
@@ -835,7 +848,7 @@ package struct ResolvedField: Sendable {
 
     /// The same field as the incremental part delivers it: no longer deferred.
     func undeferred() -> ResolvedField {
-        ResolvedField(responseKey: responseKey, keyBytes: keyBytes, storageKey: storageKey, rendered: rendered, slot: slot, kind: kind, edit: edit, deferred: nil, caught: caught)
+        ResolvedField(responseKey: responseKey, keyBytes: keyBytes, storageKey: storageKey, rendered: rendered, slot: slot, kind: kind, edit: edit, deferred: nil, caught: caught, client: origin == .client)
     }
 
     /// The same field on another concrete type: its slot, and its
@@ -864,7 +877,8 @@ package struct ResolvedField: Sendable {
             kind: kind,
             edit: edit,
             deferred: deferred,
-            caught: caught
+            caught: caught,
+            client: origin == .client
         )
     }
 

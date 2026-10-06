@@ -115,6 +115,12 @@ pub struct Config {
     /// The fields that key a record of each type.
     #[serde(default)]
     pub identity: Identity,
+    /// Relay's `schemaExtensions`: files, or directories of `.graphql` files,
+    /// beside the configuration, which give server types client fields or
+    /// declare types the server does not have. A client field is written by
+    /// a payload committed by hand and never asked of a server.
+    #[serde(rename = "schemaExtensions", default)]
+    pub schema_extensions: Vec<String>,
     /// Relay's `customScalarTypes`: the Swift type a custom scalar reads as,
     /// by the scalar's name, e.g. `"Decimal": "Foundation.Decimal"`. The
     /// store keeps the text; the accessor converts at the read, and says the

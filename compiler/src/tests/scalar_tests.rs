@@ -25,7 +25,7 @@ fn emitted_mapped(text: &str) -> String {
     let (sdl, path) = schema();
     let mut config: Config = serde_json::from_str(MAPPED).expect("the configuration parses");
     config.path = PathBuf::from("baton.json");
-    let compiled = compile(&sdl, &path, &[document(text)], &config)
+    let compiled = compile(&sdl, &path, &[], &[document(text)], &config)
         .unwrap_or_else(|errors| panic!("{errors:?}"));
     let output = crate::emit::emit(&compiled.plan).expect("the plan emits");
     output.files.into_values().collect::<Vec<_>>().join("\n")
@@ -62,7 +62,7 @@ fn a_mapping_of_a_name_the_schema_does_not_declare_is_an_error_pointing_at_the_c
         serde_json::from_str(r#"{"customScalarTypes": {"Money": "Foundation.Decimal"}}"#)
             .expect("the configuration parses");
     config.path = PathBuf::from("baton.json");
-    let diagnostics = compile(&sdl, &path, &[document(QUERY)], &config)
+    let diagnostics = compile(&sdl, &path, &[], &[document(QUERY)], &config)
         .err()
         .expect("an undeclared scalar does not compile");
     let messages: Vec<String> = diagnostics

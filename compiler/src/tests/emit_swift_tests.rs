@@ -35,6 +35,7 @@ fn decided_variables(text: &str) -> Vec<VariableValue> {
     let compiled = pipeline::compile(
         &schema,
         &schema_path.to_string_lossy(),
+        &[],
         &[document],
         &Config::default(),
     )

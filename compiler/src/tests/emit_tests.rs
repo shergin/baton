@@ -34,6 +34,26 @@ fn plans() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("src/tests/plans")
 }
 
+/// The texts and paths of the configuration's client schema extensions, read
+/// as `batonc` reads them: each entry beside the configuration, a file or a
+/// directory of `.graphql` files.
+fn schema_extensions(config: &Config, config_path: &Path) -> Vec<(String, String)> {
+    let base = config_path
+        .parent()
+        .expect("the configuration sits in a directory");
+    config
+        .schema_extensions
+        .iter()
+        .flat_map(|entry| {
+            crate::extension_files(&base.join(entry)).expect("the extension is readable")
+        })
+        .map(|file| {
+            let text = std::fs::read_to_string(&file).expect("the extension is readable");
+            (text, file.to_string_lossy().into_owned())
+        })
+        .collect()
+}
+
 /// The plan of the Swift test target, its sources named from the
 /// repository's root as `batonc plan` run there names them.
 fn compile_swift_tests() -> Plan {
@@ -54,17 +74,24 @@ fn compile_swift_tests() -> Plan {
 
     let (documents, errors) = documents::collect(&sources);
     assert!(errors.is_empty(), "{errors:?}");
-    let compiled = pipeline::compile(&schema, &schema_path.to_string_lossy(), &documents, &config)
-        .unwrap_or_else(|errors| {
-            let rendered: Vec<String> = errors
-                .iter()
-                .map(|error| diagnostics::render(error, &documents).to_string())
-                .collect();
-            panic!(
-                "the test documents do not compile:\n{}",
-                rendered.join("\n")
-            )
-        });
+    let extensions = schema_extensions(&config, &config_path);
+    let compiled = pipeline::compile(
+        &schema,
+        &schema_path.to_string_lossy(),
+        &extensions,
+        &documents,
+        &config,
+    )
+    .unwrap_or_else(|errors| {
+        let rendered: Vec<String> = errors
+            .iter()
+            .map(|error| diagnostics::render(error, &documents).to_string())
+            .collect();
+        panic!(
+            "the test documents do not compile:\n{}",
+            rendered.join("\n")
+        )
+    });
     let mut plan = compiled.plan;
     let root = repository();
     let relative = |source: &mut String| {
@@ -343,8 +370,15 @@ fn emitted(text: &str) -> String {
         text: text.to_string(),
         embedded: None,
     }];
-    let compiled = pipeline::compile(&schema, &schema_path.to_string_lossy(), &documents, &config)
-        .unwrap_or_else(|errors| panic!("the document does not compile: {errors:?}"));
+    let extensions = schema_extensions(&config, &config_path);
+    let compiled = pipeline::compile(
+        &schema,
+        &schema_path.to_string_lossy(),
+        &extensions,
+        &documents,
+        &config,
+    )
+    .unwrap_or_else(|errors| panic!("the document does not compile: {errors:?}"));
     let output = emit(&compiled.plan)
         .unwrap_or_else(|errors| panic!("the document declares names twice: {errors:?}"));
     let mut swift: String = output.files.values().cloned().collect();

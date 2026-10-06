@@ -102,3 +102,15 @@ All of it is *(planned)*.
   the image is a rule about types, proposed apart.
 - Waiting for a second screen: both adopters asked in two days, and the
   first screen is in the project's own app.
+
+## Settled by the build, 2026-10-11
+
+The two details left to the build are settled as the extensions landed. A
+client field is nullable: an extension declaring a non-null client field is
+refused at its own line, since the schema cannot promise what no server
+sends and a lens reads the field as absent until a payload writes it. An
+operation of client fields alone is refused at its name: the text a server
+receives would select nothing, and a server answers one field at least, so
+a client-only type such as a list of drafts is read beside a server field.
+A payload committed for every tick of a stream is still unbenched; the door
+is not yet recommended for one.

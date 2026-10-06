@@ -88,9 +88,17 @@ pub(super) fn shared_text(shared: &Shared) -> String {
                                 parts_literal(slot)
                             )
                         } else {
+                            // A schema extension's slot is the client's: the
+                            // registry marks it, so a read of it absent
+                            // reports nothing missing and heals nothing.
+                            let intern = if shared.client_slots.contains(slot) {
+                                "Registry.clientSlot"
+                            } else {
+                                "Registry.slot"
+                            };
                             format!(
                                 "{}({}, {})",
-                                runtime_value("Registry.slot"),
+                                runtime_value(intern),
                                 type_reference(&slot.type_name),
                                 swift_literal(&slot.template)
                             )

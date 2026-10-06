@@ -11,7 +11,7 @@ fn emitted_against(sdl: &str, text: &str) -> Result<crate::emit::Output, Vec<Str
     let mut config: Config = serde_json::from_str("{}").expect("the configuration parses");
     config.path = PathBuf::from("baton.json");
     let compiled =
-        compile(sdl, "schema.graphql", &[document(text)], &config).map_err(|errors| {
+        compile(sdl, "schema.graphql", &[], &[document(text)], &config).map_err(|errors| {
             errors
                 .iter()
                 .map(|error| error.message().to_string())

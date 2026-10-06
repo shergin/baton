@@ -44,6 +44,10 @@ pub struct Shared {
     /// The schema's enums the documents read or pass, with their values,
     /// each declared as a Swift enum.
     pub enums: BTreeMap<String, Vec<String>>,
+    /// The slots of the schema extensions' fields, which the registry marks
+    /// as the client's: a lens reads one as absent, not missing, until a
+    /// payload writes it.
+    pub client_slots: BTreeSet<SlotRef>,
 }
 
 impl Shared {
@@ -170,6 +174,10 @@ impl Shared {
             let slot_type = variant.slot_type(selection);
             for field in &variant.fields {
                 self.slots.insert(SlotRef::new(slot_type, &field.key));
+                if field.extension {
+                    self.client_slots
+                        .insert(SlotRef::new(slot_type, &field.key));
+                }
                 for conjunction in &field.guards {
                     self.guards.extend(conjunction.iter().cloned());
                 }

@@ -1,0 +1,23 @@
+{
+  "data": {
+    "drafts": [
+      {
+        "id": "d1",
+        "text": "Ask about the citadel",
+        "about": {
+          "id": "1",
+          "name": "Rick Sanchez"
+        }
+      },
+      {
+        "id": "d2",
+        "text": "Plumbus care",
+        "about": null
+      }
+    ],
+    "character": {
+      "id": "1",
+      "name": "Rick Sanchez"
+    }
+  }
+}

@@ -26,6 +26,7 @@ fn decided(text: &str) -> NormalizationSelection {
     let compiled = pipeline::compile(
         &schema,
         &schema_path.to_string_lossy(),
+        &[],
         &[document],
         &Config::default(),
     )

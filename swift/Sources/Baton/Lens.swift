@@ -103,8 +103,10 @@ extension Anchor {
     /// every accessor, and a cold path kept small keeps the read small.
     @inline(never)
     private func missing(_ slot: Slot) {
-        // A deleted record's fields are gone on purpose.
-        guard !record.deleted, owner.reports else { return }
+        // A deleted record's fields are gone on purpose; a client field is
+        // absent until a payload writes it, and no server would answer a
+        // heal for it.
+        guard !record.deleted, owner.reports, !Registry.isClient(slot) else { return }
         anchor.store?.reportMissing?(record, slot)
         owner.environment?.heal(owner.root, record, slot)
     }

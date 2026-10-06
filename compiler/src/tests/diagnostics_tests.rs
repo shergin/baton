@@ -25,6 +25,7 @@ fn an_error_in_the_schema_points_at_its_line_in_the_schema_file() {
     let Err(diagnostics) = pipeline::compile(
         sdl,
         "schema.graphql",
+        &[],
         &[document("query Q { a { b } }")],
         &Config::default(),
     ) else {
@@ -44,6 +45,7 @@ fn an_error_in_a_document_points_at_its_place_in_the_host_file_on_one_line() {
     let Err(diagnostics) = pipeline::compile(
         sdl,
         "schema.graphql",
+        &[],
         std::slice::from_ref(&source),
         &Config::default(),
     ) else {

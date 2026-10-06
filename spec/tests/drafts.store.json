@@ -1,0 +1,8 @@
+{
+  "Character:1": {"__typename": "Character", "id": "1", "name": "Rick Sanchez"},
+  "Draft:d1": {"__typename": "Draft", "about": {"__ref": "Character:1"}, "id": "d1", "text": "Ask about the citadel"},
+  "Draft:d2": {"__typename": "Draft", "about": null, "id": "d2", "text": "Plumbus care"},
+  "client:root": {"__typename": "Query", "character(id:\"1\")": {"__ref": "Character:1"}, "drafts": {"__refs": ["Draft:d1", "Draft:d2"]}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

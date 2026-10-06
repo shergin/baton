@@ -110,6 +110,7 @@ fn plan_fields(output: &mut String, type_name: &str, fields: &[NormalizationFiel
             .map(|label| format!(", deferred: {}", swift_literal(label)))
             .unwrap_or_default();
         let caught_argument = if field.caught { ", caught: true" } else { "" };
+        let client_argument = if field.client { ", client: true" } else { "" };
         let guards_argument = guards_expression(&field.guards);
         match &field.kind {
             NormalizationKind::Scalar { type_ } => {
@@ -123,7 +124,7 @@ fn plan_fields(output: &mut String, type_name: &str, fields: &[NormalizationFiel
                 };
                 let _ = write!(
                     output,
-                    ".scalar({}, key: {slot}, kind: .{kind}, list: {list}{edit_argument}{deferred_argument}{caught_argument}{guards_argument}),",
+                    ".scalar({}, key: {slot}, kind: .{kind}, list: {list}{edit_argument}{deferred_argument}{caught_argument}{client_argument}{guards_argument}),",
                     swift_literal(&field.response_key)
                 );
             }
@@ -151,7 +152,7 @@ fn plan_fields(output: &mut String, type_name: &str, fields: &[NormalizationFiel
                     .unwrap_or_default();
                 let _ = write!(
                     output,
-                    ".linked({}, key: {slot}, plural: {plural}{lookup_argument}{connection_argument}{edit_argument}{deferred_argument}{caught_argument}{guards_argument}, selection: ",
+                    ".linked({}, key: {slot}, plural: {plural}{lookup_argument}{connection_argument}{edit_argument}{deferred_argument}{caught_argument}{client_argument}{guards_argument}, selection: ",
                     swift_literal(&field.response_key)
                 );
                 write_selection(output, selection, depth + 1);

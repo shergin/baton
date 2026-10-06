@@ -12,6 +12,7 @@ use graphql_syntax::OperationKind as SyntaxOperationKind;
 use graphql_text_printer::{PrinterOptions, print_full_operation};
 use intern::Lookup;
 use intern::string_key::Intern;
+use relay_transforms::CLIENT_EXTENSION_DIRECTIVE_NAME;
 use relay_transforms::{
     CATCH_DIRECTIVE_NAME, CHILDREN_CAN_BUBBLE_METADATA_KEY, CatchMetadataDirective, CatchTo,
     FragmentAliasMetadata, Programs, RefetchableMetadata, RequiredAction as RelayRequiredAction,
@@ -207,6 +208,7 @@ impl Lowering<'_> {
                 fragment.type_condition,
                 Side::Reader,
                 false,
+                false,
             ),
         };
         // A fragment on the mutation type is only ever read at the mutation
@@ -235,6 +237,7 @@ impl Lowering<'_> {
                     operation.type_,
                     Side::Reader,
                     false,
+                    false,
                 )
             })
             .unwrap_or_else(|| {
@@ -256,10 +259,16 @@ impl Lowering<'_> {
                 )
             })
             .unwrap_or_else(|| {
-                self.internal(
-                    "the operation has no printable text",
+                // Relay's text transforms leave the client fields out and drop
+                // an operation left with none: one of client fields alone
+                // would ask a server for nothing.
+                self.diagnostics.borrow_mut().push(Diagnostic::error(
+                    format!(
+                        "`{}` selects client fields only; a server answers one field at least, so select a server field beside them",
+                        operation.name.item
+                    ),
                     operation.name.location,
-                );
+                ));
                 String::new()
             })
             // Trimmed once, here: the id is the hash of the very text the
@@ -270,6 +279,7 @@ impl Lowering<'_> {
             &operation.selections,
             operation.type_,
             Side::Normalization,
+            false,
             false,
         );
         let mut reader = reader;
@@ -612,16 +622,17 @@ impl Lowering<'_> {
         parent_type: Type,
         side: Side,
         caught: bool,
+        client: bool,
     ) -> Vec<SelectionPlan> {
         selections
             .iter()
             .map(|selection| match selection {
-                Selection::ScalarField(field) => self.scalar_field(field, caught),
+                Selection::ScalarField(field) => self.scalar_field(field, caught, client),
                 Selection::LinkedField(field) => {
-                    self.linked_field(field, parent_type, side, caught)
+                    self.linked_field(field, parent_type, side, caught, client)
                 }
                 Selection::InlineFragment(inline) => {
-                    self.inline_fragment(inline, parent_type, side, caught)
+                    self.inline_fragment(inline, parent_type, side, caught, client)
                 }
                 Selection::FragmentSpread(spread) => {
                     // Relay inlines every spread of the normalization program,
@@ -636,7 +647,7 @@ impl Lowering<'_> {
                     self.fragment_spread(spread)
                 }
                 Selection::Condition(condition) => {
-                    self.condition(condition, parent_type, side, caught)
+                    self.condition(condition, parent_type, side, caught, client)
                 }
             })
             .collect()
@@ -660,11 +671,13 @@ impl Lowering<'_> {
         ));
     }
 
-    fn scalar_field(&self, field: &ScalarField, caught: bool) -> SelectionPlan {
+    fn scalar_field(&self, field: &ScalarField, caught: bool, client: bool) -> SelectionPlan {
         let definition = self.schema.field(field.definition.item);
         self.refuse_nested_list(field, definition);
         let field_caught = caught || self.is_caught(&field.directives);
         SelectionPlan::Scalar {
+            client: client || definition.is_extension,
+            extension: definition.is_extension,
             name: definition.name.item.lookup().to_string(),
             alias: field.alias.map(|alias| alias.item.lookup().to_string()),
             origin: Origin::of(field.alias_or_name_location()),
@@ -687,8 +700,10 @@ impl Lowering<'_> {
         parent_type: Type,
         side: Side,
         caught: bool,
+        client: bool,
     ) -> SelectionPlan {
         let definition = self.schema.field(field.definition.item);
+        let client = client || definition.is_extension;
         self.refuse_nested_list(field, definition);
         let target = definition.type_.inner();
         let name = definition.name.item.lookup();
@@ -718,8 +733,10 @@ impl Lowering<'_> {
             required: self.required(&field.directives),
             catch: self.catch(&field.directives),
             caught: field_caught,
+            client,
+            extension: definition.is_extension,
             bubbles: self.bubbles(&field.directives),
-            selections: self.selections(&field.selections, target, side, field_caught),
+            selections: self.selections(&field.selections, target, side, field_caught, client),
         }
     }
 
@@ -839,7 +856,15 @@ impl Lowering<'_> {
         parent_type: Type,
         side: Side,
         caught: bool,
+        client: bool,
     ) -> SelectionPlan {
+        // Relay groups a selection's client fields under an inline fragment
+        // it marks; everything under it is the client's.
+        let client = client
+            || inline
+                .directives
+                .named(*CLIENT_EXTENSION_DIRECTIVE_NAME)
+                .is_some();
         // An alias that names what the selection is named by
         // anyway is no alias.
         let explicit = FragmentAliasMetadata::find(&inline.directives).filter(|metadata| {
@@ -893,6 +918,7 @@ impl Lowering<'_> {
                 inline.type_condition.unwrap_or(parent_type),
                 side,
                 inline_caught,
+                client,
             ),
         }
     }
@@ -934,6 +960,7 @@ impl Lowering<'_> {
         parent_type: Type,
         side: Side,
         caught: bool,
+        client: bool,
     ) -> SelectionPlan {
         SelectionPlan::Condition {
             variable: match &condition.value {
@@ -943,7 +970,7 @@ impl Lowering<'_> {
                 ConditionValue::Constant(_) => None,
             },
             passing: condition.passing_value,
-            selections: self.selections(&condition.selections, parent_type, side, caught),
+            selections: self.selections(&condition.selections, parent_type, side, caught, client),
         }
     }
 

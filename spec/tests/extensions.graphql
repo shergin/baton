@@ -1,0 +1,21 @@
+# The client schema extension the test target reads: fields a server never
+# sends on a server type, and a type the server does not have, each written
+# by a payload committed by hand and read by a lens like any field.
+
+extend type Character {
+  """Whether the app pinned the character; the device's alone."""
+  isPinned: Boolean
+  """A note the user wrote about the character."""
+  note: String
+}
+
+"""A draft the user writes on the device, about a character the server has."""
+type Draft {
+  id: ID
+  text: String
+  about: Character
+}
+
+extend type Query {
+  drafts: [Draft]
+}

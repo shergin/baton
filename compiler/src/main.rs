@@ -147,7 +147,16 @@ fn parse_options(
 
 /// The schema SDL and its path, from `--schema`, or from the `schema` entry of
 /// the `--config` file. The config also carries the lookups.
-fn read_schema(options: &Options) -> Result<(String, String, Config), DriverError> {
+/// The schema's text and path, the texts and paths of the configuration's
+/// schema extensions, and the configuration.
+struct SchemaSources {
+    sdl: String,
+    path: String,
+    extensions: Vec<(String, String)>,
+    config: Config,
+}
+
+fn read_schema(options: &Options) -> Result<SchemaSources, DriverError> {
     let config = match options.values.get("config") {
         Some(path) => Config::load(Path::new(path)).map_err(DriverError::Config)?,
         None => Config::default(),
@@ -167,7 +176,51 @@ fn read_schema(options: &Options) -> Result<(String, String, Config), DriverErro
         path: path.display().to_string(),
         source,
     })?;
-    Ok((sdl, path.to_string_lossy().into_owned(), config))
+    let base = options
+        .values
+        .get("config")
+        .map(Path::new)
+        .and_then(Path::parent)
+        .map(Path::to_path_buf)
+        .unwrap_or_default();
+    let mut extensions = Vec::new();
+    for entry in &config.schema_extensions {
+        for file in extension_files(&base.join(entry))? {
+            let text = std::fs::read_to_string(&file).map_err(|source| DriverError::Read {
+                path: file.display().to_string(),
+                source,
+            })?;
+            extensions.push((text, file.to_string_lossy().into_owned()));
+        }
+    }
+    Ok(SchemaSources {
+        sdl,
+        path: path.to_string_lossy().into_owned(),
+        extensions,
+        config,
+    })
+}
+
+/// The files a `schemaExtensions` entry names: the file itself, or the
+/// `.graphql` files of a directory, in name order.
+fn extension_files(path: &Path) -> Result<Vec<PathBuf>, DriverError> {
+    if !path.is_dir() {
+        return Ok(vec![path.to_path_buf()]);
+    }
+    let entries = std::fs::read_dir(path).map_err(|source| DriverError::Read {
+        path: path.display().to_string(),
+        source,
+    })?;
+    let mut files: Vec<PathBuf> = entries
+        .filter_map(Result::ok)
+        .map(|entry| entry.path())
+        .filter(|file| {
+            file.extension()
+                .is_some_and(|extension| extension == "graphql")
+        })
+        .collect();
+    files.sort();
+    Ok(files)
 }
 
 fn scan(arguments: &[String]) -> Result<(), DriverError> {
@@ -186,7 +239,8 @@ fn scan(arguments: &[String]) -> Result<(), DriverError> {
 
 fn plan(arguments: &[String]) -> Result<(), DriverError> {
     let options = parse_options("plan", arguments, &["schema", "config"])?;
-    let (sdl, schema_path, config) = read_schema(&options)?;
+    let sources = read_schema(&options)?;
+    let (sdl, schema_path, config) = (&sources.sdl, &sources.path, &sources.config);
     let (documents, errors) = documents::collect(&options.paths);
     for error in &errors {
         eprintln!("{error}");
@@ -194,14 +248,14 @@ fn plan(arguments: &[String]) -> Result<(), DriverError> {
     if !errors.is_empty() {
         return Err(DriverError::Reported);
     }
-    match pipeline::compile(&sdl, &schema_path, &documents, &config) {
+    match pipeline::compile(sdl, schema_path, &sources.extensions, &documents, config) {
         Ok(compiled) => {
             println!("{}", serde_json::to_string_pretty(&compiled.plan)?);
             report_timings(&compiled.timings, documents.len());
             Ok(())
         }
         Err(diagnostics) => {
-            let known = with_schema(&documents, &schema_path, &sdl);
+            let known = with_schema(&documents, schema_path, sdl);
             for diagnostic in &diagnostics {
                 eprintln!("{}", diagnostics::render(diagnostic, &known));
             }
@@ -216,7 +270,8 @@ fn generate(arguments: &[String]) -> Result<(), DriverError> {
         arguments,
         &["schema", "config", "out", "shared", "emit"],
     )?;
-    let (sdl, schema_path, config) = read_schema(&options)?;
+    let sources = read_schema(&options)?;
+    let (sdl, schema_path, config) = (&sources.sdl, &sources.path, &sources.config);
     let out_dir = options.values.get("out").map(PathBuf::from);
     let shared_path = options.values.get("shared").map(PathBuf::from);
     let (documents, errors) = documents::collect(&options.paths);
@@ -227,11 +282,11 @@ fn generate(arguments: &[String]) -> Result<(), DriverError> {
     // Relay's program is all or nothing: after an error nothing is written,
     // so the build stops on the first wave of diagnostics instead of a second
     // one from a module half written.
-    let compiled = pipeline::compile(&sdl, &schema_path, &documents, &config);
+    let compiled = pipeline::compile(sdl, schema_path, &sources.extensions, &documents, config);
     let plan = match compiled {
         Ok(compiled) => compiled.plan,
         Err(diagnostics) => {
-            let known = with_schema(&documents, &schema_path, &sdl);
+            let known = with_schema(&documents, schema_path, sdl);
             for diagnostic in &diagnostics {
                 eprintln!("{}", diagnostics::render(diagnostic, &known));
             }
@@ -495,7 +550,8 @@ fn write_if_changed(path: &Path, text: &str) -> Result<(), DriverError> {
 
 fn bench(arguments: &[String]) -> Result<(), DriverError> {
     let options = parse_options("bench", arguments, &["schema", "config", "fragments"])?;
-    let (sdl, schema_path, config) = read_schema(&options)?;
+    let sources = read_schema(&options)?;
+    let (sdl, schema_path, config) = (&sources.sdl, &sources.path, &sources.config);
     let count: usize = options
         .values
         .get("fragments")
@@ -509,7 +565,7 @@ fn bench(arguments: &[String]) -> Result<(), DriverError> {
     let documents = synthetic_corpus(count);
     let mut last = None;
     for round in 0..3 {
-        match pipeline::compile(&sdl, &schema_path, &documents, &config) {
+        match pipeline::compile(sdl, schema_path, &sources.extensions, &documents, config) {
             Ok(compiled) => {
                 eprintln!(
                     "round {round}: {} fragments, {} operations",

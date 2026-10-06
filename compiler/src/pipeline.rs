@@ -82,18 +82,31 @@ pub struct Compiled {
 pub fn compile(
     schema_sdl: &str,
     schema_path: &str,
+    extensions: &[(String, String)],
     documents: &[Document],
     config: &Config,
 ) -> Result<Compiled, Vec<Diagnostic>> {
     let mut timings = Timings::default();
 
     let started = Instant::now();
+    // The client schema extensions join Baton's directive as extensions, so
+    // Relay marks their fields as the client's and its text transforms leave
+    // them out of what a server receives.
+    let mut extension_sources: Vec<(&str, SourceLocationKey)> =
+        vec![(BATON_DIRECTIVES, SourceLocationKey::Generated)];
+    for (text, path) in extensions {
+        extension_sources.push((text.as_str(), SourceLocationKey::standalone(path)));
+    }
     let schema = relay_schema::build_schema_with_extensions_parallel(
         &[(schema_sdl, SourceLocationKey::standalone(schema_path))],
-        &[(BATON_DIRECTIVES, SourceLocationKey::Generated)],
+        &extension_sources,
     )?;
     let schema = Arc::new(schema);
     timings.schema = started.elapsed();
+    let errors = validate_client_fields(&schema);
+    if !errors.is_empty() {
+        return Err(errors);
+    }
     let keys = identity::Keys::resolve(&schema, &config.identity, config_location(config))?;
     let mut errors = validate_lookups(&schema, config, &keys);
     errors.extend(validate_mappings(&schema, config));
@@ -156,7 +169,7 @@ pub fn compile(
     let started = Instant::now();
     let mut plan = lower(&schema, &programs, config, &keys)?;
     plan.root_names = root_names;
-    plan.schema_digest = schema_digest(schema_sdl, &config.identity);
+    plan.schema_digest = schema_digest(schema_sdl, extensions, &config.identity);
     timings.lower = started.elapsed();
 
     Ok(Compiled { plan, timings })
@@ -223,18 +236,49 @@ fn root_names(
     }
 }
 
-/// The digest an image is versioned by: the schema's text, and the identity
-/// configuration when it is not the default, so that records keyed another
-/// way are a miss and not a merge of two keyings. The default leaves the
-/// digest what it was before identity could be configured.
-fn schema_digest(schema_sdl: &str, identity: &crate::config::Identity) -> String {
-    if identity.is_default() {
-        return format!("{:x}", md5::compute(schema_sdl.as_bytes()));
-    }
+/// The digest an image is versioned by: the schema's text, its client
+/// extensions, and the identity configuration when it is not the default,
+/// so that records keyed or described another way are a miss and not a
+/// merge of two. Without extensions and with the default identity the
+/// digest is what it was before either could be configured.
+fn schema_digest(
+    schema_sdl: &str,
+    extensions: &[(String, String)],
+    identity: &crate::config::Identity,
+) -> String {
     let mut text = schema_sdl.to_string();
-    text.push_str("\n# identity\n");
-    text.push_str(&identity.canonical());
+    for (extension, _) in extensions {
+        text.push_str("\n# extension\n");
+        text.push_str(extension);
+    }
+    if !identity.is_default() {
+        text.push_str("\n# identity\n");
+        text.push_str(&identity.canonical());
+    }
     format!("{:x}", md5::compute(text.as_bytes()))
+}
+
+/// Checks the client schema extensions: a client field is nullable, since
+/// the schema cannot promise what no server sends and a lens reads it as
+/// absent until a payload writes it.
+fn validate_client_fields(schema: &SDLSchema) -> Vec<Diagnostic> {
+    let mut errors = Vec::new();
+    for object in schema.get_objects() {
+        for field_id in &object.fields {
+            let field = schema.field(*field_id);
+            if field.is_extension && field.type_.is_non_null() {
+                errors.push(Diagnostic::error(
+                    format!(
+                        "the client field `{}.{}` is non-null: a client field is nullable, since no server promises it",
+                        object.name.item.0.lookup(),
+                        field.name.item.lookup()
+                    ),
+                    field.name.location,
+                ));
+            }
+        }
+    }
+    errors
 }
 
 /// Checks each mapping in `customScalarTypes`: the name is a custom scalar

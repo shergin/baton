@@ -1,0 +1,9 @@
+{
+  "data": {
+    "character": {
+      "id": "1",
+      "name": "Rick Sanchez",
+      "status": "Alive"
+    }
+  }
+}

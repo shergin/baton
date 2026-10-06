@@ -757,8 +757,14 @@ fn compile(text: &str) -> Result<emit::Output, Vec<String>> {
         text: text.to_string(),
         embedded: None,
     }];
-    let plan = match pipeline::compile(&schema, &schema_path.to_string_lossy(), &documents, &config)
-    {
+    let extensions = super::schema_extensions(&config, &config_path);
+    let plan = match pipeline::compile(
+        &schema,
+        &schema_path.to_string_lossy(),
+        &extensions,
+        &documents,
+        &config,
+    ) {
         Ok(compiled) => compiled.plan,
         Err(errors) => {
             return Err(errors

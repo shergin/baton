@@ -201,6 +201,12 @@ pub struct NormalizationField {
     pub deferred: Option<String>,
     /// Whether an error on the field is handled by a `@catch`.
     pub caught: bool,
+    /// A client field, from a schema extension: never asked of a server,
+    /// never waited for, written by a payload committed by hand.
+    pub client: bool,
+    /// The field itself is a schema extension's: its slot is a client slot
+    /// wherever a lens reads it.
+    pub extension: bool,
     pub edit: Option<EditPlan>,
     pub kind: NormalizationKind,
 }
@@ -216,6 +222,8 @@ impl PartialEq for NormalizationField {
             guards,
             deferred,
             caught,
+            client,
+            extension,
             edit,
             kind,
         } = self;
@@ -224,6 +232,8 @@ impl PartialEq for NormalizationField {
             && *guards == other.guards
             && *deferred == other.deferred
             && *caught == other.caught
+            && *client == other.client
+            && *extension == other.extension
             && *edit == other.edit
             && *kind == other.kind
     }
@@ -591,6 +601,8 @@ fn field(
     let guards = any(members.iter().map(|member| member.guard.clone()).collect());
     let written = written_key(members[0].selection);
     let caught = members.iter().all(|member| caught(member.selection));
+    let client = is_client(members[0].selection);
+    let extension = is_extension(members[0].selection);
     let edit = members.iter().find_map(|member| edit(member.selection));
     match members[0].selection {
         SelectionPlan::Scalar {
@@ -602,6 +614,8 @@ fn field(
             guards,
             deferred,
             caught,
+            client,
+            extension,
             edit,
             kind: NormalizationKind::Scalar {
                 type_: type_.clone(),
@@ -642,6 +656,8 @@ fn field(
                 guards,
                 deferred,
                 caught,
+                client,
+                extension,
                 edit,
                 kind: NormalizationKind::Linked {
                     plural: type_.is_list(),
@@ -730,6 +746,22 @@ fn is_type_membership(selection: &SelectionPlan) -> bool {
 fn caught(selection: &SelectionPlan) -> bool {
     match selection {
         SelectionPlan::Scalar { caught, .. } | SelectionPlan::Linked { caught, .. } => *caught,
+        _ => false,
+    }
+}
+
+fn is_client(selection: &SelectionPlan) -> bool {
+    match selection {
+        SelectionPlan::Scalar { client, .. } | SelectionPlan::Linked { client, .. } => *client,
+        _ => false,
+    }
+}
+
+fn is_extension(selection: &SelectionPlan) -> bool {
+    match selection {
+        SelectionPlan::Scalar { extension, .. } | SelectionPlan::Linked { extension, .. } => {
+            *extension
+        }
         _ => false,
     }
 }
