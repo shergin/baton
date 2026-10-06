@@ -35,6 +35,7 @@ principle, the proof belongs here.
 - [Client data is described by the schema and written by a payload](client-data-is-described-and-committed.md)
 - [An operation states its expiration in its document](an-operation-states-its-expiration.md)
 - [Keys a session produces belong to its store](session-keys-belong-to-the-store.md)
+- [The store numbers what its session renders](the-store-numbers-what-it-renders.md)
 - [One runtime module, with edges as targets and a checked rule inside](one-runtime-module.md)
 - [The emitter writes Swift from typed pieces, not strings](the-emitter-writes-typed-pieces.md)
 - [A handle keeps its fetch and derives its phase](a-handle-derives-its-phase.md)

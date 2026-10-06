@@ -21,6 +21,74 @@ Best ingest and best commit of the fixture at each release below.
   <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
 
+## Unreleased, the keys step — 2026-10-07
+
+Revision: `fcec2ce`, the three commits of the keys step (`fee7273`,
+`94569ee`, `fcec2ce`). The baseline column is `f1c1fdf`, the commit before
+them, built in a worktree and run the same evening, one full run each,
+back to back. Machine: Apple M1 Pro (MacBook Pro), macOS 26.5.2, Xcode
+26.6, Swift 6.3.3, release build. Not a quiet machine: the load average
+stood between 13 and 31 through both runs, and the control entry, the
+untracked lens read, read 26.1 ns against 25.1 on the lifetime entry's
+quiet run. Read the numbers here against the baseline column, not against
+the entries below.
+
+The store numbers the keys its session renders, frees them with its
+collector and forgets them at its end; the image sweeps its names with its
+rows. Two entries changed definition in this step, because a change set is
+now resolved for one store: "into an empty store" makes the store and its
+change set in the setup and times the commit alone, where it timed
+`Store().commit(changes)` of one change set shared by every store; and
+"bytes a row holds" makes and drops the change set inside the measurement,
+so a record's key string counts as the record's, 64 bytes a row.
+
+### The gates
+
+| Measurement | `f1c1fdf` | This step | The gate |
+|---|---|---|---|
+| Root field with a variable argument, untracked read | 31.5 ns (32.8) | 32.8 ns (33.1) | 31.6 ns at the median, set on a quiet machine |
+| A commit of one lookup of a new id, at the session's start | 1.88 µs (2.08) | 1.33 µs (1.46) | 2.04 µs |
+| The same at the session's end | 2.25 µs (2.62) | 2.12 µs (2.33) | 2.04 µs |
+| The newest root field with an argument, untracked, at the start | 36.9 ns (37.0) | 36.8 ns (38.0) | |
+| The same at the end, after 50,000 lookups and 500 pages | 51.5 ns (53.8) | 52.2 ns (52.5) | |
+| Keys numbered on `Query`: at the start, at the end, after a collection with no roots | 469, 50,672, kept for the process | 0, 50,202, 0 | the size at the start |
+| The same on `Character` | 55, 556, kept | 0, 500, 0 | |
+
+Best (median). The read gate's absolute number is met by neither tree on
+this machine; relative to the baseline the read did not move, 0.3 ns at
+the median, inside a loaded run's spread. The lookup commit is under the
+gate at the start and under the baseline at the end. The table is empty
+once a long session's roots have left and a collection ran, where the
+process kept every key before.
+
+### What the step costs elsewhere
+
+| Measurement | `f1c1fdf` | This step |
+|---|---|---|
+| Resolve the fixture plan for a page, per resolution | 676 ns (729) | 878 ns (889) |
+| A pass over one root reaching 50,004 records | 2.49 ms (2.77) | 2.68 ms (3.10) |
+| A pass over 300 roots reaching one record each | 31.7 µs (31.8) | 36.0 µs (36.3) |
+| A pass that keeps none of 50,000 records | 31.9 ms (34.3) | 30.0 ms (36.4) |
+| `loadNext` with no body reading the nodes, per page of 50 | 195 µs (1.19 ms) | 190 µs (1.18 ms) |
+| `loadNext`, a body reading every node, per page of 50 | 273 µs (1.53 ms) | 222 µs (1.80 ms) |
+| Hydration: the check reads 898 rows into an empty store | 1.83 ms (1.94) | 1.99 ms (2.21) |
+| Write-behind of the fixture's commit, off the main actor | 1.12 ms (1.27) | 1.18 ms (1.41) |
+| A launch's first write-behind of the fixture: the aging, the names sweep and 898 rows | | 1.43 ms (1.59) |
+| 5,000 rows into an empty store, keys like `labels` | 4.30 ms (4.81) | 3.14 ms (3.32), new definition |
+| The same, keys like `labels(first: 3)` | 4.29 ms (4.85) | 3.14 ms (3.35) |
+| The same, keys like `labels(first: $count)` | 4.92 ms (5.49) | 3.43 ms (3.61) |
+| Bytes a row holds, the three kinds in that order | 356, 356, 452 | 420, 420, 516, new definition |
+| Into an empty store (899 records) | 893 µs (947) | 628 µs (646), new definition |
+
+A resolution pays a hold and two locks per rendered key: 200 ns on the
+fixture's plan. A pass frees keys after its sweep: 4 µs over 300 roots,
+and a walk of the records that kept entries under freed numbers when there
+are any. The names sweep and the aging together cost a launch's first
+write-behind a quarter of a millisecond over 898 rows; the table of names
+is bounded by the rows. By shape, every key with arguments the store's,
+would have kept `labels(first: 3)` in the sorted list: 96 bytes a row and
+15% on 5,000 rows under either definition. It is not chosen.
+
 ## Unreleased, the lifetime step — 2026-10-06
 
 Revision: `e93ea3d` with the two changes this entry's last table names,

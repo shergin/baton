@@ -1,6 +1,9 @@
 # Keys a session produces belong to its store
 
-Status: accepted, 2026-10-04; the mechanism is not chosen. Serves
+Status: accepted, 2026-10-04; the mechanism, left open here, was chosen on
+2026-10-07 in
+[The store numbers what its session renders](the-store-numbers-what-it-renders.md).
+Serves
 [The store is the UI's state](../principles/store-is-the-ui-state.md) and
 [The compiler decides](../principles/compiler-decides.md). Reopen if the
 spike finds no rule that keeps one slot for a key's text at today's cost of

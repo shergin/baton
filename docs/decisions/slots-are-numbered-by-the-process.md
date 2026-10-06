@@ -1,6 +1,9 @@
 # Slots are numbered by the process, not by the compiler
 
-Status: accepted, 2026-10-03. Serves
+Status: accepted, 2026-10-03; superseded on 2026-10-07 for the keys a
+session renders from variables, which
+[the store numbers](the-store-numbers-what-it-renders.md); the build's keys
+stay as decided here. Serves
 [The compiler decides](../principles/compiler-decides.md) and
 [Two runtimes, one compiler](../principles/two-runtimes-one-compiler.md).
 Reopen if a build step sees every module of an app and the exact schema each
