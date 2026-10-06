@@ -154,7 +154,7 @@ struct DeliveryTests {
     func errorsClear() async throws {
         let environment = Environment(transport: RecordedTransport([TestProfileQuery.name: fixture("character-errors")]))
         environment.log = nil
-        _ = try await environment.fetch(TestProfileQuery.self, variables: TestProfileQuery(id: "1").variables)
+        try await environment.fetch(TestProfileQuery(id: "1"))
         let character = try #require(try profile(environment).testProfile)
         let (fired, track) = counter { _ = character.image }
         track()
@@ -172,7 +172,7 @@ struct DeliveryTests {
     func errorsClearWithoutAValueChange() async throws {
         let environment = Environment(transport: RecordedTransport([TestProfileQuery.name: fixture("character-errors")]))
         environment.log = nil
-        _ = try await environment.fetch(TestProfileQuery.self, variables: TestProfileQuery(id: "1").variables)
+        try await environment.fetch(TestProfileQuery(id: "1"))
         let character = try #require(try profile(environment).testProfile)
         let plan = TestProfileQuery.plan.resolve(TestProfileQuery(id: "1").variables, in: environment.store.keys)
         let (fired, track) = counter { _ = character.image }
@@ -430,8 +430,8 @@ struct DeliveryTests {
         let response = fixture("character-deferred-1")
         let transport = RecordedTransport([TestStrictQuery.name: response, TestNullsOnError.name: response])
         let environment = Environment(transport: transport)
-        _ = try await environment.fetch(TestStrictQuery.self, variables: TestStrictQuery(id: "1").variables)
-        _ = try await environment.fetch(TestNullsOnError.self, variables: TestNullsOnError(id: "1").variables)
+        try await environment.fetch(TestStrictQuery(id: "1"))
+        try await environment.fetch(TestNullsOnError(id: "1"))
         let bodies = transport.requests.map { String(decoding: $0.body, as: UTF8.self) }
         #expect(!bodies[0].contains("onError"))
         #expect(bodies[1].contains("\"onError\":\"NULL\""))
@@ -519,15 +519,19 @@ struct DeliveryTests {
     }
 
     /// Fetches the profile through parts in the 2024 format and returns the
-    /// store and the uncaught errors.
-    func fetchProfile(_ parts: [String]) async throws -> (Store, [FieldError]) {
+    /// store and the paths of the field errors the log heard left uncaught.
+    func fetchProfile(_ parts: [String]) async throws -> (Store, [String]) {
         let environment = Environment(transport: OpenParts(parts.map { fixture($0) }))
-        environment.log = nil
-        final class Done: @unchecked Sendable { var uncaught: [FieldError]? }
+        let events = LogTests.Events()
+        environment.log = events.log
+        final class Done: @unchecked Sendable { var done = false }
         let done = Done()
-        Task { done.uncaught = try await environment.fetch(TestProfileQuery.self, variables: TestProfileQuery(id: "1").variables) }
-        await until { done.uncaught != nil }
-        return (environment.store, done.uncaught ?? [])
+        Task {
+            try await environment.fetch(TestProfileQuery(id: "1"))
+            done.done = true
+        }
+        await until { done.done }
+        return (environment.store, events.fieldErrors)
     }
 
     @Test("a part's subPath places its data below the announced path, and the stream ends at hasNext false though the connection stays open")
@@ -544,7 +548,7 @@ struct DeliveryTests {
         let (store, uncaught) = try await fetchProfile(["character-deferred-1-pending", "character-deferred-2-errors"])
         let episode = try #require(store.existing("Episode:1"))
         #expect(episode.error(Registry.slot(episode.type, "name"))?.message == "name hidden")
-        #expect(uncaught.map(\.message) == ["name hidden"])
+        #expect(uncaught == ["character.episode.0.name"], "the log hears the part's error once, at its path")
     }
 
     @Test("an announced part the server could not deliver puts its errors on the fields it would have filled")
@@ -552,7 +556,7 @@ struct DeliveryTests {
         let (store, uncaught) = try await fetchProfile(["character-deferred-1-pending", "character-deferred-2-failed"])
         let character = try #require(store.existing("Character:1"))
         #expect(character.error(Registry.slot(character.type, "episode"))?.message == "appearances unavailable")
-        #expect(uncaught.map(\.message) == ["appearances unavailable"])
+        #expect(uncaught == ["character"], "the log hears the part's error once, at the announced path")
     }
 
     @Test("a deferred fragment is absent after the first part and present after the second, in both incremental formats")
@@ -561,12 +565,13 @@ struct DeliveryTests {
             // Straight through `fetch`, so an error in the incremental path surfaces.
             let direct = GatedParts(fixture(first), fixture(second))
             let plain = Environment(transport: direct)
-            plain.log = nil
-            let fetching = Task { try await plain.fetch(TestProfileQuery.self, variables: TestProfileQuery(id: "1").variables) }
+            let events = LogTests.Events()
+            plain.log = events.log
+            let fetching = Task { try await plain.fetch(TestProfileQuery(id: "1")) }
             await until { direct.continuation != nil }
             direct.release()
-            let uncaught = try await fetching.value
-            #expect(uncaught.isEmpty)
+            try await fetching.value
+            #expect(events.fieldErrors.isEmpty, "\(events.fieldErrors)")
             #expect(plain.store.existing("Episode:2") != nil, "the deferred part landed")
 
             let transport = GatedParts(fixture(first), fixture(second))

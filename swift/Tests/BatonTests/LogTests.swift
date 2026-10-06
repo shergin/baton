@@ -50,7 +50,7 @@ struct LogTests {
         let environment = Environment(transport: Throwing(error: error))
         let events = Events()
         environment.log = events.log
-        _ = try? await environment.fetch(TestHeaderQuery.self, variables: TestHeaderQuery(id: "5").variables)
+        _ = try? await environment.fetch(TestHeaderQuery(id: "5"))
         for case .fetchFailed(let operation, let kind) in events.all where operation == TestHeaderQuery.name {
             return kind
         }
@@ -150,8 +150,7 @@ struct LogTests {
         let environment = Environment(transport: DeliveryTests.OpenParts([fixture("uncaught-part-1"), fixture(failed)]))
         let events = Events()
         environment.log = events.log
-        let uncaught = try await environment.fetch(TestUncaughtPartQuery.self, variables: TestUncaughtPartQuery(id: "1").variables)
-        #expect(uncaught.count == paths.count)
+        try await environment.fetch(TestUncaughtPartQuery(id: "1"))
         #expect(events.fieldErrors == paths)
         #expect(events.all.filter { if case .fieldError(let operation, _) = $0 { operation != TestUncaughtPartQuery.name } else { false } }.isEmpty)
         guard case .fetchCompleted = events.all.last else {
@@ -165,8 +164,7 @@ struct LogTests {
         let environment = Environment(transport: DeliveryTests.OpenParts([fixture("node-deferred-episode-1"), fixture("character-deferred-2-failed")]))
         let events = Events()
         environment.log = events.log
-        let uncaught = try await environment.fetch(TestNodeDeferred.self, variables: TestNodeDeferred(id: "1").variables)
-        #expect(uncaught.count == 1)
+        try await environment.fetch(TestNodeDeferred(id: "1"))
         #expect(events.all.filter { if case .fieldError = $0 { true } else { false } } == [.fieldError(operation: TestNodeDeferred.name, path: "character")])
     }
 
@@ -175,8 +173,7 @@ struct LogTests {
         let environment = Environment(transport: DeliveryTests.OpenParts([fixture("caught-part-1"), fixture("character-deferred-2-failed")]))
         let events = Events()
         environment.log = events.log
-        let uncaught = try await environment.fetch(TestCaughtPartQuery.self, variables: TestCaughtPartQuery(id: "1").variables)
-        #expect(uncaught.isEmpty)
+        try await environment.fetch(TestCaughtPartQuery(id: "1"))
         #expect(events.fieldErrors.isEmpty, "\(events.all)")
         guard case .fetchCompleted = events.all.last else {
             Issue.record("expected the fetch to complete, got \(events.all)")

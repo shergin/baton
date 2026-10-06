@@ -559,7 +559,7 @@ struct ListTests {
     func deferredUnderAppendedPage() async throws {
         let environment = Environment(transport: Parts([fixture("deferred-notes-page-2-1"), fixture("deferred-notes-page-2-2")]))
         environment.log = nil
-        _ = try await environment.fetch(TestDeferredNotesPaginationQuery.self, variables: TestDeferredNotesPaginationQuery(count: 2, cursor: "c2", id: "1").variables)
+        try await environment.fetch(TestDeferredNotesPaginationQuery(count: 2, cursor: "c2", id: "1"))
         let text = Registry.slot(Registry.type("Note"), "text")
         #expect(environment.store.existing("Note:n3")?.read(text) == .string("Get Schwifty"))
         #expect(environment.store.existing("Note:n4")?.error(text)?.message == "text hidden")

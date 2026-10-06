@@ -5,6 +5,11 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- `Environment.fetch` has one spelling, the operation value's. The one by
+  type and variables, which returned the uncaught field errors as an array
+  beside the other's throwing under `@throwOnFieldError`, is gone: a
+  fetch's field errors are read where a view reads them, from the data,
+  and each one no `@catch` handled is a `fieldError` event of the log.
 - The environment logs. `Environment.log` is one closure called with each
   `LogEvent`, a value-free enum of names and counts: a fetch started,
   completed with its duration or failed with its failure's kind; a commit

@@ -172,7 +172,10 @@ public final class Environment {
     /// Fetches an operation and commits the response; the handle, if any,
     /// follows. `firstPart` runs after the first part of a deferred response
     /// commits, so a view renders before the rest arrives. An operation with
-    /// `@throwOnFieldError` throws the field errors its handle fails on.
+    /// `@throwOnFieldError` throws the field errors its handle fails on; any
+    /// other operation's field errors are read where a view reads them, from
+    /// the data, and logged as `fieldError` events, so a fetch has one
+    /// convention for errors, the handle's.
     public func fetch<Op: Query>(_ operation: Op, firstPart: (() -> Void)? = nil) async throws {
         guard !ended else { throw EnvironmentError.gone }
         let committed = try await fetch(Op.self, variables: operation.variables, resolved: Op.plan.resolve(operation.variables, in: store.keys), firstPart: firstPart.map { firstPart in { _ in firstPart() } })
@@ -278,13 +281,12 @@ public final class Environment {
     }
 
     /// Fetches an operation by its type and variables and commits the response.
-    /// Refetches and pagination run this way: no handle comes of it, and the
-    /// operation's root, dated by the commit, waits in the release buffer if
-    /// nothing retains it. Returns the field errors no `@catch` handled.
-    @discardableResult
-    public func fetch<Op: Query>(_ operation: Op.Type, variables: Variables, firstPart: (() -> Void)? = nil) async throws -> [FieldError] {
+    /// Refetches and pagination run this way, the mechanism's spelling: no
+    /// handle comes of it, and the operation's root, dated by the commit,
+    /// waits in the release buffer if nothing retains it.
+    func fetch<Op: Query>(_ operation: Op.Type, variables: Variables) async throws {
         guard !ended else { throw EnvironmentError.gone }
-        return try await fetch(operation, variables: variables, resolved: Op.plan.resolve(variables, in: store.keys), firstPart: firstPart.map { firstPart in { _ in firstPart() } }).uncaught
+        _ = try await fetch(operation, variables: variables, resolved: Op.plan.resolve(variables, in: store.keys), firstPart: nil)
     }
 
     private func fetch<Op: Query>(_ operation: Op.Type, variables: Variables, resolved: ResolvedSelection, firstPart: ((Committed) -> Void)?) async throws -> Committed {
@@ -359,7 +361,7 @@ public final class Environment {
     func paginate<Op: Query>(_ operation: Op.Type, variables: Variables, connection: Record, loading: Slot) async throws {
         store.local { batch in store.set(connection, loading, .bool(true), &batch) }
         defer { store.local { batch in store.set(connection, loading, .bool(false), &batch) } }
-        _ = try await fetch(operation, variables: variables)
+        try await fetch(operation, variables: variables)
     }
 
     /// Commits a mutation. The optimistic response, if any, is ingested with the

@@ -78,10 +78,11 @@ struct ReaderTests {
     func caughtFailedPart(_ failed: String) async throws {
         let parts = [fixture("caught-part-1"), fixture(failed)]
         let environment = Environment(transport: DeliveryTests.OpenParts(parts))
-        environment.log = nil
+        let events = LogTests.Events()
+        environment.log = events.log
         let query = TestCaughtPartQuery(id: "1")
-        #expect(try await environment.fetch(TestCaughtPartQuery.self, variables: query.variables).isEmpty)
         try await environment.fetch(query)
+        #expect(events.fieldErrors.isEmpty, "a caught error is not logged: \(events.fieldErrors)")
 
         let handle = environment.handle(for: query)
         let retention = handle.retain()
@@ -100,17 +101,18 @@ struct ReaderTests {
         withExtendedLifetime(retention) {}
     }
 
-    @Test("a deferred spread the server could not deliver, with a field under no @catch, reports each error it sent once, and in a handle or a throwing fetch is the spread's to weigh however many it sent", arguments: [
+    @Test("a deferred spread the server could not deliver, with a field under no @catch, logs each error it sent once, and in a handle or a throwing fetch is the spread's to weigh however many it sent", arguments: [
         ("character-deferred-2-failed", ["appearances unavailable"]),
         ("character-deferred-2-failed-twice", ["appearances unavailable", "episodes timed out"]),
     ])
     func uncaughtFailedPart(_ failed: String, _ sent: [String]) async throws {
         let parts = [fixture("uncaught-part-1"), fixture(failed)]
         let environment = Environment(transport: DeliveryTests.OpenParts(parts))
-        environment.log = nil
+        let events = LogTests.Events()
+        environment.log = events.log
         let query = TestUncaughtPartQuery(id: "1")
-        #expect(try await environment.fetch(TestUncaughtPartQuery.self, variables: query.variables).map(\.message) == sent)
         try await environment.fetch(query)
+        #expect(events.fieldErrors == sent.map { _ in "character" }, "each error the part sent, once, at the announced path")
 
         let handle = environment.handle(for: query)
         let retention = handle.retain()
@@ -124,29 +126,31 @@ struct ReaderTests {
         withExtendedLifetime(retention) {}
     }
 
-    @Test("a deferred spread the server could not deliver reports each error it sent once, however many fields under no @catch hold the first", arguments: [
+    @Test("a deferred spread the server could not deliver logs each error it sent once, however many fields under no @catch hold the first", arguments: [
         ("character-deferred-2-failed", ["appearances unavailable"]),
         ("character-deferred-2-failed-twice", ["appearances unavailable", "episodes timed out"]),
     ])
     func failedPartOfTwoFields(_ failed: String, _ sent: [String]) async throws {
         let parts = [fixture("two-field-part-1"), fixture(failed)]
         let environment = Environment(transport: DeliveryTests.OpenParts(parts))
-        environment.log = nil
-        let uncaught = try await environment.fetch(TestTwoFieldPartQuery.self, variables: TestTwoFieldPartQuery(id: "1").variables)
-        #expect(uncaught.map(\.message) == sent)
+        let events = LogTests.Events()
+        environment.log = events.log
+        try await environment.fetch(TestTwoFieldPartQuery(id: "1"))
+        #expect(events.fieldErrors == sent.map { _ in "character" }, "each error the part sent, once, though two fields hold the first")
         let character = try #require(environment.store.existing("Character:1"))
         for field in ["origin", "episode"] {
             #expect(character.error(Registry.slot(character.type, field))?.message == "appearances unavailable", "\(field) holds the first error")
         }
     }
 
-    @Test("a deferred spread the server could not deliver at a record of a type it selects nothing on leaves every error it sent unplaced")
+    @Test("a deferred spread the server could not deliver at a record of a type it selects nothing on leaves the error it sent unplaced, and the log hears it once")
     func failedPartWithoutFields() async throws {
         let parts = [fixture("node-deferred-episode-1"), fixture("character-deferred-2-failed")]
         let environment = Environment(transport: DeliveryTests.OpenParts(parts))
-        environment.log = nil
-        let uncaught = try await environment.fetch(TestNodeDeferred.self, variables: TestNodeDeferred(id: "1").variables)
-        #expect(uncaught.map(\.message) == ["appearances unavailable"])
+        let events = LogTests.Events()
+        environment.log = events.log
+        try await environment.fetch(TestNodeDeferred(id: "1"))
+        #expect(events.fieldErrors == ["character"])
     }
 
     @Test("a @required link to a record @deleteRecord removed is null: the lens bubbles, a throwing selection collects the error, and a bubbling operation fails")

@@ -432,7 +432,7 @@ struct LifetimeTests {
         #expect(!handle.isStale)
 
         let beforeFetch = environment.store.rootCount
-        try await environment.fetch(TestHeaderQuery.self, variables: TestHeaderQuery(id: "11").variables)
+        try await environment.fetch(TestHeaderQuery(id: "11"))
         #expect(environment.store.rootCount == beforeFetch + 1, "the query written that nothing retains waits in the release buffer")
         let fetched = environment.handle(for: TestHeaderQuery(id: "11"), fetchPolicy: .storeOnly)
         guard case .ready = fetched.phase else {
@@ -1039,7 +1039,7 @@ struct LifetimeTests {
         withExtendedLifetime(subscriptionRetention) {}
     }
 
-    @Test("every call after the end fails on gone: a fetch, a fetch by type, a mutation, a payload committed by hand, and the attach of a handle made after it")
+    @Test("every call after the end fails on gone: a fetch, a mutation, a payload committed by hand, and the attach of a handle made after it")
     func everyLaterCallFailsOnGone() async throws {
         let transport = transport()
         let environment = Baton.Environment(transport: transport)
@@ -1049,7 +1049,6 @@ struct LifetimeTests {
         #expect(environment.ended, "a second end is the first's")
 
         await #expect(throws: EnvironmentError.gone) { try await environment.fetch(TestList(page: 1)) }
-        await #expect(throws: EnvironmentError.gone) { try await environment.fetch(TestList.self, variables: TestList(page: 1).variables) }
         await #expect(throws: EnvironmentError.gone) { try await environment.mutate(TestRename(id: "1", name: "Rick Prime")) }
         await #expect(throws: EnvironmentError.gone) { try await environment.commitPayload(TestList(page: 1), fixtureData) }
         #expect(transport.requestCount == 0, "nothing reached the network")
