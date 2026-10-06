@@ -5,6 +5,9 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- The GitHub sample keeps its store in an image across launches and signs
+  out from the toolbar: the environment ends, the image's file is removed,
+  and a new environment takes over, as the README describes.
 - Two recipes: `docs/recipes/uikit.md`, a handle held by a view controller
   and rendered through `Observations`, with a cell over a lens; and
   `docs/recipes/porting-from-relay.md`, Relay's words beside Baton's, what

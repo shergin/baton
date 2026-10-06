@@ -16,13 +16,31 @@ struct GitHubTriageApp: App {
     /// The exchange of `docs/recipes/exchange.md` over GitHub's endpoint: a
     /// query the API refused with a 5xx or lost the connection of is sent
     /// again, under a deadline; a mutation never is. A personal access token
-    /// is not renewed, so a 401 is sent once more with the same token.
-    @State private var environment = Baton.Environment(
-        transport: Exchange(base: URLSessionTransport(
-            url: URL(string: "https://api.github.com/graphql")!,
-            credentials: { ["Authorization": "Bearer \(token)"] }
-        ))
-    )
+    /// is not renewed, so a 401 is sent once more with the same token. The
+    /// store keeps an image on disk, so a launch renders before the network
+    /// answers.
+    @State private var environment = GitHubTriageApp.makeEnvironment()
+
+    private static func makeEnvironment() -> Baton.Environment {
+        Baton.Environment(
+            transport: Exchange(base: URLSessionTransport(
+                url: URL(string: "https://api.github.com/graphql")!,
+                credentials: { ["Authorization": "Bearer \(token)"] }
+            )),
+            store: Store(persistence: Persistence(name: "GitHubTriage", version: Types.schemaDigest))
+        )
+    }
+
+    /// The sign-out the README describes: the environment ends, which cancels
+    /// what it started and closes the image; the image's file is removed; and
+    /// a new environment makes its own. The token stays, so this is a start
+    /// over, as a sign-out followed by a sign-in is.
+    private func signOut() async {
+        let ending = environment
+        await ending.end()
+        ending.store.persistence?.removeAll()
+        environment = Self.makeEnvironment()
+    }
 
     var body: some Scene {
         WindowGroup {
@@ -38,8 +56,14 @@ struct GitHubTriageApp: App {
                     TriageScreen(triage: .init())
                         .navigationDestination(for: IssueQuery.self) { IssueScreen(issue: $0) }
                         .navigationDestination(for: RepositoryQuery.self) { RepositoryScreen(repository: $0) }
+                        .toolbar {
+                            Button("Sign out", systemImage: "rectangle.portrait.and.arrow.right") {
+                                Task { await signOut() }
+                            }
+                        }
                 }
                 .environment(\.baton, environment)
+                .id(ObjectIdentifier(environment))
                 .frame(minWidth: 600, minHeight: 760)
             }
         }

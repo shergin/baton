@@ -285,7 +285,8 @@ In this repository:
   on disk.
 - `GITHUB_TOKEN=$(gh auth token) swift run GitHubTriage` opens the one with
   writes, connections, unions and a 1,800-definition schema, sent through
-  the exchange recipe's wrapper.
+  the exchange recipe's wrapper, kept in an image across launches, and
+  signed out of with the toolbar's button.
 - `swift test` runs the proofs.
 - `swift run -c release BatonBenchmarks` prints the numbers behind
   [`BENCHMARKS.md`](BENCHMARKS.md).
