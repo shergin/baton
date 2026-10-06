@@ -5,6 +5,14 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- The collector takes a root's entries with the records it sweeps. A root
+  field rendered from variables, `character(id:"7")` or a page after a
+  cursor, kept its entry on the root with a blank value after its record
+  was collected, so a long session's root held one per id ever looked up;
+  the entry now goes with the record, and writing a missing value to such
+  a key takes its entry out the same way. The long-session bench looks up
+  50,000 ids, where it looked up 2,000, and reports what the process's
+  table of keys grows by.
 - The hostile-name sweep is a check of the repository:
   `scripts/hostile-name-sweep.py` type-checks, one document at a time, the
   names of fragments, operations and refetch queries the corpus tests prove

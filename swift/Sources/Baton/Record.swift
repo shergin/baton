@@ -124,6 +124,10 @@ public final class Record: Observable {
     /// image.
     var isEmpty: Bool { values.isEmpty && renderedIDs.isEmpty }
 
+    /// How many keys numbered apart the record keeps an entry for; for the
+    /// tests and the benchmarks.
+    package var renderedKeyCount: Int { renderedIDs.count }
+
     /// Calls `body` with every slot that holds a value, for copying between
     /// records. `body` may write the slot it is given.
     func forEachValue(_ body: (Slot, Value) -> Void) {
@@ -182,13 +186,21 @@ public final class Record: Observable {
 
     /// Writes a key numbered apart without notifying; the previous value
     /// when it changed. A key the record lacks is inserted in its place,
-    /// which is the end for the key interned last.
+    /// which is the end for the key interned last. A record keeps an entry
+    /// for a key only while it holds a value: writing missing takes the
+    /// entry out, so the root does not keep a key per id a session looked
+    /// up after the record it named is gone.
     private func writeRendered(_ index: Int32, _ value: Value) -> Value? {
         let (position, found) = renderedPosition(index)
         if found {
             let previous = renderedValues[position]
             if previous == value { return nil }
-            renderedValues[position] = value
+            if case .missing = value {
+                renderedIDs.remove(at: position)
+                renderedValues.remove(at: position)
+            } else {
+                renderedValues[position] = value
+            }
             return previous
         }
         if case .missing = value { return nil }
@@ -258,7 +270,8 @@ public final class Record: Observable {
     /// anything still holding it reads missing data and reports it.
     func clear() {
         for index in values.indices { values[index] = .missing }
-        for position in renderedValues.indices { renderedValues[position] = .missing }
+        renderedIDs.removeAll()
+        renderedValues.removeAll()
         errors = nil
         swept = true
     }
@@ -311,7 +324,10 @@ public final class Record: Observable {
         self.deleted = deleted
     }
 
-    /// Drops links to swept records, silently; used on the root.
+    /// Drops links to swept records, silently; used on the roots. A dense
+    /// slot reads missing afterwards; a key numbered apart leaves with its
+    /// entry, since the roots would otherwise keep one per id and cursor a
+    /// session rendered.
     func prune(_ swept: Set<ObjectIdentifier>) {
         func linksSwept(_ value: Value) -> Bool {
             switch value {
@@ -323,8 +339,9 @@ public final class Record: Observable {
         for index in values.indices where linksSwept(values[index]) {
             values[index] = .missing
         }
-        for position in renderedValues.indices where linksSwept(renderedValues[position]) {
-            renderedValues[position] = .missing
+        for position in renderedValues.indices.reversed() where linksSwept(renderedValues[position]) {
+            renderedIDs.remove(at: position)
+            renderedValues.remove(at: position)
         }
     }
 

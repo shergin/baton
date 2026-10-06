@@ -119,6 +119,55 @@ struct LifetimeTests {
         #expect(data.characters?.results?.first?.testRow.name == "Rick Sanchez")
     }
 
+    @Test("a collected lookup by id takes its entry out of the root, a retained one keeps it, and the collected field reads as missing data")
+    func collectionPrunesTheRootsLookups() async throws {
+        final class Misses: @unchecked Sendable { var reads: [String] = [] }
+        let transport = RecordedTransport { request in
+            guard case .string(let id)? = request.variables["id"] else { return nil }
+            return fixture("character-header-\(id)")
+        }
+        let environment = Environment(transport: transport, releaseBufferSize: 0)
+        let misses = Misses()
+        environment.store.reportMissing = { record, slot in misses.reads.append(record.key + "." + slot.storageKey) }
+        let root = environment.store.root
+        let before = root.renderedKeyCount
+
+        let kept = environment.handle(for: TestHeaderQuery(id: "5"))
+        kept.retain()
+        await kept.settle()
+        let dropped = environment.handle(for: TestHeaderQuery(id: "11"))
+        dropped.retain()
+        await dropped.settle()
+        #expect(root.renderedKeyCount == before + 2, "one entry per id looked up")
+        guard case .ready(let stale) = dropped.phase else { Issue.record("expected ready, got \(dropped.phase)"); return }
+        #expect(stale.character?.testHeader.name == "Albert Einstein")
+
+        // Released with an empty buffer, the lookup is evicted at once.
+        dropped.release()
+        environment.collect()
+        #expect(environment.store.existing("Character:11") == nil)
+        #expect(environment.store.existing("Character:5") != nil)
+        #expect(root.renderedKeyCount == before + 1, "the collected lookup's entry left with its record; the retained one stayed")
+
+        // Data a view still holds reads as missing rather than crashing,
+        // and the store has nothing left to answer the lookup with.
+        #expect(misses.reads.isEmpty)
+        #expect(stale.character?.testHeader.name ?? "" == "")
+        #expect(!misses.reads.isEmpty, "the read of the collected field was reported")
+        let again = environment.handle(for: TestHeaderQuery(id: "11"), fetchPolicy: .storeOnly)
+        guard case .failed(let error) = again.phase, error is MissingDataError else {
+            Issue.record("expected the collected lookup to be missing, got \(again.phase)")
+            return
+        }
+        #expect(root.renderedKeyCount == before + 1, "a failed lookup writes no entry")
+
+        guard case .ready(let data) = kept.phase else { Issue.record("the retained lookup stays ready, got \(kept.phase)"); return }
+        #expect(data.character?.testHeader.name == "Jerry Smith")
+        kept.release()
+        environment.collect()
+        #expect(root.renderedKeyCount == before, "the root is back to what it was before either lookup")
+    }
+
     @Test("storeOrNetwork reads a complete store without fetching; storeAndNetwork fetches anyway")
     func policies() async throws {
         let transport = transport()

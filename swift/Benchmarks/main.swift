@@ -384,7 +384,7 @@ func run() async throws {
     print("keys with arguments: 5,000 rows, each an id and three fields under keys of one kind")
     try argumentBench()
 
-    print("long session: 2,000 root lookups by id and 500 pages after cursors")
+    print("long session: 50,000 root lookups by id and 500 pages after cursors")
     try longSessionBench()
 }
 
@@ -900,7 +900,7 @@ struct LongSessionDocuments {
     var favorites: BenchCharacterFavorites
 }
 
-/// A long session: 2,000 characters looked up by id and 500 pages of one
+/// A long session: 50,000 characters looked up by id and 500 pages of one
 /// character's notes fetched after cursors. Every lookup interns a storage
 /// key on `Query` and every page one on `Character`, for the life of the
 /// process. Prints what that growth costs: the slots, the values the root
@@ -910,7 +910,7 @@ struct LongSessionDocuments {
 /// interns stay.
 @MainActor
 func longSessionBench() throws {
-    let lookups = 2_000
+    let lookups = 50_000
     let pages = 500
     let size = 10
     let fresh = 100
