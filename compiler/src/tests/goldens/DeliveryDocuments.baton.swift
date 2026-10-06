@@ -152,7 +152,7 @@ subscription TestNoteAdded(
                     ])),
                 ])),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -224,7 +224,7 @@ query TestNullsOnError(
                 .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
                 .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -301,7 +301,7 @@ fragment TestAppearances_character on Character {
                 ])),
                 .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -421,7 +421,7 @@ fragment TestStrict_character on Character {
                 ])),
                 .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -493,7 +493,7 @@ query TestRosterQuery(
                     .scalar("status", key: .fixed(Slots.Character.status), kind: .string, list: false),
                 ])),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -579,7 +579,7 @@ fragment TestAppearances_character on Character {
                     .scalar("id", key: .fixed(Slots.Episode.id), kind: .string, list: false),
                 ])),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -671,7 +671,7 @@ query TestStrictQuery(
                 .scalar("species", key: .fixed(Slots.Character.species), kind: .string, list: false),
                 .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -762,7 +762,7 @@ fragment TestName_character on Character {
                 .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
                 .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor

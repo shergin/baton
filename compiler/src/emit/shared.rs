@@ -33,13 +33,43 @@ pub(super) fn shared_text(shared: &Shared) -> String {
         ));
         for type_name in &shared.types {
             // A root type is interned by the name the store's root record
-            // has, so its slots are numbered where the root's values are.
+            // has, so its slots are numbered where the root's values are. A
+            // transient type's records never reach the image.
             let interned = shared.root_names.get(type_name).unwrap_or(type_name);
+            let transient = if shared.transient_types.contains(type_name) {
+                ", transient: true"
+            } else {
+                ""
+            };
             writer.line(format!(
-                "static let {} = {}({})",
+                "static let {} = {}({}{transient})",
                 type_constant(type_name),
                 runtime_value("Registry.type"),
                 swift_literal(interned)
+            ));
+        }
+        if !shared.transient_types.is_empty() || !shared.transient_fields.is_empty() {
+            // What never reaches the image, told to the registry when any plan
+            // of the module is first used: a lazy constant nothing names
+            // would never run.
+            let types: Vec<String> = shared
+                .transient_types
+                .iter()
+                .map(|name| type_constant(name))
+                .collect();
+            let fields: Vec<String> = shared
+                .transient_fields
+                .iter()
+                .map(|(type_name, field)| {
+                    format!("({}, {})", type_constant(type_name), swift_literal(field))
+                })
+                .collect();
+            writer.doc("What never reaches the image: the types whose records are not written, and the root fields whose cells, keys and operations are not.");
+            writer.line(format!(
+                "static let transient = {}(types: [{}], fields: [{}])",
+                runtime_value("Transient"),
+                types.join(", "),
+                fields.join(", ")
             ));
         }
         // Inside `Types` the members are named bare: a schema type named

@@ -89,7 +89,7 @@ enum Oracle {
 
     @MainActor private static func walk(_ object: [String: Any], _ selection: ResolvedSelection, _ path: String, _ leaves: inout [Leaf]) throws {
         // The response's own typename picks the fields, as the ingest's does.
-        let type = selection.isAbstract ? (object["__typename"] as? String).map(Registry.type) ?? selection.type : selection.type
+        let type = selection.isAbstract ? (object["__typename"] as? String).map { Registry.type($0) } ?? selection.type : selection.type
         for field in selection.variant(for: type).fields {
             guard let value = object[field.responseKey] else { continue }
             let here = path.isEmpty ? field.responseKey : path + "." + field.responseKey

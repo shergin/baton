@@ -92,6 +92,8 @@ struct OracleOperation: Sendable {
         "TestSetStatuses": { _ in OracleOperation(TestSetStatuses(), reads: setStatusesReads, spellings: setStatusesSpellings) },
         "TestPinnedCharacter": { try OracleOperation(TestPinnedCharacter(id: $0.string("id")), reads: pinnedCharacterReads) },
         "TestDrafts": { _ in OracleOperation(TestDrafts(), reads: draftsReads) },
+        "TestSecrets": { try OracleOperation(TestSecrets(code: $0.string("code")), reads: secretsReads) },
+        "TestCharacterSecret": { _ in OracleOperation(TestCharacterSecret(), reads: characterSecretReads) },
     ]
 
     /// Binds a manifest case to its operation.
@@ -318,6 +320,25 @@ extension OracleOperation {
         "drafts.1.about": { $0.drafts?.element(1)?.about.map { _ in .object([:]) } ?? .null },
         "character.id": { $0.character?.id.manifestValue ?? .null },
         "character.name": { $0.character?.name.manifestValue ?? .null },
+    ]
+
+    /// The transient root field's records beside a character; memory reads
+    /// them as any records, whatever the image keeps.
+    static let secretsReads: [String: @MainActor @Sendable (TestSecrets.Data) -> Manifest.Value] = [
+        "secrets.0.id": { $0.secrets?.element(0)?.id.manifestValue ?? .null },
+        "secrets.0.body": { $0.secrets?.element(0)?.body.manifestValue ?? .null },
+        "secrets.1.id": { $0.secrets?.element(1)?.id.manifestValue ?? .null },
+        "secrets.1.body": { $0.secrets?.element(1)?.body.manifestValue ?? .null },
+        "character.id": { $0.character?.id.manifestValue ?? .null },
+        "character.name": { $0.character?.name.manifestValue ?? .null },
+    ]
+
+    /// A character and the record of a transient type it links.
+    static let characterSecretReads: [String: @MainActor @Sendable (TestCharacterSecret.Data) -> Manifest.Value] = [
+        "character.id": { $0.character?.id.manifestValue ?? .null },
+        "character.name": { $0.character?.name.manifestValue ?? .null },
+        "character.secret.id": { $0.character?.secret?.id.manifestValue ?? .null },
+        "character.secret.body": { $0.character?.secret?.body.manifestValue ?? .null },
     ]
 
     static let quotesReads: [String: @MainActor @Sendable (TestQuotesQuery.Data) -> Manifest.Value] = [

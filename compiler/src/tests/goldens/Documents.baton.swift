@@ -150,7 +150,7 @@ query Fixture(
                     ])),
                 ])),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -283,7 +283,7 @@ query TestEpisodesQuery(
                 ])),
                 .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -348,7 +348,7 @@ query TestFreshCharacter(
                 .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
                 .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -423,7 +423,7 @@ fragment TestHeader_character on Character {
                 ])),
                 .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -508,7 +508,7 @@ fragment TestRow_character on Character {
                     .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
                 ])),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -572,7 +572,7 @@ query TestQualifiedQuery(
                 .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
                 .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor

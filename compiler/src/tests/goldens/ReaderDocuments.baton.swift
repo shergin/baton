@@ -184,7 +184,7 @@ query TestCaughtEpisodes(
                     .scalar("id", key: .fixed(Slots.Episode.id), kind: .string, list: false, caught: true),
                 ])),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -275,7 +275,7 @@ fragment TestCaughtAppearances_character on Character {
                     .scalar("id", key: .fixed(Slots.Episode.id), kind: .string, list: false, caught: true),
                 ])),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -371,7 +371,7 @@ query TestCollidingErrors(
                 .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
                 .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -484,7 +484,7 @@ query TestCollidingRequired(
                 .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
                 .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -570,7 +570,7 @@ query TestFilteredCharacters(
                 .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
                 .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -649,7 +649,7 @@ query TestKeywordVariables(
                     .scalar("__typename", key: .fixed(Slots.SearchResult.__typename), kind: .string, list: false),
                 ]),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -719,7 +719,7 @@ query TestLoggedOrigin(
                     .scalar("name", key: .fixed(Slots.Location.name), kind: .string, list: false),
                 ])),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -812,7 +812,7 @@ query TestRequiredOrigin(
                     .scalar("name", key: .fixed(Slots.Location.name), kind: .string, list: false),
                 ])),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -945,7 +945,7 @@ fragment TestNotes_character_35kO5h on Character {
             .linked("slots", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: [.variable("id")]), selection: Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
                 .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -1028,7 +1028,7 @@ query TestStrictEpisodes(
                     .scalar("name", key: .fixed(Slots.Episode.name), kind: .string, list: false),
                 ])),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -1141,7 +1141,7 @@ query TestStrictOrigin(
                     .scalar("name", key: .fixed(Slots.Location.name), kind: .string, list: false),
                 ])),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -1349,7 +1349,7 @@ query TestSwiftNames(
                 .scalar("flag", key: .fixed(Slots.Tokenizer.flag), kind: .bool, list: false),
                 .scalar("id", key: .fixed(Slots.Tokenizer.id), kind: .string, list: false),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -1559,7 +1559,7 @@ query TestThrowingNode(
                     .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
                 ]),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -1684,7 +1684,7 @@ fragment TestOriginAndEpisode_character on Character {
                     .scalar("id", key: .fixed(Slots.Episode.id), kind: .string, list: false),
                 ])),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -1830,7 +1830,7 @@ fragment TestNotes_character_41grAF on Character {
                     ])),
                 ])),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -1920,7 +1920,7 @@ fragment TestAppearances_character on Character {
                     .scalar("id", key: .fixed(Slots.Episode.id), kind: .string, list: false),
                 ])),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor

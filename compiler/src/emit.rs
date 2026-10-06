@@ -42,7 +42,7 @@ const HEADER: &str =
 /// of its format, so code of another format fails to compile at that line
 /// and the marker says which side is behind. A change to what generated
 /// code names in the runtime raises it, here and in the runtime together.
-pub const FORMAT: u32 = 11;
+pub const FORMAT: u32 = 12;
 
 /// The Swift of a plan, or the names it would have declared twice.
 pub fn emit(plan: &Plan) -> Result<Output, Vec<NameError>> {
@@ -58,7 +58,7 @@ pub fn emit(plan: &Plan) -> Result<Output, Vec<NameError>> {
         files
             .entry(operation.source.clone())
             .or_default()
-            .push_str(&operation::operation_text(operation));
+            .push_str(&operation::operation_text(operation, &program.shared));
     }
     for text in files.values_mut() {
         *text = format!("{HEADER}\n{text}");

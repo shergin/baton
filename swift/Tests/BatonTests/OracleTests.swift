@@ -33,6 +33,33 @@ struct OracleCase: Sendable, CustomTestStringConvertible {
     /// root only.
     var persisted: Bool { entry.kind == .query }
 
+    /// The tests' `baton.json` `transient` block: the types whose records
+    /// and the root fields, as `Query.secrets`, the image never keeps.
+    static let transient: (types: Set<String>, fields: Set<String>) = {
+        let url = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("baton.json")
+        guard let data = try? Data(contentsOf: url),
+            let config = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+            let block = config["transient"] as? [String: Any]
+        else { return ([], []) }
+        return (Set(block["types"] as? [String] ?? []), Set(block["fields"] as? [String] ?? []))
+    }()
+
+    /// Whether the dump holds what the configuration keeps off the image: a
+    /// record of a transient type, or a cell of a transient root field. The
+    /// image then answers the operation with a miss, and it fetches.
+    var keptOffTheImage: Bool {
+        guard let dump = try? JSONSerialization.jsonObject(with: Spec.data(entry.records)) as? [String: Any] else { return false }
+        for (key, record) in dump {
+            guard let record = record as? [String: Any], let type = record["__typename"] as? String else { continue }
+            if Self.transient.types.contains(type) { return true }
+            guard key == Store.rootKey else { continue }
+            for field in record.keys where Self.transient.fields.contains(type + "." + field.prefix { $0 != "(" }) {
+                return true
+            }
+        }
+        return false
+    }
+
     /// The dump's name as `StoreDump` takes it, without the extension.
     var dumpName: String {
         let suffix = ".store.json"
@@ -94,11 +121,18 @@ struct OracleTests {
             let environment = Environment(transport: SilentTransport(), store: second)
             let secondPlan = operation.plan.resolve(operation.variables, in: second.keys)
             let answered = environment.store.check(secondPlan)
-            if oracle.entry.complete { #expect(answered == .image, "the image answers the plan") }
-            // The check passes over deferred fields, so the image answers an
-            // incremental response's initial part, and its operation fetches.
-            let initial = oracle.parts.count == 1 ? expected : try Oracle.leaves(of: oracle.parts[0], plan: secondPlan)
-            expectSame(Oracle.leaves(of: second.root, plan: secondPlan), initial, "from the image")
+            // What the configuration keeps off the image is fetched again;
+            // `TransientTests` proves what the image holds of such a case.
+            if oracle.keptOffTheImage {
+                #expect(answered == .miss, "the image keeps the transient records off, so the plan misses")
+            } else {
+                if oracle.entry.complete { #expect(answered == .image, "the image answers the plan") }
+                // The check passes over deferred fields, so the image answers
+                // an incremental response's initial part, and its operation
+                // fetches.
+                let initial = oracle.parts.count == 1 ? expected : try Oracle.leaves(of: oracle.parts[0], plan: secondPlan)
+                expectSame(Oracle.leaves(of: second.root, plan: secondPlan), initial, "from the image")
+            }
         }
 
         guard let override = oracle.entry.override else { return }

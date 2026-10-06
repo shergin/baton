@@ -292,7 +292,7 @@ mutation TestBuilderNames(
                     .scalar("favorite", key: .fixed(Slots.Character.favorite), kind: .bool, list: false),
                 ])),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -592,7 +592,7 @@ fragment TestCaughtStrict_character on Character {
                     .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
                 ]),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -687,7 +687,7 @@ mutation TestCommitVariable(
                     .scalar("favorite", key: .fixed(Slots.Character.favorite), kind: .bool, list: false),
                 ])),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -857,7 +857,7 @@ query TestConditionNames(
                     .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
                 ]),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -981,7 +981,7 @@ fragment TestEdgesNames_character on Character {
                 ])),
                 .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -1044,7 +1044,7 @@ query TestEscapedText {
                     .scalar("__typename", key: .fixed(Slots.SearchResult.__typename), kind: .string, list: false),
                 ]),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -1129,7 +1129,7 @@ fragment TestCaughtStrict_character on Character {
                 .scalar("status", key: .fixed(Slots.Character.status), kind: .string, list: false),
                 .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -1204,7 +1204,7 @@ query TestHasherVariable(
                 .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
                 .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -1265,7 +1265,7 @@ mutation TestListPayload {
                 .scalar("jsons", key: .fixed(Slots.ListsPayload.jsons), kind: .custom, list: true),
                 .scalar("statuses", key: .fixed(Slots.ListsPayload.statuses), kind: .string, list: true),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -1397,7 +1397,7 @@ fragment testLowercaseRequired on Character {
                 ])),
                 .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -1461,7 +1461,7 @@ mutation TestModuleNamedPayload(
                     .scalar("Baton", key: .fixed(Slots.Character.name), kind: .string, list: false),
                 ])),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -1610,7 +1610,7 @@ fragment TestProgramNames_character on Character {
                 ])),
                 .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -1707,7 +1707,7 @@ fragment TestProgramNames_character on Character {
                     .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
                 ]),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -1772,7 +1772,7 @@ fragment TestCaughtStrict_character on Character {
                 .scalar("species", key: .fixed(Slots.Character.species), kind: .string, list: false),
                 .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor

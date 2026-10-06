@@ -13,11 +13,11 @@ use super::swift::{
     variable_type,
 };
 use super::writer::Writer;
-use crate::decide::{OperationValue, VariableValue};
+use crate::decide::{OperationValue, Shared, VariableValue};
 use crate::names::call_label;
 use crate::pipeline::OperationKind;
 
-pub(super) fn operation_text(operation: &OperationValue) -> String {
+pub(super) fn operation_text(operation: &OperationValue, shared: &Shared) -> String {
     let mut writer = Writer::new();
     writer.doc(format!(
         "Operation value for `{} {}`.",
@@ -35,7 +35,9 @@ pub(super) fn operation_text(operation: &OperationValue) -> String {
         SwiftType::named(&operation.name),
         SwiftType::runtime(protocol)
     );
-    writer.block(head, |writer| value_members(writer, operation, resolution));
+    writer.block(head, |writer| {
+        value_members(writer, operation, resolution, shared)
+    });
     writer.blank();
 
     if operation.kind == OperationKind::Mutation {
@@ -46,7 +48,12 @@ pub(super) fn operation_text(operation: &OperationValue) -> String {
 
 /// What an operation value declares: its variables, its static data, its
 /// plan, its root lens and a mutation's builder.
-fn value_members(writer: &mut Writer, operation: &OperationValue, resolution: Option<&str>) {
+fn value_members(
+    writer: &mut Writer,
+    operation: &OperationValue,
+    resolution: Option<&str>,
+    shared: &Shared,
+) {
     for variable in &operation.variables {
         writer.line(format!(
             "public var {}: {}",
@@ -155,8 +162,15 @@ fn value_members(writer: &mut Writer, operation: &OperationValue, resolution: Op
 
     // The normalization plan, as static data. The plan's printer lays its
     // expression out over the lines below this one.
+    // A module with transient types or fields has every plan name its rule
+    // set, so the registry learns them before any plan writes a row.
+    let transient = if shared.transient_types.is_empty() && shared.transient_fields.is_empty() {
+        String::new()
+    } else {
+        ", transient: Types.transient".to_string()
+    };
     writer.line(format!(
-        "@_spi(Generated) public static let plan = {}(root: {})",
+        "@_spi(Generated) public static let plan = {}(root: {}{transient})",
         runtime_value("Plan"),
         selection_plan(&operation.normalization, writer.depth() + 1)
     ));

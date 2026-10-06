@@ -113,7 +113,7 @@ query TestKeys(
                     .scalar("count", key: .fixed(Slots.Info.count), kind: .int, list: false),
                 ])),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -219,7 +219,7 @@ query TestNoteCounts(
                     ])),
                 ])),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -335,7 +335,7 @@ fragment TestKeyArguments_query_p86SO on Query {
                     .scalar("count", key: .fixed(Slots.Info.count), kind: .int, list: false),
                 ])),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor

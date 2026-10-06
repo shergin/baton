@@ -48,6 +48,11 @@ pub struct Shared {
     /// as the client's: a lens reads one as absent, not missing, until a
     /// payload writes it.
     pub client_slots: BTreeSet<SlotRef>,
+    /// The object types whose records never reach the image.
+    pub transient_types: BTreeSet<String>,
+    /// The root fields whose cells, keys and operations never reach the
+    /// image, by the root type's name and the field's.
+    pub transient_fields: BTreeSet<(String, String)>,
 }
 
 impl Shared {
@@ -57,8 +62,12 @@ impl Shared {
             schema_digest: plan.schema_digest.clone(),
             root_names: plan.root_names.clone(),
             enums: plan.enums.clone(),
+            transient_types: plan.transient_types.clone(),
             ..Shared::default()
         };
+        for name in &plan.transient_types {
+            shared.types.insert(name.clone());
+        }
         for fragment in &program.fragments {
             shared.lens(&fragment.lens);
         }
@@ -177,6 +186,10 @@ impl Shared {
                 if field.extension {
                     self.client_slots
                         .insert(SlotRef::new(slot_type, &field.key));
+                }
+                if field.transient {
+                    self.transient_fields
+                        .insert((slot_type.to_string(), field.key.name.clone()));
                 }
                 for conjunction in &field.guards {
                     self.guards.extend(conjunction.iter().cloned());
@@ -302,6 +315,9 @@ impl Shared {
         let mut types = Scope::new("Types", &none);
         types.declare("schemaDigest", Kind::Static, "the schema's digest");
         types.declare("format", Kind::Static, "the format of the generated code");
+        if !self.transient_types.is_empty() || !self.transient_fields.is_empty() {
+            types.declare("transient", Kind::Static, "what never reaches the image");
+        }
         for type_name in &self.types {
             types.declare(
                 type_constant(type_name).trim_matches('`'),

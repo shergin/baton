@@ -34,7 +34,7 @@ query TestCaughtNames {
             .linked("types", key: .fixed(Slots.Query.types), plural: false, caught: true, selection: Baton.Selection(type: Types.Types, key: [], abstract: false, fields: [
                 .scalar("Baton", key: .fixed(Slots.Types_.Baton_), kind: .string, list: false, caught: true),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -102,7 +102,7 @@ query TestNames {
                 .scalar("Baton", key: .fixed(Slots.Types_.Baton_), kind: .string, list: false),
                 .scalar("Any", key: .fixed(Slots.Types_.Any_), kind: .string, list: false),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -192,7 +192,7 @@ query TestSpellings {
                     .scalar("__typename", key: .fixed(Slots.Spelling.__typename), kind: .string, list: false),
                 ]),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor

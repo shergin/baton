@@ -2,20 +2,24 @@
 import Foundation
 @_spi(Generated) import Baton
 
-/// Operation value for `query TestDrafts`.
-nonisolated public struct TestDrafts: Baton.Query {
+/// Operation value for `query TestCharacterSecret`.
+nonisolated public struct TestCharacterSecret: Baton.Query {
     public var resolution: Baton.OperationHandle<Self>? = nil
 
     public init() {
     }
 
-    public static let name = "TestDrafts"
-    public static let persistedID = "c7ae5975fdad208e8459c7a23b072420"
+    public static let name = "TestCharacterSecret"
+    public static let persistedID = "61476e21a4e42da55c26edd07d1ec2af"
     public static let text = #"""
-query TestDrafts {
+query TestCharacterSecret {
   character(id: "1") {
     id
     name
+    secret {
+      id
+      body
+    }
   }
 }
 """#
@@ -35,13 +39,9 @@ query TestDrafts {
             .linked("character", key: .fixed(Slots.Query.character_9e6829), plural: false, lookup: Baton.Lookup(type: Types.Character, key: [.literal("1")]), selection: Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
                 .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
                 .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
-            ])),
-            .linked("drafts", key: .fixed(Slots.Query.drafts), plural: true, client: true, selection: Baton.Selection(type: Types.Draft, key: ["id"], abstract: false, fields: [
-                .scalar("id", key: .fixed(Slots.Draft.id), kind: .string, list: false, client: true),
-                .scalar("text", key: .fixed(Slots.Draft.text), kind: .string, list: false, client: true),
-                .linked("about", key: .fixed(Slots.Draft.about), plural: false, client: true, selection: Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false, client: true),
-                    .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false, client: true),
+                .linked("secret", key: .fixed(Slots.Character.secret), plural: false, selection: Baton.Selection(type: Types.Secret, key: ["id"], abstract: false, fields: [
+                    .scalar("id", key: .fixed(Slots.Secret.id), kind: .string, list: false),
+                    .scalar("body", key: .fixed(Slots.Secret.body), kind: .string, list: false),
                 ])),
             ])),
         ]), transient: Types.transient)
@@ -51,7 +51,6 @@ query TestDrafts {
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Query"
         @MainActor public var character: Character? { anchor.linked(Slots.Query.character_9e6829).map(Character.init(anchor:)) }
-        @MainActor public var drafts: Baton.List<Drafts>? { anchor.list(Slots.Query.drafts) }
 
         nonisolated public struct Character: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
@@ -59,69 +58,65 @@ query TestDrafts {
             public static let typeName = "Character"
             @MainActor public var id: String? { anchor.string(Slots.Character.id) }
             @MainActor public var name: String? { anchor.string(Slots.Character.name) }
-        }
+            @MainActor public var secret: Secret? { anchor.linked(Slots.Character.secret).map(Secret.init(anchor:)) }
 
-        nonisolated public struct Drafts: Baton.Lens {
-            @_spi(Generated) public let anchor: Baton.Anchor
-            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Draft"
-            @MainActor public var id: String? { anchor.string(Slots.Draft.id) }
-            @MainActor public var text: String? { anchor.string(Slots.Draft.text) }
-            @MainActor public var about: About? { anchor.linked(Slots.Draft.about).map(About.init(anchor:)) }
-
-            nonisolated public struct About: Baton.Lens {
+            nonisolated public struct Secret: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Character"
-                @MainActor public var id: String? { anchor.string(Slots.Character.id) }
-                @MainActor public var name: String? { anchor.string(Slots.Character.name) }
+                public static let typeName = "Secret"
+                @MainActor public var id: String? { anchor.string(Slots.Secret.id) }
+                @MainActor public var body: String? { anchor.string(Slots.Secret.body) }
             }
         }
     }
 }
 
-/// Operation value for `query TestPinnedCharacter`.
-nonisolated public struct TestPinnedCharacter: Baton.Query {
-    public var id: String
+/// Operation value for `query TestSecrets`.
+nonisolated public struct TestSecrets: Baton.Query {
+    public var code: String
     public var resolution: Baton.OperationHandle<Self>? = nil
 
-    public init(id: String) {
-        self.id = id
+    public init(code: String) {
+        self.code = code
     }
 
-    public static let name = "TestPinnedCharacter"
-    public static let persistedID = "f758b85eb4fac6833a700fbc9ffa319d"
+    public static let name = "TestSecrets"
+    public static let persistedID = "5c59784e43ab2e5898651c38ee0a2897"
     public static let text = #"""
-query TestPinnedCharacter(
-  $id: ID!
+query TestSecrets(
+  $code: String!
 ) {
-  character(id: $id) {
+  secrets(code: $code) {
+    id
+    body
+  }
+  character(id: "1") {
     id
     name
-    status
   }
 }
 """#
 
     public var variables: Baton.Variables {
-        Baton.Variables(["id": Baton.Variable(self.id)])
+        Baton.Variables(["code": Baton.Variable(self.code)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.id == rhs.id
+        lhs.code == rhs.code
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(self.id)
+        hasher.combine(self.code)
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
-            .linked("character", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: [.variable("id")]), selection: Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
+            .linked("secrets", key: .dynamic(Slots.Query.secrets_df579e), plural: true, transient: true, selection: Baton.Selection(type: Types.Secret, key: ["id"], abstract: false, fields: [
+                .scalar("id", key: .fixed(Slots.Secret.id), kind: .string, list: false),
+                .scalar("body", key: .fixed(Slots.Secret.body), kind: .string, list: false),
+            ])),
+            .linked("character", key: .fixed(Slots.Query.character_9e6829), plural: false, lookup: Baton.Lookup(type: Types.Character, key: [.literal("1")]), selection: Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
                 .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
                 .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("status", key: .fixed(Slots.Character.status), kind: .string, list: false),
-                .scalar("isPinned", key: .fixed(Slots.Character.isPinned), kind: .bool, list: false, client: true),
-                .scalar("note", key: .fixed(Slots.Character.note), kind: .string, list: false, client: true),
             ])),
         ]), transient: Types.transient)
 
@@ -129,7 +124,16 @@ query TestPinnedCharacter(
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
         public static let typeName = "Query"
-        @MainActor public var character: Character? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(Character.init(anchor:)) }
+        @MainActor public var secrets: Baton.List<Secrets>? { anchor.list(anchor.owner.slot(Slots.Query.secrets_df579e)) }
+        @MainActor public var character: Character? { anchor.linked(Slots.Query.character_9e6829).map(Character.init(anchor:)) }
+
+        nonisolated public struct Secrets: Baton.Lens {
+            @_spi(Generated) public let anchor: Baton.Anchor
+            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            public static let typeName = "Secret"
+            @MainActor public var id: String? { anchor.string(Slots.Secret.id) }
+            @MainActor public var body: String? { anchor.string(Slots.Secret.body) }
+        }
 
         nonisolated public struct Character: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
@@ -137,9 +141,6 @@ query TestPinnedCharacter(
             public static let typeName = "Character"
             @MainActor public var id: String? { anchor.string(Slots.Character.id) }
             @MainActor public var name: String? { anchor.string(Slots.Character.name) }
-            @MainActor public var status: String? { anchor.string(Slots.Character.status) }
-            @MainActor public var isPinned: Bool? { anchor.bool(Slots.Character.isPinned) }
-            @MainActor public var note: String? { anchor.string(Slots.Character.note) }
         }
     }
 }

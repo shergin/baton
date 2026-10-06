@@ -19,6 +19,14 @@
     "DateTime": "Foundation.Date",
     "Url": "Foundation.URL"
   },
+  "transient": {
+    "types": [
+      "Secret"
+    ],
+    "fields": [
+      "Query.secrets"
+    ]
+  },
   "lookups": [
     {
       "field": "Query.character",

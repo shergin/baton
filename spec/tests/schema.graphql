@@ -44,6 +44,7 @@ type Query {
   assets: [Asset]
   assetsPricedAbove(price: Decimal!, among: [Decimal!]): [Asset]
   charactersWithStatus(status: Status!, any: [Status!]): [Character]
+  secrets(code: String!): [Secret]
   quote(base: String!, quote: String!): Quote
   quotes: [Quote]
 }
@@ -177,6 +178,17 @@ type Character implements Node & Named {
   created: String
   favorite: Boolean
   notes(first: Int, after: String, last: Int, before: String): NoteConnection!
+  secret: Secret
+}
+
+"""
+Content the tests' `baton.json` keeps off the image: its records are never
+written, nor a slot linking to one, nor the root field `secrets` with the
+code it was asked with.
+"""
+type Secret {
+  id: ID
+  body: String
 }
 
 type Note implements Node {

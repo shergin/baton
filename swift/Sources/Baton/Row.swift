@@ -50,6 +50,9 @@ struct RowWriter {
     /// A record's cell: the key's name and the value with its error.
     private mutating func cell(_ slot: Slot, _ value: Value, _ errors: [Int32: FieldError]?, typeName: (TypeID) -> Int32, slotName: (Slot) -> Int32) {
         if case .missing = value { return }
+        // A link to a transient record is left out: nothing on disk names
+        // one, and the next launch misses on the slot and fetches.
+        if value.linksTransient { return }
         let name = slotName(slot)
         if name < 0 { return }
         append(varint: UInt64(name))
@@ -349,5 +352,17 @@ struct RowReader {
         guard head >= 2, head >> 1 <= UInt64(Int32.max) + 1 else { return nil }
         guard let type = disk.type(Int(head >> 1) - 1), let key = string() else { return nil }
         return .some(target(key, type, head & 1 != 0))
+    }
+}
+
+extension Value {
+    /// Whether the value links a record of a transient type, which the image
+    /// never names.
+    nonisolated var linksTransient: Bool {
+        switch self {
+        case .ref(let target): Registry.isTransient(target.type)
+        case .refs(let targets): targets.contains { $0.map { Registry.isTransient($0.type) } ?? false }
+        default: false
+        }
     }
 }

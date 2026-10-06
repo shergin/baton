@@ -422,6 +422,18 @@ impl Lowering<'_> {
             .collect()
     }
 
+    /// Whether `transient` names the field: a root field whose cell, key and
+    /// operations never reach the image.
+    fn transient_field(&self, parent_type: Type, definition: &schema::definitions::Field) -> bool {
+        let parent_name = self.schema.get_type_name(parent_type).lookup();
+        let name = definition.name.item.lookup();
+        self.config
+            .transient
+            .fields
+            .iter()
+            .any(|field| field == &format!("{parent_name}.{name}"))
+    }
+
     /// The key fields of each keyed concrete type behind the type: the type
     /// itself, or, for an interface or union, every member with a key; the
     /// payload's `__typename` then names the type to key by.
@@ -627,7 +639,9 @@ impl Lowering<'_> {
         selections
             .iter()
             .map(|selection| match selection {
-                Selection::ScalarField(field) => self.scalar_field(field, caught, client),
+                Selection::ScalarField(field) => {
+                    self.scalar_field(field, parent_type, caught, client)
+                }
                 Selection::LinkedField(field) => {
                     self.linked_field(field, parent_type, side, caught, client)
                 }
@@ -671,13 +685,20 @@ impl Lowering<'_> {
         ));
     }
 
-    fn scalar_field(&self, field: &ScalarField, caught: bool, client: bool) -> SelectionPlan {
+    fn scalar_field(
+        &self,
+        field: &ScalarField,
+        parent_type: Type,
+        caught: bool,
+        client: bool,
+    ) -> SelectionPlan {
         let definition = self.schema.field(field.definition.item);
         self.refuse_nested_list(field, definition);
         let field_caught = caught || self.is_caught(&field.directives);
         SelectionPlan::Scalar {
             client: client || definition.is_extension,
             extension: definition.is_extension,
+            transient: self.transient_field(parent_type, definition),
             name: definition.name.item.lookup().to_string(),
             alias: field.alias.map(|alias| alias.item.lookup().to_string()),
             origin: Origin::of(field.alias_or_name_location()),
@@ -735,6 +756,7 @@ impl Lowering<'_> {
             caught: field_caught,
             client,
             extension: definition.is_extension,
+            transient: self.transient_field(parent_type, definition),
             bubbles: self.bubbles(&field.directives),
             selections: self.selections(&field.selections, target, side, field_caught, client),
         }

@@ -681,6 +681,8 @@ final class Disk: @unchecked Sendable {
         // payload, read once by its caller; entities inside it have keys of
         // their own and are written as themselves.
         if record.key.hasPrefix(Disk.mutationPayloads) || record.key.hasPrefix(Disk.subscriptionPayloads) { return true }
+        // A transient type's records never reach the image; memory keeps them.
+        if Registry.isTransient(record.type) { return true }
         writer.reset()
         writer.row(snapshot, typeName: name(of:), slotName: { name(of: $0, keys) })
         return upsert(prepared.upsertRecord, record.key)
@@ -688,6 +690,10 @@ final class Disk: @unchecked Sendable {
 
     private func put(_ field: Store.RootField, _ prepared: Prepared, _ keys: Keys) -> Bool {
         if case .missing = field.value { return true }
+        // A transient root field's cell, and so the storage key that would
+        // name it with its arguments, never reaches the image.
+        if Registry.isTransientField(field.slot.type, storageKey: keys.text(of: field.slot)) { return true }
+        if field.value.linksTransient { return true }
         writer.reset()
         writer.cell(field, typeName: name(of:))
         return upsert(prepared.upsertRoot, keys.text(of: field.slot))

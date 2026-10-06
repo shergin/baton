@@ -16,7 +16,7 @@ pub use plan::{
     RequiredAction, RequiredPlan, SelectionPlan, StorageKeyPlan, TypeKind, TypePlan, VariablePlan,
 };
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
@@ -110,6 +110,13 @@ pub fn compile(
     let keys = identity::Keys::resolve(&schema, &config.identity, config_location(config))?;
     let mut errors = validate_lookups(&schema, config, &keys);
     errors.extend(validate_mappings(&schema, config));
+    let transient_types = match transient_types(&schema, config) {
+        Ok(types) => types,
+        Err(mut transient_errors) => {
+            errors.append(&mut transient_errors);
+            BTreeSet::new()
+        }
+    };
     if !errors.is_empty() {
         return Err(errors);
     }
@@ -169,7 +176,8 @@ pub fn compile(
     let started = Instant::now();
     let mut plan = lower(&schema, &programs, config, &keys)?;
     plan.root_names = root_names;
-    plan.schema_digest = schema_digest(schema_sdl, extensions, &config.identity);
+    plan.transient_types = transient_types;
+    plan.schema_digest = schema_digest(schema_sdl, extensions, &config.identity, &config.transient);
     timings.lower = started.elapsed();
 
     Ok(Compiled { plan, timings })
@@ -245,6 +253,7 @@ fn schema_digest(
     schema_sdl: &str,
     extensions: &[(String, String)],
     identity: &crate::config::Identity,
+    transient: &crate::config::Transient,
 ) -> String {
     let mut text = schema_sdl.to_string();
     for (extension, _) in extensions {
@@ -255,7 +264,88 @@ fn schema_digest(
         text.push_str("\n# identity\n");
         text.push_str(&identity.canonical());
     }
+    if !transient.is_empty() {
+        text.push_str("\n# transient\n");
+        text.push_str(&transient.canonical());
+    }
     format!("{:x}", md5::compute(text.as_bytes()))
+}
+
+/// The object types whose records never reach the image: those named in
+/// `transient.types`, and the implementers of an interface named there.
+/// The root fields named are checked here and marked in the lowering.
+fn transient_types(
+    schema: &SDLSchema,
+    config: &Config,
+) -> Result<BTreeSet<String>, Vec<Diagnostic>> {
+    let location = config_location(config);
+    let mut errors = Vec::new();
+    let mut types = BTreeSet::new();
+    for name in &config.transient.types {
+        match schema.get_type(name.intern()) {
+            Some(Type::Object(_)) => {
+                types.insert(name.clone());
+            }
+            Some(Type::Interface(id)) => {
+                for object in schema
+                    .interface(id)
+                    .recursively_implementing_objects(schema)
+                {
+                    types.insert(schema.object(object).name.item.0.lookup().to_string());
+                }
+            }
+            Some(_) => errors.push(Diagnostic::error(
+                format!("`transient` names `{name}`, which is not an object or interface type"),
+                location,
+            )),
+            None => errors.push(Diagnostic::error(
+                format!("`transient` names `{name}`, which the schema does not declare"),
+                location,
+            )),
+        }
+    }
+    let roots: Vec<Type> = [
+        schema.query_type(),
+        schema.mutation_type(),
+        schema.subscription_type(),
+    ]
+    .into_iter()
+    .flatten()
+    .collect();
+    for field in &config.transient.fields {
+        let Some((type_name, field_name)) = field.split_once('.') else {
+            errors.push(Diagnostic::error(
+                format!("`transient` names the field `{field}`: write `Query.field`"),
+                location,
+            ));
+            continue;
+        };
+        let Some(parent) = schema.get_type(type_name.intern()) else {
+            errors.push(Diagnostic::error(
+                format!("`transient` names `{field}`, but the schema has no type `{type_name}`"),
+                location,
+            ));
+            continue;
+        };
+        if !roots.contains(&parent) {
+            errors.push(Diagnostic::error(
+                format!("`transient` names `{field}`, but `{type_name}` is not a root type: a type's records are kept out by naming the type"),
+                location,
+            ));
+            continue;
+        }
+        if schema.named_field(parent, field_name.intern()).is_none() {
+            errors.push(Diagnostic::error(
+                format!("`transient` names `{field}`, which `{type_name}` does not have"),
+                location,
+            ));
+        }
+    }
+    if errors.is_empty() {
+        Ok(types)
+    } else {
+        Err(errors)
+    }
 }
 
 /// Checks the client schema extensions: a client field is nullable, since

@@ -2196,6 +2196,88 @@
         ],
         "value": "Edited"
       }
+    },
+    {
+      "name": "tests/secrets",
+      "operation": "TestSecrets",
+      "kind": "query",
+      "document": "documents/TestSecrets.graphql",
+      "variables": {
+        "code": "x"
+      },
+      "responses": [
+        "tests/secrets.json"
+      ],
+      "records": "tests/secrets.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "secrets.0.id",
+          "value": "s1"
+        },
+        {
+          "path": "secrets.0.body",
+          "value": "the portal gun's fluid"
+        },
+        {
+          "path": "secrets.1.id",
+          "value": "s2"
+        },
+        {
+          "path": "secrets.1.body",
+          "value": "where the citadel is"
+        },
+        {
+          "path": "character.id",
+          "value": "1"
+        },
+        {
+          "path": "character.name",
+          "value": "Rick Sanchez"
+        }
+      ],
+      "override": {
+        "paths": [
+          "secrets.0.body"
+        ],
+        "value": "Edited"
+      }
+    },
+    {
+      "name": "tests/character-secret",
+      "operation": "TestCharacterSecret",
+      "kind": "query",
+      "document": "documents/TestCharacterSecret.graphql",
+      "variables": {},
+      "responses": [
+        "tests/character-secret.json"
+      ],
+      "records": "tests/character-secret.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "character.id",
+          "value": "1"
+        },
+        {
+          "path": "character.name",
+          "value": "Rick Sanchez"
+        },
+        {
+          "path": "character.secret.id",
+          "value": "s1"
+        },
+        {
+          "path": "character.secret.body",
+          "value": "the portal gun's fluid"
+        }
+      ],
+      "override": {
+        "paths": [
+          "character.secret.body"
+        ],
+        "value": "Edited"
+      }
     }
   ]
 }

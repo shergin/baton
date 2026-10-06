@@ -478,7 +478,7 @@ mutation TestAddNote(
                     ])),
                 ])),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -634,7 +634,7 @@ mutation TestAddNoteFirst(
                     ])),
                 ])),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -784,7 +784,7 @@ mutation TestAddNoteNode(
                     .scalar("text", key: .fixed(Slots.Note.text), kind: .string, list: false),
                 ])),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -910,7 +910,7 @@ mutation TestAddNoteNodeFirst(
                     .scalar("text", key: .fixed(Slots.Note.text), kind: .string, list: false),
                 ])),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -1036,7 +1036,7 @@ mutation TestAddNoteNodeOfAnotherType(
                     .scalar("text", key: .fixed(Slots.Note.text), kind: .string, list: false),
                 ])),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -1160,7 +1160,7 @@ fragment TestRow_character on Character {
                 .scalar("image", key: .fixed(Slots.Character.image), kind: .string, list: false),
                 .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -1271,7 +1271,7 @@ fragment TestAuthorNotes_note_1G22uz on Note {
                     .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
                 ]),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -1378,7 +1378,7 @@ fragment TestAuthorNotes_note on Note {
                     .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
                 ]),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -1490,7 +1490,7 @@ fragment TestNoteText_note on Note {
                     .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
                 ]),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -1547,7 +1547,7 @@ mutation TestDeleteNote(
             .linked("removeNote", key: .fixed(Slots.Mutation.removeNote), plural: false, selection: Baton.Selection(type: Types.RemoveNotePayload, key: [], abstract: false, fields: [
                 .scalar("removedNoteId", key: .fixed(Slots.RemoveNotePayload.removedNoteId), kind: .string, list: false, edit: Baton.Edit(kind: .deleteRecord)),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -1694,7 +1694,7 @@ fragment TestHiddenNotes_character_1G22uz on Character {
                     .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
                 ]),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -1793,7 +1793,7 @@ fragment TestHiddenNotes_character on Character {
                 ])),
                 .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -1903,7 +1903,7 @@ fragment TestHiddenRecentNotes_character_1G22uz on Character {
                     .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
                 ]),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -1998,7 +1998,7 @@ fragment TestHiddenRecentNotes_character on Character {
                 ])),
                 .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -2108,7 +2108,7 @@ fragment TestNotes_character_1G22uz on Character {
                     .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
                 ]),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -2203,7 +2203,7 @@ fragment TestNotes_character on Character {
                 ])),
                 .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -2301,7 +2301,7 @@ fragment TestNotes_character_2H9PL on Character {
                 ])),
                 .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -2407,7 +2407,7 @@ fragment TestRecentNotes_character_1G22uz on Character {
                     .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
                 ]),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -2498,7 +2498,7 @@ fragment TestRecentNotes_character on Character {
                 ])),
                 .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -2559,7 +2559,7 @@ mutation TestRemoveNote(
                 .scalar("removedNoteId", key: .fixed(Slots.RemoveNotePayload.removedNoteId), kind: .string, list: false, edit: Baton.Edit(kind: .deleteEdge, connections: .variable("connections"))),
                 .scalar("deleted", key: .fixed(Slots.RemoveNotePayload.removedNoteId), kind: .string, list: false, edit: Baton.Edit(kind: .deleteRecord)),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -2725,7 +2725,7 @@ query TestTwoPagesQuery(
                     .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
                 ]),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor

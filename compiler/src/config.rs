@@ -84,6 +84,35 @@ fn default_key() -> Vec<String> {
     vec!["id".to_string()]
 }
 
+/// What never reaches the image, decided at build time like identity: the
+/// records of the types named, and the cells, storage keys and fetch stamps
+/// of the root fields named, `Query.search`. A record's slot that links to a
+/// transient record is left out of its row as well, so nothing on disk names
+/// one.
+#[derive(Debug, Clone, Default, PartialEq, Eq, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct Transient {
+    #[serde(default)]
+    pub types: Vec<String>,
+    #[serde(default)]
+    pub fields: Vec<String>,
+}
+
+impl Transient {
+    pub fn is_empty(&self) -> bool {
+        self.types.is_empty() && self.fields.is_empty()
+    }
+
+    /// The configuration as one text, for the digest.
+    pub fn canonical(&self) -> String {
+        let mut types = self.types.clone();
+        types.sort();
+        let mut fields = self.fields.clone();
+        fields.sort();
+        format!("types:{}\nfields:{}", types.join(","), fields.join(","))
+    }
+}
+
 /// The GraphQL specification's `onError` values.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Deserialize)]
 #[serde(rename_all = "UPPERCASE")]
@@ -121,6 +150,11 @@ pub struct Config {
     /// a payload committed by hand and never asked of a server.
     #[serde(rename = "schemaExtensions", default)]
     pub schema_extensions: Vec<String>,
+    /// What may not reach the image: types whose records are never written,
+    /// and root fields whose cells, keys and operations are never written.
+    /// Memory is unaffected; the next launch misses and fetches.
+    #[serde(default)]
+    pub transient: Transient,
     /// Relay's `customScalarTypes`: the Swift type a custom scalar reads as,
     /// by the scalar's name, e.g. `"Decimal": "Foundation.Decimal"`. The
     /// store keeps the text; the accessor converts at the read, and says the

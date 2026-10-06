@@ -1040,6 +1040,7 @@ fn the_names_read_from_the_rules_are_the_ones_the_rules_apply() {
         "variable",
         "schemaDigest",
         "format",
+        "transient",
         "Data",
     ] {
         assert!(

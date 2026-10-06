@@ -138,7 +138,10 @@ extension Store {
     func date(_ root: Root) -> [String] {
         root.stamp(.now, epoch: invalidationEpoch)
         root.fetches += 1
-        persistence?.fetched(root.key)
+        // An operation selecting a transient root field leaves no stamp: the
+        // stamp carries the operation's variables, which would name what the
+        // field was asked with.
+        if !root.resolved.transient { persistence?.fetched(root.key) }
         guard root.record === self.root, root.holders == 0, !releaseBuffer.contains(root.key) else { return [] }
         return park(root.key)
     }

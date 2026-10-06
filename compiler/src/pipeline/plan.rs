@@ -2,7 +2,7 @@
 //! front end has checked and transformed them. It is the seam: nothing
 //! after it sees a Relay type.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 /// The plan IR for one compilation: every fragment's reader shape and every
 /// operation's reader shape, normalization shape, text and id.
@@ -23,6 +23,9 @@ pub struct Plan {
     /// value and one for a value the build does not know.
     #[serde(skip_serializing_if = "BTreeMap::is_empty")]
     pub enums: BTreeMap<String, Vec<String>>,
+    /// The object types whose records never reach the image.
+    #[serde(skip_serializing_if = "BTreeSet::is_empty")]
+    pub transient_types: BTreeSet<String>,
 }
 
 /// Where a document wrote a name it chose: the file, which of the file's
@@ -440,6 +443,10 @@ pub enum SelectionPlan {
         /// it: its slot is a client slot wherever it is read.
         #[serde(skip_serializing_if = "is_false")]
         extension: bool,
+        /// A root field `transient` names: its cell, key and the operations
+        /// selecting it never reach the image.
+        #[serde(skip_serializing_if = "is_false")]
+        transient: bool,
     },
     Linked {
         name: String,
@@ -473,6 +480,9 @@ pub enum SelectionPlan {
         /// The field itself is a schema extension's.
         #[serde(skip_serializing_if = "is_false")]
         extension: bool,
+        /// A root field `transient` names.
+        #[serde(skip_serializing_if = "is_false")]
+        transient: bool,
         /// Whether a `@required` child can null this field.
         bubbles: bool,
         selections: Vec<SelectionPlan>,

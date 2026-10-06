@@ -207,6 +207,9 @@ pub struct NormalizationField {
     /// The field itself is a schema extension's: its slot is a client slot
     /// wherever a lens reads it.
     pub extension: bool,
+    /// A root field `transient` names: never written to the image, nor the
+    /// operations selecting it.
+    pub transient: bool,
     pub edit: Option<EditPlan>,
     pub kind: NormalizationKind,
 }
@@ -224,6 +227,7 @@ impl PartialEq for NormalizationField {
             caught,
             client,
             extension,
+            transient,
             edit,
             kind,
         } = self;
@@ -234,6 +238,7 @@ impl PartialEq for NormalizationField {
             && *caught == other.caught
             && *client == other.client
             && *extension == other.extension
+            && *transient == other.transient
             && *edit == other.edit
             && *kind == other.kind
     }
@@ -603,6 +608,7 @@ fn field(
     let caught = members.iter().all(|member| caught(member.selection));
     let client = is_client(members[0].selection);
     let extension = is_extension(members[0].selection);
+    let transient = is_transient(members[0].selection);
     let edit = members.iter().find_map(|member| edit(member.selection));
     match members[0].selection {
         SelectionPlan::Scalar {
@@ -616,6 +622,7 @@ fn field(
             caught,
             client,
             extension,
+            transient,
             edit,
             kind: NormalizationKind::Scalar {
                 type_: type_.clone(),
@@ -658,6 +665,7 @@ fn field(
                 caught,
                 client,
                 extension,
+                transient,
                 edit,
                 kind: NormalizationKind::Linked {
                     plural: type_.is_list(),
@@ -753,6 +761,15 @@ fn caught(selection: &SelectionPlan) -> bool {
 fn is_client(selection: &SelectionPlan) -> bool {
     match selection {
         SelectionPlan::Scalar { client, .. } | SelectionPlan::Linked { client, .. } => *client,
+        _ => false,
+    }
+}
+
+fn is_transient(selection: &SelectionPlan) -> bool {
+    match selection {
+        SelectionPlan::Scalar { transient, .. } | SelectionPlan::Linked { transient, .. } => {
+            *transient
+        }
         _ => false,
     }
 }

@@ -54,7 +54,7 @@ query TestTokenizerQuery {
                 .scalar("json", key: .fixed(Slots.Tokenizer.json), kind: .custom, list: false),
                 .scalar("jsons", key: .fixed(Slots.Tokenizer.jsons), kind: .custom, list: true),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor

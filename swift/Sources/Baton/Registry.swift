@@ -86,6 +86,17 @@ public enum Registry {
         /// The slots of the schema extensions' fields, the client's: by type,
         /// the indices a payload committed by hand alone writes.
         var clientSlots: [Set<Int32>] = []
+        /// By `TypeID.raw`, whether the type's records never reach the image.
+        var transientTypes: [Bool] = []
+        /// The root fields whose cells, keys and operations never reach the
+        /// image, by the root type's number and the field's name.
+        var transientFields: Set<TransientField> = []
+    }
+
+    /// A root field marked transient.
+    struct TransientField: Hashable, Sendable {
+        let type: TypeID
+        let field: String
     }
 
     private static let state = Mutex(State())
@@ -94,15 +105,19 @@ public enum Registry {
     /// against, without taking the lock.
     static let denseTotal = Atomic<Int>(0)
 
-    public static func type(_ name: String) -> TypeID {
+    public static func type(_ name: String, transient: Bool = false) -> TypeID {
         state.withLock { state in
-            if let id = state.typeIDs[name] { return id }
+            if let id = state.typeIDs[name] {
+                if transient { state.transientTypes[Int(id.raw)] = true }
+                return id
+            }
             let id = TypeID(raw: Int32(state.typeNames.count))
             state.typeIDs[name] = id
             state.typeNames.append(name)
             state.slotIndices.append([:])
             state.slotKeys.append([])
             state.clientSlots.append([])
+            state.transientTypes.append(transient)
             return id
         }
     }
@@ -135,6 +150,29 @@ public enum Registry {
     /// Whether the slot is a schema extension's, which no server answers.
     static func isClient(_ slot: Slot) -> Bool {
         state.withLock { $0.clientSlots[Int(slot.type.raw)].contains(slot.index) }
+    }
+
+    /// Whether the type's records never reach the image.
+    static func isTransient(_ type: TypeID) -> Bool {
+        state.withLock { $0.transientTypes[Int(type.raw)] }
+    }
+
+    /// Marks a type's records as never reaching the image.
+    static func markTransient(_ type: TypeID) {
+        state.withLock { $0.transientTypes[Int(type.raw)] = true }
+    }
+
+    /// Marks a root field whose cells, storage keys and operations never
+    /// reach the image, by the root type and the field's name; the writer
+    /// asks by the name a storage key starts with.
+    static func markTransient(_ type: TypeID, field: String) {
+        state.withLock { _ = $0.transientFields.insert(TransientField(type: type, field: field)) }
+    }
+
+    /// Whether the root field a storage key names is transient.
+    static func isTransientField(_ type: TypeID, storageKey: String) -> Bool {
+        let name = storageKey.prefix { $0 != "(" }
+        return state.withLock { $0.transientFields.contains(TransientField(type: type, field: String(name))) }
     }
 
     /// The build's keys numbered since `counts` last described each type's

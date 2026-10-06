@@ -491,6 +491,25 @@ is a name error at the document, and one named like a shared enum or the
 standard library's types takes `Enum` after its name. See
 [the decision](decisions/an-enum-reads-as-a-generated-enum.md).
 
+**Transient.** *Composition: schema, image.* What never reaches the image,
+decided at build time in `baton.json`'s `transient` block like identity and
+lookups: the records of the types named (an interface's entry names its
+implementers), and the cells, storage keys and fetch stamps of the root
+fields named, `Query.search`, since a root field's key carries the arguments
+it was asked with and an operation's stamp carries its variables. A record's
+slot that links to a transient record is left out of its row, so nothing on
+disk names one; the next launch misses on it and fetches, as the owner's rule
+has it: a list is never shortened to fit, and a screen that shows transient
+records refetches at launch. Memory is unaffected: the store keeps the
+records as long as a retention reaches them. The shared file declares the
+lists once, as `Types.transient`, and every plan of the module names it, so
+the registry knows them before any plan writes a row. The lists join the
+schema's digest, so an image written under another list starts again. Not a
+Relay word, since Relay's store is not persisted; borrowed from the ordinary sense
+of what does not outlive its process, over *ephemeral*, which says short
+lived rather than unwritten, and *volatile*, which names a kind of memory.
+See [the decision](decisions/what-may-reach-the-image.md).
+
 **Plan.** *Concept: plan.* Baton's word for the normalization artifact: the
 data a response is decoded by and a store is written from, one per
 operation, emitted by the compiler and interpreted by the runtime. Relay's

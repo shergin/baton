@@ -91,7 +91,7 @@ query TestAssetPricesQuery {
                 .scalar("prices", key: .fixed(Slots.Asset.prices), kind: .custom, list: true),
                 .scalar("id", key: .fixed(Slots.Asset.id), kind: .string, list: false),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -177,7 +177,7 @@ fragment TestThrowingPrices_asset on Asset {
                 .scalar("prices", key: .fixed(Slots.Asset.prices), kind: .custom, list: true),
                 .scalar("id", key: .fixed(Slots.Asset.id), kind: .string, list: false),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor

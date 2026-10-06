@@ -48,7 +48,11 @@ public enum Format9 {}
 public enum Format10 {}
 
 @_spi(Generated)
+@available(*, unavailable, message: "this generated code is of format 11 and the runtime reads format 12: what never reaches the image is marked in the plan and the registry; rebuild with the compiler of this release")
 public enum Format11 {}
+
+@_spi(Generated)
+public enum Format12 {}
 
 /// An operation's normalization plan, emitted by the compiler as static data:
 /// what the response contains and where each value is stored.
@@ -56,7 +60,10 @@ public enum Format11 {}
 public struct Plan: Sendable {
     public let root: Selection
 
-    public init(root: Selection) { self.root = root }
+    /// `transient` is the module's rule set for the image, named by every
+    /// plan of a module that has one, so the registry learns the rules
+    /// before any plan writes a row.
+    public init(root: Selection, transient: Transient? = nil) { self.root = root }
 
     /// Binds the variables: dynamic storage keys become slots, numbered by
     /// `keys`, the store's, lookup keys become record keys, connections learn
@@ -65,6 +72,18 @@ public struct Plan: Sendable {
     package func resolve(_ variables: Variables, in keys: Keys) -> ResolvedSelection {
         keys.reconcile()
         return root.resolve(variables, keys.hold())
+    }
+}
+
+/// What never reaches the image, as `baton.json` configures it: the types
+/// whose records are not written, and the root fields whose cells, storage
+/// keys and fetch stamps are not. Made once per module, in the shared file,
+/// and told to the registry when made.
+@_spi(Generated)
+public final class Transient: Sendable {
+    public init(types: [TypeID], fields: [(TypeID, String)]) {
+        for type in types { Registry.markTransient(type) }
+        for (type, field) in fields { Registry.markTransient(type, field: field) }
     }
 }
 
@@ -295,6 +314,9 @@ public struct PlanField: Sendable {
     /// A client field, from a schema extension: no server is asked for it
     /// and none is waited for; a payload committed by hand writes it.
     public let client: Bool
+    /// A root field `transient` names: its cell, its key and the operations
+    /// selecting it never reach the image.
+    public let transient: Bool
     /// Alternatives of conjunctions of `@include` and `@skip` conditions: the
     /// field is fetched when any alternative holds. Empty when it always is.
     public let guards: [[Guard]]
@@ -306,7 +328,7 @@ public struct PlanField: Sendable {
     /// lookup, its connection or its edit, or a field below it.
     let readsVariables: Bool
 
-    init(responseKey: String, key: StorageKey, kind: Kind, edit: Edit?, deferred: String?, caught: Bool, client: Bool, guards: [[Guard]]) {
+    init(responseKey: String, key: StorageKey, kind: Kind, edit: Edit?, deferred: String?, caught: Bool, client: Bool, transient: Bool, guards: [[Guard]]) {
         self.responseKey = responseKey
         self.key = key
         self.kind = kind
@@ -314,6 +336,7 @@ public struct PlanField: Sendable {
         self.deferred = deferred
         self.caught = caught
         self.client = client
+        self.transient = transient
         self.guards = guards
         keyBytes = Array(responseKey.utf8)
         var readsVariables = !guards.isEmpty
@@ -330,12 +353,12 @@ public struct PlanField: Sendable {
         self.readsVariables = readsVariables
     }
 
-    public static func scalar(_ responseKey: String, key: StorageKey, kind: ScalarKind, list: Bool, edit: Edit? = nil, deferred: String? = nil, caught: Bool = false, client: Bool = false, guards: [[Guard]] = []) -> PlanField {
-        PlanField(responseKey: responseKey, key: key, kind: .scalar(kind, list: list), edit: edit, deferred: deferred, caught: caught, client: client, guards: guards)
+    public static func scalar(_ responseKey: String, key: StorageKey, kind: ScalarKind, list: Bool, edit: Edit? = nil, deferred: String? = nil, caught: Bool = false, client: Bool = false, transient: Bool = false, guards: [[Guard]] = []) -> PlanField {
+        PlanField(responseKey: responseKey, key: key, kind: .scalar(kind, list: list), edit: edit, deferred: deferred, caught: caught, client: client, transient: transient, guards: guards)
     }
 
-    public static func linked(_ responseKey: String, key: StorageKey, plural: Bool, lookup: Lookup? = nil, connection: ConnectionPlan? = nil, edit: Edit? = nil, deferred: String? = nil, caught: Bool = false, client: Bool = false, guards: [[Guard]] = [], selection: Selection) -> PlanField {
-        PlanField(responseKey: responseKey, key: key, kind: .linked(selection, plural: plural, lookup: lookup, connection: connection), edit: edit, deferred: deferred, caught: caught, client: client, guards: guards)
+    public static func linked(_ responseKey: String, key: StorageKey, plural: Bool, lookup: Lookup? = nil, connection: ConnectionPlan? = nil, edit: Edit? = nil, deferred: String? = nil, caught: Bool = false, client: Bool = false, transient: Bool = false, guards: [[Guard]] = [], selection: Selection) -> PlanField {
+        PlanField(responseKey: responseKey, key: key, kind: .linked(selection, plural: plural, lookup: lookup, connection: connection), edit: edit, deferred: deferred, caught: caught, client: client, transient: transient, guards: guards)
     }
 
     /// Whether the variables select the field.
@@ -399,6 +422,9 @@ public final class Selection: Sendable {
     /// Whether any field below reads a variable; when none does, the
     /// selection resolves once and keeps the resolution.
     let readsVariables: Bool
+    /// Whether a field of the selection is a transient root field: an
+    /// operation selecting one leaves no fetch stamp in the image.
+    let transient: Bool
     private let resolution = Mutex<ResolvedSelection?>(nil)
 
     /// A selection every type reads alike.
@@ -413,6 +439,7 @@ public final class Selection: Sendable {
         self.memberships = memberships
         self.variants = variants
         readsVariables = variants.contains { $0.fields.contains(where: \.readsVariables) }
+        transient = variants.contains { $0.fields.contains(where: \.transient) }
     }
 
     /// Binds the variables: fields whose guards fail are dropped, keys with
@@ -447,7 +474,7 @@ public final class Selection: Sendable {
         }
         // A selection that reads no variables renders no key, and its
         // resolution is shared by every store: it holds no store's keys.
-        return ResolvedSelection(type: type, key: key, isAbstract: isAbstract, fields: others, listed: listed, conditions: conditions, memberships: memberships, hold: readsVariables ? hold : nil)
+        return ResolvedSelection(type: type, key: key, isAbstract: isAbstract, fields: others, listed: listed, conditions: conditions, memberships: memberships, hold: readsVariables ? hold : nil, transient: transient)
     }
 
     /// A field with its variables bound, its slot on the selection's own type.
@@ -605,6 +632,9 @@ package final class ResolvedSelection: Sendable {
     let key: [String]
     /// Whether a record's type comes from the payload's `__typename`.
     package let isAbstract: Bool
+    /// Whether the selection reads a transient root field, so the operation
+    /// leaves no fetch stamp in the image.
+    package let transient: Bool
     /// The fields of a selection on an object type; on an abstract type,
     /// those every type reads, resolved on the abstract type itself for a
     /// record whose payload names no type. Stored apart from a variant so
@@ -634,10 +664,11 @@ package final class ResolvedSelection: Sendable {
     /// shares.
     private let hold: Keys.Hold?
 
-    init(type: TypeID, key: [String], isAbstract: Bool, fields: [ResolvedField], listed: [TypeID: ResolvedVariant], conditions: [(TypeID, [ResolvedField])] = [], memberships: [Selection.MembershipAnswer] = [], hold: Keys.Hold?) {
+    init(type: TypeID, key: [String], isAbstract: Bool, fields: [ResolvedField], listed: [TypeID: ResolvedVariant], conditions: [(TypeID, [ResolvedField])] = [], memberships: [Selection.MembershipAnswer] = [], hold: Keys.Hold?, transient: Bool = false) {
         self.type = type
         self.key = key
         self.isAbstract = isAbstract
+        self.transient = transient
         self.fields = fields
         own = ResolvedVariant(type: type, key: key, fields: fields, typeName: type.name)
         self.listed = listed

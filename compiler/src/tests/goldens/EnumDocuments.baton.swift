@@ -45,7 +45,7 @@ query TestCharactersWithStatus(
                 .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
                 .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -93,7 +93,7 @@ mutation TestSetStatuses {
             .linked("setLists", key: .fixed(Slots.Mutation.setLists), plural: false, selection: Baton.Selection(type: Types.ListsPayload, key: [], abstract: false, fields: [
                 .scalar("statuses", key: .fixed(Slots.ListsPayload.statuses), kind: .string, list: true),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor

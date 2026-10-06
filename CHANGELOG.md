@@ -5,6 +5,14 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- What may reach the image is configured. `baton.json`'s `transient` block
+  names types whose records are never written and root fields, as
+  `Query.search`, whose cells, storage keys and fetch stamps never are,
+  since those carry the arguments and variables they were asked with. A
+  slot linking to a transient record is left out of its row; the next
+  launch misses on it and fetches. Memory is unaffected. The lists join the
+  schema's digest, so an image written under another list starts again.
+  Generated code of this shape is format 12.
 - Client schema extensions, under Relay's key `schemaExtensions` in
   `baton.json`: files, or directories of `.graphql` files, that give server
   types client fields or declare types the server does not have. A client

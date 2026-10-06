@@ -43,7 +43,7 @@ query TestAssetNameQuery(
                 .scalar("id", key: .fixed(Slots.Asset.id), kind: .string, list: false),
                 .scalar("uuid", key: .fixed(Slots.Asset.uuid), kind: .string, list: false),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -109,7 +109,7 @@ query TestAssetQuery(
                 .scalar("name", key: .fixed(Slots.Asset.name), kind: .string, list: false),
                 .scalar("id", key: .fixed(Slots.Asset.id), kind: .string, list: false),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -173,7 +173,7 @@ query TestAssetsQuery {
                 .scalar("id", key: .fixed(Slots.Asset.id), kind: .string, list: false),
                 .scalar("uuid", key: .fixed(Slots.Asset.uuid), kind: .string, list: false),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -236,7 +236,7 @@ query TestQuoteQuery(
                 .scalar("quote", key: .fixed(Slots.Quote.quote), kind: .string, list: false),
                 .scalar("rate", key: .fixed(Slots.Quote.rate), kind: .double, list: false),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -291,7 +291,7 @@ query TestQuotesQuery {
                 .scalar("base", key: .fixed(Slots.Quote.base), kind: .string, list: false),
                 .scalar("quote", key: .fixed(Slots.Quote.quote), kind: .string, list: false),
             ])),
-        ]))
+        ]), transient: Types.transient)
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor

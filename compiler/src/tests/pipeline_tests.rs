@@ -633,3 +633,6 @@ mod enum_tests;
 
 #[path = "extension_tests.rs"]
 mod extension_tests;
+
+#[path = "transient_tests.rs"]
+mod transient_tests;
