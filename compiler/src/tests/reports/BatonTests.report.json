@@ -1,0 +1,1814 @@
+{
+  "schemaDigest": "6ebb62f12d31c6016642f7b201a78456",
+  "operations": [
+    {
+      "name": "Fixture",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/Documents.swift",
+      "variables": [
+        {
+          "name": "page",
+          "type": "Int"
+        }
+      ],
+      "fragments": [],
+      "text": "query Fixture(\n  $page: Int\n) {\n  characters(page: $page) {\n    info {\n      count\n      pages\n      next\n      prev\n    }\n    results {\n      id\n      name\n      status\n      species\n      type\n      gender\n      image\n      created\n      origin {\n        id\n        name\n        type\n        dimension\n        created\n      }\n      location {\n        id\n        name\n        type\n        dimension\n        created\n      }\n      episode {\n        id\n        name\n        air_date\n        episode\n        created\n        characters {\n          id\n          name\n          image\n        }\n      }\n    }\n  }\n}"
+    },
+    {
+      "name": "TestAddNote",
+      "kind": "mutation",
+      "source": "swift/Tests/BatonTests/ListDocuments.swift",
+      "variables": [
+        {
+          "name": "characterId",
+          "type": "ID!"
+        },
+        {
+          "name": "text",
+          "type": "String!"
+        },
+        {
+          "name": "connections",
+          "type": "[ID!]!"
+        }
+      ],
+      "fragments": [],
+      "text": "mutation TestAddNote(\n  $characterId: ID!\n  $text: String!\n) {\n  addNote(characterId: $characterId, text: $text) {\n    noteEdge {\n      cursor\n      node {\n        id\n        text\n      }\n    }\n  }\n}"
+    },
+    {
+      "name": "TestAddNoteFirst",
+      "kind": "mutation",
+      "source": "swift/Tests/BatonTests/ListDocuments.swift",
+      "variables": [
+        {
+          "name": "characterId",
+          "type": "ID!"
+        },
+        {
+          "name": "text",
+          "type": "String!"
+        },
+        {
+          "name": "connections",
+          "type": "[ID!]!"
+        }
+      ],
+      "fragments": [],
+      "text": "mutation TestAddNoteFirst(\n  $characterId: ID!\n  $text: String!\n) {\n  addNote(characterId: $characterId, text: $text) {\n    noteEdge {\n      cursor\n      node {\n        id\n        text\n      }\n    }\n  }\n}"
+    },
+    {
+      "name": "TestAddNoteNode",
+      "kind": "mutation",
+      "source": "swift/Tests/BatonTests/ListDocuments.swift",
+      "variables": [
+        {
+          "name": "characterId",
+          "type": "ID!"
+        },
+        {
+          "name": "text",
+          "type": "String!"
+        },
+        {
+          "name": "connections",
+          "type": "[ID!]!"
+        }
+      ],
+      "fragments": [],
+      "text": "mutation TestAddNoteNode(\n  $characterId: ID!\n  $text: String!\n) {\n  addNote(characterId: $characterId, text: $text) {\n    note {\n      id\n      text\n    }\n  }\n}"
+    },
+    {
+      "name": "TestAddNoteNodeFirst",
+      "kind": "mutation",
+      "source": "swift/Tests/BatonTests/ListDocuments.swift",
+      "variables": [
+        {
+          "name": "characterId",
+          "type": "ID!"
+        },
+        {
+          "name": "text",
+          "type": "String!"
+        },
+        {
+          "name": "connections",
+          "type": "[ID!]!"
+        }
+      ],
+      "fragments": [],
+      "text": "mutation TestAddNoteNodeFirst(\n  $characterId: ID!\n  $text: String!\n) {\n  addNote(characterId: $characterId, text: $text) {\n    note {\n      id\n      text\n    }\n  }\n}"
+    },
+    {
+      "name": "TestAddNoteNodeOfAnotherType",
+      "kind": "mutation",
+      "source": "swift/Tests/BatonTests/ListDocuments.swift",
+      "variables": [
+        {
+          "name": "characterId",
+          "type": "ID!"
+        },
+        {
+          "name": "text",
+          "type": "String!"
+        },
+        {
+          "name": "connections",
+          "type": "[ID!]!"
+        }
+      ],
+      "fragments": [],
+      "text": "mutation TestAddNoteNodeOfAnotherType(\n  $characterId: ID!\n  $text: String!\n) {\n  addNote(characterId: $characterId, text: $text) {\n    note {\n      id\n      text\n    }\n  }\n}"
+    },
+    {
+      "name": "TestAliasQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ListDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [
+        "TestRow_character"
+      ],
+      "text": "query TestAliasQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    ...TestRow_character\n    id\n  }\n}\n\nfragment TestRow_character on Character {\n  name\n  status\n  image\n}"
+    },
+    {
+      "name": "TestAssetNameQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/IdentityDocuments.swift",
+      "variables": [
+        {
+          "name": "uuid",
+          "type": "String!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestAssetNameQuery(\n  $uuid: String!\n) {\n  asset(uuid: $uuid) {\n    name\n    id\n    uuid\n  }\n}"
+    },
+    {
+      "name": "TestAssetPricesQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ScalarDocuments.swift",
+      "variables": [],
+      "fragments": [],
+      "text": "query TestAssetPricesQuery {\n  assets {\n    uuid\n    price\n    listedAt\n    page\n    prices\n    id\n  }\n}"
+    },
+    {
+      "name": "TestAssetQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/IdentityDocuments.swift",
+      "variables": [
+        {
+          "name": "uuid",
+          "type": "String!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestAssetQuery(\n  $uuid: String!\n) {\n  asset(uuid: $uuid) {\n    owner {\n      name\n      id\n    }\n    uuid\n    name\n    id\n  }\n}"
+    },
+    {
+      "name": "TestAssetsQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/IdentityDocuments.swift",
+      "variables": [],
+      "fragments": [],
+      "text": "query TestAssetsQuery {\n  assets {\n    name\n    size\n    id\n    uuid\n  }\n}"
+    },
+    {
+      "name": "TestAuthorNotesPaginationQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ListDocuments.swift",
+      "variables": [
+        {
+          "name": "count",
+          "type": "Int"
+        },
+        {
+          "name": "cursor",
+          "type": "String"
+        },
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [
+        "TestAuthorNotes_note"
+      ],
+      "text": "query TestAuthorNotesPaginationQuery(\n  $count: Int = 2\n  $cursor: String\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...TestAuthorNotes_note_1G22uz\n    id\n  }\n}\n\nfragment TestAuthorNotes_note_1G22uz on Note {\n  id\n  author {\n    id\n    name\n    notes(first: $count, after: $cursor) {\n      edges {\n        node {\n          id\n          text\n          __typename\n        }\n        cursor\n      }\n      pageInfo {\n        endCursor\n        hasNextPage\n      }\n    }\n  }\n}"
+    },
+    {
+      "name": "TestAuthorNotesQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ListDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [
+        "TestAuthorNotes_note"
+      ],
+      "text": "query TestAuthorNotesQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...TestAuthorNotes_note\n    id\n  }\n}\n\nfragment TestAuthorNotes_note on Note {\n  id\n  author {\n    id\n    name\n    notes(first: 2) {\n      edges {\n        node {\n          id\n          text\n          __typename\n        }\n        cursor\n      }\n      pageInfo {\n        endCursor\n        hasNextPage\n      }\n    }\n  }\n}"
+    },
+    {
+      "name": "TestBuilderNames",
+      "kind": "mutation",
+      "source": "swift/Tests/BatonTests/EmitterDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        },
+        {
+          "name": "favorite",
+          "type": "Boolean!"
+        },
+        {
+          "name": "self",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [],
+      "text": "mutation TestBuilderNames(\n  $id: ID!\n  $favorite: Boolean!\n  $self: ID!\n) {\n  type: setFavorite(id: $id, favorite: $favorite) {\n    character {\n      id\n      favorite\n    }\n  }\n  self: setFavorite(id: $self, favorite: $favorite) {\n    character {\n      id\n      favorite\n    }\n  }\n  string: setFavorite(id: $id, favorite: $favorite) {\n    character {\n      id\n      name\n    }\n  }\n  sendable: setFavorite(id: $id, favorite: $favorite) {\n    character {\n      id\n      favorite\n    }\n  }\n}"
+    },
+    {
+      "name": "TestCaughtEpisodes",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestCaughtEpisodes(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    caught: episode {\n      name\n      id\n    }\n  }\n}"
+    },
+    {
+      "name": "TestCaughtNames",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/NameDocuments.swift",
+      "variables": [],
+      "fragments": [],
+      "text": "query TestCaughtNames {\n  types {\n    Baton\n  }\n}"
+    },
+    {
+      "name": "TestCaughtPartQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [
+        "TestCaughtAppearances_character"
+      ],
+      "text": "query TestCaughtPartQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    name\n    ...TestCaughtAppearances_character @defer(label: \"TestCaughtPartQuery$defer$TestCaughtAppearances_character\")\n  }\n}\n\nfragment TestCaughtAppearances_character on Character {\n  episode {\n    name\n    id\n  }\n}"
+    },
+    {
+      "name": "TestCaughtSpreads",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/EmitterDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [
+        "TestCaughtProfile_character",
+        "TestCaughtStrict_character"
+      ],
+      "text": "query TestCaughtSpreads(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    ...TestCaughtProfile_character\n    ...TestCaughtStrict_character\n  }\n  node(id: $id) {\n    __typename\n    id\n    ... on Character {\n      ...TestCaughtProfile_character\n    }\n  }\n}\n\nfragment TestCaughtProfile_character on Character {\n  name\n  origin {\n    name\n    id\n  }\n}\n\nfragment TestCaughtStrict_character on Character {\n  species\n}"
+    },
+    {
+      "name": "TestCharacterSecret",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/TransientDocuments.swift",
+      "variables": [],
+      "fragments": [],
+      "text": "query TestCharacterSecret {\n  character(id: \"1\") {\n    id\n    name\n    secret {\n      id\n      body\n    }\n  }\n}"
+    },
+    {
+      "name": "TestCharactersWithStatus",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/EnumDocuments.swift",
+      "variables": [
+        {
+          "name": "status",
+          "type": "Status!"
+        },
+        {
+          "name": "any",
+          "type": "[Status!]"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestCharactersWithStatus(\n  $status: Status!\n  $any: [Status!]\n) {\n  charactersWithStatus(status: $status, any: $any) {\n    name\n    id\n  }\n}"
+    },
+    {
+      "name": "TestCollidingErrors",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestCollidingErrors(\n  $id: ID!\n) {\n  types: character(id: $id) {\n    id\n  }\n  typesLens: character(id: $id) {\n    id\n    name\n  }\n}"
+    },
+    {
+      "name": "TestCollidingRequired",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestCollidingRequired(\n  $id: ID!\n) {\n  types: character(id: $id) {\n    id\n  }\n  typesLens: character(id: $id) {\n    id\n    name\n  }\n}"
+    },
+    {
+      "name": "TestCommitVariable",
+      "kind": "mutation",
+      "source": "swift/Tests/BatonTests/EmitterDocuments.swift",
+      "variables": [
+        {
+          "name": "commit",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [],
+      "text": "mutation TestCommitVariable(\n  $commit: ID!\n) {\n  setFavorite(id: $commit, favorite: true) {\n    character {\n      id\n      name\n      favorite\n    }\n  }\n}"
+    },
+    {
+      "name": "TestConditionNames",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/EmitterDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        },
+        {
+          "name": "name",
+          "type": "String!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestConditionNames(\n  $id: ID!\n  $name: String!\n) {\n  namesake(name: $name) {\n    __typename\n    asCharacter: name\n    ... on Character {\n      status\n    }\n    ... on Node {\n      __isNode: __typename\n      id\n    }\n  }\n  node(id: $id) {\n    __typename\n    id\n    ... on Episode {\n      name\n    }\n    ... on Character {\n      name\n    }\n  }\n}"
+    },
+    {
+      "name": "TestConditions",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ConditionDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        },
+        {
+          "name": "withOrigin",
+          "type": "Boolean!"
+        },
+        {
+          "name": "hideStatus",
+          "type": "Boolean!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestConditions(\n  $id: ID!\n  $withOrigin: Boolean!\n  $hideStatus: Boolean!\n) {\n  character(id: $id) {\n    name\n    origin {\n      id\n    }\n    origin @include(if: $withOrigin) {\n      name\n      dimension\n      id\n    }\n    species @include(if: $withOrigin)\n    status @skip(if: $hideStatus)\n    id\n  }\n}"
+    },
+    {
+      "name": "TestDeferredNotesPaginationQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ListDocuments.swift",
+      "variables": [
+        {
+          "name": "count",
+          "type": "Int"
+        },
+        {
+          "name": "cursor",
+          "type": "String"
+        },
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [
+        "TestDeferredNotes_character",
+        "TestNoteText_note"
+      ],
+      "text": "query TestDeferredNotesPaginationQuery(\n  $count: Int = 2\n  $cursor: String\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...TestDeferredNotes_character_1G22uz\n    id\n  }\n}\n\nfragment TestDeferredNotes_character_1G22uz on Character {\n  notes(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        ...TestNoteText_note @defer(label: \"TestDeferredNotes_character$defer$noteText\")\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment TestNoteText_note on Note {\n  text\n}"
+    },
+    {
+      "name": "TestDeleteNote",
+      "kind": "mutation",
+      "source": "swift/Tests/BatonTests/ListDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [],
+      "text": "mutation TestDeleteNote(\n  $id: ID!\n) {\n  removeNote(id: $id) {\n    removedNoteId\n  }\n}"
+    },
+    {
+      "name": "TestDrafts",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ExtensionDocuments.swift",
+      "variables": [],
+      "fragments": [],
+      "text": "query TestDrafts {\n  character(id: \"1\") {\n    id\n    name\n  }\n}"
+    },
+    {
+      "name": "TestEdgesNamesQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/EmitterDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [
+        "TestEdgesNames_character"
+      ],
+      "text": "query TestEdgesNamesQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    ...TestEdgesNames_character\n    id\n  }\n}\n\nfragment TestEdgesNames_character on Character {\n  notes(first: 2) {\n    Edges: pageInfo {\n      hasNextPage\n    }\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}"
+    },
+    {
+      "name": "TestEpisodesQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/Documents.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestEpisodesQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    episode {\n      id\n      name\n    }\n    id\n  }\n}"
+    },
+    {
+      "name": "TestEscapedText",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/EmitterDocuments.swift",
+      "variables": [],
+      "fragments": [],
+      "text": "query TestEscapedText {\n  search(name: \"\\\\#1\") {\n    __typename\n    ... on Node {\n      __isNode: __typename\n      id\n    }\n  }\n}"
+    },
+    {
+      "name": "TestFilteredCharacters",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
+      "variables": [
+        {
+          "name": "filters",
+          "type": "[FilterCharacter!]!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestFilteredCharacters(\n  $filters: [FilterCharacter!]!\n) {\n  charactersMatching(filters: $filters) {\n    id\n    name\n  }\n}"
+    },
+    {
+      "name": "TestFoldedNode",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ConditionDocuments.swift",
+      "variables": [
+        {
+          "name": "name",
+          "type": "String!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestFoldedNode(\n  $name: String!\n) {\n  search(name: $name) {\n    __typename\n    ... on Node {\n      __isNode: __typename\n      id\n    }\n  }\n}"
+    },
+    {
+      "name": "TestFragmentNamedFields",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/EmitterDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [
+        "Fragment",
+        "TestCaughtProfile_character",
+        "TestCaughtStrict_character"
+      ],
+      "text": "query TestFragmentNamedFields(\n  $id: ID!\n) {\n  character(id: $id) {\n    TestCaughtProfile_character: name\n    TestCaughtStrict_character: species\n    ...TestCaughtProfile_character\n    ...TestCaughtStrict_character\n    Fragment: status\n    ...Fragment\n    id\n  }\n}\n\nfragment Fragment on Character {\n  status\n}\n\nfragment TestCaughtProfile_character on Character {\n  name\n  origin {\n    name\n    id\n  }\n}\n\nfragment TestCaughtStrict_character on Character {\n  species\n}"
+    },
+    {
+      "name": "TestFreshCharacter",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/Documents.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestFreshCharacter(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    name\n  }\n}"
+    },
+    {
+      "name": "TestHasherVariable",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/EmitterDocuments.swift",
+      "variables": [
+        {
+          "name": "hasher",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestHasherVariable(\n  $hasher: ID!\n) {\n  character(id: $hasher) {\n    id\n    name\n  }\n}"
+    },
+    {
+      "name": "TestHeaderQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/Documents.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [
+        "TestHeader_character"
+      ],
+      "text": "query TestHeaderQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    ...TestHeader_character\n    id\n  }\n}\n\nfragment TestHeader_character on Character {\n  name\n  status\n  species\n  image\n  origin {\n    name\n    id\n  }\n}"
+    },
+    {
+      "name": "TestHiddenNotesPaginationQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ListDocuments.swift",
+      "variables": [
+        {
+          "name": "count",
+          "type": "Int"
+        },
+        {
+          "name": "cursor",
+          "type": "String"
+        },
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [
+        "TestHiddenNotes_character"
+      ],
+      "text": "query TestHiddenNotesPaginationQuery(\n  $count: Int = 2\n  $cursor: String\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...TestHiddenNotes_character_1G22uz\n    id\n  }\n}\n\nfragment TestHiddenNotes_character_1G22uz on Character {\n  TestHiddenNotes_character: name\n  TestHiddenNotesPaginationQuery: status\n  notes(first: $count, after: $cursor) {\n    TestHiddenNotes_character: totalCount\n    TestHiddenNotesPaginationQuery: totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}"
+    },
+    {
+      "name": "TestHiddenNotesQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ListDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [
+        "TestHiddenNotes_character"
+      ],
+      "text": "query TestHiddenNotesQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    ...TestHiddenNotes_character\n    id\n  }\n}\n\nfragment TestHiddenNotes_character on Character {\n  TestHiddenNotes_character: name\n  TestHiddenNotesPaginationQuery: status\n  notes(first: 2) {\n    TestHiddenNotes_character: totalCount\n    TestHiddenNotesPaginationQuery: totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}"
+    },
+    {
+      "name": "TestHiddenRecentNotesPaginationQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ListDocuments.swift",
+      "variables": [
+        {
+          "name": "count",
+          "type": "Int"
+        },
+        {
+          "name": "cursor",
+          "type": "String"
+        },
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [
+        "TestHiddenRecentNotes_character"
+      ],
+      "text": "query TestHiddenRecentNotesPaginationQuery(\n  $count: Int = 2\n  $cursor: String\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...TestHiddenRecentNotes_character_1G22uz\n    id\n  }\n}\n\nfragment TestHiddenRecentNotes_character_1G22uz on Character {\n  notes(last: $count, before: $cursor) {\n    TestHiddenRecentNotes_character: totalCount\n    TestHiddenRecentNotesPaginationQuery: totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      hasPreviousPage\n      startCursor\n    }\n  }\n  id\n}"
+    },
+    {
+      "name": "TestHiddenRecentNotesQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ListDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [
+        "TestHiddenRecentNotes_character"
+      ],
+      "text": "query TestHiddenRecentNotesQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    ...TestHiddenRecentNotes_character\n    id\n  }\n}\n\nfragment TestHiddenRecentNotes_character on Character {\n  notes(last: 2) {\n    TestHiddenRecentNotes_character: totalCount\n    TestHiddenRecentNotesPaginationQuery: totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      hasPreviousPage\n      startCursor\n    }\n  }\n  id\n}"
+    },
+    {
+      "name": "TestKeys",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/KeyDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        },
+        {
+          "name": "name",
+          "type": "String"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestKeys(\n  $id: ID!\n  $name: String\n) {\n  search(name: \"$0.00\") {\n    __typename\n    ... on Node {\n      __isNode: __typename\n      id\n    }\n  }\n  character(id: \"a,b\") {\n    name\n    id\n  }\n  charactersByIds(ids: [$id, \"2\"]) {\n    name\n    id\n  }\n  characters(filter: {status: \"Alive\", name: $name}) {\n    info {\n      count\n    }\n  }\n}"
+    },
+    {
+      "name": "TestKeywordVariables",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
+      "variables": [
+        {
+          "name": "where",
+          "type": "ID!"
+        },
+        {
+          "name": "in",
+          "type": "String!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestKeywordVariables(\n  $where: ID!\n  $in: String!\n) {\n  character(id: $where) {\n    id\n  }\n  search(name: $in) {\n    __typename\n    ... on Node {\n      __isNode: __typename\n      id\n    }\n  }\n}"
+    },
+    {
+      "name": "TestList",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/Documents.swift",
+      "variables": [
+        {
+          "name": "page",
+          "type": "Int"
+        }
+      ],
+      "fragments": [
+        "TestHeader_character",
+        "TestRow_character"
+      ],
+      "text": "query TestList(\n  $page: Int\n) {\n  characters(page: $page) {\n    results {\n      ...TestRow_character\n      ...TestHeader_character\n      id\n    }\n  }\n}\n\nfragment TestHeader_character on Character {\n  name\n  status\n  species\n  image\n  origin {\n    name\n    id\n  }\n}\n\nfragment TestRow_character on Character {\n  name\n  status\n  image\n}"
+    },
+    {
+      "name": "TestListPayload",
+      "kind": "mutation",
+      "source": "swift/Tests/BatonTests/EmitterDocuments.swift",
+      "variables": [],
+      "fragments": [],
+      "text": "mutation TestListPayload {\n  setLists {\n    strings\n    ids\n    counts\n    ratios\n    flags\n    jsons\n    statuses\n  }\n}"
+    },
+    {
+      "name": "TestLoggedOrigin",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestLoggedOrigin(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    origin {\n      id\n      name\n    }\n  }\n}"
+    },
+    {
+      "name": "TestLowercaseSpreads",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/EmitterDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [
+        "testLowercase",
+        "testLowercaseRequired"
+      ],
+      "text": "query TestLowercaseSpreads(\n  $id: ID!\n) {\n  character(id: $id) {\n    ...testLowercase\n    ...testLowercaseRequired\n    id\n  }\n}\n\nfragment testLowercase on Character {\n  name\n}\n\nfragment testLowercaseRequired on Character {\n  origin {\n    name\n    id\n  }\n}"
+    },
+    {
+      "name": "TestModuleNamedPayload",
+      "kind": "mutation",
+      "source": "swift/Tests/BatonTests/EmitterDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [],
+      "text": "mutation TestModuleNamedPayload(\n  $id: ID!\n) {\n  setFavorite(id: $id, favorite: true) {\n    Baton: character {\n      id\n      Baton: name\n    }\n  }\n}"
+    },
+    {
+      "name": "TestNamedSpread",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ConditionDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [
+        "TestNamed_named"
+      ],
+      "text": "query TestNamedSpread(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    id\n    ...TestNamed_named\n  }\n}\n\nfragment TestNamed_named on Named {\n  __isNamed: __typename\n  name\n}"
+    },
+    {
+      "name": "TestNames",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/NameDocuments.swift",
+      "variables": [],
+      "fragments": [],
+      "text": "query TestNames {\n  types {\n    Type\n    Protocol\n    Baton\n    Any\n  }\n}"
+    },
+    {
+      "name": "TestNode",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/WriteDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestNode(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ... on Character {\n      id\n      name\n    }\n    ... on Episode {\n      id\n      name\n    }\n    id\n  }\n}"
+    },
+    {
+      "name": "TestNodeDeferred",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ConditionDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [
+        "TestAppearances_character"
+      ],
+      "text": "query TestNodeDeferred(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    id\n    ... on Character {\n      name\n    }\n    ...TestAppearances_character @defer(label: \"TestNodeDeferred$defer$TestAppearances_character\")\n  }\n}\n\nfragment TestAppearances_character on Character {\n  episode {\n    name\n    air_date\n    id\n  }\n}"
+    },
+    {
+      "name": "TestNodeFields",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ConditionDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestNodeFields(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    id\n    ... on Character {\n      name\n    }\n  }\n}"
+    },
+    {
+      "name": "TestNoteAdded",
+      "kind": "subscription",
+      "source": "swift/Tests/BatonTests/DeliveryDocuments.swift",
+      "variables": [
+        {
+          "name": "characterId",
+          "type": "ID!"
+        },
+        {
+          "name": "connections",
+          "type": "[ID!]!"
+        }
+      ],
+      "fragments": [],
+      "text": "subscription TestNoteAdded(\n  $characterId: ID!\n) {\n  noteAdded(characterId: $characterId) {\n    noteEdge {\n      cursor\n      node {\n        id\n        text\n      }\n    }\n  }\n}"
+    },
+    {
+      "name": "TestNoteCounts",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/KeyDocuments.swift",
+      "variables": [
+        {
+          "name": "page",
+          "type": "Int"
+        },
+        {
+          "name": "count",
+          "type": "Int"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestNoteCounts(\n  $page: Int\n  $count: Int\n) {\n  characters(page: $page) {\n    results {\n      id\n      name\n      pinned: notes(first: 97) {\n        totalCount\n      }\n      recent: notes(first: $count) {\n        totalCount\n      }\n    }\n  }\n}"
+    },
+    {
+      "name": "TestNotesPaginationQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ListDocuments.swift",
+      "variables": [
+        {
+          "name": "count",
+          "type": "Int"
+        },
+        {
+          "name": "cursor",
+          "type": "String"
+        },
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [
+        "TestNotes_character"
+      ],
+      "text": "query TestNotesPaginationQuery(\n  $count: Int = 2\n  $cursor: String\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...TestNotes_character_1G22uz\n    id\n  }\n}\n\nfragment TestNotes_character_1G22uz on Character {\n  name\n  notes(first: $count, after: $cursor) {\n    totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}"
+    },
+    {
+      "name": "TestNotesQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ListDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [
+        "TestNotes_character"
+      ],
+      "text": "query TestNotesQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    ...TestNotes_character\n    id\n  }\n}\n\nfragment TestNotes_character on Character {\n  name\n  notes(first: 2) {\n    totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}"
+    },
+    {
+      "name": "TestNotesSizedQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ListDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        },
+        {
+          "name": "size",
+          "type": "Int"
+        }
+      ],
+      "fragments": [
+        "TestNotes_character"
+      ],
+      "text": "query TestNotesSizedQuery(\n  $id: ID!\n  $size: Int\n) {\n  character(id: $id) {\n    ...TestNotes_character_2H9PL\n    id\n  }\n}\n\nfragment TestNotes_character_2H9PL on Character {\n  name\n  notes(first: $size) {\n    totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}"
+    },
+    {
+      "name": "TestNullsOnError",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/DeliveryDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestNullsOnError(\n  $id: ID!\n) {\n  character(id: $id) {\n    name\n    id\n  }\n}"
+    },
+    {
+      "name": "TestOverlapQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/DeliveryDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [
+        "TestAppearances_character"
+      ],
+      "text": "query TestOverlapQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    name\n    episode {\n      id\n    }\n    ...TestAppearances_character @defer(label: \"TestOverlapQuery$defer$TestAppearances_character\")\n    id\n  }\n}\n\nfragment TestAppearances_character on Character {\n  episode {\n    name\n    air_date\n    id\n  }\n}"
+    },
+    {
+      "name": "TestPinnedCharacter",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ExtensionDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestPinnedCharacter(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    name\n    status\n  }\n}"
+    },
+    {
+      "name": "TestPricedAssetsQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ScalarDocuments.swift",
+      "variables": [
+        {
+          "name": "price",
+          "type": "Decimal!"
+        },
+        {
+          "name": "among",
+          "type": "[Decimal!]"
+        }
+      ],
+      "fragments": [
+        "TestCaughtPrices_asset",
+        "TestRequiredPrice_asset",
+        "TestThrowingPrices_asset"
+      ],
+      "text": "query TestPricedAssetsQuery(\n  $price: Decimal!\n  $among: [Decimal!]\n) {\n  assetsPricedAbove(price: $price, among: $among) {\n    uuid\n    ...TestCaughtPrices_asset\n    ...TestThrowingPrices_asset\n    ...TestRequiredPrice_asset\n    id\n  }\n}\n\nfragment TestCaughtPrices_asset on Asset {\n  price\n  listedAt\n  page\n}\n\nfragment TestRequiredPrice_asset on Asset {\n  price\n}\n\nfragment TestThrowingPrices_asset on Asset {\n  price\n  prices\n}"
+    },
+    {
+      "name": "TestProfileQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/DeliveryDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [
+        "TestAppearances_character",
+        "TestProfile_character",
+        "TestStrict_character"
+      ],
+      "text": "query TestProfileQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    ...TestProfile_character\n    ...TestStrict_character\n    ...TestAppearances_character @defer(label: \"TestProfileQuery$defer$TestAppearances_character\")\n    id\n  }\n}\n\nfragment TestAppearances_character on Character {\n  episode {\n    name\n    air_date\n    id\n  }\n}\n\nfragment TestProfile_character on Character {\n  name\n  origin {\n    name\n    id\n  }\n  status\n  image\n  location {\n    name\n    dimension\n    id\n  }\n  gender\n}\n\nfragment TestStrict_character on Character {\n  species\n  type\n}"
+    },
+    {
+      "name": "TestProgramNamesQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/EmitterDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [
+        "TestCaughtProfile_character",
+        "TestProgramNames_character"
+      ],
+      "text": "query TestProgramNamesQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    ...TestProgramNames_character\n    id\n  }\n}\n\nfragment TestCaughtProfile_character on Character {\n  name\n  origin {\n    name\n    id\n  }\n}\n\nfragment TestProgramNames_character on Character {\n  testProgramNamesRefetchQuery: origin {\n    name\n    id\n  }\n  testCaughtProfile_character: location {\n    name\n    id\n  }\n  ...TestCaughtProfile_character\n  id\n}"
+    },
+    {
+      "name": "TestProgramNamesRefetchQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/EmitterDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [
+        "TestCaughtProfile_character",
+        "TestProgramNames_character"
+      ],
+      "text": "query TestProgramNamesRefetchQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...TestProgramNames_character\n    id\n  }\n}\n\nfragment TestCaughtProfile_character on Character {\n  name\n  origin {\n    name\n    id\n  }\n}\n\nfragment TestProgramNames_character on Character {\n  testProgramNamesRefetchQuery: origin {\n    name\n    id\n  }\n  testCaughtProfile_character: location {\n    name\n    id\n  }\n  ...TestCaughtProfile_character\n  id\n}"
+    },
+    {
+      "name": "TestQualifiedQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/Documents.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestQualifiedQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    name\n  }\n}"
+    },
+    {
+      "name": "TestQuoteQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/IdentityDocuments.swift",
+      "variables": [
+        {
+          "name": "base",
+          "type": "String!"
+        },
+        {
+          "name": "quote",
+          "type": "String!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestQuoteQuery(\n  $base: String!\n  $quote: String!\n) {\n  quote(base: $base, quote: $quote) {\n    base\n    quote\n    rate\n  }\n}"
+    },
+    {
+      "name": "TestQuotesQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/IdentityDocuments.swift",
+      "variables": [],
+      "fragments": [],
+      "text": "query TestQuotesQuery {\n  quotes {\n    rate\n    base\n    quote\n  }\n}"
+    },
+    {
+      "name": "TestRecentNotesPaginationQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ListDocuments.swift",
+      "variables": [
+        {
+          "name": "count",
+          "type": "Int"
+        },
+        {
+          "name": "cursor",
+          "type": "String"
+        },
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [
+        "TestRecentNotes_character"
+      ],
+      "text": "query TestRecentNotesPaginationQuery(\n  $count: Int = 2\n  $cursor: String\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...TestRecentNotes_character_1G22uz\n    id\n  }\n}\n\nfragment TestRecentNotes_character_1G22uz on Character {\n  notes(last: $count, before: $cursor) {\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      hasPreviousPage\n      startCursor\n    }\n  }\n  id\n}"
+    },
+    {
+      "name": "TestRecentNotesQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ListDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [
+        "TestRecentNotes_character"
+      ],
+      "text": "query TestRecentNotesQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    ...TestRecentNotes_character\n    id\n  }\n}\n\nfragment TestRecentNotes_character on Character {\n  notes(last: 2) {\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      hasPreviousPage\n      startCursor\n    }\n  }\n  id\n}"
+    },
+    {
+      "name": "TestRemoveNote",
+      "kind": "mutation",
+      "source": "swift/Tests/BatonTests/ListDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        },
+        {
+          "name": "connections",
+          "type": "[ID!]!"
+        }
+      ],
+      "fragments": [],
+      "text": "mutation TestRemoveNote(\n  $id: ID!\n) {\n  removeNote(id: $id) {\n    removedNoteId\n    deleted: removedNoteId\n  }\n}"
+    },
+    {
+      "name": "TestRename",
+      "kind": "mutation",
+      "source": "swift/Tests/BatonTests/WriteDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        },
+        {
+          "name": "name",
+          "type": "String!"
+        }
+      ],
+      "fragments": [],
+      "text": "mutation TestRename(\n  $id: ID!\n  $name: String!\n) {\n  rename(id: $id, name: $name) {\n    character {\n      id\n      name\n    }\n  }\n}"
+    },
+    {
+      "name": "TestRenameThroughFragment",
+      "kind": "mutation",
+      "source": "swift/Tests/BatonTests/WriteDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        },
+        {
+          "name": "name",
+          "type": "String!"
+        }
+      ],
+      "fragments": [
+        "TestRenamePayload_mutation"
+      ],
+      "text": "mutation TestRenameThroughFragment(\n  $id: ID!\n  $name: String!\n) {\n  ...TestRenamePayload_mutation\n}\n\nfragment TestRenamePayload_mutation on Mutation {\n  rename(id: $id, name: $name) {\n    character {\n      id\n      name\n    }\n  }\n}"
+    },
+    {
+      "name": "TestRenameWithOrigin",
+      "kind": "mutation",
+      "source": "swift/Tests/BatonTests/WriteDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        },
+        {
+          "name": "name",
+          "type": "String!"
+        },
+        {
+          "name": "withOrigin",
+          "type": "Boolean!"
+        }
+      ],
+      "fragments": [],
+      "text": "mutation TestRenameWithOrigin(\n  $id: ID!\n  $name: String!\n  $withOrigin: Boolean!\n) {\n  rename(id: $id, name: $name) {\n    character {\n      id\n      name\n      origin @include(if: $withOrigin) {\n        id\n        name\n      }\n    }\n  }\n}"
+    },
+    {
+      "name": "TestRequiredOrigin",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestRequiredOrigin(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    origin {\n      id\n      name\n    }\n  }\n}"
+    },
+    {
+      "name": "TestReservedNames",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [
+        "TestNotes_character"
+      ],
+      "text": "query TestReservedNames(\n  $id: ID!\n) {\n  sites: character(id: $id) {\n    id\n    ...TestNotes_character_35kO5h\n  }\n  types: character(id: $id) {\n    id\n  }\n  slots: character(id: $id) {\n    id\n  }\n}\n\nfragment TestNotes_character_35kO5h on Character {\n  name\n  notes(first: 1) {\n    totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}"
+    },
+    {
+      "name": "TestRosterQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/DeliveryDocuments.swift",
+      "variables": [
+        {
+          "name": "page",
+          "type": "Int"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestRosterQuery(\n  $page: Int\n) {\n  characters(page: $page) {\n    results {\n      id\n      name\n      status\n    }\n  }\n}"
+    },
+    {
+      "name": "TestSearch",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/WriteDocuments.swift",
+      "variables": [
+        {
+          "name": "name",
+          "type": "String!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestSearch(\n  $name: String!\n) {\n  search(name: $name) {\n    __typename\n    ... on Character {\n      id\n      name\n    }\n    ... on Location {\n      id\n      name\n      dimension\n    }\n    ... on Node {\n      __isNode: __typename\n      id\n    }\n  }\n}"
+    },
+    {
+      "name": "TestSearchOrigins",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/WriteDocuments.swift",
+      "variables": [
+        {
+          "name": "name",
+          "type": "String!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestSearchOrigins(\n  $name: String!\n) {\n  search(name: $name) {\n    __typename\n    ... on Character {\n      origin {\n        name\n        id\n      }\n    }\n    ... on Node {\n      __isNode: __typename\n      id\n    }\n  }\n}"
+    },
+    {
+      "name": "TestSecrets",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/TransientDocuments.swift",
+      "variables": [
+        {
+          "name": "code",
+          "type": "String!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestSecrets(\n  $code: String!\n) {\n  secrets(code: $code) {\n    id\n    body\n  }\n  character(id: \"1\") {\n    id\n    name\n  }\n}"
+    },
+    {
+      "name": "TestSetFavorite",
+      "kind": "mutation",
+      "source": "swift/Tests/BatonTests/WriteDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        },
+        {
+          "name": "favorite",
+          "type": "Boolean!"
+        }
+      ],
+      "fragments": [],
+      "text": "mutation TestSetFavorite(\n  $id: ID!\n  $favorite: Boolean!\n) {\n  setFavorite(id: $id, favorite: $favorite) {\n    character {\n      id\n      name\n      favorite\n    }\n  }\n}"
+    },
+    {
+      "name": "TestSetStatuses",
+      "kind": "mutation",
+      "source": "swift/Tests/BatonTests/EnumDocuments.swift",
+      "variables": [],
+      "fragments": [],
+      "text": "mutation TestSetStatuses {\n  setLists {\n    statuses\n  }\n}"
+    },
+    {
+      "name": "TestSpellings",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/NameDocuments.swift",
+      "variables": [],
+      "fragments": [],
+      "text": "query TestSpellings {\n  spellings {\n    __typename\n    ... on Spelled {\n      __isSpelled: __typename\n      label\n    }\n    ... on Baton {\n      id\n    }\n    ... on Type {\n      id\n    }\n    ... on Protocol {\n      id\n    }\n    ... on Set {\n      id\n    }\n    ... on Any {\n      id\n    }\n    ... on Node {\n      __isNode: __typename\n      id\n    }\n  }\n}"
+    },
+    {
+      "name": "TestSpreadKeys",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/KeyDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        },
+        {
+          "name": "name",
+          "type": "String"
+        }
+      ],
+      "fragments": [
+        "TestKeyArguments_query"
+      ],
+      "text": "query TestSpreadKeys(\n  $id: ID!\n  $name: String\n) {\n  character(id: $id) {\n    name\n    id\n  }\n  named: characters(filter: {name: $name}) {\n    info {\n      count\n    }\n  }\n  ...TestKeyArguments_query_p86SO\n}\n\nfragment TestKeyArguments_query_p86SO on Query {\n  charactersByIds(ids: [$id, \"2\"]) {\n    name\n    id\n  }\n  characters(filter: {status: \"Alive\", name: $name}) {\n    info {\n      count\n    }\n  }\n}"
+    },
+    {
+      "name": "TestSpreadNames",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/EmitterDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [
+        "TestCaughtStrict_character"
+      ],
+      "text": "query TestSpreadNames(\n  $id: ID!\n) {\n  character(id: $id) {\n    testCaughtStrict: species\n    ...TestCaughtStrict_character\n    id\n  }\n}\n\nfragment TestCaughtStrict_character on Character {\n  species\n}"
+    },
+    {
+      "name": "TestStrictConditions",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ConditionDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        },
+        {
+          "name": "withStatus",
+          "type": "Boolean!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestStrictConditions(\n  $id: ID!\n  $withStatus: Boolean!\n) {\n  character(id: $id) {\n    name\n    __typename @include(if: $withStatus)\n    species @include(if: $withStatus)\n    status @include(if: $withStatus)\n    origin @include(if: $withStatus) {\n      name\n      id\n    }\n    id\n  }\n}"
+    },
+    {
+      "name": "TestStrictDeferred",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/DeliveryDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [
+        "TestAppearances_character"
+      ],
+      "text": "query TestStrictDeferred(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    name\n    ...TestAppearances_character @defer(label: \"TestStrictDeferred$defer$TestAppearances_character\")\n  }\n}\n\nfragment TestAppearances_character on Character {\n  episode {\n    name\n    air_date\n    id\n  }\n}"
+    },
+    {
+      "name": "TestStrictEpisodes",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestStrictEpisodes(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    episode {\n      id\n      name\n    }\n  }\n}"
+    },
+    {
+      "name": "TestStrictOrigin",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestStrictOrigin(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    origin {\n      id\n      name\n    }\n  }\n}"
+    },
+    {
+      "name": "TestStrictQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/DeliveryDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestStrictQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    name\n    species\n    id\n  }\n}"
+    },
+    {
+      "name": "TestSwiftNames",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestSwiftNames(\n  $id: ID!\n) {\n  type: character(id: $id) {\n    id\n  }\n  self: character(id: $id) {\n    id\n  }\n  protocol: character(id: $id) {\n    id\n  }\n  any: character(id: $id) {\n    id\n  }\n  mainActor: character(id: $id) {\n    id\n  }\n  baton: character(id: $id) {\n    id\n  }\n  abstractSlots: character(id: $id) {\n    id\n  }\n  result: character(id: $id) {\n    id\n  }\n  optional: character(id: $id) {\n    id\n  }\n  string: character(id: $id) {\n    id\n  }\n  int: character(id: $id) {\n    id\n  }\n  double: character(id: $id) {\n    id\n  }\n  bool: character(id: $id) {\n    id\n  }\n  owner: character(id: $id) {\n    id\n  }\n  caught: character(id: $id) {\n    id\n  }\n  node(id: $id) {\n    __typename\n    id\n  }\n  tokenizer {\n    ratio\n    count\n    flag\n    id\n  }\n}"
+    },
+    {
+      "name": "TestThrowingNode",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestThrowingNode(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    id\n    ... on Character {\n      name\n    }\n  }\n}"
+    },
+    {
+      "name": "TestThrowingSpread",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/DeliveryDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [
+        "TestName_character"
+      ],
+      "text": "query TestThrowingSpread(\n  $id: ID!\n) {\n  character(id: $id) {\n    species\n    ...TestName_character\n    id\n  }\n}\n\nfragment TestName_character on Character {\n  name\n}"
+    },
+    {
+      "name": "TestTokenizerQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/TokenizerDocuments.swift",
+      "variables": [],
+      "fragments": [],
+      "text": "query TestTokenizerQuery {\n  tokenizer {\n    id\n    text\n    strings\n    count\n    counts\n    ratio\n    ratios\n    flag\n    flags\n    json\n    jsons\n  }\n}"
+    },
+    {
+      "name": "TestTwoFieldPartQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [
+        "TestOriginAndEpisode_character"
+      ],
+      "text": "query TestTwoFieldPartQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    name\n    ...TestOriginAndEpisode_character @defer(label: \"TestTwoFieldPartQuery$defer$TestOriginAndEpisode_character\")\n  }\n}\n\nfragment TestOriginAndEpisode_character on Character {\n  origin {\n    name\n    id\n  }\n  episode {\n    name\n    id\n  }\n}"
+    },
+    {
+      "name": "TestTwoPagesQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ListDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestTwoPagesQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    notes(first: 2) {\n      edges {\n        node {\n          id\n          text\n          __typename\n        }\n        cursor\n      }\n      pageInfo {\n        endCursor\n        hasNextPage\n      }\n    }\n  }\n  node(id: $id) {\n    __typename\n    ... on Character {\n      notes(first: 2, after: \"c2\") {\n        edges {\n          node {\n            id\n            text\n            __typename\n          }\n          cursor\n        }\n        pageInfo {\n          endCursor\n          hasNextPage\n        }\n      }\n    }\n    id\n  }\n}"
+    },
+    {
+      "name": "TestTwoScopes",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
+      "variables": [
+        {
+          "name": "a",
+          "type": "ID!"
+        },
+        {
+          "name": "b",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [
+        "TestNotes_character"
+      ],
+      "text": "query TestTwoScopes(\n  $a: ID!\n  $b: ID!\n) {\n  first: character(id: $a) {\n    id\n    name\n    ...TestNotes_character_35kO5h\n  }\n  second: character(id: $b) {\n    id\n    name\n    ...TestNotes_character_41grAF\n  }\n}\n\nfragment TestNotes_character_35kO5h on Character {\n  name\n  notes(first: 1) {\n    totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment TestNotes_character_41grAF on Character {\n  name\n  notes(first: 3) {\n    totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}"
+    },
+    {
+      "name": "TestTwoSpreads",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ConditionDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        },
+        {
+          "name": "again",
+          "type": "Boolean!"
+        }
+      ],
+      "fragments": [
+        "TestRow_character"
+      ],
+      "text": "query TestTwoSpreads(\n  $id: ID!\n  $again: Boolean!\n) {\n  character(id: $id) {\n    ...TestRow_character\n    ...TestRow_character @include(if: $again)\n    id\n  }\n}\n\nfragment TestRow_character on Character {\n  name\n  status\n  image\n}"
+    },
+    {
+      "name": "TestUncaughtPartQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [
+        "TestAppearances_character"
+      ],
+      "text": "query TestUncaughtPartQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    name\n    ...TestAppearances_character @defer(label: \"TestUncaughtPartQuery$defer$TestAppearances_character\")\n  }\n}\n\nfragment TestAppearances_character on Character {\n  episode {\n    name\n    air_date\n    id\n  }\n}"
+    },
+    {
+      "name": "TestUnion",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ConditionDocuments.swift",
+      "variables": [
+        {
+          "name": "name",
+          "type": "String!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestUnion(\n  $name: String!\n) {\n  search(name: $name) {\n    __typename\n    ... on Character {\n      label: name\n      status\n    }\n    ... on Location {\n      label: dimension\n      type\n    }\n    ... on Episode {\n      air_date\n    }\n    ... on Named {\n      __isNamed: __typename\n      name\n    }\n    ... on Node {\n      __isNode: __typename\n      id\n    }\n  }\n}"
+    }
+  ],
+  "fragments": [
+    {
+      "name": "Fragment",
+      "type": "Character",
+      "source": "swift/Tests/BatonTests/EmitterDocuments.swift",
+      "operations": [
+        "TestFragmentNamedFields"
+      ],
+      "text": "fragment Fragment on Character {\n  status\n}"
+    },
+    {
+      "name": "TestAppearances_character",
+      "type": "Character",
+      "source": "swift/Tests/BatonTests/DeliveryDocuments.swift",
+      "operations": [
+        "TestNodeDeferred",
+        "TestOverlapQuery",
+        "TestProfileQuery",
+        "TestStrictDeferred",
+        "TestUncaughtPartQuery"
+      ],
+      "text": "fragment TestAppearances_character on Character {\n  episode {\n    name\n    air_date\n  }\n}"
+    },
+    {
+      "name": "TestAuthorNotes_note",
+      "type": "Note",
+      "source": "swift/Tests/BatonTests/ListDocuments.swift",
+      "operations": [
+        "TestAuthorNotesPaginationQuery",
+        "TestAuthorNotesQuery"
+      ],
+      "text": "fragment TestAuthorNotes_note on Note @refetchable(queryName: \"TestAuthorNotesPaginationQuery\") @argumentDefinitions(\n  count: {type: \"Int\", defaultValue: 2}\n  cursor: {type: \"String\"}\n) {\n  id\n  author {\n    id\n    name\n    notes(first: $count, after: $cursor) @connection(key: \"TestAuthorNotes_notes\") {\n      edges {\n        node {\n          id\n          text\n        }\n      }\n    }\n  }\n}"
+    },
+    {
+      "name": "TestCaughtAppearances_character",
+      "type": "Character",
+      "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
+      "operations": [
+        "TestCaughtPartQuery"
+      ],
+      "text": "fragment TestCaughtAppearances_character on Character {\n  episode @catch {\n    name\n  }\n}"
+    },
+    {
+      "name": "TestCaughtPrices_asset",
+      "type": "Asset",
+      "source": "swift/Tests/BatonTests/ScalarDocuments.swift",
+      "operations": [
+        "TestPricedAssetsQuery"
+      ],
+      "text": "fragment TestCaughtPrices_asset on Asset {\n  price @catch\n  listedAt @catch\n  page @catch(to: NULL)\n}"
+    },
+    {
+      "name": "TestCaughtProfile_character",
+      "type": "Character",
+      "source": "swift/Tests/BatonTests/EmitterDocuments.swift",
+      "operations": [
+        "TestCaughtSpreads",
+        "TestFragmentNamedFields",
+        "TestProgramNamesQuery",
+        "TestProgramNamesRefetchQuery"
+      ],
+      "text": "fragment TestCaughtProfile_character on Character {\n  name\n  origin {\n    name\n  }\n}"
+    },
+    {
+      "name": "TestCaughtStrict_character",
+      "type": "Character",
+      "source": "swift/Tests/BatonTests/EmitterDocuments.swift",
+      "operations": [
+        "TestCaughtSpreads",
+        "TestFragmentNamedFields",
+        "TestSpreadNames"
+      ],
+      "text": "fragment TestCaughtStrict_character on Character @throwOnFieldError {\n  species\n}"
+    },
+    {
+      "name": "TestDeferredNotes_character",
+      "type": "Character",
+      "source": "swift/Tests/BatonTests/ListDocuments.swift",
+      "operations": [
+        "TestDeferredNotesPaginationQuery"
+      ],
+      "text": "fragment TestDeferredNotes_character on Character @refetchable(queryName: \"TestDeferredNotesPaginationQuery\") @argumentDefinitions(\n  count: {type: \"Int\", defaultValue: 2}\n  cursor: {type: \"String\"}\n) {\n  notes(first: $count, after: $cursor) @connection(key: \"TestDeferredNotes_notes\") {\n    edges {\n      node {\n        id\n        ...TestNoteText_note @defer(label: \"noteText\")\n      }\n    }\n  }\n}"
+    },
+    {
+      "name": "TestEdgesNames_character",
+      "type": "Character",
+      "source": "swift/Tests/BatonTests/EmitterDocuments.swift",
+      "operations": [
+        "TestEdgesNamesQuery"
+      ],
+      "text": "fragment TestEdgesNames_character on Character {\n  notes(first: 2) @connection(key: \"TestEdgesNames_notes\") {\n    Edges: pageInfo {\n      hasNextPage\n    }\n    edges {\n      node {\n        id\n        text\n      }\n    }\n  }\n}"
+    },
+    {
+      "name": "TestFavorite_character",
+      "type": "Character",
+      "source": "swift/Tests/BatonTests/WriteDocuments.swift",
+      "operations": [],
+      "text": "fragment TestFavorite_character on Character {\n  id\n  name\n  favorite\n}"
+    },
+    {
+      "name": "TestHeader_character",
+      "type": "Character",
+      "source": "swift/Tests/BatonTests/Documents.swift",
+      "operations": [
+        "TestHeaderQuery",
+        "TestList"
+      ],
+      "text": "fragment TestHeader_character on Character {\n  name\n  status\n  species\n  image\n  origin {\n    name\n  }\n}"
+    },
+    {
+      "name": "TestHiddenNotes_character",
+      "type": "Character",
+      "source": "swift/Tests/BatonTests/ListDocuments.swift",
+      "operations": [
+        "TestHiddenNotesPaginationQuery",
+        "TestHiddenNotesQuery"
+      ],
+      "text": "fragment TestHiddenNotes_character on Character @refetchable(queryName: \"TestHiddenNotesPaginationQuery\") @argumentDefinitions(\n  count: {type: \"Int\", defaultValue: 2}\n  cursor: {type: \"String\"}\n) {\n  TestHiddenNotes_character: name\n  TestHiddenNotesPaginationQuery: status\n  notes(first: $count, after: $cursor) @connection(key: \"TestHiddenNotes_notes\") {\n    TestHiddenNotes_character: totalCount\n    TestHiddenNotesPaginationQuery: totalCount\n    edges {\n      node {\n        id\n        text\n      }\n    }\n  }\n}"
+    },
+    {
+      "name": "TestHiddenRecentNotes_character",
+      "type": "Character",
+      "source": "swift/Tests/BatonTests/ListDocuments.swift",
+      "operations": [
+        "TestHiddenRecentNotesPaginationQuery",
+        "TestHiddenRecentNotesQuery"
+      ],
+      "text": "fragment TestHiddenRecentNotes_character on Character @refetchable(queryName: \"TestHiddenRecentNotesPaginationQuery\") @argumentDefinitions(\n  count: {type: \"Int\", defaultValue: 2}\n  cursor: {type: \"String\"}\n) {\n  notes(last: $count, before: $cursor) @connection(key: \"TestHiddenRecentNotes_notes\") {\n    TestHiddenRecentNotes_character: totalCount\n    TestHiddenRecentNotesPaginationQuery: totalCount\n    edges {\n      node {\n        id\n        text\n      }\n    }\n  }\n}"
+    },
+    {
+      "name": "TestKeyArguments_query",
+      "type": "Query",
+      "source": "swift/Tests/BatonTests/KeyDocuments.swift",
+      "operations": [
+        "TestSpreadKeys"
+      ],
+      "text": "fragment TestKeyArguments_query on Query @argumentDefinitions(\n  ids: {type: \"[ID!]!\"}\n  filter: {type: \"FilterCharacter\"}\n) {\n  charactersByIds(ids: $ids) {\n    name\n  }\n  characters(filter: $filter) {\n    info {\n      count\n    }\n  }\n}"
+    },
+    {
+      "name": "TestLogEdges_connection",
+      "type": "NoteConnection",
+      "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
+      "operations": [],
+      "text": "fragment TestLogEdges_connection on NoteConnection {\n  edges @required(action: LOG) {\n    cursor\n  }\n}"
+    },
+    {
+      "name": "TestLoggedNotes_character",
+      "type": "Character",
+      "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
+      "operations": [],
+      "text": "fragment TestLoggedNotes_character on Character {\n  notes(first: 1) {\n    totalCount\n    ...TestLogEdges_connection\n  }\n}"
+    },
+    {
+      "name": "TestName_character",
+      "type": "Character",
+      "source": "swift/Tests/BatonTests/DeliveryDocuments.swift",
+      "operations": [
+        "TestThrowingSpread"
+      ],
+      "text": "fragment TestName_character on Character {\n  name\n}"
+    },
+    {
+      "name": "TestNamed_named",
+      "type": "Named",
+      "source": "swift/Tests/BatonTests/ConditionDocuments.swift",
+      "operations": [
+        "TestNamedSpread"
+      ],
+      "text": "fragment TestNamed_named on Named {\n  name\n}"
+    },
+    {
+      "name": "TestNoteText_note",
+      "type": "Note",
+      "source": "swift/Tests/BatonTests/ListDocuments.swift",
+      "operations": [
+        "TestDeferredNotesPaginationQuery"
+      ],
+      "text": "fragment TestNoteText_note on Note {\n  text\n}"
+    },
+    {
+      "name": "TestNotes_character",
+      "type": "Character",
+      "source": "swift/Tests/BatonTests/ListDocuments.swift",
+      "operations": [
+        "TestNotesPaginationQuery",
+        "TestNotesQuery",
+        "TestNotesSizedQuery",
+        "TestReservedNames",
+        "TestTwoScopes"
+      ],
+      "text": "fragment TestNotes_character on Character @refetchable(queryName: \"TestNotesPaginationQuery\") @argumentDefinitions(\n  count: {type: \"Int\", defaultValue: 2}\n  cursor: {type: \"String\"}\n) {\n  name\n  notes(first: $count, after: $cursor) @connection(key: \"TestNotes_notes\") {\n    totalCount\n    edges {\n      node {\n        id\n        text\n      }\n    }\n  }\n}"
+    },
+    {
+      "name": "TestOriginAndEpisode_character",
+      "type": "Character",
+      "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
+      "operations": [
+        "TestTwoFieldPartQuery"
+      ],
+      "text": "fragment TestOriginAndEpisode_character on Character {\n  origin {\n    name\n  }\n  episode {\n    name\n  }\n}"
+    },
+    {
+      "name": "TestProfile_character",
+      "type": "Character",
+      "source": "swift/Tests/BatonTests/DeliveryDocuments.swift",
+      "operations": [
+        "TestProfileQuery"
+      ],
+      "text": "fragment TestProfile_character on Character {\n  name\n  origin @required(action: NONE) {\n    name\n  }\n  status @required(action: LOG)\n  image @catch\n  location @catch {\n    name\n    dimension\n  }\n  gender @catch(to: NULL)\n}"
+    },
+    {
+      "name": "TestProgramNames_character",
+      "type": "Character",
+      "source": "swift/Tests/BatonTests/EmitterDocuments.swift",
+      "operations": [
+        "TestProgramNamesQuery",
+        "TestProgramNamesRefetchQuery"
+      ],
+      "text": "fragment TestProgramNames_character on Character @refetchable(queryName: \"TestProgramNamesRefetchQuery\") {\n  testProgramNamesRefetchQuery: origin {\n    name\n  }\n  testCaughtProfile_character: location {\n    name\n  }\n  ...TestCaughtProfile_character\n}"
+    },
+    {
+      "name": "TestRecentNotes_character",
+      "type": "Character",
+      "source": "swift/Tests/BatonTests/ListDocuments.swift",
+      "operations": [
+        "TestRecentNotesPaginationQuery",
+        "TestRecentNotesQuery"
+      ],
+      "text": "fragment TestRecentNotes_character on Character @refetchable(queryName: \"TestRecentNotesPaginationQuery\") @argumentDefinitions(\n  count: {type: \"Int\", defaultValue: 2}\n  cursor: {type: \"String\"}\n) {\n  notes(last: $count, before: $cursor) @connection(key: \"TestRecentNotes_notes\") {\n    edges {\n      node {\n        id\n        text\n      }\n    }\n  }\n}"
+    },
+    {
+      "name": "TestRenamePayload_mutation",
+      "type": "Mutation",
+      "source": "swift/Tests/BatonTests/WriteDocuments.swift",
+      "operations": [
+        "TestRenameThroughFragment"
+      ],
+      "text": "fragment TestRenamePayload_mutation on Mutation {\n  rename(id: $id, name: $name) {\n    character {\n      id\n      name\n    }\n  }\n}"
+    },
+    {
+      "name": "TestRequiredPrice_asset",
+      "type": "Asset",
+      "source": "swift/Tests/BatonTests/ScalarDocuments.swift",
+      "operations": [
+        "TestPricedAssetsQuery"
+      ],
+      "text": "fragment TestRequiredPrice_asset on Asset {\n  price @required(action: NONE)\n}"
+    },
+    {
+      "name": "TestRow_character",
+      "type": "Character",
+      "source": "swift/Tests/BatonTests/Documents.swift",
+      "operations": [
+        "TestAliasQuery",
+        "TestList",
+        "TestTwoSpreads"
+      ],
+      "text": "fragment TestRow_character on Character {\n  name\n  status\n  image\n}"
+    },
+    {
+      "name": "TestStrict_character",
+      "type": "Character",
+      "source": "swift/Tests/BatonTests/DeliveryDocuments.swift",
+      "operations": [
+        "TestProfileQuery"
+      ],
+      "text": "fragment TestStrict_character on Character @throwOnFieldError {\n  species\n  type @required(action: THROW)\n}"
+    },
+    {
+      "name": "TestThrowingOrigin_character",
+      "type": "Character",
+      "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
+      "operations": [],
+      "text": "fragment TestThrowingOrigin_character on Character @throwOnFieldError {\n  origin @required(action: THROW) {\n    name\n  }\n}"
+    },
+    {
+      "name": "TestThrowingPrices_asset",
+      "type": "Asset",
+      "source": "swift/Tests/BatonTests/ScalarDocuments.swift",
+      "operations": [
+        "TestPricedAssetsQuery"
+      ],
+      "text": "fragment TestThrowingPrices_asset on Asset @throwOnFieldError {\n  price\n  prices\n}"
+    },
+    {
+      "name": "testLowercase",
+      "type": "Character",
+      "source": "swift/Tests/BatonTests/EmitterDocuments.swift",
+      "operations": [
+        "TestLowercaseSpreads"
+      ],
+      "text": "fragment testLowercase on Character {\n  name\n}"
+    },
+    {
+      "name": "testLowercaseRequired",
+      "type": "Character",
+      "source": "swift/Tests/BatonTests/EmitterDocuments.swift",
+      "operations": [
+        "TestLowercaseSpreads"
+      ],
+      "text": "fragment testLowercaseRequired on Character {\n  origin @required(action: NONE) {\n    name\n  }\n}"
+    }
+  ]
+}

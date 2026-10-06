@@ -38,6 +38,12 @@ struct BatonPlugin: BuildToolPlugin {
         let schema = configurationFile.deletingLastPathComponent().appending(path: configuration.schema)
         let outputDirectory = workDirectory.appending(path: "Generated")
         let shared = outputDirectory.appending(path: "Baton.baton.swift")
+        // What the target compiled, for review and registration. The report
+        // and the persisted documents file are written beside the generated
+        // Swift but not declared as outputs: SwiftPM bundles a declared
+        // output that is not a source as a resource, and neither belongs in
+        // the app.
+        let report = outputDirectory.appending(path: "Baton.report.json")
 
         // The compiler is an input: a rebuilt compiler regenerates. The
         // output directory is the compiler's own, and it removes the
@@ -62,11 +68,9 @@ struct BatonPlugin: BuildToolPlugin {
             "--config", configurationFile.path(percentEncoded: false),
             "--out", outputDirectory.path(percentEncoded: false),
             "--shared", shared.path(percentEncoded: false),
+            "--report", report.path(percentEncoded: false),
         ]
         var outputs: [URL] = []
-        if let persist = configuration.persistConfig {
-            outputs.append(outputDirectory.appending(path: URL(filePath: persist.file).lastPathComponent))
-        }
         for source in sources {
             inputs.append(source)
             arguments.append(source.path(percentEncoded: false))

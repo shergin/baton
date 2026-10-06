@@ -73,6 +73,11 @@ pub struct FragmentPlan {
     pub possible_types: Vec<String>,
     /// `@argumentDefinitions`, with defaults.
     pub arguments: Vec<VariablePlan>,
+    /// The definition as the author wrote it, printed before the transforms,
+    /// which the report carries for review and for a dependent target's
+    /// compilation to read.
+    #[serde(skip)]
+    pub text: String,
     /// `@refetchable`: the generated query and how to bind it.
     pub refetch: Option<RefetchPlan>,
     /// `@throwOnFieldError`: a field error anywhere inside throws at the spread.

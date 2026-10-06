@@ -5,6 +5,16 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- The compiler writes a report of what it compiled for a target:
+  `batonc generate --report <file>`, and `Baton.report.json` in the build's
+  output directory under the plugin. Every operation with its kind, source,
+  id, variables, the fragments it reaches and its text; every fragment with
+  its type, source, the operations that reach it and its printed
+  definition; the schema's digest. Deterministic and by name, so a diff of
+  two reports is the contract's change. The report and the persisted
+  documents file sit beside the generated Swift in the plugin's output
+  directory and are not outputs the build bundles, so neither reaches the
+  app.
 - A recipe, `docs/recipes/exchange.md`, and its sample, `examples/Exchange`,
   for what a production endpoint needs around the transport's one verb: one
   replay of an authorization challenge, a bounded retry with a jittered

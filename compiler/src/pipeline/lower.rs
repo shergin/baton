@@ -9,7 +9,7 @@ use graphql_ir::{
     LinkedField, OperationDefinition, ScalarField, Selection,
 };
 use graphql_syntax::OperationKind as SyntaxOperationKind;
-use graphql_text_printer::{PrinterOptions, print_full_operation};
+use graphql_text_printer::{PrinterOptions, print_fragment, print_full_operation};
 use intern::Lookup;
 use intern::string_key::Intern;
 use relay_transforms::CLIENT_EXTENSION_DIRECTIVE_NAME;
@@ -246,6 +246,20 @@ impl Lowering<'_> {
             type_is_abstract: fragment.type_condition.is_abstract_type(),
             possible_types: self.possible_types(fragment.type_condition),
             arguments: self.variables(&fragment.variable_definitions),
+            // The source program's definition, as the author wrote it: the
+            // transforms rename a fragment with arguments by a hash and drop
+            // one nothing spreads, and a dependent target's compilation would
+            // read the definition, not a copy.
+            text: self
+                .programs
+                .source
+                .fragment(fragment.name.item)
+                .map(|text_fragment| {
+                    print_fragment(self.schema, text_fragment, PrinterOptions::default())
+                        .trim_end()
+                        .to_string()
+                })
+                .unwrap_or_default(),
             refetch: self.refetch(fragment),
             throws_on_field_error: fragment
                 .directives

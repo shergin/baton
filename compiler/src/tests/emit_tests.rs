@@ -34,6 +34,11 @@ fn plans() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("src/tests/plans")
 }
 
+/// The report golden.
+fn reports() -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("src/tests/reports")
+}
+
 /// The texts and paths of the configuration's client schema extensions, read
 /// as `batonc` reads them: each entry beside the configuration, a file or a
 /// directory of `.graphql` files.
@@ -298,6 +303,22 @@ fn check_goldens(directory: PathBuf, emitted: &BTreeMap<String, String>, extensi
     );
 }
 
+/// The report of the Swift test target as `generate --report` writes it
+/// from the repository's root. The hostile-name corpus is left out for the
+/// reason the plan goldens leave it out: its names are the sweep's and add
+/// no shape.
+fn report_swift_tests() -> BTreeMap<String, String> {
+    let mut plan = compile_swift_tests();
+    plan.fragments
+        .retain(|fragment| fragment.source != hostile_names::CORPUS);
+    plan.operations
+        .retain(|operation| operation.source != hostile_names::CORPUS);
+    BTreeMap::from([(
+        "BatonTests.report.json".to_string(),
+        crate::report::text(&plan, &repository()),
+    )])
+}
+
 #[test]
 fn the_swift_emitter_reproduces_its_goldens_byte_for_byte() {
     check_goldens(goldens(), &emit_swift_tests(), ".baton.swift");
@@ -306,6 +327,11 @@ fn the_swift_emitter_reproduces_its_goldens_byte_for_byte() {
 #[test]
 fn the_plan_reproduces_its_goldens_byte_for_byte() {
     check_goldens(plans(), &plan_swift_tests(), ".plan.json");
+}
+
+#[test]
+fn the_report_reproduces_its_golden_byte_for_byte() {
+    check_goldens(reports(), &report_swift_tests(), ".report.json");
 }
 
 #[test]

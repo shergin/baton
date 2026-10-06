@@ -6,7 +6,8 @@
 //! - `plan --schema <sdl> <files…>` prints the plan IR as JSON, timings on stderr.
 //! - `generate --schema <sdl> (--out <dir> | --emit <src>=<out>…) <files…>`
 //!   writes the Swift of each host file and the shared file, or nothing when a
-//!   document has an error, and prints diagnostics in `path:line:col:` form.
+//!   document has an error, and prints diagnostics in `path:line:col:` form;
+//!   `--report <file>` writes what the target compiled as JSON.
 //! - `bench --schema <sdl> --fragments <n>` compiles a synthetic corpus twice
 //!   and prints the warm timings.
 
@@ -18,6 +19,7 @@ mod documents;
 mod emit;
 mod names;
 mod pipeline;
+mod report;
 mod swift;
 
 use std::collections::BTreeMap;
@@ -268,7 +270,7 @@ fn generate(arguments: &[String]) -> Result<(), DriverError> {
     let options = parse_options(
         "generate",
         arguments,
-        &["schema", "config", "out", "shared", "emit"],
+        &["schema", "config", "out", "shared", "emit", "report"],
     )?;
     let sources = read_schema(&options)?;
     let (sdl, schema_path, config) = (&sources.sdl, &sources.path, &sources.config);
@@ -365,6 +367,12 @@ fn generate(arguments: &[String]) -> Result<(), DriverError> {
         });
     if let Some(persist_path) = &persist_path {
         write_output(persist_path, &persisted_documents(&plan))?;
+    }
+    // The report: what this target compiled, for the people who register
+    // operations and review contract changes.
+    if let Some(report_path) = options.values.get("report") {
+        let root = std::env::current_dir().unwrap_or_default();
+        write_output(Path::new(report_path), &report::text(&plan, &root))?;
     }
     if let Some(out_dir) = &out_dir {
         remove_stale_outputs(out_dir, &written)?;

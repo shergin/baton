@@ -569,6 +569,21 @@ of another format fails to compile at that one line. An app's own files
 import `Baton` and see lenses, handles, the environment, transports and
 persistence.
 
+**Report.** *Composition: document, schema.* Baton's word for what the
+compiler compiled for one target, written by `batonc generate --report` as
+JSON and, under the SwiftPM plugin, into the build's output directory as
+`Baton.report.json`: the schema's digest; every operation with its name,
+kind, source, id when persisted, variables as the schema types them, the
+fragments it reaches directly or through other fragments, and its text;
+every fragment with its name, type condition, source, the operations that
+reach it, and its definition as the author wrote it, printed before the
+transforms. Deterministic, by
+name, with sources relative to the working directory, so the diff of two
+builds' reports is the contract's change. The persisted documents file is a
+second view of the same facts, and a dependent target's compilation is what
+the fragment's definition is there for; see
+[the decision](decisions/the-report-is-what-a-dependent-target-reads.md).
+
 ## Runtime
 
 **Environment.** *Concept: environment.* Relay's word for store plus network
