@@ -5,6 +5,11 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- An object under an interface or union takes its type from its
+  `__typename` by a byte comparison with the names the plan lists, where
+  the ingest made a string and took the registry's lock for every object;
+  an escaped or unlisted name still asks the registry. A page of 899 union
+  results ingests in 508 µs against 541, in `BENCHMARKS.md`.
 - The compiler's tests fence the bytes of generated code per accessor line
   at 120 over the goldens, the budget 0.1.0 named and never enforced; the
   goldens stand at 106.1.

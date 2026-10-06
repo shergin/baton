@@ -21,6 +21,29 @@ Best ingest and best commit of the fixture at each release below.
   <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
 
+## Unreleased, a type's name matched by bytes — 2026-10-11
+
+Revision: the working tree on top of `3c3296e`, one full run before and one
+after the change, back to back. Machine: Apple M1 Pro (MacBook Pro), macOS
+26.5.2, release build. Not a quiet machine; read the two rows against each
+other.
+
+An object under an interface or union names its type in `__typename`, and
+the ingest took the type by making a string of the name and asking the
+registry under its lock, once per object. The resolved plan now carries the
+names of the types it lists as bytes, and an object of a listed type takes
+its type from a comparison; an escaped name or one the plan does not list
+still asks the registry. The entry ingests a search of 899 results, a third
+of each of the union's three types, 51,944 bytes.
+
+| Measurement | Best | Median |
+|---|---|---|
+| Ingest of 899 objects under a union, before | 541 µs | 561 µs |
+| Ingest of 899 objects under a union, after | 508 µs | 510 µs |
+
+About 37 ns an object, a string and a lock, out of 600; the row stays in
+the suite as the union ingest's number.
+
 ## Unreleased, generated code per accessor — 2026-10-11
 
 Revision: the working tree on top of `a59397d`, measured over the Swift

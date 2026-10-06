@@ -932,7 +932,7 @@ package enum Ingest {
                     found += 1
                     needsID = found < keys.count
                 } else if needsType, keyLength == typename.utf8CodeUnitCount, memcmp(base + keyStart, typename.utf8Start, keyLength) == 0 {
-                    concreteType = Registry.type(Ingest.materialize(base: base, start, end, escaped))
+                    concreteType = plan.listedType(base: base, start, end, escaped) ?? Registry.type(Ingest.materialize(base: base, start, end, escaped))
                     needsType = false
                     // A type the plan lists has its variant; only an unlisted
                     // one takes it from the answers, which the whole object

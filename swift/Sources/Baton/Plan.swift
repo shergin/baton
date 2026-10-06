@@ -1,3 +1,4 @@
+import Foundation
 import Synchronization
 
 /// The format of the generated code this runtime reads: what that code names
@@ -663,6 +664,11 @@ package final class ResolvedSelection: Sendable {
     /// a type the plan did not list takes the variants of the conditions
     /// the response says it satisfies.
     let membershipKeys: [(bytes: [UInt8], condition: TypeID)]
+    /// The names of the types the plan lists, as bytes to match a
+    /// `__typename` against, so an object of a listed type takes its type
+    /// without a string and without the registry's lock; an unlisted name
+    /// still asks the registry.
+    let typeNameKeys: [(bytes: [UInt8], type: TypeID)]
     /// The variants of types the plan does not list, from `base`'s fields,
     /// resolved when a record of the type first comes.
     private let others = Mutex<[Unlisted: ResolvedVariant]>([:])
@@ -688,6 +694,7 @@ package final class ResolvedSelection: Sendable {
         membershipKeys = memberships.map { (Array($0.responseKey.utf8), $0.condition) }
         self.hold = hold
         typeName = type.name
+        typeNameKeys = ([type] + listed.keys.sorted { $0.raw < $1.raw }).map { (Array($0.name.utf8), $0) }
     }
 
     /// The fields a record of `type` reads, with their slots on it. Taken
@@ -695,6 +702,17 @@ package final class ResolvedSelection: Sendable {
     /// Whether the plan lists the type, so a record of it needs no answer.
     func lists(_ type: TypeID) -> Bool {
         type == self.type || listed[type] != nil
+    }
+
+    /// The listed type whose name the bytes spell, matched without making a
+    /// string; nil for an escaped name or one the plan does not list.
+    func listedType(base: UnsafePointer<UInt8>, _ start: Int, _ end: Int, _ escaped: Bool) -> TypeID? {
+        guard !escaped else { return nil }
+        let length = end - start
+        for (bytes, type) in typeNameKeys where bytes.count == length {
+            if bytes.withUnsafeBufferPointer({ memcmp(base + start, $0.baseAddress!, length) == 0 }) { return type }
+        }
+        return nil
     }
 
     @MainActor package func variant(for type: TypeID) -> ResolvedVariant {

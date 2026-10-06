@@ -129,6 +129,25 @@ struct BenchmarkDocuments {
         query BenchAssetPrices { assets { price } }
         """)
     var assetPrices: BenchAssetPrices
+
+    @Query("""
+        query BenchSearch($name: String!) {
+          search(name: $name) {
+            ... on Character { id name }
+            ... on Location { id name }
+            ... on Episode { id name }
+          }
+        }
+        """)
+    var search: BenchSearch
+}
+
+/// A search of `count` results under the union, a third of each type, so
+/// every object's `__typename` names a type the plan lists.
+func searchResults(_ count: Int) -> Data {
+    let types = ["Character", "Location", "Episode"]
+    let results = (0..<count).map { #"{"__typename":"\#(types[$0 % 3])","id":"s\#($0)","name":"Result \#($0)"}"# }
+    return Data(#"{"data":{"search":[\#(results.joined(separator: ","))]}}"#.utf8)
 }
 
 /// A response of `count` assets, each with a price of eight significant
@@ -385,6 +404,16 @@ func run() async throws {
     let back = try Ingest.normalize(Data(#"{"data":{"rename":{"character":{"id":"1","name":"Rick Sanchez"}}}}"#.utf8), plan: renamePlan, rootKey: Store.mutationRootKey)
     measure("ingest", iterations: 200) {
         _ = try! Ingest.normalize(small, plan: renamePlan, rootKey: Store.mutationRootKey)
+    }
+    // Every object under a union names its type: the ingest takes the type
+    // from the name, which costs a string and the registry's lock unless
+    // the plan's listed names match the bytes first.
+    let searched = Store()
+    let searchPlan = BenchSearch.plan.resolve(BenchSearch(name: "r").variables, in: searched.keys)
+    let searchPayload = searchResults(899)
+    print("a search of 899 results under a union: \(searchPayload.count) bytes")
+    measure("ingest of 899 objects under a union, each naming its type", iterations: 30) {
+        _ = try! Ingest.normalize(searchPayload, plan: searchPlan, rootKey: Store.rootKey)
     }
     measure("commit into the 899-record store, one field changing", iterations: 200, setup: { store.commit(back) }) {
         store.commit(answer)
