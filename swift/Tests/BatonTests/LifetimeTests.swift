@@ -927,4 +927,124 @@ struct LifetimeTests {
             #expect(live.retainCount == 0)
         }
     }
+
+    /// The records `record` links to, by a link or a list of links.
+    func links(of record: Record) -> [Record] {
+        record.storedSlots.flatMap { entry -> [Record] in
+            switch entry.value {
+            case .ref(let linked): [linked]
+            case .refs(let linked): linked.compactMap { $0 }
+            default: []
+            }
+        }
+    }
+
+    /// Commits the fixture's list and returns Rick and an episode he links
+    /// to that links back to him: two records that hold each other.
+    func commitLinkedRecords(into store: Store) throws -> (character: Record, episode: Record) {
+        store.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables)))
+        let character = try #require(store.existing("Character:1"))
+        let episode = try #require(links(of: character).first { links(of: $0).contains { $0 === character } })
+        return (character, episode)
+    }
+
+    @Test("two records that link to each other are freed with their store when it is dropped without an end")
+    func linkedRecordsAreFreedWithTheirStore() async throws {
+        weak var weakStore: Store?
+        weak var weakCharacter: Record?
+        weak var weakEpisode: Record?
+        do {
+            let environment = Baton.Environment(transport: SilentTransport())
+            environment.store.reportMissing = nil
+            let linked = try commitLinkedRecords(into: environment.store)
+            weakStore = environment.store
+            weakCharacter = linked.character
+            weakEpisode = linked.episode
+        }
+        await until { weakStore == nil }
+        await turns()
+        #expect(weakCharacter == nil, "the store's deinit cleared the link that kept the character")
+        #expect(weakEpisode == nil, "and the one that kept the episode")
+    }
+
+    @Test("an environment's end clears every record, even one something still holds, and leaves only the store's roots")
+    func theEndClearsHeldRecords() async throws {
+        let environment = Baton.Environment(transport: SilentTransport())
+        environment.store.reportMissing = nil
+        let linked = try commitLinkedRecords(into: environment.store)
+        #expect(!linked.character.storedSlots.isEmpty)
+        await environment.end()
+        #expect(environment.ended)
+        #expect(linked.character.storedSlots.isEmpty, "the character holds nothing, its link to the episode included")
+        #expect(linked.episode.storedSlots.isEmpty, "the episode holds nothing, its link back included")
+        #expect(environment.store.existing("Character:1") == nil)
+        #expect(environment.store.count == 3, "the three roots")
+        #expect(environment.store.rootCount == 0)
+    }
+
+    @Test("a handle a model holds reads gone after the end and tells its observer, and a subscription it holds ends on gone")
+    func heldHandlesReadGone() async throws {
+        let events = DeliveryTests.Events()
+        let environment = Baton.Environment(transport: SilentTransport(), subscriptions: events)
+        environment.store.reportMissing = nil
+        environment.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables)))
+        let handle = environment.handle(for: TestList(page: 1), fetchPolicy: .storeOnly)
+        let retention = handle.retain()
+        guard case .ready = handle.phase else { Issue.record("expected ready from the store, got \(handle.phase)"); return }
+        let subscription = environment.subscriptionHandle(for: TestNoteAdded(characterId: "lifetime-\(#line)", connections: []))
+        let subscriptionRetention = subscription.retain()
+        #expect(subscription.isActive)
+        await until { events.continuation != nil }
+        let notifications = Notifications()
+        notifications.track { _ = handle.phase }
+
+        await environment.end()
+        #expect(notifications.fired == 1, "the phase told its observer")
+        guard case .failed(let error as EnvironmentError) = handle.phase, error == .gone else {
+            Issue.record("expected the phase to fail on gone, got \(handle.phase)")
+            return
+        }
+        guard case .failed(.environment(.gone), at: _) = handle.fetch else {
+            Issue.record("expected the fetch to fail on gone, got \(handle.fetch)")
+            return
+        }
+        guard case .ended(.environment(.gone)) = subscription.stream else {
+            Issue.record("expected the stream to end on gone, got \(subscription.stream)")
+            return
+        }
+        #expect(subscription.error as? EnvironmentError == .gone)
+        await until { events.ended }
+        withExtendedLifetime(retention) {}
+        withExtendedLifetime(subscriptionRetention) {}
+    }
+
+    @Test("every call after the end fails on gone: a fetch, a fetch by type, a mutation, a payload committed by hand, and the attach of a handle made after it")
+    func everyLaterCallFailsOnGone() async throws {
+        let transport = transport()
+        let environment = Baton.Environment(transport: transport)
+        environment.store.reportMissing = nil
+        await environment.end()
+        await environment.end()
+        #expect(environment.ended, "a second end is the first's")
+
+        await #expect(throws: EnvironmentError.gone) { try await environment.fetch(TestList(page: 1)) }
+        await #expect(throws: EnvironmentError.gone) { try await environment.fetch(TestList.self, variables: TestList(page: 1).variables) }
+        await #expect(throws: EnvironmentError.gone) { try await environment.mutate(TestRename(id: "1", name: "Rick Prime")) }
+        await #expect(throws: EnvironmentError.gone) { try await environment.commitPayload(TestList(page: 1), fixtureData) }
+        #expect(transport.requestCount == 0, "nothing reached the network")
+        #expect(environment.store.count == 3, "nothing reached the store")
+
+        let handle = environment.handle(for: TestList(page: 1))
+        let retention = handle.retain()
+        guard case .failed(let error as EnvironmentError) = handle.phase, error == .gone else {
+            Issue.record("expected a handle made after the end to fail on gone, got \(handle.phase)")
+            return
+        }
+        guard case .failed(.environment(.gone), at: _) = handle.fetch else {
+            Issue.record("expected its fetch to fail on gone, got \(handle.fetch)")
+            return
+        }
+        #expect(transport.requestCount == 0)
+        withExtendedLifetime(retention) {}
+    }
 }

@@ -143,6 +143,9 @@ protocol AnyOperationHandle: AnyObject {
     func revalidate()
     /// Fetches again for a heal, unless a fetch is in flight.
     func fetchForHeal()
+    /// The environment ended: what the handle shows says so, and nothing is
+    /// fetched again.
+    func end()
     /// Settles the phase again after a commit changed a field error or a
     /// null, for policies that read them.
     func reevaluate()
@@ -344,9 +347,10 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
 
     private func start() {
         task?.cancel()
-        guard environment != nil else {
-            // Nothing can fetch for a handle whose environment is gone: it
-            // keeps the data it shows and says why it cannot load more.
+        guard let current = environment, !current.ended else {
+            // Nothing can fetch for a handle whose environment is gone or
+            // ended: it keeps the data it shows and says why it cannot load
+            // more.
             task = nil
             fetch = .failed(.environment(.gone), at: .now)
             if case .loading = phase {
@@ -476,6 +480,15 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
         task = nil
         fetch = .idle
     }
+
+    /// The environment ended: the fetch in flight is cancelled, the phase
+    /// says gone to its observers, and the records the data read are the
+    /// store's to clear.
+    func end() {
+        cancel()
+        fetch = .failed(.environment(.gone), at: .now)
+        phase = .failed(EnvironmentError.gone)
+    }
 }
 
 /// The in-flight state behind a mutation action, observable by the view.
@@ -576,7 +589,7 @@ public final class SubscriptionHandle<Op: Subscription>: AnyOperationHandle {
 
     /// Opens the stream unless it is open, or its environment is gone.
     func start() {
-        guard task == nil, environment != nil else { return }
+        guard task == nil, let current = environment, !current.ended else { return }
         stream = .connecting
         error = nil
         task = Task { [weak self] in
@@ -654,6 +667,13 @@ public final class SubscriptionHandle<Op: Subscription>: AnyOperationHandle {
     func fetchForHeal() {}
 
     func reevaluate() {}
+
+    /// The environment ended: the stream closes and says so.
+    func end() {
+        cancel()
+        error = EnvironmentError.gone
+        stream = .ended(.environment(.gone))
+    }
 
     func cancel() {
         task?.cancel()

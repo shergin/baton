@@ -36,20 +36,21 @@ it.
   Neither is replaced. A sign-in makes an environment and a sign-out ends
   it. Which one is current is the app's state: the app injects it, and the
   storage behind `@Query`, `@Mutation` and `@Subscription` follows.
-- `Environment.end()` *(planned)* ends it, once and for good: it cancels
+- `Environment.end()` (built 2026-10-06) ends it, once and for good: it cancels
   every fetch and stream the environment started, drops the roots, clears
   every record and closes the image. What becomes of the file is
   [a decision of its own](an-image-belongs-to-one-store.md).
-- An ended store commits nothing *(planned)*. That covers what
+- An ended store commits nothing, checked at the one door a payload takes.
+  That covers what
   cancellation cannot reach: a fetch the app awaits in a task of its own,
   and a mutation in flight, which is never cancelled because the server
   applies it anyway.
-- What is still held says so *(planned)*. A handle reads
+- What is still held says so. A handle reads
   `.failed(EnvironmentError.gone)` and tells its observers, so an owner
   outside SwiftUI resolves again in the current environment. A lens still
   held finds its records cleared. Every later call on the environment
   fails with the same error.
-- A store clears its records when it is deallocated *(planned)*, so an
+- A store clears its records when it is deallocated, so an
   environment dropped without an end leaks nothing. That is a net, not the
   end: the moment is not defined while anything holds the store.
 - A refreshed credential is the same identity and the same environment.

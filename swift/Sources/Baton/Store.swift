@@ -22,6 +22,9 @@ public final class Store {
     /// Called once a batch that changed a null, an error or a link has
     /// notified, for the phases that read them; the environment sets it.
     var phasesNeedSettling: (() -> Void)?
+    /// Whether the store's session has ended: it holds nothing, commits
+    /// nothing more and reports nothing.
+    package private(set) var ended = false
 
     /// Called when a lens reads a slot the store never received. Debug builds
     /// print by default; a product can route it to its own reporting.
@@ -113,6 +116,31 @@ public final class Store {
             print("Baton: the id \(id) names \(records.map(\.key).joined(separator: ", ")); nothing was done for it")
         }
         #endif
+    }
+
+    /// Ends the store, once and for good: the roots go, every record is
+    /// cleared, and nothing is committed or reported after. The image is the
+    /// environment's to close, since closing waits for the writer.
+    func end() {
+        guard !ended else { return }
+        ended = true
+        roots.removeAll()
+        releaseBuffer.removeAll()
+        completedMutations.removeAll()
+        optimisticLayers.removeAll()
+        for record in records.values { record.clear() }
+        records = [Store.rootKey: root, Store.mutationRootKey: mutationRoot, Store.subscriptionRootKey: subscriptionRoot]
+        placeholders.removeAll()
+        reportMissing = nil
+        reportUnexpected = nil
+        reportAmbiguousIdentity = nil
+        phasesNeedSettling = nil
+    }
+
+    /// A store dropped without an end clears its records, so that records
+    /// which link to each other are freed with it: the net, not the end.
+    isolated deinit {
+        for record in records.values { record.clear() }
     }
 
     /// Marks everything fetched so far as stale, in memory and in the image;

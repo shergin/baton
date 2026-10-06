@@ -951,6 +951,99 @@ struct PersistenceTests {
         #expect(!reread.isStale, "the next user's fetch time stands")
     }
 
+    @Test("a response that lands after the end reaches neither memory nor the image: a handle's refetch, and a fetch awaited in a task of the app's own")
+    func aResponseAfterTheEnd() async throws {
+        try await seed(launch())
+        let gate = GatedTransport()
+        let environment = launch(gate)
+        let handle = environment.handle(for: Fixture(page: 1))
+        let retention = handle.retain()
+        await until { gate.pending == 1 }
+        let own = Task { try await environment.fetch(TestList(page: 2)) }
+        await until { gate.pending == 2 }
+
+        await environment.end()
+        gate.respond(renamedFixture)
+        gate.respond(shiftedFixture(by: 200_000))
+        _ = await own.result
+        for _ in 0..<20 { await Task.yield() }
+        #expect(environment.store.count == 3, "the store holds its three roots and none of the responses' records")
+        #expect(environment.store.existing("Character:200001") == nil)
+        guard case .failed(let error as EnvironmentError) = handle.phase, error == .gone else {
+            Issue.record("expected the handle to fail on gone, got \(handle.phase)")
+            return
+        }
+        withExtendedLifetime(retention) {}
+
+        let next = launch()
+        let data = try stored(Fixture(page: 1), in: next)
+        #expect(data.characters?.results?[1].name == "Morty Smith", "the image holds what the seed wrote, not the late refetch")
+        #expect(throws: NotStored.self) { try stored(TestList(page: 2), in: next) }
+        await finish(next)
+    }
+
+    @Test("a mutation in flight at the end that the server answers reaches neither memory nor the image")
+    func aMutationAnsweredAfterTheEnd() async throws {
+        try await seed(launch())
+        let gate = GatedTransport()
+        let environment = launch(gate)
+        // A launch that reads the list keeps its rows for the next one.
+        _ = try stored(Fixture(page: 1), in: environment)
+        let mutation = Task { try await environment.mutate(TestRename(id: "1", name: "Rick Prime")) }
+        await until { gate.pending == 1 }
+
+        await environment.end()
+        gate.respond(fixture("rename-1"))
+        _ = await mutation.result
+        #expect(environment.store.existing("Character:1") == nil, "the store holds no record of the payload")
+        #expect(environment.store.count == 3)
+
+        let next = launch()
+        let data = try stored(Fixture(page: 1), in: next)
+        #expect(data.characters?.results?[0].name == "Rick Sanchez", "the image never took the rename")
+        await finish(next)
+    }
+
+    /// Fetches the fixture as `account` on `url` and keeps the launch open,
+    /// as a session that is about to sign out.
+    func signedIn(as account: String, at url: URL) async -> Environment {
+        let environment = launch(RecordedTransport { _ in fixtureData }, at: url, version: account)
+        let handle = environment.handle(for: Fixture(page: 1))
+        let retention = handle.retain()
+        await handle.settle()
+        await environment.store.persistence?.flush()
+        withExtendedLifetime(retention) {}
+        return environment
+    }
+
+    @Test("each step of a sign-out leaves nothing another account can read: after the end, another account reads nothing and the same account still reads its data; after removeAll, neither does")
+    func theSignOutOrder() async throws {
+        // The end alone: the image stays, under its account's version, so
+        // the same account reads it again and another reads nothing.
+        let ended = TemporaryImage()
+        await signedIn(as: "alice", at: ended.url).end()
+        let returning = launch(at: ended.url, version: "alice")
+        let kept = try stored(Fixture(page: 1), in: returning)
+        #expect(kept.characters?.results?.first?.name == "Rick Sanchez", "the cache survives a switch of accounts")
+        await finish(returning)
+        let bob = launch(at: ended.url, version: "bob")
+        #expect(throws: NotStored.self) { try stored(Fixture(page: 1), in: bob) }
+        #expect(bob.store.hydratedRecords == 0)
+        await finish(bob)
+
+        // The end, then removeAll; forgetting the credential is the app's,
+        // with no step here.
+        let alice = await signedIn(as: "alice", at: image.url)
+        await alice.end()
+        alice.store.persistence?.removeAll()
+        let other = launch(version: "bob")
+        #expect(throws: NotStored.self) { try stored(Fixture(page: 1), in: other) }
+        await finish(other)
+        let again = launch(version: "alice")
+        #expect(throws: NotStored.self) { try stored(Fixture(page: 1), in: again) }
+        await finish(again)
+    }
+
     /// Asks `environment`, whose image does not hold the file, for its late
     /// work on it: a read, a commit and a removal, none of which may touch
     /// the file.

@@ -226,11 +226,13 @@ transport that answers from recorded responses.
 To keep the store across launches, give the environment an image:
 `Environment(url: endpoint, persistence: Persistence(name: "Main", version: Types.schemaDigest))`,
 where `Types.schemaDigest` is the generated digest of the schema, so a new
-schema starts the image again; call `removeAll()` on it at sign-out, and
-hand the same image to the next environment. A store made before the
-removal leaves the image alone after it, so a response that lands late for
-the user who signed out never reaches the next one; and one image holds a
-file, so a second made on it while the first lives runs without it.
+schema starts the image again. A sign-out is `await environment.end()`,
+which cancels what the environment started, clears its records and closes
+the image, then `removeAll()` on the image, then forgetting the credential;
+the next environment makes its own image, on that file or another. A
+response that lands late for the user who signed out reaches neither memory
+nor the image, and a handle a model still holds reads
+`.failed(EnvironmentError.gone)`.
 
 Outside SwiftUI, a model or a view controller keeps an operation's data
 alive by holding the `Retention` that `handle.retain()` returns, and lets it

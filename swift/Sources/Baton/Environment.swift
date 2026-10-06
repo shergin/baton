@@ -18,6 +18,9 @@ public final class Environment {
     /// The handles, by the operation's key, for as long as their roots are
     /// the store's: equal operation values share one.
     private var handles: [String: any AnyOperationHandle] = [:]
+    /// Whether the session has ended: every later call fails with
+    /// `EnvironmentError.gone`, and what is still held says so.
+    public private(set) var ended = false
 
     public init(transport: any Transport, subscriptions: (any SubscriptionTransport)? = nil, store: Store = Store()) {
         self.store = store
@@ -95,6 +98,23 @@ public final class Environment {
         }
     }
 
+    /// Ends the session, once and for good: cancels every fetch and stream
+    /// the environment started, drops the roots, clears every record and
+    /// closes the image, giving its file back. A handle still held reads
+    /// `.failed(EnvironmentError.gone)` and tells its observers; a lens still
+    /// held finds its records cleared; every later call on the environment
+    /// fails with the same error, and a response that lands later reaches
+    /// neither memory nor the image. The order of a sign-out is the app's:
+    /// end the environment, remove the image, forget the credential last.
+    public func end() async {
+        guard !ended else { return }
+        ended = true
+        for handle in handles.values { handle.end() }
+        handles.removeAll()
+        store.end()
+        await store.persistence?.close()
+    }
+
     /// Refetches the retained operations that are stale or whose last fetch
     /// failed, where a holder allows the network: for an app's return to the
     /// foreground, or a connection regained. Marks nothing; `invalidate()`
@@ -111,7 +131,7 @@ public final class Environment {
     /// refetch is reported as unexpected and healed no further. A lens with
     /// no root, made by hand, is reported and not healed.
     func heal(_ root: Store.Root?, _ record: Record, _ slot: Slot) {
-        guard let root else { return }
+        guard let root, !ended else { return }
         guard store.heal(root) else {
             store.reportUnexpected?(record, slot, .missing)
             return
@@ -135,6 +155,7 @@ public final class Environment {
     /// commits, so a view renders before the rest arrives. An operation with
     /// `@throwOnFieldError` throws the field errors its handle fails on.
     public func fetch<Op: Query>(_ operation: Op, firstPart: (() -> Void)? = nil) async throws {
+        guard !ended else { throw EnvironmentError.gone }
         let committed = try await fetch(Op.self, variables: operation.variables, resolved: Op.plan.resolve(operation.variables), firstPart: firstPart.map { firstPart in { _ in firstPart() } })
         guard Op.throwsOnFieldError else { return }
         // The handle's reading: the operation's own selection, where an error
@@ -195,6 +216,11 @@ public final class Environment {
     /// The parts of a deferred stream after the first arrive here as the
     /// change sets the delivery assembled, and the last of them dates.
     func commit(_ changes: ChangeSet, replacing layer: UUID? = nil, dating root: Store.Root? = nil) -> Committed {
+        // The terminal check: a response that lands after the end, which
+        // cancellation could not reach, a fetch awaited in a task of the
+        // app's own or a mutation the server applied, reaches neither
+        // memory nor the image.
+        guard !ended else { return Committed() }
         store.commit(changes, replacingOptimistic: layer)
         if let root { evict(store.date(root)) }
         var committed = Committed()
@@ -219,6 +245,7 @@ public final class Environment {
     /// it was. Under `@throwOnFieldError` the field errors no `@catch`
     /// handled are thrown, as a fetch throws them.
     public func commitPayload<Op: Operation>(_ operation: Op, _ payload: Data) async throws {
+        guard !ended else { throw EnvironmentError.gone }
         let root = store.root(Op.name + operation.variables.json, resolved: Op.plan.resolve(operation.variables), record: rootRecord(of: Op.self))
         let committed = try await commit(payload, plan: root.resolved, root: root, checkingCancellation: false, complete: false)
         if Op.throwsOnFieldError, !committed.uncaught.isEmpty { throw FieldErrors(committed.uncaught) }
@@ -237,7 +264,8 @@ public final class Environment {
     /// nothing retains it. Returns the field errors no `@catch` handled.
     @discardableResult
     public func fetch<Op: Query>(_ operation: Op.Type, variables: Variables, firstPart: (() -> Void)? = nil) async throws -> [FieldError] {
-        try await fetch(operation, variables: variables, resolved: Op.plan.resolve(variables), firstPart: firstPart.map { firstPart in { _ in firstPart() } }).uncaught
+        guard !ended else { throw EnvironmentError.gone }
+        return try await fetch(operation, variables: variables, resolved: Op.plan.resolve(variables), firstPart: firstPart.map { firstPart in { _ in firstPart() } }).uncaught
     }
 
     private func fetch<Op: Query>(_ operation: Op.Type, variables: Variables, resolved: ResolvedSelection, firstPart: ((Committed) -> Void)?) async throws -> Committed {
@@ -299,6 +327,7 @@ public final class Environment {
     /// it, and then reads only the records other roots keep. A completion of
     /// an equal value, the same name and variables, takes its place.
     public func mutate<Op: Mutation>(_ operation: Op, optimistic: Variable? = nil) async throws -> Op.Data {
+        guard !ended else { throw EnvironmentError.gone }
         let resolved = Op.plan.resolve(operation.variables)
         let root = store.root(Op.name + operation.variables.json, resolved: resolved, record: store.mutationRoot)
         var layer: UUID?
@@ -328,9 +357,10 @@ public final class Environment {
 
     /// The events of a subscription, as the transport delivers them.
     func subscribe<Op: Subscription>(_ operation: Op) -> AsyncThrowingStream<Data, any Error> {
-        guard let subscriptions else {
+        guard let subscriptions, !ended else {
+            let failure: EnvironmentError = ended ? .gone : .noSubscriptionTransport
             return AsyncThrowingStream { continuation in
-                continuation.finish(throwing: EnvironmentError.noSubscriptionTransport)
+                continuation.finish(throwing: failure)
             }
         }
         return subscriptions.subscribe(request(Op.self, variables: operation.variables))

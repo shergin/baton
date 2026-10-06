@@ -72,7 +72,7 @@ public enum EnvironmentError: Error, Equatable, Sendable, CustomStringConvertibl
     case notInjected
     /// A lens read outside an environment's store asked to fetch.
     case outsideEnvironment
-    /// The environment that made a handle is gone.
+    /// The environment that made a handle is gone, or has ended.
     case gone
     /// A subscription ran in an environment made without `subscriptions:`.
     case noSubscriptionTransport
@@ -81,7 +81,7 @@ public enum EnvironmentError: Error, Equatable, Sendable, CustomStringConvertibl
         switch self {
         case .notInjected: "no Baton environment: set `.environment(\\.baton, environment)` on an ancestor view"
         case .outsideEnvironment: "the lens was read outside an environment's store, so it cannot fetch"
-        case .gone: "the handle's environment is gone, so it cannot fetch"
+        case .gone: "the environment is gone or has ended, so nothing can be fetched"
         case .noSubscriptionTransport: "no subscription transport: pass `subscriptions:` to the environment"
         }
     }

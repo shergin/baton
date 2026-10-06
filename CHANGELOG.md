@@ -5,6 +5,17 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- An environment ends. `await environment.end()` ends the session once and
+  for good: it cancels every fetch and stream the environment started,
+  drops the roots, clears every record and closes the image, giving its
+  file back. An ended store commits nothing, checked at the one door a
+  payload takes, so a response that lands after the end, a fetch awaited in
+  a task of the app's own or a mutation the server applied, reaches neither
+  memory nor the image; a handle still held reads
+  `.failed(EnvironmentError.gone)` and tells its observers; every later call
+  on the environment throws the same error. A store dropped without an end
+  clears its records when it is deallocated, so records that link to each
+  other are freed with it.
 - A list of links that only grew, a page appended or prepended to a
   connection, drops no link, so it schedules no collection pass of its
   own; a list that changed otherwise still does. The lifetime step's

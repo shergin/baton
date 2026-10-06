@@ -451,11 +451,17 @@ stretch of use; Relay has no word for an environment's end, because
 JavaScript collects one nobody holds. Here a session is the life of one
 environment, not a type: an environment pairs a store with the transport
 that fills it and replaces neither, a sign-in makes one and a sign-out ends
-it, and which one is current is the app's state. `Environment.end()`
-*(planned)* cancels what the environment started, clears its records and
-closes its image; an ended store commits nothing, and a handle still held
-fails with `EnvironmentError.gone`. Until it exists, a sign-out drops the
-environment and removes the image, as the [image](#store)'s entry says. See
+it, and which one is current is the app's state. `Environment.end()` ends
+it, once and for good: it cancels every fetch and stream the environment
+started, drops the roots, clears every record and closes the image, giving
+its file back. An ended store commits nothing, checked at the one door a
+payload takes, so a response that lands later reaches neither memory nor
+the image; a handle still held reads `.failed(EnvironmentError.gone)` and
+tells its observers, a lens still held finds its records cleared, and
+every later call on the environment fails with the same error. A store
+dropped without an end clears its records when it is deallocated: the net,
+not the end. The order of a sign-out is the app's: end the environment,
+remove the image, forget the credential last. See
 [the decision](decisions/the-environment-is-the-session.md).
 
 **Transport.** *Concept: transport.* The protocol behind which HTTP and
