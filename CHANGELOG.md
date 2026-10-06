@@ -9,6 +9,10 @@ are expected and listed without apology.
   a model derives its value inside an `Observations` closure over the
   lenses it reads, and no commit signal is added; recorded in
   `docs/decisions/derived-state-is-observed-not-signaled.md`.
+- `List.empty`, the value a view substitutes for a nullable list it reads
+  as empty: `fragment.reviewRequests?.nodes ?? .empty`. A nullable list
+  still reads as `List?`, since the server's null and its empty list
+  differ.
 - `Record`, `Value`, `Slot`, `TypeID`, `Owner` and `Members` are generated
   code's interface, behind `@_spi(Generated)`, now that no hook hands them
   out; an app's own files see lenses, handles, the environment, the log,

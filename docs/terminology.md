@@ -138,7 +138,9 @@ follows the schema's: a list whose elements the schema types nullable reads
 as an array of optionals, a null element as nil; a list of non-null elements
 reports an element it cannot hold, as a scalar reports a value it cannot
 hold, and leaves it out; a list of records shows its records, a null entry
-having no identity to be keyed by. See
+having no identity to be keyed by, as `List`, a collection of lenses, and a
+nullable one as `List?`, since the server's null and its empty list differ,
+with `List.empty` for a view that reads null as empty. See
 [A fragment is a lens](principles/fragment-is-a-lens.md) and
 [A list's null elements are typed as the schema says](decisions/a-lists-null-elements-are-typed.md).
 

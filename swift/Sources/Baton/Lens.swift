@@ -641,10 +641,14 @@ extension Anchor {
 
 /// A plural link: lenses over the linked records, in order. Null elements,
 /// deleted records and elements the caller rejects (a `@required` field of
-/// theirs is null) are dropped.
+/// theirs is null) are dropped. A nullable list reads as `List?`, since the
+/// server's null and its empty list differ; `empty` is the value a view
+/// substitutes when it does not care, `items ?? .empty`.
 public struct List<Element: Lens>: RandomAccessCollection, Sendable {
     let records: ContiguousArray<Record>
-    let anchor: Anchor
+    /// The anchor the elements are reached through; none for `empty`, which
+    /// has no element to reach.
+    let anchor: Anchor?
 
     @MainActor init(records: ContiguousArray<Record?>, anchor: Anchor, keep: ((Anchor) -> Bool)?) {
         var present = ContiguousArray<Record>()
@@ -657,7 +661,19 @@ public struct List<Element: Lens>: RandomAccessCollection, Sendable {
         self.anchor = anchor
     }
 
+    private init() {
+        records = []
+        anchor = nil
+    }
+
+    /// The list with no elements, for a nullable list a view reads as empty.
+    public static var empty: List<Element> { List() }
+
     public var startIndex: Int { 0 }
     public var endIndex: Int { records.count }
-    public subscript(position: Int) -> Element { Element(anchor: anchor.child(records[position])) }
+    public subscript(position: Int) -> Element {
+        // An index into an empty list traps here, before the anchor is asked for.
+        let record = records[position]
+        return Element(anchor: anchor!.child(record))
+    }
 }
