@@ -128,7 +128,8 @@ struct OracleTests {
                 continue
             }
             let value = read(anchor)
-            if !value.isSameJSON(as: row.value) {
+            let expected = operation.spellings[row.path]?(row.value) ?? row.value
+            if !value.isSameJSON(as: expected) {
                 Issue.record("\(oracle.entry.name): the lens reads \(row.path) as \(value) where the manifest has \(row.value)")
             }
         }

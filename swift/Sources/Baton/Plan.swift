@@ -36,7 +36,11 @@ public enum Format6 {}
 public enum Format7 {}
 
 @_spi(Generated)
+@available(*, unavailable, message: "this generated code is of format 8 and the runtime reads format 9: a mapped scalar converts at the read; rebuild with the compiler of this release")
 public enum Format8 {}
+
+@_spi(Generated)
+public enum Format9 {}
 
 /// An operation's normalization plan, emitted by the compiler as static data:
 /// what the response contains and where each value is stored.

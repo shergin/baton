@@ -72,14 +72,14 @@ pub enum BuilderValue {
 }
 
 /// What a variable holds, in no language's terms.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct VariableShape {
     pub base: VariableBase,
     /// A list of the base, when the variable is one.
     pub list: Option<ListShape>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum VariableBase {
     /// A scalar, as the accessors read it.
     Scalar(Primitive),
@@ -396,12 +396,13 @@ fn numbered(base: &str, taken: &[&str]) -> String {
 /// else as the request carries it.
 fn variable_shape(variable: &VariablePlan) -> VariableShape {
     let base = match variable.type_.base_kind() {
-        TypeKind::Int => VariableBase::Scalar(Primitive::Int),
-        TypeKind::Float => VariableBase::Scalar(Primitive::Double),
-        TypeKind::Boolean => VariableBase::Scalar(Primitive::Bool),
-        TypeKind::String | TypeKind::Id | TypeKind::Enum | TypeKind::CustomScalar => {
-            VariableBase::Scalar(Primitive::String)
-        }
+        TypeKind::Int
+        | TypeKind::Float
+        | TypeKind::Boolean
+        | TypeKind::String
+        | TypeKind::Id
+        | TypeKind::Enum
+        | TypeKind::CustomScalar => VariableBase::Scalar(ScalarShape::primitive(&variable.type_)),
         _ => VariableBase::Input,
     };
     VariableShape {

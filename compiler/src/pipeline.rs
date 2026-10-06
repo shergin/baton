@@ -95,7 +95,8 @@ pub fn compile(
     let schema = Arc::new(schema);
     timings.schema = started.elapsed();
     let keys = identity::Keys::resolve(&schema, &config.identity, config_location(config))?;
-    let errors = validate_lookups(&schema, config, &keys);
+    let mut errors = validate_lookups(&schema, config, &keys);
+    errors.extend(validate_mappings(&schema, config));
     if !errors.is_empty() {
         return Err(errors);
     }
@@ -234,6 +235,38 @@ fn schema_digest(schema_sdl: &str, identity: &crate::config::Identity) -> String
     text.push_str("\n# identity\n");
     text.push_str(&identity.canonical());
     format!("{:x}", md5::compute(text.as_bytes()))
+}
+
+/// Checks each mapping in `customScalarTypes`: the name is a custom scalar
+/// of the schema, and the Swift type is written.
+fn validate_mappings(schema: &SDLSchema, config: &Config) -> Vec<Diagnostic> {
+    let location = config_location(config);
+    let mut errors = Vec::new();
+    for (scalar, swift_type) in &config.custom_scalar_types {
+        let mut fail = |message: String| errors.push(Diagnostic::error(message, location));
+        match schema.get_type(scalar.intern()) {
+            Some(Type::Scalar(_))
+                if !matches!(
+                    scalar.as_str(),
+                    "Int" | "Float" | "String" | "Boolean" | "ID"
+                ) => {}
+            Some(Type::Scalar(_)) => fail(format!(
+                "`customScalarTypes` maps `{scalar}`, a built-in scalar, which reads as itself"
+            )),
+            Some(_) => fail(format!(
+                "`customScalarTypes` maps `{scalar}`, which is not a scalar of the schema"
+            )),
+            None => fail(format!(
+                "`customScalarTypes` maps `{scalar}`, which the schema does not declare"
+            )),
+        }
+        if swift_type.trim().is_empty() {
+            fail(format!(
+                "`customScalarTypes` maps `{scalar}` to no type: write the Swift type it reads as"
+            ));
+        }
+    }
+    errors
 }
 
 /// Where a diagnostic about the configuration points: the file itself.

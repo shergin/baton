@@ -160,6 +160,10 @@ pub enum TypePlan {
         name: String,
         kind: TypeKind,
         non_null: bool,
+        /// The Swift type a custom scalar reads as, when `baton.json` maps
+        /// it; the store keeps the text either way.
+        #[serde(skip_serializing_if = "Option::is_none")]
+        mapped: Option<String>,
     },
     List {
         element: Box<TypePlan>,
@@ -205,6 +209,14 @@ impl TypePlan {
     pub fn base_kind(&self) -> TypeKind {
         match self.base() {
             TypePlan::Named { kind, .. } => *kind,
+            TypePlan::List { .. } => unreachable!("the base of a type is named"),
+        }
+    }
+
+    /// The Swift type the base reads as, when it is a mapped custom scalar.
+    pub fn mapped(&self) -> Option<&str> {
+        match self.base() {
+            TypePlan::Named { mapped, .. } => mapped.as_deref(),
             TypePlan::List { .. } => unreachable!("the base of a type is named"),
         }
     }

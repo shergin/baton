@@ -115,6 +115,12 @@ pub struct Config {
     /// The fields that key a record of each type.
     #[serde(default)]
     pub identity: Identity,
+    /// Relay's `customScalarTypes`: the Swift type a custom scalar reads as,
+    /// by the scalar's name, e.g. `"Decimal": "Foundation.Decimal"`. The
+    /// store keeps the text; the accessor converts at the read, and says the
+    /// conversion can fail. An unmapped custom scalar reads as `String`.
+    #[serde(rename = "customScalarTypes", default)]
+    pub custom_scalar_types: BTreeMap<String, String>,
     /// The `onError` request parameter every operation sends: `PROPAGATE`,
     /// `NULL` or `ABORT`. Under `NULL` a server nulls an errored field in
     /// place, so a field the schema types non-null is typed by its semantic

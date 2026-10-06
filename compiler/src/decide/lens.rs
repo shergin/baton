@@ -103,7 +103,9 @@ impl ReaderPlan {
         }
         for entry in self.satisfied.iter().flatten() {
             if let Some(
-                SatisfiedCheck::HasValue { slot, .. } | SatisfiedCheck::Linked { slot, .. },
+                SatisfiedCheck::HasValue { slot, .. }
+                | SatisfiedCheck::Converts { slot, .. }
+                | SatisfiedCheck::Linked { slot, .. },
             ) = &entry.item
             {
                 names.insert(slot.shared_enum());
@@ -120,7 +122,8 @@ impl ReaderPlan {
                             ErrorLine::Field(slot)
                             | ErrorLine::Linked { slot, .. }
                             | ErrorLine::List { slot, .. }
-                            | ErrorLine::Required { slot, .. } => {
+                            | ErrorLine::Required { slot, .. }
+                            | ErrorLine::Converts { slot, .. } => {
                                 names.insert(slot.shared_enum());
                             }
                             ErrorLine::Nested(_) => {}
@@ -275,11 +278,14 @@ pub struct ScalarRead {
     pub slot: SlotAccess,
     pub shape: ScalarShape,
     pub form: ScalarForm,
+    /// The field's response path from the lens's root, dotted, which a
+    /// mapped scalar's conversion failure is reported under.
+    pub path: String,
 }
 
 /// What a scalar field reads as, in no language's terms: each emitter
 /// spells the type and picks the reader for it.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ScalarShape {
     pub primitive: Primitive,
     /// A list of the primitive, when the field is one.
@@ -302,27 +308,39 @@ impl ListShape {
     }
 }
 
-/// What the store keeps a scalar as. An id, an enum and a custom scalar are
-/// kept as their text.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// What a scalar reads as. The store keeps an id, an enum and a custom
+/// scalar as their text; a custom scalar `baton.json` maps reads as the
+/// Swift type named, converted from the text at the read.
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Primitive {
     String,
     Int,
     Double,
     Bool,
+    Mapped(String),
+}
+
+impl Primitive {
+    /// Whether the read converts the stored text, and so can fail.
+    pub fn is_mapped(&self) -> bool {
+        matches!(self, Primitive::Mapped(_))
+    }
 }
 
 impl ScalarShape {
     /// The shape of a field of the type.
     pub fn of(type_: &TypePlan) -> ScalarShape {
         ScalarShape {
-            primitive: Self::primitive(type_.base_kind()),
+            primitive: Self::primitive(type_),
             list: ListShape::of(type_),
         }
     }
 
-    fn primitive(kind: TypeKind) -> Primitive {
-        match kind {
+    pub fn primitive(type_: &TypePlan) -> Primitive {
+        if let Some(mapped) = type_.mapped() {
+            return Primitive::Mapped(mapped.to_string());
+        }
+        match type_.base_kind() {
             TypeKind::Int => Primitive::Int,
             TypeKind::Float => Primitive::Double,
             TypeKind::Boolean => Primitive::Bool,
@@ -502,6 +520,14 @@ pub enum SatisfiedCheck {
         path: String,
         log: bool,
     },
+    /// The field has a value that converts to the Swift type a mapped
+    /// scalar reads as.
+    Converts {
+        slot: SlotAccess,
+        path: String,
+        log: bool,
+        swift_type: String,
+    },
     /// The link has a value and its lens is satisfied.
     Linked {
         slot: SlotAccess,
@@ -533,6 +559,12 @@ pub enum ErrorLine {
     List { slot: SlotAccess, lens: String },
     /// A `@required(action: THROW)` field that is null.
     Required { slot: SlotAccess, path: String },
+    /// A mapped scalar whose text does not convert.
+    Converts {
+        slot: SlotAccess,
+        path: String,
+        swift_type: String,
+    },
     /// An aliased selection's lens.
     Nested(String),
 }

@@ -251,6 +251,7 @@ fn named(kind: TypeKind) -> TypePlan {
         name: format!("{kind:?}"),
         kind,
         non_null: false,
+        mapped: None,
     }
 }
 
@@ -265,10 +266,13 @@ fn list_of(element: TypePlan) -> TypePlan {
 /// `type_` made non-null.
 fn non_null(type_: TypePlan) -> TypePlan {
     match type_ {
-        TypePlan::Named { name, kind, .. } => TypePlan::Named {
+        TypePlan::Named {
+            name, kind, mapped, ..
+        } => TypePlan::Named {
             name,
             kind,
             non_null: true,
+            mapped,
         },
         TypePlan::List { element, .. } => TypePlan::List {
             element,

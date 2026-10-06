@@ -84,6 +84,10 @@ pub(super) struct Context<'a> {
     /// for the catch to read, while their types keep the fragment's own
     /// policy, as the fragment is one type wherever it is spread.
     caught_spread: bool,
+    /// The response path from the lens's root to this lens, dotted and
+    /// ending in a dot, or empty at the root: what a field's error is
+    /// reported under.
+    response_path: &'a str,
 }
 
 impl Context<'_> {
@@ -109,6 +113,9 @@ struct Nested {
     connection: Option<ConnectionPlan>,
     bubbles: bool,
     within_catch: bool,
+    /// The response key the lens is read under, for a linked field; an
+    /// inline fragment adds no step to the response path.
+    response_key: Option<String>,
 }
 
 /// What a lens declares besides its members' accessors and lenses.
@@ -193,6 +200,7 @@ impl Readers {
             throws: fragment.throws_on_field_error,
             within_catch: false,
             caught_spread: self.caught_fragments.contains(&fragment.name),
+            response_path: "",
         };
         self.lens(
             &fragment.name,
@@ -217,6 +225,7 @@ impl Readers {
             throws: operation.throws_on_field_error,
             within_catch: false,
             caught_spread: false,
+            response_path: "",
         };
         let mut data = self.lens(
             "Data",
@@ -273,16 +282,21 @@ impl Readers {
         let satisfied = bubbles.then(|| satisfied(type_name, type_is_abstract, &members));
         let field_errors = context
             .scans_errors()
-            .then(|| field_errors(type_name, type_is_abstract, &members));
+            .then(|| field_errors(type_name, type_is_abstract, &members, context.response_path));
         let is_present = (is_fragment_root && self.deferred_fragments.contains(name))
             .then(|| is_present(type_name, type_is_abstract, &members));
         let nested = nested
             .into_iter()
             .map(|child| {
                 let path = format!("{}.{}", context.path, child.name);
+                let response_path = match &child.response_key {
+                    Some(key) => format!("{}{key}.", context.response_path),
+                    None => context.response_path.to_string(),
+                };
                 let child_context = Context {
                     path: &path,
                     within_catch: context.within_catch || child.within_catch,
+                    response_path: &response_path,
                     ..context
                 };
                 self.lens(
@@ -634,6 +648,7 @@ impl Readers {
                 connection: None,
                 bubbles: *bubbles,
                 within_catch: catch.is_some(),
+                response_key: None,
             });
             return Some(Read::Aliased(AliasedRead {
                 lens,
@@ -654,6 +669,7 @@ impl Readers {
             connection: None,
             bubbles: false,
             within_catch: false,
+            response_key: None,
         });
         Some(Read::Condition(ConditionRead { lens, test }))
     }
@@ -780,6 +796,8 @@ fn scalar_read(
     context: Context<'_>,
 ) -> Read {
     let SelectionPlan::Scalar {
+        name,
+        alias,
         type_,
         non_null,
         semantic_non_null,
@@ -791,8 +809,16 @@ fn scalar_read(
     else {
         unreachable!("a scalar member is a scalar field");
     };
-    let non_null =
-        *non_null || required.is_some() || (*semantic_non_null && context.handles_errors());
+    // A mapped scalar's schema promises the text, not the conversion: the
+    // read is non-null only where a directive says what a failure does, and
+    // there as the schema types the field.
+    let non_null = if type_.mapped().is_some() {
+        required.is_some()
+            || (*non_null && (context.handles_errors() || catch.is_some()))
+            || (*semantic_non_null && context.handles_errors())
+    } else {
+        *non_null || required.is_some() || (*semantic_non_null && context.handles_errors())
+    };
     let form = match (
         catch.as_ref().map(|catch| catch.to),
         required.as_ref().map(|required| required.action),
@@ -809,6 +835,11 @@ fn scalar_read(
         slot: SlotAccess::of(type_name, type_is_abstract, storage_key),
         shape: ScalarShape::of(type_),
         form,
+        path: format!(
+            "{}{}",
+            context.response_path,
+            alias.as_deref().unwrap_or(name)
+        ),
     })
 }
 
@@ -822,6 +853,8 @@ fn linked_read(
     context: Context<'_>,
 ) -> Read {
     let SelectionPlan::Linked {
+        name,
+        alias,
         type_,
         non_null,
         semantic_non_null,
@@ -873,6 +906,7 @@ fn linked_read(
         connection: connection.clone(),
         bubbles: *bubbles,
         within_catch: catch.is_some(),
+        response_key: Some(alias.clone().unwrap_or_else(|| name.clone())),
     });
     Read::Linked(LinkedRead {
         slot: SlotAccess::of(type_name, type_is_abstract, storage_key),

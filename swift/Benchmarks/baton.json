@@ -1,5 +1,6 @@
 {
   "schema": "../../spec/tests/schema.graphql",
+  "customScalarTypes": { "Decimal": "Foundation.Decimal" },
   "lookups": [
     { "field": "Query.character", "type": "Character", "argument": "id" },
     { "field": "Query.location", "type": "Location", "argument": "id" },

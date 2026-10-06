@@ -110,39 +110,46 @@ impl fmt::Display for SwiftType {
 
 /// A scalar's type: the primitive, or an array of it, of optionals when the
 /// schema types the elements nullable.
-pub(super) fn scalar_type(shape: ScalarShape) -> SwiftType {
-    let primitive = primitive_type(shape.primitive);
+pub(super) fn scalar_type(shape: &ScalarShape) -> SwiftType {
+    let primitive = primitive_type(&shape.primitive);
     match shape.list {
         Some(list) => primitive.optional_if(!list.non_null).array(),
         None => primitive,
     }
 }
 
-fn primitive_type(primitive: Primitive) -> SwiftType {
-    SwiftType::named(match primitive {
-        Primitive::String => "String",
-        Primitive::Int => "Int",
-        Primitive::Double => "Double",
-        Primitive::Bool => "Bool",
-    })
+/// A primitive's type. A mapped scalar's is the type `baton.json` names,
+/// as written, qualified or not: the configuration spells Swift.
+fn primitive_type(primitive: &Primitive) -> SwiftType {
+    match primitive {
+        Primitive::String => SwiftType::named("String"),
+        Primitive::Int => SwiftType::named("Int"),
+        Primitive::Double => SwiftType::named("Double"),
+        Primitive::Bool => SwiftType::named("Bool"),
+        Primitive::Mapped(name) => SwiftType::Named(name.clone()),
+    }
 }
 
 /// The anchor's reader for a scalar: `string`, `ints`, `nullableInts` for a
-/// list whose elements the schema types nullable.
-pub(super) fn scalar_reader(shape: ScalarShape) -> &'static str {
-    match (shape.primitive, shape.list.map(|list| list.non_null)) {
+/// list whose elements the schema types nullable; `mapped` and its lists
+/// for a scalar converted at the read.
+pub(super) fn scalar_reader(shape: &ScalarShape) -> &'static str {
+    match (&shape.primitive, shape.list.map(|list| list.non_null)) {
         (Primitive::String, None) => "string",
         (Primitive::Int, None) => "int",
         (Primitive::Double, None) => "double",
         (Primitive::Bool, None) => "bool",
+        (Primitive::Mapped(_), None) => "mapped",
         (Primitive::String, Some(true)) => "strings",
         (Primitive::Int, Some(true)) => "ints",
         (Primitive::Double, Some(true)) => "doubles",
         (Primitive::Bool, Some(true)) => "bools",
+        (Primitive::Mapped(_), Some(true)) => "mappedList",
         (Primitive::String, Some(false)) => "nullableStrings",
         (Primitive::Int, Some(false)) => "nullableInts",
         (Primitive::Double, Some(false)) => "nullableDoubles",
         (Primitive::Bool, Some(false)) => "nullableBools",
+        (Primitive::Mapped(_), Some(false)) => "nullableMappedList",
     }
 }
 
@@ -150,7 +157,7 @@ pub(super) fn scalar_reader(shape: ScalarShape) -> &'static str {
 /// accessors read it, an input object as the runtime's variable value,
 /// optional when the variable may be null.
 pub(super) fn variable_type(variable: &VariableValue) -> SwiftType {
-    let base = match variable.shape.base {
+    let base = match &variable.shape.base {
         VariableBase::Scalar(primitive) => primitive_type(primitive),
         VariableBase::Input => SwiftType::runtime("Variable"),
     };

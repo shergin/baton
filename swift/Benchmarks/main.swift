@@ -116,6 +116,18 @@ struct BenchmarkDocuments {
         }
         """)
     var strict: BenchStrictFixture
+
+    @Query("""
+        query BenchAssetPrices { assets { price } }
+        """)
+    var assetPrices: BenchAssetPrices
+}
+
+/// A response of `count` assets, each with a price of eight significant
+/// digits, for the mapped read's bench.
+func assetPrices(_ count: Int) -> Data {
+    let assets = (0..<count).map { #"{"id":"asset-\#($0)","price":"\#(12_345 + $0).678"}"# }
+    return Data(#"{"data":{"assets":[\#(assets.joined(separator: ","))]}}"#.utf8)
 }
 
 /// `--quick`: three samples per measurement, so CI runs every bench once
@@ -256,6 +268,21 @@ func run() async throws {
                 sink &+= row.image?.utf8.count ?? 0
                 sink &+= row.created?.utf8.count ?? 0
                 sink &+= row.origin?.name?.utf8.count ?? 0
+            }
+        }
+        if sink == 42 { print("") }
+    }
+    // The same number of reads of a custom scalar mapped to `Decimal`, each
+    // converting the stored text, from a store of its own.
+    let priced = Store()
+    let pricesPlan = BenchAssetPrices.plan.resolve(BenchAssetPrices().variables, in: priced.keys)
+    priced.commit(try Ingest.normalize(assetPrices(reads), plan: pricesPlan, rootKey: Store.rootKey))
+    let assets = Array(BenchAssetPrices.Data(anchor: Anchor(record: priced.root, variables: BenchAssetPrices().variables, store: priced)).assets!)
+    measure("untracked mapped Decimal read, per field", iterations: 50, ops: reads * 20) {
+        var sink = 0
+        for _ in 0..<20 {
+            for asset in assets {
+                sink &+= Int(asset.price?.exponent ?? 0)
             }
         }
         if sink == 42 { print("") }

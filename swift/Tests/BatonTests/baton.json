@@ -11,6 +11,11 @@
       ]
     }
   },
+  "customScalarTypes": {
+    "Decimal": "Foundation.Decimal",
+    "DateTime": "Foundation.Date",
+    "Url": "Foundation.URL"
+  },
   "lookups": [
     {
       "field": "Query.character",

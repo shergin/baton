@@ -583,6 +583,7 @@ fn a_type_plan_keeps_every_list_and_the_nullability_of_each_level() {
         name: "Int".to_string(),
         kind: TypeKind::Int,
         non_null: true,
+        mapped: None,
     };
     let row = TypePlan::List {
         element: Box::new(int.clone()),
@@ -611,3 +612,6 @@ fn a_type_plan_keeps_every_list_and_the_nullability_of_each_level() {
 
 #[path = "identity_tests.rs"]
 mod identity_tests;
+
+#[path = "scalar_tests.rs"]
+mod scalar_tests;

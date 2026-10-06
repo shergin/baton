@@ -1,0 +1,868 @@
+{
+  "fragments": [
+    {
+      "name": "TestCaughtPrices_asset",
+      "source": "swift/Tests/BatonTests/ScalarDocuments.swift",
+      "document": 1,
+      "type_condition": "Asset",
+      "type_is_abstract": false,
+      "possible_types": [
+        "Asset"
+      ],
+      "arguments": [],
+      "refetch": null,
+      "throws_on_field_error": false,
+      "bubbles": false,
+      "reader": [
+        {
+          "kind": "scalar",
+          "name": "price",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Decimal",
+            "kind": "custom_scalar",
+            "non_null": false,
+            "mapped": "Foundation.Decimal"
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "storage_key": {
+            "name": "price",
+            "arguments": []
+          },
+          "edit": null,
+          "required": null,
+          "catch": {
+            "to": "RESULT"
+          },
+          "caught": true
+        },
+        {
+          "kind": "scalar",
+          "name": "listedAt",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "DateTime",
+            "kind": "custom_scalar",
+            "non_null": true,
+            "mapped": "Foundation.Date"
+          },
+          "non_null": true,
+          "semantic_non_null": false,
+          "storage_key": {
+            "name": "listedAt",
+            "arguments": []
+          },
+          "edit": null,
+          "required": null,
+          "catch": {
+            "to": "RESULT"
+          },
+          "caught": true
+        },
+        {
+          "kind": "scalar",
+          "name": "page",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Url",
+            "kind": "custom_scalar",
+            "non_null": false,
+            "mapped": "Foundation.URL"
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "storage_key": {
+            "name": "page",
+            "arguments": []
+          },
+          "edit": null,
+          "required": null,
+          "catch": {
+            "to": "NULL"
+          },
+          "caught": true
+        }
+      ]
+    },
+    {
+      "name": "TestRequiredPrice_asset",
+      "source": "swift/Tests/BatonTests/ScalarDocuments.swift",
+      "document": 3,
+      "type_condition": "Asset",
+      "type_is_abstract": false,
+      "possible_types": [
+        "Asset"
+      ],
+      "arguments": [],
+      "refetch": null,
+      "throws_on_field_error": false,
+      "bubbles": true,
+      "reader": [
+        {
+          "kind": "scalar",
+          "name": "price",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Decimal",
+            "kind": "custom_scalar",
+            "non_null": false,
+            "mapped": "Foundation.Decimal"
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "storage_key": {
+            "name": "price",
+            "arguments": []
+          },
+          "edit": null,
+          "required": {
+            "action": "NONE",
+            "path": "price"
+          },
+          "catch": null,
+          "caught": false
+        }
+      ]
+    },
+    {
+      "name": "TestThrowingPrices_asset",
+      "source": "swift/Tests/BatonTests/ScalarDocuments.swift",
+      "document": 2,
+      "type_condition": "Asset",
+      "type_is_abstract": false,
+      "possible_types": [
+        "Asset"
+      ],
+      "arguments": [],
+      "refetch": null,
+      "throws_on_field_error": true,
+      "bubbles": false,
+      "reader": [
+        {
+          "kind": "scalar",
+          "name": "price",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Decimal",
+            "kind": "custom_scalar",
+            "non_null": false,
+            "mapped": "Foundation.Decimal"
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "storage_key": {
+            "name": "price",
+            "arguments": []
+          },
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false
+        },
+        {
+          "kind": "scalar",
+          "name": "prices",
+          "alias": null,
+          "type": {
+            "shape": "list",
+            "element": {
+              "shape": "named",
+              "name": "Decimal",
+              "kind": "custom_scalar",
+              "non_null": false,
+              "mapped": "Foundation.Decimal"
+            },
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "storage_key": {
+            "name": "prices",
+            "arguments": []
+          },
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false
+        }
+      ]
+    }
+  ],
+  "operations": [
+    {
+      "name": "TestAssetPricesQuery",
+      "source": "swift/Tests/BatonTests/ScalarDocuments.swift",
+      "document": 0,
+      "kind": "query",
+      "root_type": "Query",
+      "variables": [],
+      "text": "query TestAssetPricesQuery {\n  assets {\n    uuid\n    price\n    listedAt\n    page\n    prices\n    id\n  }\n}",
+      "id": "7a4c1866da6137b56436994b9c9b36af",
+      "throws_on_field_error": false,
+      "bubbles": false,
+      "has_deferred": false,
+      "error_behavior": null,
+      "reader": [
+        {
+          "kind": "linked",
+          "name": "assets",
+          "alias": null,
+          "type": {
+            "shape": "list",
+            "element": {
+              "shape": "named",
+              "name": "Asset",
+              "kind": "object",
+              "non_null": false
+            },
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "keys": {
+            "Asset": [
+              "uuid"
+            ]
+          },
+          "is_abstract": false,
+          "possible_types": [
+            "Asset"
+          ],
+          "storage_key": {
+            "name": "assets",
+            "arguments": []
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "uuid",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "String",
+                "kind": "string",
+                "non_null": true
+              },
+              "non_null": true,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "uuid",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "price",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Decimal",
+                "kind": "custom_scalar",
+                "non_null": false,
+                "mapped": "Foundation.Decimal"
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "price",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "listedAt",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "DateTime",
+                "kind": "custom_scalar",
+                "non_null": true,
+                "mapped": "Foundation.Date"
+              },
+              "non_null": true,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "listedAt",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "page",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Url",
+                "kind": "custom_scalar",
+                "non_null": false,
+                "mapped": "Foundation.URL"
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "page",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "prices",
+              "alias": null,
+              "type": {
+                "shape": "list",
+                "element": {
+                  "shape": "named",
+                  "name": "Decimal",
+                  "kind": "custom_scalar",
+                  "non_null": false,
+                  "mapped": "Foundation.Decimal"
+                },
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "prices",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            }
+          ]
+        }
+      ],
+      "normalization": [
+        {
+          "kind": "linked",
+          "name": "assets",
+          "alias": null,
+          "type": {
+            "shape": "list",
+            "element": {
+              "shape": "named",
+              "name": "Asset",
+              "kind": "object",
+              "non_null": false
+            },
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "keys": {
+            "Asset": [
+              "uuid"
+            ]
+          },
+          "is_abstract": false,
+          "possible_types": [
+            "Asset"
+          ],
+          "storage_key": {
+            "name": "assets",
+            "arguments": []
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "uuid",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "String",
+                "kind": "string",
+                "non_null": true
+              },
+              "non_null": true,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "uuid",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "price",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Decimal",
+                "kind": "custom_scalar",
+                "non_null": false,
+                "mapped": "Foundation.Decimal"
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "price",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "listedAt",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "DateTime",
+                "kind": "custom_scalar",
+                "non_null": true,
+                "mapped": "Foundation.Date"
+              },
+              "non_null": true,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "listedAt",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "page",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Url",
+                "kind": "custom_scalar",
+                "non_null": false,
+                "mapped": "Foundation.URL"
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "page",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "prices",
+              "alias": null,
+              "type": {
+                "shape": "list",
+                "element": {
+                  "shape": "named",
+                  "name": "Decimal",
+                  "kind": "custom_scalar",
+                  "non_null": false,
+                  "mapped": "Foundation.Decimal"
+                },
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "prices",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "id",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "ID",
+                "kind": "id",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "id",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TestPricedAssetsQuery",
+      "source": "swift/Tests/BatonTests/ScalarDocuments.swift",
+      "document": 4,
+      "kind": "query",
+      "root_type": "Query",
+      "variables": [
+        {
+          "name": "price",
+          "type": {
+            "shape": "named",
+            "name": "Decimal",
+            "kind": "custom_scalar",
+            "non_null": true,
+            "mapped": "Foundation.Decimal"
+          },
+          "default_value": null
+        },
+        {
+          "name": "among",
+          "type": {
+            "shape": "list",
+            "element": {
+              "shape": "named",
+              "name": "Decimal",
+              "kind": "custom_scalar",
+              "non_null": true,
+              "mapped": "Foundation.Decimal"
+            },
+            "non_null": false
+          },
+          "default_value": null
+        }
+      ],
+      "text": "query TestPricedAssetsQuery(\n  $price: Decimal!\n  $among: [Decimal!]\n) {\n  assetsPricedAbove(price: $price, among: $among) {\n    uuid\n    ...TestCaughtPrices_asset\n    ...TestThrowingPrices_asset\n    ...TestRequiredPrice_asset\n    id\n  }\n}\n\nfragment TestCaughtPrices_asset on Asset {\n  price\n  listedAt\n  page\n}\n\nfragment TestRequiredPrice_asset on Asset {\n  price\n}\n\nfragment TestThrowingPrices_asset on Asset {\n  price\n  prices\n}",
+      "id": "def93858d0a87ae2ad5fc91a2ab1fb51",
+      "throws_on_field_error": false,
+      "bubbles": false,
+      "has_deferred": false,
+      "error_behavior": null,
+      "reader": [
+        {
+          "kind": "linked",
+          "name": "assetsPricedAbove",
+          "alias": null,
+          "type": {
+            "shape": "list",
+            "element": {
+              "shape": "named",
+              "name": "Asset",
+              "kind": "object",
+              "non_null": false
+            },
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "keys": {
+            "Asset": [
+              "uuid"
+            ]
+          },
+          "is_abstract": false,
+          "possible_types": [
+            "Asset"
+          ],
+          "storage_key": {
+            "name": "assetsPricedAbove",
+            "arguments": [
+              {
+                "name": "among",
+                "value": {
+                  "kind": "variable",
+                  "value": "among"
+                }
+              },
+              {
+                "name": "price",
+                "value": {
+                  "kind": "variable",
+                  "value": "price"
+                }
+              }
+            ]
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "uuid",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "String",
+                "kind": "string",
+                "non_null": true
+              },
+              "non_null": true,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "uuid",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "spread",
+              "fragment": "TestCaughtPrices_asset",
+              "type_condition": "Asset",
+              "arguments": []
+            },
+            {
+              "kind": "spread",
+              "fragment": "TestThrowingPrices_asset",
+              "type_condition": "Asset",
+              "arguments": []
+            },
+            {
+              "kind": "spread",
+              "fragment": "TestRequiredPrice_asset",
+              "type_condition": "Asset",
+              "arguments": []
+            }
+          ]
+        }
+      ],
+      "normalization": [
+        {
+          "kind": "linked",
+          "name": "assetsPricedAbove",
+          "alias": null,
+          "type": {
+            "shape": "list",
+            "element": {
+              "shape": "named",
+              "name": "Asset",
+              "kind": "object",
+              "non_null": false
+            },
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "keys": {
+            "Asset": [
+              "uuid"
+            ]
+          },
+          "is_abstract": false,
+          "possible_types": [
+            "Asset"
+          ],
+          "storage_key": {
+            "name": "assetsPricedAbove",
+            "arguments": [
+              {
+                "name": "among",
+                "value": {
+                  "kind": "variable",
+                  "value": "among"
+                }
+              },
+              {
+                "name": "price",
+                "value": {
+                  "kind": "variable",
+                  "value": "price"
+                }
+              }
+            ]
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "uuid",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "String",
+                "kind": "string",
+                "non_null": true
+              },
+              "non_null": true,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "uuid",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "price",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Decimal",
+                "kind": "custom_scalar",
+                "non_null": false,
+                "mapped": "Foundation.Decimal"
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "price",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": true
+            },
+            {
+              "kind": "scalar",
+              "name": "listedAt",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "DateTime",
+                "kind": "custom_scalar",
+                "non_null": true,
+                "mapped": "Foundation.Date"
+              },
+              "non_null": true,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "listedAt",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": true
+            },
+            {
+              "kind": "scalar",
+              "name": "page",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Url",
+                "kind": "custom_scalar",
+                "non_null": false,
+                "mapped": "Foundation.URL"
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "page",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": true
+            },
+            {
+              "kind": "scalar",
+              "name": "prices",
+              "alias": null,
+              "type": {
+                "shape": "list",
+                "element": {
+                  "shape": "named",
+                  "name": "Decimal",
+                  "kind": "custom_scalar",
+                  "non_null": false,
+                  "mapped": "Foundation.Decimal"
+                },
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "prices",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "id",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "ID",
+                "kind": "id",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "id",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

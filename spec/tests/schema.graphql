@@ -6,8 +6,9 @@
 # that edit it, a subscription, the `@defer` directive and a
 # `@semanticNonNull` field, the scalars the tokenizer fixture
 # (`spec/tokenizer/`) reads, types and fields named as Swift and the
-# generated code name their own, and two entities keyed otherwise than by
-# `id` in the tests' `baton.json`. Documents.swift compiles against it
+# generated code name their own, two entities keyed otherwise than by `id`
+# in the tests' `baton.json`, and three custom scalars it maps to Foundation
+# types. Documents.swift compiles against it
 # unchanged; every document here would also be valid against the public
 # schema except those that use the additions.
 
@@ -41,6 +42,7 @@ type Query {
   charactersMatching(filters: [FilterCharacter!]!): [Character]
   asset(uuid: String!): Asset
   assets: [Asset]
+  assetsPricedAbove(price: Decimal!, among: [Decimal!]): [Asset]
   quote(base: String!, quote: String!): Quote
   quotes: [Quote]
 }
@@ -193,7 +195,20 @@ type Asset {
   name: String
   size: Int
   owner: Character
+  price: Decimal
+  listedAt: DateTime!
+  page: Url
+  prices: [Decimal]
 }
+
+"""An amount as text, which the tests' `baton.json` maps to `Foundation.Decimal`."""
+scalar Decimal
+
+"""An ISO 8601 date, mapped to `Foundation.Date`."""
+scalar DateTime
+
+"""A URL as text, mapped to `Foundation.URL`."""
+scalar Url
 
 """An entity the tests' `baton.json` keys by two fields, `base` and `quote`."""
 type Quote {

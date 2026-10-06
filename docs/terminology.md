@@ -446,15 +446,28 @@ it and by nothing else, read by a lens like any field, and left out of the
 text a server receives. Baton computes none: no resolvers. See
 [the decision](decisions/client-data-is-described-and-committed.md).
 
-**Custom scalar.** *Composition: schema, lens.* GraphQL: a scalar the
-schema declares beside the built-in five. Here: stored as its text, exactly
-as the server wrote it, and read as a `String`. A mapping to a Swift type
-at the lens, under Relay's key `customScalarTypes`, is *(planned)*: the
-accessor converts on read and is optional unless `@required`, `@catch` or
-`@throwOnFieldError` covers it, because the schema promises the text and
-not the conversion. A value that does not convert is reported as
-unexpected and never reads as a zero value. See
-[the decision](decisions/a-mapped-scalar-is-a-fallible-read.md).
+**Custom scalar, mapped scalar.** *Composition: schema, lens.* GraphQL: a
+scalar the schema declares beside the built-in five. Here: stored as its
+text, exactly as the server wrote it, and read as a `String`; or, mapped
+under Relay's key `customScalarTypes` to a Swift type conforming to
+`MappedScalar` (`Decimal`, `Date`, `URL` and `UUID` conform, each with one
+format: the POSIX locale, ISO 8601's internet profile with or without
+fractional seconds), read as that type, converted from the text at the
+read and never cached on the record. The accessor says the conversion can
+fail: it is optional wherever the schema puts the field, unless a
+directive says what a failure does. `@required` and `@throwOnFieldError`
+make it non-optional and throwing, since a value that does not convert
+has no zero to read as; under `@required(action: NONE)` or `LOG` the lens
+is unsatisfied as a null would leave it. `@catch` makes it a `Result`
+whose failure carries the conversion's error, under the field's path. A
+value that does not convert is reported as unexpected, never as missing,
+and never reads as a zero value; an element of a list that does not
+convert is reported once, left out of a list of non-null elements as an
+element the list cannot hold is, and read as nil in a list of nullable
+elements. There is no raw accessor beside the mapped one. A variable of
+a mapped type takes the Swift type and is sent as its text. See
+[the first decision](decisions/a-mapped-scalar-is-a-fallible-read.md) and
+[the second](decisions/a-mapped-scalar-converts-at-the-read.md).
 
 **Plan.** *Concept: plan.* Baton's word for the normalization artifact: the
 data a response is decoded by and a store is written from, one per

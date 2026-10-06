@@ -1,0 +1,10 @@
+query TestAssetPricesQuery {
+  assets {
+    uuid
+    price
+    listedAt
+    page
+    prices
+    id
+  }
+}

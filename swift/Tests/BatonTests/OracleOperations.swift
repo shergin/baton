@@ -9,17 +9,23 @@ import Foundation
 /// touch the plan, so a lens that disagrees with the store is caught.
 struct OracleOperation: Sendable {
     typealias Reader = @MainActor @Sendable (Anchor) -> Manifest.Value
+    typealias Spelling = @Sendable (Manifest.Value) -> Manifest.Value
 
     let name: String
     let text: String
     let plan: Plan
     let variables: Variables
     let readers: [String: Reader]
+    /// The manifest's text at a path the lens reads as a mapped scalar,
+    /// written again as the mapped type writes it, so that the response's
+    /// `1.50` and the lens's `Decimal` 1.5 compare as one value.
+    let spellings: [String: Spelling]
     /// Runs the operation through an environment, as an app fetches it;
     /// nil for an operation that is not a query.
     let fetch: (@MainActor @Sendable (Environment) async throws -> Void)?
 
-    init<Op: Baton.Operation>(_ operation: Op, reads: [String: @MainActor @Sendable (Op.Data) -> Manifest.Value]) {
+    init<Op: Baton.Operation>(_ operation: Op, reads: [String: @MainActor @Sendable (Op.Data) -> Manifest.Value], spellings: [String: Spelling] = [:]) {
+        self.spellings = spellings
         name = Op.name
         text = Op.text
         plan = Op.plan
@@ -82,6 +88,7 @@ struct OracleOperation: Sendable {
         "TestAssetQuery": { try OracleOperation(TestAssetQuery(uuid: $0.string("uuid")), reads: assetReads) },
         "TestQuotesQuery": { _ in OracleOperation(TestQuotesQuery(), reads: quotesReads) },
         "TestQuoteQuery": { try OracleOperation(TestQuoteQuery(base: $0.string("base"), quote: $0.string("quote")), reads: quoteReads) },
+        "TestAssetPricesQuery": { _ in OracleOperation(TestAssetPricesQuery(), reads: assetPricesReads, spellings: assetPricesSpellings) },
     ]
 
     /// Binds a manifest case to its operation.
@@ -230,6 +237,49 @@ extension OracleOperation {
         "asset.uuid": { $0.asset?.uuid.manifestValue ?? .null },
         "asset.name": { $0.asset?.name.manifestValue ?? .null },
     ]
+
+    /// Every mapped field of the three assets; a value the type cannot hold
+    /// reads as null, and a list leaves such an element out.
+    static let assetPricesReads: [String: @MainActor @Sendable (TestAssetPricesQuery.Data) -> Manifest.Value] = [
+        "assets.0.price": { $0.assets?.element(0)?.price.manifestValue ?? .null },
+        "assets.0.listedAt": { $0.assets?.element(0)?.listedAt.manifestValue ?? .null },
+        "assets.0.page": { $0.assets?.element(0)?.page.manifestValue ?? .null },
+        "assets.0.prices": { $0.assets?.element(0)?.prices.manifestValue ?? .null },
+        "assets.1.price": { $0.assets?.element(1)?.price.manifestValue ?? .null },
+        "assets.1.listedAt": { $0.assets?.element(1)?.listedAt.manifestValue ?? .null },
+        "assets.1.page": { $0.assets?.element(1)?.page.manifestValue ?? .null },
+        "assets.1.prices": { $0.assets?.element(1)?.prices.manifestValue ?? .null },
+        "assets.2.price": { $0.assets?.element(2)?.price.manifestValue ?? .null },
+        "assets.2.listedAt": { $0.assets?.element(2)?.listedAt.manifestValue ?? .null },
+        "assets.2.page": { $0.assets?.element(2)?.page.manifestValue ?? .null },
+        "assets.2.prices": { $0.assets?.element(2)?.prices.manifestValue ?? .null },
+    ]
+
+    static let assetPricesSpellings: [String: Spelling] = {
+        var spellings: [String: Spelling] = [:]
+        for index in 0..<3 {
+            spellings["assets.\(index).price"] = spelled(as: Decimal.self)
+            spellings["assets.\(index).listedAt"] = spelled(as: Date.self)
+            spellings["assets.\(index).page"] = spelled(as: URL.self)
+            spellings["assets.\(index).prices"] = spelled(as: Decimal.self)
+        }
+        return spellings
+    }()
+
+    /// The manifest's text converted to `type` and written back as its
+    /// `scalarText`, element by element in a list; a text the type cannot
+    /// hold is left as it is, so the comparison shows it.
+    static func spelled<T: MappedScalar>(as type: T.Type) -> Spelling {
+        { value in respelled(value, as: type) }
+    }
+
+    private static func respelled<T: MappedScalar>(_ value: Manifest.Value, as type: T.Type) -> Manifest.Value {
+        switch value {
+        case .string(let text): T(scalarText: text).map { .string($0.scalarText) } ?? value
+        case .list(let items): .list(items.map { respelled($0, as: type) })
+        default: value
+        }
+    }
 
     static let quotesReads: [String: @MainActor @Sendable (TestQuotesQuery.Data) -> Manifest.Value] = [
         "quotes.0.rate": { $0.quotes?.element(0)?.rate.manifestValue ?? .null },
@@ -383,6 +433,19 @@ extension Double: ManifestValueConvertible {
 
 extension Bool: ManifestValueConvertible {
     var manifestValue: Manifest.Value { .bool(self) }
+}
+
+/// A mapped scalar is read in the manifest's spelling as its text.
+extension Decimal: ManifestValueConvertible {
+    var manifestValue: Manifest.Value { .string(scalarText) }
+}
+
+extension Date: ManifestValueConvertible {
+    var manifestValue: Manifest.Value { .string(scalarText) }
+}
+
+extension URL: ManifestValueConvertible {
+    var manifestValue: Manifest.Value { .string(scalarText) }
 }
 
 extension Optional: ManifestValueConvertible where Wrapped: ManifestValueConvertible {

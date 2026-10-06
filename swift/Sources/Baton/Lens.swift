@@ -187,6 +187,100 @@ extension Anchor {
     public func bool(_ slot: Slot) -> Bool? { bool(slot, nonNull: false) }
     public func requiredBool(_ slot: Slot) -> Bool { bool(slot, nonNull: true) ?? false }
 
+    /// A mapped scalar: the stored text converted to the type the field
+    /// reads as. A text the type cannot hold is reported as unexpected, never
+    /// as missing, which the heal would refetch forever, and reads as nil.
+    @inline(__always)
+    public func mapped<T: MappedScalar>(_ slot: Slot) -> T? {
+        guard let text = string(slot, nonNull: false) else { return nil }
+        guard let value = T(scalarText: text) else {
+            unexpected(slot, record.read(slot))
+            return nil
+        }
+        return value
+    }
+
+    /// `@required` or `@throwOnFieldError` on a mapped scalar: the value, or
+    /// the field's error, or the conversion's error. A failure has no zero to
+    /// read as, so the accessor throws where a scalar's would read one.
+    public func throwingMapped<T: MappedScalar>(_ slot: Slot, path: String) throws -> T {
+        if let error = record.error(slot) { throw FieldErrors([error]) }
+        switch record.read(slot) {
+        case .null, .missing:
+            if case .missing = record.read(slot) { missing(slot) }
+            throw RequiredFieldError(path: path)
+        default:
+            guard let value: T = mapped(slot) else {
+                throw FieldErrors([.conversion(path: path, to: T.self)])
+            }
+            return value
+        }
+    }
+
+    /// `@catch` on a non-null mapped scalar: the value, or the field's error,
+    /// or the conversion's.
+    public func caughtMapped<T: MappedScalar>(_ slot: Slot, path: String) -> Result<T, FieldErrors> {
+        if let error = record.error(slot) { return .failure(FieldErrors([error])) }
+        guard let text = string(slot, nonNull: true) else { return .failure(FieldErrors([.null(path: path)])) }
+        guard let value = T(scalarText: text) else {
+            unexpected(slot, record.read(slot))
+            return .failure(FieldErrors([.conversion(path: path, to: T.self)]))
+        }
+        return .success(value)
+    }
+
+    /// `@catch` on a nullable mapped scalar: a null reads as nil; a text that
+    /// does not convert is the failure.
+    public func caughtOptionalMapped<T: MappedScalar>(_ slot: Slot, path: String) -> Result<T?, FieldErrors> {
+        if let error = record.error(slot) { return .failure(FieldErrors([error])) }
+        guard let text = string(slot, nonNull: false) else { return .success(nil) }
+        guard let value = T(scalarText: text) else {
+            unexpected(slot, record.read(slot))
+            return .failure(FieldErrors([.conversion(path: path, to: T.self)]))
+        }
+        return .success(value)
+    }
+
+    /// Whether a `@required` mapped scalar has a value that converts, for
+    /// `satisfied`: a text the type cannot hold nulls the lens as a null
+    /// would, and is reported as unexpected.
+    public func converts<T: MappedScalar>(_ slot: Slot, to type: T.Type, path: String, log: Bool) -> Bool {
+        guard hasValue(slot, path: path, log: log) else { return false }
+        guard let text = string(slot, nonNull: false), T(scalarText: text) != nil else {
+            unexpected(slot, record.read(slot))
+            return requiredMissing(path: path, log: log)
+        }
+        return true
+    }
+
+    /// Appends the conversion's error when a mapped scalar's text does not
+    /// convert, for an error policy to handle.
+    public func collectConversion<T: MappedScalar>(_ slot: Slot, to type: T.Type, path: String, into errors: inout [FieldError]) {
+        guard let text = string(slot, nonNull: false), T(scalarText: text) == nil else { return }
+        errors.append(.conversion(path: path, to: T.self))
+    }
+
+    /// Lists of a mapped scalar. An element that does not convert is reported
+    /// once; a list of non-null elements leaves it out, as it leaves out an
+    /// element it cannot hold, and a list of nullable elements reads it as
+    /// nil, as it reads a value of another kind.
+    public func mappedList<T: MappedScalar>(_ slot: Slot) -> [T]? { scalars(slot, nonNull: false) { Anchor.convert($0) } }
+    public func requiredMappedList<T: MappedScalar>(_ slot: Slot) -> [T] { scalars(slot, nonNull: true) { Anchor.convert($0) } ?? [] }
+    public func nullableMappedList<T: MappedScalar>(_ slot: Slot) -> [T?]? { nullableScalars(slot, nonNull: false) { Anchor.convert($0) } }
+    public func requiredNullableMappedList<T: MappedScalar>(_ slot: Slot) -> [T?] { nullableScalars(slot, nonNull: true) { Anchor.convert($0) } ?? [] }
+
+    /// A stored scalar as its text, converted; nil for a value of another
+    /// kind or one the type cannot hold.
+    private static func convert<T: MappedScalar>(_ value: Value) -> T? {
+        switch value {
+        case .string(let text): return T(scalarText: text)
+        case .int(let int): return T(scalarText: String(int))
+        case .double(let double): return T(scalarText: String(double))
+        case .bool(let bool): return T(scalarText: bool ? "true" : "false")
+        default: return nil
+        }
+    }
+
     public func strings(_ slot: Slot) -> [String]? { scalars(slot, nonNull: false) { if case .string(let string) = $0 { string } else { nil } } }
     public func requiredStrings(_ slot: Slot) -> [String] { scalars(slot, nonNull: true) { if case .string(let string) = $0 { string } else { nil } } ?? [] }
     public func ints(_ slot: Slot) -> [Int]? { scalars(slot, nonNull: false) { if case .int(let int) = $0 { int } else { nil } } }

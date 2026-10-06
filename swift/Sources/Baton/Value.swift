@@ -61,6 +61,10 @@ public enum Variable: Hashable, Sendable {
     public init(_ value: [Bool?]?) { self = value.map { .list($0.map(Variable.init)) } ?? .null }
     public init(_ value: Variable?) { self = value ?? .null }
     public init(_ value: [Variable]?) { self = value.map(Variable.list) ?? .null }
+    /// A mapped scalar is sent as its text.
+    public init<T: MappedScalar>(_ value: T?) { self = value.map { .string($0.scalarText) } ?? .null }
+    public init<T: MappedScalar>(_ value: [T]?) { self = value.map { .list($0.map { .string($0.scalarText) }) } ?? .null }
+    public init<T: MappedScalar>(_ value: [T?]?) { self = value.map { .list($0.map { Variable($0) }) } ?? .null }
 
     /// JSON text, with object keys sorted so equal values render equally.
     public var json: String {

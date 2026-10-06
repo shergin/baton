@@ -105,7 +105,9 @@ impl Shared {
         for entry in lens.satisfied.iter().flatten() {
             match &entry.item {
                 Some(
-                    SatisfiedCheck::HasValue { slot, .. } | SatisfiedCheck::Linked { slot, .. },
+                    SatisfiedCheck::HasValue { slot, .. }
+                    | SatisfiedCheck::Converts { slot, .. }
+                    | SatisfiedCheck::Linked { slot, .. },
                 ) => self.slot(slot),
                 None => {}
             }
@@ -119,7 +121,8 @@ impl Shared {
                             ErrorLine::Field(slot)
                             | ErrorLine::Linked { slot, .. }
                             | ErrorLine::List { slot, .. }
-                            | ErrorLine::Required { slot, .. } => self.slot(slot),
+                            | ErrorLine::Required { slot, .. }
+                            | ErrorLine::Converts { slot, .. } => self.slot(slot),
                             ErrorLine::Nested(_) => {}
                         }
                     }

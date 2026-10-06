@@ -25,6 +25,18 @@ public struct FieldError: Error, Hashable, Sendable, CustomStringConvertible, Lo
         FieldError(message: "the @required field is null", path: path)
     }
 
+    /// The error a `@catch` on a non-null mapped scalar carries when the
+    /// field is null or missing: it has no zero to read as.
+    public static func null(path: String) -> FieldError {
+        FieldError(message: "the non-null field is null", path: path)
+    }
+
+    /// The error a mapped scalar raises when its text does not convert to
+    /// the type the field reads as.
+    public static func conversion<T>(path: String, to type: T.Type) -> FieldError {
+        FieldError(message: "the value does not convert to \(type)", path: path)
+    }
+
     public var description: String { path.isEmpty ? message : "\(path): \(message)" }
     public var errorDescription: String? { description }
 }

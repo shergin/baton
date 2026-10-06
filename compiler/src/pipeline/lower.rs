@@ -980,11 +980,19 @@ impl Lowering<'_> {
                 element: Box::new(self.type_plan_wrapped(inner, false)),
                 non_null,
             },
-            TypeReference::Named(named) => TypePlan::Named {
-                name: self.schema.get_type_name(*named).lookup().to_string(),
-                kind: self.type_kind(*named),
-                non_null,
-            },
+            TypeReference::Named(named) => {
+                let name = self.schema.get_type_name(*named).lookup().to_string();
+                let kind = self.type_kind(*named);
+                let mapped = (kind == TypeKind::CustomScalar)
+                    .then(|| self.config.custom_scalar_types.get(&name).cloned())
+                    .flatten();
+                TypePlan::Named {
+                    name,
+                    kind,
+                    non_null,
+                    mapped,
+                }
+            }
         }
     }
 

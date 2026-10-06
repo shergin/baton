@@ -1,0 +1,8 @@
+{
+  "Asset:a1": {"__typename": "Asset", "id": "QXNzZXQ6YTE=", "listedAt": "2026-10-11T09:30:00.250Z", "page": "https://example.com/assets/a1", "price": "12345678901234567890.123456789", "prices": ["1.50", "2", "0.001"], "uuid": "a1"},
+  "Asset:b2": {"__typename": "Asset", "id": "QXNzZXQ6YjI=", "listedAt": "2026-10-11T09:30:00Z", "page": "", "price": "n/a", "prices": ["3.25", "many", null], "uuid": "b2"},
+  "Asset:c3": {"__typename": "Asset", "id": "QXNzZXQ6YzM=", "listedAt": "yesterday", "page": null, "price": null, "prices": null, "uuid": "c3"},
+  "client:root": {"__typename": "Query", "assets": {"__refs": ["Asset:a1", "Asset:b2", "Asset:c3"]}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

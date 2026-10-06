@@ -5,6 +5,18 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- A custom scalar reads as the Swift type `baton.json` maps it to, under
+  Relay's key `customScalarTypes`: `"Decimal": "Foundation.Decimal"`. The
+  type conforms to `MappedScalar`, an initializer from the scalar's text
+  and the text back; `Decimal`, `Date`, `URL` and `UUID` conform, each with
+  one format. The store keeps the text; the accessor converts at the read
+  and says the conversion can fail: optional wherever the schema puts the
+  field, non-optional and throwing under `@required` or
+  `@throwOnFieldError`, a `Result` under `@catch` whose failure carries the
+  conversion's error. A value that does not convert is reported as
+  unexpected and never reads as a zero. A variable of a mapped type takes
+  the Swift type and is sent as its text. Generated files import
+  Foundation. Generated code of this shape is format 9.
 - A lookup takes several arguments. `baton.json`'s `lookups` name the
   arguments that carry a composite key, `"arguments": ["base", "quote"]`,
   one per field of the type's key in its order; `argument` stays the

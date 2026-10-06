@@ -4,7 +4,7 @@
 
 use super::lens::{ErrorCheck, ErrorLine, Guarded, ReaderPlan, SatisfiedCheck, SlotAccess};
 use super::members::{Member, collects_errors, condition_lens, own_members};
-use crate::pipeline::{RequiredAction, SelectionPlan};
+use crate::pipeline::{RequiredAction, SelectionPlan, TypePlan};
 
 /// Marks `lens` to report the path of its first missing `@required` field,
 /// and the lenses its `satisfied` recurses into, which report the paths
@@ -39,6 +39,23 @@ pub(super) fn satisfied(
     own_members(members)
         .map(|member| {
             let check = match &member.selection {
+                // A mapped scalar is present when its text converts: a value
+                // the type cannot hold nulls the lens as a null would.
+                SelectionPlan::Scalar {
+                    required: Some(required),
+                    storage_key,
+                    type_:
+                        TypePlan::Named {
+                            mapped: Some(swift_type),
+                            ..
+                        },
+                    ..
+                } if required.action != RequiredAction::Throw => Some(SatisfiedCheck::Converts {
+                    slot: SlotAccess::of(type_name, type_is_abstract, storage_key),
+                    path: required.path.clone(),
+                    log: required.action == RequiredAction::Log,
+                    swift_type: swift_type.clone(),
+                }),
                 SelectionPlan::Scalar {
                     required: Some(required),
                     storage_key,
@@ -86,6 +103,7 @@ pub(super) fn field_errors(
     type_name: &str,
     type_is_abstract: bool,
     members: &[Member],
+    response_path: &str,
 ) -> Vec<ErrorCheck> {
     let mut checks = Vec::new();
     for member in members {
@@ -115,6 +133,9 @@ pub(super) fn field_errors(
             SelectionPlan::Scalar {
                 storage_key,
                 required,
+                type_,
+                name,
+                alias,
                 ..
             } => {
                 let slot = SlotAccess::of(type_name, type_is_abstract, storage_key);
@@ -123,8 +144,21 @@ pub(super) fn field_errors(
                     && required.action == RequiredAction::Throw
                 {
                     lines.push(ErrorLine::Required {
-                        slot,
+                        slot: slot.clone(),
                         path: required.path.clone(),
+                    });
+                }
+                // A mapped scalar whose text does not convert is an error
+                // the policy handles, under the field's own path. A list
+                // keeps the list rule: an element that does not convert is
+                // reported and left out.
+                if let Some(swift_type) = type_.mapped()
+                    && !type_.is_list()
+                {
+                    lines.push(ErrorLine::Converts {
+                        slot,
+                        path: format!("{response_path}{}", alias.as_deref().unwrap_or(name)),
+                        swift_type: swift_type.to_string(),
                     });
                 }
             }

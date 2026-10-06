@@ -1940,6 +1940,86 @@
         ],
         "value": 1.7
       }
+    },
+    {
+      "name": "tests/asset-prices",
+      "operation": "TestAssetPricesQuery",
+      "kind": "query",
+      "document": "documents/TestAssetPricesQuery.graphql",
+      "variables": {},
+      "responses": [
+        "tests/asset-prices.json"
+      ],
+      "records": "tests/asset-prices.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "assets.0.price",
+          "value": "12345678901234567890.123456789"
+        },
+        {
+          "path": "assets.0.listedAt",
+          "value": "2026-10-11T09:30:00.250Z"
+        },
+        {
+          "path": "assets.0.page",
+          "value": "https://example.com/assets/a1"
+        },
+        {
+          "path": "assets.0.prices",
+          "value": [
+            "1.50",
+            "2",
+            "0.001"
+          ]
+        },
+        {
+          "path": "assets.1.price",
+          "value": null,
+          "note": "`price` maps to Decimal and the text does not convert, so it reads as null"
+        },
+        {
+          "path": "assets.1.listedAt",
+          "value": "2026-10-11T09:30:00Z"
+        },
+        {
+          "path": "assets.1.page",
+          "value": null,
+          "note": "`page` maps to URL and the empty text does not convert, so it reads as null"
+        },
+        {
+          "path": "assets.1.prices",
+          "value": [
+            "3.25",
+            null,
+            null
+          ],
+          "note": "`prices` maps to Decimal and its elements are nullable: the element that does not convert reads as null, as the null does"
+        },
+        {
+          "path": "assets.2.price",
+          "value": null
+        },
+        {
+          "path": "assets.2.listedAt",
+          "value": null,
+          "note": "`listedAt` maps to Date and the text does not convert, so it reads as null"
+        },
+        {
+          "path": "assets.2.page",
+          "value": null
+        },
+        {
+          "path": "assets.2.prices",
+          "value": null
+        }
+      ],
+      "override": {
+        "paths": [
+          "assets.0.price"
+        ],
+        "value": "9.5"
+      }
     }
   ]
 }

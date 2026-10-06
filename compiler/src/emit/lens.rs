@@ -95,8 +95,11 @@ fn accessor(writer: &mut Writer, accessor: &Accessor) {
 /// A scalar accessor: plain, `@required`, `@catch` or throwing.
 fn scalar_accessor(writer: &mut Writer, name: &str, read: &ScalarRead, condition: Option<&str>) {
     let slot = slot_expression(&read.slot);
-    let reader = scalar_reader(read.shape);
-    let value = scalar_type(read.shape);
+    let reader = scalar_reader(&read.shape);
+    let value = scalar_type(&read.shape);
+    if read.shape.primitive.is_mapped() && read.shape.list.is_none() {
+        return mapped_accessor(writer, name, read, condition, slot, value);
+    }
     let required_reader = format!("required{}", capitalize(reader));
     let (swift_type, body, throws) = match &read.form {
         ScalarForm::Caught { non_null } => {
@@ -123,6 +126,53 @@ fn scalar_accessor(writer: &mut Writer, name: &str, read: &ScalarRead, condition
             true,
         ),
         ScalarForm::Required => (value, format!("anchor.{required_reader}({slot})"), false),
+    };
+    Computed::new(name, swift_type)
+        .throwing(throws)
+        .reads(writer, &body, condition);
+}
+
+/// A mapped scalar's accessor: the conversion can fail, so the accessor is
+/// optional unless a directive says what a failure does. `@required` and
+/// `@throwOnFieldError` make it non-optional and throwing, since a value
+/// that does not convert has no zero to read as; `@catch` makes it a
+/// `Result` whose failure carries the conversion's error.
+fn mapped_accessor(
+    writer: &mut Writer,
+    name: &str,
+    read: &ScalarRead,
+    condition: Option<&str>,
+    slot: String,
+    value: SwiftType,
+) {
+    let path = swift_literal(&read.path);
+    let (swift_type, body, throws) = match &read.form {
+        ScalarForm::Caught { non_null: true } => (
+            value.caught(),
+            format!("anchor.caughtMapped({slot}, path: {path})"),
+            false,
+        ),
+        ScalarForm::Caught { non_null: false } => (
+            value.optional().caught(),
+            format!("anchor.caughtOptionalMapped({slot}, path: {path})"),
+            false,
+        ),
+        ScalarForm::Nulled | ScalarForm::Optional => {
+            (value.optional(), format!("anchor.mapped({slot})"), false)
+        }
+        ScalarForm::Throwing { path } => (
+            value,
+            format!(
+                "try anchor.throwingMapped({slot}, path: {})",
+                swift_literal(path)
+            ),
+            true,
+        ),
+        ScalarForm::Required => (
+            value,
+            format!("try anchor.throwingMapped({slot}, path: {path})"),
+            true,
+        ),
     };
     Computed::new(name, swift_type)
         .throwing(throws)
@@ -527,6 +577,18 @@ fn satisfied_function(writer: &mut Writer, entries: &[Guarded<Option<SatisfiedCh
                         swift_literal(path)
                     ));
                 }
+                Some(SatisfiedCheck::Converts {
+                    slot,
+                    path,
+                    log,
+                    swift_type,
+                }) => {
+                    writer.line(format!(
+                        "guard anchor.converts({}, to: {swift_type}.self, path: {}, log: {log}) else {{ return false }}",
+                        slot_expression(slot),
+                        swift_literal(path)
+                    ));
+                }
                 Some(SatisfiedCheck::Linked {
                     slot,
                     lens,
@@ -565,6 +627,18 @@ fn missing_required_function(writer: &mut Writer, entries: &[Guarded<Option<Sati
                     let path = swift_literal(path);
                     writer.line(format!(
                         "guard anchor.hasValue({}, path: {path}, log: {log}) else {{ return {path} }}",
+                        slot_expression(slot)
+                    ));
+                }
+                Some(SatisfiedCheck::Converts {
+                    slot,
+                    path,
+                    log,
+                    swift_type,
+                }) => {
+                    let path = swift_literal(path);
+                    writer.line(format!(
+                        "guard anchor.converts({}, to: {swift_type}.self, path: {path}, log: {log}) else {{ return {path} }}",
                         slot_expression(slot)
                     ));
                 }
@@ -672,6 +746,17 @@ fn error_line(writer: &mut Writer, line: &ErrorLine) {
         ErrorLine::Required { slot, path } => {
             writer.line(format!(
                 "anchor.collectRequired({}, path: {}, into: &errors)",
+                slot_expression(slot),
+                swift_literal(path)
+            ));
+        }
+        ErrorLine::Converts {
+            slot,
+            path,
+            swift_type,
+        } => {
+            writer.line(format!(
+                "anchor.collectConversion({}, to: {swift_type}.self, path: {}, into: &errors)",
                 slot_expression(slot),
                 swift_literal(path)
             ));

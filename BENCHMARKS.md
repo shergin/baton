@@ -21,6 +21,32 @@ Best ingest and best commit of the fixture at each release below.
   <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
 
+## Unreleased, mapped scalars — 2026-10-11
+
+Revision: the working tree of the mapped-scalars change on top of
+`c7d3e7e`, one `--quick` run of the read entries. Machine: Apple M1 Pro
+(MacBook Pro), macOS 26.5.2, release build. Not a quiet machine: the
+control entry, the untracked lens read, read 31.5 ns against 25.0 on the
+lifetime step's quiet run, and the tracked row read 718 ns at the median
+against 637; read the mapped entry against the string read beside it.
+
+A mapped scalar converts the stored text at every read
+(`docs/decisions/a-mapped-scalar-converts-at-the-read.md`). The entry reads
+a `Decimal` field through its mapped accessor over the same 3,200 reads the
+string entry makes.
+
+| Measurement | Best | Median |
+|---|---|---|
+| Untracked lens read, per field (String) | 31.5 ns | 31.6 ns |
+| Untracked mapped Decimal read, per field | 567 ns | 589 ns |
+| Tracked read, a row body of 8 fields, per field | 636 ns | 718 ns |
+
+A `Decimal` read costs about eighteen string reads, and about what a tracked
+read of a field costs: `Decimal(string:locale:)` is the whole of it. This is
+the number the decision's reopening line watches; a body that reads many
+amounts pays it per amount per evaluation, since nothing is cached on the
+record.
+
 ## Unreleased, the keys step — 2026-10-07
 
 Revision: `fcec2ce`, the three commits of the keys step (`fee7273`,

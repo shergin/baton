@@ -31,7 +31,7 @@ pub(super) fn builder(writer: &mut Writer, builder: &BuilderPlan) {
                 let key = swift_literal(&field.key);
                 let local = &field.local;
                 let swift_type = match &field.value {
-                    BuilderValue::Scalar { shape } => scalar_type(*shape),
+                    BuilderValue::Scalar { shape } => scalar_type(shape),
                     BuilderValue::Object {
                         builder,
                         plural: true,
