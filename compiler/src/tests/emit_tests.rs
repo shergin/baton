@@ -255,6 +255,7 @@ fn spelled_hideable_names(text: &str) -> BTreeSet<&'static str> {
         ("Slots", "Slots."),
         ("AbstractSlots", "AbstractSlots."),
         ("Sites", "Sites."),
+        ("Guards", "Guards."),
         ("Self", "Self."),
         ("Self", "Self("),
     ];

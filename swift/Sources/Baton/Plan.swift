@@ -20,11 +20,15 @@ public enum Format2 {}
 public enum Format3 {}
 
 @_spi(Generated)
-@available(*, unavailable, message: "this generated code is of format 4 and the runtime reads format 5: a fragment spread enters its record as the anchor's origin, which a connection below it paginates by; rebuild with the compiler of this release")
+@available(*, unavailable, message: "this generated code is of format 4 and the runtime reads format 6; rebuild with the compiler of this release")
 public enum Format4 {}
 
 @_spi(Generated)
+@available(*, unavailable, message: "this generated code is of format 5 and the runtime reads format 6: a read's include or skip condition is a constant the owner settles once; rebuild with the compiler of this release")
 public enum Format5 {}
+
+@_spi(Generated)
+public enum Format6 {}
 
 /// An operation's normalization plan, emitted by the compiler as static data:
 /// what the response contains and where each value is stored.
@@ -231,10 +235,12 @@ public struct Refetch: Sendable {
     }
 }
 
-/// One condition of `@include` or `@skip`: the variable, and the value it
-/// must have for the field to be fetched.
+/// One condition `@include(if:)` or `@skip(if:)` puts on a selection: the
+/// variable, and the value of it that selects. Generated code declares each
+/// once, so an owner settles it once, by identity, as it does a key with
+/// variables.
 @_spi(Generated)
-public struct Guard: Sendable {
+public final class Guard: Sendable {
     public let variable: String
     public let passing: Bool
 

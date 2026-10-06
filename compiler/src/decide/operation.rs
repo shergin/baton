@@ -116,7 +116,7 @@ pub(super) fn operation(
         .collect();
     let normalization = super::normalization(&operation.root_type, &operation.normalization);
     let data = readers.operation(operation);
-    duplicates.extend(operation_scope(operation, resolves, &data));
+    duplicates.extend(operation_scope(operation, resolves, &data, &normalization));
     duplicates.extend(nested_types(operation, &data, fragments));
     let optimistic = (operation.kind == OperationKind::Mutation).then(|| {
         let path = format!("{}.OptimisticResponse", operation.name);
@@ -151,14 +151,23 @@ pub(super) fn operation(
 /// a value of its kind, which a variable would take the place of, and
 /// beside the names its code spells, which a variable would hide: the
 /// runtime's module, the shared enums its plan and its root lens read
-/// through, Swift's `Self` where a lens nested in it reaches a static
-/// member of its own, and a mutation's action's own parameter.
-fn operation_scope(operation: &OperationPlan, resolves: bool, data: &ReaderPlan) -> Vec<NameError> {
+/// through or test conditions by, Swift's `Self` where a lens nested in it
+/// reaches a static member of its own, and a mutation's action's own
+/// parameter.
+fn operation_scope(
+    operation: &OperationPlan,
+    resolves: bool,
+    data: &ReaderPlan,
+    normalization: &NormalizationSelection,
+) -> Vec<NameError> {
     let none = Reserved::none();
     let mut scope = Scope::new(operation.name.as_str(), &none);
     scope.declare("Baton", Kind::Type, "the runtime's module `Baton`");
     let mut spelled = data.hideable_names();
     spelled.extend(["Types", "Slots"]);
+    if normalization.has_guards() {
+        spelled.insert("Guards");
+    }
     for name in spelled {
         scope.declare(name, Kind::Type, hideable_name(name));
     }

@@ -66,12 +66,12 @@ query TestConditions(
                 .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
                 .linked("origin", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                    .scalar("name", key: .fixed(Slots.Location.name), kind: .string, list: false, guards: [[.init("withOrigin", passing: true)]]),
-                    .scalar("dimension", key: .fixed(Slots.Location.dimension), kind: .string, list: false, guards: [[.init("withOrigin", passing: true)]]),
+                    .scalar("name", key: .fixed(Slots.Location.name), kind: .string, list: false, guards: [[Guards.withOrigin_true]]),
+                    .scalar("dimension", key: .fixed(Slots.Location.dimension), kind: .string, list: false, guards: [[Guards.withOrigin_true]]),
                 ])),
                 .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                .scalar("species", key: .fixed(Slots.Character.species), kind: .string, list: false, guards: [[.init("withOrigin", passing: true)]]),
-                .scalar("status", key: .fixed(Slots.Character.status), kind: .string, list: false, guards: [[.init("hideStatus", passing: false)]]),
+                .scalar("species", key: .fixed(Slots.Character.species), kind: .string, list: false, guards: [[Guards.withOrigin_true]]),
+                .scalar("status", key: .fixed(Slots.Character.status), kind: .string, list: false, guards: [[Guards.hideStatus_false]]),
             ])),
         ]))
 
@@ -87,16 +87,16 @@ query TestConditions(
             public static let typeName = "Character"
             @MainActor public var name: String? { anchor.string(Slots.Character.name) }
             @MainActor public var origin: Origin? { anchor.linked(Slots.Character.origin).map(Origin.init(anchor:)) }
-            @MainActor public var species: String? { anchor.selects("withOrigin", true) ? anchor.string(Slots.Character.species) : nil }
-            @MainActor public var status: String? { anchor.selects("hideStatus", false) ? anchor.string(Slots.Character.status) : nil }
+            @MainActor public var species: String? { anchor.owner.selects(Guards.withOrigin_true) ? anchor.string(Slots.Character.species) : nil }
+            @MainActor public var status: String? { anchor.owner.selects(Guards.hideStatus_false) ? anchor.string(Slots.Character.status) : nil }
 
             nonisolated public struct Origin: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
                 public static let typeName = "Location"
                 @MainActor public var id: String? { anchor.string(Slots.Location.id) }
-                @MainActor public var name: String? { anchor.selects("withOrigin", true) ? anchor.string(Slots.Location.name) : nil }
-                @MainActor public var dimension: String? { anchor.selects("withOrigin", true) ? anchor.string(Slots.Location.dimension) : nil }
+                @MainActor public var name: String? { anchor.owner.selects(Guards.withOrigin_true) ? anchor.string(Slots.Location.name) : nil }
+                @MainActor public var dimension: String? { anchor.owner.selects(Guards.withOrigin_true) ? anchor.string(Slots.Location.dimension) : nil }
             }
         }
     }
@@ -471,11 +471,11 @@ query TestStrictConditions(
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
             .linked("character", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, key: "id", abstract: false, fields: [
-                .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false, guards: [[.init("withStatus", passing: true)]]),
+                .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false, guards: [[Guards.withStatus_true]]),
                 .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("species", key: .fixed(Slots.Character.species), kind: .string, list: false, guards: [[.init("withStatus", passing: true)]]),
-                .scalar("status", key: .fixed(Slots.Character.status), kind: .string, list: false, caught: true, guards: [[.init("withStatus", passing: true)]]),
-                .linked("origin", key: .fixed(Slots.Character.origin), plural: false, caught: true, guards: [[.init("withStatus", passing: true)]], selection: Baton.Selection(type: Types.Location, key: "id", abstract: false, fields: [
+                .scalar("species", key: .fixed(Slots.Character.species), kind: .string, list: false, guards: [[Guards.withStatus_true]]),
+                .scalar("status", key: .fixed(Slots.Character.status), kind: .string, list: false, caught: true, guards: [[Guards.withStatus_true]]),
+                .linked("origin", key: .fixed(Slots.Character.origin), plural: false, caught: true, guards: [[Guards.withStatus_true]], selection: Baton.Selection(type: Types.Location, key: "id", abstract: false, fields: [
                     .scalar("name", key: .fixed(Slots.Location.name), kind: .string, list: false, caught: true),
                     .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false, caught: true),
                 ])),
@@ -507,14 +507,14 @@ query TestStrictConditions(
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Character"
             @MainActor public var name: String? { anchor.string(Slots.Character.name) }
-            @MainActor public var species: String? { anchor.selects("withStatus", true) ? anchor.requiredString(Slots.Character.species) : nil }
-            @MainActor public var status: Result<String?, Baton.FieldErrors>? { anchor.selects("withStatus", true) ? anchor.caught(Slots.Character.status) { $0.string(Slots.Character.status) } : nil }
-            @MainActor public var origin: Result<Origin?, Baton.FieldErrors>? { anchor.selects("withStatus", true) ? anchor.caught(Slots.Character.origin, within: Origin.fieldErrors) { $0.linked(Slots.Character.origin).map(Origin.init(anchor:)) } : nil }
+            @MainActor public var species: String? { anchor.owner.selects(Guards.withStatus_true) ? anchor.requiredString(Slots.Character.species) : nil }
+            @MainActor public var status: Result<String?, Baton.FieldErrors>? { anchor.owner.selects(Guards.withStatus_true) ? anchor.caught(Slots.Character.status) { $0.string(Slots.Character.status) } : nil }
+            @MainActor public var origin: Result<Origin?, Baton.FieldErrors>? { anchor.owner.selects(Guards.withStatus_true) ? anchor.caught(Slots.Character.origin, within: Origin.fieldErrors) { $0.linked(Slots.Character.origin).map(Origin.init(anchor:)) } : nil }
             /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
             @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
                 var errors: [Baton.FieldError] = []
                 anchor.collectError(Slots.Character.name, into: &errors)
-                if anchor.selects("withStatus", true) {
+                if anchor.owner.selects(Guards.withStatus_true) {
                     anchor.collectError(Slots.Character.species, into: &errors)
                 }
                 return errors
@@ -616,7 +616,7 @@ fragment TestRow_character on Character {
             public static let typeName = "Character"
             @MainActor public var testRow: TestRow_character { .init(anchor: anchor.entering()) }
             @MainActor public var again: TestRow_character? {
-                guard anchor.selects("again", true) else { return nil }
+                guard anchor.owner.selects(Guards.again_true) else { return nil }
                 return .init(anchor: anchor.entering())
             }
         }

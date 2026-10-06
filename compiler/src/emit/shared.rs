@@ -8,7 +8,7 @@ use super::swift::{runtime_value, swift_literal, type_reference};
 use super::writer::Writer;
 use super::{FORMAT, HEADER};
 use crate::decide::{KeyPart, Shared, SlotRef};
-use crate::names::{possible_types, slot_name, type_constant};
+use crate::names::{guard_name, possible_types, slot_name, type_constant};
 
 /// `Types`, `Slots` and, when the module has any, `Sites` and
 /// `AbstractSlots`.
@@ -85,6 +85,21 @@ pub(super) fn shared_text(shared: &Shared) -> String {
             );
         }
     });
+    if !shared.guards.is_empty() {
+        writer.blank();
+        writer.doc("The conditions `@include` and `@skip` put on selections, which an owner settles once each.");
+        writer.block("nonisolated enum Guards", |writer| {
+            for guard in &shared.guards {
+                writer.line(format!(
+                    "static let {} = {}({}, passing: {})",
+                    guard_name(&guard.variable, guard.passing),
+                    runtime_value("Guard"),
+                    swift_literal(&guard.variable),
+                    guard.passing
+                ));
+            }
+        });
+    }
     if !shared.sites.is_empty() {
         writer.blank();
         writer.doc("The spreads with `@arguments`, where an owner binds a fragment's scope once.");

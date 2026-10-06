@@ -6,6 +6,7 @@ use super::swift::{constant_text, possible_types_reference, swift_literal, type_
 use crate::decide::{
     self, Guard, NormalizationField, NormalizationKind, NormalizationSelection, SlotRef,
 };
+use crate::names::guard_name;
 use crate::pipeline::{
     ArgumentValuePlan, ConnectionPlan, ConstantPlan, EditPlan, LookupPlan, StorageKeyPlan, TypeKind,
 };
@@ -272,13 +273,7 @@ fn guards_expression(guards: &[Vec<Guard>]) -> String {
         .map(|conjunction| {
             let conditions: Vec<String> = conjunction
                 .iter()
-                .map(|guard| {
-                    format!(
-                        ".init({}, passing: {})",
-                        swift_literal(&guard.variable),
-                        guard.passing
-                    )
-                })
+                .map(|guard| format!("Guards.{}", guard_name(&guard.variable, guard.passing)))
                 .collect();
             format!("[{}]", conditions.join(", "))
         })

@@ -266,9 +266,9 @@ fn a_throwing_computed_property_under_a_condition_returns_nil_before_it_reads() 
         one_line(
             property,
             "try .throwing(anchor)",
-            Some("anchor.selects(\"withStrict\", true)")
+            Some("anchor.owner.selects(Guards.withStrict_true)")
         ),
-        "@MainActor public var strict: TestStrict_character? { get throws { guard anchor.selects(\"withStrict\", true) else { return nil }; return try .throwing(anchor) } }\n"
+        "@MainActor public var strict: TestStrict_character? { get throws { guard anchor.owner.selects(Guards.withStrict_true) else { return nil }; return try .throwing(anchor) } }\n"
     );
 }
 
@@ -279,9 +279,9 @@ fn a_computed_property_already_optional_is_not_made_optional_again_under_a_condi
         one_line(
             property,
             "anchor.string(Slots.Character.name)",
-            Some("anchor.selects(\"withName\", true)")
+            Some("anchor.owner.selects(Guards.withName_true)")
         ),
-        "@MainActor public var name: String? { anchor.selects(\"withName\", true) ? anchor.string(Slots.Character.name) : nil }\n"
+        "@MainActor public var name: String? { anchor.owner.selects(Guards.withName_true) ? anchor.string(Slots.Character.name) : nil }\n"
     );
 }
 

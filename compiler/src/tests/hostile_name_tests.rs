@@ -166,6 +166,7 @@ const RECORD_ID: (&str, &str) = ("recordID", "the `recordID` every lens has");
 const TYPES: (&str, &str) = ("Types", "the shared enum `Types`");
 const SLOTS: (&str, &str) = ("Slots", "the shared enum `Slots`");
 const SITES: (&str, &str) = ("Sites", "the shared enum `Sites`");
+const GUARDS: (&str, &str) = ("Guards", "the shared enum `Guards`");
 const ABSTRACT_SLOTS: (&str, &str) = ("AbstractSlots", "the shared enum `AbstractSlots`");
 const VARIABLE: (&str, &str) = ("variable", "the optimistic response's `variable`");
 const VARIABLES: (&str, &str) = ("variables", "the operation's `variables`");
@@ -336,6 +337,7 @@ fn positions() -> Vec<Position> {
                 OPTIMISTIC_RESPONSE,
                 TYPES,
                 SLOTS,
+                GUARDS,
                 MODULE,
             ],
         ),
@@ -352,6 +354,7 @@ fn positions() -> Vec<Position> {
                 DATA,
                 TYPES,
                 SLOTS,
+                GUARDS,
                 MODULE,
             ],
         ),
@@ -371,6 +374,7 @@ fn positions() -> Vec<Position> {
                 TYPES,
                 SLOTS,
                 SITES,
+                GUARDS,
                 MODULE,
             ],
         ),

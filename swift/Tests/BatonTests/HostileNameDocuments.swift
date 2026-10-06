@@ -51,7 +51,7 @@ struct HostileNameDocuments {
           # What the runtime's protocols give a generated type.
           hashValue: name phase: name isRefreshing: name isStale: name retry: name subscription: name
           # The shared enums.
-          Types: name Sites: name AbstractSlots: name schemaDigest: name format: name
+          Types: name Sites: name Guards: name AbstractSlots: name schemaDigest: name format: name
           # The modules, and what the generated code spells from the standard library.
           Baton: name Swift: name Set: name Result: name Optional: name String: name Int: name
           Double: name Bool: name MainActor: name Hasher: name Sendable: name
@@ -108,7 +108,7 @@ struct HostileNameDocuments {
           hashValue: origin { id } phase: origin { id } isRefreshing: origin { id }
           isStale: origin { id } retry: origin { id } subscription: origin { id }
           # The shared enums.
-          Types: origin { id } Sites: origin { id } AbstractSlots: origin { id }
+          Types: origin { id } Sites: origin { id } Guards: origin { id } AbstractSlots: origin { id }
           schemaDigest: origin { id } format: origin { id }
           # The modules, and what the generated code spells from the standard library.
           Baton: origin { id } Swift: origin { id } Set: origin { id } Result: origin { id }
@@ -192,7 +192,7 @@ struct HostileNameDocuments {
           ... @alias(as: "isRefreshing") { name } ... @alias(as: "isStale") { name }
           ... @alias(as: "retry") { name } ... @alias(as: "subscription") { name }
           # The shared enums.
-          ... @alias(as: "Types") { name } ... @alias(as: "Sites") { name }
+          ... @alias(as: "Types") { name } ... @alias(as: "Sites") { name } ... @alias(as: "Guards") { name }
           ... @alias(as: "AbstractSlots") { name } ... @alias(as: "schemaDigest") { name }
           ... @alias(as: "format") { name }
           # The modules, and what the generated code spells from the standard library.
@@ -359,6 +359,7 @@ struct HostileNameDocuments {
           ... @alias(as: "Types") { ...HostileSpreadTarget_character }
           ... @alias(as: "Slots") { ...HostileSpreadTarget_character }
           ... @alias(as: "Sites") { ...HostileSpreadTarget_character }
+          ... @alias(as: "Guards") { ...HostileSpreadTarget_character }
           ... @alias(as: "AbstractSlots") { ...HostileSpreadTarget_character }
           ... @alias(as: "schemaDigest") { ...HostileSpreadTarget_character }
           ... @alias(as: "format") { ...HostileSpreadTarget_character }
@@ -441,7 +442,7 @@ struct HostileNameDocuments {
           # What the runtime's protocols give a generated type.
           hashValue: name phase: name isRefreshing: name isStale: name retry: name subscription: name
           # The shared enums.
-          AbstractSlots: name schemaDigest: name format: name
+          Guards: name AbstractSlots: name schemaDigest: name format: name
           # The modules, and what the generated code spells from the standard library.
           Baton: name Swift: name Set: name Result: name Optional: name String: name Int: name
           Double: name Bool: name MainActor: name Hasher: name Sendable: name
@@ -501,7 +502,7 @@ struct HostileNameDocuments {
             hashValue: totalCount phase: totalCount isRefreshing: totalCount isStale: totalCount
             retry: totalCount subscription: totalCount
             # The shared enums.
-            Sites: totalCount AbstractSlots: totalCount schemaDigest: totalCount format: totalCount
+            Sites: totalCount Guards: totalCount AbstractSlots: totalCount schemaDigest: totalCount format: totalCount
             # The modules, and what the generated code spells from the standard library.
             Baton: totalCount Swift: totalCount Set: totalCount Result: totalCount Optional: totalCount
             String: totalCount Int: totalCount Double: totalCount Bool: totalCount MainActor: totalCount
@@ -576,7 +577,7 @@ struct HostileNameDocuments {
             # What the runtime's protocols give a generated type.
             hashValue: name phase: name isRefreshing: name isStale: name retry: name subscription: name
             # The shared enums.
-            Sites: name AbstractSlots: name schemaDigest: name format: name
+            Sites: name Guards: name AbstractSlots: name schemaDigest: name format: name
             # The modules, and what the generated code spells from the standard library.
             Baton: name Swift: name Set: name Result: name Optional: name String: name Int: name
             Double: name Bool: name MainActor: name Hasher: name Sendable: name
@@ -617,7 +618,7 @@ struct HostileNameDocuments {
           # What the runtime's protocols give a generated type.
           hashValue: id phase: id isRefreshing: id isStale: id retry: id subscription: id
           # The shared enums.
-          Sites: id schemaDigest: id format: id
+          Sites: id Guards: id schemaDigest: id format: id
           # The modules, and what the generated code spells from the standard library.
           Baton: id Swift: id Set: id Result: id Optional: id String: id Int: id Double: id Bool: id
           MainActor: id Hasher: id Sendable: id
@@ -663,7 +664,7 @@ struct HostileNameDocuments {
           # What the runtime's protocols give a generated type.
           $retry: ID!, $subscription: ID!,
           # The shared enums.
-          $Sites: ID!, $AbstractSlots: ID!, $schemaDigest: ID!, $format: ID!,
+          $Sites: ID!, $Guards: ID!, $AbstractSlots: ID!, $schemaDigest: ID!, $format: ID!,
           # The modules, and what the generated code spells from the standard library.
           $Swift: ID!, $Set: ID!, $Result: ID!, $Optional: ID!, $String: ID!, $Int: ID!, $Double: ID!,
           $Bool: ID!, $MainActor: ID!, $Hasher: ID!, $Sendable: ID!
@@ -692,7 +693,7 @@ struct HostileNameDocuments {
             # What the runtime's protocols give a generated type.
             $retry, $subscription,
             # The shared enums.
-            $Sites, $AbstractSlots, $schemaDigest, $format,
+            $Sites, $Guards, $AbstractSlots, $schemaDigest, $format,
             # The modules, and what the generated code spells from the standard library.
             $Swift, $Set, $Result, $Optional, $String, $Int, $Double, $Bool, $MainActor, $Hasher,
             $Sendable
@@ -1267,7 +1268,7 @@ struct HostileNameDocuments {
               hashValue: name phase: name isRefreshing: name isStale: name retry: name
               subscription: name
               # The shared enums.
-              Types: name Sites: name AbstractSlots: name schemaDigest: name format: name
+              Types: name Sites: name Guards: name AbstractSlots: name schemaDigest: name format: name
               # The modules, and what the generated code spells from the standard library.
               Baton: name Swift: name Set: name Result: name Optional: name String: name Int: name
               Double: name Bool: name MainActor: name Hasher: name Sendable: name
@@ -1317,7 +1318,7 @@ struct HostileNameDocuments {
             hashValue: note { id } phase: note { id } isRefreshing: note { id } isStale: note { id }
             retry: note { id } subscription: note { id }
             # The shared enums.
-            Types: note { id } Sites: note { id } AbstractSlots: note { id } schemaDigest: note { id }
+            Types: note { id } Sites: note { id } Guards: note { id } AbstractSlots: note { id } schemaDigest: note { id }
             format: note { id }
             # The modules, and what the generated code spells from the standard library.
             Baton: note { id } Swift: note { id } Set: note { id } Result: note { id }

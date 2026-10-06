@@ -409,7 +409,7 @@ mutation TestRenameWithOrigin(
                 .linked("character", key: .fixed(Slots.FavoritePayload.character), plural: false, selection: Baton.Selection(type: Types.Character, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
                     .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .linked("origin", key: .fixed(Slots.Character.origin), plural: false, guards: [[.init("withOrigin", passing: true)]], selection: Baton.Selection(type: Types.Location, key: "id", abstract: false, fields: [
+                    .linked("origin", key: .fixed(Slots.Character.origin), plural: false, guards: [[Guards.withOrigin_true]], selection: Baton.Selection(type: Types.Location, key: "id", abstract: false, fields: [
                         .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
                         .scalar("name", key: .fixed(Slots.Location.name), kind: .string, list: false),
                     ])),
@@ -435,7 +435,7 @@ mutation TestRenameWithOrigin(
                 public static let typeName = "Character"
                 @MainActor public var id: String? { anchor.string(Slots.Character.id) }
                 @MainActor public var name: String? { anchor.string(Slots.Character.name) }
-                @MainActor public var origin: Origin? { anchor.selects("withOrigin", true) ? anchor.linked(Slots.Character.origin).map(Origin.init(anchor:)) : nil }
+                @MainActor public var origin: Origin? { anchor.owner.selects(Guards.withOrigin_true) ? anchor.linked(Slots.Character.origin).map(Origin.init(anchor:)) : nil }
 
                 nonisolated public struct Origin: Baton.Lens {
                     @_spi(Generated) public let anchor: Baton.Anchor

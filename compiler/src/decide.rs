@@ -147,6 +147,25 @@ pub struct NormalizationVariant {
     pub fields: Vec<NormalizationField>,
 }
 
+impl NormalizationSelection {
+    /// Whether a field of the selection, or of one nested in it, is fetched
+    /// under an `@include` or `@skip`, so that its plan names `Guards`.
+    pub fn has_guards(&self) -> bool {
+        self.variants
+            .iter()
+            .flat_map(|variant| &variant.fields)
+            .any(|field| {
+                if !field.guards.is_empty() {
+                    return true;
+                }
+                match &field.kind {
+                    NormalizationKind::Linked { selection, .. } => selection.has_guards(),
+                    _ => false,
+                }
+            })
+    }
+}
+
 impl NormalizationVariant {
     /// The type whose slots the variant's fields name: a variant of one type
     /// names that type's, which the runtime then takes as they are.

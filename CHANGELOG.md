@@ -5,6 +5,16 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- An owner settles an `@include` or `@skip` condition once, as it resolves
+  a key with variables once. Generated code declares each condition as a
+  constant, `Guards.<variable>_<value>`, that the plan's fields and the
+  lenses' reads both name, and an accessor's read tests the owner's answer
+  rather than looking the variable up by name. Generated code of this shape
+  is format 6. `Guards` joins the names the compiler keeps: a fragment or
+  operation of that name is an error when the module has a condition, a
+  field of that name where its lens tests one, and a variable of that name
+  where its operation tests one, as with `Sites`; a nested lens that would
+  take the name is `GuardsLens`.
 - A resolved variant carries the lists its walks need, made once at the
   resolution: the fields a response is read by and the ones a complete
   response must carry, the fields the availability check waits for, the

@@ -121,10 +121,6 @@ extension Anchor {
     /// Whether an `@include` or `@skip` condition selects: the variable has
     /// the value. An accessor under a condition that does not select reads
     /// as nil and reports nothing missing.
-    public func selects(_ variable: String, _ passing: Bool) -> Bool {
-        variables[variable] == .bool(passing)
-    }
-
     /// The field's value read as a string. A null reads as nil, and is
     /// reported when the field is typed non-null.
     @inline(__always)

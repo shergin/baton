@@ -10,7 +10,7 @@ use super::lens::{
     AliasGuard, ErrorCheck, ErrorLine, Read, ReaderPlan, SatisfiedCheck, SlotAccess, SpreadGuard,
     TypeTest,
 };
-use super::{NormalizationKind, NormalizationSelection, Program};
+use super::{Guard, NormalizationKind, NormalizationSelection, Program};
 use crate::names::{
     Kind, NameError, Reserved, STANDARD_LIBRARY_NAMES, Scope, Written, possible_types,
     type_constant,
@@ -34,6 +34,9 @@ pub struct Shared {
     pub abstract_slots: BTreeSet<SlotRef>,
     /// The identifiers of the spreads with arguments.
     pub sites: BTreeSet<String>,
+    /// The conditions `@include` and `@skip` put on selections, which an
+    /// owner settles once each.
+    pub guards: BTreeSet<Guard>,
 }
 
 impl Shared {
@@ -63,6 +66,7 @@ impl Shared {
         {
             self.slot(identity);
         }
+        self.guards.extend(lens.own_guards().into_iter().cloned());
         for accessor in &lens.accessors {
             match &accessor.read {
                 Read::Scalar(read) => self.slot(&read.slot),
@@ -155,6 +159,9 @@ impl Shared {
             let slot_type = variant.slot_type(selection);
             for field in &variant.fields {
                 self.slots.insert(SlotRef::new(slot_type, &field.key));
+                for conjunction in &field.guards {
+                    self.guards.extend(conjunction.iter().cloned());
+                }
                 if let Some(edge_type) = field
                     .edit
                     .as_ref()
@@ -215,6 +222,9 @@ impl Shared {
         module.declare("Slots", Kind::Type, "the shared enum `Slots`");
         if !self.sites.is_empty() {
             module.declare("Sites", Kind::Type, "the shared enum `Sites`");
+        }
+        if !self.guards.is_empty() {
+            module.declare("Guards", Kind::Type, "the shared enum `Guards`");
         }
         if !self.abstract_slots.is_empty() {
             module.declare(

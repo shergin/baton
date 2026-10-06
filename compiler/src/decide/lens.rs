@@ -41,8 +41,9 @@ impl ReaderPlan {
     /// that a member of the lens, or of the type it is nested in, named
     /// like one of them would hide from all of those bodies. The module's
     /// shared enums: `Slots` and `AbstractSlots` where they read a slot,
-    /// `Types` where they test a record's type or name one, and `Sites`
-    /// where they bind a spread's arguments; and Swift's `Self` where they
+    /// `Types` where they test a record's type or name one, `Sites`
+    /// where they bind a spread's arguments, and `Guards` where they test
+    /// an `@include` or `@skip`; and Swift's `Self` where they
     /// reach a static member of their own, a refetchable fragment's
     /// descriptor or a connection's slots.
     pub fn hideable_names(&self) -> BTreeSet<&'static str> {
@@ -131,9 +132,52 @@ impl ReaderPlan {
         for presence in self.is_present.iter().flatten() {
             names.insert(presence.item.shared_enum());
         }
+        if !self.own_guards().is_empty() {
+            names.insert("Guards");
+        }
         for child in &self.nested {
             child.collect_hideable_names(names);
         }
+    }
+
+    /// The conditions the lens's own body tests, not those of the lenses
+    /// nested in it: on its accessors, its spreads and aliases, and its
+    /// checks.
+    pub fn own_guards(&self) -> Vec<&Guard> {
+        let mut alternatives: Vec<&Vec<Vec<Guard>>> = Vec::new();
+        for accessor in &self.accessors {
+            alternatives.push(&accessor.guards);
+            match &accessor.read {
+                Read::Spread(read) => {
+                    for guard in &read.guards {
+                        if let SpreadGuard::Selects(guards) = guard {
+                            alternatives.push(guards);
+                        }
+                    }
+                }
+                Read::Aliased(read) => {
+                    for guard in &read.guards {
+                        if let AliasGuard::Selects(guards) = guard {
+                            alternatives.push(guards);
+                        }
+                    }
+                }
+                Read::Scalar(_) | Read::Linked(_) | Read::Condition(_) => {}
+            }
+        }
+        for entry in self.satisfied.iter().flatten() {
+            alternatives.push(&entry.guards);
+        }
+        for check in self.field_errors.iter().flatten() {
+            match check {
+                ErrorCheck::Condition { guards, .. } => alternatives.push(guards),
+                ErrorCheck::Member(lines) => alternatives.push(&lines.guards),
+            }
+        }
+        for presence in self.is_present.iter().flatten() {
+            alternatives.push(&presence.guards);
+        }
+        alternatives.into_iter().flatten().flatten().collect()
     }
 
     /// The fragments the lens and every lens nested in it spread, whose

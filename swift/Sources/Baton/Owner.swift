@@ -24,6 +24,9 @@ public final class Owner {
     private var abstractSlots: [(key: DynamicKey, slot: AbstractSlot)] = []
     /// The scope of each spread with arguments, bound on first use.
     private var bound: [(site: ArgumentSite, owner: Owner)] = []
+    /// Whether each condition read in the scope selects, settled on first
+    /// use.
+    private var conditions: [(condition: Guard, selects: Bool)] = []
     private var inertOwner: Owner?
 
     /// The environment that fetches for the scope's lenses: their refetches
@@ -60,6 +63,18 @@ public final class Owner {
         let slot = resolve(key.type, key.render(variables))
         slots.append((key, slot))
         return slot
+    }
+
+    /// Whether the condition selects under these variables: `@include(if:)`
+    /// when the variable is true, `@skip(if:)` when it is false. Settled
+    /// once per owner, as a key with variables is, so a read looks nothing
+    /// up by name.
+    @inline(__always)
+    public func selects(_ condition: Guard) -> Bool {
+        for entry in conditions where entry.condition === condition { return entry.selects }
+        let selects = condition.holds(variables)
+        conditions.append((condition, selects))
+        return selects
     }
 
     /// The key's slot under these variables on `type`, for a key read on an

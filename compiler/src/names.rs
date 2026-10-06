@@ -88,7 +88,7 @@ struct Declaration {
 /// these names would shadow it for the lens and everything nested in it, or
 /// not compile; an identifier a lens comes to spell unqualified joins the
 /// list in the same change.
-pub const RESERVED_TYPE_NAMES: [&str; 16] = [
+pub const RESERVED_TYPE_NAMES: [&str; 17] = [
     // Swift lets no type member take these names.
     "Type",
     "Self",
@@ -102,6 +102,7 @@ pub const RESERVED_TYPE_NAMES: [&str; 16] = [
     "Slots",
     "AbstractSlots",
     "Sites",
+    "Guards",
     // What the accessors return: a `@catch` field's `Result`, the
     // `Optional` every optional accessor's type stands for, and the
     // scalars.
@@ -401,6 +402,12 @@ pub fn type_constant(name: &str) -> String {
 /// The constant in `Types` of the types that satisfy `condition`.
 pub fn possible_types(condition: &str) -> String {
     format!("{condition}_possible")
+}
+
+/// The constant in `Guards` of a condition: the variable and the value of
+/// it that selects, `withOrigin_true`.
+pub fn guard_name(variable: &str, passing: bool) -> String {
+    format!("{variable}_{passing}")
 }
 
 /// `name` with an underscore after it when it is one of `hidden`, escaped

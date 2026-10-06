@@ -22,6 +22,7 @@ use crate::decide::{
     SpreadRead, TypeTest,
 };
 use crate::names::capitalize;
+use crate::names::guard_name;
 
 pub(super) fn fragment_text(fragment: &FragmentLens) -> String {
     let mut writer = Writer::new();
@@ -748,9 +749,8 @@ fn guard_condition(guards: &[Vec<Guard>]) -> Option<String> {
                 .iter()
                 .map(|guard| {
                     format!(
-                        "anchor.selects({}, {})",
-                        swift_literal(&guard.variable),
-                        guard.passing
+                        "anchor.owner.selects(Guards.{})",
+                        guard_name(&guard.variable, guard.passing)
                     )
                 })
                 .collect::<Vec<_>>()

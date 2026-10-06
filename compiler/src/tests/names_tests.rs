@@ -19,6 +19,7 @@ fn a_nested_lens_is_never_named_like_what_a_lens_spells_unqualified_or_a_swift_k
         "Slots",
         "AbstractSlots",
         "Sites",
+        "Guards",
         "Result",
         "Optional",
         "String",
