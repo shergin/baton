@@ -241,6 +241,109 @@ struct LifetimeTests {
         withExtendedLifetime(retention) {}
     }
 
+    /// The requests a transport was sent for one operation.
+    func requests(_ transport: RecordedTransport, _ operationName: String, id: String? = nil) -> Int {
+        transport.requests.filter { request in
+            guard request.operationName == operationName else { return false }
+            guard let id else { return true }
+            guard case .string(let requested)? = request.variables["id"] else { return false }
+            return requested == id
+        }.count
+    }
+
+    @Test("a storeOnly holder is fetched for by neither an invalidation nor a revalidation; a holder that allows the network is, while it holds")
+    func aStoreOnlyHolderIsNotFetchedFor() async {
+        let transport = transport()
+        let environment = Environment(transport: transport)
+        let list = environment.handle(for: TestList(page: 1))
+        let listRetention = list.retain()
+        await list.settle()
+
+        // The list brought the character: the lookup reads from the store.
+        let header = environment.handle(for: TestHeaderQuery(id: "5"), fetchPolicy: .storeOnly)
+        let storeOnlyRetention = header.retain()
+        guard case .ready = header.phase else { Issue.record("expected ready from the store, got \(header.phase)"); return }
+
+        environment.invalidate()
+        await list.settle()
+        await turns()
+        #expect(requests(transport, TestHeaderQuery.name) == 0, "the invalidation fetched nothing for the storeOnly holder")
+        #expect(header.isStale, "it was marked stale all the same")
+        #expect(requests(transport, TestList.name) == 2, "the list's holder allows the network, and it was refetched")
+
+        environment.revalidate()
+        await turns()
+        #expect(requests(transport, TestHeaderQuery.name) == 0, "the revalidation fetched nothing for the storeOnly holder either")
+        #expect(header.isStale)
+
+        // A second holder that allows the network: its attach fetches the
+        // stale data, and then an invalidation fetches for it.
+        let again = environment.handle(for: TestHeaderQuery(id: "5"), fetchPolicy: .storeOrNetwork)
+        #expect(again === header)
+        let networkRetention = again.retain()
+        await header.settle()
+        let afterAttach = requests(transport, TestHeaderQuery.name)
+        #expect(afterAttach == 1, "the storeOrNetwork attach fetched the stale data")
+        environment.invalidate()
+        await header.settle()
+        await turns()
+        #expect(requests(transport, TestHeaderQuery.name) == afterAttach + 1, "the invalidation fetched it once")
+
+        // The network holder lets go; the storeOnly one still holds.
+        _ = consume networkRetention
+        #expect(header.retainCount == 1)
+        environment.invalidate()
+        await header.settle()
+        await turns()
+        #expect(requests(transport, TestHeaderQuery.name) == afterAttach + 1, "with only the storeOnly holder left, nothing was fetched")
+        #expect(header.isStale)
+        withExtendedLifetime((listRetention, storeOnlyRetention)) {}
+    }
+
+    @Test("revalidate refetches a retained handle that is stale and one whose last fetch failed, leaves a fresh one alone, and marks nothing")
+    func revalidation() async {
+        let failures = Attempts()
+        let transport = RecordedTransport { request in
+            guard case .string(let id)? = request.variables["id"] else { return nil }
+            // The lookup of character 11 fails the first time it is asked.
+            if id == "11", request.operationName == TestHeaderQuery.name, failures.next() == 1 { return nil }
+            return fixture("character-header-\(id)")
+        }
+        let environment = Environment(transport: transport, store: Store(cacheExpiration: .zero))
+        let stale = environment.handle(for: TestHeaderQuery(id: "5"))
+        let failed = environment.handle(for: TestHeaderQuery(id: "11"))
+        let fresh = environment.handle(for: TestFreshCharacter(id: "5"))
+        let retentions = (stale.retain(), failed.retain(), fresh.retain())
+        await stale.settle()
+        await failed.settle()
+        await fresh.settle()
+        guard case .ready = stale.phase, case .ready = fresh.phase else {
+            Issue.record("expected both ready, got \(stale.phase) and \(fresh.phase)")
+            return
+        }
+        guard case .failed = failed.phase, case .failed = failed.fetch else {
+            Issue.record("expected the first lookup of 11 to fail, got \(failed.phase)")
+            return
+        }
+        #expect(stale.isStale, "the store's default of zero ages it at once")
+        #expect(!fresh.isStale, "thirty seconds of its own keep it fresh")
+        #expect(!failed.isStale, "a failure with no data behind it has nothing to go stale")
+
+        environment.revalidate()
+        #expect(!fresh.isStale, "a revalidation marks nothing")
+        #expect(!failed.isStale)
+        await stale.settle()
+        await failed.settle()
+        await turns()
+        #expect(requests(transport, TestHeaderQuery.name, id: "5") == 2, "the stale handle was refetched")
+        #expect(requests(transport, TestHeaderQuery.name, id: "11") == 2, "the failed handle was fetched again")
+        #expect(requests(transport, TestFreshCharacter.name) == 1, "the fresh handle was left alone")
+        guard case .ready(let data) = failed.phase else { Issue.record("expected ready after the revalidation, got \(failed.phase)"); return }
+        #expect(data.character?.testHeader.name == "Albert Einstein")
+        #expect(!fresh.isStale)
+        withExtendedLifetime(retentions) {}
+    }
+
     @Test("an expired handle refetches on attach under storeOrNetwork")
     func expiration() async {
         let transport = transport()

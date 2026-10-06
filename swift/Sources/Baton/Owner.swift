@@ -24,20 +24,25 @@ public final class Owner {
     /// The environment that fetches for the scope's lenses: their refetches
     /// and pages. None for a lens made by hand, which cannot fetch.
     private(set) weak var environment: Environment?
+    /// The root the scope reads under, whose operation a heal refetches.
+    /// None for a lens made by hand.
+    let root: Store.Root?
 
     nonisolated public convenience init(variables: Variables, store: Store? = nil) {
-        self.init(variables: variables, store: store, environment: nil, reports: true)
+        self.init(variables: variables, store: store, environment: nil, root: nil, reports: true)
     }
 
-    /// The scope of a handle's lenses, which fetch through its environment.
-    convenience init(variables: Variables, store: Store, environment: Environment) {
-        self.init(variables: variables, store: store, environment: environment, reports: true)
+    /// The scope of a handle's lenses, which fetch through its environment
+    /// and are healed through its root.
+    convenience init(variables: Variables, store: Store, environment: Environment, root: Store.Root? = nil) {
+        self.init(variables: variables, store: store, environment: environment, root: root, reports: true)
     }
 
-    nonisolated private init(variables: Variables, store: Store?, environment: Environment?, reports: Bool) {
+    nonisolated private init(variables: Variables, store: Store?, environment: Environment?, root: Store.Root?, reports: Bool) {
         self.variables = variables
         self.store = store
         self.environment = environment
+        self.root = root
         self.reports = reports
     }
 
@@ -65,7 +70,7 @@ public final class Owner {
         for entry in bound where entry.site === site { return entry.owner }
         var merged = variables.values
         for (name, value) in values() { merged[name] = value ?? .null }
-        let owner = Owner(variables: Variables(merged), store: store, environment: environment, reports: reports)
+        let owner = Owner(variables: Variables(merged), store: store, environment: environment, root: root, reports: reports)
         bound.append((site, owner))
         return owner
     }
@@ -75,7 +80,7 @@ public final class Owner {
     /// non-null link below it reads the store's placeholder of its type.
     var inert: Owner {
         if let inertOwner { return inertOwner }
-        let owner = reports ? Owner(variables: variables, store: store, environment: environment, reports: false) : self
+        let owner = reports ? Owner(variables: variables, store: store, environment: environment, root: root, reports: false) : self
         inertOwner = owner
         return owner
     }

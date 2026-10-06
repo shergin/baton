@@ -232,6 +232,13 @@ removal leaves the image alone after it, so a response that lands late for
 the user who signed out never reaches the next one; and one image holds a
 file, so a second made on it while the first lives runs without it.
 
+Outside SwiftUI, a model or a view controller keeps an operation's data
+alive by holding the `Retention` that `handle.retain()` returns, and lets it
+go with itself; the policy it attached with stays with the retention, so a
+`storeOnly` holder is never fetched for behind its back. `revalidate()` on
+the environment refetches what is stale or failed when the app returns to
+the foreground.
+
 A store is filled from a payload as well as from the network.
 `try await environment.commitPayload(CharacterQuery(id: "1"), fixture)` runs
 the operation's plan over bytes in a response's shape and commits them as a

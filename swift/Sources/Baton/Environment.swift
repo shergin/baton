@@ -85,13 +85,38 @@ public final class Environment {
         }
     }
 
-    /// Marks every handle's data stale. Retained handles refetch at once; the
-    /// data stays visible until the response commits.
+    /// Marks every handle's data stale. Retained handles whose holders allow
+    /// the network refetch at once; the data stays visible until the response
+    /// commits.
     public func invalidate() {
         store.invalidate()
         for handle in handles.values where handle.retainCount > 0 {
             handle.refetchIfStale()
         }
+    }
+
+    /// Refetches the retained operations that are stale or whose last fetch
+    /// failed, where a holder allows the network: for an app's return to the
+    /// foreground, or a connection regained. Marks nothing; `invalidate()`
+    /// does.
+    public func revalidate() {
+        for handle in handles.values where handle.retainCount > 0 {
+            handle.revalidate()
+        }
+    }
+
+    /// The heal: a read under `root` found data missing. The store marks the
+    /// root stale, and its handle refetches if a holder allows the network,
+    /// once per fetch of the root; a field still missing after the heal's own
+    /// refetch is reported as unexpected and healed no further. A lens with
+    /// no root, made by hand, is reported and not healed.
+    func heal(_ root: Store.Root?, _ record: Record, _ slot: Slot) {
+        guard let root else { return }
+        guard store.heal(root) else {
+            store.reportUnexpected?(record, slot, .missing)
+            return
+        }
+        handles[root.key]?.fetchForHeal()
     }
 
     private func request<Op: Operation>(_ operation: Op.Type, variables: Variables) -> Request {

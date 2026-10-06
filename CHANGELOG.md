@@ -5,6 +5,19 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- The heal. A read that finds a slot the store never received, which a
+  retargeted link leaves behind, marks the owning operation stale and
+  refetches it if a holder allows the network, once per fetch of that
+  operation; a field still missing after the heal's own refetch is reported
+  as unexpected and healed no further. Missing data was reported and left
+  to the next attach.
+- The fetch policy is the holder's. An attach's policy stays with the
+  retention it makes, so a fetch the runtime starts later asks whether any
+  holder allows the network: `invalidate()` no longer refetches an
+  operation attached `storeOnly`. `Environment.revalidate()` refetches the
+  retained operations that are stale or whose last fetch failed, where a
+  holder allows the network, and marks nothing: for an app's return to the
+  foreground or a connection regained.
 - The commit stamps an operation's age. Every server write dates its
   operation, whoever asked for it: a handle's fetch, a refetch, a page,
   `Environment.fetch` or `commitPayload`, and a deferred response when its

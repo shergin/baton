@@ -953,4 +953,136 @@ struct PhaseTests {
         #expect(error.code == .notConnectedToInternet)
         #expect(!operation.isRefreshing)
     }
+
+    /// What a heal's reads report: the slots read missing, and those read
+    /// unexpected with the value found.
+    final class Reports: @unchecked Sendable {
+        var missing: [String] = []
+        var unexpected: [String] = []
+    }
+
+    /// An environment whose store records what its reads report.
+    func reporting(_ transport: any Transport) -> (Baton.Environment, Reports) {
+        let environment = Environment(transport: transport)
+        let reports = Reports()
+        environment.store.reportMissing = { record, slot in reports.missing.append(record.key + "." + slot.storageKey) }
+        environment.store.reportUnexpected = { record, slot, value in
+            if case .missing = value { reports.unexpected.append(record.key + "." + slot.storageKey) }
+        }
+        return (environment, reports)
+    }
+
+    /// The operation whose lens reads `character.origin.dimension`, and the
+    /// one that selects the origin's id alone.
+    let withOrigin = TestConditions(id: "1", withOrigin: true, hideStatus: false)
+    let originIdOnly = TestConditions(id: "1", withOrigin: false, hideStatus: true)
+
+    /// Moves Rick's origin onto a location the store knows only by its id,
+    /// through the operation that selects nothing else of it.
+    func retargetOrigin(_ environment: Baton.Environment) async throws {
+        let text = String(decoding: fixture("conditions-excluded"), as: UTF8.self)
+            .replacingOccurrences(of: "\"origin\":{\"id\":\"1\"}", with: "\"origin\":{\"id\":\"99\"}")
+        #expect(text.contains("\"99\""))
+        try await environment.commitPayload(originIdOnly, Data(text.utf8))
+    }
+
+    /// The dimension of Rick's origin, read through a handle's lens.
+    func dimension(_ handle: OperationHandle<TestConditions>) -> String? {
+        guard case .ready(let data) = handle.phase else {
+            Issue.record("expected ready, got \(handle.phase)")
+            return nil
+        }
+        return data.character?.origin?.dimension
+    }
+
+    @Test("a link retargeted to a record with fewer fields reads a zero value, marks the operation stale and refetches it once, then reads the value; a miss under the heal's own data is unexpected and not fetched again until a refetch of the operation lands")
+    func aMissingFieldHealsOncePerFetch() async throws {
+        let transport = RecordedTransport([TestConditions.name: fixture("conditions-included")])
+        let (environment, reports) = reporting(transport)
+        let handle = environment.handle(for: withOrigin)
+        let retention = handle.retain()
+        await handle.settle()
+        #expect(transport.requestCount == 1)
+        #expect(dimension(handle) == "Dimension C-137")
+        #expect(reports.missing.isEmpty)
+
+        try await retargetOrigin(environment)
+        let missing = dimension(handle)
+        #expect(missing == nil, "the location the link moved to has no dimension")
+        #expect(reports.missing == ["Location:99.dimension"])
+        #expect(handle.isStale, "the heal marked the operation stale")
+        await handle.settle()
+        #expect(transport.requestCount == 2, "the heal refetched the operation once")
+        #expect(dimension(handle) == "Dimension C-137", "the refetch moved the link back to the fuller record")
+        #expect(!handle.isStale)
+
+        // Under the heal's own data, a miss is unexpected and healed no
+        // further.
+        try await retargetOrigin(environment)
+        #expect(dimension(handle) == nil)
+        #expect(reports.missing.count == 2)
+        #expect(reports.unexpected == ["Location:99.dimension"])
+        await handle.settle()
+        for _ in 0..<10 { await Task.yield() }
+        #expect(transport.requestCount == 2, "no fetch for a miss under the heal's own data")
+        #expect(!handle.isStale)
+
+        // A refetch of the operation arms the heal again.
+        try await handle.refetch()
+        #expect(transport.requestCount == 3)
+        try await retargetOrigin(environment)
+        #expect(dimension(handle) == nil)
+        #expect(reports.unexpected.count == 1, "the miss after the refetch is healed, not reported unexpected")
+        #expect(handle.isStale)
+        await handle.settle()
+        #expect(transport.requestCount == 4, "the heal refetched again")
+        #expect(dimension(handle) == "Dimension C-137")
+        withExtendedLifetime(retention) {}
+    }
+
+    @Test("a miss under a storeOnly holder alone marks the operation stale and sends nothing, however often it is read")
+    func aStoreOnlyHolderIsNotHealedFromTheNetwork() async throws {
+        let transport = RecordedTransport([TestConditions.name: fixture("conditions-included")])
+        let (environment, reports) = reporting(transport)
+        try await environment.commitPayload(withOrigin, fixture("conditions-included"))
+        let handle = environment.handle(for: withOrigin, fetchPolicy: .storeOnly)
+        let retention = handle.retain()
+        #expect(dimension(handle) == "Dimension C-137")
+        #expect(!handle.isStale)
+
+        try await retargetOrigin(environment)
+        #expect(dimension(handle) == nil)
+        #expect(reports.missing == ["Location:99.dimension"])
+        #expect(handle.isStale, "the heal marked the operation stale")
+        for _ in 0..<10 { await Task.yield() }
+        #expect(transport.requestCount == 0, "no holder allows the network")
+
+        #expect(dimension(handle) == nil)
+        #expect(reports.missing == ["Location:99.dimension", "Location:99.dimension"], "a second read reports the miss again")
+        #expect(reports.unexpected.isEmpty)
+        #expect(handle.isStale)
+        for _ in 0..<10 { await Task.yield() }
+        #expect(transport.requestCount == 0)
+        withExtendedLifetime(retention) {}
+    }
+
+    @Test("a lens made by hand that finds data missing is reported and sends no request")
+    func aLensMadeByHandIsNotHealed() async throws {
+        let transport = RecordedTransport([TestConditions.name: fixture("conditions-included")])
+        let (environment, reports) = reporting(transport)
+        let handle = environment.handle(for: withOrigin)
+        let retention = handle.retain()
+        await handle.settle()
+        #expect(transport.requestCount == 1)
+
+        try await retargetOrigin(environment)
+        let data = TestConditions.Data(anchor: Anchor(record: environment.store.root, variables: withOrigin.variables, store: environment.store))
+        #expect(data.character?.origin?.dimension == nil)
+        #expect(reports.missing == ["Location:99.dimension"])
+        #expect(reports.unexpected.isEmpty)
+        for _ in 0..<10 { await Task.yield() }
+        #expect(transport.requestCount == 1, "a lens with no root heals nothing")
+        #expect(!handle.isStale, "the operation the lens reads was not marked stale")
+        withExtendedLifetime(retention) {}
+    }
 }

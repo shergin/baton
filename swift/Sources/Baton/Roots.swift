@@ -20,11 +20,22 @@ extension Store {
         @ObservationIgnored let resolved: ResolvedSelection
         @ObservationIgnored let record: Record
         @ObservationIgnored fileprivate(set) var holders = 0
+        /// How many of the holders attached with a policy that allows the
+        /// network: a fetch the runtime starts later asks whether any does.
+        @ObservationIgnored fileprivate(set) var networkHolders = 0
         /// When the store last committed the operation's response, in this
         /// launch or, read from the image, an earlier one.
         private(set) var fetchTime: ContinuousClock.Instant?
         /// The invalidation the data was fetched under.
         @ObservationIgnored fileprivate(set) var fetchEpoch = 0
+        /// How many responses the store has committed for the operation.
+        @ObservationIgnored fileprivate(set) var fetches = 0
+        /// The fetch a heal asked for, by its number: a miss under that
+        /// fetch's data is unexpected, and healed no further.
+        @ObservationIgnored fileprivate(set) var healedAt: Int?
+
+        /// Whether a holder's policy allows the network.
+        var allowsNetwork: Bool { networkHolders > 0 }
 
         init(key: String, resolved: ResolvedSelection, record: Record) {
             self.key = key
@@ -47,10 +58,11 @@ extension Store {
         return root
     }
 
-    /// Keeps the root's records alive by one holder more. A root retained
-    /// after its eviction is a root again.
-    func retain(_ root: Root) {
+    /// Keeps the root's records alive by one holder more, whose policy allows
+    /// the network or not. A root retained after its eviction is a root again.
+    func retain(_ root: Root, allowingNetwork: Bool) {
         root.holders += 1
+        if allowingNetwork { root.networkHolders += 1 }
         releaseBuffer.removeAll { $0 == root.key }
         if roots[root.key] == nil { roots[root.key] = root }
     }
@@ -60,10 +72,12 @@ extension Store {
     /// subscription's events wait for nobody. The keys of the roots pushed
     /// out are returned, so that the environment drops what it holds for
     /// them.
-    func release(_ root: Root, buffering: Bool = true) -> [String] {
+    func release(_ root: Root, allowingNetwork: Bool, buffering: Bool = true) -> [String] {
         root.holders -= 1
+        if allowingNetwork { root.networkHolders -= 1 }
         guard root.holders <= 0 else { return [] }
         root.holders = 0
+        root.networkHolders = 0
         guard buffering else {
             drop(root)
             return []
@@ -122,6 +136,7 @@ extension Store {
     /// of the roots pushed out are returned.
     func date(_ root: Root) -> [String] {
         root.stamp(.now, epoch: invalidationEpoch)
+        root.fetches += 1
         persistence?.fetched(root.key, removals: imageRemovals)
         guard root.record === self.root, root.holders == 0, !releaseBuffer.contains(root.key) else { return [] }
         return park(root.key)
@@ -137,6 +152,17 @@ extension Store {
         } else if hydrated {
             root.stamp(nil, epoch: invalidationEpoch - 1)
         }
+    }
+
+    /// A read under the root found data missing: the root is marked stale,
+    /// and the heal may refetch it, once per fetch of the root. Returns false
+    /// when the data is the heal's own refetch's, under which a field still
+    /// missing is unexpected and healed no further.
+    func heal(_ root: Root) -> Bool {
+        if root.healedAt == root.fetches { return false }
+        root.healedAt = root.fetches + 1
+        root.stamp(root.fetchTime, epoch: invalidationEpoch - 1)
+        return true
     }
 
     /// The roots: retained, waiting in the buffer, or a completed mutation's.
@@ -185,12 +211,15 @@ extension Store {
 @MainActor
 public final class Retention {
     private let handle: any AnyOperationHandle
+    /// Whether the holder attached with a policy that allows the network.
+    private let allowsNetwork: Bool
 
-    init(_ handle: any AnyOperationHandle) {
+    init(_ handle: any AnyOperationHandle, allowsNetwork: Bool) {
         self.handle = handle
+        self.allowsNetwork = allowsNetwork
     }
 
     isolated deinit {
-        handle.release()
+        handle.release(allowingNetwork: allowsNetwork)
     }
 }

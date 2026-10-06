@@ -88,10 +88,13 @@ extension Lens {
 
 @MainActor
 extension Anchor {
+    /// Reports a slot the store never received, and asks the owner's
+    /// environment to heal: mark the operation stale and refetch it.
     private func missing(_ slot: Slot) {
         // A deleted record's fields are gone on purpose.
         guard !record.deleted, owner.reports else { return }
         anchor.store?.reportMissing?(record, slot)
+        owner.environment?.heal(owner.root, record, slot)
     }
 
     private func unexpected(_ slot: Slot, _ value: Value) {

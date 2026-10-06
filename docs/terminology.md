@@ -292,9 +292,12 @@ layers and the image's write queue, and from nothing else. See
 
 **Invalidation, TTL.** *Composition: store, operation value, environment.*
 Relay's and Apollo's shared words. `Environment.invalidate()` marks every
-fetched operation stale and refetches the retained ones; an operation's
-[cache expiration](#documents), or the store's default, does the same by
-age. Stale data stays readable. An
+fetched operation stale and refetches the retained ones whose holders allow
+the network; an operation's [cache expiration](#documents), or the store's
+default, does the same by age. `Environment.revalidate()` refetches the
+retained operations that are stale or whose last fetch failed, where a
+holder allows the network, and marks nothing: for an app's return to the
+foreground or a connection regained. Stale data stays readable. An
 invalidation also forgets the image's fetch times, so it outlives the
 launch. The age is the root's, kept by the store and stamped by the commit
 of every response, a handle's fetch, a refetch, a page, `Environment.fetch`
@@ -369,11 +372,16 @@ an app branches on the server's code and never on its message: see
 
 **Heal.** *Composition: store, operation value, environment.* Baton's word
 for the response to missing data: record the event, mark the owning
-operation stale, refetch. See [Honest data](principles/honest-data.md).
-Today: `Store.reportMissing` is called; the refetch is *(planned)*. A value
-the generated type cannot hold, a null in a field typed non-null or a value
-of another kind, is reported through `Store.reportUnexpected`; it is not a
-miss, so nothing heals it.
+operation stale, refetch. See [Honest data](principles/honest-data.md). A
+read that finds a slot the store never received reports it through
+`Store.reportMissing` and tells its owner's environment, which marks the
+owner's root stale and refetches it if a holder allows the network, once per
+fetch of that root; a field still missing after the heal's own refetch is
+reported through `Store.reportUnexpected` and healed no further. A lens made
+by hand has no root and is reported, not healed. A value the generated type
+cannot hold, a null in a field typed non-null or a value of another kind, is
+reported through `Store.reportUnexpected`; it is not a miss, so nothing
+heals it.
 
 ## Compiler
 
@@ -540,7 +548,11 @@ which the decision leaves open. See
 **Fetch policy.** *Composition: store, operation value, environment.*
 Relay's four, as `@Query("…", fetchPolicy:)`: `storeOrNetwork`
 (`FetchPolicy.default`), `storeAndNetwork`, `networkOnly`, `storeOnly`;
-decided on attach over the availability check and staleness.
+decided on attach over the availability check and staleness. The policy is
+the holder's: it stays with the retention the attach makes, so a fetch the
+runtime starts later, for an invalidation, a revalidation or a heal, asks
+whether any holder allows the network, and a `storeOnly` holder is fetched
+for by none of them.
 
 **Lookup.** *Composition: schema, store, plan.* Baton's word for a root
 field configured in `baton.json` as returning an entity by one of its

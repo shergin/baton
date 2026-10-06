@@ -134,9 +134,15 @@ protocol AnyOperationHandle: AnyObject {
     /// The handle's root among the store's.
     var root: Store.Root { get }
     var retainCount: Int { get }
-    /// One holder fewer: a retention ended.
-    func release()
+    /// One holder fewer: a retention ended, of a holder whose policy allowed
+    /// the network or not.
+    func release(allowingNetwork: Bool)
     func refetchIfStale()
+    /// Fetches again when the data is stale or the last fetch failed, if a
+    /// holder allows the network.
+    func revalidate()
+    /// Fetches again for a heal, unless a fetch is in flight.
+    func fetchForHeal()
     /// Settles the phase again after a commit changed a field error or a
     /// null, for policies that read them.
     func reevaluate()
@@ -174,6 +180,8 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
     /// Set by a `preload` that fetched: the first attach finds the fetch
     /// made, or on the way.
     @ObservationIgnored var preloaded = false
+    /// The policy of the last attach, which the retention it makes keeps.
+    @ObservationIgnored private var lastPolicy: FetchPolicy = .default
     /// The field errors of the last fetch that no field in the store holds,
     /// which `@throwOnFieldError` counts until the next fetch.
     @ObservationIgnored private var unplaced: [FieldError] = []
@@ -184,7 +192,7 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
         self.environment = environment
         store = environment.store
         root = environment.store.root(key, resolved: Op.plan.resolve(operation.variables), record: environment.store.root)
-        owner = Owner(variables: operation.variables, store: environment.store, environment: environment)
+        owner = Owner(variables: operation.variables, store: environment.store, environment: environment, root: root)
     }
 
     /// How many hold the handle's root; for the tests.
@@ -275,6 +283,7 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
     /// Applies a policy on attach: renders what the store allows, fetches
     /// when the policy asks for it.
     func apply(_ policy: FetchPolicy) {
+        lastPolicy = policy
         // A preload's fetch is the first attach's: in flight, or done with
         // data that is still fresh, it is not made again. A parked handle
         // saw no commit since that fetch, so its phase is settled here.
@@ -420,20 +429,34 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
     /// holds one for a view's lifetime; a model or a view controller holds
     /// one in a property and lets it go with itself.
     public func retain() -> Retention {
-        store.retain(root)
+        let allowsNetwork = lastPolicy != .storeOnly
+        store.retain(root, allowingNetwork: allowsNetwork)
         environment?.didRetain(self)
-        return Retention(self)
+        return Retention(self, allowsNetwork: allowsNetwork)
     }
 
     /// A retention ended. At no holder the root enters the release buffer,
     /// and the handles of the roots it pushes out go with their fetches.
-    func release() {
-        let evicted = store.release(root)
+    func release(allowingNetwork: Bool) {
+        let evicted = store.release(root, allowingNetwork: allowingNetwork)
         environment?.evict(evicted)
     }
 
+    /// A fetch the runtime starts asks whether a holder allows the network: a
+    /// `storeOnly` holder is fetched for by neither an invalidation nor a
+    /// revalidation nor a heal.
     func refetchIfStale() {
+        if isStale, root.allowsNetwork { fetchUnlessInFlight() }
+    }
+
+    func revalidate() {
+        guard root.allowsNetwork else { return }
         if isStale { fetchUnlessInFlight() }
+        if case .failed = fetch { fetchUnlessInFlight() }
+    }
+
+    func fetchForHeal() {
+        if root.allowsNetwork { fetchUnlessInFlight() }
     }
 
     func reevaluate() {
@@ -609,22 +632,26 @@ public final class SubscriptionHandle<Op: Subscription>: AnyOperationHandle {
     /// Keeps the stream open and the latest event's records alive until the
     /// retention ends.
     public func retain() -> Retention {
-        store.retain(root)
+        store.retain(root, allowingNetwork: true)
         environment?.didRetain(self)
         start()
-        return Retention(self)
+        return Retention(self, allowsNetwork: true)
     }
 
     /// A retention ended. At no holder the stream closes and the root leaves
     /// at once; nothing is buffered.
-    func release() {
-        _ = store.release(root, buffering: false)
+    func release(allowingNetwork: Bool) {
+        _ = store.release(root, allowingNetwork: allowingNetwork, buffering: false)
         guard root.holders == 0 else { return }
         cancel()
         environment?.didEnd(self)
     }
 
     func refetchIfStale() {}
+
+    func revalidate() {}
+
+    func fetchForHeal() {}
 
     func reevaluate() {}
 

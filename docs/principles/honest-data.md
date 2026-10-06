@@ -86,5 +86,6 @@ from the `required*` readers and one placeholder record per type behind a
 non-null link without data. A server's response that omits a field the
 operation selected fails the fetch as malformed, so missing data arises only
 when a link is retargeted; an optimistic response and `commitPayload` may
-carry part of a selection. Still planned: the heal's refetch of the owning
-operation. This section may rot; the rest must not.
+carry part of a selection. The heal: a read that finds data missing marks
+the owning operation stale and refetches it, once per fetch, if a holder
+allows the network. This section may rot; the rest must not.
