@@ -885,28 +885,25 @@ struct PersistenceTests {
             .replacingOccurrences(of: "\"name\":\"Morty Smith\"", with: "\"name\":\"Morty C-137\"").utf8)
     }
 
-    @Test("a response the user who signed out was waiting for lands after removeAll and reaches neither the image nor the next user, whose environment took the same image")
+    @Test("a response the user who signed out was waiting for lands after the end and the removal, and reaches neither the image nor the next user, whose own image took the same file")
     func aLateResponseAfterASignOut() async throws {
-        let persistence = Persistence(url: image.url)
         let gate = GatedTransport()
-        let leaving = Environment(transport: gate, store: Store(persistence: persistence))
-        leaving.store.reportMissing = nil
+        let leaving = launch(gate, version: "alice")
         let screen = leaving.handle(for: Fixture(page: 1))
         let screenRetention = screen.retain()
         await until { gate.pending == 1 }
 
-        // The sign-out the README describes: the views go away, the image is
-        // removed, and the next environment gets the same image.
-        _ = consume screenRetention
-        persistence.removeAll()
+        // The sign-out in its order: the environment ends, the image is
+        // removed, and the next account makes its own image on the file.
+        await leaving.end()
+        leaving.store.persistence?.removeAll()
         let renamed = renamedFixture
         let transport = RecordedTransport { _ in renamed }
-        let next = Environment(transport: transport, store: Store(persistence: persistence))
-        next.store.reportMissing = nil
+        let next = launch(transport, version: "bob")
 
         gate.respond(fixtureData)
-        await screen.settle()
-        await persistence.flush()
+        for _ in 0..<20 { await Task.yield() }
+        withExtendedLifetime(screenRetention) {}
 
         let handle = next.handle(for: Fixture(page: 1))
         let retention = handle.retain()
@@ -917,38 +914,64 @@ struct PersistenceTests {
             return
         }
         #expect(data.characters?.results?[1].name == "Morty C-137")
-        _ = consume retention
-        await persistence.close()
+        withExtendedLifetime(retention) {}
+        await finish(next)
 
-        let later = try stored(Fixture(page: 1), in: launch())
-        #expect(later.characters?.results?[1].name == "Morty C-137", "the rows the next user's fetch wrote")
+        let later = launch(version: "bob")
+        let reread = try stored(Fixture(page: 1), in: later)
+        #expect(reread.characters?.results?[1].name == "Morty C-137", "the rows the next user's fetch wrote, not the late response")
+        await finish(later)
     }
 
-    @Test("a store made before removeAll reads nothing from the image after it, and its invalidation leaves the next user's data fresh")
+    @Test("an environment that ended before removeAll reads nothing from the next user's image, and its invalidation leaves the next user's data fresh")
     func aSignedOutStoreLeavesTheImageAlone() async throws {
-        let persistence = Persistence(url: image.url)
-        let leaving = Environment(transport: SilentTransport(), store: Store(persistence: persistence))
-        leaving.store.reportMissing = nil
-        persistence.removeAll()
-        let next = Environment(transport: RecordedTransport { _ in fixtureData }, store: Store(persistence: persistence))
-        next.store.reportMissing = nil
+        let leaving = launch(version: "alice")
+        await leaving.end()
+        leaving.store.persistence?.removeAll()
+        let next = launch(RecordedTransport { _ in fixtureData }, version: "bob")
         let handle = next.handle(for: Fixture(page: 1))
         let retention = handle.retain()
         await handle.settle()
-        await persistence.flush()
+        await next.store.persistence?.flush()
 
         #expect(leaving.store.check(Fixture.plan.resolve(Fixture(page: 1).variables)) == .miss, "the next user's rows")
         leaving.invalidate()
-        _ = consume retention
-        await persistence.close()
+        await leaving.store.persistence?.flush()
+        withExtendedLifetime(retention) {}
+        await finish(next)
 
-        let later = launch()
+        let later = launch(version: "bob")
         let reread = later.handle(for: Fixture(page: 1), fetchPolicy: .storeOnly)
         guard case .ready = reread.phase else {
             Issue.record("expected the next user's rows, got \(reread.phase)")
             return
         }
         #expect(!reread.isStale, "the next user's fetch time stands")
+        await finish(later)
+    }
+
+    @Test("after the end, removeAll deletes the file, and a new image on the same path in a new environment starts empty, reads nothing and writes its own rows for the next launch")
+    func anImageAfterTheEndStartsAgainOnItsFile() async throws {
+        let leaving = await signedIn(as: "", at: image.url)
+        await leaving.end()
+        let persistence = try #require(leaving.store.persistence)
+        #expect(FileManager.default.fileExists(atPath: persistence.url.path))
+        persistence.removeAll()
+        #expect(!FileManager.default.fileExists(atPath: persistence.url.path), "the file is deleted")
+
+        let renamed = renamedFixture
+        let transport = RecordedTransport { _ in renamed }
+        let next = Environment(transport: transport, store: Store(persistence: Persistence(url: persistence.url)))
+        next.store.reportMissing = nil
+        #expect(throws: NotStored.self) { try stored(Fixture(page: 1), in: next) }
+        #expect(next.store.hydratedRecords == 0, "the new image reads nothing")
+        try await next.fetch(Fixture(page: 1))
+        await finish(next)
+
+        let later = launch()
+        let data = try stored(Fixture(page: 1), in: later)
+        #expect(data.characters?.results?[1].name == "Morty C-137", "the rows the new image wrote")
+        await finish(later)
     }
 
     @Test("a response that lands after the end reaches neither memory nor the image: a handle's refetch, and a fetch awaited in a task of the app's own")

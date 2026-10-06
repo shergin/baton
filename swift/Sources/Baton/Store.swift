@@ -77,11 +77,6 @@ public final class Store {
     /// Whether the batch in progress moved or dropped a link, which may have
     /// orphaned what the link reached: a pass follows the batch.
     private var linkDropped = false
-    /// How many times the image had been removed when this store was made.
-    /// The store hands it over with everything it asks of the image, so a
-    /// store from before a sign-out's `removeAll()` reads, writes and dates
-    /// nothing there after it.
-    let imageRemovals: Int
     /// How many records have been filled from the image; for tests and
     /// benchmarks.
     package internal(set) var hydratedRecords = 0
@@ -98,7 +93,6 @@ public final class Store {
         self.persistence = persistence
         self.cacheExpiration = cacheExpiration
         self.releaseBufferSize = releaseBufferSize
-        imageRemovals = persistence?.removals ?? 0
         root = Record(type: Registry.type("Query"), key: Store.rootKey)
         mutationRoot = Record(type: Registry.type("Mutation"), key: Store.mutationRootKey)
         subscriptionRoot = Record(type: Registry.type("Subscription"), key: Store.subscriptionRootKey)
@@ -146,8 +140,9 @@ public final class Store {
     /// Marks everything fetched so far as stale, in memory and in the image;
     /// `Environment.invalidate()` is the public way, which also refetches.
     func invalidate() {
+        guard !ended else { return }
         invalidationEpoch += 1
-        persistence?.invalidate(removals: imageRemovals)
+        persistence?.invalidate()
     }
 
     /// The placeholder record of a type.
@@ -388,7 +383,7 @@ public final class Store {
         let start = batch.undo.count
         apply(changes, into: &batch)
         if let forgets, !forgets.keys.isEmpty || !forgets.ids.isEmpty {
-            persistence?.forget(keys: forgets.keys, ids: forgets.ids, removals: imageRemovals)
+            persistence?.forget(keys: forgets.keys, ids: forgets.ids)
             forgottenKeys.formUnion(forgets.keys)
             forgottenIDs.formUnion(forgets.ids)
             // A record with the id that an earlier payload wrote is forgotten
@@ -482,7 +477,7 @@ public final class Store {
             }
         }
         if records.isEmpty, fields.isEmpty { return }
-        persistence.committed(records, root: fields, removals: imageRemovals)
+        persistence.committed(records, root: fields)
     }
 
     /// Applies an optimistic response on top of everything else.
@@ -828,7 +823,7 @@ public final class Store {
         defer { _ = finish(walk.batch) }
         if available(selection, at: record, from: nil, &walk) { return walk.met ? .image : .memory }
         guard let persistence else { return .miss }
-        let found = persistence.reading(removals: imageRemovals, &walk) { disk, walk in
+        let found = persistence.reading(&walk) { disk, walk in
             available(selection, at: record, from: disk, &walk)
         }
         return found ? .image : .miss

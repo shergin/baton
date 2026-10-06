@@ -26,8 +26,8 @@ purge had not begun.
 
 ## Decision
 
-- An image is made for one store and lives as long as it *(planned)*. The
-  environment's end closes it and gives the file back
+- An image is made for one store and lives as long as it (built 2026-10-06).
+  The environment's end closes it and gives the file back
   ([The environment is the session](the-environment-is-the-session.md));
   the next environment makes its own, on that file or another. The count
   of removals and its parameters go.

@@ -137,7 +137,7 @@ extension Store {
     func date(_ root: Root) -> [String] {
         root.stamp(.now, epoch: invalidationEpoch)
         root.fetches += 1
-        persistence?.fetched(root.key, removals: imageRemovals)
+        persistence?.fetched(root.key)
         guard root.record === self.root, root.holders == 0, !releaseBuffer.contains(root.key) else { return [] }
         return park(root.key)
     }
@@ -147,7 +147,7 @@ extension Store {
     /// had to be read from the image and has no such time is stale.
     func takeAge(_ root: Root, hydrated: Bool) {
         guard root.fetchTime == nil, let persistence else { return }
-        if let age = persistence.age(of: root.key, removals: imageRemovals) {
+        if let age = persistence.age(of: root.key) {
             root.stamp(.now - .seconds(age), epoch: invalidationEpoch)
         } else if hydrated {
             root.stamp(nil, epoch: invalidationEpoch - 1)
@@ -191,7 +191,7 @@ extension Store {
         for root in roots.values {
             mark(root.resolved, from: root.record, into: &reachable)
         }
-        for record in persistence?.unwrittenRecords(removals: imageRemovals) ?? [] {
+        for record in persistence?.unwrittenRecords() ?? [] {
             reachable.insert(ObjectIdentifier(record))
         }
         for layer in optimisticLayers {

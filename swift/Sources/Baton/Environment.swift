@@ -92,6 +92,7 @@ public final class Environment {
     /// the network refetch at once; the data stays visible until the response
     /// commits.
     public func invalidate() {
+        guard !ended else { return }
         store.invalidate()
         for handle in handles.values where handle.retainCount > 0 {
             handle.refetchIfStale()
@@ -120,6 +121,7 @@ public final class Environment {
     /// foreground, or a connection regained. Marks nothing; `invalidate()`
     /// does.
     public func revalidate() {
+        guard !ended else { return }
         for handle in handles.values where handle.retainCount > 0 {
             handle.revalidate()
         }

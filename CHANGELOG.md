@@ -5,6 +5,15 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- An image belongs to one store. It is made for the store and lives as long
+  as it: the environment's end closes it and gives the file back, and the
+  next environment makes its own, on that file or another. The count of
+  removals a store noted when it was made, which eight of the image's
+  functions took to fence a store from before a sign-out, goes: an ended
+  store commits nothing, which fences the same with no count.
+  `removeAll()` stays as the deletion of the file after the end, which is
+  hygiene; what keeps one account's rows from the next is the image's
+  identity, the account in its path or in its `version`.
 - An environment ends. `await environment.end()` ends the session once and
   for good: it cancels every fetch and stream the environment started,
   drops the roots, clears every record and closes the image, giving its

@@ -314,15 +314,14 @@ layers never reach it. `Persistence(url:)` or `Persistence(name:)`, handed
 to `Store(persistence:)`. It is a cache: an image of another format or
 `version`, a corrupt one and one over its size limit are deleted and started
 again, and a record that goes a whole launch unread is dropped at the next.
-One image in a process holds a file; a second made on it runs without it,
-and `close()` hands it over. The image that takes it over counts as a
+An image is made for one store and lives as long as it: the environment's
+end closes it and gives the file back, and the next environment makes its
+own, on that file or another; the image that takes a file over counts as a
 launch, though the process is the same, so the rows the closed one wrote
-that it does not read age out a launch sooner; a sign-out keeps one image,
-`removeAll()` and then the same image for the next environment. That
-sign-out stands until an environment has an end: an image made for one
-store and closed at that end is *(planned)*. What keeps one account's rows
-from the next is the account in the image's path or in its `version`,
-which works today. See
+that it does not read age out a launch sooner. One image in a process holds
+a file; a second made on it runs without it. What keeps one account's rows
+from the next is the account in the image's path or in its `version`;
+`removeAll()`, deleting the file after the end, is hygiene. See
 [the decision](decisions/an-image-belongs-to-one-store.md).
 
 **Hydration.** *Composition: store, plan.* The web's word for filling a
