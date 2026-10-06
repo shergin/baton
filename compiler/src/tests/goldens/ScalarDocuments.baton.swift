@@ -6,7 +6,6 @@ import Foundation
 nonisolated public struct TestCaughtPrices_asset: Baton.Lens {
     @_spi(Generated) public let anchor: Baton.Anchor
     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Asset"
     @MainActor public var price: Result<Foundation.Decimal?, Baton.FieldErrors> { anchor.caughtOptionalMapped(Slots.Asset.price, path: "price") }
     @MainActor public var listedAt: Result<Foundation.Date, Baton.FieldErrors> { anchor.caughtMapped(Slots.Asset.listedAt, path: "listedAt") }
     @MainActor public var page: Foundation.URL? { anchor.mapped(Slots.Asset.page) }
@@ -16,7 +15,6 @@ nonisolated public struct TestCaughtPrices_asset: Baton.Lens {
 nonisolated public struct TestRequiredPrice_asset: Baton.Lens {
     @_spi(Generated) public let anchor: Baton.Anchor
     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Asset"
     @MainActor public var price: Foundation.Decimal { get throws { try anchor.throwingMapped(Slots.Asset.price, path: "price") } }
     /// Whether every `@required` field is present; the lens is otherwise null to its parent, as Relay bubbles.
     @_spi(Generated) @MainActor public static func satisfied(_ anchor: Baton.Anchor) -> Bool {
@@ -29,7 +27,6 @@ nonisolated public struct TestRequiredPrice_asset: Baton.Lens {
 nonisolated public struct TestThrowingPrices_asset: Baton.Lens {
     @_spi(Generated) public let anchor: Baton.Anchor
     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Asset"
     @MainActor public var price: Foundation.Decimal? { anchor.mapped(Slots.Asset.price) }
     @MainActor public var prices: [Foundation.Decimal?]? { anchor.nullableMappedList(Slots.Asset.prices) }
     /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
@@ -95,13 +92,11 @@ query TestAssetPricesQuery {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var assets: Baton.List<Assets>? { anchor.list(Slots.Query.assets) }
 
         nonisolated public struct Assets: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Asset"
             @MainActor public var uuid: String { anchor.requiredString(Slots.Asset.uuid) }
             @MainActor public var price: Foundation.Decimal? { anchor.mapped(Slots.Asset.price) }
             @MainActor public var listedAt: Foundation.Date? { anchor.mapped(Slots.Asset.listedAt) }
@@ -180,13 +175,11 @@ fragment TestThrowingPrices_asset on Asset {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var assetsPricedAbove: Baton.List<AssetsPricedAbove>? { anchor.list(anchor.owner.slot(Slots.Query.assetsPricedAbove_914469)) }
 
         nonisolated public struct AssetsPricedAbove: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Asset"
             @MainActor public var uuid: String { anchor.requiredString(Slots.Asset.uuid) }
             @MainActor public var testCaughtPrices: TestCaughtPrices_asset { .init(anchor: anchor.entering()) }
             @MainActor public var testThrowingPrices: TestThrowingPrices_asset { get throws { try .throwing(anchor.entering()) } }

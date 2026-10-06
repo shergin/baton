@@ -6,7 +6,6 @@ import Foundation
 nonisolated public struct TestFavorite_character: Baton.Lens {
     @_spi(Generated) public let anchor: Baton.Anchor
     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
     @MainActor public var id: String? { anchor.string(Slots.Character.id) }
     @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     @MainActor public var favorite: Bool? { anchor.bool(Slots.Character.favorite) }
@@ -16,19 +15,16 @@ nonisolated public struct TestFavorite_character: Baton.Lens {
 nonisolated public struct TestRenamePayload_mutation: Baton.Lens {
     @_spi(Generated) public let anchor: Baton.Anchor
     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Mutation"
     @MainActor public var rename: Rename? { anchor.linked(Slots.Mutation.rename).map(Rename.init(anchor:)) }
 
     nonisolated public struct Rename: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "FavoritePayload"
         @MainActor public var character: Character? { anchor.linked(Slots.FavoritePayload.character).map(Character.init(anchor:)) }
 
         nonisolated public struct Character: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Character"
             @MainActor public var id: String? { anchor.string(Slots.Character.id) }
             @MainActor public var name: String? { anchor.string(Slots.Character.name) }
         }
@@ -85,13 +81,11 @@ fragment TestFavorite_character on Character {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var character: Character? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(Character.init(anchor:)) }
 
         nonisolated public struct Character: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Character"
             @MainActor public var id: String? { anchor.string(Slots.Character.id) }
             @MainActor public var testFavorite: TestFavorite_character { .init(anchor: anchor.entering()) }
         }
@@ -156,20 +150,17 @@ query TestNode(
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var node: Node? { anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08)).map(Node.init(anchor:)) }
 
         nonisolated public struct Node: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Node"
             @MainActor public var asCharacter: AsCharacter? { anchor.record.is(Types.Character) ? AsCharacter(anchor: anchor) : nil }
             @MainActor public var asEpisode: AsEpisode? { anchor.record.is(Types.Episode) ? AsEpisode(anchor: anchor) : nil }
 
             nonisolated public struct AsCharacter: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Character"
                 @MainActor public var id: String? { anchor.string(Slots.Character.id) }
                 @MainActor public var name: String? { anchor.string(Slots.Character.name) }
             }
@@ -177,7 +168,6 @@ query TestNode(
             nonisolated public struct AsEpisode: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Episode"
                 @MainActor public var id: String? { anchor.string(Slots.Episode.id) }
                 @MainActor public var name: String? { anchor.string(Slots.Episode.name) }
             }
@@ -235,19 +225,16 @@ mutation TestRename(
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Mutation"
         @MainActor public var rename: Rename? { anchor.linked(Slots.Mutation.rename).map(Rename.init(anchor:)) }
 
         nonisolated public struct Rename: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "FavoritePayload"
             @MainActor public var character: Character? { anchor.linked(Slots.FavoritePayload.character).map(Character.init(anchor:)) }
 
             nonisolated public struct Character: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Character"
                 @MainActor public var id: String? { anchor.string(Slots.Character.id) }
                 @MainActor public var name: String? { anchor.string(Slots.Character.name) }
             }
@@ -361,7 +348,6 @@ fragment TestRenamePayload_mutation on Mutation {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Mutation"
         @MainActor public var testRenamePayload: TestRenamePayload_mutation { .init(anchor: anchor.entering()) }
     }
 
@@ -480,19 +466,16 @@ mutation TestRenameWithOrigin(
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Mutation"
         @MainActor public var rename: Rename? { anchor.linked(Slots.Mutation.rename).map(Rename.init(anchor:)) }
 
         nonisolated public struct Rename: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "FavoritePayload"
             @MainActor public var character: Character? { anchor.linked(Slots.FavoritePayload.character).map(Character.init(anchor:)) }
 
             nonisolated public struct Character: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Character"
                 @MainActor public var id: String? { anchor.string(Slots.Character.id) }
                 @MainActor public var name: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var origin: Origin? { anchor.owner.selects(Guards.withOrigin_true) ? anchor.linked(Slots.Character.origin).map(Origin.init(anchor:)) : nil }
@@ -500,7 +483,6 @@ mutation TestRenameWithOrigin(
                 nonisolated public struct Origin: Baton.Lens {
                     @_spi(Generated) public let anchor: Baton.Anchor
                     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                    public static let typeName = "Location"
                     @MainActor public var id: String? { anchor.string(Slots.Location.id) }
                     @MainActor public var name: String? { anchor.string(Slots.Location.name) }
                 }
@@ -655,20 +637,17 @@ query TestSearch(
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var search: Baton.List<Search>? { anchor.list(anchor.owner.slot(Slots.Query.search_954c44)) }
 
         nonisolated public struct Search: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "SearchResult"
             @MainActor public var asCharacter: AsCharacter? { anchor.record.is(Types.Character) ? AsCharacter(anchor: anchor) : nil }
             @MainActor public var asLocation: AsLocation? { anchor.record.is(Types.Location) ? AsLocation(anchor: anchor) : nil }
 
             nonisolated public struct AsCharacter: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Character"
                 @MainActor public var id: String? { anchor.string(Slots.Character.id) }
                 @MainActor public var name: String? { anchor.string(Slots.Character.name) }
             }
@@ -676,7 +655,6 @@ query TestSearch(
             nonisolated public struct AsLocation: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Location"
                 @MainActor public var id: String? { anchor.string(Slots.Location.id) }
                 @MainActor public var name: String? { anchor.string(Slots.Location.name) }
                 @MainActor public var dimension: String? { anchor.string(Slots.Location.dimension) }
@@ -754,25 +732,21 @@ query TestSearchOrigins(
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var search: Baton.List<Search>? { anchor.list(anchor.owner.slot(Slots.Query.search_954c44)) }
 
         nonisolated public struct Search: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "SearchResult"
             @MainActor public var asCharacter: AsCharacter? { anchor.record.is(Types.Character) ? AsCharacter(anchor: anchor) : nil }
 
             nonisolated public struct AsCharacter: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Character"
                 @MainActor public var origin: Origin? { anchor.linked(Slots.Character.origin).map(Origin.init(anchor:)) }
 
                 nonisolated public struct Origin: Baton.Lens {
                     @_spi(Generated) public let anchor: Baton.Anchor
                     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                    public static let typeName = "Location"
                     @MainActor public var name: String? { anchor.string(Slots.Location.name) }
                 }
             }
@@ -832,19 +806,16 @@ mutation TestSetFavorite(
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Mutation"
         @MainActor public var setFavorite: SetFavorite? { anchor.linked(Slots.Mutation.setFavorite).map(SetFavorite.init(anchor:)) }
 
         nonisolated public struct SetFavorite: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "FavoritePayload"
             @MainActor public var character: Character? { anchor.linked(Slots.FavoritePayload.character).map(Character.init(anchor:)) }
 
             nonisolated public struct Character: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Character"
                 @MainActor public var id: String? { anchor.string(Slots.Character.id) }
                 @MainActor public var name: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var favorite: Bool? { anchor.bool(Slots.Character.favorite) }

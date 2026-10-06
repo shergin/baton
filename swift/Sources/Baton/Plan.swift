@@ -60,7 +60,11 @@ public enum Format12 {}
 public enum Format13 {}
 
 @_spi(Generated)
+@available(*, unavailable, message: "this generated code is of format 14 and the runtime reads format 15: a lens no longer declares its type's name; rebuild with the compiler of this release")
 public enum Format14 {}
+
+@_spi(Generated)
+public enum Format15 {}
 
 /// An operation's normalization plan, emitted by the compiler as static data:
 /// what the response contains and where each value is stored.

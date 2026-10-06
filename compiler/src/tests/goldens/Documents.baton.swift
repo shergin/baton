@@ -6,7 +6,6 @@ import Foundation
 nonisolated public struct TestHeader_character: Baton.Lens {
     @_spi(Generated) public let anchor: Baton.Anchor
     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
     @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     @MainActor public var status: String? { anchor.string(Slots.Character.status) }
     @MainActor public var species: String? { anchor.string(Slots.Character.species) }
@@ -16,7 +15,6 @@ nonisolated public struct TestHeader_character: Baton.Lens {
     nonisolated public struct Origin: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var name: String? { anchor.string(Slots.Location.name) }
     }
 }
@@ -25,7 +23,6 @@ nonisolated public struct TestHeader_character: Baton.Lens {
 nonisolated public struct TestRow_character: Baton.Lens {
     @_spi(Generated) public let anchor: Baton.Anchor
     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
     @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     @MainActor public var status: String? { anchor.string(Slots.Character.status) }
     @MainActor public var image: String? { anchor.string(Slots.Character.image) }
@@ -154,20 +151,17 @@ query Fixture(
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var characters: Characters? { anchor.linked(anchor.owner.slot(Slots.Query.characters_5517f9)).map(Characters.init(anchor:)) }
 
         nonisolated public struct Characters: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Characters"
             @MainActor public var info: Info? { anchor.linked(Slots.Characters.info).map(Info.init(anchor:)) }
             @MainActor public var results: Baton.List<Results>? { anchor.list(Slots.Characters.results) }
 
             nonisolated public struct Info: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Info"
                 @MainActor public var count: Int? { anchor.int(Slots.Info.count) }
                 @MainActor public var pages: Int? { anchor.int(Slots.Info.pages) }
                 @MainActor public var next: Int? { anchor.int(Slots.Info.next) }
@@ -177,7 +171,6 @@ query Fixture(
             nonisolated public struct Results: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Character"
                 @MainActor public var id: String? { anchor.string(Slots.Character.id) }
                 @MainActor public var name: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var status: String? { anchor.string(Slots.Character.status) }
@@ -193,7 +186,6 @@ query Fixture(
                 nonisolated public struct Origin: Baton.Lens {
                     @_spi(Generated) public let anchor: Baton.Anchor
                     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                    public static let typeName = "Location"
                     @MainActor public var id: String? { anchor.string(Slots.Location.id) }
                     @MainActor public var name: String? { anchor.string(Slots.Location.name) }
                     @MainActor public var type: String? { anchor.string(Slots.Location.type) }
@@ -204,7 +196,6 @@ query Fixture(
                 nonisolated public struct Location: Baton.Lens {
                     @_spi(Generated) public let anchor: Baton.Anchor
                     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                    public static let typeName = "Location"
                     @MainActor public var id: String? { anchor.string(Slots.Location.id) }
                     @MainActor public var name: String? { anchor.string(Slots.Location.name) }
                     @MainActor public var type: String? { anchor.string(Slots.Location.type) }
@@ -215,7 +206,6 @@ query Fixture(
                 nonisolated public struct Episode: Baton.Lens {
                     @_spi(Generated) public let anchor: Baton.Anchor
                     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                    public static let typeName = "Episode"
                     @MainActor public var id: String? { anchor.string(Slots.Episode.id) }
                     @MainActor public var name: String? { anchor.string(Slots.Episode.name) }
                     @MainActor public var air_date: String? { anchor.string(Slots.Episode.air_date) }
@@ -226,7 +216,6 @@ query Fixture(
                     nonisolated public struct Characters: Baton.Lens {
                         @_spi(Generated) public let anchor: Baton.Anchor
                         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                        public static let typeName = "Character"
                         @MainActor public var id: String? { anchor.string(Slots.Character.id) }
                         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
                         @MainActor public var image: String? { anchor.string(Slots.Character.image) }
@@ -286,19 +275,16 @@ query TestEpisodesQuery(
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var character: Character? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(Character.init(anchor:)) }
 
         nonisolated public struct Character: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Character"
             @MainActor public var episode: Baton.List<Episode> { anchor.requiredList(Slots.Character.episode) }
 
             nonisolated public struct Episode: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Episode"
                 @MainActor public var id: String? { anchor.string(Slots.Episode.id) }
                 @MainActor public var name: String? { anchor.string(Slots.Episode.name) }
             }
@@ -350,13 +336,11 @@ query TestFreshCharacter(
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var character: Character? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(Character.init(anchor:)) }
 
         nonisolated public struct Character: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Character"
             @MainActor public var id: String? { anchor.string(Slots.Character.id) }
             @MainActor public var name: String? { anchor.string(Slots.Character.name) }
         }
@@ -424,13 +408,11 @@ fragment TestHeader_character on Character {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var character: Character? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(Character.init(anchor:)) }
 
         nonisolated public struct Character: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Character"
             @MainActor public var testHeader: TestHeader_character { .init(anchor: anchor.entering()) }
         }
     }
@@ -508,19 +490,16 @@ fragment TestRow_character on Character {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var characters: Characters? { anchor.linked(anchor.owner.slot(Slots.Query.characters_5517f9)).map(Characters.init(anchor:)) }
 
         nonisolated public struct Characters: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Characters"
             @MainActor public var results: Baton.List<Results>? { anchor.list(Slots.Characters.results) }
 
             nonisolated public struct Results: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Character"
                 @MainActor public var testRow: TestRow_character { .init(anchor: anchor.entering()) }
                 @MainActor public var testHeader: TestHeader_character { .init(anchor: anchor.entering()) }
             }
@@ -571,13 +550,11 @@ query TestQualifiedQuery(
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var character: Character? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(Character.init(anchor:)) }
 
         nonisolated public struct Character: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Character"
             @MainActor public var id: String? { anchor.string(Slots.Character.id) }
             @MainActor public var name: String? { anchor.string(Slots.Character.name) }
         }

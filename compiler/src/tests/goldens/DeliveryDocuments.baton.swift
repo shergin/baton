@@ -6,7 +6,6 @@ import Foundation
 nonisolated public struct TestAppearances_character: Baton.Lens {
     @_spi(Generated) public let anchor: Baton.Anchor
     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
     @MainActor public var episode: Baton.List<Episode> { anchor.requiredList(Slots.Character.episode) }
     /// Whether the deferred part that carries this fragment has arrived.
     @_spi(Generated) @MainActor public static func isPresent(_ anchor: Baton.Anchor) -> Bool { anchor.present(Slots.Character.episode) }
@@ -14,7 +13,6 @@ nonisolated public struct TestAppearances_character: Baton.Lens {
     nonisolated public struct Episode: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Episode"
         @MainActor public var name: String? { anchor.string(Slots.Episode.name) }
         @MainActor public var air_date: String? { anchor.string(Slots.Episode.air_date) }
     }
@@ -24,7 +22,6 @@ nonisolated public struct TestAppearances_character: Baton.Lens {
 nonisolated public struct TestName_character: Baton.Lens {
     @_spi(Generated) public let anchor: Baton.Anchor
     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
     @MainActor public var name: String? { anchor.string(Slots.Character.name) }
 }
 
@@ -32,7 +29,6 @@ nonisolated public struct TestName_character: Baton.Lens {
 nonisolated public struct TestProfile_character: Baton.Lens {
     @_spi(Generated) public let anchor: Baton.Anchor
     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
     @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     @MainActor public var origin: Origin { Origin(anchor: anchor.requiredLinked(Slots.Character.origin, type: Types.Location)) }
     @MainActor public var status: String { anchor.requiredString(Slots.Character.status) }
@@ -49,14 +45,12 @@ nonisolated public struct TestProfile_character: Baton.Lens {
     nonisolated public struct Origin: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var name: String? { anchor.string(Slots.Location.name) }
     }
 
     nonisolated public struct Location: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var name: String? { anchor.string(Slots.Location.name) }
         @MainActor public var dimension: String? { anchor.string(Slots.Location.dimension) }
         /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
@@ -80,7 +74,6 @@ nonisolated public struct TestProfile_character: Baton.Lens {
 nonisolated public struct TestStrict_character: Baton.Lens {
     @_spi(Generated) public let anchor: Baton.Anchor
     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
     @MainActor public var species: String { anchor.requiredString(Slots.Character.species) }
     @MainActor public var type: String { get throws { try anchor.throwing(Slots.Character.type, path: "type") { $0.string(Slots.Character.type) } } }
     /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
@@ -156,26 +149,22 @@ subscription TestNoteAdded(
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Subscription"
         @MainActor public var noteAdded: NoteAdded? { anchor.linked(anchor.owner.slot(Slots.Subscription.noteAdded_5f458b)).map(NoteAdded.init(anchor:)) }
 
         nonisolated public struct NoteAdded: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "NoteAddedPayload"
             @MainActor public var noteEdge: NoteEdge? { anchor.linked(Slots.NoteAddedPayload.noteEdge).map(NoteEdge.init(anchor:)) }
 
             nonisolated public struct NoteEdge: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "NoteEdge"
                 @MainActor public var cursor: String { anchor.requiredString(Slots.NoteEdge.cursor) }
                 @MainActor public var node: Node? { anchor.linked(Slots.NoteEdge.node).map(Node.init(anchor:)) }
 
                 nonisolated public struct Node: Baton.Lens {
                     @_spi(Generated) public let anchor: Baton.Anchor
                     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                    public static let typeName = "Note"
                     @MainActor public var id: String? { anchor.string(Slots.Note.id) }
                     @MainActor public var text: String? { anchor.string(Slots.Note.text) }
                 }
@@ -227,13 +216,11 @@ query TestNullsOnError(
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var character: Character? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(Character.init(anchor:)) }
 
         nonisolated public struct Character: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Character"
             @MainActor public var name: String? { anchor.string(Slots.Character.name) }
         }
     }
@@ -303,13 +290,11 @@ fragment TestAppearances_character on Character {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var character: Character? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(Character.init(anchor:)) }
 
         nonisolated public struct Character: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Character"
             @MainActor public var name: String? { anchor.string(Slots.Character.name) }
             @MainActor public var episode: Baton.List<Episode> { anchor.requiredList(Slots.Character.episode) }
             @MainActor public var testAppearances: TestAppearances_character? {
@@ -321,7 +306,6 @@ fragment TestAppearances_character on Character {
             nonisolated public struct Episode: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Episode"
                 @MainActor public var id: String? { anchor.string(Slots.Episode.id) }
             }
         }
@@ -422,13 +406,11 @@ fragment TestStrict_character on Character {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var character: Character? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(Character.init(anchor:)) }
 
         nonisolated public struct Character: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Character"
             @MainActor public var testProfile: TestProfile_character? {
                 typealias Fragment = TestProfile_character
                 guard Fragment.satisfied(anchor) else { return nil }
@@ -493,19 +475,16 @@ query TestRosterQuery(
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var characters: Characters? { anchor.linked(anchor.owner.slot(Slots.Query.characters_5517f9)).map(Characters.init(anchor:)) }
 
         nonisolated public struct Characters: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Characters"
             @MainActor public var results: Baton.List<Results>? { anchor.list(Slots.Characters.results, keep: Results.satisfied) }
 
             nonisolated public struct Results: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Character"
                 @MainActor public var id: String? { anchor.string(Slots.Character.id) }
                 @MainActor public var name: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var status: String { anchor.requiredString(Slots.Character.status) }
@@ -578,7 +557,6 @@ fragment TestAppearances_character on Character {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var character: Character? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(Character.init(anchor:)) }
         /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
         @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
@@ -597,7 +575,6 @@ fragment TestAppearances_character on Character {
         nonisolated public struct Character: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Character"
             @MainActor public var id: String? { anchor.string(Slots.Character.id) }
             @MainActor public var name: String? { anchor.string(Slots.Character.name) }
             @MainActor public var testAppearances: TestAppearances_character? {
@@ -669,7 +646,6 @@ query TestStrictQuery(
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var character: Character? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(Character.init(anchor:)) }
         /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
         @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
@@ -688,7 +664,6 @@ query TestStrictQuery(
         nonisolated public struct Character: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Character"
             @MainActor public var name: String? { anchor.string(Slots.Character.name) }
             @MainActor public var species: String { anchor.requiredString(Slots.Character.species) }
             /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
@@ -759,7 +734,6 @@ fragment TestName_character on Character {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var character: Character? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(Character.init(anchor:)) }
         /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
         @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
@@ -778,7 +752,6 @@ fragment TestName_character on Character {
         nonisolated public struct Character: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Character"
             @MainActor public var species: String { anchor.requiredString(Slots.Character.species) }
             @MainActor public var testName: TestName_character { .init(anchor: anchor.entering()) }
             /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.

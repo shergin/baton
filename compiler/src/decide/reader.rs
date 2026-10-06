@@ -440,7 +440,6 @@ impl Readers {
         let mut scope = Scope::new(path, &self.lens_names);
         scope.declare("anchor", Kind::Instance, "the `anchor` every lens has");
         scope.declare("recordID", Kind::Instance, "the `recordID` every lens has");
-        scope.declare("typeName", Kind::Static, "the type name every lens has");
         if facts.refetchable {
             scope.declare(
                 "refetchable",

@@ -49,13 +49,11 @@ query TestCharactersWithStatus(
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var charactersWithStatus: Baton.List<CharactersWithStatus>? { anchor.list(anchor.owner.slot(Slots.Query.charactersWithStatus_deb51f)) }
 
         nonisolated public struct CharactersWithStatus: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Character"
             @MainActor public var name: String? { anchor.string(Slots.Character.name) }
         }
     }
@@ -96,13 +94,11 @@ mutation TestSetStatuses {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Mutation"
         @MainActor public var setLists: SetLists? { anchor.linked(Slots.Mutation.setLists).map(SetLists.init(anchor:)) }
 
         nonisolated public struct SetLists: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "ListsPayload"
             @MainActor public var statuses: [Status?]? { anchor.nullableEnumValues(Slots.ListsPayload.statuses) }
         }
     }

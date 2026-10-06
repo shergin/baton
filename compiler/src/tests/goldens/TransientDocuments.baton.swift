@@ -48,13 +48,11 @@ query TestCharacterSecret {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var character: Character? { anchor.linked(Slots.Query.character_9e6829).map(Character.init(anchor:)) }
 
         nonisolated public struct Character: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Character"
             @MainActor public var id: String? { anchor.string(Slots.Character.id) }
             @MainActor public var name: String? { anchor.string(Slots.Character.name) }
             @MainActor public var secret: Secret? { anchor.linked(Slots.Character.secret).map(Secret.init(anchor:)) }
@@ -62,7 +60,6 @@ query TestCharacterSecret {
             nonisolated public struct Secret: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Secret"
                 @MainActor public var id: String? { anchor.string(Slots.Secret.id) }
                 @MainActor public var body: String? { anchor.string(Slots.Secret.body) }
             }
@@ -121,14 +118,12 @@ query TestSecrets(
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var secrets: Baton.List<Secrets>? { anchor.list(anchor.owner.slot(Slots.Query.secrets_df579e)) }
         @MainActor public var character: Character? { anchor.linked(Slots.Query.character_9e6829).map(Character.init(anchor:)) }
 
         nonisolated public struct Secrets: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Secret"
             @MainActor public var id: String? { anchor.string(Slots.Secret.id) }
             @MainActor public var body: String? { anchor.string(Slots.Secret.body) }
         }
@@ -136,7 +131,6 @@ query TestSecrets(
         nonisolated public struct Character: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Character"
             @MainActor public var id: String? { anchor.string(Slots.Character.id) }
             @MainActor public var name: String? { anchor.string(Slots.Character.name) }
         }

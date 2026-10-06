@@ -6,7 +6,6 @@ import Foundation
 nonisolated public struct TestAuthorNotes_note: Baton.Lens {
     @_spi(Generated) public let anchor: Baton.Anchor
     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Note"
     @MainActor public var id: String? { anchor.string(Slots.Note.id) }
     @MainActor public var author: Author? { anchor.linked(Slots.Note.author).map(Author.init(anchor:)) }
     /// How the fragment is fetched again: `TestAuthorNotesPaginationQuery` with the lens's variables.
@@ -20,7 +19,6 @@ nonisolated public struct TestAuthorNotes_note: Baton.Lens {
     nonisolated public struct Author: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var id: String? { anchor.string(Slots.Character.id) }
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
         @MainActor public var notes: Notes { Notes(anchor: anchor.requiredLinked(Slots.Character.__TestAuthorNotes_notes_connection, type: Types.NoteConnection)) }
@@ -28,7 +26,6 @@ nonisolated public struct TestAuthorNotes_note: Baton.Lens {
         nonisolated public struct Notes: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "NoteConnection"
             @MainActor public var edges: Baton.List<Edges>? { anchor.list(Slots.NoteConnection.edges) }
             @MainActor public var pageInfo: PageInfo { PageInfo(anchor: anchor.requiredLinked(Slots.NoteConnection.pageInfo, type: Types.PageInfo)) }
             /// The connection's slots: edges, nodes, cursors and the page info, for the store's merge and the state below.
@@ -52,14 +49,12 @@ nonisolated public struct TestAuthorNotes_note: Baton.Lens {
             nonisolated public struct Edges: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "NoteEdge"
                 @MainActor public var node: Node? { anchor.linked(Slots.NoteEdge.node).map(Node.init(anchor:)) }
                 @MainActor public var cursor: String { anchor.requiredString(Slots.NoteEdge.cursor) }
 
                 nonisolated public struct Node: Baton.Lens {
                     @_spi(Generated) public let anchor: Baton.Anchor
                     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                    public static let typeName = "Note"
                     @MainActor public var id: String? { anchor.string(Slots.Note.id) }
                     @MainActor public var text: String? { anchor.string(Slots.Note.text) }
                 }
@@ -68,7 +63,6 @@ nonisolated public struct TestAuthorNotes_note: Baton.Lens {
             nonisolated public struct PageInfo: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "PageInfo"
                 @MainActor public var endCursor: String? { anchor.string(Slots.PageInfo.endCursor) }
                 @MainActor public var hasNextPage: Bool { anchor.requiredBool(Slots.PageInfo.hasNextPage) }
             }
@@ -80,7 +74,6 @@ nonisolated public struct TestAuthorNotes_note: Baton.Lens {
 nonisolated public struct TestDeferredNotes_character: Baton.Lens {
     @_spi(Generated) public let anchor: Baton.Anchor
     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
     @MainActor public var notes: Notes { Notes(anchor: anchor.requiredLinked(Slots.Character.__TestDeferredNotes_notes_connection, type: Types.NoteConnection)) }
     @MainActor public var id: String? { anchor.string(Slots.Character.id) }
     /// How the fragment is fetched again: `TestDeferredNotesPaginationQuery` with the lens's variables.
@@ -94,7 +87,6 @@ nonisolated public struct TestDeferredNotes_character: Baton.Lens {
     nonisolated public struct Notes: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "NoteConnection"
         @MainActor public var edges: Baton.List<Edges>? { anchor.list(Slots.NoteConnection.edges) }
         @MainActor public var pageInfo: PageInfo { PageInfo(anchor: anchor.requiredLinked(Slots.NoteConnection.pageInfo, type: Types.PageInfo)) }
         /// The connection's slots: edges, nodes, cursors and the page info, for the store's merge and the state below.
@@ -118,14 +110,12 @@ nonisolated public struct TestDeferredNotes_character: Baton.Lens {
         nonisolated public struct Edges: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "NoteEdge"
             @MainActor public var node: Node? { anchor.linked(Slots.NoteEdge.node).map(Node.init(anchor:)) }
             @MainActor public var cursor: String { anchor.requiredString(Slots.NoteEdge.cursor) }
 
             nonisolated public struct Node: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
                 @MainActor public var testNoteText: TestNoteText_note? {
                     typealias Fragment = TestNoteText_note
@@ -138,7 +128,6 @@ nonisolated public struct TestDeferredNotes_character: Baton.Lens {
         nonisolated public struct PageInfo: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "PageInfo"
             @MainActor public var endCursor: String? { anchor.string(Slots.PageInfo.endCursor) }
             @MainActor public var hasNextPage: Bool { anchor.requiredBool(Slots.PageInfo.hasNextPage) }
         }
@@ -149,7 +138,6 @@ nonisolated public struct TestDeferredNotes_character: Baton.Lens {
 nonisolated public struct TestHiddenNotes_character: Baton.Lens {
     @_spi(Generated) public let anchor: Baton.Anchor
     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
     @MainActor public var TestHiddenNotes_character: String? { anchor.string(Slots.Character.name) }
     @MainActor public var TestHiddenNotesPaginationQuery: String? { anchor.string(Slots.Character.status) }
     @MainActor public var notes: Notes { Notes(anchor: anchor.requiredLinked(Slots.Character.__TestHiddenNotes_notes_connection, type: Types.NoteConnection)) }
@@ -165,7 +153,6 @@ nonisolated public struct TestHiddenNotes_character: Baton.Lens {
     nonisolated public struct Notes: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "NoteConnection"
         @MainActor public var TestHiddenNotes_character: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
         @MainActor public var TestHiddenNotesPaginationQuery: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
         @MainActor public var edges: Baton.List<Edges>? { anchor.list(Slots.NoteConnection.edges) }
@@ -191,14 +178,12 @@ nonisolated public struct TestHiddenNotes_character: Baton.Lens {
         nonisolated public struct Edges: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "NoteEdge"
             @MainActor public var node: Node? { anchor.linked(Slots.NoteEdge.node).map(Node.init(anchor:)) }
             @MainActor public var cursor: String { anchor.requiredString(Slots.NoteEdge.cursor) }
 
             nonisolated public struct Node: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
                 @MainActor public var text: String? { anchor.string(Slots.Note.text) }
             }
@@ -207,7 +192,6 @@ nonisolated public struct TestHiddenNotes_character: Baton.Lens {
         nonisolated public struct PageInfo: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "PageInfo"
             @MainActor public var endCursor: String? { anchor.string(Slots.PageInfo.endCursor) }
             @MainActor public var hasNextPage: Bool { anchor.requiredBool(Slots.PageInfo.hasNextPage) }
         }
@@ -218,7 +202,6 @@ nonisolated public struct TestHiddenNotes_character: Baton.Lens {
 nonisolated public struct TestHiddenRecentNotes_character: Baton.Lens {
     @_spi(Generated) public let anchor: Baton.Anchor
     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
     @MainActor public var notes: Notes { Notes(anchor: anchor.requiredLinked(Slots.Character.__TestHiddenRecentNotes_notes_connection, type: Types.NoteConnection)) }
     @MainActor public var id: String? { anchor.string(Slots.Character.id) }
     /// How the fragment is fetched again: `TestHiddenRecentNotesPaginationQuery` with the lens's variables.
@@ -232,7 +215,6 @@ nonisolated public struct TestHiddenRecentNotes_character: Baton.Lens {
     nonisolated public struct Notes: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "NoteConnection"
         @MainActor public var TestHiddenRecentNotes_character: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
         @MainActor public var TestHiddenRecentNotesPaginationQuery: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
         @MainActor public var edges: Baton.List<Edges>? { anchor.list(Slots.NoteConnection.edges) }
@@ -258,14 +240,12 @@ nonisolated public struct TestHiddenRecentNotes_character: Baton.Lens {
         nonisolated public struct Edges: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "NoteEdge"
             @MainActor public var node: Node? { anchor.linked(Slots.NoteEdge.node).map(Node.init(anchor:)) }
             @MainActor public var cursor: String { anchor.requiredString(Slots.NoteEdge.cursor) }
 
             nonisolated public struct Node: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
                 @MainActor public var text: String? { anchor.string(Slots.Note.text) }
             }
@@ -274,7 +254,6 @@ nonisolated public struct TestHiddenRecentNotes_character: Baton.Lens {
         nonisolated public struct PageInfo: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "PageInfo"
             @MainActor public var hasPreviousPage: Bool { anchor.requiredBool(Slots.PageInfo.hasPreviousPage) }
             @MainActor public var startCursor: String? { anchor.string(Slots.PageInfo.startCursor) }
         }
@@ -285,7 +264,6 @@ nonisolated public struct TestHiddenRecentNotes_character: Baton.Lens {
 nonisolated public struct TestNoteText_note: Baton.Lens {
     @_spi(Generated) public let anchor: Baton.Anchor
     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Note"
     @MainActor public var text: String? { anchor.string(Slots.Note.text) }
     /// Whether the deferred part that carries this fragment has arrived.
     @_spi(Generated) @MainActor public static func isPresent(_ anchor: Baton.Anchor) -> Bool { anchor.present(Slots.Note.text) }
@@ -295,7 +273,6 @@ nonisolated public struct TestNoteText_note: Baton.Lens {
 nonisolated public struct TestNotes_character: Baton.Lens {
     @_spi(Generated) public let anchor: Baton.Anchor
     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
     @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     @MainActor public var notes: Notes { Notes(anchor: anchor.requiredLinked(Slots.Character.__TestNotes_notes_connection, type: Types.NoteConnection)) }
     @MainActor public var id: String? { anchor.string(Slots.Character.id) }
@@ -310,7 +287,6 @@ nonisolated public struct TestNotes_character: Baton.Lens {
     nonisolated public struct Notes: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "NoteConnection"
         @MainActor public var totalCount: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
         @MainActor public var edges: Baton.List<Edges>? { anchor.list(Slots.NoteConnection.edges) }
         @MainActor public var pageInfo: PageInfo { PageInfo(anchor: anchor.requiredLinked(Slots.NoteConnection.pageInfo, type: Types.PageInfo)) }
@@ -335,14 +311,12 @@ nonisolated public struct TestNotes_character: Baton.Lens {
         nonisolated public struct Edges: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "NoteEdge"
             @MainActor public var node: Node? { anchor.linked(Slots.NoteEdge.node).map(Node.init(anchor:)) }
             @MainActor public var cursor: String { anchor.requiredString(Slots.NoteEdge.cursor) }
 
             nonisolated public struct Node: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
                 @MainActor public var text: String? { anchor.string(Slots.Note.text) }
             }
@@ -351,7 +325,6 @@ nonisolated public struct TestNotes_character: Baton.Lens {
         nonisolated public struct PageInfo: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "PageInfo"
             @MainActor public var endCursor: String? { anchor.string(Slots.PageInfo.endCursor) }
             @MainActor public var hasNextPage: Bool { anchor.requiredBool(Slots.PageInfo.hasNextPage) }
         }
@@ -362,7 +335,6 @@ nonisolated public struct TestNotes_character: Baton.Lens {
 nonisolated public struct TestRecentNotes_character: Baton.Lens {
     @_spi(Generated) public let anchor: Baton.Anchor
     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
     @MainActor public var notes: Notes { Notes(anchor: anchor.requiredLinked(Slots.Character.__TestRecentNotes_notes_connection, type: Types.NoteConnection)) }
     @MainActor public var id: String? { anchor.string(Slots.Character.id) }
     /// How the fragment is fetched again: `TestRecentNotesPaginationQuery` with the lens's variables.
@@ -376,7 +348,6 @@ nonisolated public struct TestRecentNotes_character: Baton.Lens {
     nonisolated public struct Notes: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "NoteConnection"
         @MainActor public var edges: Baton.List<Edges>? { anchor.list(Slots.NoteConnection.edges) }
         @MainActor public var pageInfo: PageInfo { PageInfo(anchor: anchor.requiredLinked(Slots.NoteConnection.pageInfo, type: Types.PageInfo)) }
         /// The connection's slots: edges, nodes, cursors and the page info, for the store's merge and the state below.
@@ -400,14 +371,12 @@ nonisolated public struct TestRecentNotes_character: Baton.Lens {
         nonisolated public struct Edges: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "NoteEdge"
             @MainActor public var node: Node? { anchor.linked(Slots.NoteEdge.node).map(Node.init(anchor:)) }
             @MainActor public var cursor: String { anchor.requiredString(Slots.NoteEdge.cursor) }
 
             nonisolated public struct Node: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
                 @MainActor public var text: String? { anchor.string(Slots.Note.text) }
             }
@@ -416,7 +385,6 @@ nonisolated public struct TestRecentNotes_character: Baton.Lens {
         nonisolated public struct PageInfo: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "PageInfo"
             @MainActor public var hasPreviousPage: Bool { anchor.requiredBool(Slots.PageInfo.hasPreviousPage) }
             @MainActor public var startCursor: String? { anchor.string(Slots.PageInfo.startCursor) }
         }
@@ -482,26 +450,22 @@ mutation TestAddNote(
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Mutation"
         @MainActor public var addNote: AddNote? { anchor.linked(Slots.Mutation.addNote).map(AddNote.init(anchor:)) }
 
         nonisolated public struct AddNote: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "AddNotePayload"
             @MainActor public var noteEdge: NoteEdge? { anchor.linked(Slots.AddNotePayload.noteEdge).map(NoteEdge.init(anchor:)) }
 
             nonisolated public struct NoteEdge: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "NoteEdge"
                 @MainActor public var cursor: String { anchor.requiredString(Slots.NoteEdge.cursor) }
                 @MainActor public var node: Node? { anchor.linked(Slots.NoteEdge.node).map(Node.init(anchor:)) }
 
                 nonisolated public struct Node: Baton.Lens {
                     @_spi(Generated) public let anchor: Baton.Anchor
                     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                    public static let typeName = "Note"
                     @MainActor public var id: String? { anchor.string(Slots.Note.id) }
                     @MainActor public var text: String? { anchor.string(Slots.Note.text) }
                 }
@@ -637,26 +601,22 @@ mutation TestAddNoteFirst(
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Mutation"
         @MainActor public var addNote: AddNote? { anchor.linked(Slots.Mutation.addNote).map(AddNote.init(anchor:)) }
 
         nonisolated public struct AddNote: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "AddNotePayload"
             @MainActor public var noteEdge: NoteEdge? { anchor.linked(Slots.AddNotePayload.noteEdge).map(NoteEdge.init(anchor:)) }
 
             nonisolated public struct NoteEdge: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "NoteEdge"
                 @MainActor public var cursor: String { anchor.requiredString(Slots.NoteEdge.cursor) }
                 @MainActor public var node: Node? { anchor.linked(Slots.NoteEdge.node).map(Node.init(anchor:)) }
 
                 nonisolated public struct Node: Baton.Lens {
                     @_spi(Generated) public let anchor: Baton.Anchor
                     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                    public static let typeName = "Note"
                     @MainActor public var id: String? { anchor.string(Slots.Note.id) }
                     @MainActor public var text: String? { anchor.string(Slots.Note.text) }
                 }
@@ -786,19 +746,16 @@ mutation TestAddNoteNode(
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Mutation"
         @MainActor public var addNote: AddNote? { anchor.linked(Slots.Mutation.addNote).map(AddNote.init(anchor:)) }
 
         nonisolated public struct AddNote: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "AddNotePayload"
             @MainActor public var note: Note? { anchor.linked(Slots.AddNotePayload.note).map(Note.init(anchor:)) }
 
             nonisolated public struct Note: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
                 @MainActor public var text: String? { anchor.string(Slots.Note.text) }
             }
@@ -911,19 +868,16 @@ mutation TestAddNoteNodeFirst(
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Mutation"
         @MainActor public var addNote: AddNote? { anchor.linked(Slots.Mutation.addNote).map(AddNote.init(anchor:)) }
 
         nonisolated public struct AddNote: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "AddNotePayload"
             @MainActor public var note: Note? { anchor.linked(Slots.AddNotePayload.note).map(Note.init(anchor:)) }
 
             nonisolated public struct Note: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
                 @MainActor public var text: String? { anchor.string(Slots.Note.text) }
             }
@@ -1036,19 +990,16 @@ mutation TestAddNoteNodeOfAnotherType(
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Mutation"
         @MainActor public var addNote: AddNote? { anchor.linked(Slots.Mutation.addNote).map(AddNote.init(anchor:)) }
 
         nonisolated public struct AddNote: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "AddNotePayload"
             @MainActor public var note: Note? { anchor.linked(Slots.AddNotePayload.note).map(Note.init(anchor:)) }
 
             nonisolated public struct Note: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
                 @MainActor public var text: String? { anchor.string(Slots.Note.text) }
             }
@@ -1159,13 +1110,11 @@ fragment TestRow_character on Character {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var character: Character? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(Character.init(anchor:)) }
 
         nonisolated public struct Character: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Character"
             @MainActor public var row: TestRow_character { .init(anchor: anchor.entering()) }
         }
     }
@@ -1269,13 +1218,11 @@ fragment TestAuthorNotes_note_1G22uz on Note {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var node: Node? { anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08)).map(Node.init(anchor:)) }
 
         nonisolated public struct Node: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Node"
             @MainActor public var testAuthorNotes: TestAuthorNotes_note? {
                 let bound = anchor.binding(Sites.TestAuthorNotesPaginationQuery_testAuthorNotes) { () -> [String: Baton.Variable?] in ["count": anchor.variables["count"], "cursor": anchor.variables["cursor"]] }
                 guard anchor.record.is(Types.Note) else { return nil }
@@ -1375,13 +1322,11 @@ fragment TestAuthorNotes_note on Note {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var node: Node? { anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08)).map(Node.init(anchor:)) }
 
         nonisolated public struct Node: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Node"
             @MainActor public var note: TestAuthorNotes_note? {
                 let bound = anchor.binding(Sites.TestAuthorNotesQuery_note) { () -> [String: Baton.Variable?] in ["count": .int(2), "cursor": .null] }
                 guard anchor.record.is(Types.Note) else { return nil }
@@ -1486,13 +1431,11 @@ fragment TestNoteText_note on Note {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var node: Node? { anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08)).map(Node.init(anchor:)) }
 
         nonisolated public struct Node: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Node"
             @MainActor public var testDeferredNotes: TestDeferredNotes_character? {
                 let bound = anchor.binding(Sites.TestDeferredNotesPaginationQuery_testDeferredNotes) { () -> [String: Baton.Variable?] in ["count": anchor.variables["count"], "cursor": anchor.variables["cursor"]] }
                 guard anchor.record.is(Types.Character) else { return nil }
@@ -1542,13 +1485,11 @@ mutation TestDeleteNote(
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Mutation"
         @MainActor public var removeNote: RemoveNote? { anchor.linked(Slots.Mutation.removeNote).map(RemoveNote.init(anchor:)) }
 
         nonisolated public struct RemoveNote: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "RemoveNotePayload"
             @MainActor public var removedNoteId: String? { anchor.string(Slots.RemoveNotePayload.removedNoteId) }
         }
     }
@@ -1688,13 +1629,11 @@ fragment TestHiddenNotes_character_1G22uz on Character {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var node: Node? { anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08)).map(Node.init(anchor:)) }
 
         nonisolated public struct Node: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Node"
             @MainActor public var testHiddenNotes: TestHiddenNotes_character? {
                 let bound = anchor.binding(Sites.TestHiddenNotesPaginationQuery_testHiddenNotes) { () -> [String: Baton.Variable?] in ["count": anchor.variables["count"], "cursor": anchor.variables["cursor"]] }
                 guard anchor.record.is(Types.Character) else { return nil }
@@ -1786,13 +1725,11 @@ fragment TestHiddenNotes_character on Character {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var character: Character? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(Character.init(anchor:)) }
 
         nonisolated public struct Character: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Character"
             @MainActor public var testHiddenNotes: TestHiddenNotes_character {
                 let bound = anchor.binding(Sites.TestHiddenNotesQuery_testHiddenNotes) { () -> [String: Baton.Variable?] in ["count": .int(2), "cursor": .null] }
                 return .init(anchor: bound.entering())
@@ -1895,13 +1832,11 @@ fragment TestHiddenRecentNotes_character_1G22uz on Character {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var node: Node? { anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08)).map(Node.init(anchor:)) }
 
         nonisolated public struct Node: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Node"
             @MainActor public var testHiddenRecentNotes: TestHiddenRecentNotes_character? {
                 let bound = anchor.binding(Sites.TestHiddenRecentNotesPaginationQuery_testHiddenRecentNotes) { () -> [String: Baton.Variable?] in ["count": anchor.variables["count"], "cursor": anchor.variables["cursor"]] }
                 guard anchor.record.is(Types.Character) else { return nil }
@@ -1989,13 +1924,11 @@ fragment TestHiddenRecentNotes_character on Character {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var character: Character? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(Character.init(anchor:)) }
 
         nonisolated public struct Character: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Character"
             @MainActor public var testHiddenRecentNotes: TestHiddenRecentNotes_character {
                 let bound = anchor.binding(Sites.TestHiddenRecentNotesQuery_testHiddenRecentNotes) { () -> [String: Baton.Variable?] in ["count": .int(2), "cursor": .null] }
                 return .init(anchor: bound.entering())
@@ -2098,13 +2031,11 @@ fragment TestNotes_character_1G22uz on Character {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var node: Node? { anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08)).map(Node.init(anchor:)) }
 
         nonisolated public struct Node: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Node"
             @MainActor public var testNotes: TestNotes_character? {
                 let bound = anchor.binding(Sites.TestNotesPaginationQuery_testNotes) { () -> [String: Baton.Variable?] in ["count": anchor.variables["count"], "cursor": anchor.variables["cursor"]] }
                 guard anchor.record.is(Types.Character) else { return nil }
@@ -2192,13 +2123,11 @@ fragment TestNotes_character on Character {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var character: Character? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(Character.init(anchor:)) }
 
         nonisolated public struct Character: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Character"
             @MainActor public var testNotes: TestNotes_character {
                 let bound = anchor.binding(Sites.TestNotesQuery_testNotes) { () -> [String: Baton.Variable?] in ["count": .int(2), "cursor": .null] }
                 return .init(anchor: bound.entering())
@@ -2289,13 +2218,11 @@ fragment TestNotes_character_2H9PL on Character {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var character: Character? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(Character.init(anchor:)) }
 
         nonisolated public struct Character: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Character"
             @MainActor public var testNotes: TestNotes_character {
                 let bound = anchor.binding(Sites.TestNotesSizedQuery_testNotes) { () -> [String: Baton.Variable?] in ["count": anchor.variables["size"], "cursor": .null] }
                 return .init(anchor: bound.entering())
@@ -2394,13 +2321,11 @@ fragment TestRecentNotes_character_1G22uz on Character {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var node: Node? { anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08)).map(Node.init(anchor:)) }
 
         nonisolated public struct Node: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Node"
             @MainActor public var testRecentNotes: TestRecentNotes_character? {
                 let bound = anchor.binding(Sites.TestRecentNotesPaginationQuery_testRecentNotes) { () -> [String: Baton.Variable?] in ["count": anchor.variables["count"], "cursor": anchor.variables["cursor"]] }
                 guard anchor.record.is(Types.Character) else { return nil }
@@ -2484,13 +2409,11 @@ fragment TestRecentNotes_character on Character {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var character: Character? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(Character.init(anchor:)) }
 
         nonisolated public struct Character: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Character"
             @MainActor public var testRecentNotes: TestRecentNotes_character {
                 let bound = anchor.binding(Sites.TestRecentNotesQuery_testRecentNotes) { () -> [String: Baton.Variable?] in ["count": .int(2), "cursor": .null] }
                 return .init(anchor: bound.entering())
@@ -2544,13 +2467,11 @@ mutation TestRemoveNote(
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Mutation"
         @MainActor public var removeNote: RemoveNote? { anchor.linked(Slots.Mutation.removeNote).map(RemoveNote.init(anchor:)) }
 
         nonisolated public struct RemoveNote: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "RemoveNotePayload"
             @MainActor public var removedNoteId: String? { anchor.string(Slots.RemoveNotePayload.removedNoteId) }
             @MainActor public var deleted: String? { anchor.string(Slots.RemoveNotePayload.removedNoteId) }
         }
@@ -2709,21 +2630,18 @@ query TestTwoPagesQuery(
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var character: Character? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(Character.init(anchor:)) }
         @MainActor public var node: Node? { anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08)).map(Node.init(anchor:)) }
 
         nonisolated public struct Character: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Character"
             @MainActor public var id: String? { anchor.string(Slots.Character.id) }
             @MainActor public var notes: Notes { Notes(anchor: anchor.requiredLinked(Slots.Character.__TestTwoPages_notes_connection, type: Types.NoteConnection)) }
 
             nonisolated public struct Notes: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "NoteConnection"
                 @MainActor public var edges: Baton.List<Edges>? { anchor.list(Slots.NoteConnection.edges) }
                 @MainActor public var pageInfo: PageInfo { PageInfo(anchor: anchor.requiredLinked(Slots.NoteConnection.pageInfo, type: Types.PageInfo)) }
                 /// The connection's slots: edges, nodes, cursors and the page info, for the store's merge and the state below.
@@ -2741,14 +2659,12 @@ query TestTwoPagesQuery(
                 nonisolated public struct Edges: Baton.Lens {
                     @_spi(Generated) public let anchor: Baton.Anchor
                     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                    public static let typeName = "NoteEdge"
                     @MainActor public var node: Node? { anchor.linked(Slots.NoteEdge.node).map(Node.init(anchor:)) }
                     @MainActor public var cursor: String { anchor.requiredString(Slots.NoteEdge.cursor) }
 
                     nonisolated public struct Node: Baton.Lens {
                         @_spi(Generated) public let anchor: Baton.Anchor
                         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                        public static let typeName = "Note"
                         @MainActor public var id: String? { anchor.string(Slots.Note.id) }
                         @MainActor public var text: String? { anchor.string(Slots.Note.text) }
                     }
@@ -2757,7 +2673,6 @@ query TestTwoPagesQuery(
                 nonisolated public struct PageInfo: Baton.Lens {
                     @_spi(Generated) public let anchor: Baton.Anchor
                     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                    public static let typeName = "PageInfo"
                     @MainActor public var endCursor: String? { anchor.string(Slots.PageInfo.endCursor) }
                     @MainActor public var hasNextPage: Bool { anchor.requiredBool(Slots.PageInfo.hasNextPage) }
                 }
@@ -2767,19 +2682,16 @@ query TestTwoPagesQuery(
         nonisolated public struct Node: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Node"
             @MainActor public var asCharacter: AsCharacter? { anchor.record.is(Types.Character) ? AsCharacter(anchor: anchor) : nil }
 
             nonisolated public struct AsCharacter: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Character"
                 @MainActor public var notes: Notes { Notes(anchor: anchor.requiredLinked(Slots.Character.__TestTwoPages_notes_connection, type: Types.NoteConnection)) }
 
                 nonisolated public struct Notes: Baton.Lens {
                     @_spi(Generated) public let anchor: Baton.Anchor
                     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                    public static let typeName = "NoteConnection"
                     @MainActor public var edges: Baton.List<Edges>? { anchor.list(Slots.NoteConnection.edges) }
                     @MainActor public var pageInfo: PageInfo { PageInfo(anchor: anchor.requiredLinked(Slots.NoteConnection.pageInfo, type: Types.PageInfo)) }
                     /// The connection's slots: edges, nodes, cursors and the page info, for the store's merge and the state below.
@@ -2797,14 +2709,12 @@ query TestTwoPagesQuery(
                     nonisolated public struct Edges: Baton.Lens {
                         @_spi(Generated) public let anchor: Baton.Anchor
                         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                        public static let typeName = "NoteEdge"
                         @MainActor public var node: Node? { anchor.linked(Slots.NoteEdge.node).map(Node.init(anchor:)) }
                         @MainActor public var cursor: String { anchor.requiredString(Slots.NoteEdge.cursor) }
 
                         nonisolated public struct Node: Baton.Lens {
                             @_spi(Generated) public let anchor: Baton.Anchor
                             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                            public static let typeName = "Note"
                             @MainActor public var id: String? { anchor.string(Slots.Note.id) }
                             @MainActor public var text: String? { anchor.string(Slots.Note.text) }
                         }
@@ -2813,7 +2723,6 @@ query TestTwoPagesQuery(
                     nonisolated public struct PageInfo: Baton.Lens {
                         @_spi(Generated) public let anchor: Baton.Anchor
                         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                        public static let typeName = "PageInfo"
                         @MainActor public var endCursor: String? { anchor.string(Slots.PageInfo.endCursor) }
                         @MainActor public var hasNextPage: Bool { anchor.requiredBool(Slots.PageInfo.hasNextPage) }
                     }

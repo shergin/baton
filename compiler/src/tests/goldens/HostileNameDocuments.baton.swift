@@ -6,7 +6,6 @@ import Foundation
 nonisolated public struct HostileAbstract_node: Baton.Lens {
     @_spi(Generated) public let anchor: Baton.Anchor
     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Node"
     @MainActor public var `Type`: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
     @MainActor public var `Protocol`: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
     @MainActor public var `Any`: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
@@ -78,7 +77,6 @@ nonisolated public struct HostileAbstract_node: Baton.Lens {
     @MainActor public var `sending`: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
     @MainActor public var then: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
     @MainActor public var unsafe: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
-    @MainActor public var typeName: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
     @MainActor public var satisfied: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
     @MainActor public var missingRequiredField: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
     @MainActor public var fieldErrors: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
@@ -160,7 +158,6 @@ nonisolated public struct HostileAbstract_node: Baton.Lens {
     nonisolated public struct AsCharacter: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var status: String? { anchor.string(Slots.Character.status) }
     }
 }
@@ -169,11 +166,10 @@ nonisolated public struct HostileAbstract_node: Baton.Lens {
 nonisolated public struct HostileArguments_character: Baton.Lens {
     @_spi(Generated) public let anchor: Baton.Anchor
     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
-    @MainActor public var name: String? { (anchor.owner.selects(Guards.Type_true) || anchor.owner.selects(Guards.Protocol_true) || anchor.owner.selects(Guards.Any_true) || anchor.owner.selects(Guards.self_true) || anchor.owner.selects(Guards.Self_true) || anchor.owner.selects(Guards.init_true) || anchor.owner.selects(Guards.deinit_true) || anchor.owner.selects(Guards.subscript_true) || anchor.owner.selects(Guards.class_true) || anchor.owner.selects(Guards.struct_true) || anchor.owner.selects(Guards.enum_true) || anchor.owner.selects(Guards.func_true) || anchor.owner.selects(Guards.var_true) || anchor.owner.selects(Guards.let_true) || anchor.owner.selects(Guards.import_true) || anchor.owner.selects(Guards.extension_true) || anchor.owner.selects(Guards.operator_true) || anchor.owner.selects(Guards.static_true) || anchor.owner.selects(Guards.default_true) || anchor.owner.selects(Guards.case_true) || anchor.owner.selects(Guards.switch_true) || anchor.owner.selects(Guards.if_true) || anchor.owner.selects(Guards.else_true) || anchor.owner.selects(Guards.for_true) || anchor.owner.selects(Guards.in_true) || anchor.owner.selects(Guards.while_true) || anchor.owner.selects(Guards.repeat_true) || anchor.owner.selects(Guards.return_true) || anchor.owner.selects(Guards.break_true) || anchor.owner.selects(Guards.continue_true) || anchor.owner.selects(Guards.where_true) || anchor.owner.selects(Guards.is_true) || anchor.owner.selects(Guards.as_true) || anchor.owner.selects(Guards.try_true) || anchor.owner.selects(Guards.throw_true) || anchor.owner.selects(Guards.throws_true) || anchor.owner.selects(Guards.guard_true) || anchor.owner.selects(Guards.defer_true) || anchor.owner.selects(Guards.do_true) || anchor.owner.selects(Guards.catch_true) || anchor.owner.selects(Guards.true_true) || anchor.owner.selects(Guards.false_true) || anchor.owner.selects(Guards.nil_true) || anchor.owner.selects(Guards.super_true) || anchor.owner.selects(Guards.internal_true) || anchor.owner.selects(Guards.private_true) || anchor.owner.selects(Guards.public_true) || anchor.owner.selects(Guards.fileprivate_true) || anchor.owner.selects(Guards.open_true) || anchor.owner.selects(Guards.inout_true) || anchor.owner.selects(Guards.typealias_true) || anchor.owner.selects(Guards.associatedtype_true) || anchor.owner.selects(Guards.protocol_true) || anchor.owner.selects(Guards.some_true) || anchor.owner.selects(Guards.any_true) || anchor.owner.selects(Guards.rethrows_true) || anchor.owner.selects(Guards.fallthrough_true) || anchor.owner.selects(Guards.precedencegroup_true) || anchor.owner.selects(Guards.__true) || anchor.owner.selects(Guards.async_true) || anchor.owner.selects(Guards.borrowing_true) || anchor.owner.selects(Guards.consume_true) || anchor.owner.selects(Guards.consuming_true) || anchor.owner.selects(Guards.copy_true) || anchor.owner.selects(Guards.discard_true) || anchor.owner.selects(Guards.each_true) || anchor.owner.selects(Guards.isolated_true) || anchor.owner.selects(Guards.sending_true) || anchor.owner.selects(Guards.then_true) || anchor.owner.selects(Guards.unsafe_true) || anchor.owner.selects(Guards.await_true) || anchor.owner.selects(Guards.anchor_true) || anchor.owner.selects(Guards.recordID_true) || anchor.owner.selects(Guards.typeName_true) || anchor.owner.selects(Guards.satisfied_true) || anchor.owner.selects(Guards.missingRequiredField_true) || anchor.owner.selects(Guards.fieldErrors_true) || anchor.owner.selects(Guards.isPresent_true) || anchor.owner.selects(Guards.throwing_true) || anchor.owner.selects(Guards.caught_true) || anchor.owner.selects(Guards.refetchable_true) || anchor.owner.selects(Guards.refetch_true) || anchor.owner.selects(Guards.connection_true) || anchor.owner.selects(Guards.nodes_true) || anchor.owner.selects(Guards.hasNext_true) || anchor.owner.selects(Guards.hasPrevious_true) || anchor.owner.selects(Guards.isLoadingNext_true) || anchor.owner.selects(Guards.isLoadingPrevious_true) || anchor.owner.selects(Guards.connectionID_true) || anchor.owner.selects(Guards.loadNext_true) || anchor.owner.selects(Guards.loadPrevious_true) || anchor.owner.selects(Guards.bound_true) || anchor.owner.selects(Guards.errors_true) || anchor.owner.selects(Guards.child_true) || anchor.owner.selects(Guards.missing_true) || anchor.owner.selects(Guards.count_true) || anchor.owner.selects(Guards.fields_true) || anchor.owner.selects(Guards.lhs_true) || anchor.owner.selects(Guards.rhs_true) || anchor.owner.selects(Guards.hasher_true) || anchor.owner.selects(Guards.optimistic_true) || anchor.owner.selects(Guards.selfValue_true) || anchor.owner.selects(Guards.Fragment_true) || anchor.owner.selects(Guards.Spread_true) || anchor.owner.selects(Guards.Owner_true) || anchor.owner.selects(Guards.Query_true) || anchor.owner.selects(Guards.Operation_true) || anchor.owner.selects(Guards.RefetchQuery_true) || anchor.owner.selects(Guards.name_true) || anchor.owner.selects(Guards.document_true) || anchor.owner.selects(Guards.text_true) || anchor.owner.selects(Guards.plan_true) || anchor.owner.selects(Guards.errorBehavior_true) || anchor.owner.selects(Guards.throwsOnFieldError_true) || anchor.owner.selects(Guards.bubbles_true) || anchor.owner.selects(Guards.hasDeferred_true) || anchor.owner.selects(Guards.cacheExpiration_true) || anchor.owner.selects(Guards.Action_true) || anchor.owner.selects(Guards.OptimisticResponse_true) || anchor.owner.selects(Guards.hash_true) || anchor.owner.selects(Guards.commit_true) || anchor.owner.selects(Guards.callAsFunction_true) || anchor.owner.selects(Guards.Op_true) || anchor.owner.selects(Guards.variable_true) || anchor.owner.selects(Guards.retry_true) || anchor.owner.selects(Guards.subscription_true) || anchor.owner.selects(Guards.AbstractSlots_true) || anchor.owner.selects(Guards.schemaDigest_true) || anchor.owner.selects(Guards.format_true) || anchor.owner.selects(Guards.transient_true) || anchor.owner.selects(Guards.Swift_true) || anchor.owner.selects(Guards.Set_true) || anchor.owner.selects(Guards.Result_true) || anchor.owner.selects(Guards.Optional_true) || anchor.owner.selects(Guards.String_true) || anchor.owner.selects(Guards.Int_true) || anchor.owner.selects(Guards.Double_true) || anchor.owner.selects(Guards.Bool_true) || anchor.owner.selects(Guards.MainActor_true) || anchor.owner.selects(Guards.Hasher_true) || anchor.owner.selects(Guards.Sendable_true)) ? anchor.string(Slots.Character.name) : nil }
+    @MainActor public var name: String? { (anchor.owner.selects(Guards.Type_true) || anchor.owner.selects(Guards.Protocol_true) || anchor.owner.selects(Guards.Any_true) || anchor.owner.selects(Guards.self_true) || anchor.owner.selects(Guards.Self_true) || anchor.owner.selects(Guards.init_true) || anchor.owner.selects(Guards.deinit_true) || anchor.owner.selects(Guards.subscript_true) || anchor.owner.selects(Guards.class_true) || anchor.owner.selects(Guards.struct_true) || anchor.owner.selects(Guards.enum_true) || anchor.owner.selects(Guards.func_true) || anchor.owner.selects(Guards.var_true) || anchor.owner.selects(Guards.let_true) || anchor.owner.selects(Guards.import_true) || anchor.owner.selects(Guards.extension_true) || anchor.owner.selects(Guards.operator_true) || anchor.owner.selects(Guards.static_true) || anchor.owner.selects(Guards.default_true) || anchor.owner.selects(Guards.case_true) || anchor.owner.selects(Guards.switch_true) || anchor.owner.selects(Guards.if_true) || anchor.owner.selects(Guards.else_true) || anchor.owner.selects(Guards.for_true) || anchor.owner.selects(Guards.in_true) || anchor.owner.selects(Guards.while_true) || anchor.owner.selects(Guards.repeat_true) || anchor.owner.selects(Guards.return_true) || anchor.owner.selects(Guards.break_true) || anchor.owner.selects(Guards.continue_true) || anchor.owner.selects(Guards.where_true) || anchor.owner.selects(Guards.is_true) || anchor.owner.selects(Guards.as_true) || anchor.owner.selects(Guards.try_true) || anchor.owner.selects(Guards.throw_true) || anchor.owner.selects(Guards.throws_true) || anchor.owner.selects(Guards.guard_true) || anchor.owner.selects(Guards.defer_true) || anchor.owner.selects(Guards.do_true) || anchor.owner.selects(Guards.catch_true) || anchor.owner.selects(Guards.true_true) || anchor.owner.selects(Guards.false_true) || anchor.owner.selects(Guards.nil_true) || anchor.owner.selects(Guards.super_true) || anchor.owner.selects(Guards.internal_true) || anchor.owner.selects(Guards.private_true) || anchor.owner.selects(Guards.public_true) || anchor.owner.selects(Guards.fileprivate_true) || anchor.owner.selects(Guards.open_true) || anchor.owner.selects(Guards.inout_true) || anchor.owner.selects(Guards.typealias_true) || anchor.owner.selects(Guards.associatedtype_true) || anchor.owner.selects(Guards.protocol_true) || anchor.owner.selects(Guards.some_true) || anchor.owner.selects(Guards.any_true) || anchor.owner.selects(Guards.rethrows_true) || anchor.owner.selects(Guards.fallthrough_true) || anchor.owner.selects(Guards.precedencegroup_true) || anchor.owner.selects(Guards.__true) || anchor.owner.selects(Guards.async_true) || anchor.owner.selects(Guards.borrowing_true) || anchor.owner.selects(Guards.consume_true) || anchor.owner.selects(Guards.consuming_true) || anchor.owner.selects(Guards.copy_true) || anchor.owner.selects(Guards.discard_true) || anchor.owner.selects(Guards.each_true) || anchor.owner.selects(Guards.isolated_true) || anchor.owner.selects(Guards.sending_true) || anchor.owner.selects(Guards.then_true) || anchor.owner.selects(Guards.unsafe_true) || anchor.owner.selects(Guards.await_true) || anchor.owner.selects(Guards.anchor_true) || anchor.owner.selects(Guards.recordID_true) || anchor.owner.selects(Guards.satisfied_true) || anchor.owner.selects(Guards.missingRequiredField_true) || anchor.owner.selects(Guards.fieldErrors_true) || anchor.owner.selects(Guards.isPresent_true) || anchor.owner.selects(Guards.throwing_true) || anchor.owner.selects(Guards.caught_true) || anchor.owner.selects(Guards.refetchable_true) || anchor.owner.selects(Guards.refetch_true) || anchor.owner.selects(Guards.connection_true) || anchor.owner.selects(Guards.nodes_true) || anchor.owner.selects(Guards.hasNext_true) || anchor.owner.selects(Guards.hasPrevious_true) || anchor.owner.selects(Guards.isLoadingNext_true) || anchor.owner.selects(Guards.isLoadingPrevious_true) || anchor.owner.selects(Guards.connectionID_true) || anchor.owner.selects(Guards.loadNext_true) || anchor.owner.selects(Guards.loadPrevious_true) || anchor.owner.selects(Guards.bound_true) || anchor.owner.selects(Guards.errors_true) || anchor.owner.selects(Guards.child_true) || anchor.owner.selects(Guards.missing_true) || anchor.owner.selects(Guards.count_true) || anchor.owner.selects(Guards.fields_true) || anchor.owner.selects(Guards.lhs_true) || anchor.owner.selects(Guards.rhs_true) || anchor.owner.selects(Guards.hasher_true) || anchor.owner.selects(Guards.optimistic_true) || anchor.owner.selects(Guards.selfValue_true) || anchor.owner.selects(Guards.Fragment_true) || anchor.owner.selects(Guards.Spread_true) || anchor.owner.selects(Guards.Owner_true) || anchor.owner.selects(Guards.Query_true) || anchor.owner.selects(Guards.Operation_true) || anchor.owner.selects(Guards.RefetchQuery_true) || anchor.owner.selects(Guards.name_true) || anchor.owner.selects(Guards.document_true) || anchor.owner.selects(Guards.text_true) || anchor.owner.selects(Guards.plan_true) || anchor.owner.selects(Guards.errorBehavior_true) || anchor.owner.selects(Guards.throwsOnFieldError_true) || anchor.owner.selects(Guards.bubbles_true) || anchor.owner.selects(Guards.hasDeferred_true) || anchor.owner.selects(Guards.cacheExpiration_true) || anchor.owner.selects(Guards.Action_true) || anchor.owner.selects(Guards.OptimisticResponse_true) || anchor.owner.selects(Guards.hash_true) || anchor.owner.selects(Guards.commit_true) || anchor.owner.selects(Guards.callAsFunction_true) || anchor.owner.selects(Guards.Op_true) || anchor.owner.selects(Guards.variable_true) || anchor.owner.selects(Guards.retry_true) || anchor.owner.selects(Guards.subscription_true) || anchor.owner.selects(Guards.AbstractSlots_true) || anchor.owner.selects(Guards.schemaDigest_true) || anchor.owner.selects(Guards.format_true) || anchor.owner.selects(Guards.transient_true) || anchor.owner.selects(Guards.Swift_true) || anchor.owner.selects(Guards.Set_true) || anchor.owner.selects(Guards.Result_true) || anchor.owner.selects(Guards.Optional_true) || anchor.owner.selects(Guards.String_true) || anchor.owner.selects(Guards.Int_true) || anchor.owner.selects(Guards.Double_true) || anchor.owner.selects(Guards.Bool_true) || anchor.owner.selects(Guards.MainActor_true) || anchor.owner.selects(Guards.Hasher_true) || anchor.owner.selects(Guards.Sendable_true)) ? anchor.string(Slots.Character.name) : nil }
     @MainActor public var id: String? { anchor.string(Slots.Character.id) }
     /// How the fragment is fetched again: `HostileArgumentsRefetchQuery` with the lens's variables.
-    @_spi(Generated) public static let refetchable: Baton.Refetch = .init(variables: ["AbstractSlots", "Action", "Any", "Bool", "Double", "Fragment", "Hasher", "Int", "MainActor", "Op", "Operation", "OptimisticResponse", "Optional", "Owner", "Protocol", "Query", "RefetchQuery", "Result", "Self", "Sendable", "Set", "Spread", "String", "Swift", "Type", "_", "anchor", "any", "as", "associatedtype", "async", "await", "borrowing", "bound", "break", "bubbles", "cacheExpiration", "callAsFunction", "case", "catch", "caught", "child", "class", "commit", "connection", "connectionID", "consume", "consuming", "continue", "copy", "count", "default", "defer", "deinit", "discard", "do", "document", "each", "else", "enum", "errorBehavior", "errors", "extension", "fallthrough", "false", "fieldErrors", "fields", "fileprivate", "for", "format", "func", "guard", "hasDeferred", "hasNext", "hasPrevious", "hash", "hasher", "if", "import", "in", "init", "inout", "internal", "is", "isLoadingNext", "isLoadingPrevious", "isPresent", "isolated", "let", "lhs", "loadNext", "loadPrevious", "missing", "missingRequiredField", "name", "nil", "nodes", "open", "operator", "optimistic", "plan", "precedencegroup", "private", "protocol", "public", "recordID", "refetch", "refetchable", "repeat", "rethrows", "retry", "return", "rhs", "satisfied", "schemaDigest", "self", "selfValue", "sending", "some", "static", "struct", "subscript", "subscription", "super", "switch", "text", "then", "throw", "throwing", "throws", "throwsOnFieldError", "transient", "true", "try", "typeName", "typealias", "unsafe", "var", "variable", "where", "while", "id"], identifier: "id", identity: Slots.Character.id, first: nil, after: nil, last: nil, before: nil)
+    @_spi(Generated) public static let refetchable: Baton.Refetch = .init(variables: ["AbstractSlots", "Action", "Any", "Bool", "Double", "Fragment", "Hasher", "Int", "MainActor", "Op", "Operation", "OptimisticResponse", "Optional", "Owner", "Protocol", "Query", "RefetchQuery", "Result", "Self", "Sendable", "Set", "Spread", "String", "Swift", "Type", "_", "anchor", "any", "as", "associatedtype", "async", "await", "borrowing", "bound", "break", "bubbles", "cacheExpiration", "callAsFunction", "case", "catch", "caught", "child", "class", "commit", "connection", "connectionID", "consume", "consuming", "continue", "copy", "count", "default", "defer", "deinit", "discard", "do", "document", "each", "else", "enum", "errorBehavior", "errors", "extension", "fallthrough", "false", "fieldErrors", "fields", "fileprivate", "for", "format", "func", "guard", "hasDeferred", "hasNext", "hasPrevious", "hash", "hasher", "if", "import", "in", "init", "inout", "internal", "is", "isLoadingNext", "isLoadingPrevious", "isPresent", "isolated", "let", "lhs", "loadNext", "loadPrevious", "missing", "missingRequiredField", "name", "nil", "nodes", "open", "operator", "optimistic", "plan", "precedencegroup", "private", "protocol", "public", "recordID", "refetch", "refetchable", "repeat", "rethrows", "retry", "return", "rhs", "satisfied", "schemaDigest", "self", "selfValue", "sending", "some", "static", "struct", "subscript", "subscription", "super", "switch", "text", "then", "throw", "throwing", "throws", "throwsOnFieldError", "transient", "true", "try", "typealias", "unsafe", "var", "variable", "where", "while", "id"], identifier: "id", identity: Slots.Character.id, first: nil, after: nil, last: nil, before: nil)
     /// Fetches the fragment again through `HostileArgumentsRefetchQuery` with its current variables; the records update in place.
     @MainActor public func refetch() async throws {
         typealias Query = HostileArgumentsRefetchQuery
@@ -185,7 +181,6 @@ nonisolated public struct HostileArguments_character: Baton.Lens {
 nonisolated public struct HostileBodies_character: Baton.Lens {
     @_spi(Generated) public let anchor: Baton.Anchor
     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
     @MainActor public var `Type`: String? { anchor.string(Slots.Character.name) }
     @MainActor public var `Protocol`: String? { anchor.string(Slots.Character.name) }
     @MainActor public var `Any`: String? { anchor.string(Slots.Character.name) }
@@ -256,7 +251,6 @@ nonisolated public struct HostileBodies_character: Baton.Lens {
     @MainActor public var `sending`: String? { anchor.string(Slots.Character.name) }
     @MainActor public var then: String? { anchor.string(Slots.Character.name) }
     @MainActor public var unsafe: String? { anchor.string(Slots.Character.name) }
-    @MainActor public var typeName: String? { anchor.string(Slots.Character.name) }
     @MainActor public var satisfied: String? { anchor.string(Slots.Character.name) }
     @MainActor public var missingRequiredField: String? { anchor.string(Slots.Character.name) }
     @MainActor public var fieldErrors: String? { anchor.string(Slots.Character.name) }
@@ -513,7 +507,6 @@ nonisolated public struct HostileBodies_character: Baton.Lens {
         anchor.collectError(Slots.Character.name, into: &errors)
         anchor.collectError(Slots.Character.name, into: &errors)
         anchor.collectError(Slots.Character.name, into: &errors)
-        anchor.collectError(Slots.Character.name, into: &errors)
         anchor.collectError(Slots.Character.species, into: &errors)
         anchor.collectRequired(Slots.Character.species, path: "species", into: &errors)
         anchor.collectErrors(Slots.Character.origin, within: Origin.fieldErrors, into: &errors)
@@ -531,7 +524,6 @@ nonisolated public struct HostileBodies_character: Baton.Lens {
     nonisolated public struct Origin: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var name: String { anchor.requiredString(Slots.Location.name) }
         /// Whether every `@required` field is present; the lens is otherwise null to its parent, as Relay bubbles.
         @_spi(Generated) @MainActor public static func satisfied(_ anchor: Baton.Anchor) -> Bool {
@@ -558,7 +550,6 @@ nonisolated public struct HostileBodies_character: Baton.Lens {
 nonisolated public struct HostileBound_character: Baton.Lens {
     @_spi(Generated) public let anchor: Baton.Anchor
     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
     @MainActor public var name: String? { anchor.owner.selects(Guards.flag_true) ? anchor.string(Slots.Character.name) : nil }
     @MainActor public var origin: Origin { Origin(anchor: anchor.requiredLinked(Slots.Character.origin, type: Types.Location)) }
     /// Whether every `@required` field is present; the lens is otherwise null to its parent, as Relay bubbles.
@@ -572,7 +563,6 @@ nonisolated public struct HostileBound_character: Baton.Lens {
     nonisolated public struct Origin: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 }
@@ -581,7 +571,6 @@ nonisolated public struct HostileBound_character: Baton.Lens {
 nonisolated public struct HostileCaught_character: Baton.Lens {
     @_spi(Generated) public let anchor: Baton.Anchor
     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
     @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
     @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
@@ -602,13 +591,11 @@ nonisolated public struct HostileCaught_character: Baton.Lens {
 nonisolated public struct HostileConnectionNodes_character: Baton.Lens {
     @_spi(Generated) public let anchor: Baton.Anchor
     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
     @MainActor public var notes: Notes { Notes(anchor: anchor.requiredLinked(Slots.Character.__HostileConnectionNodes_notes_connection, type: Types.NoteConnection)) }
 
     nonisolated public struct Notes: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "NoteConnection"
         @MainActor public var nodes: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
         @MainActor public var edges: Baton.List<Edges>? { anchor.list(Slots.NoteConnection.edges) }
         @MainActor public var pageInfo: PageInfo { PageInfo(anchor: anchor.requiredLinked(Slots.NoteConnection.pageInfo, type: Types.PageInfo)) }
@@ -625,14 +612,12 @@ nonisolated public struct HostileConnectionNodes_character: Baton.Lens {
         nonisolated public struct Edges: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "NoteEdge"
             @MainActor public var node: Node? { anchor.linked(Slots.NoteEdge.node).map(Node.init(anchor:)) }
             @MainActor public var cursor: String { anchor.requiredString(Slots.NoteEdge.cursor) }
 
             nonisolated public struct Node: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
         }
@@ -640,7 +625,6 @@ nonisolated public struct HostileConnectionNodes_character: Baton.Lens {
         nonisolated public struct PageInfo: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "PageInfo"
             @MainActor public var endCursor: String? { anchor.string(Slots.PageInfo.endCursor) }
             @MainActor public var hasNextPage: Bool { anchor.requiredBool(Slots.PageInfo.hasNextPage) }
         }
@@ -651,7 +635,6 @@ nonisolated public struct HostileConnectionNodes_character: Baton.Lens {
 nonisolated public struct HostileConnection_character: Baton.Lens {
     @_spi(Generated) public let anchor: Baton.Anchor
     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
     @MainActor public var notes: Notes { Notes(anchor: anchor.requiredLinked(Slots.Character.__HostileConnection_notes_connection, type: Types.NoteConnection)) }
     @MainActor public var id: String? { anchor.string(Slots.Character.id) }
     /// How the fragment is fetched again: `HostileConnectionRefetchQuery` with the lens's variables.
@@ -665,7 +648,6 @@ nonisolated public struct HostileConnection_character: Baton.Lens {
     nonisolated public struct Notes: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "NoteConnection"
         @MainActor public var `Type`: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
         @MainActor public var `Protocol`: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
         @MainActor public var `Any`: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
@@ -736,7 +718,6 @@ nonisolated public struct HostileConnection_character: Baton.Lens {
         @MainActor public var `sending`: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
         @MainActor public var then: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
         @MainActor public var unsafe: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
-        @MainActor public var typeName: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
         @MainActor public var satisfied: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
         @MainActor public var missingRequiredField: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
         @MainActor public var fieldErrors: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
@@ -831,14 +812,12 @@ nonisolated public struct HostileConnection_character: Baton.Lens {
         nonisolated public struct Edges: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "NoteEdge"
             @MainActor public var node: Node? { anchor.linked(Slots.NoteEdge.node).map(Node.init(anchor:)) }
             @MainActor public var cursor: String { anchor.requiredString(Slots.NoteEdge.cursor) }
 
             nonisolated public struct Node: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
         }
@@ -846,7 +825,6 @@ nonisolated public struct HostileConnection_character: Baton.Lens {
         nonisolated public struct PageInfo: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "PageInfo"
             @MainActor public var endCursor: String? { anchor.string(Slots.PageInfo.endCursor) }
             @MainActor public var hasNextPage: Bool { anchor.requiredBool(Slots.PageInfo.hasNextPage) }
         }
@@ -857,7 +835,6 @@ nonisolated public struct HostileConnection_character: Baton.Lens {
 nonisolated public struct HostileDeferred_character: Baton.Lens {
     @_spi(Generated) public let anchor: Baton.Anchor
     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
     @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     /// Whether the deferred part that carries this fragment has arrived.
     @_spi(Generated) @MainActor public static func isPresent(_ anchor: Baton.Anchor) -> Bool { anchor.present(Slots.Character.name) }
@@ -867,7 +844,6 @@ nonisolated public struct HostileDeferred_character: Baton.Lens {
 nonisolated public struct HostileLinks_character: Baton.Lens {
     @_spi(Generated) public let anchor: Baton.Anchor
     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
     @MainActor public var `Type`: TypeLens? { anchor.linked(Slots.Character.origin).map(TypeLens.init(anchor:)) }
     @MainActor public var `Protocol`: ProtocolLens? { anchor.linked(Slots.Character.origin).map(ProtocolLens.init(anchor:)) }
     @MainActor public var `Any`: AnyLens? { anchor.linked(Slots.Character.origin).map(AnyLens.init(anchor:)) }
@@ -939,7 +915,6 @@ nonisolated public struct HostileLinks_character: Baton.Lens {
     @MainActor public var `sending`: Sending? { anchor.linked(Slots.Character.origin).map(Sending.init(anchor:)) }
     @MainActor public var then: Then? { anchor.linked(Slots.Character.origin).map(Then.init(anchor:)) }
     @MainActor public var unsafe: Unsafe? { anchor.linked(Slots.Character.origin).map(Unsafe.init(anchor:)) }
-    @MainActor public var typeName: TypeName? { anchor.linked(Slots.Character.origin).map(TypeName.init(anchor:)) }
     @MainActor public var satisfied: Satisfied? { anchor.linked(Slots.Character.origin).map(Satisfied.init(anchor:)) }
     @MainActor public var missingRequiredField: MissingRequiredField? { anchor.linked(Slots.Character.origin).map(MissingRequiredField.init(anchor:)) }
     @MainActor public var fieldErrors: FieldErrors? { anchor.linked(Slots.Character.origin).map(FieldErrors.init(anchor:)) }
@@ -1022,1050 +997,894 @@ nonisolated public struct HostileLinks_character: Baton.Lens {
     nonisolated public struct TypeLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct ProtocolLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct AnyLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct SelfLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct SelfLens2: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Init: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Deinit: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Subscript: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Class: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Struct: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Enum: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Func: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Var: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Let: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Import: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Extension: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Operator: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Static: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Default: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Case: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Switch: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct If: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Else: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct For: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct In: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct While: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Repeat: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Return: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Break: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Continue: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Where: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Is: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct As: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Try: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Throw: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Throws: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Guard: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Defer: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Do: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Catch: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct True: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct False: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Nil: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Super: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Internal: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Private: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Public: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Fileprivate: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Open: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Inout: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Typealias: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Associatedtype: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct ProtocolLens2: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Some: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct AnyLens2: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Rethrows: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Fallthrough: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Precedencegroup: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct _2: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Async: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Await: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Borrowing: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Consume: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Consuming: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Copy: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Discard: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Each: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Isolated: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Sending: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Then: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Unsafe: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
-        @MainActor public var id: String? { anchor.string(Slots.Location.id) }
-    }
-
-    nonisolated public struct TypeName: Baton.Lens {
-        @_spi(Generated) public let anchor: Baton.Anchor
-        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Satisfied: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct MissingRequiredField: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct FieldErrors: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct IsPresent: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Throwing: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Caught: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Refetchable: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Refetch: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Connection: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Nodes: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct HasNext: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct HasPrevious: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct IsLoadingNext: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct IsLoadingPrevious: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct ConnectionID: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct LoadNext: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct LoadPrevious: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Bound: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Errors: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Child: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Missing: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Count: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Fields: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Lhs: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Rhs: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Hasher2: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Optimistic: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct SelfValue: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct FragmentLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Spread2: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Owner2: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Query2: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Operation2: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct RefetchQuery2: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Variables: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Resolution: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Name: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Document: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Text: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Plan: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct ErrorBehavior: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct ThrowsOnFieldError: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Bubbles: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct HasDeferred: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct CacheExpiration: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Data2: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Action2: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct OptimisticResponse2: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Hash: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Commit: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct CallAsFunction: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Op2: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Variable: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct HashValue: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Phase: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct IsRefreshing: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct IsStale: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Retry: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Subscription: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct TypesLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct SitesLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct GuardsLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct AbstractSlotsLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct SchemaDigest: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Format: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Transient: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct BatonLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Swift2: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Set2: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct ResultLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct OptionalLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct StringLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct IntLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct DoubleLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct BoolLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct MainActorLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Hasher3: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
     nonisolated public struct Sendable2: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Location"
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 }
@@ -2074,7 +1893,6 @@ nonisolated public struct HostileLinks_character: Baton.Lens {
 nonisolated public struct HostileScalars_character: Baton.Lens {
     @_spi(Generated) public let anchor: Baton.Anchor
     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
     @MainActor public var `Type`: String? { anchor.string(Slots.Character.name) }
     @MainActor public var `Protocol`: String? { anchor.string(Slots.Character.name) }
     @MainActor public var `Any`: String? { anchor.string(Slots.Character.name) }
@@ -2146,7 +1964,6 @@ nonisolated public struct HostileScalars_character: Baton.Lens {
     @MainActor public var `sending`: String? { anchor.string(Slots.Character.name) }
     @MainActor public var then: String? { anchor.string(Slots.Character.name) }
     @MainActor public var unsafe: String? { anchor.string(Slots.Character.name) }
-    @MainActor public var typeName: String? { anchor.string(Slots.Character.name) }
     @MainActor public var satisfied: String? { anchor.string(Slots.Character.name) }
     @MainActor public var missingRequiredField: String? { anchor.string(Slots.Character.name) }
     @MainActor public var fieldErrors: String? { anchor.string(Slots.Character.name) }
@@ -2231,7 +2048,6 @@ nonisolated public struct HostileScalars_character: Baton.Lens {
 nonisolated public struct HostileSelections_character: Baton.Lens {
     @_spi(Generated) public let anchor: Baton.Anchor
     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
     @MainActor public var `Type`: TypeLens { TypeLens(anchor: anchor) }
     @MainActor public var `Protocol`: ProtocolLens { ProtocolLens(anchor: anchor) }
     @MainActor public var `Any`: AnyLens { AnyLens(anchor: anchor) }
@@ -2303,7 +2119,6 @@ nonisolated public struct HostileSelections_character: Baton.Lens {
     @MainActor public var `sending`: Sending { Sending(anchor: anchor) }
     @MainActor public var then: Then { Then(anchor: anchor) }
     @MainActor public var unsafe: Unsafe { Unsafe(anchor: anchor) }
-    @MainActor public var typeName: TypeName { TypeName(anchor: anchor) }
     @MainActor public var satisfied: Satisfied { Satisfied(anchor: anchor) }
     @MainActor public var missingRequiredField: MissingRequiredField { MissingRequiredField(anchor: anchor) }
     @MainActor public var fieldErrors: FieldErrors { FieldErrors(anchor: anchor) }
@@ -2386,1050 +2201,894 @@ nonisolated public struct HostileSelections_character: Baton.Lens {
     nonisolated public struct TypeLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct ProtocolLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct AnyLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct SelfLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct SelfLens2: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Init: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Deinit: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Subscript: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Class: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Struct: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Enum: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Func: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Var: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Let: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Import: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Extension: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Operator: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Static: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Default: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Case: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Switch: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct If: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Else: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct For: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct In: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct While: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Repeat: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Return: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Break: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Continue: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Where: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Is: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct As: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Try: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Throw: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Throws: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Guard: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Defer: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Do: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Catch: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct True: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct False: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Nil: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Super: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Internal: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Private: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Public: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Fileprivate: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Open: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Inout: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Typealias: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Associatedtype: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct ProtocolLens2: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Some: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct AnyLens2: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Rethrows: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Fallthrough: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Precedencegroup: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct _2: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Async: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Await: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Borrowing: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Consume: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Consuming: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Copy: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Discard: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Each: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Isolated: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Sending: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Then: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Unsafe: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
-        @MainActor public var name: String? { anchor.string(Slots.Character.name) }
-    }
-
-    nonisolated public struct TypeName: Baton.Lens {
-        @_spi(Generated) public let anchor: Baton.Anchor
-        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Satisfied: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct MissingRequiredField: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct FieldErrors: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct IsPresent: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Throwing: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Caught: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Refetchable: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Refetch: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Connection: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Nodes: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct HasNext: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct HasPrevious: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct IsLoadingNext: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct IsLoadingPrevious: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct ConnectionID: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct LoadNext: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct LoadPrevious: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Bound: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Errors: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Child: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Missing: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Count: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Fields: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Lhs: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Rhs: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Hasher2: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Optimistic: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct SelfValue: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct FragmentLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Spread2: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Owner2: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Query2: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Operation2: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct RefetchQuery2: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Variables: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Resolution: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Name: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Document: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Text: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Plan: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct ErrorBehavior: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct ThrowsOnFieldError: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Bubbles: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct HasDeferred: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct CacheExpiration: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Data2: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Action2: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct OptimisticResponse2: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Hash: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Commit: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct CallAsFunction: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Op2: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Variable: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct HashValue: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Phase: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct IsRefreshing: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct IsStale: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Retry: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Subscription: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct TypesLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct SitesLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct GuardsLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct AbstractSlotsLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct SchemaDigest: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Format: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Transient: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct BatonLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Swift2: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Set2: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct ResultLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct OptionalLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct StringLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct IntLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct DoubleLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct BoolLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct MainActorLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Hasher3: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
     nonisolated public struct Sendable2: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Character"
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 }
@@ -3438,7 +3097,6 @@ nonisolated public struct HostileSelections_character: Baton.Lens {
 nonisolated public struct HostileSpreadTarget_character: Baton.Lens {
     @_spi(Generated) public let anchor: Baton.Anchor
     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
     @MainActor public var name: String? { anchor.string(Slots.Character.name) }
 }
 
@@ -3446,7 +3104,6 @@ nonisolated public struct HostileSpreadTarget_character: Baton.Lens {
 nonisolated public struct HostileSpreads_character: Baton.Lens {
     @_spi(Generated) public let anchor: Baton.Anchor
     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
     @MainActor public var `Type`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
     @MainActor public var `Protocol`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
     @MainActor public var `Any`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
@@ -3518,7 +3175,6 @@ nonisolated public struct HostileSpreads_character: Baton.Lens {
     @MainActor public var `sending`: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
     @MainActor public var then: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
     @MainActor public var unsafe: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
-    @MainActor public var typeName: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
     @MainActor public var satisfied: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
     @MainActor public var missingRequiredField: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
     @MainActor public var fieldErrors: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
@@ -3604,7 +3260,6 @@ nonisolated public struct HostileSpreads_character: Baton.Lens {
 nonisolated public struct _hostileHidden: Baton.Lens {
     @_spi(Generated) public let anchor: Baton.Anchor
     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    public static let typeName = "Character"
     @MainActor public var name: String? { anchor.string(Slots.Character.name) }
 }
 
@@ -3744,7 +3399,6 @@ nonisolated public struct HostileArgumentsRefetchQuery: Baton.Query {
     public var transient: Bool?
     public var `true`: Bool?
     public var `try`: Bool?
-    public var typeName: Bool?
     public var `typealias`: Bool?
     public var unsafe: Bool?
     public var `var`: Bool?
@@ -3754,7 +3408,7 @@ nonisolated public struct HostileArgumentsRefetchQuery: Baton.Query {
     public var id: String
     public var resolution: Baton.OperationHandle<Self>? = nil
 
-    public init(AbstractSlots: Bool? = nil, Action: Bool? = nil, `Any`: Bool? = nil, Bool: Bool? = nil, Double: Bool? = nil, Fragment: Bool? = nil, Hasher: Bool? = nil, Int: Bool? = nil, MainActor: Bool? = nil, Op: Bool? = nil, Operation: Bool? = nil, OptimisticResponse: Bool? = nil, Optional: Bool? = nil, Owner: Bool? = nil, `Protocol`: Bool? = nil, Query: Bool? = nil, RefetchQuery: Bool? = nil, Result: Bool? = nil, `Self`: Bool? = nil, Sendable: Bool? = nil, Set: Bool? = nil, Spread: Bool? = nil, String: Bool? = nil, Swift: Bool? = nil, `Type`: Bool? = nil, `_`: Bool? = nil, anchor: Bool? = nil, `any`: Bool? = nil, `as`: Bool? = nil, `associatedtype`: Bool? = nil, async: Bool? = nil, `await`: Bool? = nil, `borrowing`: Bool? = nil, bound: Bool? = nil, `break`: Bool? = nil, bubbles: Bool? = nil, cacheExpiration: Bool? = nil, callAsFunction: Bool? = nil, `case`: Bool? = nil, `catch`: Bool? = nil, caught: Bool? = nil, child: Bool? = nil, `class`: Bool? = nil, commit: Bool? = nil, connection: Bool? = nil, connectionID: Bool? = nil, consume: Bool? = nil, `consuming`: Bool? = nil, `continue`: Bool? = nil, copy: Bool? = nil, count: Bool? = nil, `default`: Bool? = nil, `defer`: Bool? = nil, `deinit`: Bool? = nil, discard: Bool? = nil, `do`: Bool? = nil, document: Bool? = nil, `each`: Bool? = nil, `else`: Bool? = nil, `enum`: Bool? = nil, errorBehavior: Bool? = nil, errors: Bool? = nil, `extension`: Bool? = nil, `fallthrough`: Bool? = nil, `false`: Bool? = nil, fieldErrors: Bool? = nil, fields: Bool? = nil, `fileprivate`: Bool? = nil, `for`: Bool? = nil, format: Bool? = nil, `func`: Bool? = nil, `guard`: Bool? = nil, hasDeferred: Bool? = nil, hasNext: Bool? = nil, hasPrevious: Bool? = nil, hash: Bool? = nil, hasher: Bool? = nil, `if`: Bool? = nil, `import`: Bool? = nil, `in`: Bool? = nil, `init`: Bool? = nil, `inout`: Bool? = nil, `internal`: Bool? = nil, `is`: Bool? = nil, isLoadingNext: Bool? = nil, isLoadingPrevious: Bool? = nil, isPresent: Bool? = nil, `isolated`: Bool? = nil, `let`: Bool? = nil, lhs: Bool? = nil, loadNext: Bool? = nil, loadPrevious: Bool? = nil, missing: Bool? = nil, missingRequiredField: Bool? = nil, name: Bool? = nil, `nil`: Bool? = nil, nodes: Bool? = nil, `open`: Bool? = nil, `operator`: Bool? = nil, optimistic: Bool? = nil, plan: Bool? = nil, `precedencegroup`: Bool? = nil, `private`: Bool? = nil, `protocol`: Bool? = nil, `public`: Bool? = nil, recordID: Bool? = nil, refetch: Bool? = nil, refetchable: Bool? = nil, `repeat`: Bool? = nil, `rethrows`: Bool? = nil, retry: Bool? = nil, `return`: Bool? = nil, rhs: Bool? = nil, satisfied: Bool? = nil, schemaDigest: Bool? = nil, `self` selfValue2: Bool? = nil, selfValue: Bool? = nil, `sending`: Bool? = nil, `some`: Bool? = nil, `static`: Bool? = nil, `struct`: Bool? = nil, `subscript`: Bool? = nil, subscription: Bool? = nil, `super`: Bool? = nil, `switch`: Bool? = nil, text: Bool? = nil, then: Bool? = nil, `throw`: Bool? = nil, throwing: Bool? = nil, `throws`: Bool? = nil, throwsOnFieldError: Bool? = nil, transient: Bool? = nil, `true`: Bool? = nil, `try`: Bool? = nil, typeName: Bool? = nil, `typealias`: Bool? = nil, unsafe: Bool? = nil, `var`: Bool? = nil, variable: Bool? = nil, `where`: Bool? = nil, `while`: Bool? = nil, id: String) {
+    public init(AbstractSlots: Bool? = nil, Action: Bool? = nil, `Any`: Bool? = nil, Bool: Bool? = nil, Double: Bool? = nil, Fragment: Bool? = nil, Hasher: Bool? = nil, Int: Bool? = nil, MainActor: Bool? = nil, Op: Bool? = nil, Operation: Bool? = nil, OptimisticResponse: Bool? = nil, Optional: Bool? = nil, Owner: Bool? = nil, `Protocol`: Bool? = nil, Query: Bool? = nil, RefetchQuery: Bool? = nil, Result: Bool? = nil, `Self`: Bool? = nil, Sendable: Bool? = nil, Set: Bool? = nil, Spread: Bool? = nil, String: Bool? = nil, Swift: Bool? = nil, `Type`: Bool? = nil, `_`: Bool? = nil, anchor: Bool? = nil, `any`: Bool? = nil, `as`: Bool? = nil, `associatedtype`: Bool? = nil, async: Bool? = nil, `await`: Bool? = nil, `borrowing`: Bool? = nil, bound: Bool? = nil, `break`: Bool? = nil, bubbles: Bool? = nil, cacheExpiration: Bool? = nil, callAsFunction: Bool? = nil, `case`: Bool? = nil, `catch`: Bool? = nil, caught: Bool? = nil, child: Bool? = nil, `class`: Bool? = nil, commit: Bool? = nil, connection: Bool? = nil, connectionID: Bool? = nil, consume: Bool? = nil, `consuming`: Bool? = nil, `continue`: Bool? = nil, copy: Bool? = nil, count: Bool? = nil, `default`: Bool? = nil, `defer`: Bool? = nil, `deinit`: Bool? = nil, discard: Bool? = nil, `do`: Bool? = nil, document: Bool? = nil, `each`: Bool? = nil, `else`: Bool? = nil, `enum`: Bool? = nil, errorBehavior: Bool? = nil, errors: Bool? = nil, `extension`: Bool? = nil, `fallthrough`: Bool? = nil, `false`: Bool? = nil, fieldErrors: Bool? = nil, fields: Bool? = nil, `fileprivate`: Bool? = nil, `for`: Bool? = nil, format: Bool? = nil, `func`: Bool? = nil, `guard`: Bool? = nil, hasDeferred: Bool? = nil, hasNext: Bool? = nil, hasPrevious: Bool? = nil, hash: Bool? = nil, hasher: Bool? = nil, `if`: Bool? = nil, `import`: Bool? = nil, `in`: Bool? = nil, `init`: Bool? = nil, `inout`: Bool? = nil, `internal`: Bool? = nil, `is`: Bool? = nil, isLoadingNext: Bool? = nil, isLoadingPrevious: Bool? = nil, isPresent: Bool? = nil, `isolated`: Bool? = nil, `let`: Bool? = nil, lhs: Bool? = nil, loadNext: Bool? = nil, loadPrevious: Bool? = nil, missing: Bool? = nil, missingRequiredField: Bool? = nil, name: Bool? = nil, `nil`: Bool? = nil, nodes: Bool? = nil, `open`: Bool? = nil, `operator`: Bool? = nil, optimistic: Bool? = nil, plan: Bool? = nil, `precedencegroup`: Bool? = nil, `private`: Bool? = nil, `protocol`: Bool? = nil, `public`: Bool? = nil, recordID: Bool? = nil, refetch: Bool? = nil, refetchable: Bool? = nil, `repeat`: Bool? = nil, `rethrows`: Bool? = nil, retry: Bool? = nil, `return`: Bool? = nil, rhs: Bool? = nil, satisfied: Bool? = nil, schemaDigest: Bool? = nil, `self` selfValue2: Bool? = nil, selfValue: Bool? = nil, `sending`: Bool? = nil, `some`: Bool? = nil, `static`: Bool? = nil, `struct`: Bool? = nil, `subscript`: Bool? = nil, subscription: Bool? = nil, `super`: Bool? = nil, `switch`: Bool? = nil, text: Bool? = nil, then: Bool? = nil, `throw`: Bool? = nil, throwing: Bool? = nil, `throws`: Bool? = nil, throwsOnFieldError: Bool? = nil, transient: Bool? = nil, `true`: Bool? = nil, `try`: Bool? = nil, `typealias`: Bool? = nil, unsafe: Bool? = nil, `var`: Bool? = nil, variable: Bool? = nil, `where`: Bool? = nil, `while`: Bool? = nil, id: String) {
         self.AbstractSlots = AbstractSlots
         self.Action = Action
         self.`Any` = `Any`
@@ -3889,7 +3543,6 @@ nonisolated public struct HostileArgumentsRefetchQuery: Baton.Query {
         self.transient = transient
         self.`true` = `true`
         self.`try` = `try`
-        self.typeName = typeName
         self.`typealias` = `typealias`
         self.unsafe = unsafe
         self.`var` = `var`
@@ -4036,7 +3689,6 @@ query HostileArgumentsRefetchQuery(
   $transient: Boolean = true
   $true: Boolean = true
   $try: Boolean = true
-  $typeName: Boolean = true
   $typealias: Boolean = true
   $unsafe: Boolean = true
   $var: Boolean = true
@@ -4047,12 +3699,12 @@ query HostileArgumentsRefetchQuery(
 ) {
   node(id: $id) {
     __typename
-    ...HostileArguments_character_ZMauI
+    ...HostileArguments_character_YwmvO
     id
   }
 }
 
-fragment HostileArguments_character_ZMauI on Character {
+fragment HostileArguments_character_YwmvO on Character {
   name @include(if: $Type)
   name @include(if: $Protocol)
   name @include(if: $Any)
@@ -4126,7 +3778,6 @@ fragment HostileArguments_character_ZMauI on Character {
   name @include(if: $await)
   name @include(if: $anchor)
   name @include(if: $recordID)
-  name @include(if: $typeName)
   name @include(if: $satisfied)
   name @include(if: $missingRequiredField)
   name @include(if: $fieldErrors)
@@ -4199,11 +3850,11 @@ fragment HostileArguments_character_ZMauI on Character {
 """#)
 
     public var variables: Baton.Variables {
-        Baton.Variables(["AbstractSlots": Baton.Variable(self.AbstractSlots), "Action": Baton.Variable(self.Action), "Any": Baton.Variable(self.`Any`), "Bool": Baton.Variable(self.Bool), "Double": Baton.Variable(self.Double), "Fragment": Baton.Variable(self.Fragment), "Hasher": Baton.Variable(self.Hasher), "Int": Baton.Variable(self.Int), "MainActor": Baton.Variable(self.MainActor), "Op": Baton.Variable(self.Op), "Operation": Baton.Variable(self.Operation), "OptimisticResponse": Baton.Variable(self.OptimisticResponse), "Optional": Baton.Variable(self.Optional), "Owner": Baton.Variable(self.Owner), "Protocol": Baton.Variable(self.`Protocol`), "Query": Baton.Variable(self.Query), "RefetchQuery": Baton.Variable(self.RefetchQuery), "Result": Baton.Variable(self.Result), "Self": Baton.Variable(self.`Self`), "Sendable": Baton.Variable(self.Sendable), "Set": Baton.Variable(self.Set), "Spread": Baton.Variable(self.Spread), "String": Baton.Variable(self.String), "Swift": Baton.Variable(self.Swift), "Type": Baton.Variable(self.`Type`), "_": Baton.Variable(self.`_`), "anchor": Baton.Variable(self.anchor), "any": Baton.Variable(self.`any`), "as": Baton.Variable(self.`as`), "associatedtype": Baton.Variable(self.`associatedtype`), "async": Baton.Variable(self.async), "await": Baton.Variable(self.`await`), "borrowing": Baton.Variable(self.`borrowing`), "bound": Baton.Variable(self.bound), "break": Baton.Variable(self.`break`), "bubbles": Baton.Variable(self.bubbles), "cacheExpiration": Baton.Variable(self.cacheExpiration), "callAsFunction": Baton.Variable(self.callAsFunction), "case": Baton.Variable(self.`case`), "catch": Baton.Variable(self.`catch`), "caught": Baton.Variable(self.caught), "child": Baton.Variable(self.child), "class": Baton.Variable(self.`class`), "commit": Baton.Variable(self.commit), "connection": Baton.Variable(self.connection), "connectionID": Baton.Variable(self.connectionID), "consume": Baton.Variable(self.consume), "consuming": Baton.Variable(self.`consuming`), "continue": Baton.Variable(self.`continue`), "copy": Baton.Variable(self.copy), "count": Baton.Variable(self.count), "default": Baton.Variable(self.`default`), "defer": Baton.Variable(self.`defer`), "deinit": Baton.Variable(self.`deinit`), "discard": Baton.Variable(self.discard), "do": Baton.Variable(self.`do`), "document": Baton.Variable(self.document), "each": Baton.Variable(self.`each`), "else": Baton.Variable(self.`else`), "enum": Baton.Variable(self.`enum`), "errorBehavior": Baton.Variable(self.errorBehavior), "errors": Baton.Variable(self.errors), "extension": Baton.Variable(self.`extension`), "fallthrough": Baton.Variable(self.`fallthrough`), "false": Baton.Variable(self.`false`), "fieldErrors": Baton.Variable(self.fieldErrors), "fields": Baton.Variable(self.fields), "fileprivate": Baton.Variable(self.`fileprivate`), "for": Baton.Variable(self.`for`), "format": Baton.Variable(self.format), "func": Baton.Variable(self.`func`), "guard": Baton.Variable(self.`guard`), "hasDeferred": Baton.Variable(self.hasDeferred), "hasNext": Baton.Variable(self.hasNext), "hasPrevious": Baton.Variable(self.hasPrevious), "hash": Baton.Variable(self.hash), "hasher": Baton.Variable(self.hasher), "if": Baton.Variable(self.`if`), "import": Baton.Variable(self.`import`), "in": Baton.Variable(self.`in`), "init": Baton.Variable(self.`init`), "inout": Baton.Variable(self.`inout`), "internal": Baton.Variable(self.`internal`), "is": Baton.Variable(self.`is`), "isLoadingNext": Baton.Variable(self.isLoadingNext), "isLoadingPrevious": Baton.Variable(self.isLoadingPrevious), "isPresent": Baton.Variable(self.isPresent), "isolated": Baton.Variable(self.`isolated`), "let": Baton.Variable(self.`let`), "lhs": Baton.Variable(self.lhs), "loadNext": Baton.Variable(self.loadNext), "loadPrevious": Baton.Variable(self.loadPrevious), "missing": Baton.Variable(self.missing), "missingRequiredField": Baton.Variable(self.missingRequiredField), "name": Baton.Variable(self.name), "nil": Baton.Variable(self.`nil`), "nodes": Baton.Variable(self.nodes), "open": Baton.Variable(self.`open`), "operator": Baton.Variable(self.`operator`), "optimistic": Baton.Variable(self.optimistic), "plan": Baton.Variable(self.plan), "precedencegroup": Baton.Variable(self.`precedencegroup`), "private": Baton.Variable(self.`private`), "protocol": Baton.Variable(self.`protocol`), "public": Baton.Variable(self.`public`), "recordID": Baton.Variable(self.recordID), "refetch": Baton.Variable(self.refetch), "refetchable": Baton.Variable(self.refetchable), "repeat": Baton.Variable(self.`repeat`), "rethrows": Baton.Variable(self.`rethrows`), "retry": Baton.Variable(self.retry), "return": Baton.Variable(self.`return`), "rhs": Baton.Variable(self.rhs), "satisfied": Baton.Variable(self.satisfied), "schemaDigest": Baton.Variable(self.schemaDigest), "self": Baton.Variable(self.`self`), "selfValue": Baton.Variable(self.selfValue), "sending": Baton.Variable(self.`sending`), "some": Baton.Variable(self.`some`), "static": Baton.Variable(self.`static`), "struct": Baton.Variable(self.`struct`), "subscript": Baton.Variable(self.`subscript`), "subscription": Baton.Variable(self.subscription), "super": Baton.Variable(self.`super`), "switch": Baton.Variable(self.`switch`), "text": Baton.Variable(self.text), "then": Baton.Variable(self.then), "throw": Baton.Variable(self.`throw`), "throwing": Baton.Variable(self.throwing), "throws": Baton.Variable(self.`throws`), "throwsOnFieldError": Baton.Variable(self.throwsOnFieldError), "transient": Baton.Variable(self.transient), "true": Baton.Variable(self.`true`), "try": Baton.Variable(self.`try`), "typeName": Baton.Variable(self.typeName), "typealias": Baton.Variable(self.`typealias`), "unsafe": Baton.Variable(self.unsafe), "var": Baton.Variable(self.`var`), "variable": Baton.Variable(self.variable), "where": Baton.Variable(self.`where`), "while": Baton.Variable(self.`while`), "id": Baton.Variable(self.id)])
+        Baton.Variables(["AbstractSlots": Baton.Variable(self.AbstractSlots), "Action": Baton.Variable(self.Action), "Any": Baton.Variable(self.`Any`), "Bool": Baton.Variable(self.Bool), "Double": Baton.Variable(self.Double), "Fragment": Baton.Variable(self.Fragment), "Hasher": Baton.Variable(self.Hasher), "Int": Baton.Variable(self.Int), "MainActor": Baton.Variable(self.MainActor), "Op": Baton.Variable(self.Op), "Operation": Baton.Variable(self.Operation), "OptimisticResponse": Baton.Variable(self.OptimisticResponse), "Optional": Baton.Variable(self.Optional), "Owner": Baton.Variable(self.Owner), "Protocol": Baton.Variable(self.`Protocol`), "Query": Baton.Variable(self.Query), "RefetchQuery": Baton.Variable(self.RefetchQuery), "Result": Baton.Variable(self.Result), "Self": Baton.Variable(self.`Self`), "Sendable": Baton.Variable(self.Sendable), "Set": Baton.Variable(self.Set), "Spread": Baton.Variable(self.Spread), "String": Baton.Variable(self.String), "Swift": Baton.Variable(self.Swift), "Type": Baton.Variable(self.`Type`), "_": Baton.Variable(self.`_`), "anchor": Baton.Variable(self.anchor), "any": Baton.Variable(self.`any`), "as": Baton.Variable(self.`as`), "associatedtype": Baton.Variable(self.`associatedtype`), "async": Baton.Variable(self.async), "await": Baton.Variable(self.`await`), "borrowing": Baton.Variable(self.`borrowing`), "bound": Baton.Variable(self.bound), "break": Baton.Variable(self.`break`), "bubbles": Baton.Variable(self.bubbles), "cacheExpiration": Baton.Variable(self.cacheExpiration), "callAsFunction": Baton.Variable(self.callAsFunction), "case": Baton.Variable(self.`case`), "catch": Baton.Variable(self.`catch`), "caught": Baton.Variable(self.caught), "child": Baton.Variable(self.child), "class": Baton.Variable(self.`class`), "commit": Baton.Variable(self.commit), "connection": Baton.Variable(self.connection), "connectionID": Baton.Variable(self.connectionID), "consume": Baton.Variable(self.consume), "consuming": Baton.Variable(self.`consuming`), "continue": Baton.Variable(self.`continue`), "copy": Baton.Variable(self.copy), "count": Baton.Variable(self.count), "default": Baton.Variable(self.`default`), "defer": Baton.Variable(self.`defer`), "deinit": Baton.Variable(self.`deinit`), "discard": Baton.Variable(self.discard), "do": Baton.Variable(self.`do`), "document": Baton.Variable(self.document), "each": Baton.Variable(self.`each`), "else": Baton.Variable(self.`else`), "enum": Baton.Variable(self.`enum`), "errorBehavior": Baton.Variable(self.errorBehavior), "errors": Baton.Variable(self.errors), "extension": Baton.Variable(self.`extension`), "fallthrough": Baton.Variable(self.`fallthrough`), "false": Baton.Variable(self.`false`), "fieldErrors": Baton.Variable(self.fieldErrors), "fields": Baton.Variable(self.fields), "fileprivate": Baton.Variable(self.`fileprivate`), "for": Baton.Variable(self.`for`), "format": Baton.Variable(self.format), "func": Baton.Variable(self.`func`), "guard": Baton.Variable(self.`guard`), "hasDeferred": Baton.Variable(self.hasDeferred), "hasNext": Baton.Variable(self.hasNext), "hasPrevious": Baton.Variable(self.hasPrevious), "hash": Baton.Variable(self.hash), "hasher": Baton.Variable(self.hasher), "if": Baton.Variable(self.`if`), "import": Baton.Variable(self.`import`), "in": Baton.Variable(self.`in`), "init": Baton.Variable(self.`init`), "inout": Baton.Variable(self.`inout`), "internal": Baton.Variable(self.`internal`), "is": Baton.Variable(self.`is`), "isLoadingNext": Baton.Variable(self.isLoadingNext), "isLoadingPrevious": Baton.Variable(self.isLoadingPrevious), "isPresent": Baton.Variable(self.isPresent), "isolated": Baton.Variable(self.`isolated`), "let": Baton.Variable(self.`let`), "lhs": Baton.Variable(self.lhs), "loadNext": Baton.Variable(self.loadNext), "loadPrevious": Baton.Variable(self.loadPrevious), "missing": Baton.Variable(self.missing), "missingRequiredField": Baton.Variable(self.missingRequiredField), "name": Baton.Variable(self.name), "nil": Baton.Variable(self.`nil`), "nodes": Baton.Variable(self.nodes), "open": Baton.Variable(self.`open`), "operator": Baton.Variable(self.`operator`), "optimistic": Baton.Variable(self.optimistic), "plan": Baton.Variable(self.plan), "precedencegroup": Baton.Variable(self.`precedencegroup`), "private": Baton.Variable(self.`private`), "protocol": Baton.Variable(self.`protocol`), "public": Baton.Variable(self.`public`), "recordID": Baton.Variable(self.recordID), "refetch": Baton.Variable(self.refetch), "refetchable": Baton.Variable(self.refetchable), "repeat": Baton.Variable(self.`repeat`), "rethrows": Baton.Variable(self.`rethrows`), "retry": Baton.Variable(self.retry), "return": Baton.Variable(self.`return`), "rhs": Baton.Variable(self.rhs), "satisfied": Baton.Variable(self.satisfied), "schemaDigest": Baton.Variable(self.schemaDigest), "self": Baton.Variable(self.`self`), "selfValue": Baton.Variable(self.selfValue), "sending": Baton.Variable(self.`sending`), "some": Baton.Variable(self.`some`), "static": Baton.Variable(self.`static`), "struct": Baton.Variable(self.`struct`), "subscript": Baton.Variable(self.`subscript`), "subscription": Baton.Variable(self.subscription), "super": Baton.Variable(self.`super`), "switch": Baton.Variable(self.`switch`), "text": Baton.Variable(self.text), "then": Baton.Variable(self.then), "throw": Baton.Variable(self.`throw`), "throwing": Baton.Variable(self.throwing), "throws": Baton.Variable(self.`throws`), "throwsOnFieldError": Baton.Variable(self.throwsOnFieldError), "transient": Baton.Variable(self.transient), "true": Baton.Variable(self.`true`), "try": Baton.Variable(self.`try`), "typealias": Baton.Variable(self.`typealias`), "unsafe": Baton.Variable(self.unsafe), "var": Baton.Variable(self.`var`), "variable": Baton.Variable(self.variable), "where": Baton.Variable(self.`where`), "while": Baton.Variable(self.`while`), "id": Baton.Variable(self.id)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.AbstractSlots == rhs.AbstractSlots && lhs.Action == rhs.Action && lhs.`Any` == rhs.`Any` && lhs.Bool == rhs.Bool && lhs.Double == rhs.Double && lhs.Fragment == rhs.Fragment && lhs.Hasher == rhs.Hasher && lhs.Int == rhs.Int && lhs.MainActor == rhs.MainActor && lhs.Op == rhs.Op && lhs.Operation == rhs.Operation && lhs.OptimisticResponse == rhs.OptimisticResponse && lhs.Optional == rhs.Optional && lhs.Owner == rhs.Owner && lhs.`Protocol` == rhs.`Protocol` && lhs.Query == rhs.Query && lhs.RefetchQuery == rhs.RefetchQuery && lhs.Result == rhs.Result && lhs.`Self` == rhs.`Self` && lhs.Sendable == rhs.Sendable && lhs.Set == rhs.Set && lhs.Spread == rhs.Spread && lhs.String == rhs.String && lhs.Swift == rhs.Swift && lhs.`Type` == rhs.`Type` && lhs.`_` == rhs.`_` && lhs.anchor == rhs.anchor && lhs.`any` == rhs.`any` && lhs.`as` == rhs.`as` && lhs.`associatedtype` == rhs.`associatedtype` && lhs.async == rhs.async && lhs.`await` == rhs.`await` && lhs.`borrowing` == rhs.`borrowing` && lhs.bound == rhs.bound && lhs.`break` == rhs.`break` && lhs.bubbles == rhs.bubbles && lhs.cacheExpiration == rhs.cacheExpiration && lhs.callAsFunction == rhs.callAsFunction && lhs.`case` == rhs.`case` && lhs.`catch` == rhs.`catch` && lhs.caught == rhs.caught && lhs.child == rhs.child && lhs.`class` == rhs.`class` && lhs.commit == rhs.commit && lhs.connection == rhs.connection && lhs.connectionID == rhs.connectionID && lhs.consume == rhs.consume && lhs.`consuming` == rhs.`consuming` && lhs.`continue` == rhs.`continue` && lhs.copy == rhs.copy && lhs.count == rhs.count && lhs.`default` == rhs.`default` && lhs.`defer` == rhs.`defer` && lhs.`deinit` == rhs.`deinit` && lhs.discard == rhs.discard && lhs.`do` == rhs.`do` && lhs.document == rhs.document && lhs.`each` == rhs.`each` && lhs.`else` == rhs.`else` && lhs.`enum` == rhs.`enum` && lhs.errorBehavior == rhs.errorBehavior && lhs.errors == rhs.errors && lhs.`extension` == rhs.`extension` && lhs.`fallthrough` == rhs.`fallthrough` && lhs.`false` == rhs.`false` && lhs.fieldErrors == rhs.fieldErrors && lhs.fields == rhs.fields && lhs.`fileprivate` == rhs.`fileprivate` && lhs.`for` == rhs.`for` && lhs.format == rhs.format && lhs.`func` == rhs.`func` && lhs.`guard` == rhs.`guard` && lhs.hasDeferred == rhs.hasDeferred && lhs.hasNext == rhs.hasNext && lhs.hasPrevious == rhs.hasPrevious && lhs.hash == rhs.hash && lhs.hasher == rhs.hasher && lhs.`if` == rhs.`if` && lhs.`import` == rhs.`import` && lhs.`in` == rhs.`in` && lhs.`init` == rhs.`init` && lhs.`inout` == rhs.`inout` && lhs.`internal` == rhs.`internal` && lhs.`is` == rhs.`is` && lhs.isLoadingNext == rhs.isLoadingNext && lhs.isLoadingPrevious == rhs.isLoadingPrevious && lhs.isPresent == rhs.isPresent && lhs.`isolated` == rhs.`isolated` && lhs.`let` == rhs.`let` && lhs.lhs == rhs.lhs && lhs.loadNext == rhs.loadNext && lhs.loadPrevious == rhs.loadPrevious && lhs.missing == rhs.missing && lhs.missingRequiredField == rhs.missingRequiredField && lhs.name == rhs.name && lhs.`nil` == rhs.`nil` && lhs.nodes == rhs.nodes && lhs.`open` == rhs.`open` && lhs.`operator` == rhs.`operator` && lhs.optimistic == rhs.optimistic && lhs.plan == rhs.plan && lhs.`precedencegroup` == rhs.`precedencegroup` && lhs.`private` == rhs.`private` && lhs.`protocol` == rhs.`protocol` && lhs.`public` == rhs.`public` && lhs.recordID == rhs.recordID && lhs.refetch == rhs.refetch && lhs.refetchable == rhs.refetchable && lhs.`repeat` == rhs.`repeat` && lhs.`rethrows` == rhs.`rethrows` && lhs.retry == rhs.retry && lhs.`return` == rhs.`return` && lhs.rhs == rhs.rhs && lhs.satisfied == rhs.satisfied && lhs.schemaDigest == rhs.schemaDigest && lhs.`self` == rhs.`self` && lhs.selfValue == rhs.selfValue && lhs.`sending` == rhs.`sending` && lhs.`some` == rhs.`some` && lhs.`static` == rhs.`static` && lhs.`struct` == rhs.`struct` && lhs.`subscript` == rhs.`subscript` && lhs.subscription == rhs.subscription && lhs.`super` == rhs.`super` && lhs.`switch` == rhs.`switch` && lhs.text == rhs.text && lhs.then == rhs.then && lhs.`throw` == rhs.`throw` && lhs.throwing == rhs.throwing && lhs.`throws` == rhs.`throws` && lhs.throwsOnFieldError == rhs.throwsOnFieldError && lhs.transient == rhs.transient && lhs.`true` == rhs.`true` && lhs.`try` == rhs.`try` && lhs.typeName == rhs.typeName && lhs.`typealias` == rhs.`typealias` && lhs.unsafe == rhs.unsafe && lhs.`var` == rhs.`var` && lhs.variable == rhs.variable && lhs.`where` == rhs.`where` && lhs.`while` == rhs.`while` && lhs.id == rhs.id
+        lhs.AbstractSlots == rhs.AbstractSlots && lhs.Action == rhs.Action && lhs.`Any` == rhs.`Any` && lhs.Bool == rhs.Bool && lhs.Double == rhs.Double && lhs.Fragment == rhs.Fragment && lhs.Hasher == rhs.Hasher && lhs.Int == rhs.Int && lhs.MainActor == rhs.MainActor && lhs.Op == rhs.Op && lhs.Operation == rhs.Operation && lhs.OptimisticResponse == rhs.OptimisticResponse && lhs.Optional == rhs.Optional && lhs.Owner == rhs.Owner && lhs.`Protocol` == rhs.`Protocol` && lhs.Query == rhs.Query && lhs.RefetchQuery == rhs.RefetchQuery && lhs.Result == rhs.Result && lhs.`Self` == rhs.`Self` && lhs.Sendable == rhs.Sendable && lhs.Set == rhs.Set && lhs.Spread == rhs.Spread && lhs.String == rhs.String && lhs.Swift == rhs.Swift && lhs.`Type` == rhs.`Type` && lhs.`_` == rhs.`_` && lhs.anchor == rhs.anchor && lhs.`any` == rhs.`any` && lhs.`as` == rhs.`as` && lhs.`associatedtype` == rhs.`associatedtype` && lhs.async == rhs.async && lhs.`await` == rhs.`await` && lhs.`borrowing` == rhs.`borrowing` && lhs.bound == rhs.bound && lhs.`break` == rhs.`break` && lhs.bubbles == rhs.bubbles && lhs.cacheExpiration == rhs.cacheExpiration && lhs.callAsFunction == rhs.callAsFunction && lhs.`case` == rhs.`case` && lhs.`catch` == rhs.`catch` && lhs.caught == rhs.caught && lhs.child == rhs.child && lhs.`class` == rhs.`class` && lhs.commit == rhs.commit && lhs.connection == rhs.connection && lhs.connectionID == rhs.connectionID && lhs.consume == rhs.consume && lhs.`consuming` == rhs.`consuming` && lhs.`continue` == rhs.`continue` && lhs.copy == rhs.copy && lhs.count == rhs.count && lhs.`default` == rhs.`default` && lhs.`defer` == rhs.`defer` && lhs.`deinit` == rhs.`deinit` && lhs.discard == rhs.discard && lhs.`do` == rhs.`do` && lhs.document == rhs.document && lhs.`each` == rhs.`each` && lhs.`else` == rhs.`else` && lhs.`enum` == rhs.`enum` && lhs.errorBehavior == rhs.errorBehavior && lhs.errors == rhs.errors && lhs.`extension` == rhs.`extension` && lhs.`fallthrough` == rhs.`fallthrough` && lhs.`false` == rhs.`false` && lhs.fieldErrors == rhs.fieldErrors && lhs.fields == rhs.fields && lhs.`fileprivate` == rhs.`fileprivate` && lhs.`for` == rhs.`for` && lhs.format == rhs.format && lhs.`func` == rhs.`func` && lhs.`guard` == rhs.`guard` && lhs.hasDeferred == rhs.hasDeferred && lhs.hasNext == rhs.hasNext && lhs.hasPrevious == rhs.hasPrevious && lhs.hash == rhs.hash && lhs.hasher == rhs.hasher && lhs.`if` == rhs.`if` && lhs.`import` == rhs.`import` && lhs.`in` == rhs.`in` && lhs.`init` == rhs.`init` && lhs.`inout` == rhs.`inout` && lhs.`internal` == rhs.`internal` && lhs.`is` == rhs.`is` && lhs.isLoadingNext == rhs.isLoadingNext && lhs.isLoadingPrevious == rhs.isLoadingPrevious && lhs.isPresent == rhs.isPresent && lhs.`isolated` == rhs.`isolated` && lhs.`let` == rhs.`let` && lhs.lhs == rhs.lhs && lhs.loadNext == rhs.loadNext && lhs.loadPrevious == rhs.loadPrevious && lhs.missing == rhs.missing && lhs.missingRequiredField == rhs.missingRequiredField && lhs.name == rhs.name && lhs.`nil` == rhs.`nil` && lhs.nodes == rhs.nodes && lhs.`open` == rhs.`open` && lhs.`operator` == rhs.`operator` && lhs.optimistic == rhs.optimistic && lhs.plan == rhs.plan && lhs.`precedencegroup` == rhs.`precedencegroup` && lhs.`private` == rhs.`private` && lhs.`protocol` == rhs.`protocol` && lhs.`public` == rhs.`public` && lhs.recordID == rhs.recordID && lhs.refetch == rhs.refetch && lhs.refetchable == rhs.refetchable && lhs.`repeat` == rhs.`repeat` && lhs.`rethrows` == rhs.`rethrows` && lhs.retry == rhs.retry && lhs.`return` == rhs.`return` && lhs.rhs == rhs.rhs && lhs.satisfied == rhs.satisfied && lhs.schemaDigest == rhs.schemaDigest && lhs.`self` == rhs.`self` && lhs.selfValue == rhs.selfValue && lhs.`sending` == rhs.`sending` && lhs.`some` == rhs.`some` && lhs.`static` == rhs.`static` && lhs.`struct` == rhs.`struct` && lhs.`subscript` == rhs.`subscript` && lhs.subscription == rhs.subscription && lhs.`super` == rhs.`super` && lhs.`switch` == rhs.`switch` && lhs.text == rhs.text && lhs.then == rhs.then && lhs.`throw` == rhs.`throw` && lhs.throwing == rhs.throwing && lhs.`throws` == rhs.`throws` && lhs.throwsOnFieldError == rhs.throwsOnFieldError && lhs.transient == rhs.transient && lhs.`true` == rhs.`true` && lhs.`try` == rhs.`try` && lhs.`typealias` == rhs.`typealias` && lhs.unsafe == rhs.unsafe && lhs.`var` == rhs.`var` && lhs.variable == rhs.variable && lhs.`where` == rhs.`where` && lhs.`while` == rhs.`while` && lhs.id == rhs.id
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -4341,7 +3992,6 @@ fragment HostileArguments_character_ZMauI on Character {
         hasher.combine(self.transient)
         hasher.combine(self.`true`)
         hasher.combine(self.`try`)
-        hasher.combine(self.typeName)
         hasher.combine(self.`typealias`)
         hasher.combine(self.unsafe)
         hasher.combine(self.`var`)
@@ -4356,7 +4006,7 @@ fragment HostileArguments_character_ZMauI on Character {
                 .init(types: [Types.Character], key: ["id"], fields: [
                     .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
                     .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false, guards: [[Guards.Type_true], [Guards.Protocol_true], [Guards.Any_true], [Guards.self_true], [Guards.Self_true], [Guards.init_true], [Guards.deinit_true], [Guards.subscript_true], [Guards.class_true], [Guards.struct_true], [Guards.enum_true], [Guards.func_true], [Guards.var_true], [Guards.let_true], [Guards.import_true], [Guards.extension_true], [Guards.operator_true], [Guards.static_true], [Guards.default_true], [Guards.case_true], [Guards.switch_true], [Guards.if_true], [Guards.else_true], [Guards.for_true], [Guards.in_true], [Guards.while_true], [Guards.repeat_true], [Guards.return_true], [Guards.break_true], [Guards.continue_true], [Guards.where_true], [Guards.is_true], [Guards.as_true], [Guards.try_true], [Guards.throw_true], [Guards.throws_true], [Guards.guard_true], [Guards.defer_true], [Guards.do_true], [Guards.catch_true], [Guards.true_true], [Guards.false_true], [Guards.nil_true], [Guards.super_true], [Guards.internal_true], [Guards.private_true], [Guards.public_true], [Guards.fileprivate_true], [Guards.open_true], [Guards.inout_true], [Guards.typealias_true], [Guards.associatedtype_true], [Guards.protocol_true], [Guards.some_true], [Guards.any_true], [Guards.rethrows_true], [Guards.fallthrough_true], [Guards.precedencegroup_true], [Guards.__true], [Guards.async_true], [Guards.borrowing_true], [Guards.consume_true], [Guards.consuming_true], [Guards.copy_true], [Guards.discard_true], [Guards.each_true], [Guards.isolated_true], [Guards.sending_true], [Guards.then_true], [Guards.unsafe_true], [Guards.await_true], [Guards.anchor_true], [Guards.recordID_true], [Guards.typeName_true], [Guards.satisfied_true], [Guards.missingRequiredField_true], [Guards.fieldErrors_true], [Guards.isPresent_true], [Guards.throwing_true], [Guards.caught_true], [Guards.refetchable_true], [Guards.refetch_true], [Guards.connection_true], [Guards.nodes_true], [Guards.hasNext_true], [Guards.hasPrevious_true], [Guards.isLoadingNext_true], [Guards.isLoadingPrevious_true], [Guards.connectionID_true], [Guards.loadNext_true], [Guards.loadPrevious_true], [Guards.bound_true], [Guards.errors_true], [Guards.child_true], [Guards.missing_true], [Guards.count_true], [Guards.fields_true], [Guards.lhs_true], [Guards.rhs_true], [Guards.hasher_true], [Guards.optimistic_true], [Guards.selfValue_true], [Guards.Fragment_true], [Guards.Spread_true], [Guards.Owner_true], [Guards.Query_true], [Guards.Operation_true], [Guards.RefetchQuery_true], [Guards.name_true], [Guards.document_true], [Guards.text_true], [Guards.plan_true], [Guards.errorBehavior_true], [Guards.throwsOnFieldError_true], [Guards.bubbles_true], [Guards.hasDeferred_true], [Guards.cacheExpiration_true], [Guards.Action_true], [Guards.OptimisticResponse_true], [Guards.hash_true], [Guards.commit_true], [Guards.callAsFunction_true], [Guards.Op_true], [Guards.variable_true], [Guards.retry_true], [Guards.subscription_true], [Guards.AbstractSlots_true], [Guards.schemaDigest_true], [Guards.format_true], [Guards.transient_true], [Guards.Swift_true], [Guards.Set_true], [Guards.Result_true], [Guards.Optional_true], [Guards.String_true], [Guards.Int_true], [Guards.Double_true], [Guards.Bool_true], [Guards.MainActor_true], [Guards.Hasher_true], [Guards.Sendable_true]]),
+                    .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false, guards: [[Guards.Type_true], [Guards.Protocol_true], [Guards.Any_true], [Guards.self_true], [Guards.Self_true], [Guards.init_true], [Guards.deinit_true], [Guards.subscript_true], [Guards.class_true], [Guards.struct_true], [Guards.enum_true], [Guards.func_true], [Guards.var_true], [Guards.let_true], [Guards.import_true], [Guards.extension_true], [Guards.operator_true], [Guards.static_true], [Guards.default_true], [Guards.case_true], [Guards.switch_true], [Guards.if_true], [Guards.else_true], [Guards.for_true], [Guards.in_true], [Guards.while_true], [Guards.repeat_true], [Guards.return_true], [Guards.break_true], [Guards.continue_true], [Guards.where_true], [Guards.is_true], [Guards.as_true], [Guards.try_true], [Guards.throw_true], [Guards.throws_true], [Guards.guard_true], [Guards.defer_true], [Guards.do_true], [Guards.catch_true], [Guards.true_true], [Guards.false_true], [Guards.nil_true], [Guards.super_true], [Guards.internal_true], [Guards.private_true], [Guards.public_true], [Guards.fileprivate_true], [Guards.open_true], [Guards.inout_true], [Guards.typealias_true], [Guards.associatedtype_true], [Guards.protocol_true], [Guards.some_true], [Guards.any_true], [Guards.rethrows_true], [Guards.fallthrough_true], [Guards.precedencegroup_true], [Guards.__true], [Guards.async_true], [Guards.borrowing_true], [Guards.consume_true], [Guards.consuming_true], [Guards.copy_true], [Guards.discard_true], [Guards.each_true], [Guards.isolated_true], [Guards.sending_true], [Guards.then_true], [Guards.unsafe_true], [Guards.await_true], [Guards.anchor_true], [Guards.recordID_true], [Guards.satisfied_true], [Guards.missingRequiredField_true], [Guards.fieldErrors_true], [Guards.isPresent_true], [Guards.throwing_true], [Guards.caught_true], [Guards.refetchable_true], [Guards.refetch_true], [Guards.connection_true], [Guards.nodes_true], [Guards.hasNext_true], [Guards.hasPrevious_true], [Guards.isLoadingNext_true], [Guards.isLoadingPrevious_true], [Guards.connectionID_true], [Guards.loadNext_true], [Guards.loadPrevious_true], [Guards.bound_true], [Guards.errors_true], [Guards.child_true], [Guards.missing_true], [Guards.count_true], [Guards.fields_true], [Guards.lhs_true], [Guards.rhs_true], [Guards.hasher_true], [Guards.optimistic_true], [Guards.selfValue_true], [Guards.Fragment_true], [Guards.Spread_true], [Guards.Owner_true], [Guards.Query_true], [Guards.Operation_true], [Guards.RefetchQuery_true], [Guards.name_true], [Guards.document_true], [Guards.text_true], [Guards.plan_true], [Guards.errorBehavior_true], [Guards.throwsOnFieldError_true], [Guards.bubbles_true], [Guards.hasDeferred_true], [Guards.cacheExpiration_true], [Guards.Action_true], [Guards.OptimisticResponse_true], [Guards.hash_true], [Guards.commit_true], [Guards.callAsFunction_true], [Guards.Op_true], [Guards.variable_true], [Guards.retry_true], [Guards.subscription_true], [Guards.AbstractSlots_true], [Guards.schemaDigest_true], [Guards.format_true], [Guards.transient_true], [Guards.Swift_true], [Guards.Set_true], [Guards.Result_true], [Guards.Optional_true], [Guards.String_true], [Guards.Int_true], [Guards.Double_true], [Guards.Bool_true], [Guards.MainActor_true], [Guards.Hasher_true], [Guards.Sendable_true]]),
                 ]),
                 .init(types: nil, fields: [
                     .scalar("__typename", key: .fixed(Slots.Node.__typename), kind: .string, list: false),
@@ -4368,15 +4018,13 @@ fragment HostileArguments_character_ZMauI on Character {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var node: Node? { anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08)).map(Node.init(anchor:)) }
 
         nonisolated public struct Node: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Node"
             @MainActor public var hostileArguments: HostileArguments_character? {
-                let bound = anchor.binding(Sites.HostileArgumentsRefetchQuery_hostileArguments) { () -> [String: Baton.Variable?] in ["Type": anchor.variables["Type"], "Protocol": anchor.variables["Protocol"], "Any": anchor.variables["Any"], "self": anchor.variables["self"], "Self": anchor.variables["Self"], "init": anchor.variables["init"], "deinit": anchor.variables["deinit"], "subscript": anchor.variables["subscript"], "class": anchor.variables["class"], "struct": anchor.variables["struct"], "enum": anchor.variables["enum"], "func": anchor.variables["func"], "var": anchor.variables["var"], "let": anchor.variables["let"], "import": anchor.variables["import"], "extension": anchor.variables["extension"], "operator": anchor.variables["operator"], "static": anchor.variables["static"], "default": anchor.variables["default"], "case": anchor.variables["case"], "switch": anchor.variables["switch"], "if": anchor.variables["if"], "else": anchor.variables["else"], "for": anchor.variables["for"], "in": anchor.variables["in"], "while": anchor.variables["while"], "repeat": anchor.variables["repeat"], "return": anchor.variables["return"], "break": anchor.variables["break"], "continue": anchor.variables["continue"], "where": anchor.variables["where"], "is": anchor.variables["is"], "as": anchor.variables["as"], "try": anchor.variables["try"], "throw": anchor.variables["throw"], "throws": anchor.variables["throws"], "guard": anchor.variables["guard"], "defer": anchor.variables["defer"], "do": anchor.variables["do"], "catch": anchor.variables["catch"], "true": anchor.variables["true"], "false": anchor.variables["false"], "nil": anchor.variables["nil"], "super": anchor.variables["super"], "internal": anchor.variables["internal"], "private": anchor.variables["private"], "public": anchor.variables["public"], "fileprivate": anchor.variables["fileprivate"], "open": anchor.variables["open"], "inout": anchor.variables["inout"], "typealias": anchor.variables["typealias"], "associatedtype": anchor.variables["associatedtype"], "protocol": anchor.variables["protocol"], "some": anchor.variables["some"], "any": anchor.variables["any"], "rethrows": anchor.variables["rethrows"], "fallthrough": anchor.variables["fallthrough"], "precedencegroup": anchor.variables["precedencegroup"], "_": anchor.variables["_"], "async": anchor.variables["async"], "borrowing": anchor.variables["borrowing"], "consume": anchor.variables["consume"], "consuming": anchor.variables["consuming"], "copy": anchor.variables["copy"], "discard": anchor.variables["discard"], "each": anchor.variables["each"], "isolated": anchor.variables["isolated"], "sending": anchor.variables["sending"], "then": anchor.variables["then"], "unsafe": anchor.variables["unsafe"], "await": anchor.variables["await"], "anchor": anchor.variables["anchor"], "recordID": anchor.variables["recordID"], "typeName": anchor.variables["typeName"], "satisfied": anchor.variables["satisfied"], "missingRequiredField": anchor.variables["missingRequiredField"], "fieldErrors": anchor.variables["fieldErrors"], "isPresent": anchor.variables["isPresent"], "throwing": anchor.variables["throwing"], "caught": anchor.variables["caught"], "refetchable": anchor.variables["refetchable"], "refetch": anchor.variables["refetch"], "connection": anchor.variables["connection"], "nodes": anchor.variables["nodes"], "hasNext": anchor.variables["hasNext"], "hasPrevious": anchor.variables["hasPrevious"], "isLoadingNext": anchor.variables["isLoadingNext"], "isLoadingPrevious": anchor.variables["isLoadingPrevious"], "connectionID": anchor.variables["connectionID"], "loadNext": anchor.variables["loadNext"], "loadPrevious": anchor.variables["loadPrevious"], "bound": anchor.variables["bound"], "errors": anchor.variables["errors"], "child": anchor.variables["child"], "missing": anchor.variables["missing"], "count": anchor.variables["count"], "fields": anchor.variables["fields"], "lhs": anchor.variables["lhs"], "rhs": anchor.variables["rhs"], "hasher": anchor.variables["hasher"], "optimistic": anchor.variables["optimistic"], "selfValue": anchor.variables["selfValue"], "Fragment": anchor.variables["Fragment"], "Spread": anchor.variables["Spread"], "Owner": anchor.variables["Owner"], "Query": anchor.variables["Query"], "Operation": anchor.variables["Operation"], "RefetchQuery": anchor.variables["RefetchQuery"], "name": anchor.variables["name"], "document": anchor.variables["document"], "text": anchor.variables["text"], "plan": anchor.variables["plan"], "errorBehavior": anchor.variables["errorBehavior"], "throwsOnFieldError": anchor.variables["throwsOnFieldError"], "bubbles": anchor.variables["bubbles"], "hasDeferred": anchor.variables["hasDeferred"], "cacheExpiration": anchor.variables["cacheExpiration"], "Action": anchor.variables["Action"], "OptimisticResponse": anchor.variables["OptimisticResponse"], "hash": anchor.variables["hash"], "commit": anchor.variables["commit"], "callAsFunction": anchor.variables["callAsFunction"], "Op": anchor.variables["Op"], "variable": anchor.variables["variable"], "retry": anchor.variables["retry"], "subscription": anchor.variables["subscription"], "AbstractSlots": anchor.variables["AbstractSlots"], "schemaDigest": anchor.variables["schemaDigest"], "format": anchor.variables["format"], "transient": anchor.variables["transient"], "Swift": anchor.variables["Swift"], "Set": anchor.variables["Set"], "Result": anchor.variables["Result"], "Optional": anchor.variables["Optional"], "String": anchor.variables["String"], "Int": anchor.variables["Int"], "Double": anchor.variables["Double"], "Bool": anchor.variables["Bool"], "MainActor": anchor.variables["MainActor"], "Hasher": anchor.variables["Hasher"], "Sendable": anchor.variables["Sendable"]] }
+                let bound = anchor.binding(Sites.HostileArgumentsRefetchQuery_hostileArguments) { () -> [String: Baton.Variable?] in ["Type": anchor.variables["Type"], "Protocol": anchor.variables["Protocol"], "Any": anchor.variables["Any"], "self": anchor.variables["self"], "Self": anchor.variables["Self"], "init": anchor.variables["init"], "deinit": anchor.variables["deinit"], "subscript": anchor.variables["subscript"], "class": anchor.variables["class"], "struct": anchor.variables["struct"], "enum": anchor.variables["enum"], "func": anchor.variables["func"], "var": anchor.variables["var"], "let": anchor.variables["let"], "import": anchor.variables["import"], "extension": anchor.variables["extension"], "operator": anchor.variables["operator"], "static": anchor.variables["static"], "default": anchor.variables["default"], "case": anchor.variables["case"], "switch": anchor.variables["switch"], "if": anchor.variables["if"], "else": anchor.variables["else"], "for": anchor.variables["for"], "in": anchor.variables["in"], "while": anchor.variables["while"], "repeat": anchor.variables["repeat"], "return": anchor.variables["return"], "break": anchor.variables["break"], "continue": anchor.variables["continue"], "where": anchor.variables["where"], "is": anchor.variables["is"], "as": anchor.variables["as"], "try": anchor.variables["try"], "throw": anchor.variables["throw"], "throws": anchor.variables["throws"], "guard": anchor.variables["guard"], "defer": anchor.variables["defer"], "do": anchor.variables["do"], "catch": anchor.variables["catch"], "true": anchor.variables["true"], "false": anchor.variables["false"], "nil": anchor.variables["nil"], "super": anchor.variables["super"], "internal": anchor.variables["internal"], "private": anchor.variables["private"], "public": anchor.variables["public"], "fileprivate": anchor.variables["fileprivate"], "open": anchor.variables["open"], "inout": anchor.variables["inout"], "typealias": anchor.variables["typealias"], "associatedtype": anchor.variables["associatedtype"], "protocol": anchor.variables["protocol"], "some": anchor.variables["some"], "any": anchor.variables["any"], "rethrows": anchor.variables["rethrows"], "fallthrough": anchor.variables["fallthrough"], "precedencegroup": anchor.variables["precedencegroup"], "_": anchor.variables["_"], "async": anchor.variables["async"], "borrowing": anchor.variables["borrowing"], "consume": anchor.variables["consume"], "consuming": anchor.variables["consuming"], "copy": anchor.variables["copy"], "discard": anchor.variables["discard"], "each": anchor.variables["each"], "isolated": anchor.variables["isolated"], "sending": anchor.variables["sending"], "then": anchor.variables["then"], "unsafe": anchor.variables["unsafe"], "await": anchor.variables["await"], "anchor": anchor.variables["anchor"], "recordID": anchor.variables["recordID"], "satisfied": anchor.variables["satisfied"], "missingRequiredField": anchor.variables["missingRequiredField"], "fieldErrors": anchor.variables["fieldErrors"], "isPresent": anchor.variables["isPresent"], "throwing": anchor.variables["throwing"], "caught": anchor.variables["caught"], "refetchable": anchor.variables["refetchable"], "refetch": anchor.variables["refetch"], "connection": anchor.variables["connection"], "nodes": anchor.variables["nodes"], "hasNext": anchor.variables["hasNext"], "hasPrevious": anchor.variables["hasPrevious"], "isLoadingNext": anchor.variables["isLoadingNext"], "isLoadingPrevious": anchor.variables["isLoadingPrevious"], "connectionID": anchor.variables["connectionID"], "loadNext": anchor.variables["loadNext"], "loadPrevious": anchor.variables["loadPrevious"], "bound": anchor.variables["bound"], "errors": anchor.variables["errors"], "child": anchor.variables["child"], "missing": anchor.variables["missing"], "count": anchor.variables["count"], "fields": anchor.variables["fields"], "lhs": anchor.variables["lhs"], "rhs": anchor.variables["rhs"], "hasher": anchor.variables["hasher"], "optimistic": anchor.variables["optimistic"], "selfValue": anchor.variables["selfValue"], "Fragment": anchor.variables["Fragment"], "Spread": anchor.variables["Spread"], "Owner": anchor.variables["Owner"], "Query": anchor.variables["Query"], "Operation": anchor.variables["Operation"], "RefetchQuery": anchor.variables["RefetchQuery"], "name": anchor.variables["name"], "document": anchor.variables["document"], "text": anchor.variables["text"], "plan": anchor.variables["plan"], "errorBehavior": anchor.variables["errorBehavior"], "throwsOnFieldError": anchor.variables["throwsOnFieldError"], "bubbles": anchor.variables["bubbles"], "hasDeferred": anchor.variables["hasDeferred"], "cacheExpiration": anchor.variables["cacheExpiration"], "Action": anchor.variables["Action"], "OptimisticResponse": anchor.variables["OptimisticResponse"], "hash": anchor.variables["hash"], "commit": anchor.variables["commit"], "callAsFunction": anchor.variables["callAsFunction"], "Op": anchor.variables["Op"], "variable": anchor.variables["variable"], "retry": anchor.variables["retry"], "subscription": anchor.variables["subscription"], "AbstractSlots": anchor.variables["AbstractSlots"], "schemaDigest": anchor.variables["schemaDigest"], "format": anchor.variables["format"], "transient": anchor.variables["transient"], "Swift": anchor.variables["Swift"], "Set": anchor.variables["Set"], "Result": anchor.variables["Result"], "Optional": anchor.variables["Optional"], "String": anchor.variables["String"], "Int": anchor.variables["Int"], "Double": anchor.variables["Double"], "Bool": anchor.variables["Bool"], "MainActor": anchor.variables["MainActor"], "Hasher": anchor.variables["Hasher"], "Sendable": anchor.variables["Sendable"]] }
                 guard anchor.record.is(Types.Character) else { return nil }
                 return .init(anchor: bound.entering())
             }
@@ -4476,7 +4124,6 @@ fragment HostileBodies_character on Character {
   sending: name
   then: name
   unsafe: name
-  typeName: name
   satisfied: name
   missingRequiredField: name
   fieldErrors: name
@@ -4667,7 +4314,6 @@ fragment HostileDeferred_character on Character {
                     .scalar("sending", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("then", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("unsafe", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("typeName", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("satisfied", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("missingRequiredField", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("fieldErrors", key: .fixed(Slots.Character.name), kind: .string, list: false),
@@ -4761,13 +4407,11 @@ fragment HostileDeferred_character on Character {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var node: Node? { anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08)).map(Node.init(anchor:)) }
 
         nonisolated public struct Node: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Node"
             @MainActor public var hostileBodies: HostileBodies_character? {
                 get throws {
                     typealias Fragment = HostileBodies_character
@@ -4878,7 +4522,6 @@ fragment HostileConnection_character_1G22uz on Character {
     sending: totalCount
     then: totalCount
     unsafe: totalCount
-    typeName: totalCount
     satisfied: totalCount
     missingRequiredField: totalCount
     fieldErrors: totalCount
@@ -5056,7 +4699,6 @@ fragment HostileConnection_character_1G22uz on Character {
                         .scalar("sending", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
                         .scalar("then", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
                         .scalar("unsafe", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("typeName", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
                         .scalar("satisfied", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
                         .scalar("missingRequiredField", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
                         .scalar("fieldErrors", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
@@ -5151,13 +4793,11 @@ fragment HostileConnection_character_1G22uz on Character {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var node: Node? { anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08)).map(Node.init(anchor:)) }
 
         nonisolated public struct Node: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Node"
             @MainActor public var hostileConnection: HostileConnection_character? {
                 let bound = anchor.binding(Sites.HostileConnectionRefetchQuery_hostileConnection) { () -> [String: Baton.Variable?] in ["count": anchor.variables["count"], "cursor": anchor.variables["cursor"]] }
                 guard anchor.record.is(Types.Character) else { return nil }
@@ -5209,13 +4849,11 @@ fragment _hostileHidden on Character {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var character: Character? { anchor.linked(Slots.Query.character_c74a1e).map(Character.init(anchor:)) }
 
         nonisolated public struct Character: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Character"
             @MainActor public var _hostileHidden: _hostileHidden { .init(anchor: anchor.entering()) }
         }
     }
@@ -5296,7 +4934,6 @@ nonisolated public struct HostileMutationVariables: Baton.Mutation {
     public var `await`: Bool
     public var anchor: Bool
     public var recordID: Bool
-    public var typeName: Bool
     public var satisfied: Bool
     public var missingRequiredField: Bool
     public var fieldErrors: Bool
@@ -5367,7 +5004,7 @@ nonisolated public struct HostileMutationVariables: Baton.Mutation {
     public var Hasher: Bool
     public var Sendable: Bool
 
-    public init(`Type`: Bool, `Protocol`: Bool, `Any`: Bool, `self` selfValue2: Bool, `init`: Bool, `deinit`: Bool, `subscript`: Bool, `class`: Bool, `struct`: Bool, `enum`: Bool, `func`: Bool, `import`: Bool, `extension`: Bool, `operator`: Bool, `static`: Bool, `default`: Bool, `case`: Bool, `switch`: Bool, `if`: Bool, `else`: Bool, `for`: Bool, `in`: Bool, `while`: Bool, `repeat`: Bool, `return`: Bool, `break`: Bool, `continue`: Bool, `where`: Bool, `is`: Bool, `as`: Bool, `try`: Bool, `throw`: Bool, `throws`: Bool, `guard`: Bool, `defer`: Bool, `do`: Bool, `catch`: Bool, `true`: Bool, `false`: Bool, `nil`: Bool, `super`: Bool, `internal`: Bool, `private`: Bool, `public`: Bool, `fileprivate`: Bool, `open`: Bool, `inout`: Bool, `typealias`: Bool, `associatedtype`: Bool, `protocol`: Bool, `some`: Bool, `any`: Bool, `rethrows`: Bool, `fallthrough`: Bool, `precedencegroup`: Bool, `_`: Bool, `var`: Bool, `let`: Bool, `Self`: Bool, async: Bool, `borrowing`: Bool, consume: Bool, `consuming`: Bool, copy: Bool, discard: Bool, `each`: Bool, `isolated`: Bool, `sending`: Bool, then: Bool, unsafe: Bool, `await`: Bool, anchor: Bool, recordID: Bool, typeName: Bool, satisfied: Bool, missingRequiredField: Bool, fieldErrors: Bool, isPresent: Bool, throwing: Bool, caught: Bool, refetchable: Bool, refetch: Bool, connection: Bool, nodes: Bool, hasNext: Bool, hasPrevious: Bool, isLoadingNext: Bool, isLoadingPrevious: Bool, connectionID: Bool, loadNext: Bool, loadPrevious: Bool, bound: Bool, errors: Bool, child: Bool, missing: Bool, count: Bool, fields: Bool, lhs: Bool, rhs: Bool, hasher: Bool, selfValue: Bool, Fragment: Bool, Spread: Bool, Owner: Bool, Query: Bool, Operation: Bool, RefetchQuery: Bool, resolution: Bool, name: Bool, document: Bool, text: Bool, plan: Bool, errorBehavior: Bool, throwsOnFieldError: Bool, bubbles: Bool, hasDeferred: Bool, cacheExpiration: Bool, hash: Bool, commit: Bool, callAsFunction: Bool, Op: Bool, variable: Bool, phase: Bool, isRefreshing: Bool, isStale: Bool, retry: Bool, subscription: Bool, Sites: Bool, AbstractSlots: Bool, schemaDigest: Bool, format: Bool, transient: Bool, Swift: Bool, Set: Bool, Result: Bool, Optional: Bool, String: Bool, Int: Bool, Double: Bool, Bool: Bool, MainActor: Bool, Hasher: Bool, Sendable: Bool) {
+    public init(`Type`: Bool, `Protocol`: Bool, `Any`: Bool, `self` selfValue2: Bool, `init`: Bool, `deinit`: Bool, `subscript`: Bool, `class`: Bool, `struct`: Bool, `enum`: Bool, `func`: Bool, `import`: Bool, `extension`: Bool, `operator`: Bool, `static`: Bool, `default`: Bool, `case`: Bool, `switch`: Bool, `if`: Bool, `else`: Bool, `for`: Bool, `in`: Bool, `while`: Bool, `repeat`: Bool, `return`: Bool, `break`: Bool, `continue`: Bool, `where`: Bool, `is`: Bool, `as`: Bool, `try`: Bool, `throw`: Bool, `throws`: Bool, `guard`: Bool, `defer`: Bool, `do`: Bool, `catch`: Bool, `true`: Bool, `false`: Bool, `nil`: Bool, `super`: Bool, `internal`: Bool, `private`: Bool, `public`: Bool, `fileprivate`: Bool, `open`: Bool, `inout`: Bool, `typealias`: Bool, `associatedtype`: Bool, `protocol`: Bool, `some`: Bool, `any`: Bool, `rethrows`: Bool, `fallthrough`: Bool, `precedencegroup`: Bool, `_`: Bool, `var`: Bool, `let`: Bool, `Self`: Bool, async: Bool, `borrowing`: Bool, consume: Bool, `consuming`: Bool, copy: Bool, discard: Bool, `each`: Bool, `isolated`: Bool, `sending`: Bool, then: Bool, unsafe: Bool, `await`: Bool, anchor: Bool, recordID: Bool, satisfied: Bool, missingRequiredField: Bool, fieldErrors: Bool, isPresent: Bool, throwing: Bool, caught: Bool, refetchable: Bool, refetch: Bool, connection: Bool, nodes: Bool, hasNext: Bool, hasPrevious: Bool, isLoadingNext: Bool, isLoadingPrevious: Bool, connectionID: Bool, loadNext: Bool, loadPrevious: Bool, bound: Bool, errors: Bool, child: Bool, missing: Bool, count: Bool, fields: Bool, lhs: Bool, rhs: Bool, hasher: Bool, selfValue: Bool, Fragment: Bool, Spread: Bool, Owner: Bool, Query: Bool, Operation: Bool, RefetchQuery: Bool, resolution: Bool, name: Bool, document: Bool, text: Bool, plan: Bool, errorBehavior: Bool, throwsOnFieldError: Bool, bubbles: Bool, hasDeferred: Bool, cacheExpiration: Bool, hash: Bool, commit: Bool, callAsFunction: Bool, Op: Bool, variable: Bool, phase: Bool, isRefreshing: Bool, isStale: Bool, retry: Bool, subscription: Bool, Sites: Bool, AbstractSlots: Bool, schemaDigest: Bool, format: Bool, transient: Bool, Swift: Bool, Set: Bool, Result: Bool, Optional: Bool, String: Bool, Int: Bool, Double: Bool, Bool: Bool, MainActor: Bool, Hasher: Bool, Sendable: Bool) {
         self.`Type` = `Type`
         self.`Protocol` = `Protocol`
         self.`Any` = `Any`
@@ -5441,7 +5078,6 @@ nonisolated public struct HostileMutationVariables: Baton.Mutation {
         self.`await` = `await`
         self.anchor = anchor
         self.recordID = recordID
-        self.typeName = typeName
         self.satisfied = satisfied
         self.missingRequiredField = missingRequiredField
         self.fieldErrors = fieldErrors
@@ -5589,7 +5225,6 @@ mutation HostileMutationVariables(
   $await: Boolean!
   $anchor: Boolean!
   $recordID: Boolean!
-  $typeName: Boolean!
   $satisfied: Boolean!
   $missingRequiredField: Boolean!
   $fieldErrors: Boolean!
@@ -5736,7 +5371,6 @@ mutation HostileMutationVariables(
       name @include(if: $await)
       name @include(if: $anchor)
       name @include(if: $recordID)
-      name @include(if: $typeName)
       name @include(if: $satisfied)
       name @include(if: $missingRequiredField)
       name @include(if: $fieldErrors)
@@ -5812,11 +5446,11 @@ mutation HostileMutationVariables(
 """#)
 
     public var variables: Baton.Variables {
-        Baton.Variables(["Type": Baton.Variable(self.`Type`), "Protocol": Baton.Variable(self.`Protocol`), "Any": Baton.Variable(self.`Any`), "self": Baton.Variable(self.`self`), "init": Baton.Variable(self.`init`), "deinit": Baton.Variable(self.`deinit`), "subscript": Baton.Variable(self.`subscript`), "class": Baton.Variable(self.`class`), "struct": Baton.Variable(self.`struct`), "enum": Baton.Variable(self.`enum`), "func": Baton.Variable(self.`func`), "import": Baton.Variable(self.`import`), "extension": Baton.Variable(self.`extension`), "operator": Baton.Variable(self.`operator`), "static": Baton.Variable(self.`static`), "default": Baton.Variable(self.`default`), "case": Baton.Variable(self.`case`), "switch": Baton.Variable(self.`switch`), "if": Baton.Variable(self.`if`), "else": Baton.Variable(self.`else`), "for": Baton.Variable(self.`for`), "in": Baton.Variable(self.`in`), "while": Baton.Variable(self.`while`), "repeat": Baton.Variable(self.`repeat`), "return": Baton.Variable(self.`return`), "break": Baton.Variable(self.`break`), "continue": Baton.Variable(self.`continue`), "where": Baton.Variable(self.`where`), "is": Baton.Variable(self.`is`), "as": Baton.Variable(self.`as`), "try": Baton.Variable(self.`try`), "throw": Baton.Variable(self.`throw`), "throws": Baton.Variable(self.`throws`), "guard": Baton.Variable(self.`guard`), "defer": Baton.Variable(self.`defer`), "do": Baton.Variable(self.`do`), "catch": Baton.Variable(self.`catch`), "true": Baton.Variable(self.`true`), "false": Baton.Variable(self.`false`), "nil": Baton.Variable(self.`nil`), "super": Baton.Variable(self.`super`), "internal": Baton.Variable(self.`internal`), "private": Baton.Variable(self.`private`), "public": Baton.Variable(self.`public`), "fileprivate": Baton.Variable(self.`fileprivate`), "open": Baton.Variable(self.`open`), "inout": Baton.Variable(self.`inout`), "typealias": Baton.Variable(self.`typealias`), "associatedtype": Baton.Variable(self.`associatedtype`), "protocol": Baton.Variable(self.`protocol`), "some": Baton.Variable(self.`some`), "any": Baton.Variable(self.`any`), "rethrows": Baton.Variable(self.`rethrows`), "fallthrough": Baton.Variable(self.`fallthrough`), "precedencegroup": Baton.Variable(self.`precedencegroup`), "_": Baton.Variable(self.`_`), "var": Baton.Variable(self.`var`), "let": Baton.Variable(self.`let`), "Self": Baton.Variable(self.`Self`), "async": Baton.Variable(self.async), "borrowing": Baton.Variable(self.`borrowing`), "consume": Baton.Variable(self.consume), "consuming": Baton.Variable(self.`consuming`), "copy": Baton.Variable(self.copy), "discard": Baton.Variable(self.discard), "each": Baton.Variable(self.`each`), "isolated": Baton.Variable(self.`isolated`), "sending": Baton.Variable(self.`sending`), "then": Baton.Variable(self.then), "unsafe": Baton.Variable(self.unsafe), "await": Baton.Variable(self.`await`), "anchor": Baton.Variable(self.anchor), "recordID": Baton.Variable(self.recordID), "typeName": Baton.Variable(self.typeName), "satisfied": Baton.Variable(self.satisfied), "missingRequiredField": Baton.Variable(self.missingRequiredField), "fieldErrors": Baton.Variable(self.fieldErrors), "isPresent": Baton.Variable(self.isPresent), "throwing": Baton.Variable(self.throwing), "caught": Baton.Variable(self.caught), "refetchable": Baton.Variable(self.refetchable), "refetch": Baton.Variable(self.refetch), "connection": Baton.Variable(self.connection), "nodes": Baton.Variable(self.nodes), "hasNext": Baton.Variable(self.hasNext), "hasPrevious": Baton.Variable(self.hasPrevious), "isLoadingNext": Baton.Variable(self.isLoadingNext), "isLoadingPrevious": Baton.Variable(self.isLoadingPrevious), "connectionID": Baton.Variable(self.connectionID), "loadNext": Baton.Variable(self.loadNext), "loadPrevious": Baton.Variable(self.loadPrevious), "bound": Baton.Variable(self.bound), "errors": Baton.Variable(self.errors), "child": Baton.Variable(self.child), "missing": Baton.Variable(self.missing), "count": Baton.Variable(self.count), "fields": Baton.Variable(self.fields), "lhs": Baton.Variable(self.lhs), "rhs": Baton.Variable(self.rhs), "hasher": Baton.Variable(self.hasher), "selfValue": Baton.Variable(self.selfValue), "Fragment": Baton.Variable(self.Fragment), "Spread": Baton.Variable(self.Spread), "Owner": Baton.Variable(self.Owner), "Query": Baton.Variable(self.Query), "Operation": Baton.Variable(self.Operation), "RefetchQuery": Baton.Variable(self.RefetchQuery), "resolution": Baton.Variable(self.resolution), "name": Baton.Variable(self.name), "document": Baton.Variable(self.document), "text": Baton.Variable(self.text), "plan": Baton.Variable(self.plan), "errorBehavior": Baton.Variable(self.errorBehavior), "throwsOnFieldError": Baton.Variable(self.throwsOnFieldError), "bubbles": Baton.Variable(self.bubbles), "hasDeferred": Baton.Variable(self.hasDeferred), "cacheExpiration": Baton.Variable(self.cacheExpiration), "hash": Baton.Variable(self.hash), "commit": Baton.Variable(self.commit), "callAsFunction": Baton.Variable(self.callAsFunction), "Op": Baton.Variable(self.Op), "variable": Baton.Variable(self.variable), "phase": Baton.Variable(self.phase), "isRefreshing": Baton.Variable(self.isRefreshing), "isStale": Baton.Variable(self.isStale), "retry": Baton.Variable(self.retry), "subscription": Baton.Variable(self.subscription), "Sites": Baton.Variable(self.Sites), "AbstractSlots": Baton.Variable(self.AbstractSlots), "schemaDigest": Baton.Variable(self.schemaDigest), "format": Baton.Variable(self.format), "transient": Baton.Variable(self.transient), "Swift": Baton.Variable(self.Swift), "Set": Baton.Variable(self.Set), "Result": Baton.Variable(self.Result), "Optional": Baton.Variable(self.Optional), "String": Baton.Variable(self.String), "Int": Baton.Variable(self.Int), "Double": Baton.Variable(self.Double), "Bool": Baton.Variable(self.Bool), "MainActor": Baton.Variable(self.MainActor), "Hasher": Baton.Variable(self.Hasher), "Sendable": Baton.Variable(self.Sendable)])
+        Baton.Variables(["Type": Baton.Variable(self.`Type`), "Protocol": Baton.Variable(self.`Protocol`), "Any": Baton.Variable(self.`Any`), "self": Baton.Variable(self.`self`), "init": Baton.Variable(self.`init`), "deinit": Baton.Variable(self.`deinit`), "subscript": Baton.Variable(self.`subscript`), "class": Baton.Variable(self.`class`), "struct": Baton.Variable(self.`struct`), "enum": Baton.Variable(self.`enum`), "func": Baton.Variable(self.`func`), "import": Baton.Variable(self.`import`), "extension": Baton.Variable(self.`extension`), "operator": Baton.Variable(self.`operator`), "static": Baton.Variable(self.`static`), "default": Baton.Variable(self.`default`), "case": Baton.Variable(self.`case`), "switch": Baton.Variable(self.`switch`), "if": Baton.Variable(self.`if`), "else": Baton.Variable(self.`else`), "for": Baton.Variable(self.`for`), "in": Baton.Variable(self.`in`), "while": Baton.Variable(self.`while`), "repeat": Baton.Variable(self.`repeat`), "return": Baton.Variable(self.`return`), "break": Baton.Variable(self.`break`), "continue": Baton.Variable(self.`continue`), "where": Baton.Variable(self.`where`), "is": Baton.Variable(self.`is`), "as": Baton.Variable(self.`as`), "try": Baton.Variable(self.`try`), "throw": Baton.Variable(self.`throw`), "throws": Baton.Variable(self.`throws`), "guard": Baton.Variable(self.`guard`), "defer": Baton.Variable(self.`defer`), "do": Baton.Variable(self.`do`), "catch": Baton.Variable(self.`catch`), "true": Baton.Variable(self.`true`), "false": Baton.Variable(self.`false`), "nil": Baton.Variable(self.`nil`), "super": Baton.Variable(self.`super`), "internal": Baton.Variable(self.`internal`), "private": Baton.Variable(self.`private`), "public": Baton.Variable(self.`public`), "fileprivate": Baton.Variable(self.`fileprivate`), "open": Baton.Variable(self.`open`), "inout": Baton.Variable(self.`inout`), "typealias": Baton.Variable(self.`typealias`), "associatedtype": Baton.Variable(self.`associatedtype`), "protocol": Baton.Variable(self.`protocol`), "some": Baton.Variable(self.`some`), "any": Baton.Variable(self.`any`), "rethrows": Baton.Variable(self.`rethrows`), "fallthrough": Baton.Variable(self.`fallthrough`), "precedencegroup": Baton.Variable(self.`precedencegroup`), "_": Baton.Variable(self.`_`), "var": Baton.Variable(self.`var`), "let": Baton.Variable(self.`let`), "Self": Baton.Variable(self.`Self`), "async": Baton.Variable(self.async), "borrowing": Baton.Variable(self.`borrowing`), "consume": Baton.Variable(self.consume), "consuming": Baton.Variable(self.`consuming`), "copy": Baton.Variable(self.copy), "discard": Baton.Variable(self.discard), "each": Baton.Variable(self.`each`), "isolated": Baton.Variable(self.`isolated`), "sending": Baton.Variable(self.`sending`), "then": Baton.Variable(self.then), "unsafe": Baton.Variable(self.unsafe), "await": Baton.Variable(self.`await`), "anchor": Baton.Variable(self.anchor), "recordID": Baton.Variable(self.recordID), "satisfied": Baton.Variable(self.satisfied), "missingRequiredField": Baton.Variable(self.missingRequiredField), "fieldErrors": Baton.Variable(self.fieldErrors), "isPresent": Baton.Variable(self.isPresent), "throwing": Baton.Variable(self.throwing), "caught": Baton.Variable(self.caught), "refetchable": Baton.Variable(self.refetchable), "refetch": Baton.Variable(self.refetch), "connection": Baton.Variable(self.connection), "nodes": Baton.Variable(self.nodes), "hasNext": Baton.Variable(self.hasNext), "hasPrevious": Baton.Variable(self.hasPrevious), "isLoadingNext": Baton.Variable(self.isLoadingNext), "isLoadingPrevious": Baton.Variable(self.isLoadingPrevious), "connectionID": Baton.Variable(self.connectionID), "loadNext": Baton.Variable(self.loadNext), "loadPrevious": Baton.Variable(self.loadPrevious), "bound": Baton.Variable(self.bound), "errors": Baton.Variable(self.errors), "child": Baton.Variable(self.child), "missing": Baton.Variable(self.missing), "count": Baton.Variable(self.count), "fields": Baton.Variable(self.fields), "lhs": Baton.Variable(self.lhs), "rhs": Baton.Variable(self.rhs), "hasher": Baton.Variable(self.hasher), "selfValue": Baton.Variable(self.selfValue), "Fragment": Baton.Variable(self.Fragment), "Spread": Baton.Variable(self.Spread), "Owner": Baton.Variable(self.Owner), "Query": Baton.Variable(self.Query), "Operation": Baton.Variable(self.Operation), "RefetchQuery": Baton.Variable(self.RefetchQuery), "resolution": Baton.Variable(self.resolution), "name": Baton.Variable(self.name), "document": Baton.Variable(self.document), "text": Baton.Variable(self.text), "plan": Baton.Variable(self.plan), "errorBehavior": Baton.Variable(self.errorBehavior), "throwsOnFieldError": Baton.Variable(self.throwsOnFieldError), "bubbles": Baton.Variable(self.bubbles), "hasDeferred": Baton.Variable(self.hasDeferred), "cacheExpiration": Baton.Variable(self.cacheExpiration), "hash": Baton.Variable(self.hash), "commit": Baton.Variable(self.commit), "callAsFunction": Baton.Variable(self.callAsFunction), "Op": Baton.Variable(self.Op), "variable": Baton.Variable(self.variable), "phase": Baton.Variable(self.phase), "isRefreshing": Baton.Variable(self.isRefreshing), "isStale": Baton.Variable(self.isStale), "retry": Baton.Variable(self.retry), "subscription": Baton.Variable(self.subscription), "Sites": Baton.Variable(self.Sites), "AbstractSlots": Baton.Variable(self.AbstractSlots), "schemaDigest": Baton.Variable(self.schemaDigest), "format": Baton.Variable(self.format), "transient": Baton.Variable(self.transient), "Swift": Baton.Variable(self.Swift), "Set": Baton.Variable(self.Set), "Result": Baton.Variable(self.Result), "Optional": Baton.Variable(self.Optional), "String": Baton.Variable(self.String), "Int": Baton.Variable(self.Int), "Double": Baton.Variable(self.Double), "Bool": Baton.Variable(self.Bool), "MainActor": Baton.Variable(self.MainActor), "Hasher": Baton.Variable(self.Hasher), "Sendable": Baton.Variable(self.Sendable)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.`Type` == rhs.`Type` && lhs.`Protocol` == rhs.`Protocol` && lhs.`Any` == rhs.`Any` && lhs.`self` == rhs.`self` && lhs.`init` == rhs.`init` && lhs.`deinit` == rhs.`deinit` && lhs.`subscript` == rhs.`subscript` && lhs.`class` == rhs.`class` && lhs.`struct` == rhs.`struct` && lhs.`enum` == rhs.`enum` && lhs.`func` == rhs.`func` && lhs.`import` == rhs.`import` && lhs.`extension` == rhs.`extension` && lhs.`operator` == rhs.`operator` && lhs.`static` == rhs.`static` && lhs.`default` == rhs.`default` && lhs.`case` == rhs.`case` && lhs.`switch` == rhs.`switch` && lhs.`if` == rhs.`if` && lhs.`else` == rhs.`else` && lhs.`for` == rhs.`for` && lhs.`in` == rhs.`in` && lhs.`while` == rhs.`while` && lhs.`repeat` == rhs.`repeat` && lhs.`return` == rhs.`return` && lhs.`break` == rhs.`break` && lhs.`continue` == rhs.`continue` && lhs.`where` == rhs.`where` && lhs.`is` == rhs.`is` && lhs.`as` == rhs.`as` && lhs.`try` == rhs.`try` && lhs.`throw` == rhs.`throw` && lhs.`throws` == rhs.`throws` && lhs.`guard` == rhs.`guard` && lhs.`defer` == rhs.`defer` && lhs.`do` == rhs.`do` && lhs.`catch` == rhs.`catch` && lhs.`true` == rhs.`true` && lhs.`false` == rhs.`false` && lhs.`nil` == rhs.`nil` && lhs.`super` == rhs.`super` && lhs.`internal` == rhs.`internal` && lhs.`private` == rhs.`private` && lhs.`public` == rhs.`public` && lhs.`fileprivate` == rhs.`fileprivate` && lhs.`open` == rhs.`open` && lhs.`inout` == rhs.`inout` && lhs.`typealias` == rhs.`typealias` && lhs.`associatedtype` == rhs.`associatedtype` && lhs.`protocol` == rhs.`protocol` && lhs.`some` == rhs.`some` && lhs.`any` == rhs.`any` && lhs.`rethrows` == rhs.`rethrows` && lhs.`fallthrough` == rhs.`fallthrough` && lhs.`precedencegroup` == rhs.`precedencegroup` && lhs.`_` == rhs.`_` && lhs.`var` == rhs.`var` && lhs.`let` == rhs.`let` && lhs.`Self` == rhs.`Self` && lhs.async == rhs.async && lhs.`borrowing` == rhs.`borrowing` && lhs.consume == rhs.consume && lhs.`consuming` == rhs.`consuming` && lhs.copy == rhs.copy && lhs.discard == rhs.discard && lhs.`each` == rhs.`each` && lhs.`isolated` == rhs.`isolated` && lhs.`sending` == rhs.`sending` && lhs.then == rhs.then && lhs.unsafe == rhs.unsafe && lhs.`await` == rhs.`await` && lhs.anchor == rhs.anchor && lhs.recordID == rhs.recordID && lhs.typeName == rhs.typeName && lhs.satisfied == rhs.satisfied && lhs.missingRequiredField == rhs.missingRequiredField && lhs.fieldErrors == rhs.fieldErrors && lhs.isPresent == rhs.isPresent && lhs.throwing == rhs.throwing && lhs.caught == rhs.caught && lhs.refetchable == rhs.refetchable && lhs.refetch == rhs.refetch && lhs.connection == rhs.connection && lhs.nodes == rhs.nodes && lhs.hasNext == rhs.hasNext && lhs.hasPrevious == rhs.hasPrevious && lhs.isLoadingNext == rhs.isLoadingNext && lhs.isLoadingPrevious == rhs.isLoadingPrevious && lhs.connectionID == rhs.connectionID && lhs.loadNext == rhs.loadNext && lhs.loadPrevious == rhs.loadPrevious && lhs.bound == rhs.bound && lhs.errors == rhs.errors && lhs.child == rhs.child && lhs.missing == rhs.missing && lhs.count == rhs.count && lhs.fields == rhs.fields && lhs.lhs == rhs.lhs && lhs.rhs == rhs.rhs && lhs.hasher == rhs.hasher && lhs.selfValue == rhs.selfValue && lhs.Fragment == rhs.Fragment && lhs.Spread == rhs.Spread && lhs.Owner == rhs.Owner && lhs.Query == rhs.Query && lhs.Operation == rhs.Operation && lhs.RefetchQuery == rhs.RefetchQuery && lhs.resolution == rhs.resolution && lhs.name == rhs.name && lhs.document == rhs.document && lhs.text == rhs.text && lhs.plan == rhs.plan && lhs.errorBehavior == rhs.errorBehavior && lhs.throwsOnFieldError == rhs.throwsOnFieldError && lhs.bubbles == rhs.bubbles && lhs.hasDeferred == rhs.hasDeferred && lhs.cacheExpiration == rhs.cacheExpiration && lhs.hash == rhs.hash && lhs.commit == rhs.commit && lhs.callAsFunction == rhs.callAsFunction && lhs.Op == rhs.Op && lhs.variable == rhs.variable && lhs.phase == rhs.phase && lhs.isRefreshing == rhs.isRefreshing && lhs.isStale == rhs.isStale && lhs.retry == rhs.retry && lhs.subscription == rhs.subscription && lhs.Sites == rhs.Sites && lhs.AbstractSlots == rhs.AbstractSlots && lhs.schemaDigest == rhs.schemaDigest && lhs.format == rhs.format && lhs.transient == rhs.transient && lhs.Swift == rhs.Swift && lhs.Set == rhs.Set && lhs.Result == rhs.Result && lhs.Optional == rhs.Optional && lhs.String == rhs.String && lhs.Int == rhs.Int && lhs.Double == rhs.Double && lhs.Bool == rhs.Bool && lhs.MainActor == rhs.MainActor && lhs.Hasher == rhs.Hasher && lhs.Sendable == rhs.Sendable
+        lhs.`Type` == rhs.`Type` && lhs.`Protocol` == rhs.`Protocol` && lhs.`Any` == rhs.`Any` && lhs.`self` == rhs.`self` && lhs.`init` == rhs.`init` && lhs.`deinit` == rhs.`deinit` && lhs.`subscript` == rhs.`subscript` && lhs.`class` == rhs.`class` && lhs.`struct` == rhs.`struct` && lhs.`enum` == rhs.`enum` && lhs.`func` == rhs.`func` && lhs.`import` == rhs.`import` && lhs.`extension` == rhs.`extension` && lhs.`operator` == rhs.`operator` && lhs.`static` == rhs.`static` && lhs.`default` == rhs.`default` && lhs.`case` == rhs.`case` && lhs.`switch` == rhs.`switch` && lhs.`if` == rhs.`if` && lhs.`else` == rhs.`else` && lhs.`for` == rhs.`for` && lhs.`in` == rhs.`in` && lhs.`while` == rhs.`while` && lhs.`repeat` == rhs.`repeat` && lhs.`return` == rhs.`return` && lhs.`break` == rhs.`break` && lhs.`continue` == rhs.`continue` && lhs.`where` == rhs.`where` && lhs.`is` == rhs.`is` && lhs.`as` == rhs.`as` && lhs.`try` == rhs.`try` && lhs.`throw` == rhs.`throw` && lhs.`throws` == rhs.`throws` && lhs.`guard` == rhs.`guard` && lhs.`defer` == rhs.`defer` && lhs.`do` == rhs.`do` && lhs.`catch` == rhs.`catch` && lhs.`true` == rhs.`true` && lhs.`false` == rhs.`false` && lhs.`nil` == rhs.`nil` && lhs.`super` == rhs.`super` && lhs.`internal` == rhs.`internal` && lhs.`private` == rhs.`private` && lhs.`public` == rhs.`public` && lhs.`fileprivate` == rhs.`fileprivate` && lhs.`open` == rhs.`open` && lhs.`inout` == rhs.`inout` && lhs.`typealias` == rhs.`typealias` && lhs.`associatedtype` == rhs.`associatedtype` && lhs.`protocol` == rhs.`protocol` && lhs.`some` == rhs.`some` && lhs.`any` == rhs.`any` && lhs.`rethrows` == rhs.`rethrows` && lhs.`fallthrough` == rhs.`fallthrough` && lhs.`precedencegroup` == rhs.`precedencegroup` && lhs.`_` == rhs.`_` && lhs.`var` == rhs.`var` && lhs.`let` == rhs.`let` && lhs.`Self` == rhs.`Self` && lhs.async == rhs.async && lhs.`borrowing` == rhs.`borrowing` && lhs.consume == rhs.consume && lhs.`consuming` == rhs.`consuming` && lhs.copy == rhs.copy && lhs.discard == rhs.discard && lhs.`each` == rhs.`each` && lhs.`isolated` == rhs.`isolated` && lhs.`sending` == rhs.`sending` && lhs.then == rhs.then && lhs.unsafe == rhs.unsafe && lhs.`await` == rhs.`await` && lhs.anchor == rhs.anchor && lhs.recordID == rhs.recordID && lhs.satisfied == rhs.satisfied && lhs.missingRequiredField == rhs.missingRequiredField && lhs.fieldErrors == rhs.fieldErrors && lhs.isPresent == rhs.isPresent && lhs.throwing == rhs.throwing && lhs.caught == rhs.caught && lhs.refetchable == rhs.refetchable && lhs.refetch == rhs.refetch && lhs.connection == rhs.connection && lhs.nodes == rhs.nodes && lhs.hasNext == rhs.hasNext && lhs.hasPrevious == rhs.hasPrevious && lhs.isLoadingNext == rhs.isLoadingNext && lhs.isLoadingPrevious == rhs.isLoadingPrevious && lhs.connectionID == rhs.connectionID && lhs.loadNext == rhs.loadNext && lhs.loadPrevious == rhs.loadPrevious && lhs.bound == rhs.bound && lhs.errors == rhs.errors && lhs.child == rhs.child && lhs.missing == rhs.missing && lhs.count == rhs.count && lhs.fields == rhs.fields && lhs.lhs == rhs.lhs && lhs.rhs == rhs.rhs && lhs.hasher == rhs.hasher && lhs.selfValue == rhs.selfValue && lhs.Fragment == rhs.Fragment && lhs.Spread == rhs.Spread && lhs.Owner == rhs.Owner && lhs.Query == rhs.Query && lhs.Operation == rhs.Operation && lhs.RefetchQuery == rhs.RefetchQuery && lhs.resolution == rhs.resolution && lhs.name == rhs.name && lhs.document == rhs.document && lhs.text == rhs.text && lhs.plan == rhs.plan && lhs.errorBehavior == rhs.errorBehavior && lhs.throwsOnFieldError == rhs.throwsOnFieldError && lhs.bubbles == rhs.bubbles && lhs.hasDeferred == rhs.hasDeferred && lhs.cacheExpiration == rhs.cacheExpiration && lhs.hash == rhs.hash && lhs.commit == rhs.commit && lhs.callAsFunction == rhs.callAsFunction && lhs.Op == rhs.Op && lhs.variable == rhs.variable && lhs.phase == rhs.phase && lhs.isRefreshing == rhs.isRefreshing && lhs.isStale == rhs.isStale && lhs.retry == rhs.retry && lhs.subscription == rhs.subscription && lhs.Sites == rhs.Sites && lhs.AbstractSlots == rhs.AbstractSlots && lhs.schemaDigest == rhs.schemaDigest && lhs.format == rhs.format && lhs.transient == rhs.transient && lhs.Swift == rhs.Swift && lhs.Set == rhs.Set && lhs.Result == rhs.Result && lhs.Optional == rhs.Optional && lhs.String == rhs.String && lhs.Int == rhs.Int && lhs.Double == rhs.Double && lhs.Bool == rhs.Bool && lhs.MainActor == rhs.MainActor && lhs.Hasher == rhs.Hasher && lhs.Sendable == rhs.Sendable
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -5893,7 +5527,6 @@ mutation HostileMutationVariables(
         hasher.combine(self.`await`)
         hasher.combine(self.anchor)
         hasher.combine(self.recordID)
-        hasher.combine(self.typeName)
         hasher.combine(self.satisfied)
         hasher.combine(self.missingRequiredField)
         hasher.combine(self.fieldErrors)
@@ -5969,7 +5602,7 @@ mutation HostileMutationVariables(
             .linked("setFavorite", key: .fixed(Slots.Mutation.setFavorite), plural: false, caught: true, selection: Baton.Selection(type: Types.FavoritePayload, key: [], abstract: false, fields: [
                 .linked("character", key: .fixed(Slots.FavoritePayload.character), plural: false, caught: true, selection: Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false, caught: true),
-                    .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false, caught: true, guards: [[Guards.Type_true], [Guards.Protocol_true], [Guards.Any_true], [Guards.self_true], [Guards.init_true], [Guards.deinit_true], [Guards.subscript_true], [Guards.class_true], [Guards.struct_true], [Guards.enum_true], [Guards.func_true], [Guards.import_true], [Guards.extension_true], [Guards.operator_true], [Guards.static_true], [Guards.default_true], [Guards.case_true], [Guards.switch_true], [Guards.if_true], [Guards.else_true], [Guards.for_true], [Guards.in_true], [Guards.while_true], [Guards.repeat_true], [Guards.return_true], [Guards.break_true], [Guards.continue_true], [Guards.where_true], [Guards.is_true], [Guards.as_true], [Guards.try_true], [Guards.throw_true], [Guards.throws_true], [Guards.guard_true], [Guards.defer_true], [Guards.do_true], [Guards.catch_true], [Guards.true_true], [Guards.false_true], [Guards.nil_true], [Guards.super_true], [Guards.internal_true], [Guards.private_true], [Guards.public_true], [Guards.fileprivate_true], [Guards.open_true], [Guards.inout_true], [Guards.typealias_true], [Guards.associatedtype_true], [Guards.protocol_true], [Guards.some_true], [Guards.any_true], [Guards.rethrows_true], [Guards.fallthrough_true], [Guards.precedencegroup_true], [Guards.__true], [Guards.var_true], [Guards.let_true], [Guards.Self_true], [Guards.async_true], [Guards.borrowing_true], [Guards.consume_true], [Guards.consuming_true], [Guards.copy_true], [Guards.discard_true], [Guards.each_true], [Guards.isolated_true], [Guards.sending_true], [Guards.then_true], [Guards.unsafe_true], [Guards.await_true], [Guards.anchor_true], [Guards.recordID_true], [Guards.typeName_true], [Guards.satisfied_true], [Guards.missingRequiredField_true], [Guards.fieldErrors_true], [Guards.isPresent_true], [Guards.throwing_true], [Guards.caught_true], [Guards.refetchable_true], [Guards.refetch_true], [Guards.connection_true], [Guards.nodes_true], [Guards.hasNext_true], [Guards.hasPrevious_true], [Guards.isLoadingNext_true], [Guards.isLoadingPrevious_true], [Guards.connectionID_true], [Guards.loadNext_true], [Guards.loadPrevious_true], [Guards.bound_true], [Guards.errors_true], [Guards.child_true], [Guards.missing_true], [Guards.count_true], [Guards.fields_true], [Guards.lhs_true], [Guards.rhs_true], [Guards.hasher_true], [Guards.selfValue_true], [Guards.Fragment_true], [Guards.Spread_true], [Guards.Owner_true], [Guards.Query_true], [Guards.Operation_true], [Guards.RefetchQuery_true], [Guards.resolution_true], [Guards.name_true], [Guards.document_true], [Guards.text_true], [Guards.plan_true], [Guards.errorBehavior_true], [Guards.throwsOnFieldError_true], [Guards.bubbles_true], [Guards.hasDeferred_true], [Guards.cacheExpiration_true], [Guards.hash_true], [Guards.commit_true], [Guards.callAsFunction_true], [Guards.Op_true], [Guards.variable_true], [Guards.phase_true], [Guards.isRefreshing_true], [Guards.isStale_true], [Guards.retry_true], [Guards.subscription_true], [Guards.Sites_true], [Guards.AbstractSlots_true], [Guards.schemaDigest_true], [Guards.format_true], [Guards.transient_true], [Guards.Swift_true], [Guards.Set_true], [Guards.Result_true], [Guards.Optional_true], [Guards.String_true], [Guards.Int_true], [Guards.Double_true], [Guards.Bool_true], [Guards.MainActor_true], [Guards.Hasher_true], [Guards.Sendable_true]]),
+                    .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false, caught: true, guards: [[Guards.Type_true], [Guards.Protocol_true], [Guards.Any_true], [Guards.self_true], [Guards.init_true], [Guards.deinit_true], [Guards.subscript_true], [Guards.class_true], [Guards.struct_true], [Guards.enum_true], [Guards.func_true], [Guards.import_true], [Guards.extension_true], [Guards.operator_true], [Guards.static_true], [Guards.default_true], [Guards.case_true], [Guards.switch_true], [Guards.if_true], [Guards.else_true], [Guards.for_true], [Guards.in_true], [Guards.while_true], [Guards.repeat_true], [Guards.return_true], [Guards.break_true], [Guards.continue_true], [Guards.where_true], [Guards.is_true], [Guards.as_true], [Guards.try_true], [Guards.throw_true], [Guards.throws_true], [Guards.guard_true], [Guards.defer_true], [Guards.do_true], [Guards.catch_true], [Guards.true_true], [Guards.false_true], [Guards.nil_true], [Guards.super_true], [Guards.internal_true], [Guards.private_true], [Guards.public_true], [Guards.fileprivate_true], [Guards.open_true], [Guards.inout_true], [Guards.typealias_true], [Guards.associatedtype_true], [Guards.protocol_true], [Guards.some_true], [Guards.any_true], [Guards.rethrows_true], [Guards.fallthrough_true], [Guards.precedencegroup_true], [Guards.__true], [Guards.var_true], [Guards.let_true], [Guards.Self_true], [Guards.async_true], [Guards.borrowing_true], [Guards.consume_true], [Guards.consuming_true], [Guards.copy_true], [Guards.discard_true], [Guards.each_true], [Guards.isolated_true], [Guards.sending_true], [Guards.then_true], [Guards.unsafe_true], [Guards.await_true], [Guards.anchor_true], [Guards.recordID_true], [Guards.satisfied_true], [Guards.missingRequiredField_true], [Guards.fieldErrors_true], [Guards.isPresent_true], [Guards.throwing_true], [Guards.caught_true], [Guards.refetchable_true], [Guards.refetch_true], [Guards.connection_true], [Guards.nodes_true], [Guards.hasNext_true], [Guards.hasPrevious_true], [Guards.isLoadingNext_true], [Guards.isLoadingPrevious_true], [Guards.connectionID_true], [Guards.loadNext_true], [Guards.loadPrevious_true], [Guards.bound_true], [Guards.errors_true], [Guards.child_true], [Guards.missing_true], [Guards.count_true], [Guards.fields_true], [Guards.lhs_true], [Guards.rhs_true], [Guards.hasher_true], [Guards.selfValue_true], [Guards.Fragment_true], [Guards.Spread_true], [Guards.Owner_true], [Guards.Query_true], [Guards.Operation_true], [Guards.RefetchQuery_true], [Guards.resolution_true], [Guards.name_true], [Guards.document_true], [Guards.text_true], [Guards.plan_true], [Guards.errorBehavior_true], [Guards.throwsOnFieldError_true], [Guards.bubbles_true], [Guards.hasDeferred_true], [Guards.cacheExpiration_true], [Guards.hash_true], [Guards.commit_true], [Guards.callAsFunction_true], [Guards.Op_true], [Guards.variable_true], [Guards.phase_true], [Guards.isRefreshing_true], [Guards.isStale_true], [Guards.retry_true], [Guards.subscription_true], [Guards.Sites_true], [Guards.AbstractSlots_true], [Guards.schemaDigest_true], [Guards.format_true], [Guards.transient_true], [Guards.Swift_true], [Guards.Set_true], [Guards.Result_true], [Guards.Optional_true], [Guards.String_true], [Guards.Int_true], [Guards.Double_true], [Guards.Bool_true], [Guards.MainActor_true], [Guards.Hasher_true], [Guards.Sendable_true]]),
                 ])),
             ])),
         ]), transient: Types.transient)
@@ -5977,13 +5610,11 @@ mutation HostileMutationVariables(
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Mutation"
         @MainActor public var setFavorite: Result<SetFavorite?, Baton.FieldErrors> { anchor.caught(Slots.Mutation.setFavorite, within: SetFavorite.fieldErrors) { $0.linked(Slots.Mutation.setFavorite).map(SetFavorite.init(anchor:)) } }
 
         nonisolated public struct SetFavorite: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "FavoritePayload"
             @MainActor public var character: Character? { anchor.linked(Slots.FavoritePayload.character).map(Character.init(anchor:)) }
             /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
             @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
@@ -6002,14 +5633,13 @@ mutation HostileMutationVariables(
             nonisolated public struct Character: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Character"
                 @MainActor public var id: String? { anchor.string(Slots.Character.id) }
-                @MainActor public var name: String? { (anchor.owner.selects(Guards.Type_true) || anchor.owner.selects(Guards.Protocol_true) || anchor.owner.selects(Guards.Any_true) || anchor.owner.selects(Guards.self_true) || anchor.owner.selects(Guards.init_true) || anchor.owner.selects(Guards.deinit_true) || anchor.owner.selects(Guards.subscript_true) || anchor.owner.selects(Guards.class_true) || anchor.owner.selects(Guards.struct_true) || anchor.owner.selects(Guards.enum_true) || anchor.owner.selects(Guards.func_true) || anchor.owner.selects(Guards.import_true) || anchor.owner.selects(Guards.extension_true) || anchor.owner.selects(Guards.operator_true) || anchor.owner.selects(Guards.static_true) || anchor.owner.selects(Guards.default_true) || anchor.owner.selects(Guards.case_true) || anchor.owner.selects(Guards.switch_true) || anchor.owner.selects(Guards.if_true) || anchor.owner.selects(Guards.else_true) || anchor.owner.selects(Guards.for_true) || anchor.owner.selects(Guards.in_true) || anchor.owner.selects(Guards.while_true) || anchor.owner.selects(Guards.repeat_true) || anchor.owner.selects(Guards.return_true) || anchor.owner.selects(Guards.break_true) || anchor.owner.selects(Guards.continue_true) || anchor.owner.selects(Guards.where_true) || anchor.owner.selects(Guards.is_true) || anchor.owner.selects(Guards.as_true) || anchor.owner.selects(Guards.try_true) || anchor.owner.selects(Guards.throw_true) || anchor.owner.selects(Guards.throws_true) || anchor.owner.selects(Guards.guard_true) || anchor.owner.selects(Guards.defer_true) || anchor.owner.selects(Guards.do_true) || anchor.owner.selects(Guards.catch_true) || anchor.owner.selects(Guards.true_true) || anchor.owner.selects(Guards.false_true) || anchor.owner.selects(Guards.nil_true) || anchor.owner.selects(Guards.super_true) || anchor.owner.selects(Guards.internal_true) || anchor.owner.selects(Guards.private_true) || anchor.owner.selects(Guards.public_true) || anchor.owner.selects(Guards.fileprivate_true) || anchor.owner.selects(Guards.open_true) || anchor.owner.selects(Guards.inout_true) || anchor.owner.selects(Guards.typealias_true) || anchor.owner.selects(Guards.associatedtype_true) || anchor.owner.selects(Guards.protocol_true) || anchor.owner.selects(Guards.some_true) || anchor.owner.selects(Guards.any_true) || anchor.owner.selects(Guards.rethrows_true) || anchor.owner.selects(Guards.fallthrough_true) || anchor.owner.selects(Guards.precedencegroup_true) || anchor.owner.selects(Guards.__true) || anchor.owner.selects(Guards.var_true) || anchor.owner.selects(Guards.let_true) || anchor.owner.selects(Guards.Self_true) || anchor.owner.selects(Guards.async_true) || anchor.owner.selects(Guards.borrowing_true) || anchor.owner.selects(Guards.consume_true) || anchor.owner.selects(Guards.consuming_true) || anchor.owner.selects(Guards.copy_true) || anchor.owner.selects(Guards.discard_true) || anchor.owner.selects(Guards.each_true) || anchor.owner.selects(Guards.isolated_true) || anchor.owner.selects(Guards.sending_true) || anchor.owner.selects(Guards.then_true) || anchor.owner.selects(Guards.unsafe_true) || anchor.owner.selects(Guards.await_true) || anchor.owner.selects(Guards.anchor_true) || anchor.owner.selects(Guards.recordID_true) || anchor.owner.selects(Guards.typeName_true) || anchor.owner.selects(Guards.satisfied_true) || anchor.owner.selects(Guards.missingRequiredField_true) || anchor.owner.selects(Guards.fieldErrors_true) || anchor.owner.selects(Guards.isPresent_true) || anchor.owner.selects(Guards.throwing_true) || anchor.owner.selects(Guards.caught_true) || anchor.owner.selects(Guards.refetchable_true) || anchor.owner.selects(Guards.refetch_true) || anchor.owner.selects(Guards.connection_true) || anchor.owner.selects(Guards.nodes_true) || anchor.owner.selects(Guards.hasNext_true) || anchor.owner.selects(Guards.hasPrevious_true) || anchor.owner.selects(Guards.isLoadingNext_true) || anchor.owner.selects(Guards.isLoadingPrevious_true) || anchor.owner.selects(Guards.connectionID_true) || anchor.owner.selects(Guards.loadNext_true) || anchor.owner.selects(Guards.loadPrevious_true) || anchor.owner.selects(Guards.bound_true) || anchor.owner.selects(Guards.errors_true) || anchor.owner.selects(Guards.child_true) || anchor.owner.selects(Guards.missing_true) || anchor.owner.selects(Guards.count_true) || anchor.owner.selects(Guards.fields_true) || anchor.owner.selects(Guards.lhs_true) || anchor.owner.selects(Guards.rhs_true) || anchor.owner.selects(Guards.hasher_true) || anchor.owner.selects(Guards.selfValue_true) || anchor.owner.selects(Guards.Fragment_true) || anchor.owner.selects(Guards.Spread_true) || anchor.owner.selects(Guards.Owner_true) || anchor.owner.selects(Guards.Query_true) || anchor.owner.selects(Guards.Operation_true) || anchor.owner.selects(Guards.RefetchQuery_true) || anchor.owner.selects(Guards.resolution_true) || anchor.owner.selects(Guards.name_true) || anchor.owner.selects(Guards.document_true) || anchor.owner.selects(Guards.text_true) || anchor.owner.selects(Guards.plan_true) || anchor.owner.selects(Guards.errorBehavior_true) || anchor.owner.selects(Guards.throwsOnFieldError_true) || anchor.owner.selects(Guards.bubbles_true) || anchor.owner.selects(Guards.hasDeferred_true) || anchor.owner.selects(Guards.cacheExpiration_true) || anchor.owner.selects(Guards.hash_true) || anchor.owner.selects(Guards.commit_true) || anchor.owner.selects(Guards.callAsFunction_true) || anchor.owner.selects(Guards.Op_true) || anchor.owner.selects(Guards.variable_true) || anchor.owner.selects(Guards.phase_true) || anchor.owner.selects(Guards.isRefreshing_true) || anchor.owner.selects(Guards.isStale_true) || anchor.owner.selects(Guards.retry_true) || anchor.owner.selects(Guards.subscription_true) || anchor.owner.selects(Guards.Sites_true) || anchor.owner.selects(Guards.AbstractSlots_true) || anchor.owner.selects(Guards.schemaDigest_true) || anchor.owner.selects(Guards.format_true) || anchor.owner.selects(Guards.transient_true) || anchor.owner.selects(Guards.Swift_true) || anchor.owner.selects(Guards.Set_true) || anchor.owner.selects(Guards.Result_true) || anchor.owner.selects(Guards.Optional_true) || anchor.owner.selects(Guards.String_true) || anchor.owner.selects(Guards.Int_true) || anchor.owner.selects(Guards.Double_true) || anchor.owner.selects(Guards.Bool_true) || anchor.owner.selects(Guards.MainActor_true) || anchor.owner.selects(Guards.Hasher_true) || anchor.owner.selects(Guards.Sendable_true)) ? anchor.string(Slots.Character.name) : nil }
+                @MainActor public var name: String? { (anchor.owner.selects(Guards.Type_true) || anchor.owner.selects(Guards.Protocol_true) || anchor.owner.selects(Guards.Any_true) || anchor.owner.selects(Guards.self_true) || anchor.owner.selects(Guards.init_true) || anchor.owner.selects(Guards.deinit_true) || anchor.owner.selects(Guards.subscript_true) || anchor.owner.selects(Guards.class_true) || anchor.owner.selects(Guards.struct_true) || anchor.owner.selects(Guards.enum_true) || anchor.owner.selects(Guards.func_true) || anchor.owner.selects(Guards.import_true) || anchor.owner.selects(Guards.extension_true) || anchor.owner.selects(Guards.operator_true) || anchor.owner.selects(Guards.static_true) || anchor.owner.selects(Guards.default_true) || anchor.owner.selects(Guards.case_true) || anchor.owner.selects(Guards.switch_true) || anchor.owner.selects(Guards.if_true) || anchor.owner.selects(Guards.else_true) || anchor.owner.selects(Guards.for_true) || anchor.owner.selects(Guards.in_true) || anchor.owner.selects(Guards.while_true) || anchor.owner.selects(Guards.repeat_true) || anchor.owner.selects(Guards.return_true) || anchor.owner.selects(Guards.break_true) || anchor.owner.selects(Guards.continue_true) || anchor.owner.selects(Guards.where_true) || anchor.owner.selects(Guards.is_true) || anchor.owner.selects(Guards.as_true) || anchor.owner.selects(Guards.try_true) || anchor.owner.selects(Guards.throw_true) || anchor.owner.selects(Guards.throws_true) || anchor.owner.selects(Guards.guard_true) || anchor.owner.selects(Guards.defer_true) || anchor.owner.selects(Guards.do_true) || anchor.owner.selects(Guards.catch_true) || anchor.owner.selects(Guards.true_true) || anchor.owner.selects(Guards.false_true) || anchor.owner.selects(Guards.nil_true) || anchor.owner.selects(Guards.super_true) || anchor.owner.selects(Guards.internal_true) || anchor.owner.selects(Guards.private_true) || anchor.owner.selects(Guards.public_true) || anchor.owner.selects(Guards.fileprivate_true) || anchor.owner.selects(Guards.open_true) || anchor.owner.selects(Guards.inout_true) || anchor.owner.selects(Guards.typealias_true) || anchor.owner.selects(Guards.associatedtype_true) || anchor.owner.selects(Guards.protocol_true) || anchor.owner.selects(Guards.some_true) || anchor.owner.selects(Guards.any_true) || anchor.owner.selects(Guards.rethrows_true) || anchor.owner.selects(Guards.fallthrough_true) || anchor.owner.selects(Guards.precedencegroup_true) || anchor.owner.selects(Guards.__true) || anchor.owner.selects(Guards.var_true) || anchor.owner.selects(Guards.let_true) || anchor.owner.selects(Guards.Self_true) || anchor.owner.selects(Guards.async_true) || anchor.owner.selects(Guards.borrowing_true) || anchor.owner.selects(Guards.consume_true) || anchor.owner.selects(Guards.consuming_true) || anchor.owner.selects(Guards.copy_true) || anchor.owner.selects(Guards.discard_true) || anchor.owner.selects(Guards.each_true) || anchor.owner.selects(Guards.isolated_true) || anchor.owner.selects(Guards.sending_true) || anchor.owner.selects(Guards.then_true) || anchor.owner.selects(Guards.unsafe_true) || anchor.owner.selects(Guards.await_true) || anchor.owner.selects(Guards.anchor_true) || anchor.owner.selects(Guards.recordID_true) || anchor.owner.selects(Guards.satisfied_true) || anchor.owner.selects(Guards.missingRequiredField_true) || anchor.owner.selects(Guards.fieldErrors_true) || anchor.owner.selects(Guards.isPresent_true) || anchor.owner.selects(Guards.throwing_true) || anchor.owner.selects(Guards.caught_true) || anchor.owner.selects(Guards.refetchable_true) || anchor.owner.selects(Guards.refetch_true) || anchor.owner.selects(Guards.connection_true) || anchor.owner.selects(Guards.nodes_true) || anchor.owner.selects(Guards.hasNext_true) || anchor.owner.selects(Guards.hasPrevious_true) || anchor.owner.selects(Guards.isLoadingNext_true) || anchor.owner.selects(Guards.isLoadingPrevious_true) || anchor.owner.selects(Guards.connectionID_true) || anchor.owner.selects(Guards.loadNext_true) || anchor.owner.selects(Guards.loadPrevious_true) || anchor.owner.selects(Guards.bound_true) || anchor.owner.selects(Guards.errors_true) || anchor.owner.selects(Guards.child_true) || anchor.owner.selects(Guards.missing_true) || anchor.owner.selects(Guards.count_true) || anchor.owner.selects(Guards.fields_true) || anchor.owner.selects(Guards.lhs_true) || anchor.owner.selects(Guards.rhs_true) || anchor.owner.selects(Guards.hasher_true) || anchor.owner.selects(Guards.selfValue_true) || anchor.owner.selects(Guards.Fragment_true) || anchor.owner.selects(Guards.Spread_true) || anchor.owner.selects(Guards.Owner_true) || anchor.owner.selects(Guards.Query_true) || anchor.owner.selects(Guards.Operation_true) || anchor.owner.selects(Guards.RefetchQuery_true) || anchor.owner.selects(Guards.resolution_true) || anchor.owner.selects(Guards.name_true) || anchor.owner.selects(Guards.document_true) || anchor.owner.selects(Guards.text_true) || anchor.owner.selects(Guards.plan_true) || anchor.owner.selects(Guards.errorBehavior_true) || anchor.owner.selects(Guards.throwsOnFieldError_true) || anchor.owner.selects(Guards.bubbles_true) || anchor.owner.selects(Guards.hasDeferred_true) || anchor.owner.selects(Guards.cacheExpiration_true) || anchor.owner.selects(Guards.hash_true) || anchor.owner.selects(Guards.commit_true) || anchor.owner.selects(Guards.callAsFunction_true) || anchor.owner.selects(Guards.Op_true) || anchor.owner.selects(Guards.variable_true) || anchor.owner.selects(Guards.phase_true) || anchor.owner.selects(Guards.isRefreshing_true) || anchor.owner.selects(Guards.isStale_true) || anchor.owner.selects(Guards.retry_true) || anchor.owner.selects(Guards.subscription_true) || anchor.owner.selects(Guards.Sites_true) || anchor.owner.selects(Guards.AbstractSlots_true) || anchor.owner.selects(Guards.schemaDigest_true) || anchor.owner.selects(Guards.format_true) || anchor.owner.selects(Guards.transient_true) || anchor.owner.selects(Guards.Swift_true) || anchor.owner.selects(Guards.Set_true) || anchor.owner.selects(Guards.Result_true) || anchor.owner.selects(Guards.Optional_true) || anchor.owner.selects(Guards.String_true) || anchor.owner.selects(Guards.Int_true) || anchor.owner.selects(Guards.Double_true) || anchor.owner.selects(Guards.Bool_true) || anchor.owner.selects(Guards.MainActor_true) || anchor.owner.selects(Guards.Hasher_true) || anchor.owner.selects(Guards.Sendable_true)) ? anchor.string(Slots.Character.name) : nil }
                 /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
                 @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
                     var errors: [Baton.FieldError] = []
                     anchor.collectError(Slots.Character.id, into: &errors)
-                    if (anchor.owner.selects(Guards.Type_true) || anchor.owner.selects(Guards.Protocol_true) || anchor.owner.selects(Guards.Any_true) || anchor.owner.selects(Guards.self_true) || anchor.owner.selects(Guards.init_true) || anchor.owner.selects(Guards.deinit_true) || anchor.owner.selects(Guards.subscript_true) || anchor.owner.selects(Guards.class_true) || anchor.owner.selects(Guards.struct_true) || anchor.owner.selects(Guards.enum_true) || anchor.owner.selects(Guards.func_true) || anchor.owner.selects(Guards.import_true) || anchor.owner.selects(Guards.extension_true) || anchor.owner.selects(Guards.operator_true) || anchor.owner.selects(Guards.static_true) || anchor.owner.selects(Guards.default_true) || anchor.owner.selects(Guards.case_true) || anchor.owner.selects(Guards.switch_true) || anchor.owner.selects(Guards.if_true) || anchor.owner.selects(Guards.else_true) || anchor.owner.selects(Guards.for_true) || anchor.owner.selects(Guards.in_true) || anchor.owner.selects(Guards.while_true) || anchor.owner.selects(Guards.repeat_true) || anchor.owner.selects(Guards.return_true) || anchor.owner.selects(Guards.break_true) || anchor.owner.selects(Guards.continue_true) || anchor.owner.selects(Guards.where_true) || anchor.owner.selects(Guards.is_true) || anchor.owner.selects(Guards.as_true) || anchor.owner.selects(Guards.try_true) || anchor.owner.selects(Guards.throw_true) || anchor.owner.selects(Guards.throws_true) || anchor.owner.selects(Guards.guard_true) || anchor.owner.selects(Guards.defer_true) || anchor.owner.selects(Guards.do_true) || anchor.owner.selects(Guards.catch_true) || anchor.owner.selects(Guards.true_true) || anchor.owner.selects(Guards.false_true) || anchor.owner.selects(Guards.nil_true) || anchor.owner.selects(Guards.super_true) || anchor.owner.selects(Guards.internal_true) || anchor.owner.selects(Guards.private_true) || anchor.owner.selects(Guards.public_true) || anchor.owner.selects(Guards.fileprivate_true) || anchor.owner.selects(Guards.open_true) || anchor.owner.selects(Guards.inout_true) || anchor.owner.selects(Guards.typealias_true) || anchor.owner.selects(Guards.associatedtype_true) || anchor.owner.selects(Guards.protocol_true) || anchor.owner.selects(Guards.some_true) || anchor.owner.selects(Guards.any_true) || anchor.owner.selects(Guards.rethrows_true) || anchor.owner.selects(Guards.fallthrough_true) || anchor.owner.selects(Guards.precedencegroup_true) || anchor.owner.selects(Guards.__true) || anchor.owner.selects(Guards.var_true) || anchor.owner.selects(Guards.let_true) || anchor.owner.selects(Guards.Self_true) || anchor.owner.selects(Guards.async_true) || anchor.owner.selects(Guards.borrowing_true) || anchor.owner.selects(Guards.consume_true) || anchor.owner.selects(Guards.consuming_true) || anchor.owner.selects(Guards.copy_true) || anchor.owner.selects(Guards.discard_true) || anchor.owner.selects(Guards.each_true) || anchor.owner.selects(Guards.isolated_true) || anchor.owner.selects(Guards.sending_true) || anchor.owner.selects(Guards.then_true) || anchor.owner.selects(Guards.unsafe_true) || anchor.owner.selects(Guards.await_true) || anchor.owner.selects(Guards.anchor_true) || anchor.owner.selects(Guards.recordID_true) || anchor.owner.selects(Guards.typeName_true) || anchor.owner.selects(Guards.satisfied_true) || anchor.owner.selects(Guards.missingRequiredField_true) || anchor.owner.selects(Guards.fieldErrors_true) || anchor.owner.selects(Guards.isPresent_true) || anchor.owner.selects(Guards.throwing_true) || anchor.owner.selects(Guards.caught_true) || anchor.owner.selects(Guards.refetchable_true) || anchor.owner.selects(Guards.refetch_true) || anchor.owner.selects(Guards.connection_true) || anchor.owner.selects(Guards.nodes_true) || anchor.owner.selects(Guards.hasNext_true) || anchor.owner.selects(Guards.hasPrevious_true) || anchor.owner.selects(Guards.isLoadingNext_true) || anchor.owner.selects(Guards.isLoadingPrevious_true) || anchor.owner.selects(Guards.connectionID_true) || anchor.owner.selects(Guards.loadNext_true) || anchor.owner.selects(Guards.loadPrevious_true) || anchor.owner.selects(Guards.bound_true) || anchor.owner.selects(Guards.errors_true) || anchor.owner.selects(Guards.child_true) || anchor.owner.selects(Guards.missing_true) || anchor.owner.selects(Guards.count_true) || anchor.owner.selects(Guards.fields_true) || anchor.owner.selects(Guards.lhs_true) || anchor.owner.selects(Guards.rhs_true) || anchor.owner.selects(Guards.hasher_true) || anchor.owner.selects(Guards.selfValue_true) || anchor.owner.selects(Guards.Fragment_true) || anchor.owner.selects(Guards.Spread_true) || anchor.owner.selects(Guards.Owner_true) || anchor.owner.selects(Guards.Query_true) || anchor.owner.selects(Guards.Operation_true) || anchor.owner.selects(Guards.RefetchQuery_true) || anchor.owner.selects(Guards.resolution_true) || anchor.owner.selects(Guards.name_true) || anchor.owner.selects(Guards.document_true) || anchor.owner.selects(Guards.text_true) || anchor.owner.selects(Guards.plan_true) || anchor.owner.selects(Guards.errorBehavior_true) || anchor.owner.selects(Guards.throwsOnFieldError_true) || anchor.owner.selects(Guards.bubbles_true) || anchor.owner.selects(Guards.hasDeferred_true) || anchor.owner.selects(Guards.cacheExpiration_true) || anchor.owner.selects(Guards.hash_true) || anchor.owner.selects(Guards.commit_true) || anchor.owner.selects(Guards.callAsFunction_true) || anchor.owner.selects(Guards.Op_true) || anchor.owner.selects(Guards.variable_true) || anchor.owner.selects(Guards.phase_true) || anchor.owner.selects(Guards.isRefreshing_true) || anchor.owner.selects(Guards.isStale_true) || anchor.owner.selects(Guards.retry_true) || anchor.owner.selects(Guards.subscription_true) || anchor.owner.selects(Guards.Sites_true) || anchor.owner.selects(Guards.AbstractSlots_true) || anchor.owner.selects(Guards.schemaDigest_true) || anchor.owner.selects(Guards.format_true) || anchor.owner.selects(Guards.transient_true) || anchor.owner.selects(Guards.Swift_true) || anchor.owner.selects(Guards.Set_true) || anchor.owner.selects(Guards.Result_true) || anchor.owner.selects(Guards.Optional_true) || anchor.owner.selects(Guards.String_true) || anchor.owner.selects(Guards.Int_true) || anchor.owner.selects(Guards.Double_true) || anchor.owner.selects(Guards.Bool_true) || anchor.owner.selects(Guards.MainActor_true) || anchor.owner.selects(Guards.Hasher_true) || anchor.owner.selects(Guards.Sendable_true)) {
+                    if (anchor.owner.selects(Guards.Type_true) || anchor.owner.selects(Guards.Protocol_true) || anchor.owner.selects(Guards.Any_true) || anchor.owner.selects(Guards.self_true) || anchor.owner.selects(Guards.init_true) || anchor.owner.selects(Guards.deinit_true) || anchor.owner.selects(Guards.subscript_true) || anchor.owner.selects(Guards.class_true) || anchor.owner.selects(Guards.struct_true) || anchor.owner.selects(Guards.enum_true) || anchor.owner.selects(Guards.func_true) || anchor.owner.selects(Guards.import_true) || anchor.owner.selects(Guards.extension_true) || anchor.owner.selects(Guards.operator_true) || anchor.owner.selects(Guards.static_true) || anchor.owner.selects(Guards.default_true) || anchor.owner.selects(Guards.case_true) || anchor.owner.selects(Guards.switch_true) || anchor.owner.selects(Guards.if_true) || anchor.owner.selects(Guards.else_true) || anchor.owner.selects(Guards.for_true) || anchor.owner.selects(Guards.in_true) || anchor.owner.selects(Guards.while_true) || anchor.owner.selects(Guards.repeat_true) || anchor.owner.selects(Guards.return_true) || anchor.owner.selects(Guards.break_true) || anchor.owner.selects(Guards.continue_true) || anchor.owner.selects(Guards.where_true) || anchor.owner.selects(Guards.is_true) || anchor.owner.selects(Guards.as_true) || anchor.owner.selects(Guards.try_true) || anchor.owner.selects(Guards.throw_true) || anchor.owner.selects(Guards.throws_true) || anchor.owner.selects(Guards.guard_true) || anchor.owner.selects(Guards.defer_true) || anchor.owner.selects(Guards.do_true) || anchor.owner.selects(Guards.catch_true) || anchor.owner.selects(Guards.true_true) || anchor.owner.selects(Guards.false_true) || anchor.owner.selects(Guards.nil_true) || anchor.owner.selects(Guards.super_true) || anchor.owner.selects(Guards.internal_true) || anchor.owner.selects(Guards.private_true) || anchor.owner.selects(Guards.public_true) || anchor.owner.selects(Guards.fileprivate_true) || anchor.owner.selects(Guards.open_true) || anchor.owner.selects(Guards.inout_true) || anchor.owner.selects(Guards.typealias_true) || anchor.owner.selects(Guards.associatedtype_true) || anchor.owner.selects(Guards.protocol_true) || anchor.owner.selects(Guards.some_true) || anchor.owner.selects(Guards.any_true) || anchor.owner.selects(Guards.rethrows_true) || anchor.owner.selects(Guards.fallthrough_true) || anchor.owner.selects(Guards.precedencegroup_true) || anchor.owner.selects(Guards.__true) || anchor.owner.selects(Guards.var_true) || anchor.owner.selects(Guards.let_true) || anchor.owner.selects(Guards.Self_true) || anchor.owner.selects(Guards.async_true) || anchor.owner.selects(Guards.borrowing_true) || anchor.owner.selects(Guards.consume_true) || anchor.owner.selects(Guards.consuming_true) || anchor.owner.selects(Guards.copy_true) || anchor.owner.selects(Guards.discard_true) || anchor.owner.selects(Guards.each_true) || anchor.owner.selects(Guards.isolated_true) || anchor.owner.selects(Guards.sending_true) || anchor.owner.selects(Guards.then_true) || anchor.owner.selects(Guards.unsafe_true) || anchor.owner.selects(Guards.await_true) || anchor.owner.selects(Guards.anchor_true) || anchor.owner.selects(Guards.recordID_true) || anchor.owner.selects(Guards.satisfied_true) || anchor.owner.selects(Guards.missingRequiredField_true) || anchor.owner.selects(Guards.fieldErrors_true) || anchor.owner.selects(Guards.isPresent_true) || anchor.owner.selects(Guards.throwing_true) || anchor.owner.selects(Guards.caught_true) || anchor.owner.selects(Guards.refetchable_true) || anchor.owner.selects(Guards.refetch_true) || anchor.owner.selects(Guards.connection_true) || anchor.owner.selects(Guards.nodes_true) || anchor.owner.selects(Guards.hasNext_true) || anchor.owner.selects(Guards.hasPrevious_true) || anchor.owner.selects(Guards.isLoadingNext_true) || anchor.owner.selects(Guards.isLoadingPrevious_true) || anchor.owner.selects(Guards.connectionID_true) || anchor.owner.selects(Guards.loadNext_true) || anchor.owner.selects(Guards.loadPrevious_true) || anchor.owner.selects(Guards.bound_true) || anchor.owner.selects(Guards.errors_true) || anchor.owner.selects(Guards.child_true) || anchor.owner.selects(Guards.missing_true) || anchor.owner.selects(Guards.count_true) || anchor.owner.selects(Guards.fields_true) || anchor.owner.selects(Guards.lhs_true) || anchor.owner.selects(Guards.rhs_true) || anchor.owner.selects(Guards.hasher_true) || anchor.owner.selects(Guards.selfValue_true) || anchor.owner.selects(Guards.Fragment_true) || anchor.owner.selects(Guards.Spread_true) || anchor.owner.selects(Guards.Owner_true) || anchor.owner.selects(Guards.Query_true) || anchor.owner.selects(Guards.Operation_true) || anchor.owner.selects(Guards.RefetchQuery_true) || anchor.owner.selects(Guards.resolution_true) || anchor.owner.selects(Guards.name_true) || anchor.owner.selects(Guards.document_true) || anchor.owner.selects(Guards.text_true) || anchor.owner.selects(Guards.plan_true) || anchor.owner.selects(Guards.errorBehavior_true) || anchor.owner.selects(Guards.throwsOnFieldError_true) || anchor.owner.selects(Guards.bubbles_true) || anchor.owner.selects(Guards.hasDeferred_true) || anchor.owner.selects(Guards.cacheExpiration_true) || anchor.owner.selects(Guards.hash_true) || anchor.owner.selects(Guards.commit_true) || anchor.owner.selects(Guards.callAsFunction_true) || anchor.owner.selects(Guards.Op_true) || anchor.owner.selects(Guards.variable_true) || anchor.owner.selects(Guards.phase_true) || anchor.owner.selects(Guards.isRefreshing_true) || anchor.owner.selects(Guards.isStale_true) || anchor.owner.selects(Guards.retry_true) || anchor.owner.selects(Guards.subscription_true) || anchor.owner.selects(Guards.Sites_true) || anchor.owner.selects(Guards.AbstractSlots_true) || anchor.owner.selects(Guards.schemaDigest_true) || anchor.owner.selects(Guards.format_true) || anchor.owner.selects(Guards.transient_true) || anchor.owner.selects(Guards.Swift_true) || anchor.owner.selects(Guards.Set_true) || anchor.owner.selects(Guards.Result_true) || anchor.owner.selects(Guards.Optional_true) || anchor.owner.selects(Guards.String_true) || anchor.owner.selects(Guards.Int_true) || anchor.owner.selects(Guards.Double_true) || anchor.owner.selects(Guards.Bool_true) || anchor.owner.selects(Guards.MainActor_true) || anchor.owner.selects(Guards.Hasher_true) || anchor.owner.selects(Guards.Sendable_true)) {
                         anchor.collectError(Slots.Character.name, into: &errors)
                     }
                     return errors
@@ -6073,8 +5703,8 @@ mutation HostileMutationVariables(
 extension HostileMutationVariables.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
-    public func callAsFunction(`Type`: Bool, `Protocol`: Bool, `Any`: Bool, `self` selfValue2: Bool, `init`: Bool, `deinit`: Bool, `subscript`: Bool, `class`: Bool, `struct`: Bool, `enum`: Bool, `func`: Bool, `import`: Bool, `extension`: Bool, `operator`: Bool, `static`: Bool, `default`: Bool, `case`: Bool, `switch`: Bool, `if`: Bool, `else`: Bool, `for`: Bool, `in`: Bool, `while`: Bool, `repeat`: Bool, `return`: Bool, `break`: Bool, `continue`: Bool, `where`: Bool, `is`: Bool, `as`: Bool, `try`: Bool, `throw`: Bool, `throws`: Bool, `guard`: Bool, `defer`: Bool, `do`: Bool, `catch`: Bool, `true`: Bool, `false`: Bool, `nil`: Bool, `super`: Bool, `internal`: Bool, `private`: Bool, `public`: Bool, `fileprivate`: Bool, `open`: Bool, `inout`: Bool, `typealias`: Bool, `associatedtype`: Bool, `protocol`: Bool, `some`: Bool, `any`: Bool, `rethrows`: Bool, `fallthrough`: Bool, `precedencegroup`: Bool, `_`: Bool, `var`: Bool, `let`: Bool, `Self`: Bool, async: Bool, `borrowing`: Bool, consume: Bool, `consuming`: Bool, copy: Bool, discard: Bool, `each`: Bool, `isolated`: Bool, `sending`: Bool, then: Bool, unsafe: Bool, `await`: Bool, anchor: Bool, recordID: Bool, typeName: Bool, satisfied: Bool, missingRequiredField: Bool, fieldErrors: Bool, isPresent: Bool, throwing: Bool, caught: Bool, refetchable: Bool, refetch: Bool, connection: Bool, nodes: Bool, hasNext: Bool, hasPrevious: Bool, isLoadingNext: Bool, isLoadingPrevious: Bool, connectionID: Bool, loadNext: Bool, loadPrevious: Bool, bound: Bool, errors: Bool, child: Bool, missing: Bool, count: Bool, fields: Bool, lhs: Bool, rhs: Bool, hasher: Bool, selfValue: Bool, Fragment: Bool, Spread: Bool, Owner: Bool, Query: Bool, Operation: Bool, RefetchQuery: Bool, resolution: Bool, name: Bool, document: Bool, text: Bool, plan: Bool, errorBehavior: Bool, throwsOnFieldError: Bool, bubbles: Bool, hasDeferred: Bool, cacheExpiration: Bool, hash: Bool, commit: Bool, callAsFunction: Bool, Op: Bool, variable: Bool, phase: Bool, isRefreshing: Bool, isStale: Bool, retry: Bool, subscription: Bool, Sites: Bool, AbstractSlots: Bool, schemaDigest: Bool, format: Bool, transient: Bool, Swift: Bool, Set: Bool, Result: Bool, Optional: Bool, String: Bool, Int: Bool, Double: Bool, Bool: Bool, MainActor: Bool, Hasher: Bool, Sendable: Bool, optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
-        try await self.commit(.init(Type: `Type`, Protocol: `Protocol`, Any: `Any`, self: selfValue2, init: `init`, deinit: `deinit`, subscript: `subscript`, class: `class`, struct: `struct`, enum: `enum`, func: `func`, import: `import`, extension: `extension`, operator: `operator`, static: `static`, default: `default`, case: `case`, switch: `switch`, if: `if`, else: `else`, for: `for`, in: `in`, while: `while`, repeat: `repeat`, return: `return`, break: `break`, continue: `continue`, where: `where`, is: `is`, as: `as`, try: `try`, throw: `throw`, throws: `throws`, guard: `guard`, defer: `defer`, do: `do`, catch: `catch`, true: `true`, false: `false`, nil: `nil`, super: `super`, internal: `internal`, private: `private`, public: `public`, fileprivate: `fileprivate`, open: `open`, `inout`: `inout`, typealias: `typealias`, associatedtype: `associatedtype`, protocol: `protocol`, some: `some`, any: `any`, rethrows: `rethrows`, fallthrough: `fallthrough`, precedencegroup: `precedencegroup`, `_`: `_`, var: `var`, let: `let`, Self: `Self`, async: async, borrowing: `borrowing`, consume: consume, consuming: `consuming`, copy: copy, discard: discard, each: `each`, isolated: `isolated`, sending: `sending`, then: then, unsafe: unsafe, await: `await`, anchor: anchor, recordID: recordID, typeName: typeName, satisfied: satisfied, missingRequiredField: missingRequiredField, fieldErrors: fieldErrors, isPresent: isPresent, throwing: throwing, caught: caught, refetchable: refetchable, refetch: refetch, connection: connection, nodes: nodes, hasNext: hasNext, hasPrevious: hasPrevious, isLoadingNext: isLoadingNext, isLoadingPrevious: isLoadingPrevious, connectionID: connectionID, loadNext: loadNext, loadPrevious: loadPrevious, bound: bound, errors: errors, child: child, missing: missing, count: count, fields: fields, lhs: lhs, rhs: rhs, hasher: hasher, selfValue: selfValue, Fragment: Fragment, Spread: Spread, Owner: Owner, Query: Query, Operation: Operation, RefetchQuery: RefetchQuery, resolution: resolution, name: name, document: document, text: text, plan: plan, errorBehavior: errorBehavior, throwsOnFieldError: throwsOnFieldError, bubbles: bubbles, hasDeferred: hasDeferred, cacheExpiration: cacheExpiration, hash: hash, commit: commit, callAsFunction: callAsFunction, Op: Op, variable: variable, phase: phase, isRefreshing: isRefreshing, isStale: isStale, retry: retry, subscription: subscription, Sites: Sites, AbstractSlots: AbstractSlots, schemaDigest: schemaDigest, format: format, transient: transient, Swift: Swift, Set: Set, Result: Result, Optional: Optional, String: String, Int: Int, Double: Double, Bool: Bool, MainActor: MainActor, Hasher: Hasher, Sendable: Sendable), optimistic: optimistic?.variable)
+    public func callAsFunction(`Type`: Bool, `Protocol`: Bool, `Any`: Bool, `self` selfValue2: Bool, `init`: Bool, `deinit`: Bool, `subscript`: Bool, `class`: Bool, `struct`: Bool, `enum`: Bool, `func`: Bool, `import`: Bool, `extension`: Bool, `operator`: Bool, `static`: Bool, `default`: Bool, `case`: Bool, `switch`: Bool, `if`: Bool, `else`: Bool, `for`: Bool, `in`: Bool, `while`: Bool, `repeat`: Bool, `return`: Bool, `break`: Bool, `continue`: Bool, `where`: Bool, `is`: Bool, `as`: Bool, `try`: Bool, `throw`: Bool, `throws`: Bool, `guard`: Bool, `defer`: Bool, `do`: Bool, `catch`: Bool, `true`: Bool, `false`: Bool, `nil`: Bool, `super`: Bool, `internal`: Bool, `private`: Bool, `public`: Bool, `fileprivate`: Bool, `open`: Bool, `inout`: Bool, `typealias`: Bool, `associatedtype`: Bool, `protocol`: Bool, `some`: Bool, `any`: Bool, `rethrows`: Bool, `fallthrough`: Bool, `precedencegroup`: Bool, `_`: Bool, `var`: Bool, `let`: Bool, `Self`: Bool, async: Bool, `borrowing`: Bool, consume: Bool, `consuming`: Bool, copy: Bool, discard: Bool, `each`: Bool, `isolated`: Bool, `sending`: Bool, then: Bool, unsafe: Bool, `await`: Bool, anchor: Bool, recordID: Bool, satisfied: Bool, missingRequiredField: Bool, fieldErrors: Bool, isPresent: Bool, throwing: Bool, caught: Bool, refetchable: Bool, refetch: Bool, connection: Bool, nodes: Bool, hasNext: Bool, hasPrevious: Bool, isLoadingNext: Bool, isLoadingPrevious: Bool, connectionID: Bool, loadNext: Bool, loadPrevious: Bool, bound: Bool, errors: Bool, child: Bool, missing: Bool, count: Bool, fields: Bool, lhs: Bool, rhs: Bool, hasher: Bool, selfValue: Bool, Fragment: Bool, Spread: Bool, Owner: Bool, Query: Bool, Operation: Bool, RefetchQuery: Bool, resolution: Bool, name: Bool, document: Bool, text: Bool, plan: Bool, errorBehavior: Bool, throwsOnFieldError: Bool, bubbles: Bool, hasDeferred: Bool, cacheExpiration: Bool, hash: Bool, commit: Bool, callAsFunction: Bool, Op: Bool, variable: Bool, phase: Bool, isRefreshing: Bool, isStale: Bool, retry: Bool, subscription: Bool, Sites: Bool, AbstractSlots: Bool, schemaDigest: Bool, format: Bool, transient: Bool, Swift: Bool, Set: Bool, Result: Bool, Optional: Bool, String: Bool, Int: Bool, Double: Bool, Bool: Bool, MainActor: Bool, Hasher: Bool, Sendable: Bool, optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
+        try await self.commit(.init(Type: `Type`, Protocol: `Protocol`, Any: `Any`, self: selfValue2, init: `init`, deinit: `deinit`, subscript: `subscript`, class: `class`, struct: `struct`, enum: `enum`, func: `func`, import: `import`, extension: `extension`, operator: `operator`, static: `static`, default: `default`, case: `case`, switch: `switch`, if: `if`, else: `else`, for: `for`, in: `in`, while: `while`, repeat: `repeat`, return: `return`, break: `break`, continue: `continue`, where: `where`, is: `is`, as: `as`, try: `try`, throw: `throw`, throws: `throws`, guard: `guard`, defer: `defer`, do: `do`, catch: `catch`, true: `true`, false: `false`, nil: `nil`, super: `super`, internal: `internal`, private: `private`, public: `public`, fileprivate: `fileprivate`, open: `open`, `inout`: `inout`, typealias: `typealias`, associatedtype: `associatedtype`, protocol: `protocol`, some: `some`, any: `any`, rethrows: `rethrows`, fallthrough: `fallthrough`, precedencegroup: `precedencegroup`, `_`: `_`, var: `var`, let: `let`, Self: `Self`, async: async, borrowing: `borrowing`, consume: consume, consuming: `consuming`, copy: copy, discard: discard, each: `each`, isolated: `isolated`, sending: `sending`, then: then, unsafe: unsafe, await: `await`, anchor: anchor, recordID: recordID, satisfied: satisfied, missingRequiredField: missingRequiredField, fieldErrors: fieldErrors, isPresent: isPresent, throwing: throwing, caught: caught, refetchable: refetchable, refetch: refetch, connection: connection, nodes: nodes, hasNext: hasNext, hasPrevious: hasPrevious, isLoadingNext: isLoadingNext, isLoadingPrevious: isLoadingPrevious, connectionID: connectionID, loadNext: loadNext, loadPrevious: loadPrevious, bound: bound, errors: errors, child: child, missing: missing, count: count, fields: fields, lhs: lhs, rhs: rhs, hasher: hasher, selfValue: selfValue, Fragment: Fragment, Spread: Spread, Owner: Owner, Query: Query, Operation: Operation, RefetchQuery: RefetchQuery, resolution: resolution, name: name, document: document, text: text, plan: plan, errorBehavior: errorBehavior, throwsOnFieldError: throwsOnFieldError, bubbles: bubbles, hasDeferred: hasDeferred, cacheExpiration: cacheExpiration, hash: hash, commit: commit, callAsFunction: callAsFunction, Op: Op, variable: variable, phase: phase, isRefreshing: isRefreshing, isStale: isStale, retry: retry, subscription: subscription, Sites: Sites, AbstractSlots: AbstractSlots, schemaDigest: schemaDigest, format: format, transient: transient, Swift: Swift, Set: Set, Result: Result, Optional: Optional, String: String, Int: Int, Double: Double, Bool: Bool, MainActor: MainActor, Hasher: Hasher, Sendable: Sendable), optimistic: optimistic?.variable)
     }
 }
 
@@ -6122,19 +5752,16 @@ mutation HostileNamesake(
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Mutation"
         @MainActor public var setFavorite: SetFavorite? { anchor.linked(Slots.Mutation.setFavorite).map(SetFavorite.init(anchor:)) }
 
         nonisolated public struct SetFavorite: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "FavoritePayload"
             @MainActor public var character: Character? { anchor.linked(Slots.FavoritePayload.character).map(Character.init(anchor:)) }
 
             nonisolated public struct Character: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Character"
                 @MainActor public var id: String? { anchor.string(Slots.Character.id) }
             }
         }
@@ -6272,7 +5899,6 @@ mutation HostilePayload {
       then: name
       unsafe: name
       await: name
-      typeName: name
       satisfied: name
       missingRequiredField: name
       fieldErrors: name
@@ -6565,9 +6191,6 @@ mutation HostilePayload {
       id
     }
     await: note {
-      id
-    }
-    typeName: note {
       id
     }
     satisfied: note {
@@ -6890,7 +6513,6 @@ mutation HostilePayload {
                     .scalar("then", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("unsafe", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("await", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("typeName", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("satisfied", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("missingRequiredField", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("fieldErrors", key: .fixed(Slots.Character.name), kind: .string, list: false),
@@ -7185,9 +6807,6 @@ mutation HostilePayload {
                 .linked("await", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("typeName", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
                 .linked("satisfied", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
@@ -7425,20 +7044,17 @@ mutation HostilePayload {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Mutation"
         @MainActor public var setFavorite: SetFavorite? { anchor.linked(Slots.Mutation.setFavorite).map(SetFavorite.init(anchor:)) }
         @MainActor public var addNote: AddNote? { anchor.linked(Slots.Mutation.addNote).map(AddNote.init(anchor:)) }
 
         nonisolated public struct SetFavorite: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "FavoritePayload"
             @MainActor public var character: Character? { anchor.linked(Slots.FavoritePayload.character).map(Character.init(anchor:)) }
 
             nonisolated public struct Character: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Character"
                 @MainActor public var `Type`: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var `Protocol`: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var `Any`: String? { anchor.string(Slots.Character.name) }
@@ -7510,7 +7126,6 @@ mutation HostilePayload {
                 @MainActor public var then: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var unsafe: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var `await`: String? { anchor.string(Slots.Character.name) }
-                @MainActor public var typeName: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var satisfied: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var missingRequiredField: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var fieldErrors: String? { anchor.string(Slots.Character.name) }
@@ -7594,7 +7209,6 @@ mutation HostilePayload {
         nonisolated public struct AddNote: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "AddNotePayload"
             @MainActor public var `Type`: TypeLens? { anchor.linked(Slots.AddNotePayload.note).map(TypeLens.init(anchor:)) }
             @MainActor public var `Protocol`: ProtocolLens? { anchor.linked(Slots.AddNotePayload.note).map(ProtocolLens.init(anchor:)) }
             @MainActor public var `Any`: AnyLens? { anchor.linked(Slots.AddNotePayload.note).map(AnyLens.init(anchor:)) }
@@ -7666,7 +7280,6 @@ mutation HostilePayload {
             @MainActor public var then: Then? { anchor.linked(Slots.AddNotePayload.note).map(Then.init(anchor:)) }
             @MainActor public var unsafe: Unsafe? { anchor.linked(Slots.AddNotePayload.note).map(Unsafe.init(anchor:)) }
             @MainActor public var `await`: Await? { anchor.linked(Slots.AddNotePayload.note).map(Await.init(anchor:)) }
-            @MainActor public var typeName: TypeName? { anchor.linked(Slots.AddNotePayload.note).map(TypeName.init(anchor:)) }
             @MainActor public var satisfied: Satisfied? { anchor.linked(Slots.AddNotePayload.note).map(Satisfied.init(anchor:)) }
             @MainActor public var missingRequiredField: MissingRequiredField? { anchor.linked(Slots.AddNotePayload.note).map(MissingRequiredField.init(anchor:)) }
             @MainActor public var fieldErrors: FieldErrors? { anchor.linked(Slots.AddNotePayload.note).map(FieldErrors.init(anchor:)) }
@@ -7748,1043 +7361,888 @@ mutation HostilePayload {
             nonisolated public struct TypeLens: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct ProtocolLens: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct AnyLens: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct SelfLens: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct SelfLens2: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Init: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Deinit: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Subscript: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Class: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Struct: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Enum: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Func: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Var: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Let: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Import: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Extension: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Operator: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Static: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Default: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Case: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Switch: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct If: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Else: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct For: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct In: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct While: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Repeat: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Return: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Break: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Continue: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Where: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Is: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct As: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Try: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Throw: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Throws: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Guard: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Defer: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Do: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Catch: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct True: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct False: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Nil: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Super: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Internal: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Private: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Public: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Fileprivate: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Open: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Inout: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Typealias: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Associatedtype: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct ProtocolLens2: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Some: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct AnyLens2: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Rethrows: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Fallthrough: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Precedencegroup: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct _2: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Async: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Borrowing: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Consume: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Consuming: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Copy: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Discard: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Each: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Isolated: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Sending: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Then: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Unsafe: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Await: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
-                @MainActor public var id: String? { anchor.string(Slots.Note.id) }
-            }
-
-            nonisolated public struct TypeName: Baton.Lens {
-                @_spi(Generated) public let anchor: Baton.Anchor
-                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Satisfied: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct MissingRequiredField: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct FieldErrors: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct IsPresent: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Throwing: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Caught: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Refetchable: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Refetch: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Connection: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Nodes: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct HasNext: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct HasPrevious: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct IsLoadingNext: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct IsLoadingPrevious: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct ConnectionID: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct LoadNext: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct LoadPrevious: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Bound: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Errors: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Child: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Missing: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Count: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Lhs: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Rhs: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Hasher2: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Optimistic: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct SelfValue: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct FragmentLens: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Spread2: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Owner2: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Query2: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Operation2: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct RefetchQuery2: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Fields: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Variables: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Resolution: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Name: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Document: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Text: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Plan: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct ErrorBehavior: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct ThrowsOnFieldError: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Bubbles: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct HasDeferred: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct CacheExpiration: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Data2: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Action2: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct OptimisticResponse2: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Hash: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Commit: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct CallAsFunction: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Op2: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct HashValue: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Phase: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct IsRefreshing: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct IsStale: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Retry: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Subscription: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct TypesLens: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct SitesLens: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct GuardsLens: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct AbstractSlotsLens: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct SchemaDigest: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Format: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Transient: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct BatonLens: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Swift2: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Set2: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct ResultLens: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct OptionalLens: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct StringLens: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct IntLens: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct DoubleLens: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct BoolLens: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct MainActorLens: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Hasher3: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
             nonisolated public struct Sendable2: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Note"
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
         }
@@ -8892,7 +8350,6 @@ mutation HostilePayload {
                 public var then: String?
                 public var unsafe: String?
                 public var `await`: String?
-                public var typeName: String?
                 public var satisfied: String?
                 public var missingRequiredField: String?
                 public var fieldErrors: String?
@@ -8971,7 +8428,7 @@ mutation HostilePayload {
                 public var Hasher: String?
                 public var Sendable: String?
                 public var id: String?
-                public init(`Type`: String? = nil, `Protocol`: String? = nil, `Any`: String? = nil, `self` selfValue2: String? = nil, `Self`: String? = nil, `init`: String? = nil, `deinit`: String? = nil, `subscript`: String? = nil, `class`: String? = nil, `struct`: String? = nil, `enum`: String? = nil, `func`: String? = nil, `var`: String? = nil, `let`: String? = nil, `import`: String? = nil, `extension`: String? = nil, `operator`: String? = nil, `static`: String? = nil, `default`: String? = nil, `case`: String? = nil, `switch`: String? = nil, `if`: String? = nil, `else`: String? = nil, `for`: String? = nil, `in`: String? = nil, `while`: String? = nil, `repeat`: String? = nil, `return`: String? = nil, `break`: String? = nil, `continue`: String? = nil, `where`: String? = nil, `is`: String? = nil, `as`: String? = nil, `try`: String? = nil, `throw`: String? = nil, `throws`: String? = nil, `guard`: String? = nil, `defer`: String? = nil, `do`: String? = nil, `catch`: String? = nil, `true`: String? = nil, `false`: String? = nil, `nil`: String? = nil, `super`: String? = nil, `internal`: String? = nil, `private`: String? = nil, `public`: String? = nil, `fileprivate`: String? = nil, `open`: String? = nil, `inout`: String? = nil, `typealias`: String? = nil, `associatedtype`: String? = nil, `protocol`: String? = nil, `some`: String? = nil, `any`: String? = nil, `rethrows`: String? = nil, `fallthrough`: String? = nil, `precedencegroup`: String? = nil, `_`: String? = nil, async: String? = nil, `borrowing`: String? = nil, consume: String? = nil, `consuming`: String? = nil, copy: String? = nil, discard: String? = nil, `each`: String? = nil, `isolated`: String? = nil, `sending`: String? = nil, then: String? = nil, unsafe: String? = nil, `await`: String? = nil, typeName: String? = nil, satisfied: String? = nil, missingRequiredField: String? = nil, fieldErrors: String? = nil, isPresent: String? = nil, throwing: String? = nil, caught: String? = nil, refetchable: String? = nil, refetch: String? = nil, connection: String? = nil, nodes: String? = nil, hasNext: String? = nil, hasPrevious: String? = nil, isLoadingNext: String? = nil, isLoadingPrevious: String? = nil, connectionID: String? = nil, loadNext: String? = nil, loadPrevious: String? = nil, bound: String? = nil, errors: String? = nil, child: String? = nil, missing: String? = nil, count: String? = nil, lhs: String? = nil, rhs: String? = nil, hasher: String? = nil, optimistic: String? = nil, selfValue: String? = nil, Fragment: String? = nil, Spread: String? = nil, Owner: String? = nil, Query: String? = nil, Operation: String? = nil, RefetchQuery: String? = nil, fields: String? = nil, variables: String? = nil, resolution: String? = nil, name: String? = nil, document: String? = nil, text: String? = nil, plan: String? = nil, errorBehavior: String? = nil, throwsOnFieldError: String? = nil, bubbles: String? = nil, hasDeferred: String? = nil, cacheExpiration: String? = nil, Data: String? = nil, Action: String? = nil, OptimisticResponse: String? = nil, hash: String? = nil, commit: String? = nil, callAsFunction: String? = nil, Op: String? = nil, hashValue: String? = nil, phase: String? = nil, isRefreshing: String? = nil, isStale: String? = nil, retry: String? = nil, subscription: String? = nil, Types: String? = nil, Sites: String? = nil, Guards: String? = nil, AbstractSlots: String? = nil, schemaDigest: String? = nil, format: String? = nil, transient: String? = nil, Baton: String? = nil, Swift: String? = nil, Set: String? = nil, Result: String? = nil, Optional: String? = nil, String: String? = nil, Int: String? = nil, Double: String? = nil, Bool: String? = nil, MainActor: String? = nil, Hasher: String? = nil, Sendable: String? = nil, id: String? = nil) {
+                public init(`Type`: String? = nil, `Protocol`: String? = nil, `Any`: String? = nil, `self` selfValue2: String? = nil, `Self`: String? = nil, `init`: String? = nil, `deinit`: String? = nil, `subscript`: String? = nil, `class`: String? = nil, `struct`: String? = nil, `enum`: String? = nil, `func`: String? = nil, `var`: String? = nil, `let`: String? = nil, `import`: String? = nil, `extension`: String? = nil, `operator`: String? = nil, `static`: String? = nil, `default`: String? = nil, `case`: String? = nil, `switch`: String? = nil, `if`: String? = nil, `else`: String? = nil, `for`: String? = nil, `in`: String? = nil, `while`: String? = nil, `repeat`: String? = nil, `return`: String? = nil, `break`: String? = nil, `continue`: String? = nil, `where`: String? = nil, `is`: String? = nil, `as`: String? = nil, `try`: String? = nil, `throw`: String? = nil, `throws`: String? = nil, `guard`: String? = nil, `defer`: String? = nil, `do`: String? = nil, `catch`: String? = nil, `true`: String? = nil, `false`: String? = nil, `nil`: String? = nil, `super`: String? = nil, `internal`: String? = nil, `private`: String? = nil, `public`: String? = nil, `fileprivate`: String? = nil, `open`: String? = nil, `inout`: String? = nil, `typealias`: String? = nil, `associatedtype`: String? = nil, `protocol`: String? = nil, `some`: String? = nil, `any`: String? = nil, `rethrows`: String? = nil, `fallthrough`: String? = nil, `precedencegroup`: String? = nil, `_`: String? = nil, async: String? = nil, `borrowing`: String? = nil, consume: String? = nil, `consuming`: String? = nil, copy: String? = nil, discard: String? = nil, `each`: String? = nil, `isolated`: String? = nil, `sending`: String? = nil, then: String? = nil, unsafe: String? = nil, `await`: String? = nil, satisfied: String? = nil, missingRequiredField: String? = nil, fieldErrors: String? = nil, isPresent: String? = nil, throwing: String? = nil, caught: String? = nil, refetchable: String? = nil, refetch: String? = nil, connection: String? = nil, nodes: String? = nil, hasNext: String? = nil, hasPrevious: String? = nil, isLoadingNext: String? = nil, isLoadingPrevious: String? = nil, connectionID: String? = nil, loadNext: String? = nil, loadPrevious: String? = nil, bound: String? = nil, errors: String? = nil, child: String? = nil, missing: String? = nil, count: String? = nil, lhs: String? = nil, rhs: String? = nil, hasher: String? = nil, optimistic: String? = nil, selfValue: String? = nil, Fragment: String? = nil, Spread: String? = nil, Owner: String? = nil, Query: String? = nil, Operation: String? = nil, RefetchQuery: String? = nil, fields: String? = nil, variables: String? = nil, resolution: String? = nil, name: String? = nil, document: String? = nil, text: String? = nil, plan: String? = nil, errorBehavior: String? = nil, throwsOnFieldError: String? = nil, bubbles: String? = nil, hasDeferred: String? = nil, cacheExpiration: String? = nil, Data: String? = nil, Action: String? = nil, OptimisticResponse: String? = nil, hash: String? = nil, commit: String? = nil, callAsFunction: String? = nil, Op: String? = nil, hashValue: String? = nil, phase: String? = nil, isRefreshing: String? = nil, isStale: String? = nil, retry: String? = nil, subscription: String? = nil, Types: String? = nil, Sites: String? = nil, Guards: String? = nil, AbstractSlots: String? = nil, schemaDigest: String? = nil, format: String? = nil, transient: String? = nil, Baton: String? = nil, Swift: String? = nil, Set: String? = nil, Result: String? = nil, Optional: String? = nil, String: String? = nil, Int: String? = nil, Double: String? = nil, Bool: String? = nil, MainActor: String? = nil, Hasher: String? = nil, Sendable: String? = nil, id: String? = nil) {
                     self.`Type` = `Type`
                     self.`Protocol` = `Protocol`
                     self.`Any` = `Any`
@@ -9043,7 +8500,6 @@ mutation HostilePayload {
                     self.then = then
                     self.unsafe = unsafe
                     self.`await` = `await`
-                    self.typeName = typeName
                     self.satisfied = satisfied
                     self.missingRequiredField = missingRequiredField
                     self.fieldErrors = fieldErrors
@@ -9196,7 +8652,6 @@ mutation HostilePayload {
                     if let then { fields2["then"] = .init(then) }
                     if let unsafe { fields2["unsafe"] = .init(unsafe) }
                     if let `await` { fields2["await"] = .init(`await`) }
-                    if let typeName { fields2["typeName"] = .init(typeName) }
                     if let satisfied { fields2["satisfied"] = .init(satisfied) }
                     if let missingRequiredField { fields2["missingRequiredField"] = .init(missingRequiredField) }
                     if let fieldErrors { fields2["fieldErrors"] = .init(fieldErrors) }
@@ -9353,7 +8808,6 @@ mutation HostilePayload {
             public var then: Then?
             public var unsafe: Unsafe?
             public var `await`: Await?
-            public var typeName: TypeName?
             public var satisfied: Satisfied?
             public var missingRequiredField: MissingRequiredField?
             public var fieldErrors: FieldErrors?
@@ -9431,7 +8885,7 @@ mutation HostilePayload {
             public var MainActor: MainActor2?
             public var Hasher: Hasher3?
             public var Sendable: SendableResponse?
-            public init(`Type`: TypeResponse? = nil, `Protocol`: ProtocolResponse? = nil, `Any`: AnyResponse? = nil, `self` selfValue2: SelfResponse? = nil, `Self`: SelfResponse2? = nil, `init`: Init? = nil, `deinit`: Deinit? = nil, `subscript`: Subscript? = nil, `class`: Class? = nil, `struct`: Struct? = nil, `enum`: Enum? = nil, `func`: Func? = nil, `var`: Var? = nil, `let`: Let? = nil, `import`: Import? = nil, `extension`: Extension? = nil, `operator`: Operator? = nil, `static`: Static? = nil, `default`: Default? = nil, `case`: Case? = nil, `switch`: Switch? = nil, `if`: If? = nil, `else`: Else? = nil, `for`: For? = nil, `in`: In? = nil, `while`: While? = nil, `repeat`: Repeat? = nil, `return`: Return? = nil, `break`: Break? = nil, `continue`: Continue? = nil, `where`: Where? = nil, `is`: Is? = nil, `as`: As? = nil, `try`: Try? = nil, `throw`: Throw? = nil, `throws`: Throws? = nil, `guard`: Guard? = nil, `defer`: Defer? = nil, `do`: Do? = nil, `catch`: Catch? = nil, `true`: True? = nil, `false`: False? = nil, `nil`: Nil? = nil, `super`: Super? = nil, `internal`: Internal? = nil, `private`: Private? = nil, `public`: Public? = nil, `fileprivate`: Fileprivate? = nil, `open`: Open? = nil, `inout`: Inout? = nil, `typealias`: Typealias? = nil, `associatedtype`: Associatedtype? = nil, `protocol`: ProtocolResponse2? = nil, `some`: Some? = nil, `any`: AnyResponse2? = nil, `rethrows`: Rethrows? = nil, `fallthrough`: Fallthrough? = nil, `precedencegroup`: Precedencegroup? = nil, `_`: _2? = nil, async: Async? = nil, `borrowing`: Borrowing? = nil, consume: Consume? = nil, `consuming`: Consuming? = nil, copy: Copy? = nil, discard: Discard? = nil, `each`: Each? = nil, `isolated`: Isolated? = nil, `sending`: Sending? = nil, then: Then? = nil, unsafe: Unsafe? = nil, `await`: Await? = nil, typeName: TypeName? = nil, satisfied: Satisfied? = nil, missingRequiredField: MissingRequiredField? = nil, fieldErrors: FieldErrors? = nil, isPresent: IsPresent? = nil, throwing: Throwing? = nil, caught: Caught? = nil, refetchable: Refetchable? = nil, refetch: Refetch? = nil, connection: Connection? = nil, nodes: Nodes? = nil, hasNext: HasNext? = nil, hasPrevious: HasPrevious? = nil, isLoadingNext: IsLoadingNext? = nil, isLoadingPrevious: IsLoadingPrevious? = nil, connectionID: ConnectionID? = nil, loadNext: LoadNext? = nil, loadPrevious: LoadPrevious? = nil, bound: Bound? = nil, errors: Errors? = nil, child: Child? = nil, missing: Missing? = nil, count: Count? = nil, lhs: Lhs? = nil, rhs: Rhs? = nil, hasher: Hasher2? = nil, optimistic: Optimistic? = nil, selfValue: SelfValue? = nil, Fragment: Fragment2? = nil, Spread: Spread2? = nil, Owner: Owner2? = nil, Query: Query2? = nil, Operation: Operation2? = nil, RefetchQuery: RefetchQuery2? = nil, fields: Fields? = nil, variables: Variables? = nil, resolution: Resolution? = nil, name: Name? = nil, document: Document? = nil, text: Text? = nil, plan: Plan? = nil, errorBehavior: ErrorBehavior? = nil, throwsOnFieldError: ThrowsOnFieldError? = nil, bubbles: Bubbles? = nil, hasDeferred: HasDeferred? = nil, cacheExpiration: CacheExpiration? = nil, Data: Data2? = nil, Action: Action2? = nil, OptimisticResponse: OptimisticResponse2? = nil, hash: Hash? = nil, commit: Commit? = nil, callAsFunction: CallAsFunction? = nil, Op: Op2? = nil, hashValue: HashValue? = nil, phase: Phase? = nil, isRefreshing: IsRefreshing? = nil, isStale: IsStale? = nil, retry: Retry? = nil, subscription: Subscription? = nil, Types: Types2? = nil, Sites: Sites2? = nil, Guards: Guards2? = nil, AbstractSlots: AbstractSlots2? = nil, schemaDigest: SchemaDigest? = nil, format: Format? = nil, transient: Transient? = nil, Baton: BatonResponse? = nil, Swift: Swift2? = nil, Set: Set2? = nil, Result: Result2? = nil, Optional: Optional2? = nil, String: StringResponse? = nil, Int: IntResponse? = nil, Double: DoubleResponse? = nil, Bool: BoolResponse? = nil, MainActor: MainActor2? = nil, Hasher: Hasher3? = nil, Sendable: SendableResponse? = nil) {
+            public init(`Type`: TypeResponse? = nil, `Protocol`: ProtocolResponse? = nil, `Any`: AnyResponse? = nil, `self` selfValue2: SelfResponse? = nil, `Self`: SelfResponse2? = nil, `init`: Init? = nil, `deinit`: Deinit? = nil, `subscript`: Subscript? = nil, `class`: Class? = nil, `struct`: Struct? = nil, `enum`: Enum? = nil, `func`: Func? = nil, `var`: Var? = nil, `let`: Let? = nil, `import`: Import? = nil, `extension`: Extension? = nil, `operator`: Operator? = nil, `static`: Static? = nil, `default`: Default? = nil, `case`: Case? = nil, `switch`: Switch? = nil, `if`: If? = nil, `else`: Else? = nil, `for`: For? = nil, `in`: In? = nil, `while`: While? = nil, `repeat`: Repeat? = nil, `return`: Return? = nil, `break`: Break? = nil, `continue`: Continue? = nil, `where`: Where? = nil, `is`: Is? = nil, `as`: As? = nil, `try`: Try? = nil, `throw`: Throw? = nil, `throws`: Throws? = nil, `guard`: Guard? = nil, `defer`: Defer? = nil, `do`: Do? = nil, `catch`: Catch? = nil, `true`: True? = nil, `false`: False? = nil, `nil`: Nil? = nil, `super`: Super? = nil, `internal`: Internal? = nil, `private`: Private? = nil, `public`: Public? = nil, `fileprivate`: Fileprivate? = nil, `open`: Open? = nil, `inout`: Inout? = nil, `typealias`: Typealias? = nil, `associatedtype`: Associatedtype? = nil, `protocol`: ProtocolResponse2? = nil, `some`: Some? = nil, `any`: AnyResponse2? = nil, `rethrows`: Rethrows? = nil, `fallthrough`: Fallthrough? = nil, `precedencegroup`: Precedencegroup? = nil, `_`: _2? = nil, async: Async? = nil, `borrowing`: Borrowing? = nil, consume: Consume? = nil, `consuming`: Consuming? = nil, copy: Copy? = nil, discard: Discard? = nil, `each`: Each? = nil, `isolated`: Isolated? = nil, `sending`: Sending? = nil, then: Then? = nil, unsafe: Unsafe? = nil, `await`: Await? = nil, satisfied: Satisfied? = nil, missingRequiredField: MissingRequiredField? = nil, fieldErrors: FieldErrors? = nil, isPresent: IsPresent? = nil, throwing: Throwing? = nil, caught: Caught? = nil, refetchable: Refetchable? = nil, refetch: Refetch? = nil, connection: Connection? = nil, nodes: Nodes? = nil, hasNext: HasNext? = nil, hasPrevious: HasPrevious? = nil, isLoadingNext: IsLoadingNext? = nil, isLoadingPrevious: IsLoadingPrevious? = nil, connectionID: ConnectionID? = nil, loadNext: LoadNext? = nil, loadPrevious: LoadPrevious? = nil, bound: Bound? = nil, errors: Errors? = nil, child: Child? = nil, missing: Missing? = nil, count: Count? = nil, lhs: Lhs? = nil, rhs: Rhs? = nil, hasher: Hasher2? = nil, optimistic: Optimistic? = nil, selfValue: SelfValue? = nil, Fragment: Fragment2? = nil, Spread: Spread2? = nil, Owner: Owner2? = nil, Query: Query2? = nil, Operation: Operation2? = nil, RefetchQuery: RefetchQuery2? = nil, fields: Fields? = nil, variables: Variables? = nil, resolution: Resolution? = nil, name: Name? = nil, document: Document? = nil, text: Text? = nil, plan: Plan? = nil, errorBehavior: ErrorBehavior? = nil, throwsOnFieldError: ThrowsOnFieldError? = nil, bubbles: Bubbles? = nil, hasDeferred: HasDeferred? = nil, cacheExpiration: CacheExpiration? = nil, Data: Data2? = nil, Action: Action2? = nil, OptimisticResponse: OptimisticResponse2? = nil, hash: Hash? = nil, commit: Commit? = nil, callAsFunction: CallAsFunction? = nil, Op: Op2? = nil, hashValue: HashValue? = nil, phase: Phase? = nil, isRefreshing: IsRefreshing? = nil, isStale: IsStale? = nil, retry: Retry? = nil, subscription: Subscription? = nil, Types: Types2? = nil, Sites: Sites2? = nil, Guards: Guards2? = nil, AbstractSlots: AbstractSlots2? = nil, schemaDigest: SchemaDigest? = nil, format: Format? = nil, transient: Transient? = nil, Baton: BatonResponse? = nil, Swift: Swift2? = nil, Set: Set2? = nil, Result: Result2? = nil, Optional: Optional2? = nil, String: StringResponse? = nil, Int: IntResponse? = nil, Double: DoubleResponse? = nil, Bool: BoolResponse? = nil, MainActor: MainActor2? = nil, Hasher: Hasher3? = nil, Sendable: SendableResponse? = nil) {
                 self.`Type` = `Type`
                 self.`Protocol` = `Protocol`
                 self.`Any` = `Any`
@@ -9503,7 +8957,6 @@ mutation HostilePayload {
                 self.then = then
                 self.unsafe = unsafe
                 self.`await` = `await`
-                self.typeName = typeName
                 self.satisfied = satisfied
                 self.missingRequiredField = missingRequiredField
                 self.fieldErrors = fieldErrors
@@ -9655,7 +9108,6 @@ mutation HostilePayload {
                 if let then { fields2["then"] = then.variable }
                 if let unsafe { fields2["unsafe"] = unsafe.variable }
                 if let `await` { fields2["await"] = `await`.variable }
-                if let typeName { fields2["typeName"] = typeName.variable }
                 if let satisfied { fields2["satisfied"] = satisfied.variable }
                 if let missingRequiredField { fields2["missingRequiredField"] = missingRequiredField.variable }
                 if let fieldErrors { fields2["fieldErrors"] = fieldErrors.variable }
@@ -10648,19 +10100,6 @@ mutation HostilePayload {
 
             /// A partial response to show before the server answers; absent fields leave the store untouched.
             nonisolated public struct Await: Sendable {
-                public var id: String?
-                public init(id: String? = nil) {
-                    self.id = id
-                }
-                public var variable: Baton.Variable {
-                    var fields: [String: Baton.Variable] = [:]
-                    if let id { fields["id"] = .init(id) }
-                    return .object(fields)
-                }
-            }
-
-            /// A partial response to show before the server answers; absent fields leave the store untouched.
-            nonisolated public struct TypeName: Sendable {
                 public var id: String?
                 public init(id: String? = nil) {
                     self.id = id
@@ -11798,7 +11237,6 @@ fragment HostileAbstract_node on Node {
   sending: id
   then: id
   unsafe: id
-  typeName: id
   satisfied: id
   missingRequiredField: id
   fieldErrors: id
@@ -12111,9 +11549,6 @@ fragment HostileLinks_character on Character {
   unsafe: origin {
     id
   }
-  typeName: origin {
-    id
-  }
   satisfied: origin {
     id
   }
@@ -12422,7 +11857,6 @@ fragment HostileScalars_character on Character {
   sending: name
   then: name
   unsafe: name
-  typeName: name
   satisfied: name
   missingRequiredField: name
   fieldErrors: name
@@ -12600,7 +12034,6 @@ fragment HostileSpreads_character on Character {
                 .scalar("sending", key: .fixed(Slots.Character.name), kind: .string, list: false),
                 .scalar("then", key: .fixed(Slots.Character.name), kind: .string, list: false),
                 .scalar("unsafe", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("typeName", key: .fixed(Slots.Character.name), kind: .string, list: false),
                 .scalar("satisfied", key: .fixed(Slots.Character.name), kind: .string, list: false),
                 .scalar("missingRequiredField", key: .fixed(Slots.Character.name), kind: .string, list: false),
                 .scalar("fieldErrors", key: .fixed(Slots.Character.name), kind: .string, list: false),
@@ -12893,9 +12326,6 @@ fragment HostileSpreads_character on Character {
                     .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
                 ])),
                 .linked("unsafe", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("typeName", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
                 ])),
                 .linked("satisfied", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
@@ -13237,7 +12667,6 @@ fragment HostileSpreads_character on Character {
                     .scalar("sending", key: .fixed(Slots.Character.id), kind: .string, list: false),
                     .scalar("then", key: .fixed(Slots.Character.id), kind: .string, list: false),
                     .scalar("unsafe", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("typeName", key: .fixed(Slots.Character.id), kind: .string, list: false),
                     .scalar("satisfied", key: .fixed(Slots.Character.id), kind: .string, list: false),
                     .scalar("missingRequiredField", key: .fixed(Slots.Character.id), kind: .string, list: false),
                     .scalar("fieldErrors", key: .fixed(Slots.Character.id), kind: .string, list: false),
@@ -13390,7 +12819,6 @@ fragment HostileSpreads_character on Character {
                     .scalar("sending", key: .fixed(Slots.Node.id), kind: .string, list: false),
                     .scalar("then", key: .fixed(Slots.Node.id), kind: .string, list: false),
                     .scalar("unsafe", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("typeName", key: .fixed(Slots.Node.id), kind: .string, list: false),
                     .scalar("satisfied", key: .fixed(Slots.Node.id), kind: .string, list: false),
                     .scalar("missingRequiredField", key: .fixed(Slots.Node.id), kind: .string, list: false),
                     .scalar("fieldErrors", key: .fixed(Slots.Node.id), kind: .string, list: false),
@@ -13475,7 +12903,6 @@ fragment HostileSpreads_character on Character {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var scalarsCharacter: ScalarsCharacter? { anchor.linked(Slots.Query.character_c74a1e).map(ScalarsCharacter.init(anchor:)) }
         @MainActor public var linksCharacter: LinksCharacter? { anchor.linked(Slots.Query.character_c74a1e).map(LinksCharacter.init(anchor:)) }
         @MainActor public var selectionsCharacter: SelectionsCharacter? { anchor.linked(Slots.Query.character_c74a1e).map(SelectionsCharacter.init(anchor:)) }
@@ -13487,49 +12914,42 @@ fragment HostileSpreads_character on Character {
         nonisolated public struct ScalarsCharacter: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Character"
             @MainActor public var hostileScalars: HostileScalars_character { .init(anchor: anchor.entering()) }
         }
 
         nonisolated public struct LinksCharacter: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Character"
             @MainActor public var hostileLinks: HostileLinks_character { .init(anchor: anchor.entering()) }
         }
 
         nonisolated public struct SelectionsCharacter: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Character"
             @MainActor public var hostileSelections: HostileSelections_character { .init(anchor: anchor.entering()) }
         }
 
         nonisolated public struct SpreadTargetCharacter: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Character"
             @MainActor public var hostileSpreadTarget: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
         }
 
         nonisolated public struct SpreadsCharacter: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Character"
             @MainActor public var hostileSpreads: HostileSpreads_character { .init(anchor: anchor.entering()) }
         }
 
         nonisolated public struct ConnectionNodesCharacter: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Character"
             @MainActor public var hostileConnectionNodes: HostileConnectionNodes_character { .init(anchor: anchor.entering()) }
         }
 
         nonisolated public struct AbstractNode: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Node"
             @MainActor public var hostileAbstract: HostileAbstract_node { .init(anchor: anchor.entering()) }
         }
     }
@@ -13617,7 +13037,6 @@ query HostileRequired {
     sending: name
     then: name
     unsafe: name
-    typeName: name
     satisfied: name
     missingRequiredField: name
     fieldErrors: name
@@ -13789,7 +13208,6 @@ query HostileRequired {
                 .scalar("sending", key: .fixed(Slots.Character.name), kind: .string, list: false),
                 .scalar("then", key: .fixed(Slots.Character.name), kind: .string, list: false),
                 .scalar("unsafe", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("typeName", key: .fixed(Slots.Character.name), kind: .string, list: false),
                 .scalar("satisfied", key: .fixed(Slots.Character.name), kind: .string, list: false),
                 .scalar("missingRequiredField", key: .fixed(Slots.Character.name), kind: .string, list: false),
                 .scalar("fieldErrors", key: .fixed(Slots.Character.name), kind: .string, list: false),
@@ -13878,7 +13296,6 @@ query HostileRequired {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var character: Character { Character(anchor: anchor.requiredLinked(Slots.Query.character_c74a1e, type: Types.Character)) }
         /// Whether every `@required` field is present; the lens is otherwise null to its parent, as Relay bubbles.
         @_spi(Generated) @MainActor public static func satisfied(_ anchor: Baton.Anchor) -> Bool {
@@ -13895,7 +13312,6 @@ query HostileRequired {
         nonisolated public struct Character: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Character"
             @MainActor public var `Type`: String? { anchor.string(Slots.Character.name) }
             @MainActor public var `Protocol`: String? { anchor.string(Slots.Character.name) }
             @MainActor public var `Any`: String? { anchor.string(Slots.Character.name) }
@@ -13967,7 +13383,6 @@ query HostileRequired {
             @MainActor public var `sending`: String? { anchor.string(Slots.Character.name) }
             @MainActor public var then: String? { anchor.string(Slots.Character.name) }
             @MainActor public var unsafe: String? { anchor.string(Slots.Character.name) }
-            @MainActor public var typeName: String? { anchor.string(Slots.Character.name) }
             @MainActor public var satisfied: String? { anchor.string(Slots.Character.name) }
             @MainActor public var missingRequiredField: String? { anchor.string(Slots.Character.name) }
             @MainActor public var fieldErrors: String? { anchor.string(Slots.Character.name) }
@@ -14061,7 +13476,6 @@ query HostileRequired {
             nonisolated public struct Origin: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Location"
                 @MainActor public var name: String { anchor.requiredString(Slots.Location.name) }
                 /// Whether every `@required` field is present; the lens is otherwise null to its parent, as Relay bubbles.
                 @_spi(Generated) @MainActor public static func satisfied(_ anchor: Baton.Anchor) -> Bool {
@@ -14153,7 +13567,6 @@ nonisolated public struct HostileSubscriptionVariables: Baton.Subscription {
     public var `await`: Bool
     public var anchor: Bool
     public var recordID: Bool
-    public var typeName: Bool
     public var satisfied: Bool
     public var missingRequiredField: Bool
     public var fieldErrors: Bool
@@ -14226,7 +13639,7 @@ nonisolated public struct HostileSubscriptionVariables: Baton.Subscription {
     public var Sendable: Bool
     public var resolution: Baton.SubscriptionHandle<Self>? = nil
 
-    public init(`Type`: Bool, `Protocol`: Bool, `Any`: Bool, `self` selfValue2: Bool, `init`: Bool, `deinit`: Bool, `subscript`: Bool, `class`: Bool, `struct`: Bool, `enum`: Bool, `func`: Bool, `var`: Bool, `let`: Bool, `import`: Bool, `extension`: Bool, `operator`: Bool, `static`: Bool, `default`: Bool, `case`: Bool, `switch`: Bool, `if`: Bool, `else`: Bool, `for`: Bool, `in`: Bool, `while`: Bool, `repeat`: Bool, `return`: Bool, `break`: Bool, `continue`: Bool, `where`: Bool, `is`: Bool, `as`: Bool, `try`: Bool, `throw`: Bool, `throws`: Bool, `guard`: Bool, `defer`: Bool, `do`: Bool, `catch`: Bool, `true`: Bool, `false`: Bool, `nil`: Bool, `super`: Bool, `internal`: Bool, `private`: Bool, `public`: Bool, `fileprivate`: Bool, `open`: Bool, `inout`: Bool, `typealias`: Bool, `associatedtype`: Bool, `protocol`: Bool, `some`: Bool, `any`: Bool, `rethrows`: Bool, `fallthrough`: Bool, `precedencegroup`: Bool, `_`: Bool, `Self`: Bool, async: Bool, `borrowing`: Bool, consume: Bool, `consuming`: Bool, copy: Bool, discard: Bool, `each`: Bool, `isolated`: Bool, `sending`: Bool, then: Bool, unsafe: Bool, `await`: Bool, anchor: Bool, recordID: Bool, typeName: Bool, satisfied: Bool, missingRequiredField: Bool, fieldErrors: Bool, isPresent: Bool, throwing: Bool, caught: Bool, refetchable: Bool, refetch: Bool, connection: Bool, nodes: Bool, hasNext: Bool, hasPrevious: Bool, isLoadingNext: Bool, isLoadingPrevious: Bool, connectionID: Bool, loadNext: Bool, loadPrevious: Bool, bound: Bool, errors: Bool, child: Bool, missing: Bool, count: Bool, fields: Bool, lhs: Bool, rhs: Bool, hasher: Bool, optimistic: Bool, selfValue: Bool, Fragment: Bool, Spread: Bool, Owner: Bool, Query: Bool, Operation: Bool, RefetchQuery: Bool, name: Bool, document: Bool, text: Bool, plan: Bool, errorBehavior: Bool, throwsOnFieldError: Bool, bubbles: Bool, hasDeferred: Bool, cacheExpiration: Bool, Action: Bool, OptimisticResponse: Bool, hash: Bool, commit: Bool, callAsFunction: Bool, Op: Bool, variable: Bool, phase: Bool, isRefreshing: Bool, isStale: Bool, retry: Bool, Sites: Bool, AbstractSlots: Bool, schemaDigest: Bool, format: Bool, transient: Bool, Swift: Bool, Set: Bool, Result: Bool, Optional: Bool, String: Bool, Int: Bool, Double: Bool, Bool: Bool, MainActor: Bool, Hasher: Bool, Sendable: Bool) {
+    public init(`Type`: Bool, `Protocol`: Bool, `Any`: Bool, `self` selfValue2: Bool, `init`: Bool, `deinit`: Bool, `subscript`: Bool, `class`: Bool, `struct`: Bool, `enum`: Bool, `func`: Bool, `var`: Bool, `let`: Bool, `import`: Bool, `extension`: Bool, `operator`: Bool, `static`: Bool, `default`: Bool, `case`: Bool, `switch`: Bool, `if`: Bool, `else`: Bool, `for`: Bool, `in`: Bool, `while`: Bool, `repeat`: Bool, `return`: Bool, `break`: Bool, `continue`: Bool, `where`: Bool, `is`: Bool, `as`: Bool, `try`: Bool, `throw`: Bool, `throws`: Bool, `guard`: Bool, `defer`: Bool, `do`: Bool, `catch`: Bool, `true`: Bool, `false`: Bool, `nil`: Bool, `super`: Bool, `internal`: Bool, `private`: Bool, `public`: Bool, `fileprivate`: Bool, `open`: Bool, `inout`: Bool, `typealias`: Bool, `associatedtype`: Bool, `protocol`: Bool, `some`: Bool, `any`: Bool, `rethrows`: Bool, `fallthrough`: Bool, `precedencegroup`: Bool, `_`: Bool, `Self`: Bool, async: Bool, `borrowing`: Bool, consume: Bool, `consuming`: Bool, copy: Bool, discard: Bool, `each`: Bool, `isolated`: Bool, `sending`: Bool, then: Bool, unsafe: Bool, `await`: Bool, anchor: Bool, recordID: Bool, satisfied: Bool, missingRequiredField: Bool, fieldErrors: Bool, isPresent: Bool, throwing: Bool, caught: Bool, refetchable: Bool, refetch: Bool, connection: Bool, nodes: Bool, hasNext: Bool, hasPrevious: Bool, isLoadingNext: Bool, isLoadingPrevious: Bool, connectionID: Bool, loadNext: Bool, loadPrevious: Bool, bound: Bool, errors: Bool, child: Bool, missing: Bool, count: Bool, fields: Bool, lhs: Bool, rhs: Bool, hasher: Bool, optimistic: Bool, selfValue: Bool, Fragment: Bool, Spread: Bool, Owner: Bool, Query: Bool, Operation: Bool, RefetchQuery: Bool, name: Bool, document: Bool, text: Bool, plan: Bool, errorBehavior: Bool, throwsOnFieldError: Bool, bubbles: Bool, hasDeferred: Bool, cacheExpiration: Bool, Action: Bool, OptimisticResponse: Bool, hash: Bool, commit: Bool, callAsFunction: Bool, Op: Bool, variable: Bool, phase: Bool, isRefreshing: Bool, isStale: Bool, retry: Bool, Sites: Bool, AbstractSlots: Bool, schemaDigest: Bool, format: Bool, transient: Bool, Swift: Bool, Set: Bool, Result: Bool, Optional: Bool, String: Bool, Int: Bool, Double: Bool, Bool: Bool, MainActor: Bool, Hasher: Bool, Sendable: Bool) {
         self.`Type` = `Type`
         self.`Protocol` = `Protocol`
         self.`Any` = `Any`
@@ -14300,7 +13713,6 @@ nonisolated public struct HostileSubscriptionVariables: Baton.Subscription {
         self.`await` = `await`
         self.anchor = anchor
         self.recordID = recordID
-        self.typeName = typeName
         self.satisfied = satisfied
         self.missingRequiredField = missingRequiredField
         self.fieldErrors = fieldErrors
@@ -14449,7 +13861,6 @@ subscription HostileSubscriptionVariables(
   $await: Boolean!
   $anchor: Boolean!
   $recordID: Boolean!
-  $typeName: Boolean!
   $satisfied: Boolean!
   $missingRequiredField: Boolean!
   $fieldErrors: Boolean!
@@ -14599,7 +14010,6 @@ subscription HostileSubscriptionVariables(
       cursor @include(if: $await)
       cursor @include(if: $anchor)
       cursor @include(if: $recordID)
-      cursor @include(if: $typeName)
       cursor @include(if: $satisfied)
       cursor @include(if: $missingRequiredField)
       cursor @include(if: $fieldErrors)
@@ -14676,11 +14086,11 @@ subscription HostileSubscriptionVariables(
 """#)
 
     public var variables: Baton.Variables {
-        Baton.Variables(["Type": Baton.Variable(self.`Type`), "Protocol": Baton.Variable(self.`Protocol`), "Any": Baton.Variable(self.`Any`), "self": Baton.Variable(self.`self`), "init": Baton.Variable(self.`init`), "deinit": Baton.Variable(self.`deinit`), "subscript": Baton.Variable(self.`subscript`), "class": Baton.Variable(self.`class`), "struct": Baton.Variable(self.`struct`), "enum": Baton.Variable(self.`enum`), "func": Baton.Variable(self.`func`), "var": Baton.Variable(self.`var`), "let": Baton.Variable(self.`let`), "import": Baton.Variable(self.`import`), "extension": Baton.Variable(self.`extension`), "operator": Baton.Variable(self.`operator`), "static": Baton.Variable(self.`static`), "default": Baton.Variable(self.`default`), "case": Baton.Variable(self.`case`), "switch": Baton.Variable(self.`switch`), "if": Baton.Variable(self.`if`), "else": Baton.Variable(self.`else`), "for": Baton.Variable(self.`for`), "in": Baton.Variable(self.`in`), "while": Baton.Variable(self.`while`), "repeat": Baton.Variable(self.`repeat`), "return": Baton.Variable(self.`return`), "break": Baton.Variable(self.`break`), "continue": Baton.Variable(self.`continue`), "where": Baton.Variable(self.`where`), "is": Baton.Variable(self.`is`), "as": Baton.Variable(self.`as`), "try": Baton.Variable(self.`try`), "throw": Baton.Variable(self.`throw`), "throws": Baton.Variable(self.`throws`), "guard": Baton.Variable(self.`guard`), "defer": Baton.Variable(self.`defer`), "do": Baton.Variable(self.`do`), "catch": Baton.Variable(self.`catch`), "true": Baton.Variable(self.`true`), "false": Baton.Variable(self.`false`), "nil": Baton.Variable(self.`nil`), "super": Baton.Variable(self.`super`), "internal": Baton.Variable(self.`internal`), "private": Baton.Variable(self.`private`), "public": Baton.Variable(self.`public`), "fileprivate": Baton.Variable(self.`fileprivate`), "open": Baton.Variable(self.`open`), "inout": Baton.Variable(self.`inout`), "typealias": Baton.Variable(self.`typealias`), "associatedtype": Baton.Variable(self.`associatedtype`), "protocol": Baton.Variable(self.`protocol`), "some": Baton.Variable(self.`some`), "any": Baton.Variable(self.`any`), "rethrows": Baton.Variable(self.`rethrows`), "fallthrough": Baton.Variable(self.`fallthrough`), "precedencegroup": Baton.Variable(self.`precedencegroup`), "_": Baton.Variable(self.`_`), "Self": Baton.Variable(self.`Self`), "async": Baton.Variable(self.async), "borrowing": Baton.Variable(self.`borrowing`), "consume": Baton.Variable(self.consume), "consuming": Baton.Variable(self.`consuming`), "copy": Baton.Variable(self.copy), "discard": Baton.Variable(self.discard), "each": Baton.Variable(self.`each`), "isolated": Baton.Variable(self.`isolated`), "sending": Baton.Variable(self.`sending`), "then": Baton.Variable(self.then), "unsafe": Baton.Variable(self.unsafe), "await": Baton.Variable(self.`await`), "anchor": Baton.Variable(self.anchor), "recordID": Baton.Variable(self.recordID), "typeName": Baton.Variable(self.typeName), "satisfied": Baton.Variable(self.satisfied), "missingRequiredField": Baton.Variable(self.missingRequiredField), "fieldErrors": Baton.Variable(self.fieldErrors), "isPresent": Baton.Variable(self.isPresent), "throwing": Baton.Variable(self.throwing), "caught": Baton.Variable(self.caught), "refetchable": Baton.Variable(self.refetchable), "refetch": Baton.Variable(self.refetch), "connection": Baton.Variable(self.connection), "nodes": Baton.Variable(self.nodes), "hasNext": Baton.Variable(self.hasNext), "hasPrevious": Baton.Variable(self.hasPrevious), "isLoadingNext": Baton.Variable(self.isLoadingNext), "isLoadingPrevious": Baton.Variable(self.isLoadingPrevious), "connectionID": Baton.Variable(self.connectionID), "loadNext": Baton.Variable(self.loadNext), "loadPrevious": Baton.Variable(self.loadPrevious), "bound": Baton.Variable(self.bound), "errors": Baton.Variable(self.errors), "child": Baton.Variable(self.child), "missing": Baton.Variable(self.missing), "count": Baton.Variable(self.count), "fields": Baton.Variable(self.fields), "lhs": Baton.Variable(self.lhs), "rhs": Baton.Variable(self.rhs), "hasher": Baton.Variable(self.hasher), "optimistic": Baton.Variable(self.optimistic), "selfValue": Baton.Variable(self.selfValue), "Fragment": Baton.Variable(self.Fragment), "Spread": Baton.Variable(self.Spread), "Owner": Baton.Variable(self.Owner), "Query": Baton.Variable(self.Query), "Operation": Baton.Variable(self.Operation), "RefetchQuery": Baton.Variable(self.RefetchQuery), "name": Baton.Variable(self.name), "document": Baton.Variable(self.document), "text": Baton.Variable(self.text), "plan": Baton.Variable(self.plan), "errorBehavior": Baton.Variable(self.errorBehavior), "throwsOnFieldError": Baton.Variable(self.throwsOnFieldError), "bubbles": Baton.Variable(self.bubbles), "hasDeferred": Baton.Variable(self.hasDeferred), "cacheExpiration": Baton.Variable(self.cacheExpiration), "Action": Baton.Variable(self.Action), "OptimisticResponse": Baton.Variable(self.OptimisticResponse), "hash": Baton.Variable(self.hash), "commit": Baton.Variable(self.commit), "callAsFunction": Baton.Variable(self.callAsFunction), "Op": Baton.Variable(self.Op), "variable": Baton.Variable(self.variable), "phase": Baton.Variable(self.phase), "isRefreshing": Baton.Variable(self.isRefreshing), "isStale": Baton.Variable(self.isStale), "retry": Baton.Variable(self.retry), "Sites": Baton.Variable(self.Sites), "AbstractSlots": Baton.Variable(self.AbstractSlots), "schemaDigest": Baton.Variable(self.schemaDigest), "format": Baton.Variable(self.format), "transient": Baton.Variable(self.transient), "Swift": Baton.Variable(self.Swift), "Set": Baton.Variable(self.Set), "Result": Baton.Variable(self.Result), "Optional": Baton.Variable(self.Optional), "String": Baton.Variable(self.String), "Int": Baton.Variable(self.Int), "Double": Baton.Variable(self.Double), "Bool": Baton.Variable(self.Bool), "MainActor": Baton.Variable(self.MainActor), "Hasher": Baton.Variable(self.Hasher), "Sendable": Baton.Variable(self.Sendable)])
+        Baton.Variables(["Type": Baton.Variable(self.`Type`), "Protocol": Baton.Variable(self.`Protocol`), "Any": Baton.Variable(self.`Any`), "self": Baton.Variable(self.`self`), "init": Baton.Variable(self.`init`), "deinit": Baton.Variable(self.`deinit`), "subscript": Baton.Variable(self.`subscript`), "class": Baton.Variable(self.`class`), "struct": Baton.Variable(self.`struct`), "enum": Baton.Variable(self.`enum`), "func": Baton.Variable(self.`func`), "var": Baton.Variable(self.`var`), "let": Baton.Variable(self.`let`), "import": Baton.Variable(self.`import`), "extension": Baton.Variable(self.`extension`), "operator": Baton.Variable(self.`operator`), "static": Baton.Variable(self.`static`), "default": Baton.Variable(self.`default`), "case": Baton.Variable(self.`case`), "switch": Baton.Variable(self.`switch`), "if": Baton.Variable(self.`if`), "else": Baton.Variable(self.`else`), "for": Baton.Variable(self.`for`), "in": Baton.Variable(self.`in`), "while": Baton.Variable(self.`while`), "repeat": Baton.Variable(self.`repeat`), "return": Baton.Variable(self.`return`), "break": Baton.Variable(self.`break`), "continue": Baton.Variable(self.`continue`), "where": Baton.Variable(self.`where`), "is": Baton.Variable(self.`is`), "as": Baton.Variable(self.`as`), "try": Baton.Variable(self.`try`), "throw": Baton.Variable(self.`throw`), "throws": Baton.Variable(self.`throws`), "guard": Baton.Variable(self.`guard`), "defer": Baton.Variable(self.`defer`), "do": Baton.Variable(self.`do`), "catch": Baton.Variable(self.`catch`), "true": Baton.Variable(self.`true`), "false": Baton.Variable(self.`false`), "nil": Baton.Variable(self.`nil`), "super": Baton.Variable(self.`super`), "internal": Baton.Variable(self.`internal`), "private": Baton.Variable(self.`private`), "public": Baton.Variable(self.`public`), "fileprivate": Baton.Variable(self.`fileprivate`), "open": Baton.Variable(self.`open`), "inout": Baton.Variable(self.`inout`), "typealias": Baton.Variable(self.`typealias`), "associatedtype": Baton.Variable(self.`associatedtype`), "protocol": Baton.Variable(self.`protocol`), "some": Baton.Variable(self.`some`), "any": Baton.Variable(self.`any`), "rethrows": Baton.Variable(self.`rethrows`), "fallthrough": Baton.Variable(self.`fallthrough`), "precedencegroup": Baton.Variable(self.`precedencegroup`), "_": Baton.Variable(self.`_`), "Self": Baton.Variable(self.`Self`), "async": Baton.Variable(self.async), "borrowing": Baton.Variable(self.`borrowing`), "consume": Baton.Variable(self.consume), "consuming": Baton.Variable(self.`consuming`), "copy": Baton.Variable(self.copy), "discard": Baton.Variable(self.discard), "each": Baton.Variable(self.`each`), "isolated": Baton.Variable(self.`isolated`), "sending": Baton.Variable(self.`sending`), "then": Baton.Variable(self.then), "unsafe": Baton.Variable(self.unsafe), "await": Baton.Variable(self.`await`), "anchor": Baton.Variable(self.anchor), "recordID": Baton.Variable(self.recordID), "satisfied": Baton.Variable(self.satisfied), "missingRequiredField": Baton.Variable(self.missingRequiredField), "fieldErrors": Baton.Variable(self.fieldErrors), "isPresent": Baton.Variable(self.isPresent), "throwing": Baton.Variable(self.throwing), "caught": Baton.Variable(self.caught), "refetchable": Baton.Variable(self.refetchable), "refetch": Baton.Variable(self.refetch), "connection": Baton.Variable(self.connection), "nodes": Baton.Variable(self.nodes), "hasNext": Baton.Variable(self.hasNext), "hasPrevious": Baton.Variable(self.hasPrevious), "isLoadingNext": Baton.Variable(self.isLoadingNext), "isLoadingPrevious": Baton.Variable(self.isLoadingPrevious), "connectionID": Baton.Variable(self.connectionID), "loadNext": Baton.Variable(self.loadNext), "loadPrevious": Baton.Variable(self.loadPrevious), "bound": Baton.Variable(self.bound), "errors": Baton.Variable(self.errors), "child": Baton.Variable(self.child), "missing": Baton.Variable(self.missing), "count": Baton.Variable(self.count), "fields": Baton.Variable(self.fields), "lhs": Baton.Variable(self.lhs), "rhs": Baton.Variable(self.rhs), "hasher": Baton.Variable(self.hasher), "optimistic": Baton.Variable(self.optimistic), "selfValue": Baton.Variable(self.selfValue), "Fragment": Baton.Variable(self.Fragment), "Spread": Baton.Variable(self.Spread), "Owner": Baton.Variable(self.Owner), "Query": Baton.Variable(self.Query), "Operation": Baton.Variable(self.Operation), "RefetchQuery": Baton.Variable(self.RefetchQuery), "name": Baton.Variable(self.name), "document": Baton.Variable(self.document), "text": Baton.Variable(self.text), "plan": Baton.Variable(self.plan), "errorBehavior": Baton.Variable(self.errorBehavior), "throwsOnFieldError": Baton.Variable(self.throwsOnFieldError), "bubbles": Baton.Variable(self.bubbles), "hasDeferred": Baton.Variable(self.hasDeferred), "cacheExpiration": Baton.Variable(self.cacheExpiration), "Action": Baton.Variable(self.Action), "OptimisticResponse": Baton.Variable(self.OptimisticResponse), "hash": Baton.Variable(self.hash), "commit": Baton.Variable(self.commit), "callAsFunction": Baton.Variable(self.callAsFunction), "Op": Baton.Variable(self.Op), "variable": Baton.Variable(self.variable), "phase": Baton.Variable(self.phase), "isRefreshing": Baton.Variable(self.isRefreshing), "isStale": Baton.Variable(self.isStale), "retry": Baton.Variable(self.retry), "Sites": Baton.Variable(self.Sites), "AbstractSlots": Baton.Variable(self.AbstractSlots), "schemaDigest": Baton.Variable(self.schemaDigest), "format": Baton.Variable(self.format), "transient": Baton.Variable(self.transient), "Swift": Baton.Variable(self.Swift), "Set": Baton.Variable(self.Set), "Result": Baton.Variable(self.Result), "Optional": Baton.Variable(self.Optional), "String": Baton.Variable(self.String), "Int": Baton.Variable(self.Int), "Double": Baton.Variable(self.Double), "Bool": Baton.Variable(self.Bool), "MainActor": Baton.Variable(self.MainActor), "Hasher": Baton.Variable(self.Hasher), "Sendable": Baton.Variable(self.Sendable)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.`Type` == rhs.`Type` && lhs.`Protocol` == rhs.`Protocol` && lhs.`Any` == rhs.`Any` && lhs.`self` == rhs.`self` && lhs.`init` == rhs.`init` && lhs.`deinit` == rhs.`deinit` && lhs.`subscript` == rhs.`subscript` && lhs.`class` == rhs.`class` && lhs.`struct` == rhs.`struct` && lhs.`enum` == rhs.`enum` && lhs.`func` == rhs.`func` && lhs.`var` == rhs.`var` && lhs.`let` == rhs.`let` && lhs.`import` == rhs.`import` && lhs.`extension` == rhs.`extension` && lhs.`operator` == rhs.`operator` && lhs.`static` == rhs.`static` && lhs.`default` == rhs.`default` && lhs.`case` == rhs.`case` && lhs.`switch` == rhs.`switch` && lhs.`if` == rhs.`if` && lhs.`else` == rhs.`else` && lhs.`for` == rhs.`for` && lhs.`in` == rhs.`in` && lhs.`while` == rhs.`while` && lhs.`repeat` == rhs.`repeat` && lhs.`return` == rhs.`return` && lhs.`break` == rhs.`break` && lhs.`continue` == rhs.`continue` && lhs.`where` == rhs.`where` && lhs.`is` == rhs.`is` && lhs.`as` == rhs.`as` && lhs.`try` == rhs.`try` && lhs.`throw` == rhs.`throw` && lhs.`throws` == rhs.`throws` && lhs.`guard` == rhs.`guard` && lhs.`defer` == rhs.`defer` && lhs.`do` == rhs.`do` && lhs.`catch` == rhs.`catch` && lhs.`true` == rhs.`true` && lhs.`false` == rhs.`false` && lhs.`nil` == rhs.`nil` && lhs.`super` == rhs.`super` && lhs.`internal` == rhs.`internal` && lhs.`private` == rhs.`private` && lhs.`public` == rhs.`public` && lhs.`fileprivate` == rhs.`fileprivate` && lhs.`open` == rhs.`open` && lhs.`inout` == rhs.`inout` && lhs.`typealias` == rhs.`typealias` && lhs.`associatedtype` == rhs.`associatedtype` && lhs.`protocol` == rhs.`protocol` && lhs.`some` == rhs.`some` && lhs.`any` == rhs.`any` && lhs.`rethrows` == rhs.`rethrows` && lhs.`fallthrough` == rhs.`fallthrough` && lhs.`precedencegroup` == rhs.`precedencegroup` && lhs.`_` == rhs.`_` && lhs.`Self` == rhs.`Self` && lhs.async == rhs.async && lhs.`borrowing` == rhs.`borrowing` && lhs.consume == rhs.consume && lhs.`consuming` == rhs.`consuming` && lhs.copy == rhs.copy && lhs.discard == rhs.discard && lhs.`each` == rhs.`each` && lhs.`isolated` == rhs.`isolated` && lhs.`sending` == rhs.`sending` && lhs.then == rhs.then && lhs.unsafe == rhs.unsafe && lhs.`await` == rhs.`await` && lhs.anchor == rhs.anchor && lhs.recordID == rhs.recordID && lhs.typeName == rhs.typeName && lhs.satisfied == rhs.satisfied && lhs.missingRequiredField == rhs.missingRequiredField && lhs.fieldErrors == rhs.fieldErrors && lhs.isPresent == rhs.isPresent && lhs.throwing == rhs.throwing && lhs.caught == rhs.caught && lhs.refetchable == rhs.refetchable && lhs.refetch == rhs.refetch && lhs.connection == rhs.connection && lhs.nodes == rhs.nodes && lhs.hasNext == rhs.hasNext && lhs.hasPrevious == rhs.hasPrevious && lhs.isLoadingNext == rhs.isLoadingNext && lhs.isLoadingPrevious == rhs.isLoadingPrevious && lhs.connectionID == rhs.connectionID && lhs.loadNext == rhs.loadNext && lhs.loadPrevious == rhs.loadPrevious && lhs.bound == rhs.bound && lhs.errors == rhs.errors && lhs.child == rhs.child && lhs.missing == rhs.missing && lhs.count == rhs.count && lhs.fields == rhs.fields && lhs.lhs == rhs.lhs && lhs.rhs == rhs.rhs && lhs.hasher == rhs.hasher && lhs.optimistic == rhs.optimistic && lhs.selfValue == rhs.selfValue && lhs.Fragment == rhs.Fragment && lhs.Spread == rhs.Spread && lhs.Owner == rhs.Owner && lhs.Query == rhs.Query && lhs.Operation == rhs.Operation && lhs.RefetchQuery == rhs.RefetchQuery && lhs.name == rhs.name && lhs.document == rhs.document && lhs.text == rhs.text && lhs.plan == rhs.plan && lhs.errorBehavior == rhs.errorBehavior && lhs.throwsOnFieldError == rhs.throwsOnFieldError && lhs.bubbles == rhs.bubbles && lhs.hasDeferred == rhs.hasDeferred && lhs.cacheExpiration == rhs.cacheExpiration && lhs.Action == rhs.Action && lhs.OptimisticResponse == rhs.OptimisticResponse && lhs.hash == rhs.hash && lhs.commit == rhs.commit && lhs.callAsFunction == rhs.callAsFunction && lhs.Op == rhs.Op && lhs.variable == rhs.variable && lhs.phase == rhs.phase && lhs.isRefreshing == rhs.isRefreshing && lhs.isStale == rhs.isStale && lhs.retry == rhs.retry && lhs.Sites == rhs.Sites && lhs.AbstractSlots == rhs.AbstractSlots && lhs.schemaDigest == rhs.schemaDigest && lhs.format == rhs.format && lhs.transient == rhs.transient && lhs.Swift == rhs.Swift && lhs.Set == rhs.Set && lhs.Result == rhs.Result && lhs.Optional == rhs.Optional && lhs.String == rhs.String && lhs.Int == rhs.Int && lhs.Double == rhs.Double && lhs.Bool == rhs.Bool && lhs.MainActor == rhs.MainActor && lhs.Hasher == rhs.Hasher && lhs.Sendable == rhs.Sendable
+        lhs.`Type` == rhs.`Type` && lhs.`Protocol` == rhs.`Protocol` && lhs.`Any` == rhs.`Any` && lhs.`self` == rhs.`self` && lhs.`init` == rhs.`init` && lhs.`deinit` == rhs.`deinit` && lhs.`subscript` == rhs.`subscript` && lhs.`class` == rhs.`class` && lhs.`struct` == rhs.`struct` && lhs.`enum` == rhs.`enum` && lhs.`func` == rhs.`func` && lhs.`var` == rhs.`var` && lhs.`let` == rhs.`let` && lhs.`import` == rhs.`import` && lhs.`extension` == rhs.`extension` && lhs.`operator` == rhs.`operator` && lhs.`static` == rhs.`static` && lhs.`default` == rhs.`default` && lhs.`case` == rhs.`case` && lhs.`switch` == rhs.`switch` && lhs.`if` == rhs.`if` && lhs.`else` == rhs.`else` && lhs.`for` == rhs.`for` && lhs.`in` == rhs.`in` && lhs.`while` == rhs.`while` && lhs.`repeat` == rhs.`repeat` && lhs.`return` == rhs.`return` && lhs.`break` == rhs.`break` && lhs.`continue` == rhs.`continue` && lhs.`where` == rhs.`where` && lhs.`is` == rhs.`is` && lhs.`as` == rhs.`as` && lhs.`try` == rhs.`try` && lhs.`throw` == rhs.`throw` && lhs.`throws` == rhs.`throws` && lhs.`guard` == rhs.`guard` && lhs.`defer` == rhs.`defer` && lhs.`do` == rhs.`do` && lhs.`catch` == rhs.`catch` && lhs.`true` == rhs.`true` && lhs.`false` == rhs.`false` && lhs.`nil` == rhs.`nil` && lhs.`super` == rhs.`super` && lhs.`internal` == rhs.`internal` && lhs.`private` == rhs.`private` && lhs.`public` == rhs.`public` && lhs.`fileprivate` == rhs.`fileprivate` && lhs.`open` == rhs.`open` && lhs.`inout` == rhs.`inout` && lhs.`typealias` == rhs.`typealias` && lhs.`associatedtype` == rhs.`associatedtype` && lhs.`protocol` == rhs.`protocol` && lhs.`some` == rhs.`some` && lhs.`any` == rhs.`any` && lhs.`rethrows` == rhs.`rethrows` && lhs.`fallthrough` == rhs.`fallthrough` && lhs.`precedencegroup` == rhs.`precedencegroup` && lhs.`_` == rhs.`_` && lhs.`Self` == rhs.`Self` && lhs.async == rhs.async && lhs.`borrowing` == rhs.`borrowing` && lhs.consume == rhs.consume && lhs.`consuming` == rhs.`consuming` && lhs.copy == rhs.copy && lhs.discard == rhs.discard && lhs.`each` == rhs.`each` && lhs.`isolated` == rhs.`isolated` && lhs.`sending` == rhs.`sending` && lhs.then == rhs.then && lhs.unsafe == rhs.unsafe && lhs.`await` == rhs.`await` && lhs.anchor == rhs.anchor && lhs.recordID == rhs.recordID && lhs.satisfied == rhs.satisfied && lhs.missingRequiredField == rhs.missingRequiredField && lhs.fieldErrors == rhs.fieldErrors && lhs.isPresent == rhs.isPresent && lhs.throwing == rhs.throwing && lhs.caught == rhs.caught && lhs.refetchable == rhs.refetchable && lhs.refetch == rhs.refetch && lhs.connection == rhs.connection && lhs.nodes == rhs.nodes && lhs.hasNext == rhs.hasNext && lhs.hasPrevious == rhs.hasPrevious && lhs.isLoadingNext == rhs.isLoadingNext && lhs.isLoadingPrevious == rhs.isLoadingPrevious && lhs.connectionID == rhs.connectionID && lhs.loadNext == rhs.loadNext && lhs.loadPrevious == rhs.loadPrevious && lhs.bound == rhs.bound && lhs.errors == rhs.errors && lhs.child == rhs.child && lhs.missing == rhs.missing && lhs.count == rhs.count && lhs.fields == rhs.fields && lhs.lhs == rhs.lhs && lhs.rhs == rhs.rhs && lhs.hasher == rhs.hasher && lhs.optimistic == rhs.optimistic && lhs.selfValue == rhs.selfValue && lhs.Fragment == rhs.Fragment && lhs.Spread == rhs.Spread && lhs.Owner == rhs.Owner && lhs.Query == rhs.Query && lhs.Operation == rhs.Operation && lhs.RefetchQuery == rhs.RefetchQuery && lhs.name == rhs.name && lhs.document == rhs.document && lhs.text == rhs.text && lhs.plan == rhs.plan && lhs.errorBehavior == rhs.errorBehavior && lhs.throwsOnFieldError == rhs.throwsOnFieldError && lhs.bubbles == rhs.bubbles && lhs.hasDeferred == rhs.hasDeferred && lhs.cacheExpiration == rhs.cacheExpiration && lhs.Action == rhs.Action && lhs.OptimisticResponse == rhs.OptimisticResponse && lhs.hash == rhs.hash && lhs.commit == rhs.commit && lhs.callAsFunction == rhs.callAsFunction && lhs.Op == rhs.Op && lhs.variable == rhs.variable && lhs.phase == rhs.phase && lhs.isRefreshing == rhs.isRefreshing && lhs.isStale == rhs.isStale && lhs.retry == rhs.retry && lhs.Sites == rhs.Sites && lhs.AbstractSlots == rhs.AbstractSlots && lhs.schemaDigest == rhs.schemaDigest && lhs.format == rhs.format && lhs.transient == rhs.transient && lhs.Swift == rhs.Swift && lhs.Set == rhs.Set && lhs.Result == rhs.Result && lhs.Optional == rhs.Optional && lhs.String == rhs.String && lhs.Int == rhs.Int && lhs.Double == rhs.Double && lhs.Bool == rhs.Bool && lhs.MainActor == rhs.MainActor && lhs.Hasher == rhs.Hasher && lhs.Sendable == rhs.Sendable
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -14757,7 +14167,6 @@ subscription HostileSubscriptionVariables(
         hasher.combine(self.`await`)
         hasher.combine(self.anchor)
         hasher.combine(self.recordID)
-        hasher.combine(self.typeName)
         hasher.combine(self.satisfied)
         hasher.combine(self.missingRequiredField)
         hasher.combine(self.fieldErrors)
@@ -14836,7 +14245,7 @@ subscription HostileSubscriptionVariables(
                     .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, caught: true, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
                         .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false, caught: true),
                     ])),
-                    .scalar("cursor", key: .fixed(Slots.NoteEdge.cursor), kind: .string, list: false, caught: true, guards: [[Guards.Type_true], [Guards.Protocol_true], [Guards.Any_true], [Guards.self_true], [Guards.init_true], [Guards.deinit_true], [Guards.subscript_true], [Guards.class_true], [Guards.struct_true], [Guards.enum_true], [Guards.func_true], [Guards.var_true], [Guards.let_true], [Guards.import_true], [Guards.extension_true], [Guards.operator_true], [Guards.static_true], [Guards.default_true], [Guards.case_true], [Guards.switch_true], [Guards.if_true], [Guards.else_true], [Guards.for_true], [Guards.in_true], [Guards.while_true], [Guards.repeat_true], [Guards.return_true], [Guards.break_true], [Guards.continue_true], [Guards.where_true], [Guards.is_true], [Guards.as_true], [Guards.try_true], [Guards.throw_true], [Guards.throws_true], [Guards.guard_true], [Guards.defer_true], [Guards.do_true], [Guards.catch_true], [Guards.true_true], [Guards.false_true], [Guards.nil_true], [Guards.super_true], [Guards.internal_true], [Guards.private_true], [Guards.public_true], [Guards.fileprivate_true], [Guards.open_true], [Guards.inout_true], [Guards.typealias_true], [Guards.associatedtype_true], [Guards.protocol_true], [Guards.some_true], [Guards.any_true], [Guards.rethrows_true], [Guards.fallthrough_true], [Guards.precedencegroup_true], [Guards.__true], [Guards.Self_true], [Guards.async_true], [Guards.borrowing_true], [Guards.consume_true], [Guards.consuming_true], [Guards.copy_true], [Guards.discard_true], [Guards.each_true], [Guards.isolated_true], [Guards.sending_true], [Guards.then_true], [Guards.unsafe_true], [Guards.await_true], [Guards.anchor_true], [Guards.recordID_true], [Guards.typeName_true], [Guards.satisfied_true], [Guards.missingRequiredField_true], [Guards.fieldErrors_true], [Guards.isPresent_true], [Guards.throwing_true], [Guards.caught_true], [Guards.refetchable_true], [Guards.refetch_true], [Guards.connection_true], [Guards.nodes_true], [Guards.hasNext_true], [Guards.hasPrevious_true], [Guards.isLoadingNext_true], [Guards.isLoadingPrevious_true], [Guards.connectionID_true], [Guards.loadNext_true], [Guards.loadPrevious_true], [Guards.bound_true], [Guards.errors_true], [Guards.child_true], [Guards.missing_true], [Guards.count_true], [Guards.fields_true], [Guards.lhs_true], [Guards.rhs_true], [Guards.hasher_true], [Guards.optimistic_true], [Guards.selfValue_true], [Guards.Fragment_true], [Guards.Spread_true], [Guards.Owner_true], [Guards.Query_true], [Guards.Operation_true], [Guards.RefetchQuery_true], [Guards.name_true], [Guards.document_true], [Guards.text_true], [Guards.plan_true], [Guards.errorBehavior_true], [Guards.throwsOnFieldError_true], [Guards.bubbles_true], [Guards.hasDeferred_true], [Guards.cacheExpiration_true], [Guards.Action_true], [Guards.OptimisticResponse_true], [Guards.hash_true], [Guards.commit_true], [Guards.callAsFunction_true], [Guards.Op_true], [Guards.variable_true], [Guards.phase_true], [Guards.isRefreshing_true], [Guards.isStale_true], [Guards.retry_true], [Guards.Sites_true], [Guards.AbstractSlots_true], [Guards.schemaDigest_true], [Guards.format_true], [Guards.transient_true], [Guards.Swift_true], [Guards.Set_true], [Guards.Result_true], [Guards.Optional_true], [Guards.String_true], [Guards.Int_true], [Guards.Double_true], [Guards.Bool_true], [Guards.MainActor_true], [Guards.Hasher_true], [Guards.Sendable_true]]),
+                    .scalar("cursor", key: .fixed(Slots.NoteEdge.cursor), kind: .string, list: false, caught: true, guards: [[Guards.Type_true], [Guards.Protocol_true], [Guards.Any_true], [Guards.self_true], [Guards.init_true], [Guards.deinit_true], [Guards.subscript_true], [Guards.class_true], [Guards.struct_true], [Guards.enum_true], [Guards.func_true], [Guards.var_true], [Guards.let_true], [Guards.import_true], [Guards.extension_true], [Guards.operator_true], [Guards.static_true], [Guards.default_true], [Guards.case_true], [Guards.switch_true], [Guards.if_true], [Guards.else_true], [Guards.for_true], [Guards.in_true], [Guards.while_true], [Guards.repeat_true], [Guards.return_true], [Guards.break_true], [Guards.continue_true], [Guards.where_true], [Guards.is_true], [Guards.as_true], [Guards.try_true], [Guards.throw_true], [Guards.throws_true], [Guards.guard_true], [Guards.defer_true], [Guards.do_true], [Guards.catch_true], [Guards.true_true], [Guards.false_true], [Guards.nil_true], [Guards.super_true], [Guards.internal_true], [Guards.private_true], [Guards.public_true], [Guards.fileprivate_true], [Guards.open_true], [Guards.inout_true], [Guards.typealias_true], [Guards.associatedtype_true], [Guards.protocol_true], [Guards.some_true], [Guards.any_true], [Guards.rethrows_true], [Guards.fallthrough_true], [Guards.precedencegroup_true], [Guards.__true], [Guards.Self_true], [Guards.async_true], [Guards.borrowing_true], [Guards.consume_true], [Guards.consuming_true], [Guards.copy_true], [Guards.discard_true], [Guards.each_true], [Guards.isolated_true], [Guards.sending_true], [Guards.then_true], [Guards.unsafe_true], [Guards.await_true], [Guards.anchor_true], [Guards.recordID_true], [Guards.satisfied_true], [Guards.missingRequiredField_true], [Guards.fieldErrors_true], [Guards.isPresent_true], [Guards.throwing_true], [Guards.caught_true], [Guards.refetchable_true], [Guards.refetch_true], [Guards.connection_true], [Guards.nodes_true], [Guards.hasNext_true], [Guards.hasPrevious_true], [Guards.isLoadingNext_true], [Guards.isLoadingPrevious_true], [Guards.connectionID_true], [Guards.loadNext_true], [Guards.loadPrevious_true], [Guards.bound_true], [Guards.errors_true], [Guards.child_true], [Guards.missing_true], [Guards.count_true], [Guards.fields_true], [Guards.lhs_true], [Guards.rhs_true], [Guards.hasher_true], [Guards.optimistic_true], [Guards.selfValue_true], [Guards.Fragment_true], [Guards.Spread_true], [Guards.Owner_true], [Guards.Query_true], [Guards.Operation_true], [Guards.RefetchQuery_true], [Guards.name_true], [Guards.document_true], [Guards.text_true], [Guards.plan_true], [Guards.errorBehavior_true], [Guards.throwsOnFieldError_true], [Guards.bubbles_true], [Guards.hasDeferred_true], [Guards.cacheExpiration_true], [Guards.Action_true], [Guards.OptimisticResponse_true], [Guards.hash_true], [Guards.commit_true], [Guards.callAsFunction_true], [Guards.Op_true], [Guards.variable_true], [Guards.phase_true], [Guards.isRefreshing_true], [Guards.isStale_true], [Guards.retry_true], [Guards.Sites_true], [Guards.AbstractSlots_true], [Guards.schemaDigest_true], [Guards.format_true], [Guards.transient_true], [Guards.Swift_true], [Guards.Set_true], [Guards.Result_true], [Guards.Optional_true], [Guards.String_true], [Guards.Int_true], [Guards.Double_true], [Guards.Bool_true], [Guards.MainActor_true], [Guards.Hasher_true], [Guards.Sendable_true]]),
                 ])),
             ])),
         ]), transient: Types.transient)
@@ -14844,13 +14253,11 @@ subscription HostileSubscriptionVariables(
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Subscription"
         @MainActor public var noteAdded: Result<NoteAdded?, Baton.FieldErrors> { anchor.caught(Slots.Subscription.noteAdded_cab094, within: NoteAdded.fieldErrors) { $0.linked(Slots.Subscription.noteAdded_cab094).map(NoteAdded.init(anchor:)) } }
 
         nonisolated public struct NoteAdded: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "NoteAddedPayload"
             @MainActor public var noteEdge: NoteEdge? { anchor.linked(Slots.NoteAddedPayload.noteEdge).map(NoteEdge.init(anchor:)) }
             /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
             @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
@@ -14869,14 +14276,13 @@ subscription HostileSubscriptionVariables(
             nonisolated public struct NoteEdge: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "NoteEdge"
                 @MainActor public var node: Node? { anchor.linked(Slots.NoteEdge.node).map(Node.init(anchor:)) }
-                @MainActor public var cursor: String? { (anchor.owner.selects(Guards.Type_true) || anchor.owner.selects(Guards.Protocol_true) || anchor.owner.selects(Guards.Any_true) || anchor.owner.selects(Guards.self_true) || anchor.owner.selects(Guards.init_true) || anchor.owner.selects(Guards.deinit_true) || anchor.owner.selects(Guards.subscript_true) || anchor.owner.selects(Guards.class_true) || anchor.owner.selects(Guards.struct_true) || anchor.owner.selects(Guards.enum_true) || anchor.owner.selects(Guards.func_true) || anchor.owner.selects(Guards.var_true) || anchor.owner.selects(Guards.let_true) || anchor.owner.selects(Guards.import_true) || anchor.owner.selects(Guards.extension_true) || anchor.owner.selects(Guards.operator_true) || anchor.owner.selects(Guards.static_true) || anchor.owner.selects(Guards.default_true) || anchor.owner.selects(Guards.case_true) || anchor.owner.selects(Guards.switch_true) || anchor.owner.selects(Guards.if_true) || anchor.owner.selects(Guards.else_true) || anchor.owner.selects(Guards.for_true) || anchor.owner.selects(Guards.in_true) || anchor.owner.selects(Guards.while_true) || anchor.owner.selects(Guards.repeat_true) || anchor.owner.selects(Guards.return_true) || anchor.owner.selects(Guards.break_true) || anchor.owner.selects(Guards.continue_true) || anchor.owner.selects(Guards.where_true) || anchor.owner.selects(Guards.is_true) || anchor.owner.selects(Guards.as_true) || anchor.owner.selects(Guards.try_true) || anchor.owner.selects(Guards.throw_true) || anchor.owner.selects(Guards.throws_true) || anchor.owner.selects(Guards.guard_true) || anchor.owner.selects(Guards.defer_true) || anchor.owner.selects(Guards.do_true) || anchor.owner.selects(Guards.catch_true) || anchor.owner.selects(Guards.true_true) || anchor.owner.selects(Guards.false_true) || anchor.owner.selects(Guards.nil_true) || anchor.owner.selects(Guards.super_true) || anchor.owner.selects(Guards.internal_true) || anchor.owner.selects(Guards.private_true) || anchor.owner.selects(Guards.public_true) || anchor.owner.selects(Guards.fileprivate_true) || anchor.owner.selects(Guards.open_true) || anchor.owner.selects(Guards.inout_true) || anchor.owner.selects(Guards.typealias_true) || anchor.owner.selects(Guards.associatedtype_true) || anchor.owner.selects(Guards.protocol_true) || anchor.owner.selects(Guards.some_true) || anchor.owner.selects(Guards.any_true) || anchor.owner.selects(Guards.rethrows_true) || anchor.owner.selects(Guards.fallthrough_true) || anchor.owner.selects(Guards.precedencegroup_true) || anchor.owner.selects(Guards.__true) || anchor.owner.selects(Guards.Self_true) || anchor.owner.selects(Guards.async_true) || anchor.owner.selects(Guards.borrowing_true) || anchor.owner.selects(Guards.consume_true) || anchor.owner.selects(Guards.consuming_true) || anchor.owner.selects(Guards.copy_true) || anchor.owner.selects(Guards.discard_true) || anchor.owner.selects(Guards.each_true) || anchor.owner.selects(Guards.isolated_true) || anchor.owner.selects(Guards.sending_true) || anchor.owner.selects(Guards.then_true) || anchor.owner.selects(Guards.unsafe_true) || anchor.owner.selects(Guards.await_true) || anchor.owner.selects(Guards.anchor_true) || anchor.owner.selects(Guards.recordID_true) || anchor.owner.selects(Guards.typeName_true) || anchor.owner.selects(Guards.satisfied_true) || anchor.owner.selects(Guards.missingRequiredField_true) || anchor.owner.selects(Guards.fieldErrors_true) || anchor.owner.selects(Guards.isPresent_true) || anchor.owner.selects(Guards.throwing_true) || anchor.owner.selects(Guards.caught_true) || anchor.owner.selects(Guards.refetchable_true) || anchor.owner.selects(Guards.refetch_true) || anchor.owner.selects(Guards.connection_true) || anchor.owner.selects(Guards.nodes_true) || anchor.owner.selects(Guards.hasNext_true) || anchor.owner.selects(Guards.hasPrevious_true) || anchor.owner.selects(Guards.isLoadingNext_true) || anchor.owner.selects(Guards.isLoadingPrevious_true) || anchor.owner.selects(Guards.connectionID_true) || anchor.owner.selects(Guards.loadNext_true) || anchor.owner.selects(Guards.loadPrevious_true) || anchor.owner.selects(Guards.bound_true) || anchor.owner.selects(Guards.errors_true) || anchor.owner.selects(Guards.child_true) || anchor.owner.selects(Guards.missing_true) || anchor.owner.selects(Guards.count_true) || anchor.owner.selects(Guards.fields_true) || anchor.owner.selects(Guards.lhs_true) || anchor.owner.selects(Guards.rhs_true) || anchor.owner.selects(Guards.hasher_true) || anchor.owner.selects(Guards.optimistic_true) || anchor.owner.selects(Guards.selfValue_true) || anchor.owner.selects(Guards.Fragment_true) || anchor.owner.selects(Guards.Spread_true) || anchor.owner.selects(Guards.Owner_true) || anchor.owner.selects(Guards.Query_true) || anchor.owner.selects(Guards.Operation_true) || anchor.owner.selects(Guards.RefetchQuery_true) || anchor.owner.selects(Guards.name_true) || anchor.owner.selects(Guards.document_true) || anchor.owner.selects(Guards.text_true) || anchor.owner.selects(Guards.plan_true) || anchor.owner.selects(Guards.errorBehavior_true) || anchor.owner.selects(Guards.throwsOnFieldError_true) || anchor.owner.selects(Guards.bubbles_true) || anchor.owner.selects(Guards.hasDeferred_true) || anchor.owner.selects(Guards.cacheExpiration_true) || anchor.owner.selects(Guards.Action_true) || anchor.owner.selects(Guards.OptimisticResponse_true) || anchor.owner.selects(Guards.hash_true) || anchor.owner.selects(Guards.commit_true) || anchor.owner.selects(Guards.callAsFunction_true) || anchor.owner.selects(Guards.Op_true) || anchor.owner.selects(Guards.variable_true) || anchor.owner.selects(Guards.phase_true) || anchor.owner.selects(Guards.isRefreshing_true) || anchor.owner.selects(Guards.isStale_true) || anchor.owner.selects(Guards.retry_true) || anchor.owner.selects(Guards.Sites_true) || anchor.owner.selects(Guards.AbstractSlots_true) || anchor.owner.selects(Guards.schemaDigest_true) || anchor.owner.selects(Guards.format_true) || anchor.owner.selects(Guards.transient_true) || anchor.owner.selects(Guards.Swift_true) || anchor.owner.selects(Guards.Set_true) || anchor.owner.selects(Guards.Result_true) || anchor.owner.selects(Guards.Optional_true) || anchor.owner.selects(Guards.String_true) || anchor.owner.selects(Guards.Int_true) || anchor.owner.selects(Guards.Double_true) || anchor.owner.selects(Guards.Bool_true) || anchor.owner.selects(Guards.MainActor_true) || anchor.owner.selects(Guards.Hasher_true) || anchor.owner.selects(Guards.Sendable_true)) ? anchor.requiredString(Slots.NoteEdge.cursor) : nil }
+                @MainActor public var cursor: String? { (anchor.owner.selects(Guards.Type_true) || anchor.owner.selects(Guards.Protocol_true) || anchor.owner.selects(Guards.Any_true) || anchor.owner.selects(Guards.self_true) || anchor.owner.selects(Guards.init_true) || anchor.owner.selects(Guards.deinit_true) || anchor.owner.selects(Guards.subscript_true) || anchor.owner.selects(Guards.class_true) || anchor.owner.selects(Guards.struct_true) || anchor.owner.selects(Guards.enum_true) || anchor.owner.selects(Guards.func_true) || anchor.owner.selects(Guards.var_true) || anchor.owner.selects(Guards.let_true) || anchor.owner.selects(Guards.import_true) || anchor.owner.selects(Guards.extension_true) || anchor.owner.selects(Guards.operator_true) || anchor.owner.selects(Guards.static_true) || anchor.owner.selects(Guards.default_true) || anchor.owner.selects(Guards.case_true) || anchor.owner.selects(Guards.switch_true) || anchor.owner.selects(Guards.if_true) || anchor.owner.selects(Guards.else_true) || anchor.owner.selects(Guards.for_true) || anchor.owner.selects(Guards.in_true) || anchor.owner.selects(Guards.while_true) || anchor.owner.selects(Guards.repeat_true) || anchor.owner.selects(Guards.return_true) || anchor.owner.selects(Guards.break_true) || anchor.owner.selects(Guards.continue_true) || anchor.owner.selects(Guards.where_true) || anchor.owner.selects(Guards.is_true) || anchor.owner.selects(Guards.as_true) || anchor.owner.selects(Guards.try_true) || anchor.owner.selects(Guards.throw_true) || anchor.owner.selects(Guards.throws_true) || anchor.owner.selects(Guards.guard_true) || anchor.owner.selects(Guards.defer_true) || anchor.owner.selects(Guards.do_true) || anchor.owner.selects(Guards.catch_true) || anchor.owner.selects(Guards.true_true) || anchor.owner.selects(Guards.false_true) || anchor.owner.selects(Guards.nil_true) || anchor.owner.selects(Guards.super_true) || anchor.owner.selects(Guards.internal_true) || anchor.owner.selects(Guards.private_true) || anchor.owner.selects(Guards.public_true) || anchor.owner.selects(Guards.fileprivate_true) || anchor.owner.selects(Guards.open_true) || anchor.owner.selects(Guards.inout_true) || anchor.owner.selects(Guards.typealias_true) || anchor.owner.selects(Guards.associatedtype_true) || anchor.owner.selects(Guards.protocol_true) || anchor.owner.selects(Guards.some_true) || anchor.owner.selects(Guards.any_true) || anchor.owner.selects(Guards.rethrows_true) || anchor.owner.selects(Guards.fallthrough_true) || anchor.owner.selects(Guards.precedencegroup_true) || anchor.owner.selects(Guards.__true) || anchor.owner.selects(Guards.Self_true) || anchor.owner.selects(Guards.async_true) || anchor.owner.selects(Guards.borrowing_true) || anchor.owner.selects(Guards.consume_true) || anchor.owner.selects(Guards.consuming_true) || anchor.owner.selects(Guards.copy_true) || anchor.owner.selects(Guards.discard_true) || anchor.owner.selects(Guards.each_true) || anchor.owner.selects(Guards.isolated_true) || anchor.owner.selects(Guards.sending_true) || anchor.owner.selects(Guards.then_true) || anchor.owner.selects(Guards.unsafe_true) || anchor.owner.selects(Guards.await_true) || anchor.owner.selects(Guards.anchor_true) || anchor.owner.selects(Guards.recordID_true) || anchor.owner.selects(Guards.satisfied_true) || anchor.owner.selects(Guards.missingRequiredField_true) || anchor.owner.selects(Guards.fieldErrors_true) || anchor.owner.selects(Guards.isPresent_true) || anchor.owner.selects(Guards.throwing_true) || anchor.owner.selects(Guards.caught_true) || anchor.owner.selects(Guards.refetchable_true) || anchor.owner.selects(Guards.refetch_true) || anchor.owner.selects(Guards.connection_true) || anchor.owner.selects(Guards.nodes_true) || anchor.owner.selects(Guards.hasNext_true) || anchor.owner.selects(Guards.hasPrevious_true) || anchor.owner.selects(Guards.isLoadingNext_true) || anchor.owner.selects(Guards.isLoadingPrevious_true) || anchor.owner.selects(Guards.connectionID_true) || anchor.owner.selects(Guards.loadNext_true) || anchor.owner.selects(Guards.loadPrevious_true) || anchor.owner.selects(Guards.bound_true) || anchor.owner.selects(Guards.errors_true) || anchor.owner.selects(Guards.child_true) || anchor.owner.selects(Guards.missing_true) || anchor.owner.selects(Guards.count_true) || anchor.owner.selects(Guards.fields_true) || anchor.owner.selects(Guards.lhs_true) || anchor.owner.selects(Guards.rhs_true) || anchor.owner.selects(Guards.hasher_true) || anchor.owner.selects(Guards.optimistic_true) || anchor.owner.selects(Guards.selfValue_true) || anchor.owner.selects(Guards.Fragment_true) || anchor.owner.selects(Guards.Spread_true) || anchor.owner.selects(Guards.Owner_true) || anchor.owner.selects(Guards.Query_true) || anchor.owner.selects(Guards.Operation_true) || anchor.owner.selects(Guards.RefetchQuery_true) || anchor.owner.selects(Guards.name_true) || anchor.owner.selects(Guards.document_true) || anchor.owner.selects(Guards.text_true) || anchor.owner.selects(Guards.plan_true) || anchor.owner.selects(Guards.errorBehavior_true) || anchor.owner.selects(Guards.throwsOnFieldError_true) || anchor.owner.selects(Guards.bubbles_true) || anchor.owner.selects(Guards.hasDeferred_true) || anchor.owner.selects(Guards.cacheExpiration_true) || anchor.owner.selects(Guards.Action_true) || anchor.owner.selects(Guards.OptimisticResponse_true) || anchor.owner.selects(Guards.hash_true) || anchor.owner.selects(Guards.commit_true) || anchor.owner.selects(Guards.callAsFunction_true) || anchor.owner.selects(Guards.Op_true) || anchor.owner.selects(Guards.variable_true) || anchor.owner.selects(Guards.phase_true) || anchor.owner.selects(Guards.isRefreshing_true) || anchor.owner.selects(Guards.isStale_true) || anchor.owner.selects(Guards.retry_true) || anchor.owner.selects(Guards.Sites_true) || anchor.owner.selects(Guards.AbstractSlots_true) || anchor.owner.selects(Guards.schemaDigest_true) || anchor.owner.selects(Guards.format_true) || anchor.owner.selects(Guards.transient_true) || anchor.owner.selects(Guards.Swift_true) || anchor.owner.selects(Guards.Set_true) || anchor.owner.selects(Guards.Result_true) || anchor.owner.selects(Guards.Optional_true) || anchor.owner.selects(Guards.String_true) || anchor.owner.selects(Guards.Int_true) || anchor.owner.selects(Guards.Double_true) || anchor.owner.selects(Guards.Bool_true) || anchor.owner.selects(Guards.MainActor_true) || anchor.owner.selects(Guards.Hasher_true) || anchor.owner.selects(Guards.Sendable_true)) ? anchor.requiredString(Slots.NoteEdge.cursor) : nil }
                 /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
                 @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
                     var errors: [Baton.FieldError] = []
                     anchor.collectErrors(Slots.NoteEdge.node, within: Node.fieldErrors, into: &errors)
-                    if (anchor.owner.selects(Guards.Type_true) || anchor.owner.selects(Guards.Protocol_true) || anchor.owner.selects(Guards.Any_true) || anchor.owner.selects(Guards.self_true) || anchor.owner.selects(Guards.init_true) || anchor.owner.selects(Guards.deinit_true) || anchor.owner.selects(Guards.subscript_true) || anchor.owner.selects(Guards.class_true) || anchor.owner.selects(Guards.struct_true) || anchor.owner.selects(Guards.enum_true) || anchor.owner.selects(Guards.func_true) || anchor.owner.selects(Guards.var_true) || anchor.owner.selects(Guards.let_true) || anchor.owner.selects(Guards.import_true) || anchor.owner.selects(Guards.extension_true) || anchor.owner.selects(Guards.operator_true) || anchor.owner.selects(Guards.static_true) || anchor.owner.selects(Guards.default_true) || anchor.owner.selects(Guards.case_true) || anchor.owner.selects(Guards.switch_true) || anchor.owner.selects(Guards.if_true) || anchor.owner.selects(Guards.else_true) || anchor.owner.selects(Guards.for_true) || anchor.owner.selects(Guards.in_true) || anchor.owner.selects(Guards.while_true) || anchor.owner.selects(Guards.repeat_true) || anchor.owner.selects(Guards.return_true) || anchor.owner.selects(Guards.break_true) || anchor.owner.selects(Guards.continue_true) || anchor.owner.selects(Guards.where_true) || anchor.owner.selects(Guards.is_true) || anchor.owner.selects(Guards.as_true) || anchor.owner.selects(Guards.try_true) || anchor.owner.selects(Guards.throw_true) || anchor.owner.selects(Guards.throws_true) || anchor.owner.selects(Guards.guard_true) || anchor.owner.selects(Guards.defer_true) || anchor.owner.selects(Guards.do_true) || anchor.owner.selects(Guards.catch_true) || anchor.owner.selects(Guards.true_true) || anchor.owner.selects(Guards.false_true) || anchor.owner.selects(Guards.nil_true) || anchor.owner.selects(Guards.super_true) || anchor.owner.selects(Guards.internal_true) || anchor.owner.selects(Guards.private_true) || anchor.owner.selects(Guards.public_true) || anchor.owner.selects(Guards.fileprivate_true) || anchor.owner.selects(Guards.open_true) || anchor.owner.selects(Guards.inout_true) || anchor.owner.selects(Guards.typealias_true) || anchor.owner.selects(Guards.associatedtype_true) || anchor.owner.selects(Guards.protocol_true) || anchor.owner.selects(Guards.some_true) || anchor.owner.selects(Guards.any_true) || anchor.owner.selects(Guards.rethrows_true) || anchor.owner.selects(Guards.fallthrough_true) || anchor.owner.selects(Guards.precedencegroup_true) || anchor.owner.selects(Guards.__true) || anchor.owner.selects(Guards.Self_true) || anchor.owner.selects(Guards.async_true) || anchor.owner.selects(Guards.borrowing_true) || anchor.owner.selects(Guards.consume_true) || anchor.owner.selects(Guards.consuming_true) || anchor.owner.selects(Guards.copy_true) || anchor.owner.selects(Guards.discard_true) || anchor.owner.selects(Guards.each_true) || anchor.owner.selects(Guards.isolated_true) || anchor.owner.selects(Guards.sending_true) || anchor.owner.selects(Guards.then_true) || anchor.owner.selects(Guards.unsafe_true) || anchor.owner.selects(Guards.await_true) || anchor.owner.selects(Guards.anchor_true) || anchor.owner.selects(Guards.recordID_true) || anchor.owner.selects(Guards.typeName_true) || anchor.owner.selects(Guards.satisfied_true) || anchor.owner.selects(Guards.missingRequiredField_true) || anchor.owner.selects(Guards.fieldErrors_true) || anchor.owner.selects(Guards.isPresent_true) || anchor.owner.selects(Guards.throwing_true) || anchor.owner.selects(Guards.caught_true) || anchor.owner.selects(Guards.refetchable_true) || anchor.owner.selects(Guards.refetch_true) || anchor.owner.selects(Guards.connection_true) || anchor.owner.selects(Guards.nodes_true) || anchor.owner.selects(Guards.hasNext_true) || anchor.owner.selects(Guards.hasPrevious_true) || anchor.owner.selects(Guards.isLoadingNext_true) || anchor.owner.selects(Guards.isLoadingPrevious_true) || anchor.owner.selects(Guards.connectionID_true) || anchor.owner.selects(Guards.loadNext_true) || anchor.owner.selects(Guards.loadPrevious_true) || anchor.owner.selects(Guards.bound_true) || anchor.owner.selects(Guards.errors_true) || anchor.owner.selects(Guards.child_true) || anchor.owner.selects(Guards.missing_true) || anchor.owner.selects(Guards.count_true) || anchor.owner.selects(Guards.fields_true) || anchor.owner.selects(Guards.lhs_true) || anchor.owner.selects(Guards.rhs_true) || anchor.owner.selects(Guards.hasher_true) || anchor.owner.selects(Guards.optimistic_true) || anchor.owner.selects(Guards.selfValue_true) || anchor.owner.selects(Guards.Fragment_true) || anchor.owner.selects(Guards.Spread_true) || anchor.owner.selects(Guards.Owner_true) || anchor.owner.selects(Guards.Query_true) || anchor.owner.selects(Guards.Operation_true) || anchor.owner.selects(Guards.RefetchQuery_true) || anchor.owner.selects(Guards.name_true) || anchor.owner.selects(Guards.document_true) || anchor.owner.selects(Guards.text_true) || anchor.owner.selects(Guards.plan_true) || anchor.owner.selects(Guards.errorBehavior_true) || anchor.owner.selects(Guards.throwsOnFieldError_true) || anchor.owner.selects(Guards.bubbles_true) || anchor.owner.selects(Guards.hasDeferred_true) || anchor.owner.selects(Guards.cacheExpiration_true) || anchor.owner.selects(Guards.Action_true) || anchor.owner.selects(Guards.OptimisticResponse_true) || anchor.owner.selects(Guards.hash_true) || anchor.owner.selects(Guards.commit_true) || anchor.owner.selects(Guards.callAsFunction_true) || anchor.owner.selects(Guards.Op_true) || anchor.owner.selects(Guards.variable_true) || anchor.owner.selects(Guards.phase_true) || anchor.owner.selects(Guards.isRefreshing_true) || anchor.owner.selects(Guards.isStale_true) || anchor.owner.selects(Guards.retry_true) || anchor.owner.selects(Guards.Sites_true) || anchor.owner.selects(Guards.AbstractSlots_true) || anchor.owner.selects(Guards.schemaDigest_true) || anchor.owner.selects(Guards.format_true) || anchor.owner.selects(Guards.transient_true) || anchor.owner.selects(Guards.Swift_true) || anchor.owner.selects(Guards.Set_true) || anchor.owner.selects(Guards.Result_true) || anchor.owner.selects(Guards.Optional_true) || anchor.owner.selects(Guards.String_true) || anchor.owner.selects(Guards.Int_true) || anchor.owner.selects(Guards.Double_true) || anchor.owner.selects(Guards.Bool_true) || anchor.owner.selects(Guards.MainActor_true) || anchor.owner.selects(Guards.Hasher_true) || anchor.owner.selects(Guards.Sendable_true)) {
+                    if (anchor.owner.selects(Guards.Type_true) || anchor.owner.selects(Guards.Protocol_true) || anchor.owner.selects(Guards.Any_true) || anchor.owner.selects(Guards.self_true) || anchor.owner.selects(Guards.init_true) || anchor.owner.selects(Guards.deinit_true) || anchor.owner.selects(Guards.subscript_true) || anchor.owner.selects(Guards.class_true) || anchor.owner.selects(Guards.struct_true) || anchor.owner.selects(Guards.enum_true) || anchor.owner.selects(Guards.func_true) || anchor.owner.selects(Guards.var_true) || anchor.owner.selects(Guards.let_true) || anchor.owner.selects(Guards.import_true) || anchor.owner.selects(Guards.extension_true) || anchor.owner.selects(Guards.operator_true) || anchor.owner.selects(Guards.static_true) || anchor.owner.selects(Guards.default_true) || anchor.owner.selects(Guards.case_true) || anchor.owner.selects(Guards.switch_true) || anchor.owner.selects(Guards.if_true) || anchor.owner.selects(Guards.else_true) || anchor.owner.selects(Guards.for_true) || anchor.owner.selects(Guards.in_true) || anchor.owner.selects(Guards.while_true) || anchor.owner.selects(Guards.repeat_true) || anchor.owner.selects(Guards.return_true) || anchor.owner.selects(Guards.break_true) || anchor.owner.selects(Guards.continue_true) || anchor.owner.selects(Guards.where_true) || anchor.owner.selects(Guards.is_true) || anchor.owner.selects(Guards.as_true) || anchor.owner.selects(Guards.try_true) || anchor.owner.selects(Guards.throw_true) || anchor.owner.selects(Guards.throws_true) || anchor.owner.selects(Guards.guard_true) || anchor.owner.selects(Guards.defer_true) || anchor.owner.selects(Guards.do_true) || anchor.owner.selects(Guards.catch_true) || anchor.owner.selects(Guards.true_true) || anchor.owner.selects(Guards.false_true) || anchor.owner.selects(Guards.nil_true) || anchor.owner.selects(Guards.super_true) || anchor.owner.selects(Guards.internal_true) || anchor.owner.selects(Guards.private_true) || anchor.owner.selects(Guards.public_true) || anchor.owner.selects(Guards.fileprivate_true) || anchor.owner.selects(Guards.open_true) || anchor.owner.selects(Guards.inout_true) || anchor.owner.selects(Guards.typealias_true) || anchor.owner.selects(Guards.associatedtype_true) || anchor.owner.selects(Guards.protocol_true) || anchor.owner.selects(Guards.some_true) || anchor.owner.selects(Guards.any_true) || anchor.owner.selects(Guards.rethrows_true) || anchor.owner.selects(Guards.fallthrough_true) || anchor.owner.selects(Guards.precedencegroup_true) || anchor.owner.selects(Guards.__true) || anchor.owner.selects(Guards.Self_true) || anchor.owner.selects(Guards.async_true) || anchor.owner.selects(Guards.borrowing_true) || anchor.owner.selects(Guards.consume_true) || anchor.owner.selects(Guards.consuming_true) || anchor.owner.selects(Guards.copy_true) || anchor.owner.selects(Guards.discard_true) || anchor.owner.selects(Guards.each_true) || anchor.owner.selects(Guards.isolated_true) || anchor.owner.selects(Guards.sending_true) || anchor.owner.selects(Guards.then_true) || anchor.owner.selects(Guards.unsafe_true) || anchor.owner.selects(Guards.await_true) || anchor.owner.selects(Guards.anchor_true) || anchor.owner.selects(Guards.recordID_true) || anchor.owner.selects(Guards.satisfied_true) || anchor.owner.selects(Guards.missingRequiredField_true) || anchor.owner.selects(Guards.fieldErrors_true) || anchor.owner.selects(Guards.isPresent_true) || anchor.owner.selects(Guards.throwing_true) || anchor.owner.selects(Guards.caught_true) || anchor.owner.selects(Guards.refetchable_true) || anchor.owner.selects(Guards.refetch_true) || anchor.owner.selects(Guards.connection_true) || anchor.owner.selects(Guards.nodes_true) || anchor.owner.selects(Guards.hasNext_true) || anchor.owner.selects(Guards.hasPrevious_true) || anchor.owner.selects(Guards.isLoadingNext_true) || anchor.owner.selects(Guards.isLoadingPrevious_true) || anchor.owner.selects(Guards.connectionID_true) || anchor.owner.selects(Guards.loadNext_true) || anchor.owner.selects(Guards.loadPrevious_true) || anchor.owner.selects(Guards.bound_true) || anchor.owner.selects(Guards.errors_true) || anchor.owner.selects(Guards.child_true) || anchor.owner.selects(Guards.missing_true) || anchor.owner.selects(Guards.count_true) || anchor.owner.selects(Guards.fields_true) || anchor.owner.selects(Guards.lhs_true) || anchor.owner.selects(Guards.rhs_true) || anchor.owner.selects(Guards.hasher_true) || anchor.owner.selects(Guards.optimistic_true) || anchor.owner.selects(Guards.selfValue_true) || anchor.owner.selects(Guards.Fragment_true) || anchor.owner.selects(Guards.Spread_true) || anchor.owner.selects(Guards.Owner_true) || anchor.owner.selects(Guards.Query_true) || anchor.owner.selects(Guards.Operation_true) || anchor.owner.selects(Guards.RefetchQuery_true) || anchor.owner.selects(Guards.name_true) || anchor.owner.selects(Guards.document_true) || anchor.owner.selects(Guards.text_true) || anchor.owner.selects(Guards.plan_true) || anchor.owner.selects(Guards.errorBehavior_true) || anchor.owner.selects(Guards.throwsOnFieldError_true) || anchor.owner.selects(Guards.bubbles_true) || anchor.owner.selects(Guards.hasDeferred_true) || anchor.owner.selects(Guards.cacheExpiration_true) || anchor.owner.selects(Guards.Action_true) || anchor.owner.selects(Guards.OptimisticResponse_true) || anchor.owner.selects(Guards.hash_true) || anchor.owner.selects(Guards.commit_true) || anchor.owner.selects(Guards.callAsFunction_true) || anchor.owner.selects(Guards.Op_true) || anchor.owner.selects(Guards.variable_true) || anchor.owner.selects(Guards.phase_true) || anchor.owner.selects(Guards.isRefreshing_true) || anchor.owner.selects(Guards.isStale_true) || anchor.owner.selects(Guards.retry_true) || anchor.owner.selects(Guards.Sites_true) || anchor.owner.selects(Guards.AbstractSlots_true) || anchor.owner.selects(Guards.schemaDigest_true) || anchor.owner.selects(Guards.format_true) || anchor.owner.selects(Guards.transient_true) || anchor.owner.selects(Guards.Swift_true) || anchor.owner.selects(Guards.Set_true) || anchor.owner.selects(Guards.Result_true) || anchor.owner.selects(Guards.Optional_true) || anchor.owner.selects(Guards.String_true) || anchor.owner.selects(Guards.Int_true) || anchor.owner.selects(Guards.Double_true) || anchor.owner.selects(Guards.Bool_true) || anchor.owner.selects(Guards.MainActor_true) || anchor.owner.selects(Guards.Hasher_true) || anchor.owner.selects(Guards.Sendable_true)) {
                         anchor.collectError(Slots.NoteEdge.cursor, into: &errors)
                     }
                     return errors
@@ -14892,7 +14298,6 @@ subscription HostileSubscriptionVariables(
                 nonisolated public struct Node: Baton.Lens {
                     @_spi(Generated) public let anchor: Baton.Anchor
                     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                    public static let typeName = "Note"
                     @MainActor public var id: String? { anchor.string(Slots.Note.id) }
                     /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
                     @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
@@ -14988,7 +14393,6 @@ nonisolated public struct HostileVariables: Baton.Query {
     public var `await`: String
     public var anchor: String
     public var recordID: String
-    public var typeName: String
     public var satisfied: String
     public var missingRequiredField: String
     public var fieldErrors: String
@@ -15060,7 +14464,7 @@ nonisolated public struct HostileVariables: Baton.Query {
     public var Sendable: String
     public var resolution: Baton.OperationHandle<Self>? = nil
 
-    public init(`Type`: String, `Protocol`: String, `Any`: String, `self` selfValue2: String, `init`: String, `deinit`: String, `subscript`: String, `class`: String, `struct`: String, `enum`: String, `func`: String, `var`: String, `let`: String, `import`: String, `extension`: String, `operator`: String, `static`: String, `default`: String, `case`: String, `switch`: String, `if`: String, `else`: String, `for`: String, `in`: String, `while`: String, `repeat`: String, `return`: String, `break`: String, `continue`: String, `where`: String, `is`: String, `as`: String, `try`: String, `throw`: String, `throws`: String, `guard`: String, `defer`: String, `do`: String, `catch`: String, `true`: String, `false`: String, `nil`: String, `super`: String, `internal`: String, `private`: String, `public`: String, `fileprivate`: String, `open`: String, `inout`: String, `typealias`: String, `associatedtype`: String, `protocol`: String, `some`: String, `any`: String, `rethrows`: String, `fallthrough`: String, `precedencegroup`: String, `_`: String, `Self`: String, async: String, `borrowing`: String, consume: String, `consuming`: String, copy: String, discard: String, `each`: String, `isolated`: String, `sending`: String, then: String, unsafe: String, `await`: String, anchor: String, recordID: String, typeName: String, satisfied: String, missingRequiredField: String, fieldErrors: String, isPresent: String, throwing: String, caught: String, refetchable: String, refetch: String, connection: String, nodes: String, hasNext: String, hasPrevious: String, isLoadingNext: String, isLoadingPrevious: String, connectionID: String, loadNext: String, loadPrevious: String, bound: String, errors: String, child: String, missing: String, count: String, fields: String, lhs: String, rhs: String, hasher: String, optimistic: String, selfValue: String, Fragment: String, Spread: String, Owner: String, Query: String, Operation: String, RefetchQuery: String, name: String, document: String, text: String, plan: String, errorBehavior: String, throwsOnFieldError: String, bubbles: String, hasDeferred: String, cacheExpiration: String, Action: String, OptimisticResponse: String, hash: String, commit: String, callAsFunction: String, Op: String, variable: String, retry: String, subscription: String, Sites: String, Guards: String, AbstractSlots: String, schemaDigest: String, format: String, transient: String, Swift: String, Set: String, Result: String, Optional: String, String: String, Int: String, Double: String, Bool: String, MainActor: String, Hasher: String, Sendable: String) {
+    public init(`Type`: String, `Protocol`: String, `Any`: String, `self` selfValue2: String, `init`: String, `deinit`: String, `subscript`: String, `class`: String, `struct`: String, `enum`: String, `func`: String, `var`: String, `let`: String, `import`: String, `extension`: String, `operator`: String, `static`: String, `default`: String, `case`: String, `switch`: String, `if`: String, `else`: String, `for`: String, `in`: String, `while`: String, `repeat`: String, `return`: String, `break`: String, `continue`: String, `where`: String, `is`: String, `as`: String, `try`: String, `throw`: String, `throws`: String, `guard`: String, `defer`: String, `do`: String, `catch`: String, `true`: String, `false`: String, `nil`: String, `super`: String, `internal`: String, `private`: String, `public`: String, `fileprivate`: String, `open`: String, `inout`: String, `typealias`: String, `associatedtype`: String, `protocol`: String, `some`: String, `any`: String, `rethrows`: String, `fallthrough`: String, `precedencegroup`: String, `_`: String, `Self`: String, async: String, `borrowing`: String, consume: String, `consuming`: String, copy: String, discard: String, `each`: String, `isolated`: String, `sending`: String, then: String, unsafe: String, `await`: String, anchor: String, recordID: String, satisfied: String, missingRequiredField: String, fieldErrors: String, isPresent: String, throwing: String, caught: String, refetchable: String, refetch: String, connection: String, nodes: String, hasNext: String, hasPrevious: String, isLoadingNext: String, isLoadingPrevious: String, connectionID: String, loadNext: String, loadPrevious: String, bound: String, errors: String, child: String, missing: String, count: String, fields: String, lhs: String, rhs: String, hasher: String, optimistic: String, selfValue: String, Fragment: String, Spread: String, Owner: String, Query: String, Operation: String, RefetchQuery: String, name: String, document: String, text: String, plan: String, errorBehavior: String, throwsOnFieldError: String, bubbles: String, hasDeferred: String, cacheExpiration: String, Action: String, OptimisticResponse: String, hash: String, commit: String, callAsFunction: String, Op: String, variable: String, retry: String, subscription: String, Sites: String, Guards: String, AbstractSlots: String, schemaDigest: String, format: String, transient: String, Swift: String, Set: String, Result: String, Optional: String, String: String, Int: String, Double: String, Bool: String, MainActor: String, Hasher: String, Sendable: String) {
         self.`Type` = `Type`
         self.`Protocol` = `Protocol`
         self.`Any` = `Any`
@@ -15134,7 +14538,6 @@ nonisolated public struct HostileVariables: Baton.Query {
         self.`await` = `await`
         self.anchor = anchor
         self.recordID = recordID
-        self.typeName = typeName
         self.satisfied = satisfied
         self.missingRequiredField = missingRequiredField
         self.fieldErrors = fieldErrors
@@ -15282,7 +14685,6 @@ query HostileVariables(
   $await: ID!
   $anchor: ID!
   $recordID: ID!
-  $typeName: ID!
   $satisfied: ID!
   $missingRequiredField: ID!
   $fieldErrors: ID!
@@ -15353,7 +14755,7 @@ query HostileVariables(
   $Hasher: ID!
   $Sendable: ID!
 ) {
-  charactersByIds(ids: [$Type, $Protocol, $Any, $self, $init, $deinit, $subscript, $class, $struct, $enum, $func, $var, $let, $import, $extension, $operator, $static, $default, $case, $switch, $if, $else, $for, $in, $while, $repeat, $return, $break, $continue, $where, $is, $as, $try, $throw, $throws, $guard, $defer, $do, $catch, $true, $false, $nil, $super, $internal, $private, $public, $fileprivate, $open, $inout, $typealias, $associatedtype, $protocol, $some, $any, $rethrows, $fallthrough, $precedencegroup, $_, $Self, $async, $borrowing, $consume, $consuming, $copy, $discard, $each, $isolated, $sending, $then, $unsafe, $await, $anchor, $recordID, $typeName, $satisfied, $missingRequiredField, $fieldErrors, $isPresent, $throwing, $caught, $refetchable, $refetch, $connection, $nodes, $hasNext, $hasPrevious, $isLoadingNext, $isLoadingPrevious, $connectionID, $loadNext, $loadPrevious, $bound, $errors, $child, $missing, $count, $fields, $lhs, $rhs, $hasher, $optimistic, $selfValue, $Fragment, $Spread, $Owner, $Query, $Operation, $RefetchQuery, $name, $document, $text, $plan, $errorBehavior, $throwsOnFieldError, $bubbles, $hasDeferred, $cacheExpiration, $Action, $OptimisticResponse, $hash, $commit, $callAsFunction, $Op, $variable, $retry, $subscription, $Sites, $Guards, $AbstractSlots, $schemaDigest, $format, $transient, $Swift, $Set, $Result, $Optional, $String, $Int, $Double, $Bool, $MainActor, $Hasher, $Sendable]) {
+  charactersByIds(ids: [$Type, $Protocol, $Any, $self, $init, $deinit, $subscript, $class, $struct, $enum, $func, $var, $let, $import, $extension, $operator, $static, $default, $case, $switch, $if, $else, $for, $in, $while, $repeat, $return, $break, $continue, $where, $is, $as, $try, $throw, $throws, $guard, $defer, $do, $catch, $true, $false, $nil, $super, $internal, $private, $public, $fileprivate, $open, $inout, $typealias, $associatedtype, $protocol, $some, $any, $rethrows, $fallthrough, $precedencegroup, $_, $Self, $async, $borrowing, $consume, $consuming, $copy, $discard, $each, $isolated, $sending, $then, $unsafe, $await, $anchor, $recordID, $satisfied, $missingRequiredField, $fieldErrors, $isPresent, $throwing, $caught, $refetchable, $refetch, $connection, $nodes, $hasNext, $hasPrevious, $isLoadingNext, $isLoadingPrevious, $connectionID, $loadNext, $loadPrevious, $bound, $errors, $child, $missing, $count, $fields, $lhs, $rhs, $hasher, $optimistic, $selfValue, $Fragment, $Spread, $Owner, $Query, $Operation, $RefetchQuery, $name, $document, $text, $plan, $errorBehavior, $throwsOnFieldError, $bubbles, $hasDeferred, $cacheExpiration, $Action, $OptimisticResponse, $hash, $commit, $callAsFunction, $Op, $variable, $retry, $subscription, $Sites, $Guards, $AbstractSlots, $schemaDigest, $format, $transient, $Swift, $Set, $Result, $Optional, $String, $Int, $Double, $Bool, $MainActor, $Hasher, $Sendable]) {
     id
   }
 }
@@ -15361,11 +14763,11 @@ query HostileVariables(
     @_spi(Generated) public static let throwsOnFieldError = true
 
     public var variables: Baton.Variables {
-        Baton.Variables(["Type": Baton.Variable(self.`Type`), "Protocol": Baton.Variable(self.`Protocol`), "Any": Baton.Variable(self.`Any`), "self": Baton.Variable(self.`self`), "init": Baton.Variable(self.`init`), "deinit": Baton.Variable(self.`deinit`), "subscript": Baton.Variable(self.`subscript`), "class": Baton.Variable(self.`class`), "struct": Baton.Variable(self.`struct`), "enum": Baton.Variable(self.`enum`), "func": Baton.Variable(self.`func`), "var": Baton.Variable(self.`var`), "let": Baton.Variable(self.`let`), "import": Baton.Variable(self.`import`), "extension": Baton.Variable(self.`extension`), "operator": Baton.Variable(self.`operator`), "static": Baton.Variable(self.`static`), "default": Baton.Variable(self.`default`), "case": Baton.Variable(self.`case`), "switch": Baton.Variable(self.`switch`), "if": Baton.Variable(self.`if`), "else": Baton.Variable(self.`else`), "for": Baton.Variable(self.`for`), "in": Baton.Variable(self.`in`), "while": Baton.Variable(self.`while`), "repeat": Baton.Variable(self.`repeat`), "return": Baton.Variable(self.`return`), "break": Baton.Variable(self.`break`), "continue": Baton.Variable(self.`continue`), "where": Baton.Variable(self.`where`), "is": Baton.Variable(self.`is`), "as": Baton.Variable(self.`as`), "try": Baton.Variable(self.`try`), "throw": Baton.Variable(self.`throw`), "throws": Baton.Variable(self.`throws`), "guard": Baton.Variable(self.`guard`), "defer": Baton.Variable(self.`defer`), "do": Baton.Variable(self.`do`), "catch": Baton.Variable(self.`catch`), "true": Baton.Variable(self.`true`), "false": Baton.Variable(self.`false`), "nil": Baton.Variable(self.`nil`), "super": Baton.Variable(self.`super`), "internal": Baton.Variable(self.`internal`), "private": Baton.Variable(self.`private`), "public": Baton.Variable(self.`public`), "fileprivate": Baton.Variable(self.`fileprivate`), "open": Baton.Variable(self.`open`), "inout": Baton.Variable(self.`inout`), "typealias": Baton.Variable(self.`typealias`), "associatedtype": Baton.Variable(self.`associatedtype`), "protocol": Baton.Variable(self.`protocol`), "some": Baton.Variable(self.`some`), "any": Baton.Variable(self.`any`), "rethrows": Baton.Variable(self.`rethrows`), "fallthrough": Baton.Variable(self.`fallthrough`), "precedencegroup": Baton.Variable(self.`precedencegroup`), "_": Baton.Variable(self.`_`), "Self": Baton.Variable(self.`Self`), "async": Baton.Variable(self.async), "borrowing": Baton.Variable(self.`borrowing`), "consume": Baton.Variable(self.consume), "consuming": Baton.Variable(self.`consuming`), "copy": Baton.Variable(self.copy), "discard": Baton.Variable(self.discard), "each": Baton.Variable(self.`each`), "isolated": Baton.Variable(self.`isolated`), "sending": Baton.Variable(self.`sending`), "then": Baton.Variable(self.then), "unsafe": Baton.Variable(self.unsafe), "await": Baton.Variable(self.`await`), "anchor": Baton.Variable(self.anchor), "recordID": Baton.Variable(self.recordID), "typeName": Baton.Variable(self.typeName), "satisfied": Baton.Variable(self.satisfied), "missingRequiredField": Baton.Variable(self.missingRequiredField), "fieldErrors": Baton.Variable(self.fieldErrors), "isPresent": Baton.Variable(self.isPresent), "throwing": Baton.Variable(self.throwing), "caught": Baton.Variable(self.caught), "refetchable": Baton.Variable(self.refetchable), "refetch": Baton.Variable(self.refetch), "connection": Baton.Variable(self.connection), "nodes": Baton.Variable(self.nodes), "hasNext": Baton.Variable(self.hasNext), "hasPrevious": Baton.Variable(self.hasPrevious), "isLoadingNext": Baton.Variable(self.isLoadingNext), "isLoadingPrevious": Baton.Variable(self.isLoadingPrevious), "connectionID": Baton.Variable(self.connectionID), "loadNext": Baton.Variable(self.loadNext), "loadPrevious": Baton.Variable(self.loadPrevious), "bound": Baton.Variable(self.bound), "errors": Baton.Variable(self.errors), "child": Baton.Variable(self.child), "missing": Baton.Variable(self.missing), "count": Baton.Variable(self.count), "fields": Baton.Variable(self.fields), "lhs": Baton.Variable(self.lhs), "rhs": Baton.Variable(self.rhs), "hasher": Baton.Variable(self.hasher), "optimistic": Baton.Variable(self.optimistic), "selfValue": Baton.Variable(self.selfValue), "Fragment": Baton.Variable(self.Fragment), "Spread": Baton.Variable(self.Spread), "Owner": Baton.Variable(self.Owner), "Query": Baton.Variable(self.Query), "Operation": Baton.Variable(self.Operation), "RefetchQuery": Baton.Variable(self.RefetchQuery), "name": Baton.Variable(self.name), "document": Baton.Variable(self.document), "text": Baton.Variable(self.text), "plan": Baton.Variable(self.plan), "errorBehavior": Baton.Variable(self.errorBehavior), "throwsOnFieldError": Baton.Variable(self.throwsOnFieldError), "bubbles": Baton.Variable(self.bubbles), "hasDeferred": Baton.Variable(self.hasDeferred), "cacheExpiration": Baton.Variable(self.cacheExpiration), "Action": Baton.Variable(self.Action), "OptimisticResponse": Baton.Variable(self.OptimisticResponse), "hash": Baton.Variable(self.hash), "commit": Baton.Variable(self.commit), "callAsFunction": Baton.Variable(self.callAsFunction), "Op": Baton.Variable(self.Op), "variable": Baton.Variable(self.variable), "retry": Baton.Variable(self.retry), "subscription": Baton.Variable(self.subscription), "Sites": Baton.Variable(self.Sites), "Guards": Baton.Variable(self.Guards), "AbstractSlots": Baton.Variable(self.AbstractSlots), "schemaDigest": Baton.Variable(self.schemaDigest), "format": Baton.Variable(self.format), "transient": Baton.Variable(self.transient), "Swift": Baton.Variable(self.Swift), "Set": Baton.Variable(self.Set), "Result": Baton.Variable(self.Result), "Optional": Baton.Variable(self.Optional), "String": Baton.Variable(self.String), "Int": Baton.Variable(self.Int), "Double": Baton.Variable(self.Double), "Bool": Baton.Variable(self.Bool), "MainActor": Baton.Variable(self.MainActor), "Hasher": Baton.Variable(self.Hasher), "Sendable": Baton.Variable(self.Sendable)])
+        Baton.Variables(["Type": Baton.Variable(self.`Type`), "Protocol": Baton.Variable(self.`Protocol`), "Any": Baton.Variable(self.`Any`), "self": Baton.Variable(self.`self`), "init": Baton.Variable(self.`init`), "deinit": Baton.Variable(self.`deinit`), "subscript": Baton.Variable(self.`subscript`), "class": Baton.Variable(self.`class`), "struct": Baton.Variable(self.`struct`), "enum": Baton.Variable(self.`enum`), "func": Baton.Variable(self.`func`), "var": Baton.Variable(self.`var`), "let": Baton.Variable(self.`let`), "import": Baton.Variable(self.`import`), "extension": Baton.Variable(self.`extension`), "operator": Baton.Variable(self.`operator`), "static": Baton.Variable(self.`static`), "default": Baton.Variable(self.`default`), "case": Baton.Variable(self.`case`), "switch": Baton.Variable(self.`switch`), "if": Baton.Variable(self.`if`), "else": Baton.Variable(self.`else`), "for": Baton.Variable(self.`for`), "in": Baton.Variable(self.`in`), "while": Baton.Variable(self.`while`), "repeat": Baton.Variable(self.`repeat`), "return": Baton.Variable(self.`return`), "break": Baton.Variable(self.`break`), "continue": Baton.Variable(self.`continue`), "where": Baton.Variable(self.`where`), "is": Baton.Variable(self.`is`), "as": Baton.Variable(self.`as`), "try": Baton.Variable(self.`try`), "throw": Baton.Variable(self.`throw`), "throws": Baton.Variable(self.`throws`), "guard": Baton.Variable(self.`guard`), "defer": Baton.Variable(self.`defer`), "do": Baton.Variable(self.`do`), "catch": Baton.Variable(self.`catch`), "true": Baton.Variable(self.`true`), "false": Baton.Variable(self.`false`), "nil": Baton.Variable(self.`nil`), "super": Baton.Variable(self.`super`), "internal": Baton.Variable(self.`internal`), "private": Baton.Variable(self.`private`), "public": Baton.Variable(self.`public`), "fileprivate": Baton.Variable(self.`fileprivate`), "open": Baton.Variable(self.`open`), "inout": Baton.Variable(self.`inout`), "typealias": Baton.Variable(self.`typealias`), "associatedtype": Baton.Variable(self.`associatedtype`), "protocol": Baton.Variable(self.`protocol`), "some": Baton.Variable(self.`some`), "any": Baton.Variable(self.`any`), "rethrows": Baton.Variable(self.`rethrows`), "fallthrough": Baton.Variable(self.`fallthrough`), "precedencegroup": Baton.Variable(self.`precedencegroup`), "_": Baton.Variable(self.`_`), "Self": Baton.Variable(self.`Self`), "async": Baton.Variable(self.async), "borrowing": Baton.Variable(self.`borrowing`), "consume": Baton.Variable(self.consume), "consuming": Baton.Variable(self.`consuming`), "copy": Baton.Variable(self.copy), "discard": Baton.Variable(self.discard), "each": Baton.Variable(self.`each`), "isolated": Baton.Variable(self.`isolated`), "sending": Baton.Variable(self.`sending`), "then": Baton.Variable(self.then), "unsafe": Baton.Variable(self.unsafe), "await": Baton.Variable(self.`await`), "anchor": Baton.Variable(self.anchor), "recordID": Baton.Variable(self.recordID), "satisfied": Baton.Variable(self.satisfied), "missingRequiredField": Baton.Variable(self.missingRequiredField), "fieldErrors": Baton.Variable(self.fieldErrors), "isPresent": Baton.Variable(self.isPresent), "throwing": Baton.Variable(self.throwing), "caught": Baton.Variable(self.caught), "refetchable": Baton.Variable(self.refetchable), "refetch": Baton.Variable(self.refetch), "connection": Baton.Variable(self.connection), "nodes": Baton.Variable(self.nodes), "hasNext": Baton.Variable(self.hasNext), "hasPrevious": Baton.Variable(self.hasPrevious), "isLoadingNext": Baton.Variable(self.isLoadingNext), "isLoadingPrevious": Baton.Variable(self.isLoadingPrevious), "connectionID": Baton.Variable(self.connectionID), "loadNext": Baton.Variable(self.loadNext), "loadPrevious": Baton.Variable(self.loadPrevious), "bound": Baton.Variable(self.bound), "errors": Baton.Variable(self.errors), "child": Baton.Variable(self.child), "missing": Baton.Variable(self.missing), "count": Baton.Variable(self.count), "fields": Baton.Variable(self.fields), "lhs": Baton.Variable(self.lhs), "rhs": Baton.Variable(self.rhs), "hasher": Baton.Variable(self.hasher), "optimistic": Baton.Variable(self.optimistic), "selfValue": Baton.Variable(self.selfValue), "Fragment": Baton.Variable(self.Fragment), "Spread": Baton.Variable(self.Spread), "Owner": Baton.Variable(self.Owner), "Query": Baton.Variable(self.Query), "Operation": Baton.Variable(self.Operation), "RefetchQuery": Baton.Variable(self.RefetchQuery), "name": Baton.Variable(self.name), "document": Baton.Variable(self.document), "text": Baton.Variable(self.text), "plan": Baton.Variable(self.plan), "errorBehavior": Baton.Variable(self.errorBehavior), "throwsOnFieldError": Baton.Variable(self.throwsOnFieldError), "bubbles": Baton.Variable(self.bubbles), "hasDeferred": Baton.Variable(self.hasDeferred), "cacheExpiration": Baton.Variable(self.cacheExpiration), "Action": Baton.Variable(self.Action), "OptimisticResponse": Baton.Variable(self.OptimisticResponse), "hash": Baton.Variable(self.hash), "commit": Baton.Variable(self.commit), "callAsFunction": Baton.Variable(self.callAsFunction), "Op": Baton.Variable(self.Op), "variable": Baton.Variable(self.variable), "retry": Baton.Variable(self.retry), "subscription": Baton.Variable(self.subscription), "Sites": Baton.Variable(self.Sites), "Guards": Baton.Variable(self.Guards), "AbstractSlots": Baton.Variable(self.AbstractSlots), "schemaDigest": Baton.Variable(self.schemaDigest), "format": Baton.Variable(self.format), "transient": Baton.Variable(self.transient), "Swift": Baton.Variable(self.Swift), "Set": Baton.Variable(self.Set), "Result": Baton.Variable(self.Result), "Optional": Baton.Variable(self.Optional), "String": Baton.Variable(self.String), "Int": Baton.Variable(self.Int), "Double": Baton.Variable(self.Double), "Bool": Baton.Variable(self.Bool), "MainActor": Baton.Variable(self.MainActor), "Hasher": Baton.Variable(self.Hasher), "Sendable": Baton.Variable(self.Sendable)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.`Type` == rhs.`Type` && lhs.`Protocol` == rhs.`Protocol` && lhs.`Any` == rhs.`Any` && lhs.`self` == rhs.`self` && lhs.`init` == rhs.`init` && lhs.`deinit` == rhs.`deinit` && lhs.`subscript` == rhs.`subscript` && lhs.`class` == rhs.`class` && lhs.`struct` == rhs.`struct` && lhs.`enum` == rhs.`enum` && lhs.`func` == rhs.`func` && lhs.`var` == rhs.`var` && lhs.`let` == rhs.`let` && lhs.`import` == rhs.`import` && lhs.`extension` == rhs.`extension` && lhs.`operator` == rhs.`operator` && lhs.`static` == rhs.`static` && lhs.`default` == rhs.`default` && lhs.`case` == rhs.`case` && lhs.`switch` == rhs.`switch` && lhs.`if` == rhs.`if` && lhs.`else` == rhs.`else` && lhs.`for` == rhs.`for` && lhs.`in` == rhs.`in` && lhs.`while` == rhs.`while` && lhs.`repeat` == rhs.`repeat` && lhs.`return` == rhs.`return` && lhs.`break` == rhs.`break` && lhs.`continue` == rhs.`continue` && lhs.`where` == rhs.`where` && lhs.`is` == rhs.`is` && lhs.`as` == rhs.`as` && lhs.`try` == rhs.`try` && lhs.`throw` == rhs.`throw` && lhs.`throws` == rhs.`throws` && lhs.`guard` == rhs.`guard` && lhs.`defer` == rhs.`defer` && lhs.`do` == rhs.`do` && lhs.`catch` == rhs.`catch` && lhs.`true` == rhs.`true` && lhs.`false` == rhs.`false` && lhs.`nil` == rhs.`nil` && lhs.`super` == rhs.`super` && lhs.`internal` == rhs.`internal` && lhs.`private` == rhs.`private` && lhs.`public` == rhs.`public` && lhs.`fileprivate` == rhs.`fileprivate` && lhs.`open` == rhs.`open` && lhs.`inout` == rhs.`inout` && lhs.`typealias` == rhs.`typealias` && lhs.`associatedtype` == rhs.`associatedtype` && lhs.`protocol` == rhs.`protocol` && lhs.`some` == rhs.`some` && lhs.`any` == rhs.`any` && lhs.`rethrows` == rhs.`rethrows` && lhs.`fallthrough` == rhs.`fallthrough` && lhs.`precedencegroup` == rhs.`precedencegroup` && lhs.`_` == rhs.`_` && lhs.`Self` == rhs.`Self` && lhs.async == rhs.async && lhs.`borrowing` == rhs.`borrowing` && lhs.consume == rhs.consume && lhs.`consuming` == rhs.`consuming` && lhs.copy == rhs.copy && lhs.discard == rhs.discard && lhs.`each` == rhs.`each` && lhs.`isolated` == rhs.`isolated` && lhs.`sending` == rhs.`sending` && lhs.then == rhs.then && lhs.unsafe == rhs.unsafe && lhs.`await` == rhs.`await` && lhs.anchor == rhs.anchor && lhs.recordID == rhs.recordID && lhs.typeName == rhs.typeName && lhs.satisfied == rhs.satisfied && lhs.missingRequiredField == rhs.missingRequiredField && lhs.fieldErrors == rhs.fieldErrors && lhs.isPresent == rhs.isPresent && lhs.throwing == rhs.throwing && lhs.caught == rhs.caught && lhs.refetchable == rhs.refetchable && lhs.refetch == rhs.refetch && lhs.connection == rhs.connection && lhs.nodes == rhs.nodes && lhs.hasNext == rhs.hasNext && lhs.hasPrevious == rhs.hasPrevious && lhs.isLoadingNext == rhs.isLoadingNext && lhs.isLoadingPrevious == rhs.isLoadingPrevious && lhs.connectionID == rhs.connectionID && lhs.loadNext == rhs.loadNext && lhs.loadPrevious == rhs.loadPrevious && lhs.bound == rhs.bound && lhs.errors == rhs.errors && lhs.child == rhs.child && lhs.missing == rhs.missing && lhs.count == rhs.count && lhs.fields == rhs.fields && lhs.lhs == rhs.lhs && lhs.rhs == rhs.rhs && lhs.hasher == rhs.hasher && lhs.optimistic == rhs.optimistic && lhs.selfValue == rhs.selfValue && lhs.Fragment == rhs.Fragment && lhs.Spread == rhs.Spread && lhs.Owner == rhs.Owner && lhs.Query == rhs.Query && lhs.Operation == rhs.Operation && lhs.RefetchQuery == rhs.RefetchQuery && lhs.name == rhs.name && lhs.document == rhs.document && lhs.text == rhs.text && lhs.plan == rhs.plan && lhs.errorBehavior == rhs.errorBehavior && lhs.throwsOnFieldError == rhs.throwsOnFieldError && lhs.bubbles == rhs.bubbles && lhs.hasDeferred == rhs.hasDeferred && lhs.cacheExpiration == rhs.cacheExpiration && lhs.Action == rhs.Action && lhs.OptimisticResponse == rhs.OptimisticResponse && lhs.hash == rhs.hash && lhs.commit == rhs.commit && lhs.callAsFunction == rhs.callAsFunction && lhs.Op == rhs.Op && lhs.variable == rhs.variable && lhs.retry == rhs.retry && lhs.subscription == rhs.subscription && lhs.Sites == rhs.Sites && lhs.Guards == rhs.Guards && lhs.AbstractSlots == rhs.AbstractSlots && lhs.schemaDigest == rhs.schemaDigest && lhs.format == rhs.format && lhs.transient == rhs.transient && lhs.Swift == rhs.Swift && lhs.Set == rhs.Set && lhs.Result == rhs.Result && lhs.Optional == rhs.Optional && lhs.String == rhs.String && lhs.Int == rhs.Int && lhs.Double == rhs.Double && lhs.Bool == rhs.Bool && lhs.MainActor == rhs.MainActor && lhs.Hasher == rhs.Hasher && lhs.Sendable == rhs.Sendable
+        lhs.`Type` == rhs.`Type` && lhs.`Protocol` == rhs.`Protocol` && lhs.`Any` == rhs.`Any` && lhs.`self` == rhs.`self` && lhs.`init` == rhs.`init` && lhs.`deinit` == rhs.`deinit` && lhs.`subscript` == rhs.`subscript` && lhs.`class` == rhs.`class` && lhs.`struct` == rhs.`struct` && lhs.`enum` == rhs.`enum` && lhs.`func` == rhs.`func` && lhs.`var` == rhs.`var` && lhs.`let` == rhs.`let` && lhs.`import` == rhs.`import` && lhs.`extension` == rhs.`extension` && lhs.`operator` == rhs.`operator` && lhs.`static` == rhs.`static` && lhs.`default` == rhs.`default` && lhs.`case` == rhs.`case` && lhs.`switch` == rhs.`switch` && lhs.`if` == rhs.`if` && lhs.`else` == rhs.`else` && lhs.`for` == rhs.`for` && lhs.`in` == rhs.`in` && lhs.`while` == rhs.`while` && lhs.`repeat` == rhs.`repeat` && lhs.`return` == rhs.`return` && lhs.`break` == rhs.`break` && lhs.`continue` == rhs.`continue` && lhs.`where` == rhs.`where` && lhs.`is` == rhs.`is` && lhs.`as` == rhs.`as` && lhs.`try` == rhs.`try` && lhs.`throw` == rhs.`throw` && lhs.`throws` == rhs.`throws` && lhs.`guard` == rhs.`guard` && lhs.`defer` == rhs.`defer` && lhs.`do` == rhs.`do` && lhs.`catch` == rhs.`catch` && lhs.`true` == rhs.`true` && lhs.`false` == rhs.`false` && lhs.`nil` == rhs.`nil` && lhs.`super` == rhs.`super` && lhs.`internal` == rhs.`internal` && lhs.`private` == rhs.`private` && lhs.`public` == rhs.`public` && lhs.`fileprivate` == rhs.`fileprivate` && lhs.`open` == rhs.`open` && lhs.`inout` == rhs.`inout` && lhs.`typealias` == rhs.`typealias` && lhs.`associatedtype` == rhs.`associatedtype` && lhs.`protocol` == rhs.`protocol` && lhs.`some` == rhs.`some` && lhs.`any` == rhs.`any` && lhs.`rethrows` == rhs.`rethrows` && lhs.`fallthrough` == rhs.`fallthrough` && lhs.`precedencegroup` == rhs.`precedencegroup` && lhs.`_` == rhs.`_` && lhs.`Self` == rhs.`Self` && lhs.async == rhs.async && lhs.`borrowing` == rhs.`borrowing` && lhs.consume == rhs.consume && lhs.`consuming` == rhs.`consuming` && lhs.copy == rhs.copy && lhs.discard == rhs.discard && lhs.`each` == rhs.`each` && lhs.`isolated` == rhs.`isolated` && lhs.`sending` == rhs.`sending` && lhs.then == rhs.then && lhs.unsafe == rhs.unsafe && lhs.`await` == rhs.`await` && lhs.anchor == rhs.anchor && lhs.recordID == rhs.recordID && lhs.satisfied == rhs.satisfied && lhs.missingRequiredField == rhs.missingRequiredField && lhs.fieldErrors == rhs.fieldErrors && lhs.isPresent == rhs.isPresent && lhs.throwing == rhs.throwing && lhs.caught == rhs.caught && lhs.refetchable == rhs.refetchable && lhs.refetch == rhs.refetch && lhs.connection == rhs.connection && lhs.nodes == rhs.nodes && lhs.hasNext == rhs.hasNext && lhs.hasPrevious == rhs.hasPrevious && lhs.isLoadingNext == rhs.isLoadingNext && lhs.isLoadingPrevious == rhs.isLoadingPrevious && lhs.connectionID == rhs.connectionID && lhs.loadNext == rhs.loadNext && lhs.loadPrevious == rhs.loadPrevious && lhs.bound == rhs.bound && lhs.errors == rhs.errors && lhs.child == rhs.child && lhs.missing == rhs.missing && lhs.count == rhs.count && lhs.fields == rhs.fields && lhs.lhs == rhs.lhs && lhs.rhs == rhs.rhs && lhs.hasher == rhs.hasher && lhs.optimistic == rhs.optimistic && lhs.selfValue == rhs.selfValue && lhs.Fragment == rhs.Fragment && lhs.Spread == rhs.Spread && lhs.Owner == rhs.Owner && lhs.Query == rhs.Query && lhs.Operation == rhs.Operation && lhs.RefetchQuery == rhs.RefetchQuery && lhs.name == rhs.name && lhs.document == rhs.document && lhs.text == rhs.text && lhs.plan == rhs.plan && lhs.errorBehavior == rhs.errorBehavior && lhs.throwsOnFieldError == rhs.throwsOnFieldError && lhs.bubbles == rhs.bubbles && lhs.hasDeferred == rhs.hasDeferred && lhs.cacheExpiration == rhs.cacheExpiration && lhs.Action == rhs.Action && lhs.OptimisticResponse == rhs.OptimisticResponse && lhs.hash == rhs.hash && lhs.commit == rhs.commit && lhs.callAsFunction == rhs.callAsFunction && lhs.Op == rhs.Op && lhs.variable == rhs.variable && lhs.retry == rhs.retry && lhs.subscription == rhs.subscription && lhs.Sites == rhs.Sites && lhs.Guards == rhs.Guards && lhs.AbstractSlots == rhs.AbstractSlots && lhs.schemaDigest == rhs.schemaDigest && lhs.format == rhs.format && lhs.transient == rhs.transient && lhs.Swift == rhs.Swift && lhs.Set == rhs.Set && lhs.Result == rhs.Result && lhs.Optional == rhs.Optional && lhs.String == rhs.String && lhs.Int == rhs.Int && lhs.Double == rhs.Double && lhs.Bool == rhs.Bool && lhs.MainActor == rhs.MainActor && lhs.Hasher == rhs.Hasher && lhs.Sendable == rhs.Sendable
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -15442,7 +14844,6 @@ query HostileVariables(
         hasher.combine(self.`await`)
         hasher.combine(self.anchor)
         hasher.combine(self.recordID)
-        hasher.combine(self.typeName)
         hasher.combine(self.satisfied)
         hasher.combine(self.missingRequiredField)
         hasher.combine(self.fieldErrors)
@@ -15515,7 +14916,7 @@ query HostileVariables(
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
-            .linked("charactersByIds", key: .dynamic(Slots.Query.charactersByIds_a9d82e), plural: true, selection: Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
+            .linked("charactersByIds", key: .dynamic(Slots.Query.charactersByIds_e131c9), plural: true, selection: Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
                 .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
             ])),
         ]), transient: Types.transient)
@@ -15523,12 +14924,11 @@ query HostileVariables(
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
-        @MainActor public var charactersByIds: Baton.List<CharactersByIds>? { anchor.list(anchor.owner.slot(Slots.Query.charactersByIds_a9d82e)) }
+        @MainActor public var charactersByIds: Baton.List<CharactersByIds>? { anchor.list(anchor.owner.slot(Slots.Query.charactersByIds_e131c9)) }
         /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
         @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
             var errors: [Baton.FieldError] = []
-            anchor.collectErrors(list: anchor.owner.slot(Slots.Query.charactersByIds_a9d82e), within: CharactersByIds.fieldErrors, into: &errors)
+            anchor.collectErrors(list: anchor.owner.slot(Slots.Query.charactersByIds_e131c9), within: CharactersByIds.fieldErrors, into: &errors)
             return errors
         }
         /// The lens, or the field errors in it as a thrown `FieldErrors`.
@@ -15542,7 +14942,6 @@ query HostileVariables(
         nonisolated public struct CharactersByIds: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Character"
             @MainActor public var id: String? { anchor.string(Slots.Character.id) }
             /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
             @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {

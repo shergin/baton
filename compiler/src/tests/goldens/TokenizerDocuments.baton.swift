@@ -58,13 +58,11 @@ query TestTokenizerQuery {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var tokenizer: Tokenizer? { anchor.linked(Slots.Query.tokenizer).map(Tokenizer.init(anchor:)) }
 
         nonisolated public struct Tokenizer: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Tokenizer"
             @MainActor public var id: String? { anchor.string(Slots.Tokenizer.id) }
             @MainActor public var text: String? { anchor.string(Slots.Tokenizer.text) }
             @MainActor public var strings: [String?]? { anchor.nullableStrings(Slots.Tokenizer.strings) }

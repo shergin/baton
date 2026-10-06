@@ -35,7 +35,7 @@ struct HostileNameDocuments {
           async: name await: name borrowing: name consume: name consuming: name copy: name discard: name
           each: name isolated: name sending: name then: name unsafe: name
           # What every lens declares, and what a refetchable fragment and a connection add.
-          typeName: name satisfied: name missingRequiredField: name fieldErrors: name isPresent: name
+          satisfied: name missingRequiredField: name fieldErrors: name isPresent: name
           throwing: name caught: name refetchable: name refetch: name connection: name nodes: name
           hasNext: name hasPrevious: name isLoadingNext: name isLoadingPrevious: name connectionID: name
           loadNext: name loadPrevious: name
@@ -85,7 +85,7 @@ struct HostileNameDocuments {
           consuming: origin { id } copy: origin { id } discard: origin { id } each: origin { id }
           isolated: origin { id } sending: origin { id } then: origin { id } unsafe: origin { id }
           # What every lens declares, and what a refetchable fragment and a connection add.
-          typeName: origin { id } satisfied: origin { id } missingRequiredField: origin { id }
+          satisfied: origin { id } missingRequiredField: origin { id }
           fieldErrors: origin { id } isPresent: origin { id } throwing: origin { id }
           caught: origin { id } refetchable: origin { id } refetch: origin { id }
           connection: origin { id } nodes: origin { id } hasNext: origin { id }
@@ -158,7 +158,7 @@ struct HostileNameDocuments {
           ... @alias(as: "isolated") { name } ... @alias(as: "sending") { name }
           ... @alias(as: "then") { name } ... @alias(as: "unsafe") { name }
           # What every lens declares, and what a refetchable fragment and a connection add.
-          ... @alias(as: "typeName") { name } ... @alias(as: "satisfied") { name }
+          ... @alias(as: "satisfied") { name }
           ... @alias(as: "missingRequiredField") { name } ... @alias(as: "fieldErrors") { name }
           ... @alias(as: "isPresent") { name } ... @alias(as: "throwing") { name }
           ... @alias(as: "caught") { name } ... @alias(as: "refetchable") { name }
@@ -292,7 +292,6 @@ struct HostileNameDocuments {
           ... @alias(as: "then") { ...HostileSpreadTarget_character }
           ... @alias(as: "unsafe") { ...HostileSpreadTarget_character }
           # What every lens declares, and what a refetchable fragment and a connection add.
-          ... @alias(as: "typeName") { ...HostileSpreadTarget_character }
           ... @alias(as: "satisfied") { ...HostileSpreadTarget_character }
           ... @alias(as: "missingRequiredField") { ...HostileSpreadTarget_character }
           ... @alias(as: "fieldErrors") { ...HostileSpreadTarget_character }
@@ -427,7 +426,7 @@ struct HostileNameDocuments {
           async: name await: name borrowing: name consume: name consuming: name copy: name discard: name
           each: name isolated: name sending: name then: name unsafe: name
           # What every lens declares, and what a refetchable fragment and a connection add.
-          typeName: name satisfied: name missingRequiredField: name fieldErrors: name isPresent: name
+          satisfied: name missingRequiredField: name fieldErrors: name isPresent: name
           throwing: name caught: name refetchable: name refetch: name connection: name nodes: name
           hasNext: name hasPrevious: name isLoadingNext: name isLoadingPrevious: name connectionID: name
           loadNext: name loadPrevious: name
@@ -484,7 +483,7 @@ struct HostileNameDocuments {
             consuming: totalCount copy: totalCount discard: totalCount each: totalCount
             isolated: totalCount sending: totalCount then: totalCount unsafe: totalCount
             # What every lens declares, and what a refetchable fragment and a connection add.
-            typeName: totalCount satisfied: totalCount missingRequiredField: totalCount
+            satisfied: totalCount missingRequiredField: totalCount
             fieldErrors: totalCount isPresent: totalCount throwing: totalCount caught: totalCount
             refetchable: totalCount refetch: totalCount connection: totalCount loadNext: totalCount
             loadPrevious: totalCount
@@ -562,7 +561,7 @@ struct HostileNameDocuments {
             async: name await: name borrowing: name consume: name consuming: name copy: name
             discard: name each: name isolated: name sending: name then: name unsafe: name
             # What every lens declares, and what a refetchable fragment and a connection add.
-            typeName: name satisfied: name missingRequiredField: name fieldErrors: name isPresent: name
+            satisfied: name missingRequiredField: name fieldErrors: name isPresent: name
             throwing: name caught: name refetchable: name refetch: name connection: name nodes: name
             hasNext: name hasPrevious: name isLoadingNext: name isLoadingPrevious: name
             connectionID: name loadNext: name loadPrevious: name
@@ -605,7 +604,7 @@ struct HostileNameDocuments {
           async: id await: id borrowing: id consume: id consuming: id copy: id discard: id each: id
           isolated: id sending: id then: id unsafe: id
           # What every lens declares, and what a refetchable fragment and a connection add.
-          typeName: id satisfied: id missingRequiredField: id fieldErrors: id isPresent: id throwing: id
+          satisfied: id missingRequiredField: id fieldErrors: id isPresent: id throwing: id
           caught: id refetchable: id refetch: id connection: id nodes: id hasNext: id hasPrevious: id
           isLoadingNext: id isLoadingPrevious: id connectionID: id loadNext: id loadPrevious: id
           # The locals, parameters and local aliases of generated bodies.
@@ -648,7 +647,7 @@ struct HostileNameDocuments {
           $async: ID!, $borrowing: ID!, $consume: ID!, $consuming: ID!, $copy: ID!, $discard: ID!,
           $each: ID!, $isolated: ID!, $sending: ID!, $then: ID!, $unsafe: ID!, $await: ID!,
           # What every lens declares, and what a refetchable fragment and a connection add.
-          $anchor: ID!, $recordID: ID!, $typeName: ID!, $satisfied: ID!, $missingRequiredField: ID!,
+          $anchor: ID!, $recordID: ID!, $satisfied: ID!, $missingRequiredField: ID!,
           $fieldErrors: ID!, $isPresent: ID!, $throwing: ID!, $caught: ID!, $refetchable: ID!,
           $refetch: ID!, $connection: ID!, $nodes: ID!, $hasNext: ID!, $hasPrevious: ID!,
           $isLoadingNext: ID!, $isLoadingPrevious: ID!, $connectionID: ID!, $loadNext: ID!,
@@ -682,7 +681,7 @@ struct HostileNameDocuments {
             $async, $borrowing, $consume, $consuming, $copy, $discard, $each, $isolated, $sending,
             $then, $unsafe, $await,
             # What every lens declares, and what a refetchable fragment and a connection add.
-            $anchor, $recordID, $typeName, $satisfied, $missingRequiredField, $fieldErrors, $isPresent,
+            $anchor, $recordID, $satisfied, $missingRequiredField, $fieldErrors, $isPresent,
             $throwing, $caught, $refetchable, $refetch, $connection, $nodes, $hasNext, $hasPrevious,
             $isLoadingNext, $isLoadingPrevious, $connectionID, $loadNext, $loadPrevious,
             # The locals, parameters and local aliases of generated bodies.
@@ -727,7 +726,7 @@ struct HostileNameDocuments {
           $copy: Boolean!, $discard: Boolean!, $each: Boolean!, $isolated: Boolean!, $sending: Boolean!,
           $then: Boolean!, $unsafe: Boolean!, $await: Boolean!,
           # What every lens declares, and what a refetchable fragment and a connection add.
-          $anchor: Boolean!, $recordID: Boolean!, $typeName: Boolean!, $satisfied: Boolean!,
+          $anchor: Boolean!, $recordID: Boolean!, $satisfied: Boolean!,
           $missingRequiredField: Boolean!, $fieldErrors: Boolean!, $isPresent: Boolean!,
           $throwing: Boolean!, $caught: Boolean!, $refetchable: Boolean!, $refetch: Boolean!,
           $connection: Boolean!, $nodes: Boolean!, $hasNext: Boolean!, $hasPrevious: Boolean!,
@@ -796,7 +795,7 @@ struct HostileNameDocuments {
               ... @include(if: $unsafe) { name } ... @include(if: $await) { name }
               # What every lens declares, and what a refetchable fragment and a connection add.
               ... @include(if: $anchor) { name } ... @include(if: $recordID) { name }
-              ... @include(if: $typeName) { name } ... @include(if: $satisfied) { name }
+              ... @include(if: $satisfied) { name }
               ... @include(if: $missingRequiredField) { name } ... @include(if: $fieldErrors) { name }
               ... @include(if: $isPresent) { name } ... @include(if: $throwing) { name }
               ... @include(if: $caught) { name } ... @include(if: $refetchable) { name }
@@ -875,7 +874,7 @@ struct HostileNameDocuments {
           $copy: Boolean!, $discard: Boolean!, $each: Boolean!, $isolated: Boolean!, $sending: Boolean!,
           $then: Boolean!, $unsafe: Boolean!, $await: Boolean!,
           # What every lens declares, and what a refetchable fragment and a connection add.
-          $anchor: Boolean!, $recordID: Boolean!, $typeName: Boolean!, $satisfied: Boolean!,
+          $anchor: Boolean!, $recordID: Boolean!, $satisfied: Boolean!,
           $missingRequiredField: Boolean!, $fieldErrors: Boolean!, $isPresent: Boolean!,
           $throwing: Boolean!, $caught: Boolean!, $refetchable: Boolean!, $refetch: Boolean!,
           $connection: Boolean!, $nodes: Boolean!, $hasNext: Boolean!, $hasPrevious: Boolean!,
@@ -943,7 +942,7 @@ struct HostileNameDocuments {
               ... @include(if: $unsafe) { cursor } ... @include(if: $await) { cursor }
               # What every lens declares, and what a refetchable fragment and a connection add.
               ... @include(if: $anchor) { cursor } ... @include(if: $recordID) { cursor }
-              ... @include(if: $typeName) { cursor } ... @include(if: $satisfied) { cursor }
+              ... @include(if: $satisfied) { cursor }
               ... @include(if: $missingRequiredField) { cursor }
               ... @include(if: $fieldErrors) { cursor } ... @include(if: $isPresent) { cursor }
               ... @include(if: $throwing) { cursor } ... @include(if: $caught) { cursor }
@@ -1072,7 +1071,6 @@ struct HostileNameDocuments {
           # What every lens declares, and what a refetchable fragment and a connection add.
           anchor: {type: "Boolean", defaultValue: true},
           recordID: {type: "Boolean", defaultValue: true},
-          typeName: {type: "Boolean", defaultValue: true},
           satisfied: {type: "Boolean", defaultValue: true},
           missingRequiredField: {type: "Boolean", defaultValue: true},
           fieldErrors: {type: "Boolean", defaultValue: true},
@@ -1187,7 +1185,7 @@ struct HostileNameDocuments {
           ... @include(if: $unsafe) { name } ... @include(if: $await) { name }
           # What every lens declares, and what a refetchable fragment and a connection add.
           ... @include(if: $anchor) { name } ... @include(if: $recordID) { name }
-          ... @include(if: $typeName) { name } ... @include(if: $satisfied) { name }
+          ... @include(if: $satisfied) { name }
           ... @include(if: $missingRequiredField) { name } ... @include(if: $fieldErrors) { name }
           ... @include(if: $isPresent) { name } ... @include(if: $throwing) { name }
           ... @include(if: $caught) { name } ... @include(if: $refetchable) { name }
@@ -1253,7 +1251,7 @@ struct HostileNameDocuments {
               async: name borrowing: name consume: name consuming: name copy: name discard: name
               each: name isolated: name sending: name then: name unsafe: name await: name
               # What every lens declares, and what a refetchable fragment and a connection add.
-              typeName: name satisfied: name missingRequiredField: name fieldErrors: name
+              satisfied: name missingRequiredField: name fieldErrors: name
               isPresent: name throwing: name caught: name refetchable: name refetch: name
               connection: name nodes: name hasNext: name hasPrevious: name isLoadingNext: name
               isLoadingPrevious: name connectionID: name loadNext: name loadPrevious: name
@@ -1298,7 +1296,7 @@ struct HostileNameDocuments {
             copy: note { id } discard: note { id } each: note { id } isolated: note { id }
             sending: note { id } then: note { id } unsafe: note { id } await: note { id }
             # What every lens declares, and what a refetchable fragment and a connection add.
-            typeName: note { id } satisfied: note { id } missingRequiredField: note { id }
+            satisfied: note { id } missingRequiredField: note { id }
             fieldErrors: note { id } isPresent: note { id } throwing: note { id } caught: note { id }
             refetchable: note { id } refetch: note { id } connection: note { id } nodes: note { id }
             hasNext: note { id } hasPrevious: note { id } isLoadingNext: note { id }

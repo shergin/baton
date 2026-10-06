@@ -56,15 +56,14 @@ extension Anchor {
 /// data. The compiler generates one struct per selection; this protocol is
 /// what they share. The static checks are generated where a directive asks
 /// for them and default to the permissive answer elsewhere. Every
-/// requirement but `typeName` is generated code's alone: outside the module
-/// a lens was generated in, it is made only by the accessor that reaches it
-/// and cannot be rebuilt as another. The anchor and the initializer, which
+/// requirement is generated code's alone: outside the module a lens was
+/// generated in, it is made only by the accessor that reaches it and cannot
+/// be rebuilt as another. The anchor and the initializer, which
 /// every generated lens declares, default to a trap, because a library
 /// built for distribution takes no SPI requirement without a default.
 public protocol Lens: Sendable {
     @_spi(Generated) var anchor: Anchor { get }
     @_spi(Generated) init(anchor: Anchor)
-    static var typeName: String { get }
     /// Whether every `@required` field of the selection is present.
     @_spi(Generated) @MainActor static func satisfied(_ anchor: Anchor) -> Bool
     /// The path of the first `@required` field of the selection that is

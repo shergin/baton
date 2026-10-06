@@ -33,7 +33,7 @@ fn a_block_inside_a_block_writes_its_body_one_level_deeper_again() {
                 });
             },
         );
-        writer.line("public static let typeName = \"Character\"");
+        writer.line("public static let name = \"Character\"");
     });
     assert_eq!(
         writer.finish(),
@@ -44,7 +44,7 @@ fn a_block_inside_a_block_writes_its_body_one_level_deeper_again() {
             "            try .throwing(anchor)\n",
             "        }\n",
             "    }\n",
-            "    public static let typeName = \"Character\"\n",
+            "    public static let name = \"Character\"\n",
             "}\n",
         )
     );
@@ -54,7 +54,7 @@ fn a_block_inside_a_block_writes_its_body_one_level_deeper_again() {
 fn a_blank_line_is_empty_at_any_depth() {
     let mut writer = Writer::new();
     writer.block("nonisolated public struct Lens: Baton.Lens", |writer| {
-        writer.line("public static let typeName = \"Character\"");
+        writer.line("public static let name = \"Character\"");
         writer.blank();
         writer.line("nonisolated public struct Origin: Baton.Lens {}");
     });
@@ -62,7 +62,7 @@ fn a_blank_line_is_empty_at_any_depth() {
         writer.finish(),
         concat!(
             "nonisolated public struct Lens: Baton.Lens {\n",
-            "    public static let typeName = \"Character\"\n",
+            "    public static let name = \"Character\"\n",
             "\n",
             "    nonisolated public struct Origin: Baton.Lens {}\n",
             "}\n",

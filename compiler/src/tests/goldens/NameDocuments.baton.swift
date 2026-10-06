@@ -38,13 +38,11 @@ query TestCaughtNames {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var types: Result<TypesLens?, Baton.FieldErrors> { anchor.caught(Slots.Query.types, within: TypesLens.fieldErrors) { $0.linked(Slots.Query.types).map(TypesLens.init(anchor:)) } }
 
         nonisolated public struct TypesLens: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Types"
             @MainActor public var Baton: String? { anchor.string(Slots.Types_.Baton_) }
             /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
             @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
@@ -105,13 +103,11 @@ query TestNames {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var types: TypesLens? { anchor.linked(Slots.Query.types).map(TypesLens.init(anchor:)) }
 
         nonisolated public struct TypesLens: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Types"
             @MainActor public var `Type`: String? { anchor.string(Slots.Types_.Type_) }
             @MainActor public var `Protocol`: String? { anchor.string(Slots.Types_.Protocol_) }
             @MainActor public var Baton: String? { anchor.string(Slots.Types_.Baton_) }
@@ -194,13 +190,11 @@ query TestSpellings {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var spellings: Baton.List<Spellings>? { anchor.list(Slots.Query.spellings) }
 
         nonisolated public struct Spellings: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Spelling"
             @MainActor public var asSpelled: AsSpelled? { Types.Spelled_possible.includes(anchor.record.type) ? AsSpelled(anchor: anchor) : nil }
             @MainActor public var asBaton: AsBaton? { anchor.record.is(Types.Baton_) ? AsBaton(anchor: anchor) : nil }
             @MainActor public var asType: AsType? { anchor.record.is(Types.Type_) ? AsType(anchor: anchor) : nil }
@@ -211,14 +205,12 @@ query TestSpellings {
             nonisolated public struct AsSpelled: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Spelled"
                 @MainActor public var label: String? { anchor.string(AbstractSlots.Spelled.label.on(anchor.record.type)) }
             }
 
             nonisolated public struct AsBaton: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Baton"
                 @MainActor public var id: String? { anchor.string(Slots.Baton_.id) }
                 @MainActor public var label: String? { anchor.string(Slots.Baton_.label) }
             }
@@ -226,7 +218,6 @@ query TestSpellings {
             nonisolated public struct AsType: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Type"
                 @MainActor public var id: String? { anchor.string(Slots.Type_.id) }
                 @MainActor public var label: String? { anchor.string(Slots.Type_.label) }
             }
@@ -234,7 +225,6 @@ query TestSpellings {
             nonisolated public struct AsProtocol: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Protocol"
                 @MainActor public var id: String? { anchor.string(Slots.Protocol_.id) }
                 @MainActor public var label: String? { anchor.string(Slots.Protocol_.label) }
             }
@@ -242,7 +232,6 @@ query TestSpellings {
             nonisolated public struct AsSet: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Set"
                 @MainActor public var id: String? { anchor.string(Slots.Set.id) }
                 @MainActor public var label: String? { anchor.string(Slots.Set.label) }
             }
@@ -250,7 +239,6 @@ query TestSpellings {
             nonisolated public struct AsAny: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Any"
                 @MainActor public var id: String? { anchor.string(Slots.Any_.id) }
                 @MainActor public var label: String? { anchor.string(Slots.Any_.label) }
             }

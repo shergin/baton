@@ -5,6 +5,8 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- `Lens.typeName` is gone: a line of generated code per lens and a public
+  requirement, read by nothing. Format 15.
 - A fragment no operation reaches, directly or through another fragment,
   is a warning at its definition: nothing can read its lens, and the code
   generated for it is dead. The test target's fragments now all reach an

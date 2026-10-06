@@ -13,7 +13,7 @@ use crate::pipeline::{ArgumentValuePlan, ConstantPlan, StorageKeyPlan, TypeKind,
 #[derive(Debug, Clone, PartialEq)]
 pub struct ReaderPlan {
     pub name: String,
-    /// The GraphQL type it reads, its `typeName`.
+    /// The GraphQL type it reads.
     pub type_name: String,
     pub accessors: Vec<Accessor>,
     /// A `@refetchable` fragment's root: its descriptor and `refetch()`.

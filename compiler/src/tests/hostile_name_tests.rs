@@ -1171,7 +1171,6 @@ fn every_name_the_generated_code_declares_or_binds_is_a_hostile_name() {
         "hasher",
         "Fragment",
         "Query",
-        "typeName",
         "resolution",
         "variables",
         "variable",

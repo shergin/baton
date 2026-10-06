@@ -47,13 +47,11 @@ query TestAssetNameQuery(
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var asset: Asset? { anchor.linked(anchor.owner.slot(Slots.Query.asset_9e39ed)).map(Asset.init(anchor:)) }
 
         nonisolated public struct Asset: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Asset"
             @MainActor public var name: String? { anchor.string(Slots.Asset.name) }
         }
     }
@@ -112,13 +110,11 @@ query TestAssetQuery(
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var asset: Asset? { anchor.linked(anchor.owner.slot(Slots.Query.asset_9e39ed)).map(Asset.init(anchor:)) }
 
         nonisolated public struct Asset: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Asset"
             @MainActor public var owner: Owner? { anchor.linked(Slots.Asset.owner).map(Owner.init(anchor:)) }
             @MainActor public var uuid: String { anchor.requiredString(Slots.Asset.uuid) }
             @MainActor public var name: String? { anchor.string(Slots.Asset.name) }
@@ -126,7 +122,6 @@ query TestAssetQuery(
             nonisolated public struct Owner: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-                public static let typeName = "Character"
                 @MainActor public var name: String? { anchor.string(Slots.Character.name) }
             }
         }
@@ -175,13 +170,11 @@ query TestAssetsQuery {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var assets: Baton.List<Assets>? { anchor.list(Slots.Query.assets) }
 
         nonisolated public struct Assets: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Asset"
             @MainActor public var name: String? { anchor.string(Slots.Asset.name) }
             @MainActor public var size: Int? { anchor.int(Slots.Asset.size) }
         }
@@ -237,13 +230,11 @@ query TestQuoteQuery(
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var quote: Quote? { anchor.linked(anchor.owner.slot(Slots.Query.quote_bd29fc)).map(Quote.init(anchor:)) }
 
         nonisolated public struct Quote: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Quote"
             @MainActor public var base: String { anchor.requiredString(Slots.Quote.base) }
             @MainActor public var quote: String { anchor.requiredString(Slots.Quote.quote) }
             @MainActor public var rate: Double? { anchor.double(Slots.Quote.rate) }
@@ -291,13 +282,11 @@ query TestQuotesQuery {
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        public static let typeName = "Query"
         @MainActor public var quotes: Baton.List<Quotes>? { anchor.list(Slots.Query.quotes) }
 
         nonisolated public struct Quotes: Baton.Lens {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-            public static let typeName = "Quote"
             @MainActor public var rate: Double? { anchor.double(Slots.Quote.rate) }
         }
     }

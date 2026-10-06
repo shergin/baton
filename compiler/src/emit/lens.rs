@@ -48,10 +48,6 @@ pub(super) fn lens(writer: &mut Writer, lens: &ReaderPlan) {
         writer.line(format!(
             "@_spi(Generated) public init(anchor: {anchor}) {{ self.anchor = anchor }}"
         ));
-        writer.line(format!(
-            "public static let typeName = {}",
-            swift_literal(&lens.type_name)
-        ));
         for accessor in &lens.accessors {
             self::accessor(writer, accessor);
         }
