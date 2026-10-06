@@ -258,9 +258,22 @@ public final class Record: Observable {
         swept = true
     }
 
+    /// The record and its values at one moment: what a commit hands the
+    /// image's writer for a changed record. Taken on the main actor at the
+    /// cost of an array retain; encoded off it.
+    struct Snapshot: Sendable {
+        let record: Record
+        let values: ContiguousArray<Value>
+        /// The keys numbered apart, as `~index`, and their values.
+        let renderedIDs: ContiguousArray<Int32>
+        let renderedValues: ContiguousArray<Value>
+        let errors: [Int32: FieldError]?
+        let deleted: Bool
+    }
+
     /// The record as the image stores it: its values and errors now.
-    func snapshot() -> Persistence.Snapshot {
-        Persistence.Snapshot(record: self, values: values, renderedIDs: renderedIDs, renderedValues: renderedValues, errors: errors, deleted: deleted)
+    func snapshot() -> Snapshot {
+        Snapshot(record: self, values: values, renderedIDs: renderedIDs, renderedValues: renderedValues, errors: errors, deleted: deleted)
     }
 
     /// The field error beside a slot, without registering the read.

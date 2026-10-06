@@ -110,7 +110,7 @@ final class Disk: @unchecked Sendable {
     /// By name id: the type of that name.
     private var types: [TypeID?] = []
 
-    private var scratch: [UInt8] = []
+    private var writer = RowWriter()
     private var readRecords: [String] = []
     private var readRoot: [String] = []
 
@@ -550,44 +550,28 @@ final class Disk: @unchecked Sendable {
         if damaged { discard() }
     }
 
-    private func put(_ snapshot: Persistence.Snapshot, _ prepared: Prepared) -> Bool {
+    private func put(_ snapshot: Record.Snapshot, _ prepared: Prepared) -> Bool {
         let record = snapshot.record
         // What hangs off the mutation and subscription roots by path is a
         // payload, read once by its caller; entities inside it have keys of
         // their own and are written as themselves.
         if record.key.hasPrefix(Disk.mutationPayloads) || record.key.hasPrefix(Disk.subscriptionPayloads) { return true }
-        scratch.removeAll(keepingCapacity: true)
-        scratch.append((snapshot.deleted ? 1 : 0) | (record.isEntity ? 2 : 0))
-        append(varint: UInt64(name(of: record.type)))
-        for index in snapshot.values.indices {
-            appendCell(Slot(type: record.type, index: Int32(index)), snapshot.values[index], snapshot.errors)
-        }
-        for position in snapshot.renderedIDs.indices {
-            appendCell(Slot(type: record.type, index: ~snapshot.renderedIDs[position]), snapshot.renderedValues[position], snapshot.errors)
-        }
+        writer.reset()
+        writer.row(snapshot, typeName: name(of:), slotName: name(of:))
         return upsert(prepared.upsertRecord, record.key)
     }
 
-    /// Appends a record's cell: the key's name and the value with its error.
-    private func appendCell(_ slot: Slot, _ value: Value, _ errors: [Int32: FieldError]?) {
-        if case .missing = value { return }
-        let name = name(of: slot)
-        if name < 0 { return }
-        append(varint: UInt64(name))
-        append(value, error: errors?[slot.index])
-    }
-
-    private func put(_ field: Persistence.RootField, _ prepared: Prepared) -> Bool {
+    private func put(_ field: Store.RootField, _ prepared: Prepared) -> Bool {
         if case .missing = field.value { return true }
-        scratch.removeAll(keepingCapacity: true)
-        append(field.value, error: field.error)
+        writer.reset()
+        writer.cell(field, typeName: name(of:))
         return upsert(prepared.upsertRoot, Registry.storageKey(field.slot))
     }
 
-    /// Binds the key, the generation and the scratch bytes, and steps.
+    /// Binds the key, the generation and the row's bytes, and steps.
     private func upsert(_ statement: OpaquePointer, _ key: String) -> Bool {
         key.withCString { text in
-            scratch.withUnsafeBufferPointer { bytes in
+            writer.bytes.withUnsafeBufferPointer { bytes in
                 sqlite3_bind_text(statement, 1, text, -1, nil)
                 sqlite3_bind_int64(statement, 2, generation)
                 sqlite3_bind_blob(statement, 3, bytes.baseAddress, Int32(bytes.count), nil)
@@ -664,88 +648,6 @@ final class Disk: @unchecked Sendable {
         return table[type][index]
     }
 
-    // MARK: Encoding
-
-    private func append(varint value: UInt64) {
-        var value = value
-        while value >= 0x80 {
-            scratch.append(UInt8(truncatingIfNeeded: value) | 0x80)
-            value >>= 7
-        }
-        scratch.append(UInt8(truncatingIfNeeded: value))
-    }
-
-    private func append(_ string: String) {
-        var string = string
-        string.withUTF8 { bytes in
-            append(varint: UInt64(bytes.count))
-            scratch.append(contentsOf: bytes)
-        }
-    }
-
-    /// A link is the target's type, whether it is an entity, and its key; a
-    /// null entry of a list is a zero.
-    private func append(link target: Record?) {
-        guard let target else {
-            scratch.append(0)
-            return
-        }
-        append(varint: UInt64(name(of: target.type) + 1) << 1 | (target.isEntity ? 1 : 0))
-        append(target.key)
-    }
-
-    /// A value is a tag and its payload; the tag's high bit says a field
-    /// error follows.
-    private func append(_ value: Value, error: FieldError?) {
-        let flag: UInt8 = error == nil ? 0 : RowTag.hasError
-        switch value {
-        case .missing, .null:
-            scratch.append(RowTag.null | flag)
-        case .bool(let bool):
-            scratch.append((bool ? RowTag.yes : RowTag.no) | flag)
-        case .int(let int):
-            scratch.append(RowTag.int | flag)
-            append(varint: UInt64(bitPattern: Int64((int << 1) ^ (int >> 63))))
-        case .double(let double):
-            scratch.append(RowTag.double | flag)
-            withUnsafeBytes(of: double.bitPattern.littleEndian) { scratch.append(contentsOf: $0) }
-        case .string(let string):
-            scratch.append(RowTag.string | flag)
-            append(string)
-        case .ref(let target):
-            scratch.append(RowTag.ref | flag)
-            append(link: target)
-        case .refs(let targets):
-            scratch.append(RowTag.refs | flag)
-            append(varint: UInt64(targets.count))
-            for target in targets { append(link: target) }
-        case .list(let values):
-            scratch.append(RowTag.list | flag)
-            append(varint: UInt64(values.count))
-            for value in values { append(value, error: nil) }
-        }
-        if let error {
-            append(error.message)
-            append(error.path)
-            // The extensions as JSON text; empty for none, since a JSON value
-            // is never empty.
-            append(error.extensions?.json ?? "")
-        }
-    }
-}
-
-/// The tags of a stored value.
-enum RowTag {
-    static let null: UInt8 = 0
-    static let no: UInt8 = 1
-    static let yes: UInt8 = 2
-    static let int: UInt8 = 3
-    static let double: UInt8 = 4
-    static let string: UInt8 = 5
-    static let ref: UInt8 = 6
-    static let refs: UInt8 = 7
-    static let list: UInt8 = 8
-    static let hasError: UInt8 = 0x80
 }
 
 /// The destructor that tells SQLite to copy a bound value.

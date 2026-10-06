@@ -5,6 +5,11 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- The image's row is one codec: the tags, the writing of a record's row and
+  a root field's cell, and the reading back, in one type over bytes, where
+  the writer was the disk's and the reader the hydration's. The disk keeps
+  SQLite and knows nothing of the layout; a record's snapshot is the
+  record's own type, so the record names the image no more.
 - An image belongs to one store. It is made for the store and lives as long
   as it: the environment's end closes it and gives the file back, and the
   next environment makes its own, on that file or another. The count of

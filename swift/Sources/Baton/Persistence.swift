@@ -24,29 +24,9 @@ public final class Persistence: Sendable {
     /// The file size, in bytes, past which the image is discarded at launch.
     public let sizeLimit: Int
 
-    /// What a commit hands the writer for one changed record: the record and
-    /// its values at that moment. Taken on the main actor at the cost of an
-    /// array retain; encoded off it.
-    struct Snapshot: Sendable {
-        let record: Record
-        let values: ContiguousArray<Value>
-        /// The keys numbered apart, as `~index`, and their values.
-        let renderedIDs: ContiguousArray<Int32>
-        let renderedValues: ContiguousArray<Value>
-        let errors: [Int32: FieldError]?
-        let deleted: Bool
-    }
-
-    /// A changed field of the query root, which is stored a row per field.
-    struct RootField: Sendable {
-        let slot: Slot
-        let value: Value
-        let error: FieldError?
-    }
-
     /// One thing the main actor asked the writer to do, in order.
     enum Work: Sendable {
-        case commit(records: [Snapshot], root: [RootField])
+        case commit(records: [Record.Snapshot], root: [Store.RootField])
         case fetched(operation: String, time: Double)
         /// Rows a read found carrying an older generation.
         case used(records: [String], root: [String])
@@ -171,7 +151,7 @@ public final class Persistence: Sendable {
     // MARK: From the main actor
 
     /// Queues what a commit changed.
-    func committed(_ records: [Snapshot], root: [RootField]) {
+    func committed(_ records: [Record.Snapshot], root: [Store.RootField]) {
         enqueue(.commit(records: records, root: root))
     }
 

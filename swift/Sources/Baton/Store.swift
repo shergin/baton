@@ -448,13 +448,21 @@ public final class Store {
         return false
     }
 
+    /// A changed field of the query root, which the image stores a row per
+    /// field.
+    struct RootField: Sendable {
+        let slot: Slot
+        let value: Value
+        let error: FieldError?
+    }
+
     /// Hands the image what a server's payload changed: a snapshot of every
     /// changed record, and the changed fields of the root one by one. Called
     /// while the optimistic layers are lifted, so the values are the server's.
     private func persist(_ undo: [Undo]) {
         guard let persistence, !undo.isEmpty else { return }
-        var records: [Persistence.Snapshot] = []
-        var fields: [Persistence.RootField] = []
+        var records: [Record.Snapshot] = []
+        var fields: [RootField] = []
         var seen = Set<ObjectIdentifier>()
         var previous: Record?
         func add(_ record: Record) {
@@ -468,7 +476,7 @@ public final class Store {
             switch step {
             case .slot(let record, let slot, _), .error(let record, let slot, _):
                 if record === root {
-                    fields.append(Persistence.RootField(slot: slot, value: root.peek(slot), error: root.peekError(slot)))
+                    fields.append(RootField(slot: slot, value: root.peek(slot), error: root.peekError(slot)))
                 } else {
                     add(record)
                 }
