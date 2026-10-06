@@ -638,6 +638,21 @@ func persistenceBench(data: Data, edited: Data, variables: Variables) async {
         return elapsed
     }
 
+    // A new image on the file is a new launch: its first batch ages the rows
+    // and sweeps the names before it writes.
+    await persistence.close()
+    await measureEach("a launch's first write-behind of the fixture: aging, the names sweep and 898 rows", iterations: 10) {
+        let launched = Persistence(url: url)
+        let store = Store(persistence: launched)
+        await launched.flush()
+        store.commit(changes(for: store))
+        let start = now()
+        await launched.flush()
+        let elapsed = now() - start
+        await launched.close()
+        return elapsed
+    }
+
     measure("hydration: the check reads 898 rows into an empty store", iterations: 20) {
         precondition(checks(Store(persistence: persistence)))
     }

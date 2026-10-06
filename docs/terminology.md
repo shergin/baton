@@ -315,8 +315,8 @@ the query root a row per field, each operation's fetch time. Optimistic
 layers never reach it. `Persistence(url:)` or `Persistence(name:)`, handed
 to `Store(persistence:)`. It is a cache: an image of another format,
 `version` or protection class, a corrupt one and one over its size limit are
-deleted and started again, and a record that goes a whole launch unread is
-dropped at the next.
+deleted and started again, a record that goes a whole launch unread is
+dropped at the next, and the names no row uses go with the rows.
 An image is made for one store and lives as long as it: the environment's
 end closes it and gives the file back, and the next environment makes its
 own, on that file or another; the image that takes a file over counts as a

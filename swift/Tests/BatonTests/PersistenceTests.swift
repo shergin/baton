@@ -692,6 +692,159 @@ struct PersistenceTests {
         await finish(second)
     }
 
+    /// The first column of the first row a query of the image returns, as
+    /// an integer; nil for no row or a null.
+    func integer(_ text: String, _ name: String? = nil) -> Int64? {
+        var db: OpaquePointer?
+        #expect(sqlite3_open(image.url.path, &db) == SQLITE_OK)
+        defer { sqlite3_close(db) }
+        var statement: OpaquePointer?
+        #expect(sqlite3_prepare_v2(db, text, -1, &statement, nil) == SQLITE_OK, "\(text)")
+        defer { sqlite3_finalize(statement) }
+        if let name { sqlite3_bind_text(statement, 1, name, -1, unsafeBitCast(-1, to: sqlite3_destructor_type.self)) }
+        guard sqlite3_step(statement) == SQLITE_ROW, sqlite3_column_type(statement, 0) != SQLITE_NULL else { return nil }
+        return sqlite3_column_int64(statement, 0)
+    }
+
+    /// Whether the image's table of names holds a name.
+    func names(_ name: String) -> Bool {
+        integer("SELECT count(*) FROM names WHERE name = ?1", name) == 1
+    }
+
+    /// Commits the counts of the first page's characters' notes, rendering
+    /// `notes(first:<count>)` on each character's row.
+    func commitNoteCounts(_ count: Int, in environment: Environment) throws {
+        let operation = TestNoteCounts(page: 1, count: count)
+        environment.store.commit(try Ingest.normalize(fixture("note-counts-1"), plan: TestNoteCounts.plan.resolve(operation.variables, in: environment.store.keys)))
+    }
+
+    @Test("names no row uses any more are swept at a launch's first batch, and their ids are used again")
+    func unusedNamesAreSwept() async throws {
+        // Counts no other test renders or names.
+        let first = launch()
+        try commitNoteCounts(90, in: first)
+        await finish(first)
+        #expect(names("notes(first:90)"), "the rows name the rendered key")
+        let highest = try #require(integer("SELECT max(id) FROM names"))
+
+        // Two launches that read nothing, so the first launch's rows age out
+        // at the next launch's first batch.
+        await finish(launch())
+        await finish(launch())
+        let fourth = launch()
+        try commitNoteCounts(88, in: fourth)
+        await fourth.store.persistence?.flush()
+        #expect(!names("notes(first:90)"), "the name went with the rows that used it")
+        let reused = try #require(integer("SELECT id FROM names WHERE name = ?1", "notes(first:88)"))
+        #expect(reused < highest, "the new name took an id the sweep freed")
+        #expect(integer("SELECT count(*) FROM names") == integer("SELECT max(id) + 1 FROM names"), "the table holds no hole: every name was swept and interned again from the lowest id")
+        await finish(fourth)
+
+        let fifth = launch()
+        let data = try stored(TestNoteCounts(page: 1, count: 88), in: fifth)
+        #expect(data.characters?.results?.map(\.recent.totalCount) == [3, 0], "the rows written after the sweep read back")
+        await finish(fifth)
+    }
+
+    @Test("a name a remaining row uses survives the sweep, and the row's names read back")
+    func aUsedNameSurvivesTheSweep() async throws {
+        let first = launch()
+        try commitNoteCounts(89, in: first)
+        first.store.commit(try Ingest.normalize(fixture("character-header-5"), plan: header("5", in: first.store)))
+        await finish(first)
+        // The list's rows alone carry the rendered key; Jerry's alone carry
+        // `species`.
+        #expect(names("notes(first:89)"))
+        #expect(names("species"))
+
+        // Two launches read Jerry and nothing else; at the second one's first
+        // batch the list's rows age out and the names are swept.
+        for _ in 0..<2 {
+            let launched = launch()
+            let data = try stored(TestHeaderQuery(id: "5"), in: launched)
+            #expect(data.character?.testHeader.name == "Jerry Smith")
+            await finish(launched)
+        }
+        #expect(!names("notes(first:89)"), "the sweep ran: the aged rows' name is gone")
+        #expect(names("species"), "the name the remaining row uses stays")
+
+        let last = launch()
+        #expect(throws: NotStored.self) { try stored(TestNoteCounts(page: 1, count: 89), in: last) }
+        let data = try stored(TestHeaderQuery(id: "5"), in: last)
+        let jerry = data.character?.testHeader
+        #expect(jerry?.name == "Jerry Smith", "the remaining row reads back through its names")
+        #expect(jerry?.species == "Human")
+        #expect(jerry?.status == "Alive")
+        #expect(jerry?.origin?.name == "Earth (Replacement Dimension)")
+        await finish(last)
+    }
+
+    /// A plan that writes one field rendered from `cursor` on a character
+    /// the root field `sweepProbe` links to, so that its commit interns the
+    /// rendered key alone among names Jerry's row also uses.
+    func probePlan(_ cursor: String, in store: Store) -> ResolvedSelection {
+        let query = Registry.type("Query")
+        let character = Registry.type("Character")
+        let items = DynamicKey(character, [.literal("items(after:"), .variable("cursor"), .literal(")")])
+        return Plan(root: Selection(type: query, hasID: false, fields: [
+            .linked("sweepProbe", key: .fixed(Registry.slot(query, "sweepProbe")), plural: false, selection: Selection(type: character, hasID: true, fields: [
+                .scalar("id", key: .fixed(Registry.slot(character, "id")), kind: .string, list: false),
+                .scalar("items", key: .dynamic(items), kind: .string, list: false),
+            ])),
+        ])).resolve(Variables(["cursor": .string(cursor)]), in: store.keys)
+    }
+
+    /// Commits a probe character with a field under `items(after:<cursor>)`.
+    func commitProbe(_ id: String, _ cursor: String, in environment: Environment) throws {
+        let response = #"{"data":{"sweepProbe":{"id":"\#(id)","items":"page \#(cursor)"}}}"#
+        environment.store.commit(try Ingest.normalize(Data(response.utf8), plan: probePlan(cursor, in: environment.store)))
+    }
+
+    @Test("a table of names with a hole below a live name loads, and the hole's id is the first used again")
+    func aHoleBelowALiveNameIsUsedAgain() async throws {
+        // The probe's key is interned before Jerry's names, below them.
+        let first = launch()
+        try commitProbe("870", "c87", in: first)
+        first.store.commit(try Ingest.normalize(fixture("character-header-5"), plan: header("5", in: first.store)))
+        await finish(first)
+        let swept = try #require(integer("SELECT id FROM names WHERE name = ?1", #"items(after:"c87")"#))
+        let species = try #require(integer("SELECT id FROM names WHERE name = ?1", "species"))
+        #expect(swept < species)
+
+        // Two launches read Jerry alone: the probe's rows age out and the
+        // sweep leaves a hole at its key's id, below `species`.
+        for _ in 0..<2 {
+            let launched = launch()
+            #expect(try stored(TestHeaderQuery(id: "5"), in: launched).character?.testHeader.name == "Jerry Smith")
+            await finish(launched)
+        }
+        #expect(!names(#"items(after:"c87")"#), "the aged rows' key is swept")
+        #expect(integer("SELECT id FROM names WHERE name = ?1", "species") == species, "a live name keeps its id")
+        #expect(integer("SELECT max(id) + 1 - count(*) FROM names") == 1, "the table has one hole")
+
+        // This launch reads Jerry too, or his rows would age out by the next.
+        let reusing = launch()
+        #expect(try stored(TestHeaderQuery(id: "5"), in: reusing).character?.testHeader.name == "Jerry Smith")
+        try commitProbe("860", "c86", in: reusing)
+        await reusing.store.persistence?.flush()
+        #expect(integer("SELECT id FROM names WHERE name = ?1", #"items(after:"c86")"#) == swept, "the new name took the hole's id")
+        #expect(integer("SELECT max(id) + 1 - count(*) FROM names") == 0, "and filled the hole")
+        await finish(reusing)
+
+        let last = launch()
+        let store = last.store
+        let jerry = try stored(TestHeaderQuery(id: "5"), in: last).character?.testHeader
+        #expect(jerry?.name == "Jerry Smith", "the table with a hole loaded, and Jerry's names read back")
+        #expect(jerry?.species == "Human")
+        let plan = probePlan("c86", in: store)
+        #expect(store.check(plan) != .miss, "the probe's row reads from the image")
+        let probe = try #require(store.existing("Character:860"))
+        let slot = Owner(variables: Variables(["cursor": .string("c86")]), store: store).slot(DynamicKey(Registry.type("Character"), [.literal("items(after:"), .variable("cursor"), .literal(")")]))
+        #expect(probe.read(slot) == .string("page c86"), "the reused id names the new text")
+        withExtendedLifetime(plan) {}
+        await finish(last)
+    }
+
     @Test("a record @deleteRecord named that only the image holds stays unread while the forget waits for the writer, when a record of another type with its id arrives; that record reads its own row")
     func aForgottenIDIsLiftedOnlyByItsKey() async throws {
         let first = launch()
@@ -1107,7 +1260,9 @@ struct PersistenceTests {
         #expect(protected.store.hydratedRecords == 0)
         #expect(try protection(of: image.url.path) == .complete)
         try await seed(protected)
-        _ = try stored(Fixture(page: 1), in: launch(protection: .complete))
+        let again = launch(protection: .complete)
+        _ = try stored(Fixture(page: 1), in: again)
+        await finish(again)
 
         let unprotected = launch()
         #expect(throws: NotStored.self) { try stored(Fixture(page: 1), in: unprotected) }

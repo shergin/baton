@@ -17,13 +17,16 @@ import Synchronization
 final class Disk: @unchecked Sendable {
     /// The row format. A file of another format is discarded. 2: a path key
     /// under an interface or union ends in the record's concrete type. 3: a
-    /// field error carries its `extensions` as JSON text after its path.
-    static let format: Int64 = 3
+    /// field error carries its `extensions` as JSON text after its path. 4:
+    /// the table of names may have holes, its names swept with the rows that
+    /// used them.
+    static let format: Int64 = 4
     /// Marks the file as an image, so a database of another kind is left alone.
     static let applicationID: Int64 = 0x4241_544E
-    /// How many names an image may intern before it starts again: argument
-    /// values make keys, and ids must stay dense, so the table only grows.
-    static let nameLimit = 65_536
+    /// A hole in the table of names wider than this is a damaged file, not
+    /// one to size the table by: a sweep leaves holes as wide as the names
+    /// it deleted, which the rows of one image bound far below it.
+    static let widestHole = 1 << 20
     /// Client fields that describe a request in flight, not data.
     static let requestState: Set<String> = ["__isLoadingNext", "__isLoadingPrevious"]
     /// The files the process's images hold, by path. One image writes a file
@@ -87,7 +90,7 @@ final class Disk: @unchecked Sendable {
     private struct Prepared {
         let selectRecord, upsertRecord, useRecord: OpaquePointer
         let selectRoot, upsertRoot, useRoot: OpaquePointer
-        let upsertFetch, useFetch, upsertName: OpaquePointer
+        let upsertFetch, useFetch, upsertName, deleteName: OpaquePointer
         let forgetRecord, forgetID: OpaquePointer
         let begin, beginReading, commit, rollback: OpaquePointer
     }
@@ -97,8 +100,11 @@ final class Disk: @unchecked Sendable {
     private var prepared: Prepared?
 
     /// Names by id, and back.
-    private var names: [String] = []
+    /// Nil at an id a sweep freed.
+    private var names: [String?] = []
     private var ids: [String: Int32] = [:]
+    /// The ids a sweep freed, to use again, the lowest last.
+    private var freeNames: [Int32] = []
     /// Names interned since the last transaction that committed.
     private var unwritten: [Int32] = []
     /// By type, then by the index of a dense slot: the name id, -1 when not
@@ -267,16 +273,20 @@ final class Disk: @unchecked Sendable {
 
         names.removeAll()
         ids.removeAll()
-        var dense = true
+        freeNames.removeAll()
+        var readable = true
         try each("SELECT id, name FROM names ORDER BY id") { statement in
-            guard Int(sqlite3_column_int64(statement, 0)) == names.count, let name = sqlite3_column_text(statement, 1) else {
-                dense = false
+            let id = Int(sqlite3_column_int64(statement, 0))
+            guard id >= names.count, id - names.count <= Disk.widestHole, let name = sqlite3_column_text(statement, 1) else {
+                readable = false
                 return
             }
-            ids[String(cString: name)] = Int32(names.count)
+            while names.count < id { names.append(nil) }
+            ids[String(cString: name)] = Int32(id)
             names.append(String(cString: name))
         }
-        if !dense || names.count > Disk.nameLimit { throw .unreadable }
+        if !readable { throw .unreadable }
+        freeNames = names.indices.reversed().compactMap { names[$0] == nil ? Int32($0) : nil }
         var times: [String: Double] = [:]
         try each("SELECT operation, time FROM fetches WHERE used >= \(generation - 1)") { statement in
             guard let operation = sqlite3_column_text(statement, 0) else { return }
@@ -295,6 +305,7 @@ final class Disk: @unchecked Sendable {
             // A plain insert: an id another connection took fails the batch
             // rather than renaming what every row written with it means.
             upsertName: try prepare("INSERT INTO names(id, name) VALUES(?1, ?2)"),
+            deleteName: try prepare("DELETE FROM names WHERE id = ?1"),
             forgetRecord: try prepare("DELETE FROM records WHERE key = ?1"),
             forgetID: try prepare("DELETE FROM records WHERE key IN (SELECT name || ':' || ?1 FROM names)"),
             begin: try prepare("BEGIN IMMEDIATE"),
@@ -335,6 +346,7 @@ final class Disk: @unchecked Sendable {
         damaged = false
         names.removeAll()
         ids.removeAll()
+        freeNames.removeAll()
         unwritten.removeAll()
         slotNames.removeAll()
         renderedNames.removeAll()
@@ -559,7 +571,7 @@ final class Disk: @unchecked Sendable {
         if name >= slots[table].count { slots[table].append(contentsOf: repeatElement(.min, count: names.count - slots[table].count)) }
         var index = slots[table][name]
         if index == .min {
-            let storageKey = names[name]
+            guard let storageKey = names[name] else { return nil }
             index = (storageKey.utf8.contains(UInt8(ascii: "(")) ? keys.slot(type, storageKey, for: hold(on: keys)) : Registry.slot(type, storageKey)).index
             slots[table][name] = index
         }
@@ -581,7 +593,8 @@ final class Disk: @unchecked Sendable {
         guard name >= 0, name < names.count else { return nil }
         if name >= types.count { types.append(contentsOf: repeatElement(nil, count: names.count - types.count)) }
         if let type = types[name] { return type }
-        let type = Registry.type(names[name])
+        guard let text = names[name] else { return nil }
+        let type = Registry.type(text)
         types[name] = type
         return type
     }
@@ -604,6 +617,7 @@ final class Disk: @unchecked Sendable {
                 DELETE FROM root WHERE used < \(generation - 1);
                 DELETE FROM fetches WHERE used < \(generation - 1)
                 """)) != nil
+            if good { good = sweepNames(prepared) }
             aged = good
         }
         for item in work {
@@ -689,11 +703,53 @@ final class Disk: @unchecked Sendable {
     }
 
     private func put(name id: Int32, _ prepared: Prepared) -> Bool {
-        names[Int(id)].withCString { text in
+        guard let name = names[Int(id)] else { return true }
+        return name.withCString { text in
             sqlite3_bind_int64(prepared.upsertName, 1, Int64(id))
             sqlite3_bind_text(prepared.upsertName, 2, text, -1, nil)
             return run(prepared.upsertName)
         }
+    }
+
+    /// Deletes the names no row uses any more, once a launch's aging has
+    /// run, so that the ids and cursors a session rendered leave the file
+    /// with the rows that carried them and their ids are used again: the
+    /// table is bounded by the rows. A row that does not read keeps what it
+    /// names, as it keeps its place until it ages out.
+    private func sweepNames(_ prepared: Prepared) -> Bool {
+        var used = [Bool](repeating: false, count: names.count)
+        for id in unwritten { used[Int(id)] = true }
+        do {
+            try each("SELECT row FROM records") { statement in
+                guard let bytes = sqlite3_column_blob(statement, 0) else { return }
+                var reader = RowReader(UnsafeRawBufferPointer(start: bytes, count: Int(sqlite3_column_bytes(statement, 0))))
+                _ = reader.names(ofRow: &used)
+            }
+            try each("SELECT cell FROM root") { statement in
+                guard let bytes = sqlite3_column_blob(statement, 0) else { return }
+                var reader = RowReader(UnsafeRawBufferPointer(start: bytes, count: Int(sqlite3_column_bytes(statement, 0))))
+                _ = reader.names(ofCell: &used)
+            }
+        } catch {
+            return false
+        }
+        var good = true
+        for id in names.indices where !used[id] {
+            guard let name = names[id] else { continue }
+            sqlite3_bind_int64(prepared.deleteName, 1, Int64(id))
+            good = run(prepared.deleteName) && good
+            ids.removeValue(forKey: name)
+            names[id] = nil
+        }
+        // The table ends at its highest name in use; the holes below it are
+        // used again, lowest first. What the caches knew by id may now name
+        // nothing, and is learned again.
+        while let last = names.last, last == nil { names.removeLast() }
+        freeNames = names.indices.reversed().compactMap { names[$0] == nil ? Int32($0) : nil }
+        slotNames.removeAll()
+        renderedNames.removeAll()
+        typeNames.removeAll()
+        return good
     }
 
     private func forget(_ statement: OpaquePointer, _ key: String) -> Bool {
@@ -715,8 +771,17 @@ final class Disk: @unchecked Sendable {
 
     private func intern(_ name: String) -> Int32 {
         if let id = ids[name] { return id }
-        let id = Int32(names.count)
-        names.append(name)
+        let id: Int32
+        if let reused = freeNames.popLast() {
+            id = reused
+            names[Int(id)] = name
+            // What the caches knew of the id named another text.
+            for table in slots.indices where Int(id) < slots[table].count { slots[table][Int(id)] = .min }
+            if Int(id) < types.count { types[Int(id)] = nil }
+        } else {
+            id = Int32(names.count)
+            names.append(name)
+        }
         ids[name] = id
         unwritten.append(id)
         return id

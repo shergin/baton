@@ -19,6 +19,12 @@ are expected and listed without apology.
   writer names a row's slots through the committing store's keys.
   `Slot.storageKey` is gone: a report names a slot through
   `Store.storageKey(of:)`.
+- The image sweeps its names with its rows: at a launch's first batch,
+  after the rows that aged out go, the names no row uses any more are
+  deleted and their ids used again, so the file's table of names is
+  bounded by its rows, and the limit of 65,536 names, past which an image
+  started again, is gone. The image's format is 4; a file of format 3 is a
+  miss and starts again.
 - The collector frees the keys a session rendered once nothing can name
   them: a resolution and a lens's scope hold the numbers they took while
   they live, an optimistic layer and a row waiting for the image keep

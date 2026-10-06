@@ -259,6 +259,86 @@ struct RowReader {
         }
     }
 
+    // MARK: Scanning
+
+    /// Marks in `used` the names a record's row uses, its type's, its keys'
+    /// and those of the types its links name, for the sweep of the names
+    /// table. False for a damaged row, read as far as it went.
+    mutating func names(ofRow used: inout [Bool]) -> Bool {
+        guard byte() != nil, let type = index() else { return false }
+        mark(type, &used)
+        while !isAtEnd {
+            guard let name = index() else { return false }
+            mark(name, &used)
+            guard skip(valueMarking: &used) else { return false }
+        }
+        return true
+    }
+
+    /// Marks the names a root field's cell uses: the types its links name.
+    mutating func names(ofCell used: inout [Bool]) -> Bool {
+        skip(valueMarking: &used)
+    }
+
+    private func mark(_ name: Int, _ used: inout [Bool]) {
+        if name < used.count { used[name] = true }
+    }
+
+    /// Passes over a value and its error, marking the type names its links
+    /// carry.
+    private mutating func skip(valueMarking used: inout [Bool]) -> Bool {
+        guard let tag = byte() else { return false }
+        switch tag & ~RowTag.hasError {
+        case RowTag.null, RowTag.no, RowTag.yes:
+            break
+        case RowTag.int:
+            guard varint() != nil else { return false }
+        case RowTag.double:
+            guard fixed64() != nil else { return false }
+        case RowTag.string:
+            guard skipString() else { return false }
+        case RowTag.ref:
+            guard skip(linkMarking: &used) else { return false }
+        case RowTag.refs:
+            guard let count = varint(), count <= UInt64(remaining) else { return false }
+            for _ in 0..<Int(count) { guard skip(linkMarking: &used) else { return false } }
+        case RowTag.list:
+            guard let count = varint(), count <= UInt64(remaining) else { return false }
+            for _ in 0..<Int(count) { guard skipScalar() else { return false } }
+        default:
+            return false
+        }
+        if tag & RowTag.hasError != 0 {
+            for _ in 0..<3 { guard skipString() else { return false } }
+        }
+        return true
+    }
+
+    private mutating func skip(linkMarking used: inout [Bool]) -> Bool {
+        guard let head = varint() else { return false }
+        if head == 0 { return true }
+        guard head >= 2, head >> 1 <= UInt64(Int32.max) + 1 else { return false }
+        mark(Int(head >> 1) - 1, &used)
+        return skipString()
+    }
+
+    private mutating func skipScalar() -> Bool {
+        guard let tag = byte() else { return false }
+        switch tag {
+        case RowTag.null, RowTag.no, RowTag.yes: return true
+        case RowTag.int: return varint() != nil
+        case RowTag.double: return fixed64() != nil
+        case RowTag.string: return skipString()
+        default: return false
+        }
+    }
+
+    private mutating func skipString() -> Bool {
+        guard let length = varint(), length <= UInt64(remaining) else { return false }
+        offset += Int(length)
+        return true
+    }
+
     /// The record a stored link names; the inner nil is a null entry of a
     /// list, the outer one a row that could not be read.
     mutating func link(_ disk: Disk, target: (String, TypeID, Bool) -> Record) -> Record?? {
