@@ -10,7 +10,10 @@ use intern::Lookup;
 
 use crate::swift::Marker;
 
-/// The directives each place takes.
+/// The directives each place takes. A query also states its cache
+/// expiration, the one directive that is not Relay's
+/// (`docs/decisions/an-operation-states-its-expiration.md`).
+const QUERY: &[&str] = &["throwOnFieldError", "cacheExpiration"];
 const OPERATION: &[&str] = &["throwOnFieldError"];
 const FRAGMENT: &[&str] = &["argumentDefinitions", "refetchable", "throwOnFieldError"];
 const FIELD: &[&str] = &[
@@ -41,13 +44,12 @@ pub fn check(
     for definition in definitions {
         match definition {
             ExecutableDefinition::Operation(operation) => {
-                directives(
-                    &operation.directives,
-                    OPERATION,
-                    "an operation",
-                    key,
-                    &mut errors,
-                );
+                let (allowed, place) = match operation.operation_kind() {
+                    OperationKind::Query => (QUERY, "a query"),
+                    OperationKind::Mutation => (OPERATION, "a mutation"),
+                    OperationKind::Subscription => (OPERATION, "a subscription"),
+                };
+                directives(&operation.directives, allowed, place, key, &mut errors);
                 walk(&operation.selections.items, key, &mut errors);
             }
             ExecutableDefinition::Fragment(fragment) => {

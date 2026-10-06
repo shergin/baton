@@ -88,6 +88,11 @@ fn value_members(writer: &mut Writer, operation: &OperationValue, resolution: Op
             SwiftType::runtime("ErrorBehavior").optional()
         ));
     }
+    if let Some(seconds) = operation.cache_expiration {
+        writer.line(format!(
+            "@_spi(Generated) public static let cacheExpiration: Swift.Duration? = .seconds({seconds})"
+        ));
+    }
     let flags = [
         ("throwsOnFieldError", operation.throws_on_field_error),
         ("bubbles", operation.bubbles),

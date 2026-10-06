@@ -103,6 +103,10 @@ pub struct OperationPlan {
     pub has_deferred: bool,
     /// The `onError` value `baton.json` names, as `Baton.ErrorBehavior`'s case.
     pub error_behavior: Option<String>,
+    /// `@cacheExpiration(seconds:)`: how old the query's data may be before
+    /// it reads as stale; none takes the store's default.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cache_expiration: Option<f64>,
     pub reader: Vec<SelectionPlan>,
     pub normalization: Vec<SelectionPlan>,
 }

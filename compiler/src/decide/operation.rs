@@ -22,6 +22,8 @@ pub struct OperationValue {
     pub text: String,
     /// `Baton.ErrorBehavior`'s case.
     pub error_behavior: Option<String>,
+    /// `@cacheExpiration(seconds:)`, when the query states one.
+    pub cache_expiration: Option<f64>,
     pub throws_on_field_error: bool,
     pub bubbles: bool,
     pub has_deferred: bool,
@@ -133,6 +135,7 @@ pub(super) fn operation(
         id: operation.id.clone(),
         text: operation.text.clone(),
         error_behavior: operation.error_behavior.clone(),
+        cache_expiration: operation.cache_expiration,
         throws_on_field_error: operation.throws_on_field_error,
         bubbles: operation.bubbles,
         has_deferred: operation.has_deferred,
@@ -209,6 +212,7 @@ fn operation_scope(operation: &OperationPlan, resolves: bool, data: &ReaderPlan)
     }
     let flags = [
         ("errorBehavior", operation.error_behavior.is_some()),
+        ("cacheExpiration", operation.cache_expiration.is_some()),
         ("throwsOnFieldError", operation.throws_on_field_error),
         ("bubbles", operation.bubbles),
         ("hasDeferred", operation.has_deferred),

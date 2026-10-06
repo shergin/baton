@@ -3,8 +3,8 @@ import Baton
 /// The documents the tests compile against the Rick and Morty schema. The
 /// operation that produced the recorded fixture, a list that prefetches the
 /// header a detail screen reads, the detail operation itself, a second
-/// operation on the detail's root field, and one under the module-qualified
-/// marker in a raw literal.
+/// operation on the detail's root field, one that states its cache
+/// expiration, and one under the module-qualified marker in a raw literal.
 @MainActor
 struct Documents {
     @Query("""
@@ -69,6 +69,13 @@ struct Documents {
         }
         """)
     var episodesQuery: TestEpisodesQuery
+
+    @Query("""
+        query TestFreshCharacter($id: ID!) @cacheExpiration(seconds: 30) {
+          character(id: $id) { id name }
+        }
+        """)
+    var freshCharacter: TestFreshCharacter
 
     @Baton.Query(#"""
         query TestQualifiedQuery($id: ID!) {

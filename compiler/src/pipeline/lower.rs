@@ -305,8 +305,36 @@ impl Lowering<'_> {
                 .config
                 .on_error
                 .map(|behavior| behavior.swift_case().to_string()),
+            cache_expiration: self.cache_expiration(operation),
             reader,
             normalization,
+        }
+    }
+
+    /// `@cacheExpiration(seconds:)`: a constant of the operation, which the
+    /// store reads with the operation's age. The schema types it `Int!`, so a
+    /// variable is the one other value Relay admits.
+    fn cache_expiration(&self, operation: &OperationDefinition) -> Option<f64> {
+        let directive = operation
+            .directives
+            .named(directive_name("cacheExpiration"))?;
+        let argument = directive
+            .arguments
+            .named(common::ArgumentName("seconds".intern()))?;
+        match &argument.value.item {
+            graphql_ir::Value::Constant(graphql_ir::ConstantValue::Int(seconds)) => {
+                Some(*seconds as f64)
+            }
+            graphql_ir::Value::Constant(graphql_ir::ConstantValue::Float(seconds)) => {
+                Some(seconds.as_float())
+            }
+            _ => {
+                self.diagnostics.borrow_mut().push(Diagnostic::error(
+                    "`@cacheExpiration(seconds:)` takes a constant: how old the data may be is the document's to say, not a variable's",
+                    argument.value.location,
+                ));
+                None
+            }
         }
     }
 

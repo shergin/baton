@@ -289,6 +289,63 @@ fn on_error_null_sends_the_value_and_types_non_null_fields_by_their_semantic_nul
 }
 
 #[test]
+fn a_query_states_its_cache_expiration_in_its_plan_and_its_swift_and_not_in_the_text_it_sends() {
+    let (sdl, path) = schema();
+    let text = "query Probe @cacheExpiration(seconds: 30) { character(id: \"1\") { name } }";
+    let compiled = compile(&sdl, &path, &[document(text)], &Config::default())
+        .unwrap_or_else(|errors| panic!("{errors:?}"));
+    let operation = &compiled.plan.operations[0];
+    assert_eq!(operation.cache_expiration, Some(30.0));
+    assert!(
+        !operation.text.contains("cacheExpiration"),
+        "a directive the schema extension declares is not sent: {}",
+        operation.text
+    );
+    let output = crate::emit::emit(&compiled.plan).expect("the plan emits");
+    let file = output
+        .files
+        .values()
+        .next()
+        .expect("the operation has a file");
+    assert!(file.contains(
+        "@_spi(Generated) public static let cacheExpiration: Swift.Duration? = .seconds(30)"
+    ));
+
+    let plain = compile(&sdl, &path, &[document(QUERY)], &Config::default())
+        .unwrap_or_else(|errors| panic!("{errors:?}"));
+    assert_eq!(plain.plan.operations[0].cache_expiration, None);
+    let plain_output = crate::emit::emit(&plain.plan).expect("the plan emits");
+    let plain_file = plain_output
+        .files
+        .values()
+        .next()
+        .expect("the operation has a file");
+    assert!(!plain_file.contains("cacheExpiration"));
+}
+
+#[test]
+fn a_cache_expiration_on_a_mutation_or_from_a_variable_is_an_error() {
+    assert_eq!(
+        errors(
+            "{}",
+            "mutation Probe @cacheExpiration(seconds: 30) { rename(id: \"1\", name: \"a\") { character { id } } }"
+        ),
+        vec![
+            "`@cacheExpiration` on a mutation has no meaning in Baton; a mutation takes `@throwOnFieldError`"
+        ]
+    );
+    assert_eq!(
+        errors(
+            "{}",
+            "query Probe($seconds: Int!) @cacheExpiration(seconds: $seconds) { character(id: \"1\") { name } }"
+        ),
+        vec![
+            "`@cacheExpiration(seconds:)` takes a constant: how old the data may be is the document's to say, not a variable's"
+        ]
+    );
+}
+
+#[test]
 fn a_persisted_id_is_the_hash_of_the_text_the_app_holds() {
     let (sdl, path) = schema();
     let compiled = compile(&sdl, &path, &[document(QUERY)], &Config::default())

@@ -63,6 +63,13 @@ const ROOT_NAMES: [(SyntaxOperationKind, &str); 3] = [
     (SyntaxOperationKind::Subscription, "Subscription"),
 ];
 
+/// What Baton adds to the schema for Relay's front end to validate: the one
+/// directive that is not Relay's, a query's cache expiration
+/// (`docs/decisions/an-operation-states-its-expiration.md`). Declared as an
+/// extension, so Relay's text transforms leave it out of the operation text
+/// a server receives, as they do its own client directives.
+const BATON_DIRECTIVES: &str = "directive @cacheExpiration(seconds: Int!) on QUERY\n";
+
 /// Output of a successful compilation.
 pub struct Compiled {
     pub plan: Plan,
@@ -82,7 +89,7 @@ pub fn compile(
     let started = Instant::now();
     let schema = relay_schema::build_schema_with_extensions_parallel(
         &[(schema_sdl, SourceLocationKey::standalone(schema_path))],
-        &[] as &[(&str, SourceLocationKey)],
+        &[(BATON_DIRECTIVES, SourceLocationKey::Generated)],
     )?;
     let schema = Arc::new(schema);
     timings.schema = started.elapsed();

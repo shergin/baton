@@ -63,6 +63,41 @@ fn a_directive_baton_gives_no_meaning_is_an_error_at_it() {
 }
 
 #[test]
+fn a_query_takes_a_cache_expiration_and_a_mutation_or_a_subscription_does_not() {
+    assert!(
+        errors(
+            "query Q @cacheExpiration(seconds: 30) @throwOnFieldError { a }",
+            Some(Marker::Query)
+        )
+        .is_empty()
+    );
+    assert_eq!(
+        errors(
+            "mutation M @cacheExpiration(seconds: 30) { a }",
+            Some(Marker::Mutation)
+        ),
+        vec![
+            "`@cacheExpiration` on a mutation has no meaning in Baton; a mutation takes `@throwOnFieldError`"
+        ]
+    );
+    assert_eq!(
+        errors(
+            "subscription S @cacheExpiration(seconds: 30) { a }",
+            Some(Marker::Subscription)
+        ),
+        vec![
+            "`@cacheExpiration` on a subscription has no meaning in Baton; a subscription takes `@throwOnFieldError`"
+        ]
+    );
+    assert_eq!(
+        errors("query Q @live { a }", Some(Marker::Query)),
+        vec![
+            "`@live` on a query has no meaning in Baton; a query takes `@throwOnFieldError`, `@cacheExpiration`"
+        ]
+    );
+}
+
+#[test]
 fn a_marker_holds_exactly_one_definition_of_its_own_kind() {
     assert_eq!(
         errors("query Q { a }", Some(Marker::Fragment)),
