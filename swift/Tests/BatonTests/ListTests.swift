@@ -21,14 +21,20 @@ final class GatedPages: Transport, Sendable {
 struct ListTests {
     /// The notes query, fetched and held as a view on screen holds it: the
     /// retention keeps its root until the test lets it go.
-    func seededEnvironment(_ transport: any Transport = notesTransport()) async throws -> (Environment, TestNotes_character, Retention) {
-        let environment = Environment(transport: transport)
+    func seededEnvironment(_ transport: any Transport = notesTransport(), store: Store = Store()) async throws -> (Environment, TestNotes_character, Retention) {
+        let environment = Environment(transport: transport, store: store)
         environment.store.reportMissing = nil
         let handle = environment.handle(for: TestNotesQuery(id: "1"))
         let retention = handle.retain()
         await handle.settle()
         guard case .ready(let data) = handle.phase else { throw TransportError(statusCode: 0, body: "the first page did not arrive") }
         return (environment, try #require(data.character?.testNotes), retention)
+    }
+
+    /// Lets the main actor turn a few times, so a collection pass a commit
+    /// scheduled has run.
+    func turns() async {
+        for _ in 0..<10 { await Task.yield() }
     }
 
     func counter(_ body: @escaping @MainActor () -> Void) -> (fired: () -> Int, track: () -> Void) {
@@ -479,5 +485,60 @@ struct ListTests {
         #expect(store.check(TestAliasQuery.plan.resolve(query.variables)) != .miss, "the lookup finds the character the list fetched")
         let data = TestAliasQuery.Data(anchor: Anchor(record: store.root, variables: query.variables, store: store))
         #expect(data.character?.row.name == "Rick Sanchez")
+    }
+
+    @Test("pages appended to a connection by loadNext drop no link and run no collection pass")
+    func appendedPagesRunNoCollection() async throws {
+        // A buffer large enough that no page's root pushes another out, so
+        // only the commits themselves could schedule a pass.
+        let store = Store(releaseBufferSize: 100)
+        let (environment, character, retention) = try await seededEnvironment(store: store)
+        await turns()
+        let collections = store.collections
+
+        try await character.notes.loadNext()
+        await turns()
+        #expect(character.notes.nodes.count == 4)
+        #expect(store.collections == collections, "the second page only grew the list")
+
+        try await character.notes.loadNext(10)
+        await turns()
+        #expect(character.notes.nodes.count == 5)
+        #expect(store.collections == collections, "the third page only grew the list")
+        withExtendedLifetime((environment, retention)) {}
+    }
+
+    @Test("a refetch of the first page that replaces the merged list schedules one collection pass on the next turn")
+    func replacedListRunsOneCollection() async throws {
+        let store = Store(releaseBufferSize: 100)
+        let (environment, character, retention) = try await seededEnvironment(store: store)
+        try await character.notes.loadNext()
+        await turns()
+        let collections = store.collections
+
+        store.commit(try Ingest.normalize(notesPage(1), plan: TestNotesQuery.plan.resolve(TestNotesQuery(id: "1").variables)))
+        #expect(character.notes.nodes.count == 2, "the first page again replaces the merged list")
+        #expect(store.collections == collections, "the pass waits for the next turn")
+        await until { store.collections > collections }
+        await turns()
+        #expect(store.collections == collections + 1, "one pass for the commit")
+        #expect(store.existing("Note:n3") != nil, "the second page's root, waiting in the buffer, still reaches the notes the list dropped")
+        withExtendedLifetime((environment, retention)) {}
+    }
+
+    @Test("a @deleteEdge mutation that removes an edge from a connection schedules a collection pass")
+    func removedEdgeRunsCollection() async throws {
+        let store = Store(releaseBufferSize: 100)
+        let (environment, character, retention) = try await seededEnvironment(store: store)
+        await turns()
+        let collections = store.collections
+
+        let removal = TestRemoveNote(id: "n2", connections: [character.notes.connectionID])
+        store.commit(try Ingest.normalize(fixture("remove-note-n2"), plan: TestRemoveNote.plan.resolve(removal.variables), rootKey: Store.mutationRootKey))
+        #expect(character.notes.nodes.map(\.text) == ["Wubba lubba dub dub"])
+        await until { store.collections > collections }
+        await turns()
+        #expect(store.collections == collections + 1, "one pass for the commit")
+        withExtendedLifetime((environment, retention)) {}
     }
 }

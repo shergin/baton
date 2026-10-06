@@ -89,7 +89,10 @@ extension Lens {
 @MainActor
 extension Anchor {
     /// Reports a slot the store never received, and asks the owner's
-    /// environment to heal: mark the operation stale and refetch it.
+    /// environment to heal: mark the operation stale and refetch it. Out of
+    /// line, as `unexpected` is: the readers that call them are inlined into
+    /// every accessor, and a cold path kept small keeps the read small.
+    @inline(never)
     private func missing(_ slot: Slot) {
         // A deleted record's fields are gone on purpose.
         guard !record.deleted, owner.reports else { return }
@@ -97,6 +100,7 @@ extension Anchor {
         owner.environment?.heal(owner.root, record, slot)
     }
 
+    @inline(never)
     private func unexpected(_ slot: Slot, _ value: Value) {
         guard owner.reports else { return }
         store?.reportUnexpected?(record, slot, value)

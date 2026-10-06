@@ -559,6 +559,12 @@ public final class Store {
     @inline(__always)
     private func noteNulls(_ previous: Value, _ value: Value) {
         switch (previous, value) {
+        case (.refs(let old), .refs(let new)):
+            // A list that only grew, a page appended or prepended to a
+            // connection, left what it reached reachable; one that changed
+            // otherwise may not have.
+            if !Store.keeps(old, in: new) { linkDropped = true }
+            nullsOrErrorsChanged = true
         case (.ref, _), (.refs, _):
             // A link that moved, was nulled or was cleared may have left what
             // it reached unreachable.
@@ -569,6 +575,23 @@ public final class Store {
         default:
             return
         }
+    }
+
+    /// Whether every link of `old` is still in `new`, which a page appended
+    /// or prepended leaves true: `old` is a prefix or a suffix of `new`, by
+    /// identity, with no set built.
+    private static func keeps(_ old: ContiguousArray<Record?>, in new: ContiguousArray<Record?>) -> Bool {
+        guard old.count <= new.count else { return false }
+        if old.isEmpty { return true }
+        var prefix = true
+        var suffix = true
+        let offset = new.count - old.count
+        for index in old.indices {
+            if prefix, old[index] !== new[index] { prefix = false }
+            if suffix, old[index] !== new[offset + index] { suffix = false }
+            if !prefix, !suffix { return false }
+        }
+        return true
     }
 
     /// Whether a stored list of links holds the records the change set's

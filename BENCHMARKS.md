@@ -21,6 +21,59 @@ Best ingest and best commit of the fixture at each release below.
   <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
 
+## Unreleased, the lifetime step — 2026-10-06
+
+Revision: `e93ea3d` with the two changes this entry's last table names,
+which land in the commit after it. Machine: Apple M1 Pro (MacBook Pro),
+macOS 26.5.2, Xcode 26.6, Swift 6.3.3, release build. One run on a quiet
+machine; the ground entry below is the "before".
+
+The store owns the roots, the release buffer and the collector since this
+step, and collects when a root left or a commit dropped a link, once per
+turn of the main actor. The age is the root's, stamped by the commit.
+
+### The collector
+
+| Measurement | Best | Median | The ground entry |
+|---|---|---|---|
+| A pass over one root reaching 50,004 records | 2.49 ms | 2.80 ms | 2.65 ms (2.69) |
+| A pass over 301 roots, 50,304 records | 2.56 ms | 2.76 ms | 2.68 ms (2.75) |
+| A pass over 300 roots reaching one record each | 33.1 µs | 33.5 µs | 49.3 µs (52.0) |
+| A pass that keeps none of 50,000 records | 25.2 ms | 26.7 ms | 21.0 ms (22.7) |
+| 42 pages scrolled, release buffer of 10, the pass | 0.18 ms | 2.71 ms | 0.18 ms (2.53) |
+| Hydration: the check reads 898 rows into an empty store | 1.58 ms | 1.70 ms | 1.60 ms (1.73) |
+
+### What the schedule costs a page
+
+| Measurement | Best | Median | The ground entry |
+|---|---|---|---|
+| `loadNext` with no body reading the nodes, per page of 50 | 192 µs | 1.12 ms | 165 µs (205) |
+| `loadNext`, a body reading every node, per page of 50 | 228 µs | 1.47 ms | 196 µs (529) |
+
+A page's fetch dates its operation's root, which waits in the release
+buffer, as Relay's does; from the eleventh page on each page pushes an
+older page's root out, and a root that left runs a pass on the next turn:
+about a millisecond over the connection bench's 4,200 records, paid inside
+the next page's await. A list that only grew, a page appended or prepended,
+drops no link and schedules nothing of its own since this entry. The
+decision reopens the schedule, not the owner, when a pass misses a frame at
+a store size the project supports; at 50,000 records a pass is 2.8 ms.
+
+### The read, and the fences
+
+| Measurement | Best | Median | The ground entry |
+|---|---|---|---|
+| Untracked lens read, per field | 25.0 ns | 25.1 ns | 25.8 ns (25.9) |
+| Tracked read, a row body of 8 fields, per field | 603 ns | 637 ns | 635 ns (662) |
+| Commit into an empty store, 899 records | 645 µs | 687 µs | 648 µs (685) |
+| The same payload again | 124 µs | 125 µs | 126 µs (130) |
+| Check the fixture plan against the store | 118 µs | 118 µs | 113 µs (113) |
+
+The read had risen to 33.2 ns at the median after the heal landed: the
+report of a missing slot and the heal's call were inlined into every
+accessor with the reader that calls them. Out of line, as the record's
+cold lookups already are, the read is 25.1 ns again.
+
 ## Unreleased, the ground step — 2026-10-05
 
 Revision: `2dfae99` with the benches this entry adds, which land in the

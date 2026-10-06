@@ -92,8 +92,13 @@ their owner.
   write for an operation stamps its entry, and an unretained query just
   written waits in the release buffer; the check reads the entry's epoch
   and fetch time against the store's expiration.
-- Not measured yet: the collector's new schedule. The lifetime bench runs
-  at 50,000 records and with hundreds of roots before it ships.
+- [`BENCHMARKS.md`](../../BENCHMARKS.md), 2026-10-06, the lifetime entry:
+  a pass over one root reaching 50,004 records takes 2.8 ms at the median,
+  over 300 roots 34 µs, and a pass that keeps none of 50,000 records 26.7
+  ms. The schedule's cost shows on the connection bench: from the eleventh
+  page each page's root pushes an older page's out of the release buffer,
+  and the pass that follows makes a page of 50 cost 1.12 ms at the median
+  against 205 µs before, inside the next page's await. No frame is missed.
 
 ## Not chosen
 

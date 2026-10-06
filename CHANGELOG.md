@@ -5,6 +5,12 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- A list of links that only grew, a page appended or prepended to a
+  connection, drops no link, so it schedules no collection pass of its
+  own; a list that changed otherwise still does. The lifetime step's
+  numbers are in `BENCHMARKS.md`: a pass over 50,000 records takes 2.8 ms,
+  and a page costs about a millisecond more from the eleventh on, the pass
+  that follows the root the release buffer pushes out.
 - The heal. A read that finds a slot the store never received, which a
   retargeted link leaves behind, marks the owning operation stale and
   refetches it if a holder allows the network, once per fetch of that
