@@ -5,6 +5,19 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- Membership comes from the response. Whether a type satisfies an
+  interface or union condition is a table by the type's number, filled
+  from the sets the build compiled and from what responses say in Relay's
+  `__isX` fields, which the plan now carries; a type condition in a lens
+  is an array load where it was a hash per read. A record of a concrete
+  type the build did not list, a type the schema gained after the build,
+  takes its variant from the answers: the fields under each condition the
+  response says it satisfies, with the ones every type reads, settled once
+  per type and per set of conditions. A condition every compiled member
+  satisfies is a condition still, since it says nothing of a type the
+  build did not list. The image keeps what responses taught for the next
+  launch. A lookup without a type probes the members the build compiled.
+  Generated code of this shape is format 4; the image's format is 6.
 - The plan names the field that keys a record of a type, `id`, and the
   ingest reads that key and knows no field by name; a refetch reads the
   owner's id from the slot its descriptor names. A storage key leaves a

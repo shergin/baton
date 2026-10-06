@@ -68,7 +68,7 @@ struct OracleError: Error, CustomStringConvertible {
 enum Oracle {
     /// The leaves of the raw response, read by the plan from a
     /// `JSONSerialization` tree.
-    static func leaves(of response: Data, plan: ResolvedSelection) throws -> [Leaf] {
+    @MainActor static func leaves(of response: Data, plan: ResolvedSelection) throws -> [Leaf] {
         let tree = try JSONSerialization.jsonObject(with: response, options: [.fragmentsAllowed])
         guard let object = tree as? [String: Any], let data = object["data"] as? [String: Any] else {
             throw OracleError(description: "the response has no data object")
@@ -87,7 +87,7 @@ enum Oracle {
 
     // MARK: The response
 
-    private static func walk(_ object: [String: Any], _ selection: ResolvedSelection, _ path: String, _ leaves: inout [Leaf]) throws {
+    @MainActor private static func walk(_ object: [String: Any], _ selection: ResolvedSelection, _ path: String, _ leaves: inout [Leaf]) throws {
         // The response's own typename picks the fields, as the ingest's does.
         let type = selection.isAbstract ? (object["__typename"] as? String).map(Registry.type) ?? selection.type : selection.type
         for field in selection.variant(for: type).fields {

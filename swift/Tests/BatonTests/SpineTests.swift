@@ -212,6 +212,43 @@ struct SpineTests {
         #expect(counter.fired == 0, "slot \(sibling.index) and the name's slot \(name.index) are channels apart")
     }
 
+    @Test("a type the build did not list that the response does not say is a member reads only the fields every type reads")
+    func unlistedTypeWithoutAnAnswerReadsTheSharedFields() throws {
+        // Types of their own, so that no other test settles their variants
+        // or teaches the process their memberships.
+        let suffix = UUID().uuidString.replacingOccurrences(of: "-", with: "")
+        let query = Registry.type("Query")
+        let shape = Registry.type("Shape_" + suffix)
+        let rounded = Registry.type("Rounded_" + suffix)
+        let circle = Registry.type("Circle_" + suffix)
+        let blob = Registry.type("Blob_" + suffix)
+        let disc = Registry.type("Disc_" + suffix)
+        func field(_ type: TypeID, _ name: String) -> PlanField {
+            .scalar(name, key: .fixed(Registry.slot(type, name)), kind: .string, list: false)
+        }
+        let plan = Plan(root: Selection(type: query, key: nil, fields: [
+            .linked("shape", key: .fixed(Registry.slot(query, "shape_" + suffix)), plural: false, selection: Selection(type: shape, key: "id", abstract: true, memberships: [.init("__isRounded", rounded)], variants: [
+                .init(types: [circle], fields: [field(circle, "__typename"), field(circle, "id"), field(circle, "label"), field(circle, "radius")]),
+                .init(types: nil, condition: rounded, fields: [field(shape, "__typename"), field(shape, "id"), field(shape, "label"), field(shape, "radius")]),
+                .init(types: nil, fields: [field(shape, "__typename"), field(shape, "id"), field(shape, "label")]),
+            ])),
+        ]))
+        let store = Store()
+        store.reportMissing = nil
+        let resolved = plan.resolve(.none, in: store.keys)
+        let payload = #"{"data":{"shape":{"__typename":"\#(blob.name)","id":"b1","label":"blob","radius":"3"}}}"#
+        store.commit(try Ingest.normalize(Data(payload.utf8), plan: resolved))
+        let record = try #require(store.existing("\(blob.name):b1"))
+        #expect(record.read(Registry.slot(blob, "label")) == .string("blob"), "every type reads the shared field")
+        #expect(record.read(Registry.slot(blob, "radius")) == .missing, "without the answer the condition's field is not stored")
+
+        // The same payload with the answer, on another unlisted type.
+        let answered = #"{"data":{"shape":{"__typename":"\#(disc.name)","__isRounded":"\#(disc.name)","id":"d1","label":"disc","radius":"3"}}}"#
+        store.commit(try Ingest.normalize(Data(answered.utf8), plan: resolved))
+        let other = try #require(store.existing("\(disc.name):d1"))
+        #expect(other.read(Registry.slot(disc, "radius")) == .string("3"), "with the answer the condition's field is stored")
+    }
+
     @Test("keys rendered from variables, one per cursor, are numbered by the store and leave the dense numbering of their type alone, so a field first used after a hundred of them is stored beside the type's other fields")
     func renderedKeysAreNumberedApart() throws {
         // A type of its own, so that no other test numbers keys on it.

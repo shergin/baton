@@ -823,7 +823,7 @@ query TestConditionNames(
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
-            .linked("namesake", key: .dynamic(Slots.Query.namesake_9b6471), plural: false, selection: Baton.Selection(type: Types.Named, key: "id", abstract: true, variants: [
+            .linked("namesake", key: .dynamic(Slots.Query.namesake_9b6471), plural: false, selection: Baton.Selection(type: Types.Named, key: "id", abstract: true, memberships: [.init("__isNode", Types.Node)], variants: [
                 .init(types: [Types.Character], fields: [
                     .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
                     .scalar("asCharacter", key: .fixed(Slots.Character.name), kind: .string, list: false),
@@ -834,6 +834,11 @@ query TestConditionNames(
                     .scalar("__typename", key: .fixed(Slots.Location.__typename), kind: .string, list: false),
                     .scalar("asCharacter", key: .fixed(Slots.Location.name), kind: .string, list: false),
                     .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
+                ]),
+                .init(types: nil, condition: Types.Node, fields: [
+                    .scalar("__typename", key: .fixed(Slots.Named.__typename), kind: .string, list: false),
+                    .scalar("asCharacter", key: .fixed(Slots.Named.name), kind: .string, list: false),
+                    .scalar("id", key: .fixed(Slots.Named.id), kind: .string, list: false),
                 ]),
                 .init(types: nil, fields: [
                     .scalar("__typename", key: .fixed(Slots.Named.__typename), kind: .string, list: false),
@@ -1025,8 +1030,12 @@ query TestEscapedText {
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
-            .linked("search", key: .fixed(Slots.Query.search_b80531), plural: true, selection: Baton.Selection(type: Types.SearchResult, key: "id", abstract: true, variants: [
+            .linked("search", key: .fixed(Slots.Query.search_b80531), plural: true, selection: Baton.Selection(type: Types.SearchResult, key: "id", abstract: true, memberships: [.init("__isNode", Types.Node)], variants: [
                 .init(types: [Types.Character, Types.Episode, Types.Location], fields: [
+                    .scalar("__typename", key: .fixed(Slots.SearchResult.__typename), kind: .string, list: false),
+                    .scalar("id", key: .fixed(Slots.SearchResult.id), kind: .string, list: false),
+                ]),
+                .init(types: nil, condition: Types.Node, fields: [
                     .scalar("__typename", key: .fixed(Slots.SearchResult.__typename), kind: .string, list: false),
                     .scalar("id", key: .fixed(Slots.SearchResult.id), kind: .string, list: false),
                 ]),

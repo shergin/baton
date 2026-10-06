@@ -34,6 +34,20 @@ fn write_selection(output: &mut String, selection: &NormalizationSelection, dept
         },
         selection.is_abstract
     );
+    if !selection.memberships.is_empty() {
+        let answers: Vec<String> = selection
+            .memberships
+            .iter()
+            .map(|(key, condition)| {
+                format!(
+                    ".init({}, {})",
+                    swift_literal(key),
+                    type_reference(condition)
+                )
+            })
+            .collect();
+        let _ = write!(output, ", memberships: [{}]", answers.join(", "));
+    }
     if let [only] = selection.variants.as_slice()
         && only.types.is_none()
     {
@@ -51,7 +65,15 @@ fn write_selection(output: &mut String, selection: &NormalizationSelection, dept
             }
             None => "nil".to_string(),
         };
-        let _ = write!(output, "\n{pad}    .init(types: {types}, fields: [");
+        let condition = variant
+            .condition
+            .as_ref()
+            .map(|condition| format!(", condition: {}", type_reference(condition)))
+            .unwrap_or_default();
+        let _ = write!(
+            output,
+            "\n{pad}    .init(types: {types}{condition}, fields: ["
+        );
         plan_fields(
             output,
             variant.slot_type(selection),

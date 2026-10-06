@@ -142,6 +142,19 @@ having no identity to be keyed by. See
 [A fragment is a lens](principles/fragment-is-a-lens.md) and
 [A list's null elements are typed as the schema says](decisions/a-lists-null-elements-are-typed.md).
 
+**Membership, type condition.** *Composition: plan, record.* Relay: an
+inline fragment or spread on an interface or union applies to the records
+whose type satisfies it, and a response answers the condition for each
+object in an `__isX: __typename` field. Here: whether a type is a member of
+a condition is a table by the type's number, filled from the sets the build
+compiled, `Types.Named_possible`, and from what responses say, so a lens
+tests a record's type with an array load and no hash. A record of a type
+the build did not list takes its variant from the answers: the fields
+under each condition it satisfies with those every type reads, settled once
+per type and per set of conditions; a linked field selected under two
+conditions keeps the first's children. The image keeps the answers for the
+next launch. A lookup without a type probes the compiled members.
+
 **Owner.** *Composition: lens, operation value.* Relay: the fragment owner,
 the request whose variables a fragment reference is read with. Here: the
 scope a lens reads in, one operation's variables or a fragment's arguments

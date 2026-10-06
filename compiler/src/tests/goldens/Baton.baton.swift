@@ -8,7 +8,7 @@ nonisolated enum Types {
     static let schemaDigest = "b170ac848059eae3fac3ca0b9c8de535"
     /// The format of this generated code, which the runtime that reads it
     /// declares; a runtime of another format fails to compile this line.
-    static let format = Baton.Format3.self
+    static let format = Baton.Format4.self
     static let AddNotePayload = Baton.Registry.type("AddNotePayload")
     static let Any_ = Baton.Registry.type("Any")
     static let Baton_ = Baton.Registry.type("Baton")
@@ -38,12 +38,12 @@ nonisolated enum Types {
     static let Tokenizer = Baton.Registry.type("Tokenizer")
     static let Type_ = Baton.Registry.type("Type")
     static let Types = Baton.Registry.type("Types")
-    /// The types that satisfy `... on Named`.
-    static let Named_possible: Swift.Set<Baton.TypeID> = [Character, Location]
-    /// The types that satisfy `... on Node`.
-    static let Node_possible: Swift.Set<Baton.TypeID> = [Character, Episode, Location, Note]
-    /// The types that satisfy `... on Spelled`.
-    static let Spelled_possible: Swift.Set<Baton.TypeID> = [Any_, Baton_, Protocol_, Set, Type_]
+    /// The types that satisfy `... on Named`, as the build knows them.
+    static let Named_possible = Baton.Members(Named, [Character, Location])
+    /// The types that satisfy `... on Node`, as the build knows them.
+    static let Node_possible = Baton.Members(Node, [Character, Episode, Location, Note])
+    /// The types that satisfy `... on Spelled`, as the build knows them.
+    static let Spelled_possible = Baton.Members(Spelled, [Any_, Baton_, Protocol_, Set, Type_])
 }
 
 /// Interned storage keys used by this module's documents.
@@ -144,6 +144,7 @@ nonisolated enum Slots {
     }
     nonisolated enum Named {
         static let __typename = Baton.Registry.slot(Types.Named, "__typename")
+        static let id = Baton.Registry.slot(Types.Named, "id")
         static let name = Baton.Registry.slot(Types.Named, "name")
     }
     nonisolated enum Node {
@@ -209,6 +210,7 @@ nonisolated enum Slots {
     nonisolated enum SearchResult {
         static let __typename = Baton.Registry.slot(Types.SearchResult, "__typename")
         static let id = Baton.Registry.slot(Types.SearchResult, "id")
+        static let name = Baton.Registry.slot(Types.SearchResult, "name")
     }
     nonisolated enum Set {
         static let id = Baton.Registry.slot(Types.Set, "id")

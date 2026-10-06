@@ -76,10 +76,14 @@ struct OracleTests {
         let persistence = Persistence(url: image.url)
         let store = Store(persistence: oracle.persisted ? persistence : nil)
         let plan = operation.plan.resolve(operation.variables, in: store.keys)
-        let expected = try Oracle.leaves(of: response, plan: plan)
-        #expect(!expected.isEmpty)
         store.reportMissing = nil
         try await oracle.commit(operation, into: store)
+        // The response is walked after the commit: a type the build did not
+        // list takes its variant from the memberships the response states,
+        // which the store learns at the commit, and the variant is settled
+        // once per type.
+        let expected = try Oracle.leaves(of: response, plan: plan)
+        #expect(!expected.isEmpty)
         expectSame(Oracle.leaves(of: oracle.root(in: store), plan: plan), expected, "after the commit")
         StoreDump.expectMatches(store, oracle.dumpName)
 

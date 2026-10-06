@@ -220,6 +220,8 @@ extension OracleOperation {
         "search.0.status": { $0.search?.element(0)?.asCharacter?.status.manifestValue ?? .null },
         "search.0.type": { $0.search?.element(0)?.asLocation?.type.manifestValue ?? .null },
         "search.0.name": { $0.search?.element(0)?.asNamed?.name.manifestValue ?? .null },
+        "search.1.status": { $0.search?.element(1)?.asCharacter?.status.manifestValue ?? .null },
+        "search.1.name": { $0.search?.element(1)?.asNamed?.name.manifestValue ?? .null },
         "search.2.air_date": { $0.search?.element(2)?.asEpisode?.air_date.manifestValue ?? .null },
     ]
 

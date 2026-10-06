@@ -62,6 +62,47 @@ struct ConditionTests {
         #expect(misses.reads.isEmpty, "\(misses.reads)")
     }
 
+    @Test("a record of a type the build did not list takes the variant of the conditions the response says it satisfies")
+    func unlistedTypeTakesTheConditionsVariant() throws {
+        let search = TestUnion(name: "robot")
+        let misses = Misses()
+        let store = store(misses)
+        store.commit(try Ingest.normalize(fixture("union-unknown-type"), plan: TestUnion.plan.resolve(search.variables, in: store.keys)))
+        let results = try #require(TestUnion.Data(anchor: Anchor(record: store.root, variables: search.variables, store: store)).search)
+        #expect(results.count == 2)
+        #expect(results[0].asNamed?.name == "Butter Robot")
+        #expect(results[0].asCharacter == nil, "a Robot is not a Character")
+        #expect(results[0].asLocation == nil)
+        #expect(results[1].asCharacter?.label == "Rick Sanchez")
+        #expect(results[1].asNamed?.name == "Rick Sanchez")
+        let robot = Registry.type("Robot")
+        let record = try #require(store.existing("Robot:r1"), "the Robot is keyed by its id")
+        #expect(record.read(Registry.slot(robot, "name")) == .string("Butter Robot"))
+        #expect(record.read(Registry.slot(robot, "id")) == .string("r1"))
+        #expect(misses.reads.isEmpty, "\(misses.reads)")
+    }
+
+    @Test("a type condition is answered by the compiled members and by what a response said")
+    func membershipIsCompiledOrLearned() throws {
+        // A type of its own: what a response says is learned for the
+        // process, and another test commits the fixture's Robot.
+        let name = "Robot_" + UUID().uuidString.replacingOccurrences(of: "-", with: "")
+        let response = Data(String(decoding: fixture("union-unknown-type"), as: UTF8.self).replacingOccurrences(of: "\"Robot\"", with: "\"\(name)\"").utf8)
+        let robot = Registry.type(name)
+        #expect(!Types.Named_possible.includes(robot), "the build did not list it")
+        #expect(Types.Named_possible.includes(Registry.type("Character")))
+        #expect(Types.Named_possible.includes(Registry.type("Location")))
+        #expect(!Types.Named_possible.includes(Registry.type("Episode")))
+
+        let search = TestUnion(name: "robot")
+        let store = Store()
+        store.reportMissing = nil
+        store.commit(try Ingest.normalize(response, plan: TestUnion.plan.resolve(search.variables, in: store.keys)))
+        #expect(Types.Named_possible.includes(robot), "the response said it is Named")
+        #expect(Types.Named_possible.includes(Registry.type("Character")))
+        #expect(!Types.Named_possible.includes(Registry.type("Episode")), "learning one type adds no other")
+    }
+
     @Test("an abstract selection reads its own fields on whatever type the record has")
     func abstractOwnFields() throws {
         for (response, name) in [("node-fields-character", "Rick Sanchez" as String?), ("node-fields-episode", nil)] {

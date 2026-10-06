@@ -34,7 +34,8 @@ pub use operation::{BuilderPlan, BuilderValue, OperationValue, VariableBase, Var
 
 use crate::names::{NameError, Reserved, Written};
 use crate::pipeline::{
-    ConnectionPlan, EditPlan, LookupPlan, Plan, SelectionPlan, StorageKeyPlan, TypePlan,
+    ConditionClass, ConnectionPlan, EditPlan, LookupPlan, Plan, SelectionPlan, StorageKeyPlan,
+    TypePlan,
 };
 
 /// Everything the emitters print, in the plan's order.
@@ -124,15 +125,25 @@ pub struct NormalizationSelection {
     /// names each record's type.
     pub is_abstract: bool,
     /// One variant for an object type; for an abstract type, one per group
-    /// of concrete types that read the same fields, then the one that
+    /// of concrete types that read the same fields, one per interface or
+    /// union condition for a type the build did not list, then the one that
     /// serves every other type.
     pub variants: Vec<NormalizationVariant>,
+    /// Relay's `__isX: __typename` fields the response answers a type
+    /// condition with: the response key and the condition, for a record of
+    /// a type the build did not list.
+    pub memberships: Vec<(String, String)>,
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct NormalizationVariant {
-    /// The concrete types this variant serves; `None` serves every other type.
+    /// The concrete types this variant serves; `None` serves every other type,
+    /// or, with a condition, every type a response says satisfies it.
     pub types: Option<Vec<String>>,
+    /// The interface or union whose members the variant serves when the
+    /// build did not list them: the fields under the condition, with those
+    /// every type reads.
+    pub condition: Option<String>,
     pub fields: Vec<NormalizationField>,
 }
 
@@ -229,6 +240,9 @@ struct Occurrence<'a> {
     guard: Vec<Guard>,
     /// `None`: every type the parent admits.
     types: Option<Vec<String>>,
+    /// The interface or union condition the occurrence is under, when it is
+    /// under one that several types satisfy.
+    condition: Option<String>,
     deferred: Option<String>,
 }
 
@@ -242,17 +256,59 @@ fn collect<'a>(
     deferred: Option<&str>,
     into: &mut Vec<Occurrence<'a>>,
 ) {
+    collect_under(
+        selections,
+        parent_type,
+        guard,
+        types,
+        Enclosing::None,
+        deferred,
+        into,
+    );
+}
+
+/// What encloses a selection on the way down: no condition, an interface
+/// or union condition a type the build did not list may satisfy, or a
+/// concrete fragment, under which no condition is one such a type can
+/// satisfy, whatever is nested inside it.
+#[derive(Clone, Copy)]
+enum Enclosing<'a> {
+    None,
+    Condition(&'a str),
+    Narrowed,
+}
+
+impl<'a> Enclosing<'a> {
+    fn condition(self) -> Option<&'a str> {
+        match self {
+            Enclosing::Condition(condition) => Some(condition),
+            Enclosing::None | Enclosing::Narrowed => None,
+        }
+    }
+}
+
+fn collect_under<'a>(
+    selections: &'a [SelectionPlan],
+    parent_type: &str,
+    guard: &[Guard],
+    types: Option<&[String]>,
+    enclosing: Enclosing<'_>,
+    deferred: Option<&str>,
+    into: &mut Vec<Occurrence<'a>>,
+) {
     for selection in selections {
         match selection {
             SelectionPlan::Scalar { .. } | SelectionPlan::Linked { .. } => into.push(Occurrence {
                 selection,
                 guard: guard.to_vec(),
                 types: types.map(<[String]>::to_vec),
+                condition: enclosing.condition().map(str::to_string),
                 deferred: deferred.map(str::to_string),
             }),
             SelectionPlan::Inline {
                 type_condition,
                 condition_types,
+                condition_class,
                 deferred: label,
                 selections: child,
                 ..
@@ -271,11 +327,27 @@ fn collect<'a>(
                     }
                     _ => types.map(<[String]>::to_vec),
                 };
-                collect(
+                // A condition several types satisfy is one a type the build
+                // did not list may satisfy too: the response says. One every
+                // compiled type satisfies says nothing of such a type, and
+                // counts the same. A concrete fragment narrows to one type the
+                // build knows, which no unlisted type is: nothing under it, at
+                // any depth, belongs to a condition variant.
+                let under = match (enclosing, type_condition, condition_class) {
+                    (Enclosing::Narrowed, _, _) => Enclosing::Narrowed,
+                    (_, Some(_), Some(ConditionClass::Concrete(_))) => Enclosing::Narrowed,
+                    (_, Some(named), Some(ConditionClass::Set)) => Enclosing::Condition(named),
+                    (_, Some(named), Some(ConditionClass::Always)) if named != parent_type => {
+                        Enclosing::Condition(named)
+                    }
+                    _ => enclosing,
+                };
+                collect_under(
                     child,
                     parent_type,
                     guard,
                     restriction.as_deref(),
+                    under,
                     label.as_deref().or(deferred),
                     into,
                 );
@@ -294,7 +366,7 @@ fn collect<'a>(
                         passing: *passing,
                     });
                 }
-                collect(child, parent_type, &inner, types, deferred, into);
+                collect_under(child, parent_type, &inner, types, enclosing, deferred, into);
             }
             // Lowering reports a spread on the normalization side as a
             // fault of the compiler, so none reaches here.
@@ -323,8 +395,10 @@ fn decide(
             is_abstract,
             variants: vec![NormalizationVariant {
                 types: None,
+                condition: None,
                 fields: merge(&all),
             }],
+            memberships: Vec::new(),
         };
     }
     let own: Vec<&Occurrence> = occurrences
@@ -359,18 +433,62 @@ fn decide(
         .into_iter()
         .map(|(types, fields)| NormalizationVariant {
             types: Some(types),
+            condition: None,
             fields,
         })
         .collect();
+    // A variant per interface or union condition, for a type the build did
+    // not list that a response says satisfies it: the fields every type
+    // reads, with those under the condition.
+    let mut conditions: Vec<String> = Vec::new();
+    for occurrence in occurrences {
+        if let Some(condition) = &occurrence.condition
+            && !conditions.contains(condition)
+        {
+            conditions.push(condition.clone());
+        }
+    }
+    for condition in &conditions {
+        let under: Vec<&Occurrence> = occurrences
+            .iter()
+            .filter(|occurrence| {
+                occurrence.types.is_none() || occurrence.condition.as_deref() == Some(condition)
+            })
+            .collect();
+        variants.push(NormalizationVariant {
+            types: None,
+            condition: Some(condition.clone()),
+            fields: merge(&under),
+        });
+    }
     variants.push(NormalizationVariant {
         types: None,
+        condition: None,
         fields: others,
     });
+    let mut memberships: Vec<(String, String)> = Vec::new();
+    for occurrence in occurrences {
+        if let (
+            true,
+            Some(condition),
+            SelectionPlan::Scalar {
+                alias: Some(alias), ..
+            },
+        ) = (
+            is_type_membership(occurrence.selection),
+            &occurrence.condition,
+            occurrence.selection,
+        ) && !memberships.iter().any(|(key, _)| key == alias)
+        {
+            memberships.push((alias.clone(), condition.clone()));
+        }
+    }
     NormalizationSelection {
         type_name: type_name.to_string(),
         has_id,
         is_abstract,
         variants,
+        memberships,
     }
 }
 

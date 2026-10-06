@@ -53,6 +53,9 @@ package struct ChangeSet: Sendable {
     /// by its path: the store makes the record from it and asks nothing of
     /// the registry.
     package internal(set) var recordIDOffsets: ContiguousArray<Int32> = []
+    /// What the response said of types the plan did not list: that records
+    /// of the type are members of the condition. The store learns them.
+    package internal(set) var memberships: [(type: TypeID, condition: TypeID)] = []
     /// Entries grouped by record, one per slot: the last value the response
     /// gave. In arrival order until the ingest groups them at its end.
     package internal(set) var entries: ContiguousArray<Entry> = []
@@ -379,7 +382,7 @@ package enum Ingest {
         changes.group()
         let rendered = errors.map { FieldError(message: $0.message, path: Ingest.render($0.path ?? path), extensions: $0.extensions) }
         guard let first = rendered.first else { return FailedPart(changes: changes, uncaught: []) }
-        let fields = plan.variant(for: type).fields.filter { !$0.isTypename }
+        let fields = plan.variant(for: type, memberOf: []).fields.filter { !$0.isTypename }
         // A record of a type the part selects nothing on holds none of them.
         guard !fields.isEmpty else {
             changes.unplacedErrors = rendered
@@ -615,7 +618,7 @@ package enum Ingest {
                 var resolved: (Int32, Slot)?
                 var segments = path.dropFirst(prefix.count)
                 walk: while let segment = segments.popFirst() {
-                    let variant = selection.variant(for: changes.recordTypes[Int(record)])
+                    let variant = selection.variant(for: changes.recordTypes[Int(record)], memberOf: [])
                     guard case .name(let name) = segment, let index = variant.field(named: name) else { break walk }
                     let field = variant.fields[index]
                     caught = caught || field.caught
@@ -672,11 +675,13 @@ package enum Ingest {
             var record: Int32 = fixedRecord ?? -1
             var concreteType = fixedRecord.map { changes.recordTypes[Int($0)] } ?? plan.type
             var pendingID: (Int, Int, Bool)? = nil
+            var answers: [TypeID] = []
             if plan.isAbstract, fixedRecord == nil {
-                try identity(of: plan, afterValue: false, wantsID: false, concreteType: &concreteType, pendingID: &pendingID)
+                try identity(of: plan, afterValue: false, wantsID: false, concreteType: &concreteType, pendingID: &pendingID, answers: &answers)
             }
             var expected = 0
-            let variant = plan.variant(for: concreteType)
+            let variant = plan.variant(for: concreteType, memberOf: answers)
+            for condition in answers { changes.memberships.append((concreteType, condition)) }
             let fields = variant.fields
             let fieldCount = fields.count
             if complete {
@@ -761,7 +766,7 @@ package enum Ingest {
                     if record < 0 {
                         // A child's key may be a path through this object, so the
                         // object's own key is settled before the child is read.
-                        try identity(of: plan, afterValue: true, wantsID: true, concreteType: &concreteType, pendingID: &pendingID)
+                        try identity(of: plan, afterValue: true, wantsID: true, concreteType: &concreteType, pendingID: &pendingID, answers: &answers)
                         record = settle(plan: plan, concreteType: concreteType, typeName: variant.typeName, pendingID: pendingID, parent: parent, storageKey: storageKey, listIndex: listIndex)
                     }
                     if plural {
@@ -865,15 +870,18 @@ package enum Ingest {
         /// which is a link's value. Without the id an entity whose `id`
         /// follows a link would be keyed by its path, apart from the record
         /// every other operation writes.
-        mutating func identity(of plan: ResolvedSelection, afterValue: Bool, wantsID: Bool, concreteType: inout TypeID, pendingID: inout (Int, Int, Bool)?) throws {
+        mutating func identity(of plan: ResolvedSelection, afterValue: Bool, wantsID: Bool, concreteType: inout TypeID, pendingID: inout (Int, Int, Bool)?, answers: inout [TypeID]) throws {
             var needsID = wantsID && plan.keyBytes != nil && pendingID == nil
             var needsType = plan.isAbstract && concreteType == plan.type
+            // Relay's membership answers are read while the type is: a type
+            // the plan did not list takes its variant from them.
+            var needsAnswers = needsType && !plan.membershipKeys.isEmpty
             guard needsID || needsType else { return }
             let resume = position
             defer { position = resume }
             let typename: StaticString = "__typename"
             if afterValue { try skipValue() }
-            while needsID || needsType {
+            while needsID || needsType || needsAnswers {
                 skipWhitespace()
                 let byte = peek()
                 if byte == 0x7D { return }
@@ -884,6 +892,14 @@ package enum Ingest {
                 let isID = !keyEscaped && plan.keyBytes.map { key in
                     key.count == keyLength && key.withUnsafeBufferPointer { memcmp(base + keyStart, $0.baseAddress!, keyLength) == 0 }
                 } ?? false
+                if needsAnswers, !keyEscaped, keyLength > 4, base[keyStart] == 0x5F, base[keyStart + 1] == 0x5F {
+                    for answer in plan.membershipKeys where answer.bytes.count == keyLength
+                        && answer.bytes.withUnsafeBufferPointer({ memcmp(base + keyStart, $0.baseAddress!, keyLength) == 0 }) {
+                        answers.append(answer.condition)
+                    }
+                    // The answers are found once the type is: a type the plan
+                    // lists needs none, and the scan stops with the type.
+                }
                 // An id of a custom scalar may be a number: its text keys the
                 // record, as it does when the id comes before the link.
                 if needsID, isID, peek() == 0x2D || (peek() >= 0x30 && peek() <= 0x39) {
@@ -901,6 +917,10 @@ package enum Ingest {
                 } else if needsType, keyLength == typename.utf8CodeUnitCount, memcmp(base + keyStart, typename.utf8Start, keyLength) == 0 {
                     concreteType = Registry.type(Ingest.materialize(base: base, start, end, escaped))
                     needsType = false
+                    // A type the plan lists has its variant; only an unlisted
+                    // one takes it from the answers, which the whole object
+                    // is read for.
+                    if plan.lists(concreteType) { needsAnswers = false }
                 }
             }
         }

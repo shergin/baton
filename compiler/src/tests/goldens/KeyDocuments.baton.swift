@@ -86,8 +86,12 @@ query TestKeys(
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
-            .linked("search", key: .fixed(Slots.Query.search_6286a6), plural: true, selection: Baton.Selection(type: Types.SearchResult, key: "id", abstract: true, variants: [
+            .linked("search", key: .fixed(Slots.Query.search_6286a6), plural: true, selection: Baton.Selection(type: Types.SearchResult, key: "id", abstract: true, memberships: [.init("__isNode", Types.Node)], variants: [
                 .init(types: [Types.Character, Types.Episode, Types.Location], fields: [
+                    .scalar("__typename", key: .fixed(Slots.SearchResult.__typename), kind: .string, list: false),
+                    .scalar("id", key: .fixed(Slots.SearchResult.id), kind: .string, list: false),
+                ]),
+                .init(types: nil, condition: Types.Node, fields: [
                     .scalar("__typename", key: .fixed(Slots.SearchResult.__typename), kind: .string, list: false),
                     .scalar("id", key: .fixed(Slots.SearchResult.id), kind: .string, list: false),
                 ]),

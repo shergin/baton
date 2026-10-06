@@ -19,8 +19,9 @@ final class Disk: @unchecked Sendable {
     /// under an interface or union ends in the record's concrete type. 3: a
     /// field error carries its `extensions` as JSON text after its path. 4:
     /// the table of names may have holes, its names swept with the rows that
-    /// used them. 5: a storage key leaves a null argument out.
-    static let format: Int64 = 5
+    /// used them. 5: a storage key leaves a null argument out. 6: the file
+    /// keeps the memberships responses taught.
+    static let format: Int64 = 6
     /// Marks the file as an image, so a database of another kind is left alone.
     static let applicationID: Int64 = 0x4241_544E
     /// A hole in the table of names wider than this is a damaged file, not
@@ -40,8 +41,9 @@ final class Disk: @unchecked Sendable {
 
     enum Opening {
         case already
-        /// Just opened: the fetch times the file holds, by operation.
-        case opened([String: Double])
+        /// Just opened: the fetch times the file holds, by operation, and the
+        /// memberships responses taught, by type and condition name.
+        case opened([String: Double], [(type: String, condition: String)])
         case unavailable
     }
 
@@ -90,7 +92,7 @@ final class Disk: @unchecked Sendable {
     private struct Prepared {
         let selectRecord, upsertRecord, useRecord: OpaquePointer
         let selectRoot, upsertRoot, useRoot: OpaquePointer
-        let upsertFetch, useFetch, upsertName, deleteName: OpaquePointer
+        let upsertFetch, useFetch, upsertName, deleteName, upsertMembership: OpaquePointer
         let forgetRecord, forgetID: OpaquePointer
         let begin, beginReading, commit, rollback: OpaquePointer
     }
@@ -184,7 +186,8 @@ final class Disk: @unchecked Sendable {
         }
         for attempt in 0..<2 {
             do {
-                return .opened(try connect())
+                let (times, memberships) = try connect()
+                return .opened(times, memberships)
             } catch .unreadable where attempt == 0 {
                 discard()
             } catch .foreign {
@@ -199,7 +202,7 @@ final class Disk: @unchecked Sendable {
         return .unavailable
     }
 
-    private func connect() throws(Failure) -> [String: Double] {
+    private func connect() throws(Failure) -> (times: [String: Double], memberships: [(type: String, condition: String)]) {
         try? FileManager.default.createDirectory(atPath: (path as NSString).deletingLastPathComponent, withIntermediateDirectories: true)
         var handle: OpaquePointer?
         var flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_NOMUTEX
@@ -241,6 +244,7 @@ final class Disk: @unchecked Sendable {
                 CREATE TABLE fetches(operation TEXT PRIMARY KEY NOT NULL, used INTEGER NOT NULL, time REAL NOT NULL) WITHOUT ROWID;
                 CREATE TABLE names(id INTEGER PRIMARY KEY, name TEXT NOT NULL);
                 CREATE TABLE meta(key TEXT PRIMARY KEY NOT NULL, value) WITHOUT ROWID;
+                CREATE TABLE memberships(type TEXT NOT NULL, condition TEXT NOT NULL, PRIMARY KEY(type, condition)) WITHOUT ROWID;
                 COMMIT
                 """)
         }
@@ -287,6 +291,11 @@ final class Disk: @unchecked Sendable {
         }
         if !readable { throw .unreadable }
         freeNames = names.indices.reversed().compactMap { names[$0] == nil ? Int32($0) : nil }
+        var memberships: [(type: String, condition: String)] = []
+        try each("SELECT type, condition FROM memberships") { statement in
+            guard let type = sqlite3_column_text(statement, 0), let condition = sqlite3_column_text(statement, 1) else { return }
+            memberships.append((String(cString: type), String(cString: condition)))
+        }
         var times: [String: Double] = [:]
         try each("SELECT operation, time FROM fetches WHERE used >= \(generation - 1)") { statement in
             guard let operation = sqlite3_column_text(statement, 0) else { return }
@@ -306,6 +315,7 @@ final class Disk: @unchecked Sendable {
             // rather than renaming what every row written with it means.
             upsertName: try prepare("INSERT INTO names(id, name) VALUES(?1, ?2)"),
             deleteName: try prepare("DELETE FROM names WHERE id = ?1"),
+            upsertMembership: try prepare("INSERT OR IGNORE INTO memberships(type, condition) VALUES(?1, ?2)"),
             forgetRecord: try prepare("DELETE FROM records WHERE key = ?1"),
             forgetID: try prepare("DELETE FROM records WHERE key IN (SELECT name || ':' || ?1 FROM names)"),
             begin: try prepare("BEGIN IMMEDIATE"),
@@ -313,7 +323,7 @@ final class Disk: @unchecked Sendable {
             commit: try prepare("COMMIT"),
             rollback: try prepare("ROLLBACK")
         )
-        return times
+        return (times, memberships)
     }
 
     /// The open flag under which Apple's SQLite makes the file with the
@@ -639,6 +649,8 @@ final class Disk: @unchecked Sendable {
                 good = (try? exec("DELETE FROM fetches")) != nil && good
             case .freed(let slots):
                 forget(slots)
+            case .memberships(let memberships):
+                for membership in memberships { good = put(membership, prepared) && good }
             }
         }
         for id in unwritten { good = put(name: id, prepared) && good }
@@ -699,6 +711,16 @@ final class Disk: @unchecked Sendable {
             sqlite3_bind_int64(prepared.upsertFetch, 2, generation)
             sqlite3_bind_double(prepared.upsertFetch, 3, time)
             return run(prepared.upsertFetch)
+        }
+    }
+
+    private func put(_ membership: (type: String, condition: String), _ prepared: Prepared) -> Bool {
+        membership.type.withCString { type in
+            membership.condition.withCString { condition in
+                sqlite3_bind_text(prepared.upsertMembership, 1, type, -1, nil)
+                sqlite3_bind_text(prepared.upsertMembership, 2, condition, -1, nil)
+                return run(prepared.upsertMembership)
+            }
         }
     }
 

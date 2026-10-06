@@ -12,11 +12,15 @@ import Synchronization
 public enum Format1 {}
 
 @_spi(Generated)
-@available(*, unavailable, message: "this generated code is of format 2 and the runtime reads format 3: a selection names the field that keys its records, a storage key leaves a null argument out, and a refetch names the slot its identifier is read from; rebuild with the compiler of this release")
+@available(*, unavailable, message: "this generated code is of format 2 and the runtime reads format 4; rebuild with the compiler of this release")
 public enum Format2 {}
 
 @_spi(Generated)
+@available(*, unavailable, message: "this generated code is of format 3 and the runtime reads format 4: a type condition is tested against members the build compiled and a response said, and a selection carries Relay's membership answers; rebuild with the compiler of this release")
 public enum Format3 {}
+
+@_spi(Generated)
+public enum Format4 {}
 
 /// An operation's normalization plan, emitted by the compiler as static data:
 /// what the response contains and where each value is stored.
@@ -73,11 +77,12 @@ public struct Lookup: Sendable {
     }
 
     public let type: TypeID?
-    /// The concrete types a lookup without a type probes.
-    public let possibleTypes: Set<TypeID>
+    /// The types a lookup without a type probes: the members the build
+    /// compiled for the field's interface or union.
+    public let possibleTypes: Members?
     public let key: Key
 
-    public init(type: TypeID?, possibleTypes: Set<TypeID> = [], key: Key) {
+    public init(type: TypeID?, possibleTypes: Members? = nil, key: Key) {
         self.type = type
         self.possibleTypes = possibleTypes
         self.key = key
@@ -310,13 +315,32 @@ public struct PlanField: Sendable {
 public final class Selection: Sendable {
     /// The fields one group of concrete types reads.
     public struct Variant: Sendable {
-        /// The concrete types the variant serves; `nil` serves every other type.
+        /// The concrete types the variant serves; `nil` serves every other
+        /// type, or, with a condition, every type a response says satisfies
+        /// it.
         public let types: [TypeID]?
+        /// The interface or union whose members the variant serves, for a
+        /// type the build did not list: its fields are those selected under
+        /// the condition, with the ones every type reads.
+        public let condition: TypeID?
         public let fields: [PlanField]
 
-        public init(types: [TypeID]?, fields: [PlanField]) {
+        public init(types: [TypeID]?, condition: TypeID? = nil, fields: [PlanField]) {
             self.types = types
+            self.condition = condition
             self.fields = fields
+        }
+    }
+
+    /// Relay's answer to a type condition in a response, `__isNamed:
+    /// __typename`: the key the answer comes under, and the condition.
+    public struct MembershipAnswer: Sendable {
+        public let responseKey: String
+        public let condition: TypeID
+
+        public init(_ responseKey: String, _ condition: TypeID) {
+            self.responseKey = responseKey
+            self.condition = condition
         }
     }
 
@@ -326,6 +350,9 @@ public final class Selection: Sendable {
     /// name: it reads the key the plan says.
     public let key: String?
     public let isAbstract: Bool
+    /// The membership answers the response carries, for a record of a type
+    /// the build did not list.
+    public let memberships: [MembershipAnswer]
     public let variants: [Variant]
     /// Whether any field below reads a variable; when none does, the
     /// selection resolves once and keeps the resolution.
@@ -337,10 +364,11 @@ public final class Selection: Sendable {
         self.init(type: type, key: key, abstract: abstract, variants: [Variant(types: nil, fields: fields)])
     }
 
-    public init(type: TypeID, key: String?, abstract: Bool = false, variants: [Variant]) {
+    public init(type: TypeID, key: String?, abstract: Bool = false, memberships: [MembershipAnswer] = [], variants: [Variant]) {
         self.type = type
         self.key = key
         isAbstract = abstract
+        self.memberships = memberships
         self.variants = variants
         readsVariables = variants.contains { $0.fields.contains(where: \.readsVariables) }
     }
@@ -359,11 +387,16 @@ public final class Selection: Sendable {
 
     private func resolving(_ variables: Variables, _ hold: Keys.Hold) -> ResolvedSelection {
         var listed: [TypeID: ResolvedVariant] = [:]
+        var conditions: [(TypeID, [ResolvedField])] = []
         var others: [ResolvedField] = []
         for variant in variants {
             let fields = variant.fields.filter { $0.selected(by: variables) }.map { resolve($0, variables, hold) }
             guard let types = variant.types else {
-                others = fields
+                if let condition = variant.condition {
+                    conditions.append((condition, fields))
+                } else {
+                    others = fields
+                }
                 continue
             }
             for concrete in types {
@@ -372,7 +405,7 @@ public final class Selection: Sendable {
         }
         // A selection that reads no variables renders no key, and its
         // resolution is shared by every store: it holds no store's keys.
-        return ResolvedSelection(type: type, key: key, isAbstract: isAbstract, fields: others, listed: listed, hold: readsVariables ? hold : nil)
+        return ResolvedSelection(type: type, key: key, isAbstract: isAbstract, fields: others, listed: listed, conditions: conditions, memberships: memberships, hold: readsVariables ? hold : nil)
     }
 
     /// A field with its variables bound, its slot on the selection's own type.
@@ -480,7 +513,7 @@ public final class Selection: Sendable {
 /// possible types.
 package struct LookupKey: Sendable {
     package let type: TypeID?
-    package let possibleTypes: Set<TypeID>
+    package let possibleTypes: Members?
     package let value: String
 }
 
@@ -537,9 +570,16 @@ package final class ResolvedSelection: Sendable {
     /// the walks over object types read it without retaining it.
     let fields: [ResolvedField]
     private let listed: [TypeID: ResolvedVariant]
+    /// The fields selected under each interface or union condition, with
+    /// the ones every type reads, for a type the plan did not list.
+    private let conditions: [(TypeID, [ResolvedField])]
+    /// Relay's membership answers the response carries, as bytes to match:
+    /// a type the plan did not list takes the variants of the conditions
+    /// the response says it satisfies.
+    let membershipKeys: [(bytes: [UInt8], condition: TypeID)]
     /// The variants of types the plan does not list, from `base`'s fields,
     /// resolved when a record of the type first comes.
-    private let others = Mutex<[TypeID: ResolvedVariant]>([:])
+    private let others = Mutex<[Unlisted: ResolvedVariant]>([:])
     private let deferredParts = Mutex<[String: ResolvedSelection]>([:])
     /// The selection's own type's name, taken once.
     private let typeName: String
@@ -550,7 +590,7 @@ package final class ResolvedSelection: Sendable {
     /// shares.
     private let hold: Keys.Hold?
 
-    init(type: TypeID, key: String?, isAbstract: Bool, fields: [ResolvedField], listed: [TypeID: ResolvedVariant], hold: Keys.Hold?) {
+    init(type: TypeID, key: String?, isAbstract: Bool, fields: [ResolvedField], listed: [TypeID: ResolvedVariant], conditions: [(TypeID, [ResolvedField])] = [], memberships: [Selection.MembershipAnswer] = [], hold: Keys.Hold?) {
         self.type = type
         self.key = key
         hasID = key != nil
@@ -558,21 +598,65 @@ package final class ResolvedSelection: Sendable {
         self.isAbstract = isAbstract
         self.fields = fields
         self.listed = listed
+        self.conditions = conditions
+        membershipKeys = memberships.map { (Array($0.responseKey.utf8), $0.condition) }
         self.hold = hold
         typeName = type.name
     }
 
     /// The fields a record of `type` reads, with their slots on it. Taken
     /// once per record; the fields are then walked without a condition.
-    package func variant(for type: TypeID) -> ResolvedVariant {
+    /// Whether the plan lists the type, so a record of it needs no answer.
+    func lists(_ type: TypeID) -> Bool {
+        type == self.type || listed[type] != nil
+    }
+
+    @MainActor package func variant(for type: TypeID) -> ResolvedVariant {
         if !isAbstract || type == self.type { return ResolvedVariant(type: self.type, fields: fields, typeName: typeName) }
         if let variant = listed[type] { return variant }
+        return variant(forUnlisted: type) { condition in Membership.includes(type, condition) }
+    }
+
+    /// The same, where the response is read: a type the plan did not list
+    /// takes the variants of the conditions the response's membership
+    /// answers say it satisfies.
+    func variant(for type: TypeID, memberOf answers: [TypeID]) -> ResolvedVariant {
+        if !isAbstract || type == self.type { return ResolvedVariant(type: self.type, fields: fields, typeName: typeName) }
+        if let variant = listed[type] { return variant }
+        return variant(forUnlisted: type) { condition in answers.contains(condition) }
+    }
+
+    /// The variant of a type the plan did not list, settled once per type
+    /// and per set of conditions it satisfies, so that a record met before
+    /// a response answered for its type does not settle the answer: the
+    /// fields every type reads, then those of each condition the type
+    /// satisfies that are not among them, by response key. A linked field
+    /// selected under two conditions keeps the first's children.
+    private func variant(forUnlisted type: TypeID, satisfies: (TypeID) -> Bool) -> ResolvedVariant {
+        var satisfied: UInt64 = 0
+        for (index, (condition, _)) in conditions.enumerated() where satisfies(condition) {
+            satisfied |= 1 << UInt64(min(index, 63))
+        }
+        let key = Unlisted(type: type, satisfied: satisfied)
         return others.withLock { cache in
-            if let variant = cache[type] { return variant }
-            let variant = ResolvedVariant(type: type, fields: fields.map { $0.on(type, hold) })
-            cache[type] = variant
+            if let variant = cache[key] { return variant }
+            var merged = fields
+            for (index, (_, conditioned)) in conditions.enumerated() where satisfied & (1 << UInt64(min(index, 63))) != 0 {
+                for field in conditioned where !merged.contains(where: { $0.responseKey == field.responseKey }) {
+                    merged.append(field)
+                }
+            }
+            let variant = ResolvedVariant(type: type, fields: merged.map { $0.on(type, hold) })
+            cache[key] = variant
             return variant
         }
+    }
+
+    /// A type the plan did not list, with the conditions it satisfies as
+    /// bits in the order the plan lists them.
+    private struct Unlisted: Hashable {
+        let type: TypeID
+        let satisfied: UInt64
     }
 
     /// The selection an incremental part with this `@defer` label fills: the
@@ -584,7 +668,7 @@ package final class ResolvedSelection: Sendable {
                 ResolvedVariant(type: variant.type, fields: variant.fields.filter { $0.deferred == label }.map { $0.undeferred() }, typeName: variant.typeName)
             }
             let own = fields.filter { $0.deferred == label }.map { $0.undeferred() }
-            let selection = ResolvedSelection(type: type, key: key, isAbstract: isAbstract, fields: own, listed: listed.mapValues(part), hold: hold)
+            let selection = ResolvedSelection(type: type, key: key, isAbstract: isAbstract, fields: own, listed: listed.mapValues(part), conditions: conditions.map { ($0.0, $0.1.filter { $0.deferred == label }.map { $0.undeferred() }) }, memberships: membershipKeys.map { Selection.MembershipAnswer(String(decoding: $0.bytes, as: UTF8.self), $0.condition) }, hold: hold)
             guard !own.isEmpty || selection.listed.values.contains(where: { !$0.fields.isEmpty }) else { return nil }
             cache[label] = selection
             return selection

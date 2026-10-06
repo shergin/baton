@@ -173,7 +173,7 @@ query TestSpellings {
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
-            .linked("spellings", key: .fixed(Slots.Query.spellings), plural: true, selection: Baton.Selection(type: Types.Spelling, key: "id", abstract: true, variants: [
+            .linked("spellings", key: .fixed(Slots.Query.spellings), plural: true, selection: Baton.Selection(type: Types.Spelling, key: "id", abstract: true, memberships: [.init("__isSpelled", Types.Spelled)], variants: [
                 .init(types: [Types.Any_, Types.Baton_, Types.Protocol_, Types.Set, Types.Type_], fields: [
                     .scalar("__typename", key: .fixed(Slots.Spelling.__typename), kind: .string, list: false),
                     .scalar("label", key: .fixed(Slots.Spelling.label), kind: .string, list: false),
@@ -182,6 +182,10 @@ query TestSpellings {
                 .init(types: [Types.Episode], fields: [
                     .scalar("__typename", key: .fixed(Slots.Episode.__typename), kind: .string, list: false),
                     .scalar("id", key: .fixed(Slots.Episode.id), kind: .string, list: false),
+                ]),
+                .init(types: nil, condition: Types.Spelled, fields: [
+                    .scalar("__typename", key: .fixed(Slots.Spelling.__typename), kind: .string, list: false),
+                    .scalar("label", key: .fixed(Slots.Spelling.label), kind: .string, list: false),
                 ]),
                 .init(types: nil, fields: [
                     .scalar("__typename", key: .fixed(Slots.Spelling.__typename), kind: .string, list: false),
@@ -199,7 +203,7 @@ query TestSpellings {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             public static let typeName = "Spelling"
-            @MainActor public var asSpelled: AsSpelled? { Types.Spelled_possible.contains(anchor.record.type) ? AsSpelled(anchor: anchor) : nil }
+            @MainActor public var asSpelled: AsSpelled? { Types.Spelled_possible.includes(anchor.record.type) ? AsSpelled(anchor: anchor) : nil }
             @MainActor public var asBaton: AsBaton? { anchor.record.is(Types.Baton_) ? AsBaton(anchor: anchor) : nil }
             @MainActor public var asType: AsType? { anchor.record.is(Types.Type_) ? AsType(anchor: anchor) : nil }
             @MainActor public var asProtocol: AsProtocol? { anchor.record.is(Types.Protocol_) ? AsProtocol(anchor: anchor) : nil }

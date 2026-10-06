@@ -635,8 +635,12 @@ query TestKeywordVariables(
             .linked("character", key: .dynamic(Slots.Query.character_8fc9fb), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("where")), selection: Baton.Selection(type: Types.Character, key: "id", abstract: false, fields: [
                 .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
             ])),
-            .linked("search", key: .dynamic(Slots.Query.search_823c67), plural: true, selection: Baton.Selection(type: Types.SearchResult, key: "id", abstract: true, variants: [
+            .linked("search", key: .dynamic(Slots.Query.search_823c67), plural: true, selection: Baton.Selection(type: Types.SearchResult, key: "id", abstract: true, memberships: [.init("__isNode", Types.Node)], variants: [
                 .init(types: [Types.Character, Types.Episode, Types.Location], fields: [
+                    .scalar("__typename", key: .fixed(Slots.SearchResult.__typename), kind: .string, list: false),
+                    .scalar("id", key: .fixed(Slots.SearchResult.id), kind: .string, list: false),
+                ]),
+                .init(types: nil, condition: Types.Node, fields: [
                     .scalar("__typename", key: .fixed(Slots.SearchResult.__typename), kind: .string, list: false),
                     .scalar("id", key: .fixed(Slots.SearchResult.id), kind: .string, list: false),
                 ]),

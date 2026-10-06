@@ -61,6 +61,29 @@ struct PersistenceTests {
         return count
     }
 
+    @Test("the memberships a response taught are kept by the image for the next launch")
+    func membershipsAreKeptByTheImage() async throws {
+        let search = TestUnion(name: "robot")
+        let first = launch()
+        first.store.commit(try Ingest.normalize(fixture("union-unknown-type"), plan: TestUnion.plan.resolve(search.variables, in: first.store.keys)))
+        await finish(first)
+        // The SQL proves the write. The learned table is the process's, so
+        // the read below proves the image answers the case, not that the
+        // second launch learned the memberships from the file.
+        #expect(integer("SELECT count(*) FROM memberships WHERE type = 'Robot' AND condition = 'Named'") == 1)
+        #expect(integer("SELECT count(*) FROM memberships WHERE type = 'Robot' AND condition = 'Node'") == 1)
+        #expect(integer("SELECT count(*) FROM memberships WHERE type = 'Character'") == 0, "a listed type needs no answer")
+
+        let second = launch()
+        let data = try stored(search, in: second)
+        let results = try #require(data.search)
+        #expect(results.count == 2)
+        #expect(results[0].asNamed?.name == "Butter Robot")
+        #expect(results[0].asCharacter == nil)
+        #expect(results[1].asNamed?.name == "Rick Sanchez")
+        await finish(second)
+    }
+
     @Test("a row the image named by a rendered key is read through a constant of its text the build named before the next launch")
     func aRenderedRowIsReadThroughALaterConstant() async throws {
         // A count no other test renders or names.

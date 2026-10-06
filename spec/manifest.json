@@ -1618,6 +1618,40 @@
       }
     },
     {
+      "name": "tests/union-unknown-type",
+      "operation": "TestUnion",
+      "kind": "query",
+      "document": "documents/TestUnion.graphql",
+      "variables": {
+        "name": "robot"
+      },
+      "responses": [
+        "tests/union-unknown-type.json"
+      ],
+      "records": "tests/union-unknown-type.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "search.1.label",
+          "value": "Rick Sanchez"
+        },
+        {
+          "path": "search.1.status",
+          "value": "Alive"
+        },
+        {
+          "path": "search.1.name",
+          "value": "Rick Sanchez"
+        }
+      ],
+      "override": {
+        "paths": [
+          "search.0.name"
+        ],
+        "value": "Rusty"
+      }
+    },
+    {
       "name": "tests/character-deferred",
       "operation": "TestProfileQuery",
       "kind": "query",

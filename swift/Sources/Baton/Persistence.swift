@@ -36,6 +36,9 @@ public final class Persistence: Sendable {
         /// Changed records and root fields, with the store's keys, which
         /// name the slots a row is written under.
         case commit(records: [Record.Snapshot], root: [Store.RootField], keys: Keys)
+        /// What a response said of types the build did not list, by the
+        /// type's and the condition's names, for the next launch.
+        case memberships([(type: String, condition: String)])
         case fetched(operation: String, time: Double)
         /// Rows a read found carrying an older generation.
         case used(records: [String], root: [String])
@@ -185,6 +188,23 @@ public final class Persistence: Sendable {
     func committed(_ records: [Record.Snapshot], root: [Store.RootField], keys: Keys) {
         enqueue(.commit(records: records, root: root, keys: keys))
     }
+
+    /// Queues memberships a response taught, for the next launch.
+    func learned(_ memberships: [(type: String, condition: String)]) {
+        if !memberships.isEmpty { enqueue(.memberships(memberships)) }
+    }
+
+    /// The memberships the image holds that the store has not taken yet,
+    /// read when the file opened.
+    func takeMemberships() -> [(type: String, condition: String)] {
+        memberships.withLock { memberships in
+            let taken = memberships
+            memberships.removeAll()
+            return taken
+        }
+    }
+
+    private let memberships = Mutex<[(type: String, condition: String)]>([])
 
     /// Tells the image the slots the store freed.
     func freed(_ slots: [Slot]) {
@@ -445,11 +465,12 @@ public final class Persistence: Sendable {
             return true
         case .unavailable:
             return false
-        case .opened(let times):
+        case .opened(let times, let learned):
             ages.withLock { ages in
                 if ages.cleared { return }
                 for (operation, time) in times where ages.times[operation] == nil { ages.times[operation] = time }
             }
+            memberships.withLock { $0.append(contentsOf: learned) }
             return true
         }
     }

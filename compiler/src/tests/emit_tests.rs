@@ -364,5 +364,47 @@ fn a_refetchable_fragment_reads_its_owner_s_identity_from_the_id_slot_it_did_not
     );
 }
 
+#[test]
+fn an_abstract_selection_carries_its_membership_answers_and_a_variant_per_condition() {
+    let swift = emitted(
+        "query ProbeQuery { search(name: \"a\") { __typename ... on Named { name } ... on Character { status } } }",
+    );
+    assert!(
+        swift.contains(
+            "Baton.Selection(type: Types.SearchResult, key: \"id\", abstract: true, memberships: [.init(\"__isNamed\", Types.Named), .init(\"__isNode\", Types.Node)], variants: ["
+        ),
+        "{swift}"
+    );
+    assert!(
+        swift.contains(".init(types: nil, condition: Types.Named, fields: ["),
+        "{swift}"
+    );
+    assert!(!swift.contains("condition: Types.Character"), "{swift}");
+    assert!(
+        swift.contains("static let Named_possible = Baton.Members(Named, [Character, Location])"),
+        "{swift}"
+    );
+}
+
+#[test]
+fn a_selection_on_an_object_type_carries_no_membership_answers() {
+    let swift = emitted("query ProbeQuery { character(id: \"1\") { id ... on Named { name } } }");
+    assert!(!swift.contains("memberships:"), "{swift}");
+    assert!(!swift.contains("condition: Types."), "{swift}");
+}
+
+#[test]
+fn a_lens_tests_a_union_member_set_by_its_members_the_build_and_the_responses_know() {
+    let swift =
+        emitted("query ProbeQuery { search(name: \"a\") { __typename ... on Named { name } } }");
+    assert!(
+        swift.contains(
+            "public var asNamed: AsNamed? { Types.Named_possible.includes(anchor.record.type) ? AsNamed(anchor: anchor) : nil }"
+        ),
+        "{swift}"
+    );
+    assert!(!swift.contains("_possible.contains("), "{swift}");
+}
+
 #[path = "hostile_name_tests.rs"]
 mod hostile_names;

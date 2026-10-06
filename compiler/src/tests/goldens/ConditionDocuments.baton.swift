@@ -140,8 +140,12 @@ query TestFoldedNode(
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
-            .linked("search", key: .dynamic(Slots.Query.search_954c44), plural: true, selection: Baton.Selection(type: Types.SearchResult, key: "id", abstract: true, variants: [
+            .linked("search", key: .dynamic(Slots.Query.search_954c44), plural: true, selection: Baton.Selection(type: Types.SearchResult, key: "id", abstract: true, memberships: [.init("__isNode", Types.Node)], variants: [
                 .init(types: [Types.Character, Types.Episode, Types.Location], fields: [
+                    .scalar("__typename", key: .fixed(Slots.SearchResult.__typename), kind: .string, list: false),
+                    .scalar("id", key: .fixed(Slots.SearchResult.id), kind: .string, list: false),
+                ]),
+                .init(types: nil, condition: Types.Node, fields: [
                     .scalar("__typename", key: .fixed(Slots.SearchResult.__typename), kind: .string, list: false),
                     .scalar("id", key: .fixed(Slots.SearchResult.id), kind: .string, list: false),
                 ]),
@@ -207,8 +211,13 @@ fragment TestNamed_named on Named {
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
-            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, key: "id", abstract: true, variants: [
+            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, key: "id", abstract: true, memberships: [.init("__isNamed", Types.Named)], variants: [
                 .init(types: [Types.Character, Types.Location], fields: [
+                    .scalar("__typename", key: .fixed(Slots.Node.__typename), kind: .string, list: false),
+                    .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
+                    .scalar("name", key: .fixed(Slots.Node.name), kind: .string, list: false),
+                ]),
+                .init(types: nil, condition: Types.Named, fields: [
                     .scalar("__typename", key: .fixed(Slots.Node.__typename), kind: .string, list: false),
                     .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
                     .scalar("name", key: .fixed(Slots.Node.name), kind: .string, list: false),
@@ -232,7 +241,7 @@ fragment TestNamed_named on Named {
             public static let typeName = "Node"
             @MainActor public var id: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
             @MainActor public var named: TestNamed_named? {
-                guard Types.Named_possible.contains(anchor.record.type) else { return nil }
+                guard Types.Named_possible.includes(anchor.record.type) else { return nil }
                 return .init(anchor: anchor)
             }
         }
@@ -667,7 +676,7 @@ query TestUnion(
     }
 
     @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
-            .linked("search", key: .dynamic(Slots.Query.search_954c44), plural: true, selection: Baton.Selection(type: Types.SearchResult, key: "id", abstract: true, variants: [
+            .linked("search", key: .dynamic(Slots.Query.search_954c44), plural: true, selection: Baton.Selection(type: Types.SearchResult, key: "id", abstract: true, memberships: [.init("__isNamed", Types.Named), .init("__isNode", Types.Node)], variants: [
                 .init(types: [Types.Character], fields: [
                     .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
                     .scalar("label", key: .fixed(Slots.Character.name), kind: .string, list: false),
@@ -686,6 +695,14 @@ query TestUnion(
                     .scalar("type", key: .fixed(Slots.Location.type), kind: .string, list: false),
                     .scalar("name", key: .fixed(Slots.Location.name), kind: .string, list: false),
                     .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
+                ]),
+                .init(types: nil, condition: Types.Named, fields: [
+                    .scalar("__typename", key: .fixed(Slots.SearchResult.__typename), kind: .string, list: false),
+                    .scalar("name", key: .fixed(Slots.SearchResult.name), kind: .string, list: false),
+                ]),
+                .init(types: nil, condition: Types.Node, fields: [
+                    .scalar("__typename", key: .fixed(Slots.SearchResult.__typename), kind: .string, list: false),
+                    .scalar("id", key: .fixed(Slots.SearchResult.id), kind: .string, list: false),
                 ]),
                 .init(types: nil, fields: [
                     .scalar("__typename", key: .fixed(Slots.SearchResult.__typename), kind: .string, list: false),
@@ -706,7 +723,7 @@ query TestUnion(
             @MainActor public var asCharacter: AsCharacter? { anchor.record.is(Types.Character) ? AsCharacter(anchor: anchor) : nil }
             @MainActor public var asLocation: AsLocation? { anchor.record.is(Types.Location) ? AsLocation(anchor: anchor) : nil }
             @MainActor public var asEpisode: AsEpisode? { anchor.record.is(Types.Episode) ? AsEpisode(anchor: anchor) : nil }
-            @MainActor public var asNamed: AsNamed? { Types.Named_possible.contains(anchor.record.type) ? AsNamed(anchor: anchor) : nil }
+            @MainActor public var asNamed: AsNamed? { Types.Named_possible.includes(anchor.record.type) ? AsNamed(anchor: anchor) : nil }
 
             nonisolated public struct AsCharacter: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor

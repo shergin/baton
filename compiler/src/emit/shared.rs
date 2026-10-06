@@ -4,7 +4,7 @@
 //! The shared enums name the runtime's module in expressions, which is safe
 //! here alone: their members are spelled off its name, as `names` decides.
 
-use super::swift::{SwiftType, runtime_value, swift_literal, type_reference};
+use super::swift::{runtime_value, swift_literal, type_reference};
 use super::writer::Writer;
 use super::{FORMAT, HEADER};
 use crate::decide::{KeyPart, Shared, SlotRef};
@@ -44,11 +44,14 @@ pub(super) fn shared_text(shared: &Shared) -> String {
         // qualified, as a type of the module may take its name.
         for (condition, types) in &shared.possible_sets {
             let members: Vec<String> = types.iter().map(|name| type_constant(name)).collect();
-            writer.doc(format!("The types that satisfy `... on {condition}`."));
+            writer.doc(format!(
+                "The types that satisfy `... on {condition}`, as the build knows them."
+            ));
             writer.line(format!(
-                "static let {}: Swift.Set<{}> = [{}]",
+                "static let {} = {}({}, [{}])",
                 possible_types(condition),
-                SwiftType::runtime("TypeID"),
+                runtime_value("Members"),
+                type_constant(condition),
                 members.join(", ")
             ));
         }

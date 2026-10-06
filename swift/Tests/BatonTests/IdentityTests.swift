@@ -50,6 +50,13 @@ struct IdentityTests {
         #expect(data.node?.asCharacter?.name == "Adjudicator Rick")
     }
 
+    @Test("a lookup without a type probes the members the build compiled")
+    func lookupProbesTheCompiledMembers() {
+        let members = Set(Types.Node_possible.types.map(\.name))
+        #expect(members == ["Character", "Episode", "Location", "Note"], "the schema's implementers of Node")
+        #expect(Types.Node_possible.condition == Types.Node)
+    }
+
     @Test("an object under a union keyed by its path is a record per concrete type, so another type at the same path does not share one")
     func pathKeysCarryTheType() throws {
         let store = Store()

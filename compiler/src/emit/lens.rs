@@ -728,7 +728,7 @@ fn type_test(test: &TypeTest) -> String {
     match test {
         TypeTest::Is(type_name) => format!("anchor.record.is({})", type_reference(type_name)),
         TypeTest::InSet { condition, .. } => format!(
-            "{}.contains(anchor.record.type)",
+            "{}.includes(anchor.record.type)",
             possible_types_reference(condition)
         ),
     }

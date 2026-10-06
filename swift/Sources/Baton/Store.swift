@@ -695,6 +695,13 @@ public final class Store {
     /// recorded. The edits follow: connection pages merge, edges insert,
     /// records delete. The batch keeps the undo log of what changed.
     private func apply(_ changes: ChangeSet, into batch: inout Batch) {
+        // What the response said of types the build did not list, before any
+        // body tests a record of them against a condition; the image keeps
+        // it for the next launch.
+        if !changes.memberships.isEmpty {
+            for (type, condition) in changes.memberships { Membership.learn(type, of: condition) }
+            persistence?.learned(changes.memberships.map { ($0.type.name, $0.condition.name) })
+        }
         var objects = ContiguousArray<Record>()
         objects.reserveCapacity(changes.recordKeys.count)
         var created = [Bool](repeating: false, count: changes.recordKeys.count)
@@ -855,6 +862,11 @@ public final class Store {
     /// the last one's data.
     package func check(_ selection: ResolvedSelection, at record: Record? = nil) -> Answer {
         adoptConstants()
+        // What the image's responses taught in earlier launches, before the
+        // walk resolves a variant for a type the plan did not list.
+        if let persistence {
+            for (type, condition) in persistence.takeMemberships() { Membership.learn(Registry.type(type), of: Registry.type(condition)) }
+        }
         let record = record ?? root
         // What the walk writes, a lookup's link bound, a link repaired, a
         // cell filled from the image, is one local batch, notified once the
@@ -1166,10 +1178,11 @@ public final class Store {
         }
         // Without a type, the field's possible types are probed; an id they
         // share among live records resolves to none of them.
-        if let record = entity(id: lookup.value, among: lookup.possibleTypes.map(\.name)) { return record }
+        let possibleTypes = lookup.possibleTypes?.types ?? []
+        if let record = entity(id: lookup.value, among: possibleTypes.map(\.name)) { return record }
         guard let disk else { return nil }
         var found: [Record] = []
-        for type in lookup.possibleTypes {
+        for type in possibleTypes {
             if let record = resolve(type, lookup.value, disk, &batch) { found.append(record) }
         }
         guard found.count == 1 else {

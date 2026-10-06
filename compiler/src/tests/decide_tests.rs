@@ -92,9 +92,14 @@ fn a_union_reads_each_member_by_its_own_fields_and_one_alias_by_each_type_s_key(
                 vec!["__typename".into(), "label".into(), "id".into()],
                 vec!["__typename".into(), "dimension".into(), "id".into()]
             ),
+            (
+                None,
+                vec!["__typename".into(), "id".into()],
+                vec!["__typename".into(), "id".into()]
+            ),
             (None, vec!["__typename".into()], vec!["__typename".into()]),
         ],
-        "Relay's __isNode is dropped, __typename leads, and the alias keys each type's own field"
+        "Relay's __isNode is dropped from the fields, __typename leads, the alias keys each type's own field, and Node has a variant for a type the build did not list"
     );
 }
 
@@ -412,4 +417,152 @@ fn a_null_inside_an_object_argument_stays_in_its_literal() {
             value: vec![KeyPart::Literal("{\"name\":null}".into())],
         }]
     );
+}
+
+/// A variant as its condition and its response keys.
+fn conditioned(selection: &NormalizationSelection) -> Vec<(Option<String>, Vec<String>)> {
+    selection
+        .variants
+        .iter()
+        .filter(|variant| variant.types.is_none())
+        .map(|variant| (variant.condition.clone(), keys(&variant.fields)))
+        .collect()
+}
+
+#[test]
+fn an_interface_several_types_satisfy_decides_a_variant_and_a_membership_and_a_concrete_type_neither()
+ {
+    let root = decided(
+        "query Probe { search(name: \"a\") { __typename ... on Named { name } ... on Character { status } } }",
+    );
+    let search = child(&root, 0);
+    assert_eq!(
+        conditioned(search),
+        vec![
+            (
+                Some("Named".to_string()),
+                vec!["__typename".to_string(), "name".to_string()]
+            ),
+            (
+                Some("Node".to_string()),
+                vec!["__typename".to_string(), "id".to_string()]
+            ),
+            (None, vec!["__typename".to_string()]),
+        ],
+        "the Named variant carries the shared fields and its own, Relay's Node fragment has its own, the concrete Character has none, and the shared one comes last"
+    );
+    assert_eq!(
+        search.memberships,
+        vec![
+            ("__isNamed".to_string(), "Named".to_string()),
+            ("__isNode".to_string(), "Node".to_string())
+        ]
+    );
+    assert!(
+        search
+            .variants
+            .iter()
+            .all(|variant| variant.condition.is_none() || variant.types.is_none()),
+        "a condition variant serves no listed types"
+    );
+}
+
+#[test]
+fn a_selection_on_an_object_type_has_no_condition_variants_and_no_memberships() {
+    let root = decided("query Probe { character(id: \"1\") { id ... on Named { name } } }");
+    let character = child(&root, 0);
+    assert!(!character.is_abstract);
+    assert!(
+        character
+            .variants
+            .iter()
+            .all(|variant| variant.condition.is_none())
+    );
+    assert!(character.memberships.is_empty());
+}
+
+#[test]
+fn a_concrete_fragment_inside_a_condition_belongs_to_its_type_and_not_to_the_condition() {
+    let root = decided(
+        "query Probe { search(name: \"a\") { __typename ... on Named { name ... on Character { status } } } }",
+    );
+    let search = child(&root, 0);
+    assert_eq!(
+        conditioned(search),
+        vec![
+            (
+                Some("Named".to_string()),
+                vec!["__typename".to_string(), "name".to_string()]
+            ),
+            (
+                Some("Node".to_string()),
+                vec!["__typename".to_string(), "id".to_string()]
+            ),
+            (None, vec!["__typename".to_string()]),
+        ],
+        "a type the build did not list is no Character, so status is not under Named"
+    );
+    let character = search
+        .variants
+        .iter()
+        .find(|variant| variant.types.as_deref() == Some(&["Character".to_string()][..]))
+        .expect("Character has its own variant");
+    assert!(keys(&character.fields).contains(&"status".to_string()));
+}
+
+#[test]
+fn a_condition_inside_a_concrete_fragment_decides_no_condition_variant_and_no_membership() {
+    let root = decided(
+        "query Probe { search(name: \"a\") { __typename ... on Character { ... on Named { name } } } }",
+    );
+    let search = child(&root, 0);
+    assert_eq!(
+        conditioned(search),
+        vec![
+            (
+                Some("Node".to_string()),
+                vec!["__typename".to_string(), "id".to_string()]
+            ),
+            (None, vec!["__typename".to_string()]),
+        ],
+        "a type the build did not list is no Character, so nothing under Character is under Named; only Relay's Node fragment has a variant"
+    );
+    assert_eq!(
+        search.memberships,
+        vec![("__isNode".to_string(), "Node".to_string())]
+    );
+}
+
+#[test]
+fn an_interface_every_compiled_member_satisfies_decides_a_variant_and_a_membership() {
+    let root = decided("query Probe { search(name: \"a\") { __typename ... on Node { id } } }");
+    let search = child(&root, 0);
+    assert_eq!(
+        conditioned(search),
+        vec![
+            (
+                Some("Node".to_string()),
+                vec!["__typename".to_string(), "id".to_string()]
+            ),
+            (None, vec!["__typename".to_string()]),
+        ],
+        "every compiled member implements Node, which says nothing of a type the build did not list"
+    );
+    assert_eq!(
+        search.memberships,
+        vec![("__isNode".to_string(), "Node".to_string())]
+    );
+}
+
+#[test]
+fn a_condition_on_the_parent_type_itself_decides_no_variant_and_no_membership() {
+    let root = decided("query Probe($id: ID!) { node(id: $id) { id ... on Node { id } } }");
+    let node = child(&root, 0);
+    assert!(node.is_abstract);
+    assert!(
+        node.variants
+            .iter()
+            .all(|variant| variant.condition.is_none())
+    );
+    assert!(node.memberships.is_empty());
 }
