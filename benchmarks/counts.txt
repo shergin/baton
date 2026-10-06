@@ -1,0 +1,15 @@
+count notifications-per-commit-one-field 1
+count notifications-apply 1
+count notifications-revert 1
+count notifications-rebase 0
+count notifications-resolve 0
+count events-logged-per-round 2
+count field-errors-resolved 20
+count field-errors-uncaught 20
+count notifications-errors-landing 20
+count notifications-errors-clearing 20
+count wakes-of-a-root-body-while-other-roots-written 0
+count notifications-per-page-appended 1
+count records-after-collecting-pages 4228
+count notifications-refetch-first-page 1
+count log-events-during-edge-commits 0

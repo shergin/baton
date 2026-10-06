@@ -5,6 +5,11 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- CI compares the benchmark suite's deterministic counts, the notifications
+  a commit path fires and the events a commit logs, with
+  `benchmarks/counts.txt`: `swift run -c release BatonBenchmarks --counts`
+  prints them, one `count <name> <value>` a line, and a change to them is a
+  diff to review where a timing would be noise.
 - A recipe, `docs/recipes/discover-once.md`: a subject discovered once by
   its natural key and refreshed by id through `nodes(ids:)`, the pattern an
   app with external keys needs; the GitHub sample refreshes its rows that

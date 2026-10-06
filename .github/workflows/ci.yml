@@ -85,6 +85,12 @@ jobs:
       # Every bench once, three samples each: the suite keeps running, and a
       # bench that traps fails the build. The numbers are not recorded.
       - run: swift run -c release BatonBenchmarks --quick
+      # The counts that do not depend on the machine, notifications a commit
+      # path fires and events a commit logs, against the committed list: a
+      # change to them is a diff to review, where a timing would be noise.
+      - run: >
+          swift run -c release BatonBenchmarks --quick --counts
+          | grep '^count ' | diff benchmarks/counts.txt -
       # The samples and the tests are macOS executables, so nothing above
       # compiles the library for the platform it is written for.
       - run: >

@@ -289,7 +289,8 @@ In this repository:
   signed out of with the toolbar's button.
 - `swift test` runs the proofs.
 - `swift run -c release BatonBenchmarks` prints the numbers behind
-  [`BENCHMARKS.md`](BENCHMARKS.md).
+  [`BENCHMARKS.md`](BENCHMARKS.md); with `--counts`, the deterministic
+  counts CI compares with `benchmarks/counts.txt`.
 
 Requires the 26 releases of Apple's platforms and Swift 6.2 tools. In a
 checkout, `scripts/build-compiler.sh` builds the compiler from `compiler/`

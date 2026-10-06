@@ -142,6 +142,18 @@ func assetPrices(_ count: Int) -> Data {
 /// without waiting for numbers worth recording.
 let quick = CommandLine.arguments.contains("--quick")
 
+/// `--counts`: the suite prints only its deterministic counts, one
+/// `count <name> <value>` a line, which CI compares with
+/// `benchmarks/counts.txt`; a change to what a commit notifies or logs shows
+/// as a diff, where a timing would show as noise.
+let countsOnly = CommandLine.arguments.contains("--counts")
+
+/// Records a count that does not depend on the machine: printed as `line`
+/// in a normal run, and as `count <name> <value>` under `--counts`.
+func count(_ name: String, _ value: Int, _ line: String) {
+    print(countsOnly ? "count \(name) \(value)" : line)
+}
+
 /// How many samples a measurement asked for `iterations` takes.
 func rounds(_ iterations: Int) -> Int { quick ? 3 : iterations }
 
@@ -152,6 +164,7 @@ func format(_ nanoseconds: Double) -> String {
 }
 
 func report(_ label: String, _ samples: [Double], ops: Int) {
+    if countsOnly { return }
     let sorted = samples.sorted()
     let best = sorted[0] / Double(ops)
     let median = sorted[sorted.count / 2] / Double(ops)
@@ -259,7 +272,7 @@ func run() async throws {
     }) {
         store.commit(editedChanges)
     }
-    print("    notifications per commit: \(names.fired / rounds(20)) (the edited row's name)")
+    count("notifications-per-commit-one-field", names.fired / rounds(20), "    notifications per commit: \(names.fired / rounds(20)) (the edited row's name)")
     store.commit(changes)
 
     print("reads")
@@ -359,7 +372,12 @@ func run() async throws {
     }) {
         store.commit(answer, replacingOptimistic: layer)
     }
-    print("    notifications per step: apply \(applied.fired / rounds(50)), revert \(reverted.fired / rounds(50)), rebase \(rebased.fired / rounds(20)), resolve \(resolved.fired / rounds(20))")
+    count("notifications-apply", applied.fired / rounds(50), "    notifications per step: apply \(applied.fired / rounds(50)), revert \(reverted.fired / rounds(50)), rebase \(rebased.fired / rounds(20)), resolve \(resolved.fired / rounds(20))")
+    if countsOnly {
+        count("notifications-revert", reverted.fired / rounds(50), "")
+        count("notifications-rebase", rebased.fired / rounds(20), "")
+        count("notifications-resolve", resolved.fired / rounds(20), "")
+    }
     baseline(Observer())
 
     let small = Data(#"{"data":{"rename":{"character":{"id":"1","name":"Rick Prime"}}}}"#.utf8)
@@ -378,7 +396,7 @@ func run() async throws {
         store.commit(answer)
     }
     store.log = nil
-    print("    events logged: \(logged.withLock { $0 })")
+    count("events-logged-per-round", logged.withLock { $0 } / rounds(200), "    events logged: \(logged.withLock { $0 })")
     store.commit(back)
     let frame = Data(#"{"id":"1","type":"next","payload":{"data":{"noteAdded":{"id":"n9"}}}}"#.utf8)
     measure("a subscription frame (\(frame.count) bytes), its envelope read", iterations: 200) {
@@ -394,7 +412,8 @@ func run() async throws {
         _ = try! Ingest.normalize(errored, plan: plan, rootKey: Store.rootKey)
     }
     let erroredChanges = try Ingest.normalize(errored, plan: plan, rootKey: Store.rootKey)
-    print("    errors resolved: \(erroredChanges.fieldErrors.count), uncaught: \(erroredChanges.uncaughtFieldErrors.count)")
+    count("field-errors-resolved", erroredChanges.fieldErrors.count, "    errors resolved: \(erroredChanges.fieldErrors.count), uncaught: \(erroredChanges.uncaughtFieldErrors.count)")
+    if countsOnly { count("field-errors-uncaught", erroredChanges.uncaughtFieldErrors.count, "") }
     let landed = Observer()
     measure("commit the errors, 20 rows observing their image", iterations: 20, observer: landed, setup: {
         store.commit(changes)
@@ -409,7 +428,8 @@ func run() async throws {
     }) {
         store.commit(changes)
     }
-    print("    notifications per commit: errors landing \(landed.fired / rounds(20)), errors clearing \(cleared.fired / rounds(20))")
+    count("notifications-errors-landing", landed.fired / rounds(20), "    notifications per commit: errors landing \(landed.fired / rounds(20)), errors clearing \(cleared.fired / rounds(20))")
+    if countsOnly { count("notifications-errors-clearing", cleared.fired / rounds(20), "") }
     let caughtRows = rows.map { BenchCaught_character(anchor: $0.anchor) }
     measure("@catch read of a field without an error, per field", iterations: 50, ops: caughtRows.count * 20) {
         var sink = 0
@@ -597,7 +617,7 @@ func rootFieldBench(store: Store, root: BenchFixture.Data) throws {
         reader.observe([root]) { _ = $0.characters }
     }
     reader.settle()
-    print("    wakes of a body reading characters(page: 1) while \(others) other root fields are written: \(reader.fired)")
+    count("wakes-of-a-root-body-while-other-roots-written", reader.fired, "    wakes of a body reading characters(page: 1) while \(others) other root fields are written: \(reader.fired)")
 }
 
 /// A commit whose only edit is one `@deleteRecord`, in a store of ten pages
@@ -822,7 +842,7 @@ func connectionBench() async throws {
     let series = [2, 21, 41].filter { $0 - 2 < samples.count }.map { "page \($0) \(format(samples[$0 - 2]).trimmingCharacters(in: .whitespaces))" }
     report("loadNext, a body reading every node, per page of 50", samples, ops: 1)
     print("    by page: \(series.joined(separator: ", "))")
-    print("    pages appended: \(samples.count), nodes: \(character.notes.nodes.count), notifications: \(observer.fired) (one per page, on the edges slot)")
+    count("notifications-per-page-appended", observer.fired / max(samples.count, 1), "    pages appended: \(samples.count), nodes: \(character.notes.nodes.count), notifications: \(observer.fired) (one per page, on the edges slot)")
 
     let nodes = character.notes.nodes.count
     measure("nodes of the merged connection (\(nodes) lenses), untracked", iterations: 30) {
@@ -834,13 +854,13 @@ func connectionBench() async throws {
 
     let before = environment.store.count
     environment.store.collect()
-    print("    records before collection \(before), after \(environment.store.count) (the pages' own records go; the connection keeps the edges and nodes)")
+    count("records-after-collecting-pages", environment.store.count, "    records before collection \(before), after \(environment.store.count) (the pages' own records go; the connection keeps the edges and nodes)")
 
     let refetched = Observer()
     refetched.observe([character]) { _ = $0.notes.nodes }
     try await handle.refetch()
     refetched.settle()
-    print("    refetch of the first page: nodes \(character.notes.nodes.count), notifications \(refetched.fired)")
+    count("notifications-refetch-first-page", refetched.fired, "    refetch of the first page: nodes \(character.notes.nodes.count), notifications \(refetched.fired)")
     withExtendedLifetime(retention) {}
 }
 
@@ -979,8 +999,8 @@ func reportBench(changes: ChangeSet) {
     measure("same payload again with the log set", iterations: 20) {
         store.commit(changes)
     }
-    let count = reported.withLock { $0 }
-    if count != 0 { print("    reports during the commits: \(count)") }
+    let reports = reported.withLock { $0 }
+    count("log-events-during-edge-commits", reports, "    reports during the commits: \(reports)")
 }
 
 /// The optimistic half of a mutation that appends an edge: the layer's commit
