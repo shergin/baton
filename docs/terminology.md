@@ -253,8 +253,13 @@ atomic commits. See
 output of ingesting one response or applying one optimistic update: records,
 slots, references, errors, and the edits the plan asked for (a connection
 page's merge, an edge directive's insert or delete). A commit applies it on
-the main actor, edits after entries, and notifies the observed fields that
-changed.
+the main actor as a *batch*: the transaction that nets the notifications,
+the undo log of what changed, and a kind. A *server* batch is written to
+the image; an *optimistic* one keeps its undo with its layer and the image
+is not told; a *local* one, the runtime's own writes, a page's loading
+flag, a lookup's link bound, a link repaired, a cell filled from the image,
+neither. Nothing outside a batch writes a record, edits follow entries, and
+the observed fields that changed are notified when the batch ends.
 
 **Commit payload.** *Composition: store, plan, operation value,
 environment.* Relay: `commitPayload`, writing a response for an operation

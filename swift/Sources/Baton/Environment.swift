@@ -223,8 +223,8 @@ public final class Environment {
     /// Fetches a page of a connection: the loading flag on the connection
     /// record is set for the duration, and the commit merges the page.
     func paginate<Op: Query>(_ operation: Op.Type, variables: Variables, connection: Record, loading: Slot) async throws {
-        connection.write(loading, .bool(true))
-        defer { connection.write(loading, .bool(false)) }
+        store.local { batch in store.set(connection, loading, .bool(true), &batch) }
+        defer { store.local { batch in store.set(connection, loading, .bool(false), &batch) } }
         _ = try await fetch(operation, variables: variables)
     }
 

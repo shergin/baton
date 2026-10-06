@@ -417,38 +417,28 @@ struct PersistenceTests {
         TestHeaderQuery.plan.resolve(TestHeaderQuery(id: id).variables)
     }
 
-    /// Commits the root field `whileTheWriterWaits` reads: a character the
-    /// server does not know, which the image holds as null.
+    /// Commits a root field the server does not know a character for, which
+    /// the image holds as null.
     func commitUnknown(_ environment: Environment) throws {
         environment.store.commit(try Ingest.normalize(fixture("character-null"), plan: header("999")))
     }
 
-    /// Runs `body` while a check holds the image's connection, which the
-    /// writer waits for: what `body` commits is queued and not written until
-    /// it returns, the window between a commit and its write held open. The
-    /// check reads the field `commitUnknown` wrote in an earlier launch and
-    /// this one has not read; memory cannot answer a null, so it comes from
-    /// the image, and the field's observer runs `body`.
-    func whileTheWriterWaits(in environment: Environment, _ body: @escaping @MainActor () -> Void) {
-        let store = environment.store
-        let plan = header("999")
-        let slot = plan.variant(for: store.root.type).fields[0].slot
-        let runs = Notifications()
-        withObservationTracking { _ = store.root.read(slot) } onChange: {
-            MainActor.assumeIsolated {
-                runs.fired += 1
-                body()
-            }
+    /// Runs `body` while the image's writer is held: what `body` commits is
+    /// queued and not written until it returns, the window between a commit
+    /// and its write held open. The file is not held, so the checks `body`
+    /// runs read the image.
+    func whileTheWriterWaits(in environment: Environment, _ body: () -> Void) {
+        guard let persistence = environment.store.persistence else {
+            Issue.record("the environment has no image")
+            return
         }
-        _ = store.check(plan)
-        #expect(runs.fired == 1 && store.root.read(slot) == .null, "the check read the root field from the image")
+        persistence.holdingTheWriter { body() }
     }
 
     @Test("a root field's new link keeps its record through a collection until the field's row is written, so a check does not read the row before it")
     func aQueuedRootLinkKeepsItsRecord() async throws {
         let first = launch()
         first.store.commit(try Ingest.normalize(fixture("character-null"), plan: header("5")))
-        try commitUnknown(first)
         try await seed(first)
 
         let second = launch(releaseBufferSize: 0)
@@ -476,7 +466,6 @@ struct PersistenceTests {
     @Test("a record @deleteRecord named that only the image holds stays unread while the forget waits for the writer, when a record of another type with its id arrives; that record reads its own row")
     func aForgottenIDIsLiftedOnlyByItsKey() async throws {
         let first = launch()
-        try commitUnknown(first)
         try await seed(first)
 
         let second = launch(releaseBufferSize: 0)
@@ -497,6 +486,96 @@ struct PersistenceTests {
         #expect(second.store.check(list) == .miss, "the writer has dropped the row")
         await finish(second)
         #expect(throws: NotStored.self) { try stored(Fixture(page: 1), in: launch()) }
+    }
+
+    /// An image that holds the fixture's list and the root field
+    /// `character(id: "5")`, which links to Jerry Smith.
+    func seedJerry() async throws {
+        let first = launch()
+        first.store.commit(try Ingest.normalize(fixture("character-header-5"), plan: header("5")))
+        try await seed(first)
+    }
+
+    @Test("an observer that asks the store from inside a check's notification sees the whole walk: the slot it observes is filled, and so is every record after it")
+    func anObserverSeesAWholeWalk() async throws {
+        try await seedJerry()
+
+        let second = launch()
+        let store = second.store
+        let plan = header("5")
+        let slot = plan.variant(for: store.root.type).fields[0].slot
+        @MainActor final class Seen {
+            var fired = 0
+            var value: Value?
+            var hydratedRecords: Int?
+            var answer: Store.Answer?
+        }
+        let seen = Seen()
+        withObservationTracking { _ = store.root.read(slot) } onChange: {
+            MainActor.assumeIsolated {
+                seen.fired += 1
+                seen.value = store.root.read(slot)
+                seen.hydratedRecords = store.hydratedRecords
+                seen.answer = store.check(plan)
+            }
+        }
+        #expect(store.check(plan) == .image)
+        #expect(seen.fired == 1, "the root field came from the image")
+        #expect(seen.value.map { if case .ref = $0 { true } else { false } } == true, "the observed slot holds its link when it notifies")
+        #expect(seen.hydratedRecords == 2, "Jerry and his origin were read before the notification, not after it")
+        #expect(seen.answer == .image, "the question the observer asks is answered whole")
+        #expect(store.hydratedRecords == 2, "the observer's question read nothing more")
+        await finish(second)
+    }
+
+    @Test("a check notifies each slot it fills on a record a reader holds once, and none it already held")
+    func aCheckNotifiesEachFilledSlotOnce() async throws {
+        try await seedJerry()
+
+        let second = launch()
+        let store = second.store
+        // Jerry's header from the network: memory holds some of his fields,
+        // the image holds the rest.
+        store.commit(try Ingest.normalize(fixture("character-header-5"), plan: header("5")))
+        let jerry = try #require(store.existing("Character:5"))
+        let held = Set(jerry.storedSlots.map(\.slot.index))
+        let list = Fixture.plan.resolve(Fixture(page: 1).variables)
+        guard case .linked(let page, _, _, _) = list.variant(for: store.root.type).fields[0].kind,
+              let results = page.variant(for: page.type).fields.first(where: { $0.responseKey == "results" }),
+              case .linked(let character, _, _, _) = results.kind
+        else {
+            Issue.record("the list's plan reads characters' results")
+            return
+        }
+        let slots = character.variant(for: jerry.type).fields.filter { $0.responseKey != "__typename" }.map(\.slot)
+        let observers = slots.map { slot in
+            let notifications = Notifications()
+            notifications.track { _ = jerry.read(slot) }
+            return (slot, notifications)
+        }
+        // His origin, which a reader holds too, is on no path the check
+        // walks, and the episodes the check reads held nothing a reader saw.
+        let origin = try #require(store.existing("Location:20"))
+        let originSlots = origin.storedSlots.map(\.slot)
+        let originObserver = Notifications()
+        originObserver.track { for slot in originSlots { _ = origin.read(slot) } }
+        let recordsBefore = store.count
+
+        #expect(store.check(TestEpisodesQuery.plan.resolve(TestEpisodesQuery(id: "5").variables)) == .image)
+        var filled = 0
+        for (slot, notifications) in observers {
+            if held.contains(slot.index) {
+                #expect(notifications.fired == 0, "a slot memory held is not notified")
+            } else {
+                if case .missing = jerry.read(slot) { continue }
+                #expect(notifications.fired == 1, "a slot the image filled is notified once")
+                filled += 1
+            }
+        }
+        #expect(filled >= 4, "type, gender, created, location and episode came from the row")
+        #expect(originObserver.fired == 0, "a record off the walk is not notified")
+        #expect(store.count > recordsBefore, "the episodes came from the image, notifying no one")
+        await finish(second)
     }
 
     @Test("data read every launch keeps its age: expired in the second launch, still dated and fresh in the third")

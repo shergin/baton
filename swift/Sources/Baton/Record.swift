@@ -151,24 +151,6 @@ public final class Record: Observable {
         }
     }
 
-    /// Writes a slot. Returns whether the value changed; observers are notified
-    /// only then.
-    @discardableResult
-    func write(_ slot: Slot, _ value: Value) -> Bool {
-        if slot.index < 0 {
-            guard writeRendered(slot.index, value) != nil else { return false }
-            notify(slot)
-            return true
-        }
-        let index = Int(slot.index)
-        grow(to: index)
-        if values[index] == value { return false }
-        registrar.withMutation(of: self, keyPath: Record.channel(Int32(index))) {
-            values[index] = value
-        }
-        return true
-    }
-
     /// Writes a slot without notifying. Returns the previous value when the
     /// value changed, `nil` when it was equal. Batches notify at their end.
     func writeSilently(_ slot: Slot, _ value: Value) -> Value? {

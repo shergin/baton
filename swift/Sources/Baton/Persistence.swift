@@ -61,6 +61,9 @@ public final class Persistence: Sendable {
         var scheduled = false
         /// How many forgets the work holds.
         var forgets = 0
+        /// Whether the writer is held: the work waits in the queue until it is
+        /// let go. For the tests.
+        var held = false
     }
 
     /// When each operation last committed a response, by the wall clock.
@@ -266,6 +269,23 @@ public final class Persistence: Sendable {
         return result
     }
 
+    /// Runs `body` with the writer held, so that what `body` commits is
+    /// queued and not written until it returns: for the tests, which hold the
+    /// window between a commit and its write open. The file is not held, so
+    /// `body` may read it.
+    @MainActor
+    package func holdingTheWriter(_ body: () -> Void) {
+        pending.withLock { $0.held = true }
+        body()
+        let start = pending.withLock { pending in
+            pending.held = false
+            if pending.work.isEmpty || pending.scheduled { return false }
+            pending.scheduled = true
+            return true
+        }
+        if start { Task.detached(priority: .utility) { self.drain() } }
+    }
+
     /// The records the queue has yet to write, which the collector keeps
     /// until it has: those whose snapshots wait, and those a waiting root
     /// field links to. The root drops its links to swept records, and a
@@ -296,7 +316,7 @@ public final class Persistence: Sendable {
             guard current(removals) else { return false }
             pending.work.append(work)
             if case .forget = work { pending.forgets += 1 }
-            if pending.scheduled { return false }
+            if pending.scheduled || pending.held { return false }
             pending.scheduled = true
             return true
         }
@@ -306,6 +326,8 @@ public final class Persistence: Sendable {
     private func take() -> [Work] {
         pending.withLock { pending in
             pending.scheduled = false
+            // A held writer leaves the work where it is; letting go drains.
+            if pending.held { return [] }
             pending.forgets = 0
             let work = pending.work
             pending.work.removeAll(keepingCapacity: true)

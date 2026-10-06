@@ -5,6 +5,17 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- Nothing outside a batch writes a record. A commit is a batch of one of
+  three kinds: server, written to the image; optimistic, whose undo stays
+  with its layer; and local, the runtime's own writes, a page's loading
+  flag, a lookup's link bound, a link repaired, a cell filled from the
+  image, a deferred slot cleared, which were written one by one and
+  notified as they happened. The availability check's writes are one local
+  batch notified once the walk is over, so an observer that asks the store
+  a question from inside a notification sees a whole walk, never one in
+  progress; the store no longer keeps the walk's state to guard against
+  that. The connection merge and the edge edits are functions over a batch
+  in a file of their own.
 - A subscription handle's stream is a value beside its events. `stream`
   reads `.idle`, `.connecting` until the first event, `.open`, or
   `.ended(failure)`, with `nil` for the server's completion and a `Failure`

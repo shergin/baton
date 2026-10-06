@@ -434,8 +434,6 @@ package enum Ingest {
         return part
     }
 
-    /// Reads an array of GraphQL errors, such as a subscription's `error` frame
-    /// carries: messages and paths.
     /// A JSON value as a variable: an error's `extensions` read back from
     /// the image.
     package static func variable(_ data: Data) throws -> Variable {
@@ -446,6 +444,8 @@ package enum Ingest {
         }
     }
 
+    /// Reads an array of GraphQL errors, such as a subscription's `error` frame
+    /// carries: messages, paths and extensions.
     package static func responseErrors(_ data: Data) throws -> [ResponseError] {
         let bytes = [UInt8](data)
         return try bytes.withUnsafeBufferPointer { buffer in

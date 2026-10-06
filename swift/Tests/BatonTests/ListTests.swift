@@ -119,6 +119,26 @@ struct ListTests {
         #expect(paging.rootCount == 0, "a page fetch is no root")
     }
 
+    @Test("the loading flag notifies its readers when a page load sets it and again when the load clears it")
+    func loadingFlagNotifies() async throws {
+        let (environment, character) = try await seededEnvironment()
+        let gate = GatedTransport()
+        let paging = Environment(transport: gate, store: environment.store)
+        let (fired, track) = counter { _ = character.notes.isLoadingNext }
+        track()
+        let loading = Task { try await character.notes.loadNext() }
+        await until { gate.pending != 0 }
+        #expect(fired() == 1, "the flag was set")
+        #expect(character.notes.isLoadingNext)
+
+        track()
+        gate.respond(notesPage(2))
+        try await loading.value
+        #expect(fired() == 2, "the flag was cleared")
+        #expect(!character.notes.isLoadingNext)
+        withExtendedLifetime(paging) {}
+    }
+
     @Test("@appendEdge and @prependEdge insert the payload's edge into the connection named by the variable")
     func edgeDirectives() async throws {
         let (environment, character) = try await seededEnvironment()

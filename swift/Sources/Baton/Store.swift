@@ -61,15 +61,10 @@ public final class Store {
     /// How many records have been filled from the image; for tests and
     /// benchmarks.
     package internal(set) var hydratedRecords = 0
-    /// Whether the walk in memory met a record or a root field the image
-    /// filled.
-    private var metHydrated = false
     /// The root's fields the image filled, by slot index. The image stores
     /// the root a row per field and the root is never marked hydrated, so
     /// these tell the walk in memory which of its fields came from there.
     var hydratedRootSlots: Set<Int32> = []
-    /// The image's connection while a check is reading from it.
-    private var reading: Disk?
     /// Whether the batch in progress changed a field error, a null, a link,
     /// or whether a record is deleted: what `@throwOnFieldError` and
     /// bubbling `@required` read.
@@ -253,6 +248,7 @@ public final class Store {
         init(_ kind: Kind, direct: Bool = false) {
             self.kind = kind
             transaction = Transaction(direct: direct)
+            keepsUndo = kind != .local
         }
 
         mutating func touched(_ record: Record, _ slot: Slot, value: Value, error: FieldError?) {
@@ -502,8 +498,18 @@ public final class Store {
         if let previous = record.writeSilently(slot, value) {
             batch.touched(record, slot, value: previous, error: error)
             batch.record(.slot(record, slot, previous))
-            noteNulls(previous, value)
+            // A local write binds or repairs a link; it brings no new null
+            // or error into a selection.
+            if batch.kind != .local { noteNulls(previous, value) }
         }
+    }
+
+    /// Runs the runtime's own writes as one local batch, notified at its end:
+    /// a loading flag, a link bound or repaired, a cell filled from the image.
+    func local(_ writes: (inout Batch) -> Void) {
+        var batch = Batch(.local)
+        writes(&batch)
+        _ = finish(batch)
     }
 
     /// Sets or clears a slot's field error inside a batch, recorded for the
@@ -740,16 +746,16 @@ public final class Store {
     /// the last one's data.
     package func check(_ selection: ResolvedSelection, at record: Record? = nil) -> Answer {
         let record = record ?? root
-        metHydrated = false
-        if available(selection, at: record, from: nil) { return metHydrated ? .image : .memory }
-        // A check an observer starts while the image is being read joins
-        // the read that is open.
-        if let reading { return available(selection, at: record, from: reading) ? .image : .miss }
+        // What the walk writes, a lookup's link bound, a link repaired, a
+        // cell filled from the image, is one local batch, notified once the
+        // walk is over: nothing observes a walk in progress.
+        var batch = Batch(.local)
+        defer { _ = finish(batch) }
+        var met = false
+        if available(selection, at: record, from: nil, &met, &batch) { return met ? .image : .memory }
         guard let persistence else { return .miss }
         let found = persistence.reading(removals: imageRemovals) { disk in
-            reading = disk
-            defer { reading = nil }
-            return available(selection, at: record, from: disk)
+            available(selection, at: record, from: disk, &met, &batch)
         }
         return found ? .image : .miss
     }
@@ -764,11 +770,13 @@ public final class Store {
     /// fetches.
     func deferredPartsHold(_ selection: ResolvedSelection, at record: Record? = nil) -> Bool {
         var whole = true
-        deferredParts(selection, at: record ?? root, &whole)
+        var batch = Batch(.local)
+        deferredParts(selection, at: record ?? root, &whole, &batch)
+        _ = finish(batch)
         return whole
     }
 
-    private func deferredParts(_ selection: ResolvedSelection, at record: Record, _ whole: inout Bool) {
+    private func deferredParts(_ selection: ResolvedSelection, at record: Record, _ whole: inout Bool, _ batch: inout Batch) {
         let fields = selection.isAbstract ? selection.variant(for: record.type).fields : selection.fields
         for field in fields where !field.isTypename {
             let value = record.peek(field.slot)
@@ -784,14 +792,14 @@ public final class Store {
             default: break
             }
             guard field.deferred != nil else {
-                for target in targets { deferredParts(child, at: target, &whole) }
+                for target in targets { deferredParts(child, at: target, &whole, &batch) }
                 continue
             }
             if targets.contains(where: { check(child, at: $0) == .miss }) {
                 // A slot that a field outside the deferred part reads as
                 // well keeps its value: it is that field's data.
                 if !fields.contains(where: { $0.deferred == nil && $0.slot == field.slot }) {
-                    record.write(field.slot, .missing)
+                    set(record, field.slot, .missing, &batch)
                 }
                 whole = false
             }
@@ -813,56 +821,60 @@ public final class Store {
     /// one, a record that lacks a field reads its row first, a link to a
     /// record the collector swept is pointed at the live record of that key,
     /// and a connection's client record is walked while it holds nothing.
-    private func available(_ selection: ResolvedSelection, at record: Record, from disk: Disk?) -> Bool {
-        selection.isAbstract ? available(selection.variant(for: record.type).fields, at: record, from: disk) : available(selection.fields, at: record, from: disk)
+    private func available(_ selection: ResolvedSelection, at record: Record, from disk: Disk?, _ met: inout Bool, _ batch: inout Batch) -> Bool {
+        selection.isAbstract
+            ? available(selection.variant(for: record.type).fields, at: record, from: disk, &met, &batch)
+            : available(selection.fields, at: record, from: disk, &met, &batch)
     }
 
     /// The walk over one record's fields. They are taken as a parameter and
     /// read in place, so neither the list nor a field is retained per record.
-    private func available(_ fields: [ResolvedField], at record: Record, from disk: Disk?) -> Bool {
+    /// `met` says whether the walk in memory met a record or a root field
+    /// the image filled.
+    private func available(_ fields: [ResolvedField], at record: Record, from disk: Disk?, _ met: inout Bool, _ batch: inout Batch) -> Bool {
         if disk == nil {
             if record.hydrated {
-                metHydrated = true
+                met = true
             } else if record === root, !hydratedRootSlots.isEmpty, readsHydratedRootSlot(fields) {
-                metHydrated = true
+                met = true
             }
         }
         for index in fields.indices {
             if fields[index].isTypename || fields[index].deferred != nil { continue }
             let slot = fields[index].slot
-            if let disk, case .missing = record.peek(slot) { hydrate(record, slot, from: disk) }
+            if let disk, case .missing = record.peek(slot) { hydrate(record, slot, from: disk, &batch) }
             switch fields[index].kind {
             case .scalar:
                 if case .missing = record.peek(slot) { return false }
             case .linked(let child, let plural, let lookupKey, let connection):
                 switch record.peek(slot) {
                 case .missing:
-                    guard !plural, let lookupKey, let target = resolve(lookupKey, disk) else { return false }
-                    guard available(child, at: target, from: disk) else { return false }
-                    record.write(slot, .ref(target))
+                    guard !plural, let lookupKey, let target = resolve(lookupKey, disk, &batch) else { return false }
+                    guard available(child, at: target, from: disk, &met, &batch) else { return false }
+                    set(record, slot, .ref(target), &batch)
                 case .null:
                     break
                 case .ref(let found):
                     var target = found
                     if let disk {
-                        target = live(found, disk)
-                        if target !== found { record.write(slot, .ref(target)) }
+                        target = live(found, disk, &batch)
+                        if target !== found { set(record, slot, .ref(target), &batch) }
                     }
-                    if !target.deleted, !available(child, at: target, from: disk) { return false }
+                    if !target.deleted, !available(child, at: target, from: disk, &met, &batch) { return false }
                 case .refs(var targets):
                     if let disk {
                         var moved = false
                         for position in targets.indices {
                             guard let found = targets[position] else { continue }
-                            let target = live(found, disk)
+                            let target = live(found, disk, &batch)
                             if target !== found {
                                 targets[position] = target
                                 moved = true
                             }
                         }
-                        if moved { record.write(slot, .refs(targets)) }
+                        if moved { set(record, slot, .refs(targets), &batch) }
                     }
-                    for case let target? in targets where !target.deleted && !available(child, at: target, from: disk) { return false }
+                    for case let target? in targets where !target.deleted && !available(child, at: target, from: disk, &met, &batch) { return false }
                 default:
                     return false
                 }
@@ -875,9 +887,9 @@ public final class Store {
                 // stays a miss.
                 if let connection, case .ref(let found) = record.peek(connection.slot), found.swept || found.isEmpty {
                     guard let disk else { return false }
-                    let merged = live(found, disk)
-                    if merged !== found { record.write(connection.slot, .ref(merged)) }
-                    if !merged.deleted, !available(child, at: merged, from: disk) { return false }
+                    let merged = live(found, disk, &batch)
+                    if merged !== found { set(record, connection.slot, .ref(merged), &batch) }
+                    if !merged.deleted, !available(child, at: merged, from: disk, &met, &batch) { return false }
                 }
             }
         }
@@ -897,21 +909,21 @@ public final class Store {
     /// record of the key when the collector swept the one the link holds,
     /// and, for a record that holds nothing yet, its row, so that whether it
     /// was deleted is known before the walk decides to enter it.
-    private func live(_ found: Record, _ disk: Disk) -> Record {
+    private func live(_ found: Record, _ disk: Disk, _ batch: inout Batch) -> Record {
         let record = found.swept ? target(key: found.key, type: found.type, entity: found.isEntity) : found
         if !record.hydrated, record.isEmpty, record !== root, record !== mutationRoot, record !== subscriptionRoot {
-            _ = hydrate(record, from: disk)
+            _ = hydrate(record, from: disk, &batch)
         }
         return record
     }
 
     /// Reads from the image what a record lacks: the root's field, or the
     /// record's row, once.
-    private func hydrate(_ record: Record, _ slot: Slot, from disk: Disk) {
+    private func hydrate(_ record: Record, _ slot: Slot, from disk: Disk, _ batch: inout Batch) {
         if record === root {
-            _ = hydrateRoot(slot, from: disk)
+            _ = hydrateRoot(slot, from: disk, &batch)
         } else if !record.hydrated, record !== mutationRoot, record !== subscriptionRoot {
-            _ = hydrate(record, from: disk)
+            _ = hydrate(record, from: disk, &batch)
         }
     }
 
@@ -1015,15 +1027,18 @@ public final class Store {
 
     /// The entity a lookup names, if cached and not deleted. With the image
     /// at hand, an entity only the image holds counts when its type is known.
-    func resolve(_ lookup: LookupKey, _ disk: Disk? = nil) -> Record? {
+    func resolve(_ lookup: LookupKey, _ disk: Disk?, _ batch: inout Batch) -> Record? {
         if let type = lookup.type {
-            return resolve(type, lookup.value, disk)
+            return resolve(type, lookup.value, disk, &batch)
         }
         // Without a type, the field's possible types are probed; an id they
         // share among live records resolves to none of them.
         if let record = entity(id: lookup.value, among: lookup.possibleTypes.map(\.name)) { return record }
         guard let disk else { return nil }
-        let found = lookup.possibleTypes.compactMap { resolve($0, lookup.value, disk) }
+        var found: [Record] = []
+        for type in lookup.possibleTypes {
+            if let record = resolve(type, lookup.value, disk, &batch) { found.append(record) }
+        }
         guard found.count == 1 else {
             if found.count > 1 { reportAmbiguousIdentity?(lookup.value, found) }
             return nil
@@ -1034,12 +1049,12 @@ public final class Store {
     /// The entity `Type:id`: live in memory, or, with the image at hand, read
     /// from it. A record is registered only once the image had its row, so
     /// a miss leaves nothing behind.
-    private func resolve(_ type: TypeID, _ id: String, _ disk: Disk?) -> Record? {
+    private func resolve(_ type: TypeID, _ id: String, _ disk: Disk?, _ batch: inout Batch) -> Record? {
         let key = type.name + ":" + id
         if let record = records[key] { return record.deleted ? nil : record }
         guard let disk else { return nil }
         let candidate = Record(type: type, key: key, idOffset: Int32(type.name.utf8.count + 1))
-        guard hydrate(candidate, from: disk) else { return nil }
+        guard hydrate(candidate, from: disk, &batch) else { return nil }
         records[key] = candidate
         return candidate.deleted ? nil : candidate
     }
