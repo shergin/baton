@@ -201,8 +201,11 @@ will break freely until 1.0.
   SQLite, written behind every commit and read back by the availability
   check, with ages that survive a launch.
 
-Still to come: tooling and the road to 1.0. Each release is described in
-full in [`CHANGELOG.md`](CHANGELOG.md).
+Still to come: the architecture the [decision records](docs/decisions/)
+describe, built
+[one release a step](docs/decisions/the-decided-architecture-is-built-first.md),
+then the road to 1.0. Each release is described in full in
+[`CHANGELOG.md`](CHANGELOG.md).
 
 ## Using it
 

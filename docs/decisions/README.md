@@ -38,3 +38,4 @@ principle, the proof belongs here.
 - [The emitter writes Swift from typed pieces, not strings](the-emitter-writes-typed-pieces.md)
 - [A handle keeps its fetch and derives its phase](a-handle-derives-its-phase.md)
 - [A failure says its kind](a-failure-says-its-kind.md)
+- [The decided architecture is built first, one release a step](the-decided-architecture-is-built-first.md)
