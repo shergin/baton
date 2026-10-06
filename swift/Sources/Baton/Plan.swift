@@ -8,11 +8,15 @@ import Synchronization
 /// new marker is declared and the one before it stays, unavailable, with
 /// the message. The compiler's `FORMAT` is the same number.
 @_spi(Generated)
-@available(*, unavailable, message: "this generated code is of format 1 and the runtime reads format 2: a list whose elements the schema types nullable reads as an array of optionals; rebuild with the compiler of this release")
+@available(*, unavailable, message: "this generated code is of format 1 and the runtime reads format 3; rebuild with the compiler of this release")
 public enum Format1 {}
 
 @_spi(Generated)
+@available(*, unavailable, message: "this generated code is of format 2 and the runtime reads format 3: a selection names the field that keys its records, a storage key leaves a null argument out, and a refetch names the slot its identifier is read from; rebuild with the compiler of this release")
 public enum Format2 {}
+
+@_spi(Generated)
+public enum Format3 {}
 
 /// An operation's normalization plan, emitted by the compiler as static data:
 /// what the response contains and where each value is stored.
@@ -200,14 +204,17 @@ public struct Edit: Sendable {
 public struct Refetch: Sendable {
     public let variables: [String]
     public let identifier: String?
+    /// The slot the owner's id is read from, when the query takes one.
+    public let identity: Slot?
     public let first: String?
     public let after: String?
     public let last: String?
     public let before: String?
 
-    public init(variables: [String], identifier: String?, first: String?, after: String?, last: String?, before: String?) {
+    public init(variables: [String], identifier: String?, identity: Slot?, first: String?, after: String?, last: String?, before: String?) {
         self.variables = variables
         self.identifier = identifier
+        self.identity = identity
         self.first = first
         self.after = after
         self.last = last
@@ -314,7 +321,10 @@ public final class Selection: Sendable {
     }
 
     public let type: TypeID
-    public let hasID: Bool
+    /// The response key of the field that keys a record of the type, `id`,
+    /// or nil for a type keyed by its path. The ingest knows no field by
+    /// name: it reads the key the plan says.
+    public let key: String?
     public let isAbstract: Bool
     public let variants: [Variant]
     /// Whether any field below reads a variable; when none does, the
@@ -323,13 +333,13 @@ public final class Selection: Sendable {
     private let resolution = Mutex<ResolvedSelection?>(nil)
 
     /// A selection every type reads alike.
-    public convenience init(type: TypeID, hasID: Bool, abstract: Bool = false, fields: [PlanField]) {
-        self.init(type: type, hasID: hasID, abstract: abstract, variants: [Variant(types: nil, fields: fields)])
+    public convenience init(type: TypeID, key: String?, abstract: Bool = false, fields: [PlanField]) {
+        self.init(type: type, key: key, abstract: abstract, variants: [Variant(types: nil, fields: fields)])
     }
 
-    public init(type: TypeID, hasID: Bool, abstract: Bool = false, variants: [Variant]) {
+    public init(type: TypeID, key: String?, abstract: Bool = false, variants: [Variant]) {
         self.type = type
-        self.hasID = hasID
+        self.key = key
         isAbstract = abstract
         self.variants = variants
         readsVariables = variants.contains { $0.fields.contains(where: \.readsVariables) }
@@ -362,7 +372,7 @@ public final class Selection: Sendable {
         }
         // A selection that reads no variables renders no key, and its
         // resolution is shared by every store: it holds no store's keys.
-        return ResolvedSelection(type: type, hasID: hasID, isAbstract: isAbstract, fields: others, listed: listed, hold: readsVariables ? hold : nil)
+        return ResolvedSelection(type: type, key: key, isAbstract: isAbstract, fields: others, listed: listed, hold: readsVariables ? hold : nil)
     }
 
     /// A field with its variables bound, its slot on the selection's own type.
@@ -512,7 +522,13 @@ package final class ResolvedEdit: Sendable {
 /// that type reads, with their slots on it and their keys as bytes.
 package final class ResolvedSelection: Sendable {
     package let type: TypeID
+    /// The response key of the field that keys a record, as the plan says.
+    let key: String?
+    /// Whether records of the selection are keyed by a field.
     package let hasID: Bool
+    /// The key's response key as bytes, which the ingest matches without a
+    /// name of its own.
+    let keyBytes: [UInt8]?
     /// Whether a record's type comes from the payload's `__typename`.
     package let isAbstract: Bool
     /// The fields of a selection on an object type; on an abstract type,
@@ -534,9 +550,11 @@ package final class ResolvedSelection: Sendable {
     /// shares.
     private let hold: Keys.Hold?
 
-    init(type: TypeID, hasID: Bool, isAbstract: Bool, fields: [ResolvedField], listed: [TypeID: ResolvedVariant], hold: Keys.Hold?) {
+    init(type: TypeID, key: String?, isAbstract: Bool, fields: [ResolvedField], listed: [TypeID: ResolvedVariant], hold: Keys.Hold?) {
         self.type = type
-        self.hasID = hasID
+        self.key = key
+        hasID = key != nil
+        keyBytes = key.map { Array($0.utf8) }
         self.isAbstract = isAbstract
         self.fields = fields
         self.listed = listed
@@ -566,7 +584,7 @@ package final class ResolvedSelection: Sendable {
                 ResolvedVariant(type: variant.type, fields: variant.fields.filter { $0.deferred == label }.map { $0.undeferred() }, typeName: variant.typeName)
             }
             let own = fields.filter { $0.deferred == label }.map { $0.undeferred() }
-            let selection = ResolvedSelection(type: type, hasID: hasID, isAbstract: isAbstract, fields: own, listed: listed.mapValues(part), hold: hold)
+            let selection = ResolvedSelection(type: type, key: key, isAbstract: isAbstract, fields: own, listed: listed.mapValues(part), hold: hold)
             guard !own.isEmpty || selection.listed.values.contains(where: { !$0.fields.isEmpty }) else { return nil }
             cache[label] = selection
             return selection

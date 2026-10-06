@@ -29,8 +29,8 @@ query TestCaughtNames {
     public func hash(into hasher: inout Hasher) {
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("types", key: .fixed(Slots.Query.types), plural: false, caught: true, selection: Baton.Selection(type: Types.Types, hasID: false, abstract: false, fields: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
+            .linked("types", key: .fixed(Slots.Query.types), plural: false, caught: true, selection: Baton.Selection(type: Types.Types, key: nil, abstract: false, fields: [
                 .scalar("Baton", key: .fixed(Slots.Types_.Baton_), kind: .string, list: false, caught: true),
             ])),
         ]))
@@ -94,8 +94,8 @@ query TestNames {
     public func hash(into hasher: inout Hasher) {
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("types", key: .fixed(Slots.Query.types), plural: false, selection: Baton.Selection(type: Types.Types, hasID: false, abstract: false, fields: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
+            .linked("types", key: .fixed(Slots.Query.types), plural: false, selection: Baton.Selection(type: Types.Types, key: nil, abstract: false, fields: [
                 .scalar("Type", key: .fixed(Slots.Types_.Type_), kind: .string, list: false),
                 .scalar("Protocol", key: .fixed(Slots.Types_.Protocol_), kind: .string, list: false),
                 .scalar("Baton", key: .fixed(Slots.Types_.Baton_), kind: .string, list: false),
@@ -172,8 +172,8 @@ query TestSpellings {
     public func hash(into hasher: inout Hasher) {
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("spellings", key: .fixed(Slots.Query.spellings), plural: true, selection: Baton.Selection(type: Types.Spelling, hasID: true, abstract: true, variants: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
+            .linked("spellings", key: .fixed(Slots.Query.spellings), plural: true, selection: Baton.Selection(type: Types.Spelling, key: "id", abstract: true, variants: [
                 .init(types: [Types.Any_, Types.Baton_, Types.Protocol_, Types.Set, Types.Type_], fields: [
                     .scalar("__typename", key: .fixed(Slots.Spelling.__typename), kind: .string, list: false),
                     .scalar("label", key: .fixed(Slots.Spelling.label), kind: .string, list: false),

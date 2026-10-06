@@ -269,6 +269,27 @@ struct PersistenceTests {
         withExtendedLifetime(fetchedRetention) {}
     }
 
+    @Test("a refetch of a fragment read from the image carries the id read from the slot its query names, the owner's id field")
+    func aRefetchFromTheImageCarriesTheIDField() async throws {
+        let first = launch()
+        first.store.commit(try Ingest.normalize(notesPage(1), plan: TestNotesQuery.plan.resolve(TestNotesQuery(id: "1").variables, in: first.store.keys)))
+        await finish(first)
+
+        let transport = RecordedTransport { _ in fixture("notes-refetch") }
+        let second = launch(transport)
+        let data = try stored(TestNotesQuery(id: "1"), in: second)
+        let character = try #require(data.character?.testNotes)
+        let record = try #require(second.store.existing("Character:1"))
+        let id = record.read(Registry.slot(record.type, "id"))
+        #expect(id == .string("1"), "the image filled the owner's id field")
+
+        try await character.refetch()
+        let request = try #require(transport.requests.last)
+        #expect(request.operationName == "TestNotesPaginationQuery")
+        #expect(request.variables["id"] == .string("1"), "the refetch carries the id field's value")
+        #expect(character.notes.nodes.first?.text == "Wubba lubba dub dub!")
+    }
+
     @Test("a connection's merged pages and a deletion survive a launch, and the loading flag does not")
     func connectionsSurvive() async throws {
         let first = launch(notesTransport())
@@ -785,9 +806,9 @@ struct PersistenceTests {
     func probePlan(_ cursor: String, in store: Store) -> ResolvedSelection {
         let query = Registry.type("Query")
         let character = Registry.type("Character")
-        let items = DynamicKey(character, [.literal("items(after:"), .variable("cursor"), .literal(")")])
-        return Plan(root: Selection(type: query, hasID: false, fields: [
-            .linked("sweepProbe", key: .fixed(Registry.slot(query, "sweepProbe")), plural: false, selection: Selection(type: character, hasID: true, fields: [
+        let items = DynamicKey(character, "items", [KeyArgument("after", [.variable("cursor")])])
+        return Plan(root: Selection(type: query, key: nil, fields: [
+            .linked("sweepProbe", key: .fixed(Registry.slot(query, "sweepProbe")), plural: false, selection: Selection(type: character, key: "id", fields: [
                 .scalar("id", key: .fixed(Registry.slot(character, "id")), kind: .string, list: false),
                 .scalar("items", key: .dynamic(items), kind: .string, list: false),
             ])),
@@ -839,7 +860,7 @@ struct PersistenceTests {
         let plan = probePlan("c86", in: store)
         #expect(store.check(plan) != .miss, "the probe's row reads from the image")
         let probe = try #require(store.existing("Character:860"))
-        let slot = Owner(variables: Variables(["cursor": .string("c86")]), store: store).slot(DynamicKey(Registry.type("Character"), [.literal("items(after:"), .variable("cursor"), .literal(")")]))
+        let slot = Owner(variables: Variables(["cursor": .string("c86")]), store: store).slot(DynamicKey(Registry.type("Character"), "items", [KeyArgument("after", [.variable("cursor")])]))
         #expect(probe.read(slot) == .string("page c86"), "the reused id names the new text")
         withExtendedLifetime(plan) {}
         await finish(last)

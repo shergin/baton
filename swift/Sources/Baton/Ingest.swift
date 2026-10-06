@@ -746,7 +746,7 @@ package enum Ingest {
                         continue
                     }
                     let value = try scalarValue(scalar)
-                    if plan.hasID && field.keyBytes.count == 2 && field.keyBytes[0] == 0x69 && field.keyBytes[1] == 0x64,
+                    if let keyBytes = plan.keyBytes, field.keyBytes == keyBytes,
                        case .string(let start, let end, let escaped) = value, record < 0 {
                         record = changes.record(for: Record.entityKey(variant.typeName, Ingest.materialize(base: base, Int(start), Int(end), escaped)), type: concreteType, idOffset: Record.idOffset(ofType: variant.typeName))
                     }
@@ -866,7 +866,7 @@ package enum Ingest {
         /// follows a link would be keyed by its path, apart from the record
         /// every other operation writes.
         mutating func identity(of plan: ResolvedSelection, afterValue: Bool, wantsID: Bool, concreteType: inout TypeID, pendingID: inout (Int, Int, Bool)?) throws {
-            var needsID = wantsID && plan.hasID && pendingID == nil
+            var needsID = wantsID && plan.keyBytes != nil && pendingID == nil
             var needsType = plan.isAbstract && concreteType == plan.type
             guard needsID || needsType else { return }
             let resume = position
@@ -881,7 +881,9 @@ package enum Ingest {
                 let (keyStart, keyEnd, keyEscaped) = try scanString()
                 skipWhitespace(); try expect(0x3A); skipWhitespace()
                 let keyLength = keyEnd - keyStart
-                let isID = !keyEscaped && keyLength == 2 && base[keyStart] == 0x69 && base[keyStart + 1] == 0x64
+                let isID = !keyEscaped && plan.keyBytes.map { key in
+                    key.count == keyLength && key.withUnsafeBufferPointer { memcmp(base + keyStart, $0.baseAddress!, keyLength) == 0 }
+                } ?? false
                 // An id of a custom scalar may be a number: its text keys the
                 // record, as it does when the id comes before the link.
                 if needsID, isID, peek() == 0x2D || (peek() >= 0x30 && peek() <= 0x39) {

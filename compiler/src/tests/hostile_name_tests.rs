@@ -87,8 +87,9 @@ const GENERATED_NAMES: [&str; 29] = [
 ];
 
 /// The names `decide` matches in a document rather than declares: the
-/// fields a connection's `nodes` reads and the field every record has.
-const MATCHED_FIELDS: [&str; 3] = ["__typename", "edges", "node"];
+/// fields a connection's `nodes` reads, the field every record has and the
+/// field a refetchable fragment's owner is identified by.
+const MATCHED_FIELDS: [&str; 4] = ["__typename", "edges", "id", "node"];
 
 /// The text a probe holds where the hostile name goes.
 const HOSTILE: &str = "HOSTILE";

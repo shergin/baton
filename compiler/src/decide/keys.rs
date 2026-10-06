@@ -6,12 +6,21 @@
 use crate::names::slot_name;
 use crate::pipeline::{ArgumentValuePlan, ConstantPlan, StorageKeyPlan};
 
-/// A part of a storage key as the runtime builds it: text, or an operation
-/// variable rendered as JSON.
+/// A part of an argument's value as the runtime builds it: text, or an
+/// operation variable rendered as JSON.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum KeyPart {
     Literal(String),
     Variable(String),
+}
+
+/// An argument of a storage key: its name and the parts of its value. One
+/// whose value is a variable that is null is left out of the key, as Relay
+/// leaves a null argument out; one whose constant is null is left out here.
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub struct KeyArgument {
+    pub name: String,
+    pub value: Vec<KeyPart>,
 }
 
 /// A slot the generated code refers to: a parent type and a storage key.
@@ -23,25 +32,28 @@ pub struct SlotRef {
     pub template: String,
     pub field: String,
     pub has_arguments: bool,
-    pub parts: Vec<KeyPart>,
+    pub arguments: Vec<KeyArgument>,
 }
 
 impl SlotRef {
     pub fn new(type_name: &str, key: &StorageKeyPlan) -> SlotRef {
-        let parts = key_parts(key);
+        let arguments = key_arguments(key);
         SlotRef {
             type_name: type_name.to_string(),
-            template: template(&parts),
+            template: template(&key.name, &arguments),
             field: key.name.clone(),
-            has_arguments: !key.arguments.is_empty(),
-            parts,
+            has_arguments: !arguments.is_empty(),
+            arguments,
         }
     }
 
     pub fn has_variables(&self) -> bool {
-        self.parts
-            .iter()
-            .any(|part| matches!(part, KeyPart::Variable(_)))
+        self.arguments.iter().any(|argument| {
+            argument
+                .value
+                .iter()
+                .any(|part| matches!(part, KeyPart::Variable(_)))
+        })
     }
 
     /// The slot's name among its type's: `name`, or `characters_1a2b3c` when
@@ -61,29 +73,33 @@ impl SlotRef {
     }
 }
 
-/// A storage key as the parts the runtime joins: the name, then the
-/// arguments as `name:value` in order, each value written as JSON the way the
-/// runtime renders a variable (object keys sorted, floats as Swift prints
-/// them), and each variable left as a part of its own.
-fn key_parts(key: &StorageKeyPlan) -> Vec<KeyPart> {
-    let mut parts = Vec::new();
-    let mut literal = key.name.clone();
-    if !key.arguments.is_empty() {
-        literal.push('(');
-        for (index, argument) in key.arguments.iter().enumerate() {
-            if index > 0 {
-                literal.push(',');
-            }
-            literal.push_str(&argument.name);
-            literal.push(':');
+/// A storage key's arguments as the runtime joins them after the name,
+/// `name:value` in order, each value written as JSON the way the runtime
+/// renders a variable (object keys sorted, floats as Swift prints them),
+/// each variable left as a part of its own. An argument whose constant is
+/// null is left out, as Relay's storage key leaves it.
+fn key_arguments(key: &StorageKeyPlan) -> Vec<KeyArgument> {
+    key.arguments
+        .iter()
+        .filter(|argument| {
+            !matches!(
+                argument.value,
+                ArgumentValuePlan::Constant(ConstantPlan::Null)
+            )
+        })
+        .map(|argument| {
+            let mut literal = String::new();
+            let mut parts = Vec::new();
             value_parts(&argument.value, &mut literal, &mut parts);
-        }
-        literal.push(')');
-    }
-    if !literal.is_empty() {
-        parts.push(KeyPart::Literal(literal));
-    }
-    parts
+            if !literal.is_empty() {
+                parts.push(KeyPart::Literal(literal));
+            }
+            KeyArgument {
+                name: argument.name.clone(),
+                value: parts,
+            }
+        })
+        .collect()
 }
 
 fn value_parts(value: &ArgumentValuePlan, literal: &mut String, parts: &mut Vec<KeyPart>) {
@@ -122,15 +138,27 @@ fn value_parts(value: &ArgumentValuePlan, literal: &mut String, parts: &mut Vec<
     }
 }
 
-/// The key with `$name` for each variable, for naming its slot.
-fn template(parts: &[KeyPart]) -> String {
-    parts
+/// The key with `$name` for each variable, for naming its slot; the key's
+/// text itself when it has no variable.
+fn template(name: &str, arguments: &[KeyArgument]) -> String {
+    if arguments.is_empty() {
+        return name.to_string();
+    }
+    let rendered: Vec<String> = arguments
         .iter()
-        .map(|part| match part {
-            KeyPart::Literal(text) => text.clone(),
-            KeyPart::Variable(name) => format!("${name}"),
+        .map(|argument| {
+            let value: String = argument
+                .value
+                .iter()
+                .map(|part| match part {
+                    KeyPart::Literal(text) => text.clone(),
+                    KeyPart::Variable(variable) => format!("${variable}"),
+                })
+                .collect();
+            format!("{}:{value}", argument.name)
         })
-        .collect()
+        .collect();
+    format!("{name}({})", rendered.join(","))
 }
 
 /// A constant as JSON, as the runtime renders the same value given as a

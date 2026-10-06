@@ -299,5 +299,70 @@ fn the_names_a_lens_is_decided_to_spell_that_a_member_could_hide_are_the_ones_it
     }
 }
 
+/// The Swift `text` compiles to as the one document of the Swift test
+/// target's configuration, every file of it with the shared file last.
+fn emitted(text: &str) -> String {
+    let config_path = repository().join("swift/Tests/BatonTests/baton.json");
+    let config = Config::load(&config_path).expect("the test target has a baton.json");
+    let schema_path = config.schema_path(&config_path);
+    let schema = std::fs::read_to_string(&schema_path).expect("the test schema is readable");
+    let documents = [crate::documents::Document {
+        path: PathBuf::from("Probe.graphql"),
+        index: 0,
+        start: crate::swift::Position { line: 1, column: 1 },
+        text: text.to_string(),
+        embedded: None,
+    }];
+    let compiled = pipeline::compile(&schema, &schema_path.to_string_lossy(), &documents, &config)
+        .unwrap_or_else(|errors| panic!("the document does not compile: {errors:?}"));
+    let output = emit(&compiled.plan)
+        .unwrap_or_else(|errors| panic!("the document declares names twice: {errors:?}"));
+    let mut swift: String = output.files.values().cloned().collect();
+    swift.push_str(&output.shared);
+    swift
+}
+
+#[test]
+fn a_key_with_a_variable_is_written_as_its_field_name_and_its_arguments() {
+    let swift = emitted(
+        "query ProbeQuery($after: String) { character(id: \"1\") { notes(after: $after, first: 2) { edges { cursor } } } }",
+    );
+    assert!(
+        swift.contains(
+            "Baton.DynamicKey(Types.Character, \"notes\", [Baton.KeyArgument(\"after\", [.variable(\"after\")]), Baton.KeyArgument(\"first\", [.literal(\"2\")])])"
+        ),
+        "{swift}"
+    );
+}
+
+#[test]
+fn a_selection_names_the_field_that_keys_its_records_or_nil_for_a_type_without_one() {
+    let swift = emitted("query ProbeQuery { characters { info { count } results { name } } }");
+    assert!(
+        swift.contains("Baton.Selection(type: Types.Character, key: \"id\", "),
+        "{swift}"
+    );
+    assert!(
+        swift.contains("Baton.Selection(type: Types.Characters, key: nil, "),
+        "{swift}"
+    );
+    assert!(!swift.contains("hasID:"), "{swift}");
+}
+
+#[test]
+fn a_refetchable_fragment_reads_its_owner_s_identity_from_the_id_slot_it_did_not_select() {
+    let swift = emitted(
+        "fragment ProbeCharacter on Character @refetchable(queryName: \"ProbeRefetchQuery\") { name }",
+    );
+    assert!(
+        swift.contains("identifier: \"id\", identity: Slots.Character.id, "),
+        "{swift}"
+    );
+    assert!(
+        swift.contains("static let id = Baton.Registry.slot(Types.Character, \"id\")"),
+        "{swift}"
+    );
+}
+
 #[path = "hostile_name_tests.rs"]
 mod hostile_names;

@@ -37,6 +37,7 @@ principle, the proof belongs here.
 - [Keys a session produces belong to its store](session-keys-belong-to-the-store.md)
 - [The store numbers what its session renders](the-store-numbers-what-it-renders.md)
 - [A list's null elements are typed as the schema says](a-lists-null-elements-are-typed.md)
+- [A storage key leaves a null argument out](a-storage-key-leaves-a-null-argument-out.md)
 - [One runtime module, with edges as targets and a checked rule inside](one-runtime-module.md)
 - [The emitter writes Swift from typed pieces, not strings](the-emitter-writes-typed-pieces.md)
 - [A handle keeps its fetch and derives its phase](a-handle-derives-its-phase.md)

@@ -379,7 +379,7 @@ fn refetch_members(writer: &mut Writer, refetch: &RefetchMembers) {
         refetch.operation
     ));
     writer.line(format!(
-        "@_spi(Generated) public static let refetchable: {} = .init(variables: [{}], identifier: {}, first: {}, after: {}, last: {}, before: {})",
+        "@_spi(Generated) public static let refetchable: {} = .init(variables: [{}], identifier: {}, identity: {}, first: {}, after: {}, last: {}, before: {})",
         SwiftType::runtime("Refetch"),
         refetch
             .variables
@@ -388,6 +388,11 @@ fn refetch_members(writer: &mut Writer, refetch: &RefetchMembers) {
             .collect::<Vec<_>>()
             .join(", "),
         option(&refetch.identifier),
+        refetch
+            .identity
+            .as_ref()
+            .map(slot_expression)
+            .unwrap_or_else(|| "nil".to_string()),
         option(&refetch.first),
         option(&refetch.after),
         option(&refetch.last),

@@ -27,7 +27,7 @@ use super::written_key;
 use crate::names::{Kind, NameError, Reserved, Scope, lower_camel};
 use crate::pipeline::{
     ArgumentPlan, CatchTarget, ConditionClass, ConnectionPlan, ConstantPlan, FragmentPlan, Plan,
-    RefetchPlan, RequiredAction, SelectionPlan, VariablePlan,
+    RefetchPlan, RequiredAction, SelectionPlan, StorageKeyPlan, VariablePlan,
 };
 
 /// What a spread accessor needs to know about the fragment it produces.
@@ -266,7 +266,7 @@ impl Readers {
         let refetch = context
             .refetch
             .filter(|_| is_fragment_root)
-            .map(refetch_members);
+            .map(|refetch| refetch_members(refetch, type_name));
         let connection = connection.map(|connection| {
             self.connection_members(connection, type_name, &members, facts.nodes, context)
         });
@@ -885,12 +885,20 @@ fn linked_read(
 
 /// The `@refetchable` surface of a fragment lens: the descriptor of its
 /// query and `refetch()`.
-fn refetch_members(refetch: &RefetchPlan) -> RefetchMembers {
+fn refetch_members(refetch: &RefetchPlan, type_name: &str) -> RefetchMembers {
     let pagination = refetch.connection.as_ref();
+    let id = StorageKeyPlan {
+        name: "id".to_string(),
+        arguments: Vec::new(),
+    };
     RefetchMembers {
         operation: refetch.operation.clone(),
         variables: refetch.variables.clone(),
         identifier: refetch.identifier.clone(),
+        identity: refetch
+            .identifier
+            .as_ref()
+            .map(|_| SlotAccess::of(type_name, false, &id)),
         first: pagination.and_then(|pagination| pagination.first.clone()),
         after: pagination.and_then(|pagination| pagination.after.clone()),
         last: pagination.and_then(|pagination| pagination.last.clone()),

@@ -135,13 +135,25 @@ fn by_type<'a>(slots: impl IntoIterator<Item = &'a SlotRef>) -> Vec<(&'a str, Ve
 
 /// The parts of a key with variables, as `Baton.KeyPart` literals.
 fn parts_literal(slot: &SlotRef) -> String {
-    let parts: Vec<String> = slot
-        .parts
+    let arguments: Vec<String> = slot
+        .arguments
         .iter()
-        .map(|part| match part {
-            KeyPart::Literal(text) => format!(".literal({})", swift_literal(text)),
-            KeyPart::Variable(name) => format!(".variable({})", swift_literal(name)),
+        .map(|argument| {
+            let parts: Vec<String> = argument
+                .value
+                .iter()
+                .map(|part| match part {
+                    KeyPart::Literal(text) => format!(".literal({})", swift_literal(text)),
+                    KeyPart::Variable(name) => format!(".variable({})", swift_literal(name)),
+                })
+                .collect();
+            format!(
+                "{}({}, [{}])",
+                runtime_value("KeyArgument"),
+                swift_literal(&argument.name),
+                parts.join(", ")
+            )
         })
         .collect();
-    format!("[{}]", parts.join(", "))
+    format!("{}, [{}]", swift_literal(&slot.field), arguments.join(", "))
 }

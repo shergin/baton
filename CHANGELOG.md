@@ -5,6 +5,15 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- The plan names the field that keys a record of a type, `id`, and the
+  ingest reads that key and knows no field by name; a refetch reads the
+  owner's id from the slot its descriptor names. A storage key leaves a
+  null argument out, as Relay's does: `notes(after:null,first:2)` is
+  `notes(first:2)`, whether the null is a constant in the document or a
+  variable given null; an argument that is an object or a list keeps its
+  nulls inside. Generated code of this shape is format 3, and an image is
+  format 5: both start again. The decision is
+  [A storage key leaves a null argument out](docs/decisions/a-storage-key-leaves-a-null-argument-out.md).
 - A change set carries where each record's id starts in its key, so the
   store makes the record from it and asks the registry nothing per record
   it creates; an entity's key, `Type:id`, is built in one place, and what

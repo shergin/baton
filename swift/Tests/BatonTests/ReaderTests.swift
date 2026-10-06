@@ -195,8 +195,8 @@ struct ReaderTests {
         let query = Registry.type("Query")
         let kinds = Registry.type("TestKinds")
         let value = Registry.slot(kinds, "value")
-        let plan = Plan(root: Selection(type: query, hasID: false, fields: [
-            .linked("kinds", key: .fixed(Registry.slot(query, "kinds")), plural: false, selection: Selection(type: kinds, hasID: false, fields: [
+        let plan = Plan(root: Selection(type: query, key: nil, fields: [
+            .linked("kinds", key: .fixed(Registry.slot(query, "kinds")), plural: false, selection: Selection(type: kinds, key: nil, fields: [
                 .scalar("value", key: .fixed(value), kind: .string, list: false),
             ])),
         ])).resolve(.none, in: store.keys)

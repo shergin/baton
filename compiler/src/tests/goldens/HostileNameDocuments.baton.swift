@@ -170,7 +170,7 @@ nonisolated public struct HostileArguments_character: Baton.Lens {
     @MainActor public var name: String? { (anchor.selects("Type", true) || anchor.selects("Protocol", true) || anchor.selects("Any", true) || anchor.selects("self", true) || anchor.selects("Self", true) || anchor.selects("init", true) || anchor.selects("deinit", true) || anchor.selects("subscript", true) || anchor.selects("class", true) || anchor.selects("struct", true) || anchor.selects("enum", true) || anchor.selects("func", true) || anchor.selects("var", true) || anchor.selects("let", true) || anchor.selects("import", true) || anchor.selects("extension", true) || anchor.selects("operator", true) || anchor.selects("static", true) || anchor.selects("default", true) || anchor.selects("case", true) || anchor.selects("switch", true) || anchor.selects("if", true) || anchor.selects("else", true) || anchor.selects("for", true) || anchor.selects("in", true) || anchor.selects("while", true) || anchor.selects("repeat", true) || anchor.selects("return", true) || anchor.selects("break", true) || anchor.selects("continue", true) || anchor.selects("where", true) || anchor.selects("is", true) || anchor.selects("as", true) || anchor.selects("try", true) || anchor.selects("throw", true) || anchor.selects("throws", true) || anchor.selects("guard", true) || anchor.selects("defer", true) || anchor.selects("do", true) || anchor.selects("catch", true) || anchor.selects("true", true) || anchor.selects("false", true) || anchor.selects("nil", true) || anchor.selects("super", true) || anchor.selects("internal", true) || anchor.selects("private", true) || anchor.selects("public", true) || anchor.selects("fileprivate", true) || anchor.selects("open", true) || anchor.selects("inout", true) || anchor.selects("typealias", true) || anchor.selects("associatedtype", true) || anchor.selects("protocol", true) || anchor.selects("some", true) || anchor.selects("any", true) || anchor.selects("rethrows", true) || anchor.selects("fallthrough", true) || anchor.selects("precedencegroup", true) || anchor.selects("_", true) || anchor.selects("async", true) || anchor.selects("borrowing", true) || anchor.selects("consume", true) || anchor.selects("consuming", true) || anchor.selects("copy", true) || anchor.selects("discard", true) || anchor.selects("each", true) || anchor.selects("isolated", true) || anchor.selects("sending", true) || anchor.selects("then", true) || anchor.selects("unsafe", true) || anchor.selects("await", true) || anchor.selects("anchor", true) || anchor.selects("recordID", true) || anchor.selects("typeName", true) || anchor.selects("satisfied", true) || anchor.selects("missingRequiredField", true) || anchor.selects("fieldErrors", true) || anchor.selects("isPresent", true) || anchor.selects("throwing", true) || anchor.selects("caught", true) || anchor.selects("refetchable", true) || anchor.selects("refetch", true) || anchor.selects("connection", true) || anchor.selects("nodes", true) || anchor.selects("hasNext", true) || anchor.selects("hasPrevious", true) || anchor.selects("isLoadingNext", true) || anchor.selects("isLoadingPrevious", true) || anchor.selects("connectionID", true) || anchor.selects("loadNext", true) || anchor.selects("loadPrevious", true) || anchor.selects("bound", true) || anchor.selects("errors", true) || anchor.selects("child", true) || anchor.selects("missing", true) || anchor.selects("count", true) || anchor.selects("fields", true) || anchor.selects("lhs", true) || anchor.selects("rhs", true) || anchor.selects("hasher", true) || anchor.selects("optimistic", true) || anchor.selects("selfValue", true) || anchor.selects("Fragment", true) || anchor.selects("Spread", true) || anchor.selects("Owner", true) || anchor.selects("Query", true) || anchor.selects("Operation", true) || anchor.selects("RefetchQuery", true) || anchor.selects("name", true) || anchor.selects("persistedID", true) || anchor.selects("text", true) || anchor.selects("plan", true) || anchor.selects("errorBehavior", true) || anchor.selects("throwsOnFieldError", true) || anchor.selects("bubbles", true) || anchor.selects("hasDeferred", true) || anchor.selects("cacheExpiration", true) || anchor.selects("Action", true) || anchor.selects("OptimisticResponse", true) || anchor.selects("hash", true) || anchor.selects("commit", true) || anchor.selects("callAsFunction", true) || anchor.selects("Op", true) || anchor.selects("variable", true) || anchor.selects("retry", true) || anchor.selects("subscription", true) || anchor.selects("AbstractSlots", true) || anchor.selects("schemaDigest", true) || anchor.selects("format", true) || anchor.selects("Swift", true) || anchor.selects("Set", true) || anchor.selects("Result", true) || anchor.selects("Optional", true) || anchor.selects("String", true) || anchor.selects("Int", true) || anchor.selects("Double", true) || anchor.selects("Bool", true) || anchor.selects("MainActor", true) || anchor.selects("Hasher", true) || anchor.selects("Sendable", true)) ? anchor.string(Slots.Character.name) : nil }
     @MainActor public var id: String? { anchor.string(Slots.Character.id) }
     /// How the fragment is fetched again: `HostileArgumentsRefetchQuery` with the lens's variables.
-    @_spi(Generated) public static let refetchable: Baton.Refetch = .init(variables: ["AbstractSlots", "Action", "Any", "Bool", "Double", "Fragment", "Hasher", "Int", "MainActor", "Op", "Operation", "OptimisticResponse", "Optional", "Owner", "Protocol", "Query", "RefetchQuery", "Result", "Self", "Sendable", "Set", "Spread", "String", "Swift", "Type", "_", "anchor", "any", "as", "associatedtype", "async", "await", "borrowing", "bound", "break", "bubbles", "cacheExpiration", "callAsFunction", "case", "catch", "caught", "child", "class", "commit", "connection", "connectionID", "consume", "consuming", "continue", "copy", "count", "default", "defer", "deinit", "discard", "do", "each", "else", "enum", "errorBehavior", "errors", "extension", "fallthrough", "false", "fieldErrors", "fields", "fileprivate", "for", "format", "func", "guard", "hasDeferred", "hasNext", "hasPrevious", "hash", "hasher", "if", "import", "in", "init", "inout", "internal", "is", "isLoadingNext", "isLoadingPrevious", "isPresent", "isolated", "let", "lhs", "loadNext", "loadPrevious", "missing", "missingRequiredField", "name", "nil", "nodes", "open", "operator", "optimistic", "persistedID", "plan", "precedencegroup", "private", "protocol", "public", "recordID", "refetch", "refetchable", "repeat", "rethrows", "retry", "return", "rhs", "satisfied", "schemaDigest", "self", "selfValue", "sending", "some", "static", "struct", "subscript", "subscription", "super", "switch", "text", "then", "throw", "throwing", "throws", "throwsOnFieldError", "true", "try", "typeName", "typealias", "unsafe", "var", "variable", "where", "while", "id"], identifier: "id", first: nil, after: nil, last: nil, before: nil)
+    @_spi(Generated) public static let refetchable: Baton.Refetch = .init(variables: ["AbstractSlots", "Action", "Any", "Bool", "Double", "Fragment", "Hasher", "Int", "MainActor", "Op", "Operation", "OptimisticResponse", "Optional", "Owner", "Protocol", "Query", "RefetchQuery", "Result", "Self", "Sendable", "Set", "Spread", "String", "Swift", "Type", "_", "anchor", "any", "as", "associatedtype", "async", "await", "borrowing", "bound", "break", "bubbles", "cacheExpiration", "callAsFunction", "case", "catch", "caught", "child", "class", "commit", "connection", "connectionID", "consume", "consuming", "continue", "copy", "count", "default", "defer", "deinit", "discard", "do", "each", "else", "enum", "errorBehavior", "errors", "extension", "fallthrough", "false", "fieldErrors", "fields", "fileprivate", "for", "format", "func", "guard", "hasDeferred", "hasNext", "hasPrevious", "hash", "hasher", "if", "import", "in", "init", "inout", "internal", "is", "isLoadingNext", "isLoadingPrevious", "isPresent", "isolated", "let", "lhs", "loadNext", "loadPrevious", "missing", "missingRequiredField", "name", "nil", "nodes", "open", "operator", "optimistic", "persistedID", "plan", "precedencegroup", "private", "protocol", "public", "recordID", "refetch", "refetchable", "repeat", "rethrows", "retry", "return", "rhs", "satisfied", "schemaDigest", "self", "selfValue", "sending", "some", "static", "struct", "subscript", "subscription", "super", "switch", "text", "then", "throw", "throwing", "throws", "throwsOnFieldError", "true", "try", "typeName", "typealias", "unsafe", "var", "variable", "where", "while", "id"], identifier: "id", identity: Slots.Character.id, first: nil, after: nil, last: nil, before: nil)
     /// Fetches the fragment again through `HostileArgumentsRefetchQuery` with its current variables; the records update in place.
     @MainActor public func refetch() async throws {
         typealias Query = HostileArgumentsRefetchQuery
@@ -348,7 +348,7 @@ nonisolated public struct HostileBodies_character: Baton.Lens {
     }
     @MainActor public var id: String? { anchor.string(Slots.Character.id) }
     /// How the fragment is fetched again: `HostileBodiesRefetchQuery` with the lens's variables.
-    @_spi(Generated) public static let refetchable: Baton.Refetch = .init(variables: ["id"], identifier: "id", first: nil, after: nil, last: nil, before: nil)
+    @_spi(Generated) public static let refetchable: Baton.Refetch = .init(variables: ["id"], identifier: "id", identity: Slots.Character.id, first: nil, after: nil, last: nil, before: nil)
     /// Fetches the fragment again through `HostileBodiesRefetchQuery` with its current variables; the records update in place.
     @MainActor public func refetch() async throws {
         typealias Query = HostileBodiesRefetchQuery
@@ -648,7 +648,7 @@ nonisolated public struct HostileConnection_character: Baton.Lens {
     @MainActor public var notes: Notes { Notes(anchor: anchor.requiredLinked(Slots.Character.__HostileConnection_notes_connection, type: Types.NoteConnection)) }
     @MainActor public var id: String? { anchor.string(Slots.Character.id) }
     /// How the fragment is fetched again: `HostileConnectionRefetchQuery` with the lens's variables.
-    @_spi(Generated) public static let refetchable: Baton.Refetch = .init(variables: ["count", "cursor", "id"], identifier: "id", first: "count", after: "cursor", last: nil, before: nil)
+    @_spi(Generated) public static let refetchable: Baton.Refetch = .init(variables: ["count", "cursor", "id"], identifier: "id", identity: Slots.Character.id, first: "count", after: "cursor", last: nil, before: nil)
     /// Fetches the fragment again through `HostileConnectionRefetchQuery` with its current variables; the records update in place.
     @MainActor public func refetch() async throws {
         typealias Query = HostileConnectionRefetchQuery
@@ -4302,8 +4302,8 @@ fragment HostileArguments_character_JsX7i on Character {
         hasher.combine(self.id)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, hasID: true, abstract: true, variants: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
+            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, key: "id", abstract: true, variants: [
                 .init(types: [Types.Character], fields: [
                     .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
                     .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
@@ -4542,8 +4542,8 @@ fragment HostileDeferred_character on Character {
         hasher.combine(self.id)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, hasID: true, abstract: true, variants: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
+            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, key: "id", abstract: true, variants: [
                 .init(types: [Types.Character], fields: [
                     .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
                     .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
@@ -4693,7 +4693,7 @@ fragment HostileDeferred_character on Character {
                     .scalar("Hasher", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("Sendable", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("species", key: .fixed(Slots.Character.species), kind: .string, list: false),
-                    .linked("origin", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, hasID: true, abstract: false, fields: [
+                    .linked("origin", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: "id", abstract: false, fields: [
                         .scalar("name", key: .fixed(Slots.Location.name), kind: .string, list: false),
                         .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
                     ])),
@@ -4927,12 +4927,12 @@ fragment HostileConnection_character_1G22uz on Character {
         hasher.combine(self.id)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, hasID: true, abstract: true, variants: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
+            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, key: "id", abstract: true, variants: [
                 .init(types: [Types.Character], fields: [
                     .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
                     .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .linked("notes", key: .dynamic(Slots.Character.notes_a9400e), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character.__HostileConnection_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo), after: .variable("cursor")), selection: Baton.Selection(type: Types.NoteConnection, hasID: false, abstract: false, fields: [
+                    .linked("notes", key: .dynamic(Slots.Character.notes_a9400e), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character.__HostileConnection_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo), after: .variable("cursor")), selection: Baton.Selection(type: Types.NoteConnection, key: nil, abstract: false, fields: [
                         .scalar("Type", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
                         .scalar("Protocol", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
                         .scalar("Any", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
@@ -5073,14 +5073,14 @@ fragment HostileConnection_character_1G22uz on Character {
                         .scalar("MainActor", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
                         .scalar("Hasher", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
                         .scalar("Sendable", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .linked("edges", key: .fixed(Slots.NoteConnection.edges), plural: true, selection: Baton.Selection(type: Types.NoteEdge, hasID: false, abstract: false, fields: [
-                            .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                        .linked("edges", key: .fixed(Slots.NoteConnection.edges), plural: true, selection: Baton.Selection(type: Types.NoteEdge, key: nil, abstract: false, fields: [
+                            .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                                 .scalar("__typename", key: .fixed(Slots.Note.__typename), kind: .string, list: false),
                                 .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                             ])),
                             .scalar("cursor", key: .fixed(Slots.NoteEdge.cursor), kind: .string, list: false),
                         ])),
-                        .linked("pageInfo", key: .fixed(Slots.NoteConnection.pageInfo), plural: false, selection: Baton.Selection(type: Types.PageInfo, hasID: false, abstract: false, fields: [
+                        .linked("pageInfo", key: .fixed(Slots.NoteConnection.pageInfo), plural: false, selection: Baton.Selection(type: Types.PageInfo, key: nil, abstract: false, fields: [
                             .scalar("endCursor", key: .fixed(Slots.PageInfo.endCursor), kind: .string, list: false),
                             .scalar("hasNextPage", key: .fixed(Slots.PageInfo.hasNextPage), kind: .bool, list: false),
                         ])),
@@ -5145,8 +5145,8 @@ fragment _hostileHidden on Character {
     public func hash(into hasher: inout Hasher) {
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("character", key: .fixed(Slots.Query.character_c74a1e), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .literal("1")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
+            .linked("character", key: .fixed(Slots.Query.character_c74a1e), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .literal("1")), selection: Baton.Selection(type: Types.Character, key: "id", abstract: false, fields: [
                 .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
                 .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
             ])),
@@ -5907,9 +5907,9 @@ mutation HostileMutationVariables(
         hasher.combine(self.Sendable)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
-            .linked("setFavorite", key: .fixed(Slots.Mutation.setFavorite), plural: false, caught: true, selection: Baton.Selection(type: Types.FavoritePayload, hasID: false, abstract: false, fields: [
-                .linked("character", key: .fixed(Slots.FavoritePayload.character), plural: false, caught: true, selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, key: nil, abstract: false, fields: [
+            .linked("setFavorite", key: .fixed(Slots.Mutation.setFavorite), plural: false, caught: true, selection: Baton.Selection(type: Types.FavoritePayload, key: nil, abstract: false, fields: [
+                .linked("character", key: .fixed(Slots.FavoritePayload.character), plural: false, caught: true, selection: Baton.Selection(type: Types.Character, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false, caught: true),
                     .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false, caught: true, guards: [[.init("Type", passing: true)], [.init("Protocol", passing: true)], [.init("Any", passing: true)], [.init("self", passing: true)], [.init("init", passing: true)], [.init("deinit", passing: true)], [.init("subscript", passing: true)], [.init("class", passing: true)], [.init("struct", passing: true)], [.init("enum", passing: true)], [.init("func", passing: true)], [.init("import", passing: true)], [.init("extension", passing: true)], [.init("operator", passing: true)], [.init("static", passing: true)], [.init("default", passing: true)], [.init("case", passing: true)], [.init("switch", passing: true)], [.init("if", passing: true)], [.init("else", passing: true)], [.init("for", passing: true)], [.init("in", passing: true)], [.init("while", passing: true)], [.init("repeat", passing: true)], [.init("return", passing: true)], [.init("break", passing: true)], [.init("continue", passing: true)], [.init("where", passing: true)], [.init("is", passing: true)], [.init("as", passing: true)], [.init("try", passing: true)], [.init("throw", passing: true)], [.init("throws", passing: true)], [.init("guard", passing: true)], [.init("defer", passing: true)], [.init("do", passing: true)], [.init("catch", passing: true)], [.init("true", passing: true)], [.init("false", passing: true)], [.init("nil", passing: true)], [.init("super", passing: true)], [.init("internal", passing: true)], [.init("private", passing: true)], [.init("public", passing: true)], [.init("fileprivate", passing: true)], [.init("open", passing: true)], [.init("inout", passing: true)], [.init("typealias", passing: true)], [.init("associatedtype", passing: true)], [.init("protocol", passing: true)], [.init("some", passing: true)], [.init("any", passing: true)], [.init("rethrows", passing: true)], [.init("fallthrough", passing: true)], [.init("precedencegroup", passing: true)], [.init("_", passing: true)], [.init("var", passing: true)], [.init("let", passing: true)], [.init("Self", passing: true)], [.init("async", passing: true)], [.init("borrowing", passing: true)], [.init("consume", passing: true)], [.init("consuming", passing: true)], [.init("copy", passing: true)], [.init("discard", passing: true)], [.init("each", passing: true)], [.init("isolated", passing: true)], [.init("sending", passing: true)], [.init("then", passing: true)], [.init("unsafe", passing: true)], [.init("await", passing: true)], [.init("anchor", passing: true)], [.init("recordID", passing: true)], [.init("typeName", passing: true)], [.init("satisfied", passing: true)], [.init("missingRequiredField", passing: true)], [.init("fieldErrors", passing: true)], [.init("isPresent", passing: true)], [.init("throwing", passing: true)], [.init("caught", passing: true)], [.init("refetchable", passing: true)], [.init("refetch", passing: true)], [.init("connection", passing: true)], [.init("nodes", passing: true)], [.init("hasNext", passing: true)], [.init("hasPrevious", passing: true)], [.init("isLoadingNext", passing: true)], [.init("isLoadingPrevious", passing: true)], [.init("connectionID", passing: true)], [.init("loadNext", passing: true)], [.init("loadPrevious", passing: true)], [.init("bound", passing: true)], [.init("errors", passing: true)], [.init("child", passing: true)], [.init("missing", passing: true)], [.init("count", passing: true)], [.init("fields", passing: true)], [.init("lhs", passing: true)], [.init("rhs", passing: true)], [.init("hasher", passing: true)], [.init("selfValue", passing: true)], [.init("Fragment", passing: true)], [.init("Spread", passing: true)], [.init("Owner", passing: true)], [.init("Query", passing: true)], [.init("Operation", passing: true)], [.init("RefetchQuery", passing: true)], [.init("resolution", passing: true)], [.init("name", passing: true)], [.init("persistedID", passing: true)], [.init("text", passing: true)], [.init("plan", passing: true)], [.init("errorBehavior", passing: true)], [.init("throwsOnFieldError", passing: true)], [.init("bubbles", passing: true)], [.init("hasDeferred", passing: true)], [.init("cacheExpiration", passing: true)], [.init("hash", passing: true)], [.init("commit", passing: true)], [.init("callAsFunction", passing: true)], [.init("Op", passing: true)], [.init("variable", passing: true)], [.init("phase", passing: true)], [.init("isRefreshing", passing: true)], [.init("isStale", passing: true)], [.init("retry", passing: true)], [.init("subscription", passing: true)], [.init("Sites", passing: true)], [.init("AbstractSlots", passing: true)], [.init("schemaDigest", passing: true)], [.init("format", passing: true)], [.init("Swift", passing: true)], [.init("Set", passing: true)], [.init("Result", passing: true)], [.init("Optional", passing: true)], [.init("String", passing: true)], [.init("Int", passing: true)], [.init("Double", passing: true)], [.init("Bool", passing: true)], [.init("MainActor", passing: true)], [.init("Hasher", passing: true)], [.init("Sendable", passing: true)]]),
                 ])),
@@ -6054,9 +6054,9 @@ mutation HostileNamesake(
         hasher.combine(self.HostileNamesake)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
-            .linked("setFavorite", key: .fixed(Slots.Mutation.setFavorite), plural: false, selection: Baton.Selection(type: Types.FavoritePayload, hasID: false, abstract: false, fields: [
-                .linked("character", key: .fixed(Slots.FavoritePayload.character), plural: false, selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, key: nil, abstract: false, fields: [
+            .linked("setFavorite", key: .fixed(Slots.Mutation.setFavorite), plural: false, selection: Baton.Selection(type: Types.FavoritePayload, key: nil, abstract: false, fields: [
+                .linked("character", key: .fixed(Slots.FavoritePayload.character), plural: false, selection: Baton.Selection(type: Types.Character, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
                 ])),
             ])),
@@ -6752,9 +6752,9 @@ mutation HostilePayload {
     public func hash(into hasher: inout Hasher) {
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, hasID: false, abstract: false, fields: [
-            .linked("setFavorite", key: .fixed(Slots.Mutation.setFavorite), plural: false, selection: Baton.Selection(type: Types.FavoritePayload, hasID: false, abstract: false, fields: [
-                .linked("character", key: .fixed(Slots.FavoritePayload.character), plural: false, selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, key: nil, abstract: false, fields: [
+            .linked("setFavorite", key: .fixed(Slots.Mutation.setFavorite), plural: false, selection: Baton.Selection(type: Types.FavoritePayload, key: nil, abstract: false, fields: [
+                .linked("character", key: .fixed(Slots.FavoritePayload.character), plural: false, selection: Baton.Selection(type: Types.Character, key: "id", abstract: false, fields: [
                     .scalar("Type", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("Protocol", key: .fixed(Slots.Character.name), kind: .string, list: false),
                     .scalar("Any", key: .fixed(Slots.Character.name), kind: .string, list: false),
@@ -6905,446 +6905,446 @@ mutation HostilePayload {
                     .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
                 ])),
             ])),
-            .linked("addNote", key: .fixed(Slots.Mutation.addNote), plural: false, selection: Baton.Selection(type: Types.AddNotePayload, hasID: false, abstract: false, fields: [
-                .linked("Type", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+            .linked("addNote", key: .fixed(Slots.Mutation.addNote), plural: false, selection: Baton.Selection(type: Types.AddNotePayload, key: nil, abstract: false, fields: [
+                .linked("Type", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("Protocol", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("Protocol", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("Any", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("Any", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("self", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("self", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("Self", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("Self", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("init", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("init", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("deinit", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("deinit", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("subscript", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("subscript", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("class", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("class", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("struct", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("struct", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("enum", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("enum", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("func", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("func", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("var", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("var", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("let", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("let", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("import", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("import", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("extension", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("extension", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("operator", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("operator", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("static", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("static", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("default", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("default", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("case", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("case", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("switch", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("switch", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("if", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("if", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("else", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("else", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("for", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("for", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("in", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("in", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("while", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("while", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("repeat", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("repeat", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("return", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("return", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("break", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("break", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("continue", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("continue", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("where", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("where", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("is", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("is", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("as", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("as", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("try", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("try", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("throw", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("throw", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("throws", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("throws", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("guard", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("guard", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("defer", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("defer", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("do", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("do", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("catch", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("catch", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("true", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("true", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("false", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("false", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("nil", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("nil", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("super", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("super", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("internal", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("internal", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("private", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("private", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("public", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("public", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("fileprivate", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("fileprivate", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("open", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("open", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("inout", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("inout", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("typealias", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("typealias", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("associatedtype", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("associatedtype", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("protocol", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("protocol", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("some", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("some", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("any", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("any", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("rethrows", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("rethrows", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("fallthrough", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("fallthrough", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("precedencegroup", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("precedencegroup", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("_", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("_", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("async", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("async", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("borrowing", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("borrowing", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("consume", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("consume", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("consuming", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("consuming", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("copy", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("copy", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("discard", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("discard", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("each", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("each", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("isolated", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("isolated", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("sending", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("sending", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("then", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("then", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("unsafe", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("unsafe", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("await", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("await", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("typeName", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("typeName", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("satisfied", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("satisfied", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("missingRequiredField", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("missingRequiredField", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("fieldErrors", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("fieldErrors", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("isPresent", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("isPresent", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("throwing", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("throwing", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("caught", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("caught", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("refetchable", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("refetchable", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("refetch", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("refetch", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("connection", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("connection", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("nodes", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("nodes", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("hasNext", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("hasNext", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("hasPrevious", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("hasPrevious", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("isLoadingNext", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("isLoadingNext", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("isLoadingPrevious", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("isLoadingPrevious", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("connectionID", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("connectionID", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("loadNext", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("loadNext", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("loadPrevious", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("loadPrevious", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("bound", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("bound", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("errors", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("errors", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("child", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("child", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("missing", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("missing", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("count", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("count", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("lhs", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("lhs", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("rhs", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("rhs", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("hasher", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("hasher", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("optimistic", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("optimistic", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("selfValue", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("selfValue", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("Fragment", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("Fragment", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("Spread", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("Spread", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("Owner", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("Owner", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("Query", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("Query", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("Operation", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("Operation", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("RefetchQuery", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("RefetchQuery", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("fields", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("fields", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("variables", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("variables", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("resolution", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("resolution", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("name", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("name", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("persistedID", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("persistedID", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("text", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("text", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("plan", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("plan", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("errorBehavior", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("errorBehavior", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("throwsOnFieldError", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("throwsOnFieldError", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("bubbles", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("bubbles", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("hasDeferred", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("hasDeferred", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("cacheExpiration", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("cacheExpiration", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("Data", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("Data", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("Action", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("Action", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("OptimisticResponse", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("OptimisticResponse", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("hash", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("hash", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("commit", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("commit", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("callAsFunction", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("callAsFunction", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("Op", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("Op", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("hashValue", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("hashValue", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("phase", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("phase", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("isRefreshing", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("isRefreshing", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("isStale", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("isStale", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("retry", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("retry", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("subscription", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("subscription", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("Types", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("Types", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("Sites", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("Sites", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("AbstractSlots", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("AbstractSlots", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("schemaDigest", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("schemaDigest", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("format", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("format", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("Baton", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("Baton", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("Swift", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("Swift", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("Set", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("Set", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("Result", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("Result", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("Optional", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("Optional", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("String", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("String", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("Int", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("Int", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("Double", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("Double", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("Bool", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("Bool", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("MainActor", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("MainActor", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("Hasher", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("Hasher", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
-                .linked("Sendable", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+                .linked("Sendable", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
                 ])),
             ])),
@@ -11736,8 +11736,8 @@ query HostileRequired {
     public func hash(into hasher: inout Hasher) {
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("character", key: .fixed(Slots.Query.character_c74a1e), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .literal("1")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
+            .linked("character", key: .fixed(Slots.Query.character_c74a1e), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .literal("1")), selection: Baton.Selection(type: Types.Character, key: "id", abstract: false, fields: [
                 .scalar("Type", key: .fixed(Slots.Character.name), kind: .string, list: false),
                 .scalar("Protocol", key: .fixed(Slots.Character.name), kind: .string, list: false),
                 .scalar("Any", key: .fixed(Slots.Character.name), kind: .string, list: false),
@@ -11885,7 +11885,7 @@ query HostileRequired {
                 .scalar("MainActor", key: .fixed(Slots.Character.name), kind: .string, list: false),
                 .scalar("Hasher", key: .fixed(Slots.Character.name), kind: .string, list: false),
                 .scalar("Sendable", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .linked("origin", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, hasID: true, abstract: false, fields: [
+                .linked("origin", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: "id", abstract: false, fields: [
                     .scalar("name", key: .fixed(Slots.Location.name), kind: .string, list: false),
                     .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
                 ])),
@@ -12842,10 +12842,10 @@ subscription HostileSubscriptionVariables(
         hasher.combine(self.Sendable)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Subscription, hasID: false, abstract: false, fields: [
-            .linked("noteAdded", key: .fixed(Slots.Subscription.noteAdded_cab094), plural: false, caught: true, selection: Baton.Selection(type: Types.NoteAddedPayload, hasID: false, abstract: false, fields: [
-                .linked("noteEdge", key: .fixed(Slots.NoteAddedPayload.noteEdge), plural: false, caught: true, selection: Baton.Selection(type: Types.NoteEdge, hasID: false, abstract: false, fields: [
-                    .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, caught: true, selection: Baton.Selection(type: Types.Note, hasID: true, abstract: false, fields: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Subscription, key: nil, abstract: false, fields: [
+            .linked("noteAdded", key: .fixed(Slots.Subscription.noteAdded_cab094), plural: false, caught: true, selection: Baton.Selection(type: Types.NoteAddedPayload, key: nil, abstract: false, fields: [
+                .linked("noteEdge", key: .fixed(Slots.NoteAddedPayload.noteEdge), plural: false, caught: true, selection: Baton.Selection(type: Types.NoteEdge, key: nil, abstract: false, fields: [
+                    .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, caught: true, selection: Baton.Selection(type: Types.Note, key: "id", abstract: false, fields: [
                         .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false, caught: true),
                     ])),
                     .scalar("cursor", key: .fixed(Slots.NoteEdge.cursor), kind: .string, list: false, caught: true, guards: [[.init("Type", passing: true)], [.init("Protocol", passing: true)], [.init("Any", passing: true)], [.init("self", passing: true)], [.init("init", passing: true)], [.init("deinit", passing: true)], [.init("subscript", passing: true)], [.init("class", passing: true)], [.init("struct", passing: true)], [.init("enum", passing: true)], [.init("func", passing: true)], [.init("var", passing: true)], [.init("let", passing: true)], [.init("import", passing: true)], [.init("extension", passing: true)], [.init("operator", passing: true)], [.init("static", passing: true)], [.init("default", passing: true)], [.init("case", passing: true)], [.init("switch", passing: true)], [.init("if", passing: true)], [.init("else", passing: true)], [.init("for", passing: true)], [.init("in", passing: true)], [.init("while", passing: true)], [.init("repeat", passing: true)], [.init("return", passing: true)], [.init("break", passing: true)], [.init("continue", passing: true)], [.init("where", passing: true)], [.init("is", passing: true)], [.init("as", passing: true)], [.init("try", passing: true)], [.init("throw", passing: true)], [.init("throws", passing: true)], [.init("guard", passing: true)], [.init("defer", passing: true)], [.init("do", passing: true)], [.init("catch", passing: true)], [.init("true", passing: true)], [.init("false", passing: true)], [.init("nil", passing: true)], [.init("super", passing: true)], [.init("internal", passing: true)], [.init("private", passing: true)], [.init("public", passing: true)], [.init("fileprivate", passing: true)], [.init("open", passing: true)], [.init("inout", passing: true)], [.init("typealias", passing: true)], [.init("associatedtype", passing: true)], [.init("protocol", passing: true)], [.init("some", passing: true)], [.init("any", passing: true)], [.init("rethrows", passing: true)], [.init("fallthrough", passing: true)], [.init("precedencegroup", passing: true)], [.init("_", passing: true)], [.init("Self", passing: true)], [.init("async", passing: true)], [.init("borrowing", passing: true)], [.init("consume", passing: true)], [.init("consuming", passing: true)], [.init("copy", passing: true)], [.init("discard", passing: true)], [.init("each", passing: true)], [.init("isolated", passing: true)], [.init("sending", passing: true)], [.init("then", passing: true)], [.init("unsafe", passing: true)], [.init("await", passing: true)], [.init("anchor", passing: true)], [.init("recordID", passing: true)], [.init("typeName", passing: true)], [.init("satisfied", passing: true)], [.init("missingRequiredField", passing: true)], [.init("fieldErrors", passing: true)], [.init("isPresent", passing: true)], [.init("throwing", passing: true)], [.init("caught", passing: true)], [.init("refetchable", passing: true)], [.init("refetch", passing: true)], [.init("connection", passing: true)], [.init("nodes", passing: true)], [.init("hasNext", passing: true)], [.init("hasPrevious", passing: true)], [.init("isLoadingNext", passing: true)], [.init("isLoadingPrevious", passing: true)], [.init("connectionID", passing: true)], [.init("loadNext", passing: true)], [.init("loadPrevious", passing: true)], [.init("bound", passing: true)], [.init("errors", passing: true)], [.init("child", passing: true)], [.init("missing", passing: true)], [.init("count", passing: true)], [.init("fields", passing: true)], [.init("lhs", passing: true)], [.init("rhs", passing: true)], [.init("hasher", passing: true)], [.init("optimistic", passing: true)], [.init("selfValue", passing: true)], [.init("Fragment", passing: true)], [.init("Spread", passing: true)], [.init("Owner", passing: true)], [.init("Query", passing: true)], [.init("Operation", passing: true)], [.init("RefetchQuery", passing: true)], [.init("name", passing: true)], [.init("persistedID", passing: true)], [.init("text", passing: true)], [.init("plan", passing: true)], [.init("errorBehavior", passing: true)], [.init("throwsOnFieldError", passing: true)], [.init("bubbles", passing: true)], [.init("hasDeferred", passing: true)], [.init("cacheExpiration", passing: true)], [.init("Action", passing: true)], [.init("OptimisticResponse", passing: true)], [.init("hash", passing: true)], [.init("commit", passing: true)], [.init("callAsFunction", passing: true)], [.init("Op", passing: true)], [.init("variable", passing: true)], [.init("phase", passing: true)], [.init("isRefreshing", passing: true)], [.init("isStale", passing: true)], [.init("retry", passing: true)], [.init("Sites", passing: true)], [.init("AbstractSlots", passing: true)], [.init("schemaDigest", passing: true)], [.init("format", passing: true)], [.init("Swift", passing: true)], [.init("Set", passing: true)], [.init("Result", passing: true)], [.init("Optional", passing: true)], [.init("String", passing: true)], [.init("Int", passing: true)], [.init("Double", passing: true)], [.init("Bool", passing: true)], [.init("MainActor", passing: true)], [.init("Hasher", passing: true)], [.init("Sendable", passing: true)]]),
@@ -13519,8 +13519,8 @@ query HostileVariables(
         hasher.combine(self.Sendable)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("charactersByIds", key: .dynamic(Slots.Query.charactersByIds_6a6f88), plural: true, selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
+            .linked("charactersByIds", key: .dynamic(Slots.Query.charactersByIds_6a6f88), plural: true, selection: Baton.Selection(type: Types.Character, key: "id", abstract: false, fields: [
                 .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
             ])),
         ]))

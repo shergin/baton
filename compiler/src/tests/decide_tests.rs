@@ -339,3 +339,77 @@ fn a_list_shape_follows_its_elements_nullability_not_its_own() {
         );
     }
 }
+
+/// The slot of the field stored under `name` among `fields`, as the
+/// generated code refers to it on `type_name`.
+fn slot_of(type_name: &str, fields: &[NormalizationField], name: &str) -> SlotRef {
+    let field = fields
+        .iter()
+        .find(|field| field.key.name == name)
+        .unwrap_or_else(|| panic!("no field is stored under `{name}`"));
+    SlotRef::new(type_name, &field.key)
+}
+
+#[test]
+fn a_key_leaves_out_an_argument_whose_constant_is_null() {
+    let root = decided(
+        "query Probe { character(id: \"1\") { notes(after: null, first: 2) { edges { cursor } } } }",
+    );
+    let slot = slot_of("Character", &child(&root, 0).variants[0].fields, "notes");
+    assert_eq!(slot.template, "notes(first:2)");
+    assert!(slot.has_arguments);
+    assert_eq!(
+        slot.arguments,
+        vec![keys::KeyArgument {
+            name: "first".into(),
+            value: vec![KeyPart::Literal("2".into())],
+        }]
+    );
+}
+
+#[test]
+fn a_key_whose_every_argument_is_a_null_constant_is_the_field_name_alone() {
+    let root = decided("query Probe { characters(filter: null) { info { count } } }");
+    let slot = slot_of("Query", &root.variants[0].fields, "characters");
+    assert_eq!(slot.template, "characters");
+    assert!(!slot.has_arguments);
+    assert!(slot.arguments.is_empty());
+    assert_eq!(slot.member(), "characters");
+}
+
+#[test]
+fn a_variable_argument_stays_in_the_key_as_a_variable_part() {
+    let root = decided(
+        "query Probe($after: String) { character(id: \"1\") { notes(after: $after, first: 2) { edges { cursor } } } }",
+    );
+    let slot = slot_of("Character", &child(&root, 0).variants[0].fields, "notes");
+    assert_eq!(slot.template, "notes(after:$after,first:2)");
+    assert!(slot.has_variables());
+    assert_eq!(
+        slot.arguments,
+        vec![
+            keys::KeyArgument {
+                name: "after".into(),
+                value: vec![KeyPart::Variable("after".into())],
+            },
+            keys::KeyArgument {
+                name: "first".into(),
+                value: vec![KeyPart::Literal("2".into())],
+            },
+        ]
+    );
+}
+
+#[test]
+fn a_null_inside_an_object_argument_stays_in_its_literal() {
+    let root = decided("query Probe { characters(filter: {name: null}) { info { count } } }");
+    let slot = slot_of("Query", &root.variants[0].fields, "characters");
+    assert_eq!(slot.template, "characters(filter:{\"name\":null})");
+    assert_eq!(
+        slot.arguments,
+        vec![keys::KeyArgument {
+            name: "filter".into(),
+            value: vec![KeyPart::Literal("{\"name\":null}".into())],
+        }]
+    );
+}

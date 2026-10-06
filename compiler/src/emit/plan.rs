@@ -25,9 +25,13 @@ fn write_selection(output: &mut String, selection: &NormalizationSelection, dept
     let pad = "    ".repeat(depth);
     let _ = write!(
         output,
-        "Baton.Selection(type: {}, hasID: {}, abstract: {}",
+        "Baton.Selection(type: {}, key: {}, abstract: {}",
         type_reference(type_name),
-        selection.has_id,
+        if selection.has_id {
+            swift_literal("id")
+        } else {
+            "nil".to_string()
+        },
         selection.is_abstract
     );
     if let [only] = selection.variants.as_slice()

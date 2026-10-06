@@ -197,8 +197,8 @@ struct SpineTests {
         var probe = 0
         while Registry.slot(character, "probe\(probe)").index & 15 != name.index & 15 { probe += 1 }
         let sibling = Registry.slot(character, "probe\(probe)")
-        let plan = Plan(root: Selection(type: query, hasID: false, fields: [
-            .linked("probe", key: .fixed(Registry.slot(query, "probe")), plural: false, selection: Selection(type: character, hasID: true, fields: [
+        let plan = Plan(root: Selection(type: query, key: nil, fields: [
+            .linked("probe", key: .fixed(Registry.slot(query, "probe")), plural: false, selection: Selection(type: character, key: "id", fields: [
                 .scalar("id", key: .fixed(Registry.slot(character, "id")), kind: .string, list: false),
                 .scalar("probe\(probe)", key: .fixed(sibling), kind: .string, list: false),
             ])),
@@ -219,7 +219,7 @@ struct SpineTests {
         let query = Registry.type("Query")
         let store = Store()
         let id = Registry.slot(paged, "id")
-        let items = DynamicKey(paged, [.literal("items(after:"), .variable("cursor"), .literal(")")])
+        let items = DynamicKey(paged, "items", [KeyArgument("after", [.variable("cursor")])])
         func cursor(_ number: Int) -> Variables { Variables(["cursor": .string("c\(number)")]) }
         let pages = (0..<100).map { Owner(variables: cursor($0), store: store).slot(items) }
         let late = Registry.slot(paged, "late")
@@ -232,8 +232,8 @@ struct SpineTests {
         #expect(store.storageKey(of: pages[57]) == #"items(after:"c57")"#, "the store names a slot it numbered")
 
         let link = Registry.slot(query, "paged" + paged.name)
-        let plan = Plan(root: Selection(type: query, hasID: false, fields: [
-            .linked("paged", key: .fixed(link), plural: false, selection: Selection(type: paged, hasID: true, fields: [
+        let plan = Plan(root: Selection(type: query, key: nil, fields: [
+            .linked("paged", key: .fixed(link), plural: false, selection: Selection(type: paged, key: "id", fields: [
                 .scalar("id", key: .fixed(id), kind: .string, list: false),
                 .scalar("late", key: .fixed(late), kind: .string, list: false),
                 .scalar("items", key: .dynamic(items), kind: .string, list: false),
@@ -246,16 +246,67 @@ struct SpineTests {
         #expect(record.read(pages[56]) == .missing)
     }
 
+    @Test("a rendered key leaves out an argument whose variable is null or not given, as Relay's storage key does, and writes it when the variable has a value")
+    func aRenderedKeyLeavesANullArgumentOut() {
+        let row = Registry.type("Character")
+        let notes = DynamicKey(row, "notes", [KeyArgument("after", [.variable("after")]), KeyArgument("first", [.literal("2")])])
+        #expect(notes.render(Variables([:])) == "notes(first:2)", "a variable not given is left out")
+        #expect(notes.render(Variables(["after": .null])) == "notes(first:2)", "a variable given null is left out")
+        #expect(notes.render(Variables(["after": .string("c2")])) == #"notes(after:"c2",first:2)"#)
+
+        let cursor = DynamicKey(row, "notes", [KeyArgument("after", [.variable("after")])])
+        #expect(cursor.render(Variables([:])) == "notes", "a key with no argument left is the bare name")
+    }
+
+    @Test("an argument that is an object keeps a null inside it in the rendered key")
+    func anObjectArgumentKeepsTheNullsInsideIt() {
+        let filter = DynamicKey(Registry.type("Query"), "characters", [KeyArgument("filter", [.literal(#"{"name":"#), .variable("name"), .literal("}")])])
+        #expect(filter.render(Variables(["name": .null])) == #"characters(filter:{"name":null})"#)
+        #expect(filter.render(Variables([:])) == #"characters(filter:{"name":null})"#, "a variable not given inside an object is null there")
+        #expect(filter.render(Variables(["name": .string("Rick")])) == #"characters(filter:{"name":"Rick"})"#)
+    }
+
+    @Test("the ingest keys a record by the field the plan names: a selection with no key makes a record keyed by its path, though its type has an id field, and the same selection keyed by id makes Type:id")
+    func theIngestKeysARecordByTheFieldThePlanNames() throws {
+        // A type and a root field of their own, so that no other test
+        // writes the records.
+        let suffix = UUID().uuidString.replacingOccurrences(of: "-", with: "")
+        let keyed = Registry.type("Keyed_" + suffix)
+        let query = Registry.type("Query")
+        let fieldName = "keyed" + suffix
+        func plan(_ key: String?) -> Plan {
+            Plan(root: Selection(type: query, key: nil, fields: [
+                .linked(fieldName, key: .fixed(Registry.slot(query, fieldName)), plural: false, selection: Selection(type: keyed, key: key, fields: [
+                    .scalar("id", key: .fixed(Registry.slot(keyed, "id")), kind: .string, list: false),
+                    .scalar("name", key: .fixed(Registry.slot(keyed, "name")), kind: .string, list: false),
+                ])),
+            ]))
+        }
+        let response = Data(#"{"data":{"\#(fieldName)":{"id":"1","name":"Rick"}}}"#.utf8)
+
+        let unkeyed = Store()
+        unkeyed.commit(try Ingest.normalize(response, plan: plan(nil).resolve(.none, in: unkeyed.keys)))
+        let byPath = try #require(unkeyed.existing(Store.rootKey + ":" + fieldName), "the record is keyed by its path")
+        #expect(byPath.read(Registry.slot(keyed, "id")) == .string("1"), "the id is a field like any other")
+        #expect(unkeyed.existing(keyed.name + ":1") == nil, "no field keys the record but the one the plan names")
+
+        let identified = Store()
+        identified.commit(try Ingest.normalize(response, plan: plan("id").resolve(.none, in: identified.keys)))
+        let byID = try #require(identified.existing(keyed.name + ":1"), "the record is keyed by its id")
+        #expect(byID.read(Registry.slot(keyed, "name")) == .string("Rick"))
+        #expect(identified.existing(Store.rootKey + ":" + fieldName) == nil)
+    }
+
     @Test("root fields rendered from variables read back their own values whatever order they arrive in, and a commit of one wakes no body that read another")
     func renderedRootFieldsKeepTheirOwnValues() throws {
         let query = Registry.type("Query")
         let prefix = "spine_" + UUID().uuidString.replacingOccurrences(of: "-", with: "")
-        let key = DynamicKey(query, [.literal(prefix + "(n:"), .variable("n"), .literal(")")])
+        let key = DynamicKey(query, prefix, [KeyArgument("n", [.variable("n")])])
         func variables(_ number: Int) -> Variables { Variables(["n": .int(number)]) }
         let store = Store()
         // Numbered in this order, written in the reverse one.
         let keys = (0..<10).map { Owner(variables: variables($0), store: store).slot(key) }
-        let plan = Plan(root: Selection(type: query, hasID: false, fields: [
+        let plan = Plan(root: Selection(type: query, key: nil, fields: [
             .scalar("field", key: .dynamic(key), kind: .string, list: false),
         ]))
         func commit(_ number: Int, _ value: String, into store: Store) throws {
@@ -286,7 +337,7 @@ struct SpineTests {
         // The slot the generated constant holds, and the one the commit
         // rendered, which a rendering of the same text in the store finds.
         let pinned = Registry.slot(character, "notes(first:97)")
-        let notes = DynamicKey(character, [.literal("notes(first:"), .variable("count"), .literal(")")])
+        let notes = DynamicKey(character, "notes", [KeyArgument("first", [.variable("count")])])
         let recent = Owner(variables: operation.variables, store: store).slot(notes)
         #expect(pinned.index >= 0, "a constant is a dense slot, with arguments or without")
         #expect(recent.index < 0, "a key rendered from a variable is numbered apart")
@@ -365,10 +416,10 @@ struct SpineTests {
         // reads it. Its root field is its own, so that no other test meets
         // the key as a constant.
         let query = Registry.type("Query")
-        let plan = Plan(root: Selection(type: query, hasID: false, fields: [
-            .linked("character", key: .fixed(Registry.slot(query, "adopting_" + UUID().uuidString.replacingOccurrences(of: "-", with: ""))), plural: false, selection: Selection(type: character, hasID: true, fields: [
+        let plan = Plan(root: Selection(type: query, key: nil, fields: [
+            .linked("character", key: .fixed(Registry.slot(query, "adopting_" + UUID().uuidString.replacingOccurrences(of: "-", with: ""))), plural: false, selection: Selection(type: character, key: "id", fields: [
                 .scalar("id", key: .fixed(Registry.slot(character, "id")), kind: .string, list: false),
-                .linked("notes", key: .fixed(constant), plural: false, selection: Selection(type: Registry.type("NoteConnection"), hasID: false, fields: [
+                .linked("notes", key: .fixed(constant), plural: false, selection: Selection(type: Registry.type("NoteConnection"), key: nil, fields: [
                     .scalar("totalCount", key: .fixed(Registry.slot(Registry.type("NoteConnection"), "totalCount")), kind: .int, list: false),
                 ])),
             ])),
@@ -423,10 +474,10 @@ struct SpineTests {
         let link = Registry.slot(query, "labeled" + row.name)
         let id = PlanField.scalar("id", key: .fixed(Registry.slot(row, "id")), kind: .string, list: false)
         let constant = Registry.slot(row, "labels(first:3)")
-        let labels = DynamicKey(row, [.literal("labels(first:"), .variable("count"), .literal(")")])
+        let labels = DynamicKey(row, "labels", [KeyArgument("first", [.variable("count")])])
         func plan(_ key: StorageKey) -> Plan {
-            Plan(root: Selection(type: query, hasID: false, fields: [
-                .linked("labeled", key: .fixed(link), plural: false, selection: Selection(type: row, hasID: true, fields: [
+            Plan(root: Selection(type: query, key: nil, fields: [
+                .linked("labeled", key: .fixed(link), plural: false, selection: Selection(type: row, key: "id", fields: [
                     id,
                     .scalar("labels", key: key, kind: .string, list: false),
                 ])),
@@ -476,9 +527,9 @@ struct SpineTests {
         let abstract = Registry.type("Tagged_" + suffix)
         let concrete = Registry.type("TaggedThing_" + suffix)
         let query = Registry.type("Query")
-        let tag = DynamicKey(abstract, [.literal("tag(size:"), .variable("size"), .literal(")")])
-        let plan = Plan(root: Selection(type: query, hasID: false, fields: [
-            .linked("tagged", key: .fixed(Registry.slot(query, "tagged" + abstract.name)), plural: false, selection: Selection(type: abstract, hasID: true, abstract: true, fields: [
+        let tag = DynamicKey(abstract, "tag", [KeyArgument("size", [.variable("size")])])
+        let plan = Plan(root: Selection(type: query, key: nil, fields: [
+            .linked("tagged", key: .fixed(Registry.slot(query, "tagged" + abstract.name)), plural: false, selection: Selection(type: abstract, key: "id", abstract: true, fields: [
                 .scalar("id", key: .fixed(Registry.slot(abstract, "id")), kind: .string, list: false),
                 .scalar("tag", key: .dynamic(tag), kind: .string, list: false),
             ])),

@@ -39,8 +39,8 @@ query TestTokenizerQuery {
     public func hash(into hasher: inout Hasher) {
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("tokenizer", key: .fixed(Slots.Query.tokenizer), plural: false, selection: Baton.Selection(type: Types.Tokenizer, hasID: true, abstract: false, fields: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
+            .linked("tokenizer", key: .fixed(Slots.Query.tokenizer), plural: false, selection: Baton.Selection(type: Types.Tokenizer, key: "id", abstract: false, fields: [
                 .scalar("id", key: .fixed(Slots.Tokenizer.id), kind: .string, list: false),
                 .scalar("text", key: .fixed(Slots.Tokenizer.text), kind: .string, list: false),
                 .scalar("strings", key: .fixed(Slots.Tokenizer.strings), kind: .string, list: true),

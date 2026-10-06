@@ -1055,8 +1055,8 @@ func argumentBench() throws {
     func changes(_ kind: String, in store: Store, _ variables: Variables = .none, _ key: (TypeID, String) -> StorageKey) throws -> ChangeSet {
         let row = Registry.type("BenchRow" + kind)
         let fields = zip(["a", "b", "c"], names).map { PlanField.scalar($0, key: key(row, $1), kind: .int, list: false) }
-        let plan = Plan(root: Selection(type: query, hasID: false, fields: [
-            .linked("rows", key: .fixed(Registry.slot(query, "benchRows" + kind)), plural: true, selection: Selection(type: row, hasID: true, fields: [
+        let plan = Plan(root: Selection(type: query, key: nil, fields: [
+            .linked("rows", key: .fixed(Registry.slot(query, "benchRows" + kind)), plural: true, selection: Selection(type: row, key: "id", fields: [
                 .scalar("id", key: .fixed(Registry.slot(row, "id")), kind: .string, list: false),
             ] + fields)),
         ]))
@@ -1066,7 +1066,7 @@ func argumentBench() throws {
         ("labels", { try changes("Plain", in: $0) { row, name in .fixed(Registry.slot(row, name)) } }),
         ("labels(first: 3)", { try changes("Constant", in: $0) { row, name in .fixed(Registry.slot(row, name + "(first:3)")) } }),
         ("labels(first: $count)", { try changes("Variable", in: $0, Variables(["count": .int(3)])) { row, name in
-            .dynamic(DynamicKey(row, [.literal(name + "(first:"), .variable("count"), .literal(")")]))
+            .dynamic(DynamicKey(row, name, [KeyArgument("first", [.variable("count")])]))
         } }),
     ]
     for (key, changes) in kinds {

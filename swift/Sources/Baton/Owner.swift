@@ -107,20 +107,60 @@ public final class Owner {
     }
 }
 
-/// A storage key with variables, such as `characters(page:$page)`: its type
-/// and the parts it is built from. An owner renders it once.
+/// A storage key with variables, such as `characters(page:$page)`: its type,
+/// the field's name and the arguments it is built from. An owner renders it
+/// once.
 @_spi(Generated)
 public final class DynamicKey: Sendable {
     public let type: TypeID
+    public let name: String
+    public let arguments: [KeyArgument]
+
+    public init(_ type: TypeID, _ name: String, _ arguments: [KeyArgument]) {
+        self.type = type
+        self.name = name
+        self.arguments = arguments
+    }
+
+    /// The storage key under `variables`: the name, then the arguments as
+    /// `name:value` in order, in parentheses when any is left. An argument
+    /// whose value is a variable that is null is left out, as Relay's
+    /// storage key leaves a null argument out.
+    public func render(_ variables: Variables) -> String {
+        var text = name
+        var open = false
+        for argument in arguments {
+            guard let value = argument.render(variables) else { continue }
+            text += open ? "," : "("
+            open = true
+            text += argument.name
+            text += ":"
+            text += value
+        }
+        if open { text += ")" }
+        return text
+    }
+}
+
+/// An argument of a storage key: its name and the parts of its value, text
+/// and variables rendered as JSON.
+@_spi(Generated)
+public struct KeyArgument: Sendable {
+    public let name: String
     public let parts: [KeyPart]
 
-    public init(_ type: TypeID, _ parts: [KeyPart]) {
-        self.type = type
+    public init(_ name: String, _ parts: [KeyPart]) {
+        self.name = name
         self.parts = parts
     }
 
-    /// The storage key under `variables`.
-    public func render(_ variables: Variables) -> String {
+    /// The value's text under `variables`, or nil for a value that is one
+    /// variable given null or nothing.
+    func render(_ variables: Variables) -> String? {
+        if parts.count == 1, case .variable(let name) = parts[0] {
+            guard let value = variables.values[name], value != .null else { return nil }
+            return value.json
+        }
         var text = ""
         for part in parts {
             switch part {

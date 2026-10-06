@@ -61,10 +61,10 @@ query TestConditions(
         hasher.combine(self.hideStatus)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("character", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
+            .linked("character", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, key: "id", abstract: false, fields: [
                 .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .linked("origin", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, hasID: true, abstract: false, fields: [
+                .linked("origin", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: "id", abstract: false, fields: [
                     .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
                     .scalar("name", key: .fixed(Slots.Location.name), kind: .string, list: false, guards: [[.init("withOrigin", passing: true)]]),
                     .scalar("dimension", key: .fixed(Slots.Location.dimension), kind: .string, list: false, guards: [[.init("withOrigin", passing: true)]]),
@@ -139,8 +139,8 @@ query TestFoldedNode(
         hasher.combine(self.name)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("search", key: .dynamic(Slots.Query.search_954c44), plural: true, selection: Baton.Selection(type: Types.SearchResult, hasID: true, abstract: true, variants: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
+            .linked("search", key: .dynamic(Slots.Query.search_954c44), plural: true, selection: Baton.Selection(type: Types.SearchResult, key: "id", abstract: true, variants: [
                 .init(types: [Types.Character, Types.Episode, Types.Location], fields: [
                     .scalar("__typename", key: .fixed(Slots.SearchResult.__typename), kind: .string, list: false),
                     .scalar("id", key: .fixed(Slots.SearchResult.id), kind: .string, list: false),
@@ -206,8 +206,8 @@ fragment TestNamed_named on Named {
         hasher.combine(self.id)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, hasID: true, abstract: true, variants: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
+            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, key: "id", abstract: true, variants: [
                 .init(types: [Types.Character, Types.Location], fields: [
                     .scalar("__typename", key: .fixed(Slots.Node.__typename), kind: .string, list: false),
                     .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
@@ -286,13 +286,13 @@ fragment TestAppearances_character on Character {
         hasher.combine(self.id)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, hasID: true, abstract: true, variants: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
+            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, key: "id", abstract: true, variants: [
                 .init(types: [Types.Character], fields: [
                     .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
                     .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
                     .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .linked("episode", key: .fixed(Slots.Character.episode), plural: true, deferred: "TestNodeDeferred$defer$TestAppearances_character", selection: Baton.Selection(type: Types.Episode, hasID: true, abstract: false, fields: [
+                    .linked("episode", key: .fixed(Slots.Character.episode), plural: true, deferred: "TestNodeDeferred$defer$TestAppearances_character", selection: Baton.Selection(type: Types.Episode, key: "id", abstract: false, fields: [
                         .scalar("name", key: .fixed(Slots.Episode.name), kind: .string, list: false),
                         .scalar("air_date", key: .fixed(Slots.Episode.air_date), kind: .string, list: false),
                         .scalar("id", key: .fixed(Slots.Episode.id), kind: .string, list: false),
@@ -377,8 +377,8 @@ query TestNodeFields(
         hasher.combine(self.id)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, hasID: true, abstract: true, variants: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
+            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_possible, key: .variable("id")), selection: Baton.Selection(type: Types.Node, key: "id", abstract: true, variants: [
                 .init(types: [Types.Character], fields: [
                     .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
                     .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
@@ -460,13 +460,13 @@ query TestStrictConditions(
         hasher.combine(self.withStatus)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("character", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
+            .linked("character", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, key: "id", abstract: false, fields: [
                 .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false, guards: [[.init("withStatus", passing: true)]]),
                 .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
                 .scalar("species", key: .fixed(Slots.Character.species), kind: .string, list: false, guards: [[.init("withStatus", passing: true)]]),
                 .scalar("status", key: .fixed(Slots.Character.status), kind: .string, list: false, caught: true, guards: [[.init("withStatus", passing: true)]]),
-                .linked("origin", key: .fixed(Slots.Character.origin), plural: false, caught: true, guards: [[.init("withStatus", passing: true)]], selection: Baton.Selection(type: Types.Location, hasID: true, abstract: false, fields: [
+                .linked("origin", key: .fixed(Slots.Character.origin), plural: false, caught: true, guards: [[.init("withStatus", passing: true)]], selection: Baton.Selection(type: Types.Location, key: "id", abstract: false, fields: [
                     .scalar("name", key: .fixed(Slots.Location.name), kind: .string, list: false, caught: true),
                     .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false, caught: true),
                 ])),
@@ -586,8 +586,8 @@ fragment TestRow_character on Character {
         hasher.combine(self.again)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("character", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, hasID: true, abstract: false, fields: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
+            .linked("character", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: .variable("id")), selection: Baton.Selection(type: Types.Character, key: "id", abstract: false, fields: [
                 .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
                 .scalar("status", key: .fixed(Slots.Character.status), kind: .string, list: false),
                 .scalar("image", key: .fixed(Slots.Character.image), kind: .string, list: false),
@@ -666,8 +666,8 @@ query TestUnion(
         hasher.combine(self.name)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, hasID: false, abstract: false, fields: [
-            .linked("search", key: .dynamic(Slots.Query.search_954c44), plural: true, selection: Baton.Selection(type: Types.SearchResult, hasID: true, abstract: true, variants: [
+    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: nil, abstract: false, fields: [
+            .linked("search", key: .dynamic(Slots.Query.search_954c44), plural: true, selection: Baton.Selection(type: Types.SearchResult, key: "id", abstract: true, variants: [
                 .init(types: [Types.Character], fields: [
                     .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
                     .scalar("label", key: .fixed(Slots.Character.name), kind: .string, list: false),

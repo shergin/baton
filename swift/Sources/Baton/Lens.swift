@@ -496,8 +496,15 @@ extension Anchor {
     /// definitions, plus the owner's id.
     private func refetchVariables(_ refetch: Refetch, owner: Record?) -> [String: Variable] {
         var values = variables.values.filter { refetch.variables.contains($0.key) }
-        if let identifier = refetch.identifier, let id = owner?.entityID {
-            values[identifier] = .string(id)
+        if let identifier = refetch.identifier, let owner {
+            // The id is read from the slot the query names, where the key
+            // was built from; the key's own text is the fallback for a
+            // record whose row the image has not filled yet.
+            switch refetch.identity.map(owner.peek) {
+            case .string(let id)?: values[identifier] = .string(id)
+            case .int(let id)?: values[identifier] = .int(id)
+            default: if let id = owner.entityID { values[identifier] = .string(id) }
+            }
         }
         return values
     }

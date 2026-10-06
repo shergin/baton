@@ -148,9 +148,9 @@ struct TokenizerTests {
     func numericCustomIDs() throws {
         let query = Registry.type("Query")
         let user = Registry.type("TestNumericUser")
-        func entity(_ fields: [PlanField]) -> Selection { Selection(type: user, hasID: true, fields: fields) }
+        func entity(_ fields: [PlanField]) -> Selection { Selection(type: user, key: "id", fields: fields) }
         let id = PlanField.scalar("id", key: .fixed(Registry.slot(user, "id")), kind: .custom, list: false)
-        let plan = Plan(root: Selection(type: query, hasID: false, fields: [
+        let plan = Plan(root: Selection(type: query, key: nil, fields: [
             .linked("user", key: .fixed(Registry.slot(query, "user")), plural: false, selection: entity([
                 id,
                 .linked("friend", key: .fixed(Registry.slot(user, "friend")), plural: false, selection: entity([id])),

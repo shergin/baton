@@ -19,8 +19,8 @@ final class Disk: @unchecked Sendable {
     /// under an interface or union ends in the record's concrete type. 3: a
     /// field error carries its `extensions` as JSON text after its path. 4:
     /// the table of names may have holes, its names swept with the rows that
-    /// used them.
-    static let format: Int64 = 4
+    /// used them. 5: a storage key leaves a null argument out.
+    static let format: Int64 = 5
     /// Marks the file as an image, so a database of another kind is left alone.
     static let applicationID: Int64 = 0x4241_544E
     /// A hole in the table of names wider than this is a damaged file, not

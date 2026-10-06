@@ -226,7 +226,9 @@ has the id; an id that names live records of several types is reported
 through `Store.reportAmbiguousIdentity`, and nothing is done for it.
 
 **Storage key, slot.** *Composition: record, plan.* Relay: a field name plus
-its serialized arguments, the key under which a value is stored. Here:
+its serialized arguments, the key under which a value is stored; an
+argument whose value is null is left out, so `notes(first:2)` names the
+first page whether or not the document passed `after`. Here the same:
 computed by the compiler and emitted as a constant; the process numbers each
 key the build names on first use, and a record stores the value at that
 number, so a read through a constant hashes nothing. A key with variables is

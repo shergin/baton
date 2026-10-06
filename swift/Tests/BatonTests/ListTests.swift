@@ -436,7 +436,34 @@ struct ListTests {
 
         let plain = TestNotesQuery.Data(anchor: Anchor(record: store.root, variables: TestNotesQuery(id: "1").variables, store: store))
         #expect(plain.character?.testNotes.anchor.variables["count"] == .int(2), "the @argumentDefinitions default")
-        #expect(store.existing("Character:1:notes(after:null,first:7)") != nil, "the page is stored under the inlined arguments")
+        #expect(store.existing("Character:1:notes(first:7)") != nil, "the page is stored under the inlined arguments")
+    }
+
+    @Test("the first page fetched by a query with no cursor and the same page fetched by the refetch query given no cursor land on one record, keyed without the null cursor")
+    func theFirstPageWithAndWithoutANullCursorIsOneRecord() throws {
+        let store = Store()
+        store.reportMissing = nil
+        let screen = TestNotesQuery(id: "1")
+        store.commit(try Ingest.normalize(notesPage(1), plan: TestNotesQuery.plan.resolve(screen.variables, in: store.keys)))
+        let refetch = TestNotesPaginationQuery(count: 2, cursor: nil, id: "1")
+        store.commit(try Ingest.normalize(fixture("notes-refetch"), plan: TestNotesPaginationQuery.plan.resolve(refetch.variables, in: store.keys)))
+
+        let pages = store.recordsByKey.keys.filter { $0.hasPrefix("Character:1:notes(") && $0.hasSuffix(")") }
+        #expect(pages == ["Character:1:notes(first:2)"], "one page record, with no null argument in its key")
+        let page = try #require(store.existing("Character:1:notes(first:2)"))
+        guard case .refs(let edges) = page.read(Registry.slot(page.type, "edges")) else {
+            Issue.record("the page holds its edges")
+            return
+        }
+        #expect(edges.map { $0?.key } == ["Character:1:notes(first:2):edges:0", "Character:1:notes(first:2):edges:1"])
+        let character = try #require(store.existing("Character:1"))
+        let edge = try #require(edges.first ?? nil)
+        guard case .ref(let note) = edge.read(Registry.slot(edge.type, "node")) else {
+            Issue.record("the edge links its note")
+            return
+        }
+        #expect(note.read(Registry.slot(note.type, "text")) == .string("Wubba lubba dub dub!"), "the refetch wrote over the screen's page")
+        #expect(character.storedSlots.contains { store.storageKey(of: $0.0) == "notes(first:2)" })
     }
 
     @Test("a query whose page was fetched after a cursor is whole once its response is in, and a field error inside the page lands on the field it names")

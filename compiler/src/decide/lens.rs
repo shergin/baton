@@ -414,6 +414,8 @@ pub struct RefetchMembers {
     pub operation: String,
     pub variables: Vec<String>,
     pub identifier: Option<String>,
+    /// The slot the owner's id is read from, when the query takes one.
+    pub identity: Option<SlotAccess>,
     pub first: Option<String>,
     pub after: Option<String>,
     pub last: Option<String>,

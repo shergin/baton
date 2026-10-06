@@ -56,6 +56,13 @@ impl Shared {
 
     fn lens(&mut self, lens: &ReaderPlan) {
         self.types.insert(lens.type_name.clone());
+        if let Some(identity) = lens
+            .refetch
+            .as_ref()
+            .and_then(|refetch| refetch.identity.as_ref())
+        {
+            self.slot(identity);
+        }
         for accessor in &lens.accessors {
             match &accessor.read {
                 Read::Scalar(read) => self.slot(&read.slot),
