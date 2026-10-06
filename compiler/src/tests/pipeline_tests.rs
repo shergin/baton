@@ -398,3 +398,72 @@ fn a_slot_name_swift_would_misread_takes_an_underscore_and_meets_no_other() {
         "{shared}"
     );
 }
+
+/// A schema whose `Grid` has a list of lists and a one-depth list of each
+/// kind, scalar and linked.
+const GRID_SCHEMA: &str = "type Query { grid: Grid }
+type Grid { cells: [[Int!]!]! rows: [[Row!]!] totals: [Int!]! columns: [Row!]! }
+type Row { label: String }";
+
+/// The diagnostics compiling `text` against `GRID_SCHEMA` fails with.
+fn grid_diagnostics(text: &str) -> Vec<common::Diagnostic> {
+    match compile(
+        GRID_SCHEMA,
+        "schema.graphql",
+        &[document(text)],
+        &Config::default(),
+    ) {
+        Ok(_) => Vec::new(),
+        Err(diagnostics) => diagnostics,
+    }
+}
+
+fn grid_errors(text: &str) -> Vec<String> {
+    grid_diagnostics(text)
+        .iter()
+        .map(|diagnostic| diagnostic.message().to_string())
+        .collect()
+}
+
+#[test]
+fn a_scalar_list_of_lists_is_refused_once_at_the_field() {
+    assert_eq!(
+        grid_errors("query Probe { grid { cells } }"),
+        vec![
+            "`cells` is a list of lists, `[[Int!]!]!`, which the runtime cannot hold; leave it out of the selection"
+        ]
+    );
+}
+
+#[test]
+fn a_linked_list_of_lists_with_nullable_wrappers_is_refused_with_its_own_type() {
+    assert_eq!(
+        grid_errors("query Probe { grid { rows { label } } }"),
+        vec![
+            "`rows` is a list of lists, `[[Row!]!]`, which the runtime cannot hold; leave it out of the selection"
+        ]
+    );
+}
+
+#[test]
+fn one_depth_lists_beside_a_list_of_lists_compile_when_it_is_left_out() {
+    assert!(grid_errors("query Probe { grid { totals columns { label } } }").is_empty());
+    assert_eq!(
+        grid_errors("query Probe { grid { totals cells columns { label } } }"),
+        vec![
+            "`cells` is a list of lists, `[[Int!]!]!`, which the runtime cannot hold; leave it out of the selection"
+        ]
+    );
+}
+
+#[test]
+fn the_list_of_lists_refusal_points_at_the_field_in_the_document() {
+    let source = document("query Probe {\n  grid {\n    totals\n    table: cells\n  }\n}");
+    let diagnostics = grid_diagnostics(&source.text);
+    assert_eq!(diagnostics.len(), 1, "{diagnostics:?}");
+    let rendered = crate::diagnostics::render(&diagnostics[0], &[source]);
+    assert_eq!(
+        (rendered.path.as_str(), rendered.line, rendered.column),
+        ("Pipeline.swift", 4, 5)
+    );
+}

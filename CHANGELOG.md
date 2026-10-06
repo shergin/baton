@@ -5,6 +5,12 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- A field whose type is a list of lists, `[[Int!]!]!`, is a compile error
+  at the field. The plan says of a type that it is a list or not, so such
+  a field was lowered to a flat list and read wrong; the refusal stands
+  until the plan carries a type that can say the depth. A fragment spread
+  that reaches the normalization program, which Relay inlines, is an
+  internal error rather than a silent skip.
 - `RecordedTransport` and `SilentTransport` move to `BatonTesting`, a
   library product of the package for an app's tests and previews, so that
   neither ships in the app. A test or a preview that uses them adds

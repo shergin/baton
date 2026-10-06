@@ -295,6 +295,8 @@ fn collect<'a>(
                 }
                 collect(child, parent_type, &inner, types, deferred, into);
             }
+            // Lowering reports a spread on the normalization side as a
+            // fault of the compiler, so none reaches here.
             SelectionPlan::Spread { .. } => {}
         }
     }

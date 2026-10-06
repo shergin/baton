@@ -596,7 +596,18 @@ impl Lowering<'_> {
                 Selection::InlineFragment(inline) => {
                     self.inline_fragment(inline, parent_type, side, caught)
                 }
-                Selection::FragmentSpread(spread) => self.fragment_spread(spread),
+                Selection::FragmentSpread(spread) => {
+                    // Relay inlines every spread of the normalization program,
+                    // and the normalization collector skips what it would not
+                    // know how to write.
+                    if side == Side::Normalization {
+                        self.internal(
+                            "a fragment spread reached the normalization program, which inlines them",
+                            spread.fragment.location,
+                        );
+                    }
+                    self.fragment_spread(spread)
+                }
                 Selection::Condition(condition) => {
                     self.condition(condition, parent_type, side, caught)
                 }
@@ -604,8 +615,27 @@ impl Lowering<'_> {
             .collect()
     }
 
+    /// A list of lists is refused: the plan says of a field's type that it
+    /// is a list or not, so a deeper type would be lowered to a flat list
+    /// and read wrong. The refusal stands until the plan carries a type
+    /// that can say the depth.
+    fn refuse_nested_list(&self, field: &impl Field, definition: &schema::definitions::Field) {
+        if list_depth(&definition.type_) < 2 {
+            return;
+        }
+        self.diagnostics.borrow_mut().push(Diagnostic::error(
+            format!(
+                "`{}` is a list of lists, `{}`, which the runtime cannot hold; leave it out of the selection",
+                definition.name.item.lookup(),
+                self.type_reference_name(&definition.type_)
+            ),
+            field.alias_or_name_location(),
+        ));
+    }
+
     fn scalar_field(&self, field: &ScalarField, caught: bool) -> SelectionPlan {
         let definition = self.schema.field(field.definition.item);
+        self.refuse_nested_list(field, definition);
         let field_caught = caught || self.is_caught(&field.directives);
         SelectionPlan::Scalar {
             name: definition.name.item.lookup().to_string(),
@@ -639,6 +669,7 @@ impl Lowering<'_> {
         caught: bool,
     ) -> SelectionPlan {
         let definition = self.schema.field(field.definition.item);
+        self.refuse_nested_list(field, definition);
         let target = definition.type_.inner();
         let name = definition.name.item.lookup();
         let lookup = self.lookup(field, name, parent_type, target);
@@ -915,6 +946,16 @@ impl Lowering<'_> {
             TypeReference::NonNull(inner) => format!("{}!", self.type_reference_name(inner)),
             TypeReference::List(inner) => format!("[{}]", self.type_reference_name(inner)),
         }
+    }
+}
+
+/// How many lists a type wraps its base in: 0 for `Int!`, 1 for `[Int!]!`,
+/// 2 for `[[Int!]!]!`.
+fn list_depth(type_: &TypeReference<Type>) -> usize {
+    match type_ {
+        TypeReference::Named(_) => 0,
+        TypeReference::NonNull(inner) => list_depth(inner),
+        TypeReference::List(inner) => 1 + list_depth(inner),
     }
 }
 
