@@ -63,6 +63,16 @@ jobs:
           shared-key: batonc
       - run: scripts/build-compiler.sh
       - run: swift build --build-tests -Xswiftc -warnings-as-errors
+      # The samples' bodies, nested `ForEach` over connections among them,
+      # type-check in bounded time: an expression over 200 ms is a warning,
+      # and warnings are errors. `ForEach` over `List` adds overloads beside
+      # SwiftUI's, which is where the cost would come from.
+      - run: >
+          swift build --target RickAndMorty -Xswiftc -warnings-as-errors
+          -Xswiftc -Xfrontend -Xswiftc -warn-long-expression-type-checking=200
+      - run: >
+          swift build --target GitHubTriage -Xswiftc -warnings-as-errors
+          -Xswiftc -Xfrontend -Xswiftc -warn-long-expression-type-checking=200
       # The names of fragments and operations the corpus tests prove accepted
       # but cannot compile, type-checked one document at a time against the
       # module just built.
