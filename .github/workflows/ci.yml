@@ -63,6 +63,10 @@ jobs:
           shared-key: batonc
       - run: scripts/build-compiler.sh
       - run: swift build --build-tests -Xswiftc -warnings-as-errors
+      # The names of fragments and operations the corpus tests prove accepted
+      # but cannot compile, type-checked one document at a time against the
+      # module just built.
+      - run: python3 scripts/hostile-name-sweep.py
       - run: swift test -Xswiftc -warnings-as-errors
       # The optimizer merges identical getters, and a record's invalidation
       # channels are key paths to getters; only a release build can show them

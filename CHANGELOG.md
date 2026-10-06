@@ -5,6 +5,12 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- The hostile-name sweep is a check of the repository:
+  `scripts/hostile-name-sweep.py` type-checks, one document at a time, the
+  names of fragments, operations and refetch queries the corpus tests prove
+  accepted but cannot compile, and every spread form of them, against the
+  module just built. CI runs it in the Swift job; it is among the local
+  checks.
 - The build plugin tells the truth about its inputs and outputs. The
   compiler is among the build command's inputs, so a rebuilt compiler
   regenerates; the compiler removes from its output directory the

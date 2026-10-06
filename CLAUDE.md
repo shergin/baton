@@ -51,6 +51,7 @@ the vocabulary is `docs/terminology.md`. These files outrank any default.
   local checks pass; do not wait for GitHub CI. Run what CI runs:
   `scripts/check-boundaries.sh`, `scripts/build-compiler.sh`, then
   `BATON_COMPILER=local swift build --build-tests -Xswiftc -warnings-as-errors`,
+  `python3 scripts/hostile-name-sweep.py`,
   `BATON_COMPILER=local swift test -Xswiftc -warnings-as-errors`,
   `BATON_COMPILER=local swift test -c release`,
   `swift build --target Baton -Xswiftc -enable-library-evolution -Xswiftc -emit-module-interface`,
