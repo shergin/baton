@@ -263,12 +263,13 @@ the observed fields that changed are notified when the batch ends.
 
 **Commit payload.** *Composition: store, plan, operation value,
 environment.* Relay: `commitPayload`, writing a response for an operation
-that some other road delivered. Here: *(planned)*. An app writes to the
-store today only through a fetch, a mutation and a subscription event.
-`commitPayload(operation, payload)` will run the operation's plan over a
-payload in a response's shape, with the ingest, the commit and the image a
-fetch has: the one door for data from outside the transport, a REST
-response or a socket's tick. See
+that some other road delivered. Here: `Environment.commitPayload(operation,
+payload)` runs the operation's plan over a payload in a response's shape,
+with the ingest, the commit and the image a fetch has, through the same
+door: the one way for data from outside the transport, a REST response, a
+socket's tick, a preview's fixture, a test's seed. A payload may carry part
+of what the operation selects. Client fields it alone writes are
+*(planned)*. See
 [the decision](decisions/client-data-is-described-and-committed.md).
 
 **Root, retain, release buffer.** *Composition: store, operation value,

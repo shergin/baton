@@ -185,6 +185,28 @@ public final class Environment {
         try await fetch(Op.self, variables: operation.variables, resolved: resolved, firstPart: firstPart)
     }
 
+    /// Commits a payload for an operation that some other road delivered: a
+    /// REST response in the operation's shape, a socket's tick, a preview's
+    /// fixture, a test's seed. The payload is read by the operation's plan
+    /// and committed as a fetch's response is, through the one door, at the
+    /// root of the operation's kind: the records merge, the connections and
+    /// the edge directives apply, and the image is written. A payload may
+    /// carry part of what the operation selects; what it leaves out stays as
+    /// it was. Under `@throwOnFieldError` the field errors no `@catch`
+    /// handled are thrown, as a fetch throws them.
+    public func commitPayload<Op: Operation>(_ operation: Op, _ payload: Data) async throws {
+        let resolved = Op.plan.resolve(operation.variables)
+        let committed = try await commit(payload, plan: resolved, root: Self.rootKey(of: Op.self), checkingCancellation: false)
+        if Op.throwsOnFieldError, !committed.uncaught.isEmpty { throw FieldErrors(committed.uncaught) }
+    }
+
+    /// The record an operation's payload hangs off, by the operation's kind.
+    private static func rootKey<Op: Operation>(of operation: Op.Type) -> String {
+        if operation is any Mutation.Type { return Store.mutationRootKey }
+        if operation is any Subscription.Type { return Store.subscriptionRootKey }
+        return Store.rootKey
+    }
+
     /// Fetches an operation by its type and variables and commits the response.
     /// No handle and no root come of it: refetches and pagination run this way,
     /// and the records they fill stay alive through whatever reaches them.

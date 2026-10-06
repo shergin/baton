@@ -325,4 +325,127 @@ struct WriteTests {
         #expect(data.node?.asEpisode == nil)
         #expect(store.check(TestNode.plan.resolve(TestNode(id: "999").variables)) == .miss)
     }
+
+    @Test("a query's response committed by hand leaves the store as a fetch of the same response does, and a storeOnly handle answers from it")
+    func aQueryPayloadCommittedByHandMatchesAFetch() async throws {
+        let fetched = Environment(transport: RecordedTransport([Fixture.name: fixtureData]))
+        try await fetched.fetch(Fixture(page: 1))
+
+        let committed = Environment(transport: SilentTransport())
+        try await committed.commitPayload(Fixture(page: 1), fixtureData)
+        #expect(StoreDump.text(of: committed.store) == StoreDump.text(of: fetched.store))
+
+        let handle = committed.handle(for: Fixture(page: 1), fetchPolicy: .storeOnly)
+        guard case .ready(let data) = handle.phase else {
+            Issue.record("expected the store to answer, got \(handle.phase)")
+            return
+        }
+        #expect(data.characters?.results?.first?.name == "Rick Sanchez")
+        #expect(data.characters?.info?.count == 826)
+    }
+
+    @Test("a payload that carries one field of one entity writes that field and leaves everything else as it was")
+    func aPartialPayloadWritesOnlyWhatItCarries() async throws {
+        let environment = Environment(transport: SilentTransport())
+        environment.store.reportMissing = nil
+        try await environment.commitPayload(Fixture(page: 1), fixtureData)
+        let before = StoreDump.text(of: environment.store).split(separator: "\n")
+
+        let payload = Data(#"{"data":{"character":{"id":"1","name":"Rick Prime"}}}"#.utf8)
+        try await environment.commitPayload(TestHeaderQuery(id: "1"), payload)
+        let after = StoreDump.text(of: environment.store).split(separator: "\n")
+
+        let rick = try #require(before.first { $0.hasPrefix(#"  "Character:1": "#) })
+        #expect(rick.contains(#""name": "Rick Sanchez""#))
+        let renamed = rick.replacingOccurrences(of: #""name": "Rick Sanchez""#, with: #""name": "Rick Prime""#)
+        let changed = Set(before).symmetricDifference(Set(after))
+        let untouched = changed.filter { !$0.hasPrefix(#"  "client:root": "#) }
+        #expect(untouched == [rick, Substring(renamed)], "only Rick's name changed among the records, besides the root's new link")
+        #expect(after.count == before.count, "no record was added or removed")
+    }
+
+    @Test("a mutation's payload committed by hand applies its @appendEdge to a connection the store holds")
+    func aMutationPayloadCommittedByHandAppendsItsEdge() async throws {
+        let environment = Environment(transport: notesTransport())
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestNotesQuery(id: "1"))
+        handle.retain()
+        await handle.settle()
+        guard case .ready(let data) = handle.phase else {
+            Issue.record("expected .ready, got \(handle.phase)")
+            return
+        }
+        let character = try #require(data.character?.testNotes)
+        #expect(character.notes.nodes.map(\.text) == ["Wubba lubba dub dub", "Portal gun needs charging"])
+
+        let mutation = TestAddNote(characterId: "1", text: "Appended", connections: [character.notes.connectionID])
+        try await environment.commitPayload(mutation, fixture("add-note-n9"))
+        #expect(character.notes.nodes.map(\.text) == ["Wubba lubba dub dub", "Portal gun needs charging", "Appended"])
+        let roots = StoreDump.text(of: environment.store).split(separator: "\n")
+        #expect(roots.contains { $0.hasPrefix(#"  "client:root:mutation": "#) && $0.contains("addNote") }, "the payload hangs off the mutation root")
+        #expect(!roots.contains { $0.hasPrefix(#"  "client:root": "#) && $0.contains("addNote") })
+        handle.release()
+    }
+
+    @Test("a subscription's event committed by hand lands at the subscription root and appends through @appendEdge")
+    func aSubscriptionEventCommittedByHandLandsAtTheSubscriptionRoot() async throws {
+        let environment = Environment(transport: notesTransport())
+        environment.store.reportMissing = nil
+        let handle = environment.handle(for: TestNotesQuery(id: "1"))
+        handle.retain()
+        await handle.settle()
+        guard case .ready(let data) = handle.phase else {
+            Issue.record("expected .ready, got \(handle.phase)")
+            return
+        }
+        let character = try #require(data.character?.testNotes)
+
+        let subscription = TestNoteAdded(characterId: "1", connections: [character.notes.connectionID])
+        try await environment.commitPayload(subscription, fixture("note-added-1"))
+        #expect(character.notes.nodes.map(\.text).last == "Live from the garage")
+
+        let store = environment.store
+        let event = TestNoteAdded.Data(anchor: Anchor(record: store.subscriptionRoot, variables: subscription.variables, store: store))
+        #expect(event.noteAdded?.noteEdge?.node?.text == "Live from the garage")
+        let roots = StoreDump.text(of: store).split(separator: "\n")
+        #expect(roots.contains { $0.hasPrefix(#"  "client:root:subscription": "#) && $0.contains("noteAdded") })
+        #expect(!roots.contains { $0.hasPrefix(#"  "client:root": "#) && $0.contains("noteAdded") }, "nothing hangs off the query root")
+        handle.release()
+    }
+
+    @Test("under @throwOnFieldError a payload committed by hand throws its uncaught field errors, and one without errors does not")
+    func aStrictPayloadCommittedByHandThrowsItsFieldErrors() async throws {
+        let environment = Environment(transport: SilentTransport())
+        environment.store.reportMissing = nil
+        let thrown = await #expect(throws: FieldErrors.self) {
+            try await environment.commitPayload(TestStrictQuery(id: "1"), fixture("character-name-hidden"))
+        }
+        #expect(thrown?.errors.map(\.path) == ["character.name"])
+        #expect(environment.store.existing("Character:1") != nil, "the payload is committed regardless")
+
+        try await environment.commitPayload(TestStrictQuery(id: "1"), fixture("character-name-shown"))
+        let handle = environment.handle(for: TestStrictQuery(id: "1"), fetchPolicy: .storeOnly)
+        guard case .ready(let data) = handle.phase else {
+            Issue.record("expected .ready, got \(handle.phase)")
+            return
+        }
+        #expect(data.character?.name == "Rick Sanchez")
+    }
+
+    @Test("a payload committed by hand from a task cancelled before it awaits is still committed")
+    func aCancelledCallerStillCommitsItsPayload() async throws {
+        let environment = Environment(transport: SilentTransport())
+        let caller = Task { @MainActor in
+            withUnsafeCurrentTask { $0?.cancel() }
+            #expect(Task.isCancelled)
+            try await environment.commitPayload(Fixture(page: 1), fixtureData)
+        }
+        try await caller.value
+        let handle = environment.handle(for: Fixture(page: 1), fetchPolicy: .storeOnly)
+        guard case .ready(let data) = handle.phase else {
+            Issue.record("expected the payload in the store, got \(handle.phase)")
+            return
+        }
+        #expect(data.characters?.results?.first?.name == "Rick Sanchez")
+    }
 }

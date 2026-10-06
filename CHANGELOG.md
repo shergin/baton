@@ -5,6 +5,12 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- `Environment.commitPayload(operation, payload)` commits a payload for an
+  operation that some other road delivered, a REST response, a socket's
+  tick, a preview's fixture or a test's seed, through the same door a
+  fetch's response takes: the records merge, the connections and the edge
+  directives apply, and the image is written. A payload may carry part of
+  what the operation selects.
 - One door from a payload to slots. A query's fetch, a deferred stream, a
   mutation, a subscription's event and a page each normalized and
   committed on their own; every payload now passes through one function of

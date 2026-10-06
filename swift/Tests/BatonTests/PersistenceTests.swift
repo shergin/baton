@@ -107,6 +107,20 @@ struct PersistenceTests {
         #expect(environment.store.hydratedRecords == 898)
     }
 
+    @Test("a payload committed by hand reaches the image, and the next launch answers its operation from it")
+    func aPayloadCommittedByHandReachesTheImage() async throws {
+        let first = launch()
+        try await first.commitPayload(Fixture(page: 1), fixtureData)
+        await finish(first)
+
+        let second = launch()
+        let data = try stored(Fixture(page: 1), in: second)
+        #expect(second.store.hydratedRecords == 898)
+        #expect(data.characters?.results?.first?.name == "Rick Sanchez")
+        #expect(data.characters?.info?.count == 826)
+        await finish(second)
+    }
+
     @Test("a refetch after a launch changes one row, and the next launch reads the change")
     func aRefetchReachesTheImage() async throws {
         try await seed(launch())
