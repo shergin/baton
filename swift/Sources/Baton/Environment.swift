@@ -59,7 +59,7 @@ public final class Environment {
     /// The handle for an operation value, shared by every view that holds an
     /// equal value. The policy is applied on every attach.
     public func handle<Op: Query>(for operation: Op, fetchPolicy: FetchPolicy = .default) -> OperationHandle<Op> {
-        let key = Op.name + operation.variables.json
+        let key = Store.rootKey(Op.name, operation.variables)
         let handle: OperationHandle<Op>
         if let existing = handles[key] as? OperationHandle<Op> {
             handle = existing
@@ -75,7 +75,7 @@ public final class Environment {
     /// The handle for a subscription value, shared by equal values; a root
     /// while retained.
     public func subscriptionHandle<Op: Subscription>(for operation: Op) -> SubscriptionHandle<Op> {
-        let key = Op.name + operation.variables.json
+        let key = Store.rootKey(Op.name, operation.variables)
         if let existing = handles[key] as? SubscriptionHandle<Op> { return existing }
         let handle = SubscriptionHandle(operation: operation, key: key, environment: self)
         handles[key] = handle
@@ -268,16 +268,18 @@ public final class Environment {
     /// handled are thrown, as a fetch throws them.
     public func commitPayload<Op: Operation>(_ operation: Op, _ payload: Data) async throws {
         guard !ended else { throw EnvironmentError.gone }
-        let root = store.root(Op.name + operation.variables.json, resolved: Op.plan.resolve(operation.variables, in: store.keys), record: rootRecord(of: Op.self))
+        let root = store.root(Store.rootKey(Op.name, operation.variables), resolved: Op.plan.resolve(operation.variables, in: store.keys), record: rootRecord(of: Op.kind))
         let committed = try await commit(payload, plan: root.resolved, root: root, checkingCancellation: false, complete: false)
         if Op.throwsOnFieldError, !committed.uncaught.isEmpty { throw FieldErrors(committed.uncaught) }
     }
 
     /// The record an operation's payload hangs off, by the operation's kind.
-    private func rootRecord<Op: Operation>(of operation: Op.Type) -> Record {
-        if operation is any Mutation.Type { return store.mutationRoot }
-        if operation is any Subscription.Type { return store.subscriptionRoot }
-        return store.root
+    private func rootRecord(of kind: Request.Kind) -> Record {
+        switch kind {
+        case .query: store.root
+        case .mutation: store.mutationRoot
+        case .subscription: store.subscriptionRoot
+        }
     }
 
     /// Fetches an operation by its type and variables and commits the response.
@@ -319,7 +321,7 @@ public final class Environment {
         let request = request(Op.self, variables: variables)
         // The operation's root: a handle's, or one made here, which waits in
         // the release buffer once dated if nothing retains it.
-        let root = store.root(Op.name + variables.json, resolved: resolved, record: store.root)
+        let root = store.root(Store.rootKey(Op.name, variables), resolved: resolved, record: store.root)
         if !Op.hasDeferred {
             // A fetch superseded while its response was on the way or being
             // read must not land after the one that replaced it.
@@ -376,7 +378,7 @@ public final class Environment {
     public func mutate<Op: Mutation>(_ operation: Op, optimistic: Variable? = nil) async throws -> Op.Data {
         guard !ended else { throw EnvironmentError.gone }
         let resolved = Op.plan.resolve(operation.variables, in: store.keys)
-        let root = store.root(Op.name + operation.variables.json, resolved: resolved, record: store.mutationRoot)
+        let root = store.root(Store.rootKey(Op.name, operation.variables), resolved: resolved, record: store.mutationRoot)
         var layer: UUID?
         if let optimistic {
             let json = Data(("{\"data\":" + optimistic.json + "}").utf8)

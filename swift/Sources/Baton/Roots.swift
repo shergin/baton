@@ -49,6 +49,13 @@ extension Store {
         }
     }
 
+    /// The key of an operation's root: its name and its variables as JSON,
+    /// which names the root in the store, the handle in the environment and
+    /// the fetch time in the image.
+    nonisolated static func rootKey(_ name: String, _ variables: Variables) -> String {
+        name + variables.json
+    }
+
     /// The root of an operation, made on first sight: the caller retains it,
     /// or parks it in the release buffer.
     func root(_ key: String, resolved: ResolvedSelection, record: Record) -> Root {
