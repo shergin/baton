@@ -77,6 +77,7 @@ final class ScriptRun {
             context = "\(script.name), step \(index) (\(step.action.kind)): "
             heard.clear()
             let notified = step.notified == nil ? nil : observeEverySlot()
+            let sentBefore = transport.requests.count
             let thrown = await perform(step.action)
             // A pass a step scheduled runs on a later turn of the main actor.
             // A stream that failed is compared at once, before a backoff,
@@ -84,7 +85,7 @@ final class ScriptRun {
             if case .event(_, .failure) = step.action {} else {
                 for _ in 0..<10 { await Task.yield() }
             }
-            check(step, thrown: thrown, notified: notified)
+            check(step, thrown: thrown, notified: notified, sentBefore: sentBefore)
         }
         await environment.end()
     }
@@ -386,7 +387,7 @@ final class ScriptRun {
         return notified
     }
 
-    func check(_ step: Manifest.Step, thrown: (any Error)?, notified: Notified?) {
+    func check(_ step: Manifest.Step, thrown: (any Error)?, notified: Notified?, sentBefore: Int) {
         if let expected = step.error {
             if let thrown {
                 let kind = Self.kind(of: thrown)
@@ -465,6 +466,19 @@ final class ScriptRun {
                 actual.name == expected.name && expected.fields.allSatisfy { actual.fields[$0.key] == $0.value }
             }
             if !matches { fail("the log heard \(actual) where the script has \(expected)") }
+        }
+
+        if let expected = step.sent {
+            let received = transport.requests.dropFirst(sentBefore)
+            if received.count != expected.count {
+                fail("the transport received \(received.count) requests (\(received.map(\.operationName))) where the script has \(expected.count)")
+            }
+            for (request, wanted) in zip(received, expected) {
+                let body = String(decoding: request.body, as: UTF8.self)
+                if request.operationName != wanted.operation || body != wanted.body {
+                    fail("the transport received \(request.operationName) with the body\n\(body)\nwhere the script has \(wanted.operation) with\n\(wanted.body)")
+                }
+            }
         }
     }
 

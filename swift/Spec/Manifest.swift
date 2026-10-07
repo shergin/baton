@@ -253,6 +253,8 @@ extension Manifest {
         public let recordsHeld: [String]?
         /// The log's events during the step, in order.
         public let events: [Event]?
+        /// The requests the transport received during the step, in order.
+        public let sent: [SentRequest]?
         /// The kind of what the step threw, when it is expected to throw.
         public let error: String?
 
@@ -275,6 +277,7 @@ extension Manifest {
             answer = answerIsExpectation ? try container.decode(Answer.self, forKey: AnyKey("answer")) : nil
             recordsHeld = try container.decodeIfPresent([String].self, forKey: AnyKey("records_held"))
             events = try container.decodeIfPresent([Event].self, forKey: AnyKey("events"))
+            sent = try container.decodeIfPresent([SentRequest].self, forKey: AnyKey("sent"))
             error = try container.decodeIfPresent(String.self, forKey: AnyKey("error"))
         }
 
@@ -480,6 +483,13 @@ extension Manifest {
         public let stream: State
         public let events: Int?
         public let resumptions: Int?
+    }
+
+    /// A request the transport received: its operation's name and the body
+    /// the standard encoding writes for it, byte for byte.
+    public struct SentRequest: Decodable, Sendable {
+        public let operation: String
+        public let body: String
     }
 
     /// A log event: its name, and the value-free fields it carries that the

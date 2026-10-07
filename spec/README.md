@@ -134,6 +134,7 @@ step and after a collection pass it scheduled has run:
 | `answer` | Beside a `check` step, the check's answer: `memory`, `image` or `miss`. As a word it is this expectation; as an object it is the `answer` step. |
 | `records_held` | The record keys the store holds, the roots among them, sorted. |
 | `events` | The log's events during the step, its expectations' reads included, as their names in order, with the value-free fields a name carries (`{"fetchFailed": {"operation": name, "kind": kind}}`); a bare name compares the name alone. The image's events are left out, since their timing is the writer's. |
+| `sent` | The requests the transport received during the step, in order and no others: `[{"operation": name, "body": text}]`, the body the standard encoding writes for each, compared as text byte for byte. |
 | `error` | What the step threw, as a failure's kind or `fieldErrors` or `gone`, when the step is expected to throw (a `refetch` failed; a fetch after the end). A step that throws without it fails the script, except a `revert`, whose failure is the point. A `storeOnly` attach without data throws nothing: its phase reads `{"failed": "missingData"}`. |
 
 A runtime proves a script by running its steps in order in one environment
