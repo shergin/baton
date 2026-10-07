@@ -99,6 +99,18 @@ class Variables(val values: Map<String, Variable>) {
 
     companion object {
         val none: Variables = Variables(emptyMap())
+
+        /**
+         * The variables an operation value declares, from name and value
+         * pairs; a pair whose value is null is a variable left unset, absent
+         * from the request. A receiver-free builder, so a getter that reads
+         * the value's own properties reads nothing else.
+         */
+        fun of(vararg entries: Pair<String, Variable?>): Variables {
+            val values = LinkedHashMap<String, Variable>(entries.size)
+            for ((name, value) in entries) if (value != null) values[name] = value
+            return Variables(values)
+        }
     }
 }
 
