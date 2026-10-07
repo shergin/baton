@@ -56,3 +56,4 @@ principle, the proof belongs here.
 - [A subscription reconnects in its handle, by a fixed backoff](subscriptions-reconnect-in-the-handle.md)
 - [A failure says its kind](a-failure-says-its-kind.md)
 - [The decided architecture is built first, one release a step](the-decided-architecture-is-built-first.md)
+- [Releases are frequent and named for bread](releases-are-frequent-and-named-for-bread.md)

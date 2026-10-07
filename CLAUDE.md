@@ -49,6 +49,10 @@ the vocabulary is `docs/terminology.md`. These files outrank any default.
   requests.
 - Release commits are `Release <version> (<Name>)` and touch only the
   manifests and the changelog.
+- Release often: when Unreleased holds something an adopter can use and the
+  checks pass, cut a release; do not wait for a batch. The name is the next
+  unused bread in `docs/decisions/releases-are-frequent-and-named-for-bread.md`,
+  taken without asking.
 - While the project is in rapid building, a pull request merges once the
   local checks pass; do not wait for GitHub CI. Run what CI runs:
   `scripts/check-boundaries.sh`, `scripts/build-compiler.sh`, then
