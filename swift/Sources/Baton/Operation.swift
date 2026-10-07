@@ -305,8 +305,8 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
         return .ready(data)
     }
 
-    /// Whether the store holds every field the operation selects. For the
-    /// tests, until the handle derives its phase.
+    /// Whether the store holds every field the operation selects; for the
+    /// tests.
     package var isComplete: Bool { store.check(resolved) != .miss }
 
     /// Whether the data predates `Environment.invalidate()` or is older than
@@ -322,7 +322,7 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
         // Data with no known age is stale wherever an expiration applies: the
         // rule hydration has, in memory too.
         guard let fetchTime = root.fetchTime else { return true }
-        return fetchTime + expiration < .now
+        return fetchTime + expiration < store.now
     }
 
     /// Applies a policy on attach: renders what the store allows, fetches
@@ -394,7 +394,7 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
             // ended: it keeps the data it shows and says why it cannot load
             // more.
             task = nil
-            fetch = .failed(.environment(.gone), at: .now)
+            fetch = .failed(.environment(.gone), at: store.now)
             if case .loading = phase {
                 phase = .failed(EnvironmentError.gone)
             }
@@ -440,7 +440,7 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
                 // data is in the store for, which a later commit or attach
                 // can still settle by that data; with nothing to show, the
                 // phase fails.
-                fetch = .failed(Failure(error), at: .now)
+                fetch = .failed(Failure(error), at: store.now)
                 if !showsData { phase = .failed(error) }
             }
             return failure
@@ -532,7 +532,7 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
     /// store's to clear.
     func end() {
         cancel()
-        fetch = .failed(.environment(.gone), at: .now)
+        fetch = .failed(.environment(.gone), at: store.now)
         phase = .failed(EnvironmentError.gone)
     }
 }

@@ -287,9 +287,9 @@ public final class Persistence: Sendable {
         pending.withLock { $0.forgets > 0 }
     }
 
-    /// Notes that an operation's response just committed.
-    func fetched(_ operation: String) {
-        let time = Date().timeIntervalSince1970
+    /// Notes that an operation's response just committed, at the store's
+    /// wall time.
+    func fetched(_ operation: String, at time: Double) {
         let noted = ages.withLock { ages in
             ages.times[operation] = time
             return true
@@ -302,13 +302,13 @@ public final class Persistence: Sendable {
     /// A time read from the image is stamped as used, once per launch, so
     /// data read every launch keeps its age and does not go stale at the
     /// next but one.
-    func age(of operation: String) -> Double? {
+    func age(of operation: String, now: Double) -> Double? {
         let (time, first): (Double?, Bool) = ages.withLock { ages in
             return (ages.times[operation], ages.read.insert(operation).inserted)
         }
         guard let time else { return nil }
         if first { enqueue(.dated(operation: operation)) }
-        return max(0, Date().timeIntervalSince1970 - time)
+        return max(0, now - time)
     }
 
     /// Forgets every fetch time, so data from the image reads as stale.

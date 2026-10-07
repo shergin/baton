@@ -136,12 +136,12 @@ extension Store {
     /// nothing retains waits in the release buffer, as Relay's does; the keys
     /// of the roots pushed out are returned.
     func date(_ root: Root) -> [String] {
-        root.stamp(.now, epoch: invalidationEpoch)
+        root.stamp(now, epoch: invalidationEpoch)
         root.fetches += 1
         // An operation selecting a transient root field leaves no stamp: the
         // stamp carries the operation's variables, which would name what the
         // field was asked with.
-        if !root.resolved.transient { persistence?.fetched(root.key) }
+        if !root.resolved.transient { persistence?.fetched(root.key, at: wallNow) }
         guard root.record === self.root, root.holders == 0, !releaseBuffer.contains(root.key) else { return [] }
         return park(root.key)
     }
@@ -151,8 +151,8 @@ extension Store {
     /// had to be read from the image and has no such time is stale.
     func takeAge(_ root: Root, hydrated: Bool) {
         guard root.fetchTime == nil, let persistence else { return }
-        if let age = persistence.age(of: root.key) {
-            root.stamp(.now - .seconds(age), epoch: invalidationEpoch)
+        if let age = persistence.age(of: root.key, now: wallNow) {
+            root.stamp(now - .seconds(age), epoch: invalidationEpoch)
         } else if hydrated {
             root.stamp(nil, epoch: invalidationEpoch - 1)
         }

@@ -60,6 +60,17 @@ public final class Store {
     /// operation whose document states no `@cacheExpiration` of its own;
     /// `nil` is forever. Given when the store is made, where Relay gives it.
     public let cacheExpiration: Duration?
+    /// How far ahead of the continuous clock the store reads; for the tests
+    /// and the fixtures' scripts, which advance time rather than wait for it.
+    package var clockOffset: Duration = .zero
+    /// The store's clock, read for every stamp and every staleness: the
+    /// continuous clock, run ahead by `clockOffset`.
+    var now: ContinuousClock.Instant { .now + clockOffset }
+    /// The wall clock the image keeps ages by, run ahead the same way.
+    var wallNow: Double {
+        let (seconds, attoseconds) = clockOffset.components
+        return Date().timeIntervalSince1970 + Double(seconds) + Double(attoseconds) / 1e18
+    }
     /// How many released roots keep their records alive, oldest out first,
     /// and how many completed mutations keep their payloads, apart from them.
     public let releaseBufferSize: Int
