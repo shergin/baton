@@ -675,10 +675,10 @@ fn satisfied_function(writer: &mut Writer, entries: &[Guarded<Option<SatisfiedCh
                     slot,
                     path,
                     log,
-                    swift_type,
+                    host_type,
                 }) => {
                     writer.line(format!(
-                        "guard anchor.converts({}, to: {swift_type}.self, path: {}, log: {log}) else {{ return false }}",
+                        "guard anchor.converts({}, to: {host_type}.self, path: {}, log: {log}) else {{ return false }}",
                         slot_expression(slot),
                         swift_literal(path)
                     ));
@@ -728,11 +728,11 @@ fn missing_required_function(writer: &mut Writer, entries: &[Guarded<Option<Sati
                     slot,
                     path,
                     log,
-                    swift_type,
+                    host_type,
                 }) => {
                     let path = swift_literal(path);
                     writer.line(format!(
-                        "guard anchor.converts({}, to: {swift_type}.self, path: {path}, log: {log}) else {{ return {path} }}",
+                        "guard anchor.converts({}, to: {host_type}.self, path: {path}, log: {log}) else {{ return {path} }}",
                         slot_expression(slot)
                     ));
                 }
@@ -863,10 +863,10 @@ fn error_line(writer: &mut Writer, line: &ErrorLine) {
         ErrorLine::Converts {
             slot,
             path,
-            swift_type,
+            host_type,
         } => {
             writer.line(format!(
-                "anchor.collectConversion({}, to: {swift_type}.self, path: {}, into: &errors)",
+                "anchor.collectConversion({}, to: {host_type}.self, path: {}, into: &errors)",
                 slot_expression(slot),
                 swift_literal(path)
             ));

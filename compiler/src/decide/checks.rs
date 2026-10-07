@@ -59,7 +59,7 @@ pub(super) fn satisfied(
                     slot: SlotAccess::of(type_name, type_is_abstract, storage_key),
                     path: required.path.clone(),
                     log: required.action == RequiredAction::Log,
-                    swift_type: host_type(scalar, naming),
+                    host_type: host_type(scalar, naming),
                 }),
                 SelectionPlan::Scalar {
                     required: Some(required),
@@ -162,7 +162,7 @@ pub(super) fn field_errors(
                     lines.push(ErrorLine::Converts {
                         slot,
                         path: format!("{response_path}{}", alias.as_deref().unwrap_or(name)),
-                        swift_type: host_type(type_.base_name(), naming),
+                        host_type: host_type(type_.base_name(), naming),
                     });
                 }
             }

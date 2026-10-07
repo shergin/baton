@@ -243,7 +243,7 @@ impl<'a> Readers<'a> {
         )
     }
 
-    /// An operation's root lens, `Data` in Swift.
+    /// An operation's root lens, `Data` as Swift spells it.
     pub(super) fn operation(&mut self, operation: &crate::pipeline::OperationPlan) -> ReaderPlan {
         let data = self.naming.spelling(Spelled::Data);
         let path = format!("{}.{data}", operation.name);

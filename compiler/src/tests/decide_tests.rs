@@ -656,8 +656,8 @@ fn conversions(lens: &ReaderPlan) -> Vec<(String, String)> {
         .flatten()
         .filter_map(|line| match line {
             ErrorLine::Converts {
-                path, swift_type, ..
-            } => Some((path.clone(), swift_type.clone())),
+                path, host_type, ..
+            } => Some((path.clone(), host_type.clone())),
             _ => None,
         })
         .collect()

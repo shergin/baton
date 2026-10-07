@@ -315,16 +315,17 @@ impl ListShape {
 
 /// What a scalar reads as. The store keeps an id, an enum and a custom
 /// scalar as their text; a custom scalar `baton.json` maps reads as the
-/// Swift type named, converted from the text at the read.
+/// host type it names for the target, converted from the text at the read.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Primitive {
     String,
     Int,
     Double,
     Bool,
-    /// A custom scalar read as the Swift type `baton.json` maps it to.
+    /// A custom scalar read as the host type `baton.json` maps it to for the
+    /// target.
     Mapped(String),
-    /// A schema enum, read as the Swift enum generated for it.
+    /// A schema enum, read as the enum generated for it.
     Enum(String),
 }
 
@@ -546,13 +547,13 @@ pub enum SatisfiedCheck {
         path: String,
         log: bool,
     },
-    /// The field has a value that converts to the Swift type a mapped
-    /// scalar reads as.
+    /// The field has a value that converts to the host type a mapped scalar
+    /// reads as.
     Converts {
         slot: SlotAccess,
         path: String,
         log: bool,
-        swift_type: String,
+        host_type: String,
     },
     /// The link has a value and its lens is satisfied.
     Linked {
@@ -589,7 +590,7 @@ pub enum ErrorLine {
     Converts {
         slot: SlotAccess,
         path: String,
-        swift_type: String,
+        host_type: String,
     },
     /// An aliased selection's lens.
     Nested(String),

@@ -85,7 +85,7 @@ pub struct VariableShape {
 pub enum VariableBase {
     /// A scalar, as the accessors read it.
     Scalar(Primitive),
-    /// An input object, read as the Swift struct generated for it.
+    /// An input object, read as the type generated for it.
     Input(String),
 }
 
@@ -248,7 +248,7 @@ fn operation_scope(
 }
 
 /// Declares the types an operation's value nests: `Data`, and a mutation's
-/// `Action` and `OptimisticResponse`, as Swift spells them.
+/// `Action` and `OptimisticResponse`, as `naming` spells them.
 fn declare_nested_types(scope: &mut Scope<'_>, kind: OperationKind, naming: &dyn Naming) {
     scope.declare_spelled(naming, Spelled::Data);
     if kind == OperationKind::Mutation {
