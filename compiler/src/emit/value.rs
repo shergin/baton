@@ -35,6 +35,8 @@ pub(super) fn fragment_text(fragment: &FragmentLens) -> String {
 /// `init(anchor:)` reads it.
 struct Property {
     name: String,
+    /// The accessor's name as the document spells it, unescaped.
+    field: String,
     swift_type: SwiftType,
     read: Assignment,
 }
@@ -86,13 +88,13 @@ fn memberwise_initializer(writer: &mut Writer, properties: &[Property]) {
         writer.line("public init() {}");
         return;
     }
-    let names: Vec<&str> = properties
+    let fields: Vec<&str> = properties
         .iter()
-        .map(|property| property.name.as_str())
+        .map(|property| property.field.as_str())
         .collect();
     let locals: Vec<String> = properties
         .iter()
-        .map(|property| local_name(&property.name, &names))
+        .map(|property| local_name(&property.field, &fields))
         .collect();
     let parameters: Vec<String> = properties
         .iter()
@@ -168,6 +170,7 @@ fn property(accessor: &Accessor) -> Property {
             debug_assert!(!piece.throws, "a value's spread reads without throwing");
             return Property {
                 name,
+                field: accessor.name.clone(),
                 swift_type: piece.swift_type,
                 read: match piece.expression {
                     Some(expression) => Assignment::Expression(expression),
@@ -185,11 +188,13 @@ fn property(accessor: &Accessor) -> Property {
     match condition {
         Some(condition) => Property {
             name,
+            field: accessor.name.clone(),
             swift_type: swift_type.optional(),
             read: Assignment::Expression(format!("{condition} ? {expression} : nil")),
         },
         None => Property {
             name,
+            field: accessor.name.clone(),
             swift_type,
             read: Assignment::Expression(expression),
         },

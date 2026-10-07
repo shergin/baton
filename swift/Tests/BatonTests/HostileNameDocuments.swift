@@ -1340,7 +1340,7 @@ struct HostileNameDocuments {
     @Fragment("""
         fragment HostileInlineScalars_character on Character @inline @throwOnFieldError {
           # Swift's keywords, as `escape` lists them.
-          Type: name Protocol: name Any: name Self: name init: name deinit: name
+          Type: name Protocol: name Any: name self: name Self: name init: name deinit: name
           subscript: name class: name struct: name enum: name func: name var: name let: name
           import: name extension: name operator: name static: name default: name case: name switch: name
           if: name else: name for: name in: name while: name repeat: name return: name break: name
@@ -1382,7 +1382,7 @@ struct HostileNameDocuments {
     @Fragment("""
         fragment HostileInlineLinks_character on Character @inline @throwOnFieldError {
           # Swift's keywords, as `escape` lists them.
-          Type: origin { id } Protocol: origin { id } Any: origin { id }
+          Type: origin { id } Protocol: origin { id } Any: origin { id } self: origin { id }
           Self: origin { id } init: origin { id } deinit: origin { id } subscript: origin { id }
           class: origin { id } struct: origin { id } enum: origin { id } func: origin { id }
           var: origin { id } let: origin { id } import: origin { id } extension: origin { id }
@@ -1441,7 +1441,7 @@ struct HostileNameDocuments {
     @Fragment("""
         fragment HostileInlinePlurals_character on Character @inline @throwOnFieldError {
           # Swift's keywords, as `escape` lists them.
-          Type: episode { id } Protocol: episode { id } Any: episode { id }
+          Type: episode { id } Protocol: episode { id } Any: episode { id } self: episode { id }
           Self: episode { id } init: episode { id } deinit: episode { id } subscript: episode { id }
           class: episode { id } struct: episode { id } enum: episode { id } func: episode { id }
           var: episode { id } let: episode { id } import: episode { id } extension: episode { id }
@@ -1511,6 +1511,7 @@ struct HostileNameDocuments {
           ... @alias(as: "Type") { ...HostileInlineSpreadTarget_character }
           ... @alias(as: "Protocol") { ...HostileInlineSpreadTarget_character }
           ... @alias(as: "Any") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "self") { ...HostileInlineSpreadTarget_character }
           ... @alias(as: "Self") { ...HostileInlineSpreadTarget_character }
           ... @alias(as: "init") { ...HostileInlineSpreadTarget_character }
           ... @alias(as: "deinit") { ...HostileInlineSpreadTarget_character }

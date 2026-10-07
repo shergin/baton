@@ -157,6 +157,7 @@ struct Position {
 /// compile, as Swift 6.3.3 says with warnings as errors: defects of the
 /// compiler, kept here until each is fixed, when its names move to the
 /// corpus or to the refusals.
+#[allow(dead_code, reason = "no defect is known; the table waits for the next")]
 struct Defect {
     positions: &'static [&'static str],
     names: &'static [&'static str],
@@ -512,57 +513,7 @@ fn positions() -> Vec<Position> {
 }
 
 fn defects() -> Vec<Defect> {
-    // A value's memberwise initializer takes each property under its own
-    // name, so a parameter named `self` hides the instance its body
-    // assigns to; an operation value's initializer names it `selfValue`.
-    let value_self = |positions, writes, swift| Defect {
-        positions,
-        names: &["self"],
-        writes,
-        swift,
-    };
-    vec![
-        value_self(
-            &[VALUE_SCALAR],
-            &[
-                "public init(`HOSTILE`: String?) {",
-                "self.`HOSTILE` = `HOSTILE`",
-            ],
-            "value of optional type 'String?' must be unwrapped to refer to member 'self' of wrapped base type 'String'",
-        ),
-        value_self(
-            &[VALUE_LINKED],
-            &[
-                "public init(`HOSTILE`: SelfLens?) {",
-                "self.`HOSTILE` = `HOSTILE`",
-            ],
-            "value of type 'Probe_character.SelfLens?' has no member 'self'",
-        ),
-        value_self(
-            &[VALUE_PLURAL],
-            &[
-                "public init(`HOSTILE`: [SelfLens]) {",
-                "self.`HOSTILE` = `HOSTILE`",
-            ],
-            "value of type '[Probe_character.SelfLens]' has no member 'self'",
-        ),
-        value_self(
-            &[VALUE_SPREAD],
-            &[
-                "public init(`HOSTILE`: ProbeTarget_character) {",
-                "self.`HOSTILE` = `HOSTILE`",
-            ],
-            "value of type 'ProbeTarget_character' has no member 'self'",
-        ),
-        value_self(
-            &[VALUE_SPREAD_NAME],
-            &[
-                "public init(`HOSTILE`: `HOSTILE`) {",
-                "self.`HOSTILE` = `HOSTILE`",
-            ],
-            "value of type '`self`' has no member 'self'",
-        ),
-    ]
+    Vec::new()
 }
 
 /// Defects of a name that hides another the same document chose, outside
