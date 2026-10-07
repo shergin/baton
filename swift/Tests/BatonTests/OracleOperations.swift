@@ -107,6 +107,13 @@ struct OracleOperation: Sendable {
         "TestRootNotesQuery": { _ in OracleOperation(TestRootNotesQuery(), reads: rootNotesReads) },
         "TestFreshCharacter": { try OracleOperation(TestFreshCharacter(id: $0.string("id")), reads: freshCharacterReads) },
         "TestRequiredOrigin": { try OracleOperation(TestRequiredOrigin(id: $0.string("id")), reads: requiredOriginReads) },
+        // The operations a script sends for their requests alone: no lens of
+        // theirs is read.
+        "TestCharactersWithStatus": {
+            try OracleOperation(TestCharactersWithStatus(status: Status(enumText: $0.string("status")), any: $0.optionalStrings("any")?.map(Status.init(enumText:))), reads: [:])
+        },
+        "TestPricedAssetsQuery": { try OracleOperation(TestPricedAssetsQuery(price: $0.decimal("price"), among: $0.optionalDecimals("among")), reads: [:]) },
+        "TestFilteredCharacters": { try OracleOperation(TestFilteredCharacters(filters: $0.characterFilters("filters")), reads: [:]) },
     ]
 
     /// Binds a manifest case to its operation.
@@ -630,6 +637,42 @@ extension OperationVariables {
         return try items.map { item in
             guard case .string(let string) = item else { throw mismatch(name, value) }
             return string
+        }
+    }
+
+    func optionalStrings(_ name: String) throws -> [String]? {
+        guard try variable(name) != nil else { return nil }
+        return try strings(name)
+    }
+
+    /// A mapped `Decimal`, given as its text.
+    func decimal(_ name: String) throws -> Decimal {
+        let text = try string(name)
+        guard let decimal = Decimal(scalarText: text) else { throw mismatch(name, .string(text)) }
+        return decimal
+    }
+
+    func optionalDecimals(_ name: String) throws -> [Decimal]? {
+        guard let texts = try optionalStrings(name) else { return nil }
+        return try texts.map { text in
+            guard let decimal = Decimal(scalarText: text) else { throw mismatch(name, .string(text)) }
+            return decimal
+        }
+    }
+
+    /// A list of `FilterCharacter`, each given as the object of the fields
+    /// it sets.
+    func characterFilters(_ name: String) throws -> [FilterCharacter] {
+        let value = try required(name)
+        guard case .list(let items) = value else { throw mismatch(name, value) }
+        return try items.map { item in
+            guard case .object(let fields) = item else { throw mismatch(name, value) }
+            func field(_ key: String) throws -> String? {
+                guard let field = fields[key], field != .null else { return nil }
+                guard case .string(let string) = field else { throw mismatch(name, value) }
+                return string
+            }
+            return FilterCharacter(name: try field("name"), status: try field("status"), species: try field("species"), type: try field("type"), gender: try field("gender"))
         }
     }
 }

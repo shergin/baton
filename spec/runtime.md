@@ -745,14 +745,23 @@ and never both), its variables, the `onError` value when `baton.json` names
 one, and whether the response may arrive in parts. The standard encoding
 writes `operationName`, `query` or `documentId`, `variables`, and `onError`
 when set, in that order, as one JSON object. A client field is left out of
-the text and the id a server receives. *Unheld* (script `transport`).
+the text and the id a server receives. *Held by* script `transport` for a
+text, with a client field and client directives left out of it; the
+`documentId` and `onError` members are *unheld*, since the test target
+sets no `persistConfig` and no `onError`.
 
 **A variable is sent as its JSON value.** A variable of a mapped scalar or
 an enum is sent as its text; an input object as the object its fields
 render, a field left unset absent from the request, as GraphQL
 distinguishes absent from null, and an explicit null written as a constant
-in the document. A server with another convention replaces the encoding on
-the built-in transports and keeps them. *Unheld* (script `transport`).
+in the document. A variable the operation declares without a default and
+the caller leaves unset is sent as `null`, which GraphQL coerces as it does
+an absent one. A server with another convention replaces the encoding on
+the built-in transports and keeps them. *Held by* script `transport` for
+an enum and a list of it, a `Decimal` and a list of it, a list of input
+objects with fields left unset, and an unset variable; the explicit null
+constant, a variable with a default left unset and a replaced encoding are
+*unheld*.
 
 **An environment error says what is missing.** The view's environment, the
 lens's (a lens made by hand asked to fetch), the one that made a handle and

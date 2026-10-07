@@ -2335,6 +2335,7 @@
     "scripts/heal.json",
     "scripts/end.json",
     "scripts/events.json",
-    "scripts/subscriptions.json"
+    "scripts/subscriptions.json",
+    "scripts/transport.json"
   ]
 }

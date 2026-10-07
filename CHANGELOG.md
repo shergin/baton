@@ -24,6 +24,12 @@ are expected and listed without apology.
   alone. The compiler's tests check them against the Swift test target's
   markers and prove they plan what the markers plan. The manifest is format
   3: `sources` names the directory and the configuration.
+- The spec's scripts compare the requests a step sends: a `sent`
+  expectation lists each request's operation and the exact body the
+  standard encoding writes. Script `transport` holds the body's member
+  order, the text without client fields and client directives, an enum and
+  a mapped scalar sent as their text, and an input object's unset fields
+  left out.
 
 ## 0.9.0 (Krendel) — 2026-10-07
 

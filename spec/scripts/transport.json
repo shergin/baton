@@ -1,0 +1,26 @@
+{
+  "name": "transport",
+  "steps": [
+    {
+      "attach": {"operation": "TestPinnedCharacter", "variables": {"id": "1"}, "policy": "networkOnly", "as": "pinned", "response": "tests/pinned-character.json"},
+      "fetch": {"handle": "pinned", "fetch": "idle"},
+      "sent": [{"operation": "TestPinnedCharacter", "body": "{\"operationName\":\"TestPinnedCharacter\",\"query\":\"query TestPinnedCharacter($id:ID!){character(id:$id){id,name,status}}\",\"variables\":{\"id\":\"1\"}}"}]
+    },
+    {
+      "attach": {"operation": "TestCharactersWithStatus", "variables": {"status": "DEAD", "any": ["ALIVE", "UNKNOWN"]}, "policy": "networkOnly", "as": "dead", "failure": "transport"},
+      "sent": [{"operation": "TestCharactersWithStatus", "body": "{\"operationName\":\"TestCharactersWithStatus\",\"query\":\"query TestCharactersWithStatus($status:Status!,$any:[Status!]){charactersWithStatus(status:$status,any:$any){name,id}}\",\"variables\":{\"any\":[\"ALIVE\",\"UNKNOWN\"],\"status\":\"DEAD\"}}"}]
+    },
+    {
+      "attach": {"operation": "TestPricedAssetsQuery", "variables": {"price": "19.99", "among": ["0.5", "100"]}, "policy": "networkOnly", "as": "priced", "failure": "transport"},
+      "sent": [{"operation": "TestPricedAssetsQuery", "body": "{\"operationName\":\"TestPricedAssetsQuery\",\"query\":\"query TestPricedAssetsQuery($price:Decimal!,$among:[Decimal!]){assetsPricedAbove(price:$price,among:$among){uuid,...TestCaughtPrices_asset,...TestThrowingPrices_asset,...TestRequiredPrice_asset,id}}fragment TestCaughtPrices_asset on Asset{price,listedAt,page}fragment TestRequiredPrice_asset on Asset{price}fragment TestThrowingPrices_asset on Asset{price,prices}\",\"variables\":{\"among\":[\"0.5\",\"100\"],\"price\":\"19.99\"}}"}]
+    },
+    {
+      "attach": {"operation": "TestFilteredCharacters", "variables": {"filters": [{"status": "Alive"}, {"name": "Rick", "species": "Human"}]}, "policy": "networkOnly", "as": "filtered", "failure": "transport"},
+      "sent": [{"operation": "TestFilteredCharacters", "body": "{\"operationName\":\"TestFilteredCharacters\",\"query\":\"query TestFilteredCharacters($filters:[FilterCharacter!]!){charactersMatching(filters:$filters){id,name}}\",\"variables\":{\"filters\":[{\"status\":\"Alive\"},{\"name\":\"Rick\",\"species\":\"Human\"}]}}"}]
+    },
+    {
+      "attach": {"operation": "TestKeys", "variables": {"id": "7"}, "policy": "networkOnly", "as": "unnamed", "failure": "transport"},
+      "sent": [{"operation": "TestKeys", "body": "{\"operationName\":\"TestKeys\",\"query\":\"query TestKeys($id:ID!,$name:String){search(name:\\\"$0.00\\\"){__typename,...on Node{__isNode:__typename,id}},character(id:\\\"a,b\\\"){name,id},charactersByIds(ids:[$id,\\\"2\\\"]){name,id},characters(filter:{status:\\\"Alive\\\",name:$name}){info{count}}}\",\"variables\":{\"id\":\"7\",\"name\":null}}"}]
+    }
+  ]
+}
