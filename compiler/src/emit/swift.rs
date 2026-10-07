@@ -11,14 +11,29 @@
 use std::fmt;
 
 use super::writer::Writer;
-use crate::decide::{InputField, Primitive, ScalarShape, VariableBase, VariableValue};
+use crate::decide::{InputField, Primitive, ScalarShape, SlotRef, VariableBase, VariableValue};
 use crate::names::{
-    enum_type_name, escape, input_type_name, keyed_types, possible_types, type_constant,
+    enum_type_name, escape, input_type_name, keyed_types, possible_types, slot_name, type_constant,
 };
 use crate::pipeline::{ArgumentValuePlan, ConstantPlan, TypeKind};
 
 /// The runtime's module.
 pub(super) const RUNTIME: &str = "Baton";
+
+/// A slot's constant among its type's in the shared enums.
+pub(super) fn slot_member(slot: &SlotRef) -> String {
+    slot.member(&slot_name)
+}
+
+/// A slot's constant by its path in one of the shared enums:
+/// `Slots.Character.name`.
+pub(super) fn slot_path(family: &str, slot: &SlotRef) -> String {
+    format!(
+        "{family}.{}.{}",
+        slot_name(&slot.type_name),
+        slot_member(slot)
+    )
+}
 
 /// A type as Swift writes it.
 #[derive(Clone, Debug, PartialEq, Eq)]

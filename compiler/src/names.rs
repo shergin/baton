@@ -1,87 +1,17 @@
-//! Names in generated Swift: the identifiers a document's names become, and
-//! the allocator that gives each declaration of a scope a name of its own.
+//! Names in generated Swift: the identifiers a document's names become, the
+//! names Swift keeps or the generated code spells, and `SwiftNaming`, the
+//! answers the decide pass asks of a language, given for Swift.
 //!
 //! Swift resolves an unqualified name to the nearest declaration, so a nested
 //! type named like a type the generated code spells unqualified shadows it
-//! for everything nested in the scope, and two declarations of one name in one
-//! scope do not compile. Every name an emitter declares is taken from its
-//! scope's allocator, which knows the reserved names and the names already
-//! declared, and reports a second declaration of a name rather than writing
-//! Swift that does not compile: at the document's name when the document
-//! chose one of the two, as an internal error when the compiler chose both.
+//! for everything nested in the scope. The lists below are what each kind of
+//! scope keeps; the allocator in `naming` holds a scope's declarations to
+//! them.
 
-use std::collections::BTreeSet;
+use std::collections::BTreeMap;
 
-use crate::pipeline::Origin;
-
-/// How a declaration's name meets the others of its scope. Instance
-/// properties clash with instance properties and static ones with static
-/// ones, while Swift tells either from a method by its argument labels, so
-/// methods are not declared here. A nested type clashes with any
-/// declaration, since an expression that names it would be ambiguous.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum Kind {
-    Instance,
-    Static,
-    Type,
-}
-
-impl Kind {
-    fn clashes(self, other: Kind) -> bool {
-        self == other || self == Kind::Type || other == Kind::Type
-    }
-}
-
-/// Why a scope cannot declare a name.
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum NameError {
-    /// A name the document chose that another declaration takes.
-    #[error(transparent)]
-    Clash(#[from] Clash),
-    /// A name the compiler chose for two declarations: its own fault.
-    #[error(transparent)]
-    Duplicate(#[from] DuplicateName),
-}
-
-/// A name the document chose that its scope declares otherwise, said at
-/// the document's name with what the document can change.
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[error("{what} clashes with {other}; {remedy}")]
-pub struct Clash {
-    pub origin: Origin,
-    pub what: String,
-    pub other: String,
-    pub remedy: String,
-}
-
-/// A name two declarations the compiler chose would take.
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[error(
-    "internal error: `{scope}` would declare `{name}` twice, as {first} and as {second}; please report it"
-)]
-pub struct DuplicateName {
-    pub scope: String,
-    pub name: String,
-    pub first: String,
-    pub second: String,
-}
-
-/// A name the document chose: where it wrote the name, and what changing
-/// it takes, such as "alias the field".
-#[derive(Debug, Clone)]
-pub struct Written {
-    pub origin: Origin,
-    pub remedy: &'static str,
-}
-
-/// One declaration of a scope.
-struct Declaration {
-    name: String,
-    kind: Kind,
-    what: String,
-    /// None for a name the compiler chose.
-    written: Option<Written>,
-}
+use crate::config::Config;
+use crate::naming::{Naming, Position, Spelled, numbered};
 
 /// Every type and attribute name the emitter writes unqualified inside a
 /// lens, and the names Swift keeps for itself. A nested lens of one of
@@ -123,6 +53,12 @@ pub const BUILDER_RESERVED_NAMES: [&str; 10] = [
     "Type", "Self", "Protocol", "Any", "Sendable", "Baton", "String", "Int", "Double", "Bool",
 ];
 
+/// What goes after a nested lens's name a lens keeps.
+const LENS_SUFFIX: &str = "Lens";
+
+/// What goes after a nested builder's name a builder keeps.
+const RESPONSE_SUFFIX: &str = "Response";
+
 /// What the generated code spells unqualified from the standard library,
 /// in any file and at any depth: the attribute on every accessor, the types
 /// accessors return and variables take, the `Hasher` an operation value
@@ -141,242 +77,6 @@ pub const STANDARD_LIBRARY_NAMES: [&str; 9] = [
     "Hasher",
     "Sendable",
 ];
-
-/// The names a nested type of one kind of scope may not take, and what is
-/// written after a name that would be one of them.
-pub struct Reserved {
-    names: BTreeSet<String>,
-    suffix: &'static str,
-}
-
-impl Reserved {
-    /// For lenses: the names a lens spells, and every fragment, operation
-    /// and schema enum of the program, which a lens refers to unqualified;
-    /// `Lens` goes after one of them.
-    pub fn lenses<S: Into<String>>(program: impl IntoIterator<Item = S>) -> Reserved {
-        let mut names: BTreeSet<String> = RESERVED_TYPE_NAMES
-            .iter()
-            .map(|name| name.to_string())
-            .collect();
-        names.extend(program.into_iter().map(Into::into));
-        Reserved {
-            names,
-            suffix: "Lens",
-        }
-    }
-
-    /// For optimistic-response builders: the names a builder spells and the
-    /// program's schema enums, which a builder's fields are typed by;
-    /// `Response` goes after one of them.
-    pub fn builders<S: Into<String>>(program: impl IntoIterator<Item = S>) -> Reserved {
-        let mut names: BTreeSet<String> = BUILDER_RESERVED_NAMES
-            .iter()
-            .map(|name| name.to_string())
-            .collect();
-        names.extend(program.into_iter().map(Into::into));
-        Reserved {
-            names,
-            suffix: "Response",
-        }
-    }
-
-    /// For scopes that name nothing they nest after a document's names.
-    pub fn none() -> Reserved {
-        Reserved {
-            names: BTreeSet::new(),
-            suffix: "",
-        }
-    }
-
-    /// The type name for `property`: capitalized, with the suffix after a
-    /// reserved name.
-    pub fn type_name(&self, property: &str) -> String {
-        let name = capitalize(property);
-        if self.names.contains(&name) {
-            name + self.suffix
-        } else {
-            name
-        }
-    }
-}
-
-/// The declarations of one Swift scope: a lens, an operation, a builder or
-/// one of the shared enums.
-pub struct Scope<'a> {
-    /// The scope as Swift names it, for messages.
-    path: String,
-    reserved: &'a Reserved,
-    declared: Vec<Declaration>,
-    errors: Vec<NameError>,
-}
-
-impl<'a> Scope<'a> {
-    pub fn new(path: impl Into<String>, reserved: &'a Reserved) -> Scope<'a> {
-        Scope {
-            path: path.into(),
-            reserved,
-            declared: Vec::new(),
-            errors: Vec::new(),
-        }
-    }
-
-    /// Declares `name`, which the compiler chose, as it is, for `what`; a
-    /// name the scope declared already is an error.
-    pub fn declare(&mut self, name: &str, kind: Kind, what: impl Into<String>) {
-        self.declare_written(name, kind, what, None);
-    }
-
-    /// Declares `name` as it is, for `what`; the document chose it when it
-    /// is `written`. A name the scope declared already is a clash at the
-    /// document's name when the document chose either, else a duplicate.
-    pub fn declare_written(
-        &mut self,
-        name: &str,
-        kind: Kind,
-        what: impl Into<String>,
-        written: Option<Written>,
-    ) {
-        let declaration = Declaration {
-            name: name.to_string(),
-            kind,
-            what: what.into(),
-            written,
-        };
-        if let Some(first) = self.declared.iter().find(|existing| {
-            existing.name == declaration.name && existing.kind.clashes(declaration.kind)
-        }) {
-            self.errors.push(error(&self.path, first, &declaration));
-        }
-        self.declared.push(declaration);
-    }
-
-    /// Whether a declaration of `kind` can take `name`.
-    fn is_free(&self, name: &str, kind: Kind) -> bool {
-        if kind == Kind::Type && self.reserved.names.contains(name) {
-            return false;
-        }
-        !self
-            .declared
-            .iter()
-            .any(|existing| existing.name == name && existing.kind.clashes(kind))
-    }
-
-    /// A member: the first of `candidates` the scope has free, else the last
-    /// with the first number after it that is.
-    pub fn member(&mut self, candidates: &[String], kind: Kind, what: impl Into<String>) -> String {
-        let name = match candidates
-            .iter()
-            .find(|candidate| self.is_free(candidate, kind))
-        {
-            Some(free) => free.clone(),
-            None => {
-                let base = candidates.last().expect("a member has a candidate name");
-                self.numbered(|number| vec![(format!("{base}{number}"), kind)])
-                    .remove(0)
-            }
-        };
-        self.declare(&name, kind, what);
-        name
-    }
-
-    /// The nested type for `property`, as `Reserved::type_name` spells it,
-    /// numbered when the scope has the name.
-    pub fn nested_type(&mut self, property: &str, what: impl Into<String>) -> String {
-        let base = self.reserved.type_name(property);
-        let name = if self.is_free(&base, Kind::Type) {
-            base
-        } else {
-            self.numbered(|number| vec![(format!("{base}{number}"), Kind::Type)])
-                .remove(0)
-        };
-        self.declare(&name, Kind::Type, what);
-        name
-    }
-
-    /// An instance property and the nested type it reads as, under one
-    /// number when either name is taken: `asCharacter2` and `AsCharacter2`.
-    pub fn member_and_type(
-        &mut self,
-        member: &str,
-        type_name: &str,
-        what: impl Into<String>,
-    ) -> (String, String) {
-        let what = what.into();
-        let type_base = self.reserved.type_name(type_name);
-        let (member, type_name) =
-            if self.is_free(member, Kind::Instance) && self.is_free(&type_base, Kind::Type) {
-                (member.to_string(), type_base)
-            } else {
-                let mut names = self.numbered(|number| {
-                    vec![
-                        (format!("{member}{number}"), Kind::Instance),
-                        (format!("{type_base}{number}"), Kind::Type),
-                    ]
-                });
-                let type_name = names.remove(1);
-                (names.remove(0), type_name)
-            };
-        self.declare(&member, Kind::Instance, what.clone());
-        self.declare(&type_name, Kind::Type, what);
-        (member, type_name)
-    }
-
-    /// The names `make` spells for the first number from 2 at which the
-    /// scope has all of them free.
-    fn numbered(&self, make: impl Fn(usize) -> Vec<(String, Kind)>) -> Vec<String> {
-        let mut number = 2;
-        loop {
-            let names = make(number);
-            if names.iter().all(|(name, kind)| self.is_free(name, *kind)) {
-                return names.into_iter().map(|(name, _)| name).collect();
-            }
-            number += 1;
-        }
-    }
-
-    /// The names declared twice.
-    pub fn finish(self) -> Vec<NameError> {
-        self.errors
-    }
-}
-
-/// The error for `second`, a declaration of a name `first` took already: a
-/// clash at the name the document chose, the second's when it chose both,
-/// or a duplicate when the compiler chose both.
-fn error(scope: &str, first: &Declaration, second: &Declaration) -> NameError {
-    let (written, at, other) = match (&second.written, &first.written) {
-        (Some(written), _) => (written, second, first),
-        (None, Some(written)) => (written, first, second),
-        (None, None) => {
-            return DuplicateName {
-                scope: scope.to_string(),
-                name: second.name.clone(),
-                first: first.what.clone(),
-                second: second.what.clone(),
-            }
-            .into();
-        }
-    };
-    let other = match other.written {
-        Some(_) => other.what.clone(),
-        None => format!("{} in the generated Swift", other.what),
-    };
-    Clash {
-        origin: written.origin.clone(),
-        what: at.what.clone(),
-        other,
-        remedy: written.remedy.to_string(),
-    }
-    .into()
-}
-
-pub fn capitalize(text: &str) -> String {
-    let mut characters = text.chars();
-    match characters.next() {
-        Some(first) => first.to_uppercase().collect::<String>() + characters.as_str(),
-        None => String::new(),
-    }
-}
 
 pub fn lower_camel(text: &str) -> String {
     let mut characters = text.chars();
@@ -433,17 +133,26 @@ pub const MODULE_RESERVED_NAMES: [&str; 15] = [
 /// name, escaped, with `Enum` after it where the name is one the module
 /// keeps or the standard library's, as a nested lens takes `Lens`.
 pub fn enum_type_name(name: &str) -> String {
-    if MODULE_RESERVED_NAMES.contains(&name) || STANDARD_LIBRARY_NAMES.contains(&name) {
-        return format!("{name}Enum");
-    }
-    escape(name)
+    module_type_name(name, ENUM_SUFFIX)
 }
 
 /// A schema input object's Swift struct, declared at the module's top level,
 /// named as an enum's is.
 pub fn input_type_name(name: &str) -> String {
+    module_type_name(name, INPUT_SUFFIX)
+}
+
+/// What goes after a schema enum's name the module keeps.
+const ENUM_SUFFIX: &str = "Enum";
+
+/// What goes after a schema input object's name the module keeps.
+const INPUT_SUFFIX: &str = "Input";
+
+/// A type the module's top level declares for the schema's `name`: the name
+/// escaped, or with `suffix` after it where the module keeps the name.
+fn module_type_name(name: &str, suffix: &str) -> String {
     if MODULE_RESERVED_NAMES.contains(&name) || STANDARD_LIBRARY_NAMES.contains(&name) {
-        return format!("{name}Input");
+        return format!("{name}{suffix}");
     }
     escape(name)
 }
@@ -581,6 +290,137 @@ pub fn escape(name: &str) -> String {
         format!("`{name}`")
     } else {
         name.to_string()
+    }
+}
+
+/// The name a property's value goes by as a parameter or a local: the
+/// property's own, escaped, except for `self`, which as a parameter or a
+/// local would hide the instance. It goes by `selfValue`, numbered past the
+/// names in `taken`.
+pub fn local_name(property: &str, taken: &[&str]) -> String {
+    if property != "self" {
+        return escape(property);
+    }
+    numbered("selfValue", taken)
+}
+
+/// Swift's answers to what the decide pass asks of a language, and the
+/// Swift type each mapped custom scalar reads as, by the scalar's name.
+#[derive(Clone, Debug, Default)]
+pub struct SwiftNaming {
+    host_types: BTreeMap<String, String>,
+}
+
+impl SwiftNaming {
+    /// Swift's names, with the Swift type `config` names for each mapped
+    /// scalar.
+    pub fn new(config: &Config) -> SwiftNaming {
+        SwiftNaming::with_host_types(config.swift_types())
+    }
+
+    /// Swift's names, with `host_types` the Swift type of each mapped
+    /// scalar, by the scalar's name.
+    pub fn with_host_types(host_types: BTreeMap<String, String>) -> SwiftNaming {
+        SwiftNaming { host_types }
+    }
+}
+
+impl Naming for SwiftNaming {
+    fn language(&self) -> &'static str {
+        "Swift"
+    }
+
+    fn accessor(&self, name: &str) -> String {
+        lower_camel(name)
+    }
+
+    fn local(&self, property: &str, taken: &[&str]) -> String {
+        local_name(property, taken)
+    }
+
+    fn reserved(&self, position: Position) -> Vec<&'static str> {
+        match position {
+            Position::Lens => RESERVED_TYPE_NAMES.to_vec(),
+            Position::Builder => BUILDER_RESERVED_NAMES.to_vec(),
+        }
+    }
+
+    fn suffix(&self, position: Position) -> &'static str {
+        match position {
+            Position::Lens => LENS_SUFFIX,
+            Position::Builder => RESPONSE_SUFFIX,
+        }
+    }
+
+    fn spelling(&self, spelled: Spelled) -> &'static str {
+        match spelled {
+            Spelled::Types => "Types",
+            Spelled::Slots => "Slots",
+            Spelled::AbstractSlots => "AbstractSlots",
+            Spelled::Sites => "Sites",
+            Spelled::Guards => "Guards",
+            Spelled::Runtime => "Baton",
+            Spelled::OwnType => "Self",
+            Spelled::Data => "Data",
+            Spelled::Action => "Action",
+            Spelled::OptimisticResponse => "OptimisticResponse",
+        }
+    }
+
+    fn description(&self, spelled: Spelled) -> String {
+        let name = self.spelling(spelled);
+        match spelled {
+            Spelled::Types
+            | Spelled::Slots
+            | Spelled::AbstractSlots
+            | Spelled::Sites
+            | Spelled::Guards => format!("the shared enum `{name}`"),
+            Spelled::Runtime => format!("the runtime's module `{name}`"),
+            Spelled::OwnType => format!("Swift's keyword `{name}`"),
+            Spelled::Data => format!("the operation's root lens `{name}`"),
+            Spelled::Action | Spelled::OptimisticResponse => format!("the mutation's `{name}`"),
+        }
+    }
+
+    fn module_names(&self) -> Vec<(&'static str, String)> {
+        // The shared file qualifies its sets of types by the standard
+        // library's module, and Swift lets no type be named `Self` or `Any`.
+        let mut names = vec![("Swift", "the standard library's module `Swift`".to_string())];
+        for name in STANDARD_LIBRARY_NAMES {
+            names.push((name, format!("the standard library's `{name}`")));
+        }
+        for name in ["Self", "Any"] {
+            names.push((name, format!("Swift's keyword `{name}`")));
+        }
+        names
+    }
+
+    fn enum_type(&self, name: &str) -> String {
+        enum_type_name(name)
+    }
+
+    fn input_type(&self, name: &str) -> String {
+        input_type_name(name)
+    }
+
+    fn slot_name(&self, name: &str) -> String {
+        slot_name(name).trim_matches('`').to_string()
+    }
+
+    fn type_constant(&self, name: &str) -> String {
+        type_constant(name).trim_matches('`').to_string()
+    }
+
+    fn possible_types(&self, condition: &str) -> String {
+        possible_types(condition)
+    }
+
+    fn keyed_types(&self, condition: &str) -> String {
+        keyed_types(condition)
+    }
+
+    fn host_type(&self, scalar: &str) -> Option<&str> {
+        self.host_types.get(scalar).map(String::as_str)
     }
 }
 

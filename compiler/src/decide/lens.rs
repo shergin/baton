@@ -2,10 +2,11 @@
 //! forms and guards, the surface its kind has, its checks and the lenses
 //! nested in it. The lens printer writes it as it is.
 
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeSet;
 
 use super::Guard;
 use super::keys::SlotRef;
+use crate::naming::{Naming, Spelled};
 use crate::pipeline::{ArgumentValuePlan, ConstantPlan, StorageKeyPlan, TypeKind, TypePlan};
 
 /// A lens type: its accessors, the surface its kind has, and the lenses
@@ -43,16 +44,16 @@ impl ReaderPlan {
     /// shared enums: `Slots` and `AbstractSlots` where they read a slot,
     /// `Types` where they test a record's type or name one, `Sites`
     /// where they bind a spread's arguments, and `Guards` where they test
-    /// an `@include` or `@skip`; and Swift's `Self` where they
-    /// reach a static member of their own, a refetchable fragment's
-    /// descriptor or a connection's slots.
-    pub fn hideable_names(&self) -> BTreeSet<&'static str> {
+    /// an `@include` or `@skip`; and the type's own name, Swift's `Self`,
+    /// where they reach a static member of their own, a refetchable
+    /// fragment's descriptor or a connection's slots.
+    pub fn hideable_names(&self) -> BTreeSet<Spelled> {
         let mut names = BTreeSet::new();
         self.collect_hideable_names(&mut names);
         names
     }
 
-    fn collect_hideable_names(&self, names: &mut BTreeSet<&'static str>) {
+    fn collect_hideable_names(&self, names: &mut BTreeSet<Spelled>) {
         for accessor in &self.accessors {
             match &accessor.read {
                 Read::Scalar(read) => {
@@ -66,19 +67,19 @@ impl ReaderPlan {
                         read.form,
                         LinkedForm::Required | LinkedForm::Caught { optional: false }
                     ) {
-                        names.insert("Types");
+                        names.insert(Spelled::Types);
                     }
                 }
                 Read::Spread(read) => {
                     if read.binding.is_some() {
-                        names.insert("Sites");
+                        names.insert(Spelled::Sites);
                     }
                     if read
                         .guards
                         .iter()
                         .any(|guard| matches!(guard, SpreadGuard::Test(_)))
                     {
-                        names.insert("Types");
+                        names.insert(Spelled::Types);
                     }
                 }
                 Read::Aliased(read) => {
@@ -87,19 +88,19 @@ impl ReaderPlan {
                         .iter()
                         .any(|guard| matches!(guard, AliasGuard::Test(_)))
                     {
-                        names.insert("Types");
+                        names.insert(Spelled::Types);
                     }
                 }
                 Read::Condition(_) => {
-                    names.insert("Types");
+                    names.insert(Spelled::Types);
                 }
             }
         }
         if self.connection.is_some() {
-            names.insert("Types");
+            names.insert(Spelled::Types);
         }
         if self.refetch.is_some() || self.connection.is_some() {
-            names.insert("Self");
+            names.insert(Spelled::OwnType);
         }
         for entry in self.satisfied.iter().flatten() {
             if let Some(
@@ -114,7 +115,7 @@ impl ReaderPlan {
         for check in self.field_errors.iter().flatten() {
             match check {
                 ErrorCheck::Condition { .. } => {
-                    names.insert("Types");
+                    names.insert(Spelled::Types);
                 }
                 ErrorCheck::Member(lines) => {
                     for line in &lines.item {
@@ -129,14 +130,14 @@ impl ReaderPlan {
                             ErrorLine::Nested(_) => {}
                             ErrorLine::Spread(read) => {
                                 if read.binding.is_some() {
-                                    names.insert("Sites");
+                                    names.insert(Spelled::Sites);
                                 }
                                 if read
                                     .guards
                                     .iter()
                                     .any(|guard| matches!(guard, SpreadGuard::Test(_)))
                                 {
-                                    names.insert("Types");
+                                    names.insert(Spelled::Types);
                                 }
                             }
                         }
@@ -148,7 +149,7 @@ impl ReaderPlan {
             names.insert(presence.item.shared_enum());
         }
         if !self.own_guards().is_empty() {
-            names.insert("Guards");
+            names.insert(Spelled::Guards);
         }
         for child in &self.nested {
             child.collect_hideable_names(names);
@@ -215,14 +216,6 @@ impl ReaderPlan {
     }
 }
 
-/// What a refusal calls a name `ReaderPlan::hideable_names` holds.
-pub fn hideable_name(name: &str) -> String {
-    match name {
-        "Self" => "Swift's keyword `Self`".to_string(),
-        shared => format!("the shared enum `{shared}`"),
-    }
-}
-
 /// Something done only when the conditions on the way to it select: the
 /// alternatives of conjunctions of `@include` and `@skip`, none for always.
 #[derive(Debug, Clone, PartialEq)]
@@ -243,11 +236,11 @@ pub struct SlotAccess {
 impl SlotAccess {
     /// The shared enum the slot is read through: `AbstractSlots` for a
     /// constant key on an interface or union, `Slots` otherwise.
-    fn shared_enum(&self) -> &'static str {
+    fn shared_enum(&self) -> Spelled {
         if self.on_record_type && !self.slot.has_variables() {
-            "AbstractSlots"
+            Spelled::AbstractSlots
         } else {
-            "Slots"
+            Spelled::Slots
         }
     }
 
@@ -343,18 +336,18 @@ impl Primitive {
 }
 
 impl ScalarShape {
-    /// The shape of a field of the type, a mapped scalar read as the Swift
-    /// type `host_types` names for it.
-    pub fn of(type_: &TypePlan, host_types: &BTreeMap<String, String>) -> ScalarShape {
+    /// The shape of a field of the type, a mapped scalar read as the host
+    /// type `naming` names for it.
+    pub fn of(type_: &TypePlan, naming: &dyn Naming) -> ScalarShape {
         ScalarShape {
-            primitive: Self::primitive(type_, host_types),
+            primitive: Self::primitive(type_, naming),
             list: ListShape::of(type_),
         }
     }
 
-    pub fn primitive(type_: &TypePlan, host_types: &BTreeMap<String, String>) -> Primitive {
+    pub fn primitive(type_: &TypePlan, naming: &dyn Naming) -> Primitive {
         if type_.is_mapped() {
-            return Primitive::Mapped(host_type(type_.base_name(), host_types));
+            return Primitive::Mapped(host_type(type_.base_name(), naming));
         }
         match type_.base_kind() {
             TypeKind::Int => Primitive::Int,
@@ -366,14 +359,20 @@ impl ScalarShape {
     }
 }
 
-/// The Swift type `host_types` names for the mapped scalar `scalar`. The
+/// The host type `naming` names for the mapped scalar `scalar`. The
 /// lowering marks a scalar mapped only when the configuration names it, and
-/// the configuration's validation refuses a mapping without a Swift type.
-pub(super) fn host_type(scalar: &str, host_types: &BTreeMap<String, String>) -> String {
-    host_types
-        .get(scalar)
-        .unwrap_or_else(|| panic!("the configuration names no Swift type for `{scalar}`"))
-        .clone()
+/// the configuration's validation refuses a mapping without a type for the
+/// language.
+pub(super) fn host_type(scalar: &str, naming: &dyn Naming) -> String {
+    naming
+        .host_type(scalar)
+        .unwrap_or_else(|| {
+            panic!(
+                "the configuration names no {} type for `{scalar}`",
+                naming.language()
+            )
+        })
+        .to_string()
 }
 
 #[derive(Debug, Clone, PartialEq)]

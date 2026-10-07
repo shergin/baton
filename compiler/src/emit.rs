@@ -24,7 +24,8 @@ use std::collections::BTreeMap;
 
 use crate::config::Config;
 use crate::decide;
-use crate::names::NameError;
+use crate::names::SwiftNaming;
+use crate::naming::NameError;
 use crate::pipeline::Plan;
 
 /// Generated Swift, grouped by the source file that declared the documents.
@@ -49,7 +50,7 @@ pub const FORMAT: u32 = 17;
 /// The Swift of a plan, or the names it would have declared twice. A mapped
 /// scalar reads as the Swift type `config` names for it.
 pub fn emit(plan: &Plan, config: &Config) -> Result<Output, Vec<NameError>> {
-    let program = decide::program(plan, &config.swift_types())?;
+    let program = decide::program(plan, &SwiftNaming::new(config))?;
     let mut files: BTreeMap<String, String> = BTreeMap::new();
     for fragment in &program.fragments {
         let text = if fragment.inline {

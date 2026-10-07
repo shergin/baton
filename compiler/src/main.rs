@@ -21,6 +21,7 @@ mod directives;
 mod documents;
 mod emit;
 mod names;
+mod naming;
 mod pipeline;
 mod report;
 mod swift;
@@ -32,7 +33,7 @@ use std::process::ExitCode;
 use crate::config::Config;
 use crate::diagnostics::Rendered;
 use crate::documents::Document;
-use crate::names::NameError;
+use crate::naming::NameError;
 use crate::swift::Marker;
 
 fn main() -> ExitCode {

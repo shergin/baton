@@ -17,8 +17,8 @@ use super::lens::{
 };
 use super::swift::SwiftType;
 use super::writer::Writer;
-use crate::decide::{Accessor, FragmentLens, Read, ReaderPlan, local_name};
-use crate::names::escape;
+use crate::decide::{Accessor, FragmentLens, Read, ReaderPlan};
+use crate::names::{escape, local_name};
 
 pub(super) fn fragment_text(fragment: &FragmentLens) -> String {
     let mut writer = Writer::new();

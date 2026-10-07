@@ -3,7 +3,6 @@
 //! byte: a key the compiler writes and a key the runtime renders from a
 //! variable name one slot.
 
-use crate::names::slot_name;
 use crate::pipeline::{ArgumentValuePlan, ConstantPlan, StorageKeyPlan};
 
 /// A part of an argument's value as the runtime builds it: text, or an
@@ -56,20 +55,16 @@ impl SlotRef {
         })
     }
 
-    /// The slot's name among its type's: `name`, or `characters_1a2b3c` when
-    /// the key has arguments. Slots are nested per type, so a type's name
-    /// and a field's never run together into another pair's.
-    pub fn member(&self) -> String {
+    /// The slot's name among its type's: `name` as `slot_name` spells a
+    /// field's, or `characters_1a2b3c` when the key has arguments. Slots are
+    /// nested per type, so a type's name and a field's never run together
+    /// into another pair's.
+    pub fn member(&self, slot_name: &dyn Fn(&str) -> String) -> String {
         if !self.has_arguments {
             return slot_name(&self.field);
         }
         let digest = format!("{:x}", md5::compute(self.template.as_bytes()));
         format!("{}_{}", self.field, &digest[..6])
-    }
-
-    /// The constant's path in one of the shared enums: `Slots.Character.name`.
-    pub fn path(&self, family: &str) -> String {
-        format!("{family}.{}.{}", slot_name(&self.type_name), self.member())
     }
 }
 

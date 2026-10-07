@@ -14,7 +14,7 @@
 
 use super::swift::{
     Computed, LocalAlias, SwiftType, argument_expression, check_head, possible_types_reference,
-    scalar_reader, scalar_type, swift_literal, type_reference, variable_literal,
+    scalar_reader, scalar_type, slot_path, swift_literal, type_reference, variable_literal,
 };
 use super::writer::Writer;
 use crate::decide::{
@@ -23,8 +23,8 @@ use crate::decide::{
     ReaderPlan, RefetchMembers, SatisfiedCheck, ScalarForm, ScalarRead, SlotAccess, SpreadForm,
     SpreadGuard, SpreadRead, TypeTest,
 };
-use crate::names::capitalize;
 use crate::names::guard_name;
+use crate::naming::capitalize;
 
 pub(super) fn fragment_text(fragment: &FragmentLens) -> String {
     let mut writer = Writer::new();
@@ -943,12 +943,15 @@ pub(super) fn is_present_function(writer: &mut Writer, checks: &[Guarded<SlotAcc
 pub(super) fn slot_expression(access: &SlotAccess) -> String {
     let slot = &access.slot;
     match (access.on_record_type, slot.has_variables()) {
-        (false, false) => slot.path("Slots"),
-        (false, true) => format!("anchor.owner.slot({})", slot.path("Slots")),
-        (true, false) => format!("{}.on(anchor.record.type)", slot.path("AbstractSlots")),
+        (false, false) => slot_path("Slots", slot),
+        (false, true) => format!("anchor.owner.slot({})", slot_path("Slots", slot)),
+        (true, false) => format!(
+            "{}.on(anchor.record.type)",
+            slot_path("AbstractSlots", slot)
+        ),
         (true, true) => format!(
             "anchor.owner.slot({}, on: anchor.record.type)",
-            slot.path("Slots")
+            slot_path("Slots", slot)
         ),
     }
 }

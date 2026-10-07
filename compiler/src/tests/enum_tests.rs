@@ -3,7 +3,7 @@
 //! type, and the names it takes or refuses at the module's top level.
 
 use super::*;
-use crate::names::NameError;
+use crate::naming::NameError;
 
 /// What the compiler makes of `text` against the schema `sdl` under an
 /// empty configuration: the Swift it writes, or its errors' messages.

@@ -4,7 +4,7 @@
 //! The shared enums name the runtime's module in expressions, which is safe
 //! here alone: their members are spelled off its name, as `names` decides.
 
-use super::swift::{input_field_type, runtime_value, swift_literal, type_reference};
+use super::swift::{input_field_type, runtime_value, slot_member, swift_literal, type_reference};
 use super::writer::Writer;
 use super::{FORMAT, HEADER};
 use crate::decide::{KeyPart, Shared, SlotRef};
@@ -133,7 +133,7 @@ pub(super) fn shared_text(shared: &Shared) -> String {
                                 swift_literal(&slot.template)
                             )
                         };
-                        writer.line(format!("static let {} = {initializer}", slot.member()));
+                        writer.line(format!("static let {} = {initializer}", slot_member(slot)));
                     }
                 },
             );
@@ -297,7 +297,7 @@ pub(super) fn shared_text(shared: &Shared) -> String {
                         for slot in slots {
                             writer.line(format!(
                                 "static let {} = {}({})",
-                                slot.member(),
+                                slot_member(slot),
                                 runtime_value("AbstractSlot"),
                                 swift_literal(&slot.template)
                             ));

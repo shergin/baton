@@ -32,11 +32,9 @@ pub use lens::{
     RefetchMembers, SatisfiedCheck, ScalarForm, ScalarRead, ScalarShape, SlotAccess, SpreadForm,
     SpreadGuard, SpreadRead, TypeTest,
 };
-pub use operation::{
-    BuilderPlan, BuilderValue, OperationValue, VariableBase, VariableValue, local_name,
-};
+pub use operation::{BuilderPlan, BuilderValue, OperationValue, VariableBase, VariableValue};
 
-use crate::names::{NameError, Reserved, Written, enum_type_name, input_type_name};
+use crate::naming::{NameError, Naming, Position, Reserved, Written};
 use crate::pipeline::{
     ConditionClass, ConnectionPlan, EditPlan, LookupPlan, Plan, SelectionPlan, StorageKeyPlan,
     TypePlan,
@@ -66,18 +64,18 @@ pub struct FragmentLens {
 /// Decides everything the emitters print for `plan`, or returns the names
 /// some scope would declare twice. The fragments are decided before the
 /// operations and each lens before the lenses nested in it, the order that
-/// numbers argument sites. A mapped scalar reads as the Swift type
-/// `host_types` names for it: the plan carries the scalar's name only.
-pub fn program(
-    plan: &Plan,
-    host_types: &BTreeMap<String, String>,
-) -> Result<Program, Vec<NameError>> {
-    let mut readers = reader::Readers::new(plan, host_types);
-    let builder_names = Reserved::builders(
+/// numbers argument sites. Every name is spelled as `naming` spells it, and
+/// a mapped scalar reads as the host type `naming` names for it: the plan
+/// carries the scalar's name only.
+pub fn program(plan: &Plan, naming: &dyn Naming) -> Result<Program, Vec<NameError>> {
+    let mut readers = reader::Readers::new(plan, naming);
+    let builder_names = Reserved::new(
+        naming,
+        Position::Builder,
         plan.enums
             .keys()
-            .map(|name| enum_type_name(name))
-            .chain(plan.inputs.keys().map(|name| input_type_name(name))),
+            .map(|name| naming.enum_type(name))
+            .chain(plan.inputs.keys().map(|name| naming.input_type(name))),
     );
     let mut duplicates = Vec::new();
     let fragments = plan
@@ -109,10 +107,10 @@ pub fn program(
         operations,
         shared: Shared::default(),
     };
-    program.shared = Shared::collect(plan, &program, host_types);
+    program.shared = Shared::collect(plan, &program, naming);
     let mut all = std::mem::take(&mut readers.duplicates);
     all.extend(duplicates);
-    all.extend(program.shared.duplicates(plan));
+    all.extend(program.shared.duplicates(plan, naming));
     // A fragment's field is in the normalization of every operation that
     // spreads the fragment, so its clash with a builder's names is found
     // once per operation: once is told.

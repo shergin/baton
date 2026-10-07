@@ -17,16 +17,14 @@ use super::lens::{
     Accessor, AliasGuard, AliasedRead, Binding, BoundArgument, ConditionRead, ConnectionMembers,
     ErrorCheck, ErrorLine, Guarded, LinkedForm, LinkedRead, LoadMore, Nodes, Read, ReaderPlan,
     RefetchMembers, ScalarForm, ScalarRead, ScalarShape, SlotAccess, SpreadForm, SpreadGuard,
-    SpreadRead, TypeTest, hideable_name,
+    SpreadRead, TypeTest,
 };
 use super::members::{
     Member, collect_caught, collect_deferred, condition_lens, derived_spread, members,
     selects_nodes, spread_accessor_names, written_accessor,
 };
 use super::written_key;
-use crate::names::{
-    Kind, NameError, Reserved, Scope, enum_type_name, input_type_name, lower_camel,
-};
+use crate::naming::{Kind, NameError, Naming, Position, Reserved, Scope, Spelled};
 use crate::pipeline::{
     ArgumentPlan, CatchTarget, ConditionClass, ConnectionPlan, ConstantPlan, FragmentPlan, Plan,
     RefetchPlan, RequiredAction, SelectionPlan, StorageKeyPlan, VariablePlan,
@@ -48,7 +46,7 @@ struct FragmentCondition {
 }
 
 /// What the lens decisions of one program share, and what they allocate.
-pub(super) struct Readers {
+pub(super) struct Readers<'a> {
     /// Every fragment's `@argumentDefinitions`, for binding spreads.
     fragment_arguments: BTreeMap<String, Vec<VariablePlan>>,
     fragment_flags: BTreeMap<String, FragmentFlags>,
@@ -68,9 +66,9 @@ pub(super) struct Readers {
     /// What a nested lens may not be named: the names a lens spells, and
     /// the program's fragments and operations.
     lens_names: Reserved,
-    /// The Swift type each mapped scalar reads as, by the scalar's name, as
-    /// the configuration names it.
-    pub host_types: BTreeMap<String, String>,
+    /// How the target names what is generated, and the host type each
+    /// mapped scalar reads as.
+    pub naming: &'a dyn Naming,
     /// The identifiers of the spreads with arguments, numbered in the order
     /// the lenses are decided.
     pub sites: BTreeSet<String>,
@@ -84,7 +82,8 @@ pub(super) struct Readers {
 #[derive(Clone, Copy)]
 pub(super) struct Context<'a> {
     owner: &'a str,
-    /// The lens as Swift names it from the file's top level, for messages.
+    /// The lens as the generated code names it from the file's top level, for
+    /// messages.
     path: &'a str,
     refetch: Option<&'a RefetchPlan>,
     arguments: &'a [VariablePlan],
@@ -144,8 +143,8 @@ struct LensFacts {
     nodes: bool,
 }
 
-impl Readers {
-    pub(super) fn new(plan: &Plan, host_types: &BTreeMap<String, String>) -> Readers {
+impl<'a> Readers<'a> {
+    pub(super) fn new(plan: &Plan, naming: &'a dyn Naming) -> Readers<'a> {
         let mut deferred_fragments = BTreeSet::new();
         let mut caught_fragments = BTreeSet::new();
         for fragment in &plan.fragments {
@@ -198,7 +197,9 @@ impl Readers {
                 .map(|fragment| fragment.name.clone())
                 .collect(),
             scanning_values,
-            lens_names: Reserved::lenses(
+            lens_names: Reserved::new(
+                naming,
+                Position::Lens,
                 plan.fragments
                     .iter()
                     .map(|fragment| fragment.name.clone())
@@ -207,10 +208,10 @@ impl Readers {
                             .iter()
                             .map(|operation| operation.name.clone()),
                     )
-                    .chain(plan.enums.keys().map(|name| enum_type_name(name)))
-                    .chain(plan.inputs.keys().map(|name| input_type_name(name))),
+                    .chain(plan.enums.keys().map(|name| naming.enum_type(name)))
+                    .chain(plan.inputs.keys().map(|name| naming.input_type(name))),
             ),
-            host_types: host_types.clone(),
+            naming,
             sites: BTreeSet::new(),
             duplicates: Vec::new(),
         }
@@ -242,9 +243,10 @@ impl Readers {
         )
     }
 
-    /// An operation's root lens, `Data`.
+    /// An operation's root lens, `Data` in Swift.
     pub(super) fn operation(&mut self, operation: &crate::pipeline::OperationPlan) -> ReaderPlan {
-        let path = format!("{}.Data", operation.name);
+        let data = self.naming.spelling(Spelled::Data);
+        let path = format!("{}.{data}", operation.name);
         let context = Context {
             owner: &operation.name,
             path: &path,
@@ -257,7 +259,7 @@ impl Readers {
             inline: false,
         };
         let mut data = self.lens(
-            "Data",
+            data,
             &operation.root_type,
             false,
             &operation.reader,
@@ -309,14 +311,14 @@ impl Readers {
             self.connection_members(connection, type_name, &members, facts.nodes, context)
         });
         let satisfied =
-            bubbles.then(|| satisfied(type_name, type_is_abstract, &members, &self.host_types));
+            bubbles.then(|| satisfied(type_name, type_is_abstract, &members, self.naming));
         let mut field_errors = context.scans_errors().then(|| {
             field_errors(
                 type_name,
                 type_is_abstract,
                 &members,
                 context.response_path,
-                &self.host_types,
+                self.naming,
             )
         });
         // A value is one frozen selection: the errors inside the values it
@@ -383,7 +385,7 @@ impl Readers {
             nested,
         };
         self.duplicates
-            .extend(hidden_names(context.path, &lens, &members));
+            .extend(hidden_names(context.path, &lens, &members, self.naming));
         lens
     }
 
@@ -523,12 +525,12 @@ impl Readers {
                 member.accessor = Some(name);
             }
         }
-        let preferred = spread_accessor_names(selections, type_name);
+        let preferred = spread_accessor_names(selections, type_name, self.naming);
         for member in members.iter_mut() {
             let Some(fragment) = derived_spread(&member.selection) else {
                 continue;
             };
-            let full = lower_camel(fragment);
+            let full = self.naming.accessor(fragment);
             let mut candidates = vec![preferred.get(fragment).cloned().unwrap_or(full.clone())];
             if candidates[0] != full {
                 candidates.push(full);
@@ -592,13 +594,9 @@ impl Readers {
         for member in members {
             let read = match &member.selection {
                 SelectionPlan::Scalar { name, .. } if name == "__typename" => continue,
-                SelectionPlan::Scalar { .. } => scalar_read(
-                    member,
-                    type_name,
-                    type_is_abstract,
-                    context,
-                    &self.host_types,
-                ),
+                SelectionPlan::Scalar { .. } => {
+                    scalar_read(member, type_name, type_is_abstract, context, self.naming)
+                }
                 SelectionPlan::Linked { .. } => {
                     linked_read(member, type_name, type_is_abstract, nested, context)
                 }
@@ -925,7 +923,7 @@ fn scalar_read(
     type_name: &str,
     type_is_abstract: bool,
     context: Context<'_>,
-    host_types: &BTreeMap<String, String>,
+    naming: &dyn Naming,
 ) -> Read {
     let SelectionPlan::Scalar {
         name,
@@ -970,7 +968,7 @@ fn scalar_read(
     };
     Read::Scalar(ScalarRead {
         slot: SlotAccess::of(type_name, type_is_abstract, storage_key),
-        shape: ScalarShape::of(type_, host_types),
+        shape: ScalarShape::of(type_, naming),
         form,
         path: format!(
             "{}{}",
@@ -1089,12 +1087,21 @@ fn required_path(required: &Option<crate::pipeline::RequiredPlan>) -> String {
 /// The clashes of a lens's accessors with the names its code spells that
 /// they would hide: an accessor the document named `Slots`, say, would hide
 /// the enum from every body of the lens and of the lenses nested in it.
-fn hidden_names(path: &str, lens: &ReaderPlan, members: &[Member]) -> Vec<NameError> {
-    let spelled = lens.hideable_names();
-    let none = Reserved::none();
+fn hidden_names(
+    path: &str,
+    lens: &ReaderPlan,
+    members: &[Member],
+    naming: &dyn Naming,
+) -> Vec<NameError> {
+    let spelled: BTreeSet<&str> = lens
+        .hideable_names()
+        .into_iter()
+        .map(|spelled| naming.spelling(spelled))
+        .collect();
+    let none = Reserved::none(naming);
     let mut scope = Scope::new(path, &none);
-    for name in &spelled {
-        scope.declare(name, Kind::Type, hideable_name(name));
+    for spelled in lens.hideable_names() {
+        scope.declare_spelled(naming, spelled);
     }
     for member in members {
         let Some((name, what)) = written_accessor(&member.selection) else {

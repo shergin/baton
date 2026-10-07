@@ -11,10 +11,7 @@ use super::lens::{
     SlotAccess, SpreadGuard, TypeTest,
 };
 use super::{Guard, NormalizationKind, NormalizationSelection, Program};
-use crate::names::{
-    Kind, NameError, Reserved, STANDARD_LIBRARY_NAMES, Scope, Written, enum_type_name,
-    input_type_name, keyed_types, possible_types, type_constant,
-};
+use crate::naming::{Kind, NameError, Naming, Reserved, Scope, Spelled, Written};
 use crate::pipeline::{OperationKind, Plan, TypePlan};
 
 /// A field of an input object as its struct declares it: the schema's
@@ -55,10 +52,10 @@ pub struct Shared {
     /// owner settles once each.
     pub guards: BTreeSet<Guard>,
     /// The schema's enums the documents read or pass, with their values,
-    /// each declared as a Swift enum.
+    /// each declared as an enum of the target's.
     pub enums: BTreeMap<String, Vec<String>>,
     /// The schema's input objects the documents' variables name, with their
-    /// fields, each declared as a Swift struct.
+    /// fields, each declared as a struct of the target's.
     pub inputs: BTreeMap<String, Vec<InputField>>,
     /// The slots of the schema extensions' fields, which the registry marks
     /// as the client's: a lens reads one as absent, not missing, until a
@@ -73,11 +70,7 @@ pub struct Shared {
 
 impl Shared {
     /// What the lenses, plans and builders of `program` use.
-    pub(super) fn collect(
-        plan: &Plan,
-        program: &Program,
-        host_types: &BTreeMap<String, String>,
-    ) -> Shared {
+    pub(super) fn collect(plan: &Plan, program: &Program, naming: &dyn Naming) -> Shared {
         let mut shared = Shared {
             schema_digest: plan.schema_digest.clone(),
             root_names: plan.root_names.clone(),
@@ -92,7 +85,7 @@ impl Shared {
                             name: field.name.clone(),
                             type_: field.type_.clone(),
                             indirect: field.indirect,
-                            primitive: ScalarShape::primitive(&field.type_, host_types),
+                            primitive: ScalarShape::primitive(&field.type_, naming),
                         })
                         .collect();
                     (name.clone(), fields)
@@ -281,49 +274,39 @@ impl Shared {
 
     /// The names the module's top level and the shared enums would declare
     /// twice: the documents' types beside the shared enums, the runtime's
-    /// module and what the generated code spells from the standard library,
+    /// module and what the generated code spells from the language itself,
     /// and in the enums the types, sets, slots and sites the lenses use.
-    pub(super) fn duplicates(&self, plan: &Plan) -> Vec<NameError> {
-        let none = Reserved::none();
+    pub(super) fn duplicates(&self, plan: &Plan, naming: &dyn Naming) -> Vec<NameError> {
+        let none = Reserved::none(naming);
         let mut module = Scope::new("the module", &none);
-        // The shared file qualifies its sets of types by the standard
-        // library's module, and Swift lets no type be named `Self` or `Any`.
-        module.declare("Swift", Kind::Type, "the standard library's module `Swift`");
-        for name in STANDARD_LIBRARY_NAMES {
-            module.declare(name, Kind::Type, format!("the standard library's `{name}`"));
+        for (name, what) in naming.module_names() {
+            module.declare(name, Kind::Type, what);
         }
-        for name in ["Self", "Any"] {
-            module.declare(name, Kind::Type, format!("Swift's keyword `{name}`"));
-        }
-        module.declare("Baton", Kind::Type, "the runtime's module `Baton`");
-        module.declare("Types", Kind::Type, "the shared enum `Types`");
-        module.declare("Slots", Kind::Type, "the shared enum `Slots`");
+        module.declare_spelled(naming, Spelled::Runtime);
+        module.declare_spelled(naming, Spelled::Types);
+        module.declare_spelled(naming, Spelled::Slots);
         if !self.sites.is_empty() {
-            module.declare("Sites", Kind::Type, "the shared enum `Sites`");
+            module.declare_spelled(naming, Spelled::Sites);
         }
         if !self.guards.is_empty() {
-            module.declare("Guards", Kind::Type, "the shared enum `Guards`");
+            module.declare_spelled(naming, Spelled::Guards);
         }
         for name in self.enums.keys() {
             module.declare(
-                &enum_type_name(name),
+                &naming.enum_type(name),
                 Kind::Type,
                 format!("the schema's enum `{name}`"),
             );
         }
         for name in self.inputs.keys() {
             module.declare(
-                &input_type_name(name),
+                &naming.input_type(name),
                 Kind::Type,
                 format!("the schema's input object `{name}`"),
             );
         }
         if !self.abstract_slots.is_empty() {
-            module.declare(
-                "AbstractSlots",
-                Kind::Type,
-                "the shared enum `AbstractSlots`",
-            );
+            module.declare_spelled(naming, Spelled::AbstractSlots);
         }
         for fragment in &plan.fragments {
             module.declare_written(
@@ -365,7 +348,7 @@ impl Shared {
                     .map(|origin| Written { origin, remedy }),
             );
         }
-        let mut types = Scope::new("Types", &none);
+        let mut types = Scope::new(naming.spelling(Spelled::Types), &none);
         types.declare("schemaDigest", Kind::Static, "the schema's digest");
         types.declare("format", Kind::Static, "the format of the generated code");
         if !self.transient_types.is_empty() || !self.transient_fields.is_empty() {
@@ -373,26 +356,26 @@ impl Shared {
         }
         for type_name in &self.types {
             types.declare(
-                type_constant(type_name).trim_matches('`'),
+                &naming.type_constant(type_name),
                 Kind::Static,
                 format!("the type `{type_name}`"),
             );
         }
         for condition in self.keyed_sets.keys() {
             types.declare(
-                &keyed_types(condition),
+                &naming.keyed_types(condition),
                 Kind::Static,
                 format!("the types that satisfy `{condition}` that one value keys"),
             );
         }
         for condition in self.possible_sets.keys() {
             types.declare(
-                &possible_types(condition),
+                &naming.possible_types(condition),
                 Kind::Static,
                 format!("the types that satisfy `{condition}`"),
             );
         }
-        let mut sites = Scope::new("Sites", &none);
+        let mut sites = Scope::new(naming.spelling(Spelled::Sites), &none);
         for site in &self.sites {
             sites.declare(site, Kind::Static, format!("the site `{site}`"));
         }
@@ -400,8 +383,11 @@ impl Shared {
         duplicates.extend(types.finish());
         duplicates.extend(sites.finish());
         for (family, slots) in [
-            ("Slots", &self.slots),
-            ("AbstractSlots", &self.abstract_slots),
+            (naming.spelling(Spelled::Slots), &self.slots),
+            (
+                naming.spelling(Spelled::AbstractSlots),
+                &self.abstract_slots,
+            ),
         ] {
             let mut enclosing = Scope::new(family, &none);
             let mut by_type: BTreeMap<&str, Vec<&SlotRef>> = BTreeMap::new();
@@ -412,9 +398,8 @@ impl Shared {
                 enclosing.declare(type_name, Kind::Type, format!("the slots of `{type_name}`"));
                 let mut scope = Scope::new(format!("{family}.{type_name}"), &none);
                 for slot in slots {
-                    let member = slot.member();
                     scope.declare(
-                        member.trim_matches('`'),
+                        &slot.member(&|name| naming.slot_name(name)),
                         Kind::Static,
                         format!("the slot `{}`", slot.template),
                     );

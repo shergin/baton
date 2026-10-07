@@ -19,9 +19,9 @@ use std::path::{Path, PathBuf};
 use crate::config::Config;
 use crate::documents::Document;
 use crate::names::{
-    BUILDER_RESERVED_NAMES, NameError, RESERVED_TYPE_NAMES, STANDARD_LIBRARY_NAMES, call_label,
-    escape,
+    BUILDER_RESERVED_NAMES, RESERVED_TYPE_NAMES, STANDARD_LIBRARY_NAMES, call_label, escape,
 };
+use crate::naming::NameError;
 use crate::pipeline::{FragmentPlan, OperationPlan, Plan, SelectionPlan};
 use crate::{diagnostics, emit, pipeline};
 
@@ -784,8 +784,16 @@ fn local_aliases() -> Vec<String> {
 }
 
 /// The names `decide` declares in the scopes of lenses, operations,
-/// builders and the module, read from its source.
+/// builders and the module, read from its source and from what Swift's
+/// naming answers it: `local_name` and the implementation of `Naming`.
 fn scope_names() -> Vec<String> {
+    let names = include_str!("../names.rs");
+    let start = names
+        .find("pub fn local_name")
+        .expect("`names.rs` declares `local_name`");
+    let end = names
+        .find("#[cfg(test)]")
+        .expect("`names.rs` ends with its tests");
     [
         include_str!("../decide/reader.rs"),
         include_str!("../decide/lens.rs"),
@@ -793,6 +801,7 @@ fn scope_names() -> Vec<String> {
         include_str!("../decide/checks.rs"),
         include_str!("../decide/operation.rs"),
         include_str!("../decide/collect.rs"),
+        &names[start..end],
     ]
     .into_iter()
     .flat_map(string_literals)

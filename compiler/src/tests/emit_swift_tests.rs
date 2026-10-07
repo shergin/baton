@@ -9,6 +9,7 @@ use std::path::{Path, PathBuf};
 use super::*;
 use crate::config::Config;
 use crate::documents::Document;
+use crate::names::SwiftNaming;
 use crate::pipeline::{self, TypeKind, TypePlan};
 
 /// The line `property` writes when it reads `expression` under `condition`.
@@ -41,7 +42,7 @@ fn decided_variables(text: &str) -> Vec<VariableValue> {
         &Config::default(),
     )
     .unwrap_or_else(|errors| panic!("the document does not compile: {errors:?}"));
-    let program = crate::decide::program(&compiled.plan, &BTreeMap::new())
+    let program = crate::decide::program(&compiled.plan, &SwiftNaming::default())
         .unwrap_or_else(|errors| panic!("the document declares names twice: {errors:?}"));
     program
         .operations
@@ -157,7 +158,7 @@ fn shape_of(primitive: Primitive, elements_non_null: Option<bool>) -> ScalarShap
             non_null: false,
         },
     };
-    ScalarShape::of(&type_, &host_types)
+    ScalarShape::of(&type_, &SwiftNaming::with_host_types(host_types))
 }
 
 #[test]

@@ -2,12 +2,11 @@
 //! the `@required` fields that bubble, `fieldErrors` under an error policy
 //! or for a catch, and `isPresent` for a deferred spread.
 
-use std::collections::BTreeMap;
-
 use super::lens::{
     ErrorCheck, ErrorLine, Guarded, ReaderPlan, SatisfiedCheck, SlotAccess, host_type,
 };
 use super::members::{Member, collects_errors, condition_lens, own_members};
+use crate::naming::Naming;
 use crate::pipeline::{RequiredAction, SelectionPlan, TypePlan};
 
 /// Marks `lens` to report the path of its first missing `@required` field,
@@ -39,7 +38,7 @@ pub(super) fn satisfied(
     type_name: &str,
     type_is_abstract: bool,
     members: &[Member],
-    host_types: &BTreeMap<String, String>,
+    naming: &dyn Naming,
 ) -> Vec<Guarded<Option<SatisfiedCheck>>> {
     own_members(members)
         .map(|member| {
@@ -60,7 +59,7 @@ pub(super) fn satisfied(
                     slot: SlotAccess::of(type_name, type_is_abstract, storage_key),
                     path: required.path.clone(),
                     log: required.action == RequiredAction::Log,
-                    swift_type: host_type(scalar, host_types),
+                    swift_type: host_type(scalar, naming),
                 }),
                 SelectionPlan::Scalar {
                     required: Some(required),
@@ -110,7 +109,7 @@ pub(super) fn field_errors(
     type_is_abstract: bool,
     members: &[Member],
     response_path: &str,
-    host_types: &BTreeMap<String, String>,
+    naming: &dyn Naming,
 ) -> Vec<ErrorCheck> {
     let mut checks = Vec::new();
     for member in members {
@@ -163,7 +162,7 @@ pub(super) fn field_errors(
                     lines.push(ErrorLine::Converts {
                         slot,
                         path: format!("{response_path}{}", alias.as_deref().unwrap_or(name)),
-                        swift_type: host_type(type_.base_name(), host_types),
+                        swift_type: host_type(type_.base_name(), naming),
                     });
                 }
             }

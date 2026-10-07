@@ -15,6 +15,8 @@ use std::path::{Path, PathBuf};
 
 use super::*;
 use crate::config::Config;
+use crate::names::SwiftNaming;
+use crate::naming::Naming;
 use crate::{diagnostics, documents, pipeline};
 
 fn repository() -> PathBuf {
@@ -431,8 +433,13 @@ fn check_hideable_names(lens: &crate::decide::ReaderPlan) {
     let mut writer = super::writer::Writer::new();
     super::lens::lens(&mut writer, lens);
     let text = writer.finish();
+    let decided: BTreeSet<&str> = lens
+        .hideable_names()
+        .into_iter()
+        .map(|spelled| SwiftNaming::default().spelling(spelled))
+        .collect();
     assert_eq!(
-        lens.hideable_names(),
+        decided,
         spelled_hideable_names(&text),
         "the lens `{}` spells other names a member could hide than decided:\n{text}",
         lens.name
@@ -444,9 +451,11 @@ fn check_hideable_names(lens: &crate::decide::ReaderPlan) {
 
 #[test]
 fn the_names_a_lens_is_decided_to_spell_that_a_member_could_hide_are_the_ones_its_text_spells() {
-    let program =
-        crate::decide::program(&compile_swift_tests(), &swift_tests_config().swift_types())
-            .unwrap_or_else(|errors| panic!("the test documents emit: {errors:?}"));
+    let program = crate::decide::program(
+        &compile_swift_tests(),
+        &SwiftNaming::new(&swift_tests_config()),
+    )
+    .unwrap_or_else(|errors| panic!("the test documents emit: {errors:?}"));
     for fragment in &program.fragments {
         check_hideable_names(&fragment.lens);
     }

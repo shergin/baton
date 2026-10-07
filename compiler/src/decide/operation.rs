@@ -1,13 +1,13 @@
 //! The operation half of the decide pass: an operation value's variables and
 //! the names it declares, and a mutation's optimistic-response builders.
 
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeSet;
 
-use super::lens::{ListShape, Primitive, ReaderPlan, ScalarShape, hideable_name};
+use super::lens::{ListShape, Primitive, ReaderPlan, ScalarShape};
 use super::reader::Readers;
 use super::{NormalizationField, NormalizationKind, NormalizationSelection};
 use crate::config::OnError;
-use crate::names::{Kind, NameError, Reserved, Scope, Written, escape};
+use crate::naming::{Kind, NameError, Naming, Reserved, Scope, Spelled, Written, numbered};
 use crate::pipeline::{FragmentPlan, OperationKind, OperationPlan, TypeKind, VariablePlan};
 
 /// An operation's value type: its variables, its static data, its plan, its
@@ -95,7 +95,7 @@ pub enum VariableBase {
 pub(super) fn operation(
     operation: &OperationPlan,
     fragments: &[FragmentPlan],
-    readers: &mut Readers,
+    readers: &mut Readers<'_>,
     builder_names: &Reserved,
     duplicates: &mut Vec<NameError>,
 ) -> OperationValue {
@@ -110,23 +110,31 @@ pub(super) fn operation(
         .iter()
         .map(|variable| VariableValue {
             name: variable.name.clone(),
-            shape: variable_shape(variable, &readers.host_types),
+            shape: variable_shape(variable, readers.naming),
             non_null: variable.type_.non_null(),
-            local: local_name(&variable.name, &names),
+            local: readers.naming.local(&variable.name, &names),
         })
         .collect();
     let normalization = super::normalization(&operation.root_type, &operation.normalization);
     let data = readers.operation(operation);
-    duplicates.extend(operation_scope(operation, resolves, &data, &normalization));
-    duplicates.extend(nested_types(operation, &data, fragments));
+    let naming = readers.naming;
+    duplicates.extend(operation_scope(
+        operation,
+        resolves,
+        &data,
+        &normalization,
+        naming,
+    ));
+    duplicates.extend(nested_types(operation, &data, fragments, naming));
     let optimistic = (operation.kind == OperationKind::Mutation).then(|| {
-        let path = format!("{}.OptimisticResponse", operation.name);
+        let name = naming.spelling(Spelled::OptimisticResponse);
+        let path = format!("{}.{name}", operation.name);
         builder(
             &path,
-            "OptimisticResponse",
+            name,
             &normalization,
             builder_names,
-            &readers.host_types,
+            readers.naming,
             duplicates,
         )
     });
@@ -153,25 +161,26 @@ pub(super) fn operation(
 /// a value of its kind, which a variable would take the place of, and
 /// beside the names its code spells, which a variable would hide: the
 /// runtime's module, the shared enums its plan and its root lens read
-/// through or test conditions by, Swift's `Self` where a lens nested in it
-/// reaches a static member of its own, and a mutation's action's own
-/// parameter.
+/// through or test conditions by, the type's own name, Swift's `Self`,
+/// where a lens nested in it reaches a static member of its own, and a
+/// mutation's action's own parameter.
 fn operation_scope(
     operation: &OperationPlan,
     resolves: bool,
     data: &ReaderPlan,
     normalization: &NormalizationSelection,
+    naming: &dyn Naming,
 ) -> Vec<NameError> {
-    let none = Reserved::none();
+    let none = Reserved::none(naming);
     let mut scope = Scope::new(operation.name.as_str(), &none);
-    scope.declare("Baton", Kind::Type, "the runtime's module `Baton`");
+    scope.declare_spelled(naming, Spelled::Runtime);
     let mut spelled = data.hideable_names();
-    spelled.extend(["Types", "Slots"]);
+    spelled.extend([Spelled::Types, Spelled::Slots]);
     if normalization.has_guards() {
-        spelled.insert("Guards");
+        spelled.insert(Spelled::Guards);
     }
     for name in spelled {
-        scope.declare(name, Kind::Type, hideable_name(name));
+        scope.declare_spelled(naming, name);
     }
     if operation.kind == OperationKind::Mutation {
         scope.declare(
@@ -234,16 +243,18 @@ fn operation_scope(
             scope.declare(name, Kind::Static, format!("the operation's `{name}`"));
         }
     }
-    scope.declare("Data", Kind::Type, "the operation's root lens `Data`");
-    if operation.kind == OperationKind::Mutation {
-        scope.declare("Action", Kind::Type, "the mutation's `Action`");
-        scope.declare(
-            "OptimisticResponse",
-            Kind::Type,
-            "the mutation's `OptimisticResponse`",
-        );
-    }
+    declare_nested_types(&mut scope, operation.kind, naming);
     scope.finish()
+}
+
+/// Declares the types an operation's value nests: `Data`, and a mutation's
+/// `Action` and `OptimisticResponse`, as Swift spells them.
+fn declare_nested_types(scope: &mut Scope<'_>, kind: OperationKind, naming: &dyn Naming) {
+    scope.declare_spelled(naming, Spelled::Data);
+    if kind == OperationKind::Mutation {
+        scope.declare_spelled(naming, Spelled::Action);
+        scope.declare_spelled(naming, Spelled::OptimisticResponse);
+    }
 }
 
 /// The clashes of the fragments an operation's lenses spread with the types
@@ -255,18 +266,11 @@ fn nested_types(
     operation: &OperationPlan,
     data: &ReaderPlan,
     fragments: &[FragmentPlan],
+    naming: &dyn Naming,
 ) -> Vec<NameError> {
-    let none = Reserved::none();
+    let none = Reserved::none(naming);
     let mut scope = Scope::new(operation.name.as_str(), &none);
-    scope.declare("Data", Kind::Type, "the operation's root lens `Data`");
-    if operation.kind == OperationKind::Mutation {
-        scope.declare("Action", Kind::Type, "the mutation's `Action`");
-        scope.declare(
-            "OptimisticResponse",
-            Kind::Type,
-            "the mutation's `OptimisticResponse`",
-        );
-    }
+    declare_nested_types(&mut scope, operation.kind, naming);
     for name in data.spread_fragments() {
         let origin = fragments
             .iter()
@@ -291,7 +295,7 @@ fn builder(
     name: &str,
     selection: &NormalizationSelection,
     builder_names: &Reserved,
-    host_types: &BTreeMap<String, String>,
+    naming: &dyn Naming,
     duplicates: &mut Vec<NameError>,
 ) -> BuilderPlan {
     // Every field any variant reads, once: the response is written for
@@ -327,7 +331,7 @@ fn builder(
         let key = field.response_key.clone();
         let value = match &field.kind {
             NormalizationKind::Scalar { type_ } => BuilderValue::Scalar {
-                shape: ScalarShape::of(type_, host_types),
+                shape: ScalarShape::of(type_, naming),
             },
             NormalizationKind::Linked {
                 plural,
@@ -343,7 +347,7 @@ fn builder(
             }
         };
         builder_fields.push(BuilderField {
-            local: local_name(&key, &keys),
+            local: naming.local(&key, &keys),
             key,
             value,
         });
@@ -357,7 +361,7 @@ fn builder(
                 &name,
                 child,
                 builder_names,
-                host_types,
+                naming,
                 duplicates,
             )
         })
@@ -374,31 +378,9 @@ fn builder(
     }
 }
 
-/// The name a property's value goes by as a parameter or a local: the
-/// property's own, escaped, except for `self`, which as a parameter or a
-/// local would hide the instance. It goes by `selfValue`, numbered past the
-/// names in `taken`.
-pub fn local_name(property: &str, taken: &[&str]) -> String {
-    if property != "self" {
-        return escape(property);
-    }
-    numbered("selfValue", taken)
-}
-
-/// `base`, or the first of `base2`, `base3` and on that is none of `taken`.
-fn numbered(base: &str, taken: &[&str]) -> String {
-    let mut name = base.to_string();
-    let mut number = 2;
-    while taken.contains(&name.as_str()) {
-        name = format!("{base}{number}");
-        number += 1;
-    }
-    name
-}
-
 /// A variable's shape: the scalars as the accessors read them, anything
 /// else as the request carries it.
-fn variable_shape(variable: &VariablePlan, host_types: &BTreeMap<String, String>) -> VariableShape {
+fn variable_shape(variable: &VariablePlan, naming: &dyn Naming) -> VariableShape {
     let base = match variable.type_.base_kind() {
         TypeKind::Int
         | TypeKind::Float
@@ -407,7 +389,7 @@ fn variable_shape(variable: &VariablePlan, host_types: &BTreeMap<String, String>
         | TypeKind::Id
         | TypeKind::Enum
         | TypeKind::CustomScalar => {
-            VariableBase::Scalar(ScalarShape::primitive(&variable.type_, host_types))
+            VariableBase::Scalar(ScalarShape::primitive(&variable.type_, naming))
         }
         _ => VariableBase::Input(variable.type_.base_name().to_string()),
     };

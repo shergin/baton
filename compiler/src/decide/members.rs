@@ -6,7 +6,7 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use super::lens::TypeTest;
 use super::{Guard, any};
-use crate::names::lower_camel;
+use crate::naming::Naming;
 use crate::pipeline::{ConditionClass, SelectionPlan};
 
 /// One thing a lens reads, after its occurrences merged: a field, a spread
@@ -447,12 +447,13 @@ fn collect_spreads<'a>(selections: &'a [SelectionPlan], type_name: &str, into: &
     }
 }
 
-/// Default spread accessor names: the fragment's owner prefix in lower camel
-/// case, falling back to the whole name when two spreads would collide, and
-/// for a name from an underscore, which has no prefix.
+/// Default spread accessor names: the fragment's owner prefix as `naming`
+/// spells an accessor, falling back to the whole name when two spreads
+/// would collide, and for a name from an underscore, which has no prefix.
 pub(super) fn spread_accessor_names(
     selections: &[SelectionPlan],
     type_name: &str,
+    naming: &dyn Naming,
 ) -> BTreeMap<String, String> {
     let mut fragments: Vec<&str> = Vec::new();
     collect_spreads(selections, type_name, &mut fragments);
@@ -463,7 +464,7 @@ pub(super) fn spread_accessor_names(
             _ => fragment,
         };
         by_prefix
-            .entry(lower_camel(prefix))
+            .entry(naming.accessor(prefix))
             .or_default()
             .push(fragment);
     }
@@ -473,7 +474,7 @@ pub(super) fn spread_accessor_names(
             names.insert(owners[0].to_string(), prefix);
         } else {
             for owner in owners {
-                names.insert(owner.to_string(), lower_camel(owner));
+                names.insert(owner.to_string(), naming.accessor(owner));
             }
         }
     }

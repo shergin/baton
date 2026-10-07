@@ -3,7 +3,9 @@
 use std::collections::HashMap;
 use std::fmt::Write as _;
 
-use super::swift::{constant_text, keyed_types_reference, swift_literal, type_reference};
+use super::swift::{
+    constant_text, keyed_types_reference, slot_path, swift_literal, type_reference,
+};
 use crate::decide::{
     self, Guard, NormalizationField, NormalizationKind, NormalizationSelection, SlotRef,
 };
@@ -267,9 +269,9 @@ fn key_expression(key: &[String]) -> String {
 fn plan_key(type_name: &str, storage_key: &StorageKeyPlan) -> String {
     let slot = SlotRef::new(type_name, storage_key);
     if slot.has_variables() {
-        format!(".dynamic({})", slot.path("Slots"))
+        format!(".dynamic({})", slot_path("Slots", &slot))
     } else {
-        format!(".fixed({})", slot.path("Slots"))
+        format!(".fixed({})", slot_path("Slots", &slot))
     }
 }
 
