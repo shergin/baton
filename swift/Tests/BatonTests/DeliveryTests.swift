@@ -524,13 +524,7 @@ struct DeliveryTests {
         let environment = Environment(transport: OpenParts(parts.map { fixture($0) }))
         let events = LogTests.Events()
         environment.log = events.log
-        final class Done: @unchecked Sendable { var done = false }
-        let done = Done()
-        Task {
-            try await environment.fetch(TestProfileQuery(id: "1"))
-            done.done = true
-        }
-        await until { done.done }
+        try await environment.fetch(TestProfileQuery(id: "1"))
         return (environment.store, events.fieldErrors)
     }
 
@@ -1027,11 +1021,11 @@ struct DeliveryTests {
                 } catch {}
                 reader.end()
             }
-            await until(timeout: .seconds(2)) { server.count(of: "subscribe") == 2 || reader.finished }
+            await until { server.count(of: "subscribe") == 2 || reader.finished }
             if let id = server.ids(of: "subscribe").dropFirst().first {
                 server.send(#"{"id":"\#(id)","type":"next","payload":{"data":{"noteAdded":null}}}"#)
             }
-            await until(timeout: .seconds(2)) { reader.received == 1 || reader.finished }
+            await until { reader.received == 1 || reader.finished }
             second.cancel()
             guard reader.received == 1, !reader.finished else {
                 Issue.record("the second subscription ended before its event")
