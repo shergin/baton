@@ -6,7 +6,7 @@ import PackageDescription
 /// The release whose compiler bundle a package that depends on Baton
 /// downloads, and the bundle's checksum. The release workflow writes both
 /// into the release commit; empty until a release publishes a bundle.
-let compilerRelease = (version: "0.7.0", checksum: "d6a64d58d657c2b591955e2ce864e886953a034ae7d89a79a750ee69212cd45a")
+let compilerRelease = (version: "0.8.0", checksum: "58afdffbe3905904f6c3fc8192d3f18b11b1cf2826e33bf9a2bc69ef5e887636")
 
 /// The compiler the build plugin runs: the one `scripts/build-compiler.sh`
 /// built into this checkout, or else the bundle the release published.
