@@ -108,11 +108,16 @@ final class SocketServer: @unchecked Sendable {
         connection.receiveMessage { [weak self] data, context, _, error in
             guard let self else { return }
             let metadata = context?.protocolMetadata(definition: NWProtocolWebSocket.definition) as? NWProtocolWebSocket.Metadata
-            if error != nil || metadata?.opcode == .close {
+            // A client that drops the connection without a close frame ends
+            // it all the same: the last message's context is the final one.
+            if error != nil || metadata?.opcode == .close || context?.isFinal == true {
                 lock.withLock { closes += 1 }
                 return
             }
-            guard let data else { return }
+            guard let data else {
+                receive(on: connection)
+                return
+            }
             // Parsed with `JSONSerialization` rather than the transport's own
             // frame reader, so a fault in that reader shows instead of being
             // read the same way on both ends.
