@@ -52,6 +52,21 @@ hand (`driven[i].send`, `complete`, `fail`); and it lists its requests by
 kind. `wait(until:)` waits on the main actor for a handle or a store to
 settle, with a timeout, yielding between checks.
 
+## A rule tested with a value
+
+```swift
+func isSeriesRegular(_ character: CharacterValue_character) -> Bool {
+    character.status == "Alive" && character.episode.count > 10
+}
+
+#expect(!isSeriesRegular(CharacterValue_character(id: "1", name: "Rick", status: "Dead", origin: nil, episode: [])))
+```
+
+A rule outside a view takes the value an `@inline` fragment compiles to,
+so its test builds one with the value's initializer, field by field, and
+needs no store at all; the app hands it the value the spread's accessor
+read. The same rule over a lens would need a store to read from.
+
 ## The log in tests
 
 A debug build prints a missing field, a value a reader's type cannot hold,
