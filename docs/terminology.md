@@ -327,7 +327,10 @@ returns the mutation's data lens and says whether it is in flight. See
 Swift: the arguments are labelled, the optimistic response is
 `optimistic:`, the mutation's `OptimisticResponse` builder whose `payload`
 the action commits, the call is `async throws`, and `isInFlight` says it is
-in flight: `@Mutation("…") var star: StarMutation.Action`.
+in flight: `@Mutation("…") var star: StarMutation.Action`. The builder's
+own members, `payload` and `variable`, are names a mutation's root field
+cannot carry or be aliased to; the compiler refuses the alias at its name,
+as it refuses every name generated code reserves.
 
 ## Store
 
@@ -863,10 +866,14 @@ subscription transport may be an HTTP transport; the socket transport speaks
 `graphql-transport-ws` for subscriptions and any operation sent over the
 socket; two parsers split the parts and the events. The single-connection
 mode of `graphql-sse` waits for a gateway that cannot do HTTP/2. A response
-outside 2xx fails with the transport error, its HTTP status and body; a
-socket that closed under a subscription, a recorded transport with nothing
-recorded and a transport that delivers no payload fail with one of status
-0, which says what went wrong. That error stays the built-in transports'
+outside 2xx fails with the transport error, its HTTP status and body,
+unless its media type is `application/graphql-response+json` and its body
+is errors and no data: a server of the GraphQL-over-HTTP specification
+answers a [request error](#runtime) so, with a 4xx or 5xx status, and the
+transport fails with that request error instead; a socket that closed
+under a subscription, a recorded transport with nothing recorded and a
+transport that delivers no payload fail with one of status 0, which says
+what went wrong. That error stays the built-in transports'
 error, and is carried unchanged inside the transport's kind of
 [failure](#runtime), as the platform's URL error or an app's own
 transport's error is. What a production endpoint needs beyond the built-in
@@ -957,7 +964,11 @@ error raised before execution begins, which leaves the response no data;
 beside it the specification names the [field error](#store).
 Here: a response of errors and no data fails its fetch with the server's
 errors, each with its message, path and `extensions`: the request kind of a
-[failure](#runtime). See
+[failure](#runtime). It is the same whatever its HTTP status: a server of
+the GraphQL-over-HTTP specification sends it with a 4xx or 5xx status as
+`application/graphql-response+json`, and the built-in HTTP transport fails
+with it rather than with the transport's error, so a subscription it
+refuses ends instead of reconnecting. See
 [the contract](../spec/runtime.md#3-the-ingest-a-response-to-a-change-set)
 and [the decision](decisions/a-failure-says-its-kind.md).
 Swift: the failure is `GraphQLErrors`, whose `errors` keep each error.
