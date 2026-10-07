@@ -1,6 +1,7 @@
 # A mapped scalar's host type is named per language
 
-Status: accepted, 2026-10-07. Serves
+Status: accepted, 2026-10-07; amended 2026-10-07, the Kotlin entry's
+shape. Serves
 [The compiler decides](../principles/compiler-decides.md) and
 [Two runtimes, one compiler](../principles/two-runtimes-one-compiler.md).
 Built 2026-10-07. Reopen if Relay's `customScalarTypes` takes a shape of its
@@ -24,7 +25,14 @@ is a string filled from `OnError::swift_case`, the case of
 
 - `customScalarTypes` keeps Relay's key. A value is either a string, the
   Swift type as today, or an object by language, for example
-  `{"swift": "Foundation.Decimal", "kotlin": "java.math.BigDecimal"}`.
+  `{"swift": "Foundation.Decimal", "kotlin": {"type": "java.math.BigDecimal",
+  "converter": "baton.scalars.Decimals"}}`.
+- A language's entry has the shape that language needs. Swift's is the
+  type, which conforms to `MappedScalar` and so parses and renders itself.
+  Kotlin's is the type and the converter: a Kotlin type the runtime does
+  not own cannot implement an interface, so an object implementing
+  `ScalarConverter<T>` parses and renders it, and the compiler must be told
+  the type, since nothing about a converter object names it.
 - The plan carries the scalar's schema name, and each language's writer
   resolves the host type from the configuration.
 - `OperationPlan.error_behavior` carries the `onError` value, not a Swift
@@ -32,6 +40,11 @@ is a string filled from `OnError::swift_case`, the case of
 - The goldens prove each step: the Swift written does not change by a byte.
 
 ## Evidence
+
+- The Kotlin emitter's first milestone, 2026-10-07: a constructor
+  parameter of an input object or an operation needs its type, and a
+  converter object named alone gives the compiler nothing to print for it;
+  the entry became the type and the converter together.
 
 - The compiler as built, by reading: the doc comment of
   `custom_scalar_types` in `compiler/src/config.rs`; `mapped` on
