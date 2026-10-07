@@ -105,5 +105,20 @@ sealed interface Phase<out Data> {
 /** A query's handle: the operation's data in the store, observed in composition. Defined with the environment. */
 class OperationHandle<Data : Lens> internal constructor()
 
+/**
+ * A mutation as a callable value: generated code gives it an `invoke` with
+ * one argument per variable and an optional optimistic response, which
+ * commits the mutation through the environment and returns its data.
+ * Defined with the environment.
+ */
+class MutationAction<Op : MutationOperation<Data>, Data : Lens> internal constructor() {
+    /** Whether a commit of this mutation is in flight. */
+    val isInFlight: Boolean get() = TODO("milestone 3: the environment")
+
+    /** Commits [operation], an optimistic response's payload applied first when given, and returns the mutation's data. */
+    @Generated
+    suspend fun commit(operation: Op, optimistic: Payload? = null): Data = TODO("milestone 3: the environment")
+}
+
 /** A subscription's handle: its events, its latest data and its stream. Defined with the environment. */
 class SubscriptionHandle<Data : Lens> internal constructor()
