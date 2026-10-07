@@ -21,6 +21,29 @@ Best ingest and best commit of the fixture at each release below.
   <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
 
+## Unreleased, a plan's selections declared once — 2026-10-06
+
+Revision: the working tree on top of `c8ca8cc`. Machine: Apple M1 Pro
+(MacBook Pro), macOS 26.5.2, Swift 6.3.3, debug, one job. Not from
+`BatonBenchmarks`: the generator of issue 34 writes a schema and a document
+of S sections, a union, each holding C cards, a union, each holding M
+metas, a union; `batonc` writes the operation, and `swiftc -c -wmo
+-parse-as-library` compiles it with the shared file against the debug
+`Baton` module. Time is wall clock, memory the compiler's maximum resident
+set. The column before is the same file as the compiler wrote it at
+`c8ca8cc`, one expression; at 4 x 10 x 5 it is the type check alone.
+
+| S x C x M | Selections before | Declared now | Source now | Before | Now |
+|---|---|---|---|---|---|
+| 4 x 10 x 5 | 370 | 43 | 78 KB | 23.7 s, 3.20 GB | 1.06 s, 0.19 GB |
+| 8 x 20 x 10 | 2,258 | 82 | 158 KB | not run; killed at 12 GB in the issue | 1.72 s, 0.24 GB |
+| 8 x 40 x 10 | 4,498 | 142 | 273 KB | not run | 3.03 s, 0.30 GB |
+| 10 x 50 x 20 | 12,022 | 184 | 359 KB | not run | 4.01 s, 0.36 GB |
+
+The issue's workaround, each copy hoisted into its own declaration without
+sharing, type-checks 10 x 50 x 20 in 31.7 s; sharing is what keeps the
+plan linear in the document.
+
 ## Unreleased, a type's name matched by bytes — 2026-10-11
 
 Revision: the working tree on top of `3c3296e`, one full run before and one

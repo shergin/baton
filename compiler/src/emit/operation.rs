@@ -7,7 +7,7 @@
 
 use super::builder::builder;
 use super::lens::lens;
-use super::plan::selection_plan;
+use super::plan::PlanSelections;
 use super::swift::{
     SwiftType, member, parameter, raw_multiline_literal, runtime_value, swift_literal,
     variable_type,
@@ -162,8 +162,9 @@ fn value_members(
     });
     writer.blank();
 
-    // The normalization plan, as static data. The plan's printer lays its
-    // expression out over the lines below this one.
+    // The normalization plan, as static data: the root, then each of its
+    // selections once, laid out by the plan's printer over the lines below
+    // its declaration.
     // A module with transient types or fields has every plan name its rule
     // set, so the registry learns them before any plan writes a row.
     let transient = if shared.transient_types.is_empty() && shared.transient_fields.is_empty() {
@@ -171,11 +172,18 @@ fn value_members(
     } else {
         ", transient: Types.transient".to_string()
     };
+    let selections = PlanSelections::new(&operation.normalization, writer.depth());
     writer.line(format!(
         "@_spi(Generated) public static let plan = {}(root: {}{transient})",
         runtime_value("Plan"),
-        selection_plan(&operation.normalization, writer.depth() + 1)
+        selections.root()
     ));
+    for (name, initializer) in selections.declarations() {
+        writer.line(format!(
+            "private static let {name}: {} = {initializer}",
+            SwiftType::runtime("Selection")
+        ));
+    }
     writer.blank();
 
     // The root lens.

@@ -103,6 +103,8 @@ nonisolated public struct HostileAbstract_node: Baton.Lens {
     @MainActor public var lhs: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
     @MainActor public var rhs: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
     @MainActor public var hasher: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
+    @MainActor public var selection0: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
+    @MainActor public var selection: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
     @MainActor public var optimistic: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
     @MainActor public var selfValue: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
     @MainActor public var Fragment: String? { anchor.string(AbstractSlots.Node.id.on(anchor.record.type)) }
@@ -166,10 +168,10 @@ nonisolated public struct HostileAbstract_node: Baton.Lens {
 nonisolated public struct HostileArguments_character: Baton.Lens {
     @_spi(Generated) public let anchor: Baton.Anchor
     @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-    @MainActor public var name: String? { (anchor.owner.selects(Guards.Type_true) || anchor.owner.selects(Guards.Protocol_true) || anchor.owner.selects(Guards.Any_true) || anchor.owner.selects(Guards.self_true) || anchor.owner.selects(Guards.Self_true) || anchor.owner.selects(Guards.init_true) || anchor.owner.selects(Guards.deinit_true) || anchor.owner.selects(Guards.subscript_true) || anchor.owner.selects(Guards.class_true) || anchor.owner.selects(Guards.struct_true) || anchor.owner.selects(Guards.enum_true) || anchor.owner.selects(Guards.func_true) || anchor.owner.selects(Guards.var_true) || anchor.owner.selects(Guards.let_true) || anchor.owner.selects(Guards.import_true) || anchor.owner.selects(Guards.extension_true) || anchor.owner.selects(Guards.operator_true) || anchor.owner.selects(Guards.static_true) || anchor.owner.selects(Guards.default_true) || anchor.owner.selects(Guards.case_true) || anchor.owner.selects(Guards.switch_true) || anchor.owner.selects(Guards.if_true) || anchor.owner.selects(Guards.else_true) || anchor.owner.selects(Guards.for_true) || anchor.owner.selects(Guards.in_true) || anchor.owner.selects(Guards.while_true) || anchor.owner.selects(Guards.repeat_true) || anchor.owner.selects(Guards.return_true) || anchor.owner.selects(Guards.break_true) || anchor.owner.selects(Guards.continue_true) || anchor.owner.selects(Guards.where_true) || anchor.owner.selects(Guards.is_true) || anchor.owner.selects(Guards.as_true) || anchor.owner.selects(Guards.try_true) || anchor.owner.selects(Guards.throw_true) || anchor.owner.selects(Guards.throws_true) || anchor.owner.selects(Guards.guard_true) || anchor.owner.selects(Guards.defer_true) || anchor.owner.selects(Guards.do_true) || anchor.owner.selects(Guards.catch_true) || anchor.owner.selects(Guards.true_true) || anchor.owner.selects(Guards.false_true) || anchor.owner.selects(Guards.nil_true) || anchor.owner.selects(Guards.super_true) || anchor.owner.selects(Guards.internal_true) || anchor.owner.selects(Guards.private_true) || anchor.owner.selects(Guards.public_true) || anchor.owner.selects(Guards.fileprivate_true) || anchor.owner.selects(Guards.open_true) || anchor.owner.selects(Guards.inout_true) || anchor.owner.selects(Guards.typealias_true) || anchor.owner.selects(Guards.associatedtype_true) || anchor.owner.selects(Guards.protocol_true) || anchor.owner.selects(Guards.some_true) || anchor.owner.selects(Guards.any_true) || anchor.owner.selects(Guards.rethrows_true) || anchor.owner.selects(Guards.fallthrough_true) || anchor.owner.selects(Guards.precedencegroup_true) || anchor.owner.selects(Guards.__true) || anchor.owner.selects(Guards.async_true) || anchor.owner.selects(Guards.borrowing_true) || anchor.owner.selects(Guards.consume_true) || anchor.owner.selects(Guards.consuming_true) || anchor.owner.selects(Guards.copy_true) || anchor.owner.selects(Guards.discard_true) || anchor.owner.selects(Guards.each_true) || anchor.owner.selects(Guards.isolated_true) || anchor.owner.selects(Guards.sending_true) || anchor.owner.selects(Guards.then_true) || anchor.owner.selects(Guards.unsafe_true) || anchor.owner.selects(Guards.await_true) || anchor.owner.selects(Guards.anchor_true) || anchor.owner.selects(Guards.recordID_true) || anchor.owner.selects(Guards.satisfied_true) || anchor.owner.selects(Guards.missingRequiredField_true) || anchor.owner.selects(Guards.fieldErrors_true) || anchor.owner.selects(Guards.isPresent_true) || anchor.owner.selects(Guards.throwing_true) || anchor.owner.selects(Guards.caught_true) || anchor.owner.selects(Guards.refetchable_true) || anchor.owner.selects(Guards.refetch_true) || anchor.owner.selects(Guards.connection_true) || anchor.owner.selects(Guards.nodes_true) || anchor.owner.selects(Guards.hasNext_true) || anchor.owner.selects(Guards.hasPrevious_true) || anchor.owner.selects(Guards.isLoadingNext_true) || anchor.owner.selects(Guards.isLoadingPrevious_true) || anchor.owner.selects(Guards.connectionID_true) || anchor.owner.selects(Guards.loadNext_true) || anchor.owner.selects(Guards.loadPrevious_true) || anchor.owner.selects(Guards.bound_true) || anchor.owner.selects(Guards.errors_true) || anchor.owner.selects(Guards.child_true) || anchor.owner.selects(Guards.missing_true) || anchor.owner.selects(Guards.count_true) || anchor.owner.selects(Guards.fields_true) || anchor.owner.selects(Guards.lhs_true) || anchor.owner.selects(Guards.rhs_true) || anchor.owner.selects(Guards.hasher_true) || anchor.owner.selects(Guards.optimistic_true) || anchor.owner.selects(Guards.selfValue_true) || anchor.owner.selects(Guards.Fragment_true) || anchor.owner.selects(Guards.Spread_true) || anchor.owner.selects(Guards.Owner_true) || anchor.owner.selects(Guards.Query_true) || anchor.owner.selects(Guards.Operation_true) || anchor.owner.selects(Guards.RefetchQuery_true) || anchor.owner.selects(Guards.name_true) || anchor.owner.selects(Guards.document_true) || anchor.owner.selects(Guards.text_true) || anchor.owner.selects(Guards.plan_true) || anchor.owner.selects(Guards.errorBehavior_true) || anchor.owner.selects(Guards.throwsOnFieldError_true) || anchor.owner.selects(Guards.bubbles_true) || anchor.owner.selects(Guards.hasDeferred_true) || anchor.owner.selects(Guards.cacheExpiration_true) || anchor.owner.selects(Guards.Action_true) || anchor.owner.selects(Guards.OptimisticResponse_true) || anchor.owner.selects(Guards.hash_true) || anchor.owner.selects(Guards.commit_true) || anchor.owner.selects(Guards.callAsFunction_true) || anchor.owner.selects(Guards.Op_true) || anchor.owner.selects(Guards.variable_true) || anchor.owner.selects(Guards.retry_true) || anchor.owner.selects(Guards.subscription_true) || anchor.owner.selects(Guards.AbstractSlots_true) || anchor.owner.selects(Guards.schemaDigest_true) || anchor.owner.selects(Guards.format_true) || anchor.owner.selects(Guards.transient_true) || anchor.owner.selects(Guards.Swift_true) || anchor.owner.selects(Guards.Set_true) || anchor.owner.selects(Guards.Result_true) || anchor.owner.selects(Guards.Optional_true) || anchor.owner.selects(Guards.String_true) || anchor.owner.selects(Guards.Int_true) || anchor.owner.selects(Guards.Double_true) || anchor.owner.selects(Guards.Bool_true) || anchor.owner.selects(Guards.MainActor_true) || anchor.owner.selects(Guards.Hasher_true) || anchor.owner.selects(Guards.Sendable_true)) ? anchor.string(Slots.Character.name) : nil }
+    @MainActor public var name: String? { (anchor.owner.selects(Guards.Type_true) || anchor.owner.selects(Guards.Protocol_true) || anchor.owner.selects(Guards.Any_true) || anchor.owner.selects(Guards.self_true) || anchor.owner.selects(Guards.Self_true) || anchor.owner.selects(Guards.init_true) || anchor.owner.selects(Guards.deinit_true) || anchor.owner.selects(Guards.subscript_true) || anchor.owner.selects(Guards.class_true) || anchor.owner.selects(Guards.struct_true) || anchor.owner.selects(Guards.enum_true) || anchor.owner.selects(Guards.func_true) || anchor.owner.selects(Guards.var_true) || anchor.owner.selects(Guards.let_true) || anchor.owner.selects(Guards.import_true) || anchor.owner.selects(Guards.extension_true) || anchor.owner.selects(Guards.operator_true) || anchor.owner.selects(Guards.static_true) || anchor.owner.selects(Guards.default_true) || anchor.owner.selects(Guards.case_true) || anchor.owner.selects(Guards.switch_true) || anchor.owner.selects(Guards.if_true) || anchor.owner.selects(Guards.else_true) || anchor.owner.selects(Guards.for_true) || anchor.owner.selects(Guards.in_true) || anchor.owner.selects(Guards.while_true) || anchor.owner.selects(Guards.repeat_true) || anchor.owner.selects(Guards.return_true) || anchor.owner.selects(Guards.break_true) || anchor.owner.selects(Guards.continue_true) || anchor.owner.selects(Guards.where_true) || anchor.owner.selects(Guards.is_true) || anchor.owner.selects(Guards.as_true) || anchor.owner.selects(Guards.try_true) || anchor.owner.selects(Guards.throw_true) || anchor.owner.selects(Guards.throws_true) || anchor.owner.selects(Guards.guard_true) || anchor.owner.selects(Guards.defer_true) || anchor.owner.selects(Guards.do_true) || anchor.owner.selects(Guards.catch_true) || anchor.owner.selects(Guards.true_true) || anchor.owner.selects(Guards.false_true) || anchor.owner.selects(Guards.nil_true) || anchor.owner.selects(Guards.super_true) || anchor.owner.selects(Guards.internal_true) || anchor.owner.selects(Guards.private_true) || anchor.owner.selects(Guards.public_true) || anchor.owner.selects(Guards.fileprivate_true) || anchor.owner.selects(Guards.open_true) || anchor.owner.selects(Guards.inout_true) || anchor.owner.selects(Guards.typealias_true) || anchor.owner.selects(Guards.associatedtype_true) || anchor.owner.selects(Guards.protocol_true) || anchor.owner.selects(Guards.some_true) || anchor.owner.selects(Guards.any_true) || anchor.owner.selects(Guards.rethrows_true) || anchor.owner.selects(Guards.fallthrough_true) || anchor.owner.selects(Guards.precedencegroup_true) || anchor.owner.selects(Guards.__true) || anchor.owner.selects(Guards.async_true) || anchor.owner.selects(Guards.borrowing_true) || anchor.owner.selects(Guards.consume_true) || anchor.owner.selects(Guards.consuming_true) || anchor.owner.selects(Guards.copy_true) || anchor.owner.selects(Guards.discard_true) || anchor.owner.selects(Guards.each_true) || anchor.owner.selects(Guards.isolated_true) || anchor.owner.selects(Guards.sending_true) || anchor.owner.selects(Guards.then_true) || anchor.owner.selects(Guards.unsafe_true) || anchor.owner.selects(Guards.await_true) || anchor.owner.selects(Guards.anchor_true) || anchor.owner.selects(Guards.recordID_true) || anchor.owner.selects(Guards.satisfied_true) || anchor.owner.selects(Guards.missingRequiredField_true) || anchor.owner.selects(Guards.fieldErrors_true) || anchor.owner.selects(Guards.isPresent_true) || anchor.owner.selects(Guards.throwing_true) || anchor.owner.selects(Guards.caught_true) || anchor.owner.selects(Guards.refetchable_true) || anchor.owner.selects(Guards.refetch_true) || anchor.owner.selects(Guards.connection_true) || anchor.owner.selects(Guards.nodes_true) || anchor.owner.selects(Guards.hasNext_true) || anchor.owner.selects(Guards.hasPrevious_true) || anchor.owner.selects(Guards.isLoadingNext_true) || anchor.owner.selects(Guards.isLoadingPrevious_true) || anchor.owner.selects(Guards.connectionID_true) || anchor.owner.selects(Guards.loadNext_true) || anchor.owner.selects(Guards.loadPrevious_true) || anchor.owner.selects(Guards.bound_true) || anchor.owner.selects(Guards.errors_true) || anchor.owner.selects(Guards.child_true) || anchor.owner.selects(Guards.missing_true) || anchor.owner.selects(Guards.count_true) || anchor.owner.selects(Guards.fields_true) || anchor.owner.selects(Guards.lhs_true) || anchor.owner.selects(Guards.rhs_true) || anchor.owner.selects(Guards.hasher_true) || anchor.owner.selects(Guards.selection0_true) || anchor.owner.selects(Guards.selection_true) || anchor.owner.selects(Guards.optimistic_true) || anchor.owner.selects(Guards.selfValue_true) || anchor.owner.selects(Guards.Fragment_true) || anchor.owner.selects(Guards.Spread_true) || anchor.owner.selects(Guards.Owner_true) || anchor.owner.selects(Guards.Query_true) || anchor.owner.selects(Guards.Operation_true) || anchor.owner.selects(Guards.RefetchQuery_true) || anchor.owner.selects(Guards.name_true) || anchor.owner.selects(Guards.document_true) || anchor.owner.selects(Guards.text_true) || anchor.owner.selects(Guards.plan_true) || anchor.owner.selects(Guards.errorBehavior_true) || anchor.owner.selects(Guards.throwsOnFieldError_true) || anchor.owner.selects(Guards.bubbles_true) || anchor.owner.selects(Guards.hasDeferred_true) || anchor.owner.selects(Guards.cacheExpiration_true) || anchor.owner.selects(Guards.Action_true) || anchor.owner.selects(Guards.OptimisticResponse_true) || anchor.owner.selects(Guards.hash_true) || anchor.owner.selects(Guards.commit_true) || anchor.owner.selects(Guards.callAsFunction_true) || anchor.owner.selects(Guards.Op_true) || anchor.owner.selects(Guards.variable_true) || anchor.owner.selects(Guards.retry_true) || anchor.owner.selects(Guards.subscription_true) || anchor.owner.selects(Guards.AbstractSlots_true) || anchor.owner.selects(Guards.schemaDigest_true) || anchor.owner.selects(Guards.format_true) || anchor.owner.selects(Guards.transient_true) || anchor.owner.selects(Guards.Swift_true) || anchor.owner.selects(Guards.Set_true) || anchor.owner.selects(Guards.Result_true) || anchor.owner.selects(Guards.Optional_true) || anchor.owner.selects(Guards.String_true) || anchor.owner.selects(Guards.Int_true) || anchor.owner.selects(Guards.Double_true) || anchor.owner.selects(Guards.Bool_true) || anchor.owner.selects(Guards.MainActor_true) || anchor.owner.selects(Guards.Hasher_true) || anchor.owner.selects(Guards.Sendable_true)) ? anchor.string(Slots.Character.name) : nil }
     @MainActor public var id: String? { anchor.string(Slots.Character.id) }
     /// How the fragment is fetched again: `HostileArgumentsRefetchQuery` with the lens's variables.
-    @_spi(Generated) public static let refetchable: Baton.Refetch = .init(variables: ["AbstractSlots", "Action", "Any", "Bool", "Double", "Fragment", "Hasher", "Int", "MainActor", "Op", "Operation", "OptimisticResponse", "Optional", "Owner", "Protocol", "Query", "RefetchQuery", "Result", "Self", "Sendable", "Set", "Spread", "String", "Swift", "Type", "_", "anchor", "any", "as", "associatedtype", "async", "await", "borrowing", "bound", "break", "bubbles", "cacheExpiration", "callAsFunction", "case", "catch", "caught", "child", "class", "commit", "connection", "connectionID", "consume", "consuming", "continue", "copy", "count", "default", "defer", "deinit", "discard", "do", "document", "each", "else", "enum", "errorBehavior", "errors", "extension", "fallthrough", "false", "fieldErrors", "fields", "fileprivate", "for", "format", "func", "guard", "hasDeferred", "hasNext", "hasPrevious", "hash", "hasher", "if", "import", "in", "init", "inout", "internal", "is", "isLoadingNext", "isLoadingPrevious", "isPresent", "isolated", "let", "lhs", "loadNext", "loadPrevious", "missing", "missingRequiredField", "name", "nil", "nodes", "open", "operator", "optimistic", "plan", "precedencegroup", "private", "protocol", "public", "recordID", "refetch", "refetchable", "repeat", "rethrows", "retry", "return", "rhs", "satisfied", "schemaDigest", "self", "selfValue", "sending", "some", "static", "struct", "subscript", "subscription", "super", "switch", "text", "then", "throw", "throwing", "throws", "throwsOnFieldError", "transient", "true", "try", "typealias", "unsafe", "var", "variable", "where", "while", "id"], identifier: "id", identity: Slots.Character.id, first: nil, after: nil, last: nil, before: nil)
+    @_spi(Generated) public static let refetchable: Baton.Refetch = .init(variables: ["AbstractSlots", "Action", "Any", "Bool", "Double", "Fragment", "Hasher", "Int", "MainActor", "Op", "Operation", "OptimisticResponse", "Optional", "Owner", "Protocol", "Query", "RefetchQuery", "Result", "Self", "Sendable", "Set", "Spread", "String", "Swift", "Type", "_", "anchor", "any", "as", "associatedtype", "async", "await", "borrowing", "bound", "break", "bubbles", "cacheExpiration", "callAsFunction", "case", "catch", "caught", "child", "class", "commit", "connection", "connectionID", "consume", "consuming", "continue", "copy", "count", "default", "defer", "deinit", "discard", "do", "document", "each", "else", "enum", "errorBehavior", "errors", "extension", "fallthrough", "false", "fieldErrors", "fields", "fileprivate", "for", "format", "func", "guard", "hasDeferred", "hasNext", "hasPrevious", "hash", "hasher", "if", "import", "in", "init", "inout", "internal", "is", "isLoadingNext", "isLoadingPrevious", "isPresent", "isolated", "let", "lhs", "loadNext", "loadPrevious", "missing", "missingRequiredField", "name", "nil", "nodes", "open", "operator", "optimistic", "plan", "precedencegroup", "private", "protocol", "public", "recordID", "refetch", "refetchable", "repeat", "rethrows", "retry", "return", "rhs", "satisfied", "schemaDigest", "selection", "selection0", "self", "selfValue", "sending", "some", "static", "struct", "subscript", "subscription", "super", "switch", "text", "then", "throw", "throwing", "throws", "throwsOnFieldError", "transient", "true", "try", "typealias", "unsafe", "var", "variable", "where", "while", "id"], identifier: "id", identity: Slots.Character.id, first: nil, after: nil, last: nil, before: nil)
     /// Fetches the fragment again through `HostileArgumentsRefetchQuery` with its current variables; the records update in place.
     @MainActor public func refetch() async throws {
         typealias Query = HostileArgumentsRefetchQuery
@@ -277,6 +279,8 @@ nonisolated public struct HostileBodies_character: Baton.Lens {
     @MainActor public var lhs: String? { anchor.string(Slots.Character.name) }
     @MainActor public var rhs: String? { anchor.string(Slots.Character.name) }
     @MainActor public var hasher: String? { anchor.string(Slots.Character.name) }
+    @MainActor public var selection0: String? { anchor.string(Slots.Character.name) }
+    @MainActor public var selection: String? { anchor.string(Slots.Character.name) }
     @MainActor public var optimistic: String? { anchor.string(Slots.Character.name) }
     @MainActor public var selfValue: String? { anchor.string(Slots.Character.name) }
     @MainActor public var Fragment: String? { anchor.string(Slots.Character.name) }
@@ -361,6 +365,8 @@ nonisolated public struct HostileBodies_character: Baton.Lens {
     /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
     @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
         var errors: [Baton.FieldError] = []
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
         anchor.collectError(Slots.Character.name, into: &errors)
         anchor.collectError(Slots.Character.name, into: &errors)
         anchor.collectError(Slots.Character.name, into: &errors)
@@ -738,6 +744,8 @@ nonisolated public struct HostileConnection_character: Baton.Lens {
         @MainActor public var lhs: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
         @MainActor public var rhs: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
         @MainActor public var hasher: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
+        @MainActor public var selection0: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
+        @MainActor public var selection: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
         @MainActor public var optimistic: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
         @MainActor public var selfValue: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
         @MainActor public var Fragment: Int { anchor.requiredInt(Slots.NoteConnection.totalCount) }
@@ -941,6 +949,8 @@ nonisolated public struct HostileLinks_character: Baton.Lens {
     @MainActor public var lhs: Lhs? { anchor.linked(Slots.Character.origin).map(Lhs.init(anchor:)) }
     @MainActor public var rhs: Rhs? { anchor.linked(Slots.Character.origin).map(Rhs.init(anchor:)) }
     @MainActor public var hasher: Hasher2? { anchor.linked(Slots.Character.origin).map(Hasher2.init(anchor:)) }
+    @MainActor public var selection0: Selection0? { anchor.linked(Slots.Character.origin).map(Selection0.init(anchor:)) }
+    @MainActor public var selection: Selection? { anchor.linked(Slots.Character.origin).map(Selection.init(anchor:)) }
     @MainActor public var optimistic: Optimistic? { anchor.linked(Slots.Character.origin).map(Optimistic.init(anchor:)) }
     @MainActor public var selfValue: SelfValue? { anchor.linked(Slots.Character.origin).map(SelfValue.init(anchor:)) }
     @MainActor public var Fragment: FragmentLens? { anchor.linked(Slots.Character.origin).map(FragmentLens.init(anchor:)) }
@@ -1576,6 +1586,18 @@ nonisolated public struct HostileLinks_character: Baton.Lens {
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
+    nonisolated public struct Selection0: Baton.Lens {
+        @_spi(Generated) public let anchor: Baton.Anchor
+        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        @MainActor public var id: String? { anchor.string(Slots.Location.id) }
+    }
+
+    nonisolated public struct Selection: Baton.Lens {
+        @_spi(Generated) public let anchor: Baton.Anchor
+        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        @MainActor public var id: String? { anchor.string(Slots.Location.id) }
+    }
+
     nonisolated public struct Optimistic: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
@@ -1990,6 +2012,8 @@ nonisolated public struct HostileScalars_character: Baton.Lens {
     @MainActor public var lhs: String? { anchor.string(Slots.Character.name) }
     @MainActor public var rhs: String? { anchor.string(Slots.Character.name) }
     @MainActor public var hasher: String? { anchor.string(Slots.Character.name) }
+    @MainActor public var selection0: String? { anchor.string(Slots.Character.name) }
+    @MainActor public var selection: String? { anchor.string(Slots.Character.name) }
     @MainActor public var optimistic: String? { anchor.string(Slots.Character.name) }
     @MainActor public var selfValue: String? { anchor.string(Slots.Character.name) }
     @MainActor public var Fragment: String? { anchor.string(Slots.Character.name) }
@@ -2145,6 +2169,8 @@ nonisolated public struct HostileSelections_character: Baton.Lens {
     @MainActor public var lhs: Lhs { Lhs(anchor: anchor) }
     @MainActor public var rhs: Rhs { Rhs(anchor: anchor) }
     @MainActor public var hasher: Hasher2 { Hasher2(anchor: anchor) }
+    @MainActor public var selection0: Selection0 { Selection0(anchor: anchor) }
+    @MainActor public var selection: Selection { Selection(anchor: anchor) }
     @MainActor public var optimistic: Optimistic { Optimistic(anchor: anchor) }
     @MainActor public var selfValue: SelfValue { SelfValue(anchor: anchor) }
     @MainActor public var Fragment: FragmentLens { FragmentLens(anchor: anchor) }
@@ -2780,6 +2806,18 @@ nonisolated public struct HostileSelections_character: Baton.Lens {
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
+    nonisolated public struct Selection0: Baton.Lens {
+        @_spi(Generated) public let anchor: Baton.Anchor
+        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        @MainActor public var name: String? { anchor.string(Slots.Character.name) }
+    }
+
+    nonisolated public struct Selection: Baton.Lens {
+        @_spi(Generated) public let anchor: Baton.Anchor
+        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        @MainActor public var name: String? { anchor.string(Slots.Character.name) }
+    }
+
     nonisolated public struct Optimistic: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
@@ -3201,6 +3239,8 @@ nonisolated public struct HostileSpreads_character: Baton.Lens {
     @MainActor public var lhs: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
     @MainActor public var rhs: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
     @MainActor public var hasher: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var selection0: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
+    @MainActor public var selection: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
     @MainActor public var optimistic: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
     @MainActor public var selfValue: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
     @MainActor public var Fragment: HostileSpreadTarget_character { .init(anchor: anchor.entering()) }
@@ -3380,6 +3420,8 @@ nonisolated public struct HostileArgumentsRefetchQuery: Baton.Query {
     public var rhs: Bool?
     public var satisfied: Bool?
     public var schemaDigest: Bool?
+    public var selection: Bool?
+    public var selection0: Bool?
     public var `self`: Bool?
     public var selfValue: Bool?
     public var `sending`: Bool?
@@ -3408,7 +3450,7 @@ nonisolated public struct HostileArgumentsRefetchQuery: Baton.Query {
     public var id: String
     @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
-    public init(AbstractSlots: Bool? = nil, Action: Bool? = nil, `Any`: Bool? = nil, Bool: Bool? = nil, Double: Bool? = nil, Fragment: Bool? = nil, Hasher: Bool? = nil, Int: Bool? = nil, MainActor: Bool? = nil, Op: Bool? = nil, Operation: Bool? = nil, OptimisticResponse: Bool? = nil, Optional: Bool? = nil, Owner: Bool? = nil, `Protocol`: Bool? = nil, Query: Bool? = nil, RefetchQuery: Bool? = nil, Result: Bool? = nil, `Self`: Bool? = nil, Sendable: Bool? = nil, Set: Bool? = nil, Spread: Bool? = nil, String: Bool? = nil, Swift: Bool? = nil, `Type`: Bool? = nil, `_`: Bool? = nil, anchor: Bool? = nil, `any`: Bool? = nil, `as`: Bool? = nil, `associatedtype`: Bool? = nil, async: Bool? = nil, `await`: Bool? = nil, `borrowing`: Bool? = nil, bound: Bool? = nil, `break`: Bool? = nil, bubbles: Bool? = nil, cacheExpiration: Bool? = nil, callAsFunction: Bool? = nil, `case`: Bool? = nil, `catch`: Bool? = nil, caught: Bool? = nil, child: Bool? = nil, `class`: Bool? = nil, commit: Bool? = nil, connection: Bool? = nil, connectionID: Bool? = nil, consume: Bool? = nil, `consuming`: Bool? = nil, `continue`: Bool? = nil, copy: Bool? = nil, count: Bool? = nil, `default`: Bool? = nil, `defer`: Bool? = nil, `deinit`: Bool? = nil, discard: Bool? = nil, `do`: Bool? = nil, document: Bool? = nil, `each`: Bool? = nil, `else`: Bool? = nil, `enum`: Bool? = nil, errorBehavior: Bool? = nil, errors: Bool? = nil, `extension`: Bool? = nil, `fallthrough`: Bool? = nil, `false`: Bool? = nil, fieldErrors: Bool? = nil, fields: Bool? = nil, `fileprivate`: Bool? = nil, `for`: Bool? = nil, format: Bool? = nil, `func`: Bool? = nil, `guard`: Bool? = nil, hasDeferred: Bool? = nil, hasNext: Bool? = nil, hasPrevious: Bool? = nil, hash: Bool? = nil, hasher: Bool? = nil, `if`: Bool? = nil, `import`: Bool? = nil, `in`: Bool? = nil, `init`: Bool? = nil, `inout`: Bool? = nil, `internal`: Bool? = nil, `is`: Bool? = nil, isLoadingNext: Bool? = nil, isLoadingPrevious: Bool? = nil, isPresent: Bool? = nil, `isolated`: Bool? = nil, `let`: Bool? = nil, lhs: Bool? = nil, loadNext: Bool? = nil, loadPrevious: Bool? = nil, missing: Bool? = nil, missingRequiredField: Bool? = nil, name: Bool? = nil, `nil`: Bool? = nil, nodes: Bool? = nil, `open`: Bool? = nil, `operator`: Bool? = nil, optimistic: Bool? = nil, plan: Bool? = nil, `precedencegroup`: Bool? = nil, `private`: Bool? = nil, `protocol`: Bool? = nil, `public`: Bool? = nil, recordID: Bool? = nil, refetch: Bool? = nil, refetchable: Bool? = nil, `repeat`: Bool? = nil, `rethrows`: Bool? = nil, retry: Bool? = nil, `return`: Bool? = nil, rhs: Bool? = nil, satisfied: Bool? = nil, schemaDigest: Bool? = nil, `self` selfValue2: Bool? = nil, selfValue: Bool? = nil, `sending`: Bool? = nil, `some`: Bool? = nil, `static`: Bool? = nil, `struct`: Bool? = nil, `subscript`: Bool? = nil, subscription: Bool? = nil, `super`: Bool? = nil, `switch`: Bool? = nil, text: Bool? = nil, then: Bool? = nil, `throw`: Bool? = nil, throwing: Bool? = nil, `throws`: Bool? = nil, throwsOnFieldError: Bool? = nil, transient: Bool? = nil, `true`: Bool? = nil, `try`: Bool? = nil, `typealias`: Bool? = nil, unsafe: Bool? = nil, `var`: Bool? = nil, variable: Bool? = nil, `where`: Bool? = nil, `while`: Bool? = nil, id: String) {
+    public init(AbstractSlots: Bool? = nil, Action: Bool? = nil, `Any`: Bool? = nil, Bool: Bool? = nil, Double: Bool? = nil, Fragment: Bool? = nil, Hasher: Bool? = nil, Int: Bool? = nil, MainActor: Bool? = nil, Op: Bool? = nil, Operation: Bool? = nil, OptimisticResponse: Bool? = nil, Optional: Bool? = nil, Owner: Bool? = nil, `Protocol`: Bool? = nil, Query: Bool? = nil, RefetchQuery: Bool? = nil, Result: Bool? = nil, `Self`: Bool? = nil, Sendable: Bool? = nil, Set: Bool? = nil, Spread: Bool? = nil, String: Bool? = nil, Swift: Bool? = nil, `Type`: Bool? = nil, `_`: Bool? = nil, anchor: Bool? = nil, `any`: Bool? = nil, `as`: Bool? = nil, `associatedtype`: Bool? = nil, async: Bool? = nil, `await`: Bool? = nil, `borrowing`: Bool? = nil, bound: Bool? = nil, `break`: Bool? = nil, bubbles: Bool? = nil, cacheExpiration: Bool? = nil, callAsFunction: Bool? = nil, `case`: Bool? = nil, `catch`: Bool? = nil, caught: Bool? = nil, child: Bool? = nil, `class`: Bool? = nil, commit: Bool? = nil, connection: Bool? = nil, connectionID: Bool? = nil, consume: Bool? = nil, `consuming`: Bool? = nil, `continue`: Bool? = nil, copy: Bool? = nil, count: Bool? = nil, `default`: Bool? = nil, `defer`: Bool? = nil, `deinit`: Bool? = nil, discard: Bool? = nil, `do`: Bool? = nil, document: Bool? = nil, `each`: Bool? = nil, `else`: Bool? = nil, `enum`: Bool? = nil, errorBehavior: Bool? = nil, errors: Bool? = nil, `extension`: Bool? = nil, `fallthrough`: Bool? = nil, `false`: Bool? = nil, fieldErrors: Bool? = nil, fields: Bool? = nil, `fileprivate`: Bool? = nil, `for`: Bool? = nil, format: Bool? = nil, `func`: Bool? = nil, `guard`: Bool? = nil, hasDeferred: Bool? = nil, hasNext: Bool? = nil, hasPrevious: Bool? = nil, hash: Bool? = nil, hasher: Bool? = nil, `if`: Bool? = nil, `import`: Bool? = nil, `in`: Bool? = nil, `init`: Bool? = nil, `inout`: Bool? = nil, `internal`: Bool? = nil, `is`: Bool? = nil, isLoadingNext: Bool? = nil, isLoadingPrevious: Bool? = nil, isPresent: Bool? = nil, `isolated`: Bool? = nil, `let`: Bool? = nil, lhs: Bool? = nil, loadNext: Bool? = nil, loadPrevious: Bool? = nil, missing: Bool? = nil, missingRequiredField: Bool? = nil, name: Bool? = nil, `nil`: Bool? = nil, nodes: Bool? = nil, `open`: Bool? = nil, `operator`: Bool? = nil, optimistic: Bool? = nil, plan: Bool? = nil, `precedencegroup`: Bool? = nil, `private`: Bool? = nil, `protocol`: Bool? = nil, `public`: Bool? = nil, recordID: Bool? = nil, refetch: Bool? = nil, refetchable: Bool? = nil, `repeat`: Bool? = nil, `rethrows`: Bool? = nil, retry: Bool? = nil, `return`: Bool? = nil, rhs: Bool? = nil, satisfied: Bool? = nil, schemaDigest: Bool? = nil, selection: Bool? = nil, selection0: Bool? = nil, `self` selfValue2: Bool? = nil, selfValue: Bool? = nil, `sending`: Bool? = nil, `some`: Bool? = nil, `static`: Bool? = nil, `struct`: Bool? = nil, `subscript`: Bool? = nil, subscription: Bool? = nil, `super`: Bool? = nil, `switch`: Bool? = nil, text: Bool? = nil, then: Bool? = nil, `throw`: Bool? = nil, throwing: Bool? = nil, `throws`: Bool? = nil, throwsOnFieldError: Bool? = nil, transient: Bool? = nil, `true`: Bool? = nil, `try`: Bool? = nil, `typealias`: Bool? = nil, unsafe: Bool? = nil, `var`: Bool? = nil, variable: Bool? = nil, `where`: Bool? = nil, `while`: Bool? = nil, id: String) {
         self.AbstractSlots = AbstractSlots
         self.Action = Action
         self.`Any` = `Any`
@@ -3524,6 +3566,8 @@ nonisolated public struct HostileArgumentsRefetchQuery: Baton.Query {
         self.rhs = rhs
         self.satisfied = satisfied
         self.schemaDigest = schemaDigest
+        self.selection = selection
+        self.selection0 = selection0
         self.`self` = selfValue2
         self.selfValue = selfValue
         self.`sending` = `sending`
@@ -3670,6 +3714,8 @@ query HostileArgumentsRefetchQuery(
   $rhs: Boolean = true
   $satisfied: Boolean = true
   $schemaDigest: Boolean = true
+  $selection: Boolean = true
+  $selection0: Boolean = true
   $self: Boolean = true
   $selfValue: Boolean = true
   $sending: Boolean = true
@@ -3699,12 +3745,12 @@ query HostileArgumentsRefetchQuery(
 ) {
   node(id: $id) {
     __typename
-    ...HostileArguments_character_YwmvO
+    ...HostileArguments_character_3UiVxH
     id
   }
 }
 
-fragment HostileArguments_character_YwmvO on Character {
+fragment HostileArguments_character_3UiVxH on Character {
   name @include(if: $Type)
   name @include(if: $Protocol)
   name @include(if: $Any)
@@ -3804,6 +3850,8 @@ fragment HostileArguments_character_YwmvO on Character {
   name @include(if: $lhs)
   name @include(if: $rhs)
   name @include(if: $hasher)
+  name @include(if: $selection0)
+  name @include(if: $selection)
   name @include(if: $optimistic)
   name @include(if: $selfValue)
   name @include(if: $Fragment)
@@ -3850,11 +3898,11 @@ fragment HostileArguments_character_YwmvO on Character {
 """#)
 
     public var variables: Baton.Variables {
-        Baton.Variables(["AbstractSlots": Baton.Variable(self.AbstractSlots), "Action": Baton.Variable(self.Action), "Any": Baton.Variable(self.`Any`), "Bool": Baton.Variable(self.Bool), "Double": Baton.Variable(self.Double), "Fragment": Baton.Variable(self.Fragment), "Hasher": Baton.Variable(self.Hasher), "Int": Baton.Variable(self.Int), "MainActor": Baton.Variable(self.MainActor), "Op": Baton.Variable(self.Op), "Operation": Baton.Variable(self.Operation), "OptimisticResponse": Baton.Variable(self.OptimisticResponse), "Optional": Baton.Variable(self.Optional), "Owner": Baton.Variable(self.Owner), "Protocol": Baton.Variable(self.`Protocol`), "Query": Baton.Variable(self.Query), "RefetchQuery": Baton.Variable(self.RefetchQuery), "Result": Baton.Variable(self.Result), "Self": Baton.Variable(self.`Self`), "Sendable": Baton.Variable(self.Sendable), "Set": Baton.Variable(self.Set), "Spread": Baton.Variable(self.Spread), "String": Baton.Variable(self.String), "Swift": Baton.Variable(self.Swift), "Type": Baton.Variable(self.`Type`), "_": Baton.Variable(self.`_`), "anchor": Baton.Variable(self.anchor), "any": Baton.Variable(self.`any`), "as": Baton.Variable(self.`as`), "associatedtype": Baton.Variable(self.`associatedtype`), "async": Baton.Variable(self.async), "await": Baton.Variable(self.`await`), "borrowing": Baton.Variable(self.`borrowing`), "bound": Baton.Variable(self.bound), "break": Baton.Variable(self.`break`), "bubbles": Baton.Variable(self.bubbles), "cacheExpiration": Baton.Variable(self.cacheExpiration), "callAsFunction": Baton.Variable(self.callAsFunction), "case": Baton.Variable(self.`case`), "catch": Baton.Variable(self.`catch`), "caught": Baton.Variable(self.caught), "child": Baton.Variable(self.child), "class": Baton.Variable(self.`class`), "commit": Baton.Variable(self.commit), "connection": Baton.Variable(self.connection), "connectionID": Baton.Variable(self.connectionID), "consume": Baton.Variable(self.consume), "consuming": Baton.Variable(self.`consuming`), "continue": Baton.Variable(self.`continue`), "copy": Baton.Variable(self.copy), "count": Baton.Variable(self.count), "default": Baton.Variable(self.`default`), "defer": Baton.Variable(self.`defer`), "deinit": Baton.Variable(self.`deinit`), "discard": Baton.Variable(self.discard), "do": Baton.Variable(self.`do`), "document": Baton.Variable(self.document), "each": Baton.Variable(self.`each`), "else": Baton.Variable(self.`else`), "enum": Baton.Variable(self.`enum`), "errorBehavior": Baton.Variable(self.errorBehavior), "errors": Baton.Variable(self.errors), "extension": Baton.Variable(self.`extension`), "fallthrough": Baton.Variable(self.`fallthrough`), "false": Baton.Variable(self.`false`), "fieldErrors": Baton.Variable(self.fieldErrors), "fields": Baton.Variable(self.fields), "fileprivate": Baton.Variable(self.`fileprivate`), "for": Baton.Variable(self.`for`), "format": Baton.Variable(self.format), "func": Baton.Variable(self.`func`), "guard": Baton.Variable(self.`guard`), "hasDeferred": Baton.Variable(self.hasDeferred), "hasNext": Baton.Variable(self.hasNext), "hasPrevious": Baton.Variable(self.hasPrevious), "hash": Baton.Variable(self.hash), "hasher": Baton.Variable(self.hasher), "if": Baton.Variable(self.`if`), "import": Baton.Variable(self.`import`), "in": Baton.Variable(self.`in`), "init": Baton.Variable(self.`init`), "inout": Baton.Variable(self.`inout`), "internal": Baton.Variable(self.`internal`), "is": Baton.Variable(self.`is`), "isLoadingNext": Baton.Variable(self.isLoadingNext), "isLoadingPrevious": Baton.Variable(self.isLoadingPrevious), "isPresent": Baton.Variable(self.isPresent), "isolated": Baton.Variable(self.`isolated`), "let": Baton.Variable(self.`let`), "lhs": Baton.Variable(self.lhs), "loadNext": Baton.Variable(self.loadNext), "loadPrevious": Baton.Variable(self.loadPrevious), "missing": Baton.Variable(self.missing), "missingRequiredField": Baton.Variable(self.missingRequiredField), "name": Baton.Variable(self.name), "nil": Baton.Variable(self.`nil`), "nodes": Baton.Variable(self.nodes), "open": Baton.Variable(self.`open`), "operator": Baton.Variable(self.`operator`), "optimistic": Baton.Variable(self.optimistic), "plan": Baton.Variable(self.plan), "precedencegroup": Baton.Variable(self.`precedencegroup`), "private": Baton.Variable(self.`private`), "protocol": Baton.Variable(self.`protocol`), "public": Baton.Variable(self.`public`), "recordID": Baton.Variable(self.recordID), "refetch": Baton.Variable(self.refetch), "refetchable": Baton.Variable(self.refetchable), "repeat": Baton.Variable(self.`repeat`), "rethrows": Baton.Variable(self.`rethrows`), "retry": Baton.Variable(self.retry), "return": Baton.Variable(self.`return`), "rhs": Baton.Variable(self.rhs), "satisfied": Baton.Variable(self.satisfied), "schemaDigest": Baton.Variable(self.schemaDigest), "self": Baton.Variable(self.`self`), "selfValue": Baton.Variable(self.selfValue), "sending": Baton.Variable(self.`sending`), "some": Baton.Variable(self.`some`), "static": Baton.Variable(self.`static`), "struct": Baton.Variable(self.`struct`), "subscript": Baton.Variable(self.`subscript`), "subscription": Baton.Variable(self.subscription), "super": Baton.Variable(self.`super`), "switch": Baton.Variable(self.`switch`), "text": Baton.Variable(self.text), "then": Baton.Variable(self.then), "throw": Baton.Variable(self.`throw`), "throwing": Baton.Variable(self.throwing), "throws": Baton.Variable(self.`throws`), "throwsOnFieldError": Baton.Variable(self.throwsOnFieldError), "transient": Baton.Variable(self.transient), "true": Baton.Variable(self.`true`), "try": Baton.Variable(self.`try`), "typealias": Baton.Variable(self.`typealias`), "unsafe": Baton.Variable(self.unsafe), "var": Baton.Variable(self.`var`), "variable": Baton.Variable(self.variable), "where": Baton.Variable(self.`where`), "while": Baton.Variable(self.`while`), "id": Baton.Variable(self.id)])
+        Baton.Variables(["AbstractSlots": Baton.Variable(self.AbstractSlots), "Action": Baton.Variable(self.Action), "Any": Baton.Variable(self.`Any`), "Bool": Baton.Variable(self.Bool), "Double": Baton.Variable(self.Double), "Fragment": Baton.Variable(self.Fragment), "Hasher": Baton.Variable(self.Hasher), "Int": Baton.Variable(self.Int), "MainActor": Baton.Variable(self.MainActor), "Op": Baton.Variable(self.Op), "Operation": Baton.Variable(self.Operation), "OptimisticResponse": Baton.Variable(self.OptimisticResponse), "Optional": Baton.Variable(self.Optional), "Owner": Baton.Variable(self.Owner), "Protocol": Baton.Variable(self.`Protocol`), "Query": Baton.Variable(self.Query), "RefetchQuery": Baton.Variable(self.RefetchQuery), "Result": Baton.Variable(self.Result), "Self": Baton.Variable(self.`Self`), "Sendable": Baton.Variable(self.Sendable), "Set": Baton.Variable(self.Set), "Spread": Baton.Variable(self.Spread), "String": Baton.Variable(self.String), "Swift": Baton.Variable(self.Swift), "Type": Baton.Variable(self.`Type`), "_": Baton.Variable(self.`_`), "anchor": Baton.Variable(self.anchor), "any": Baton.Variable(self.`any`), "as": Baton.Variable(self.`as`), "associatedtype": Baton.Variable(self.`associatedtype`), "async": Baton.Variable(self.async), "await": Baton.Variable(self.`await`), "borrowing": Baton.Variable(self.`borrowing`), "bound": Baton.Variable(self.bound), "break": Baton.Variable(self.`break`), "bubbles": Baton.Variable(self.bubbles), "cacheExpiration": Baton.Variable(self.cacheExpiration), "callAsFunction": Baton.Variable(self.callAsFunction), "case": Baton.Variable(self.`case`), "catch": Baton.Variable(self.`catch`), "caught": Baton.Variable(self.caught), "child": Baton.Variable(self.child), "class": Baton.Variable(self.`class`), "commit": Baton.Variable(self.commit), "connection": Baton.Variable(self.connection), "connectionID": Baton.Variable(self.connectionID), "consume": Baton.Variable(self.consume), "consuming": Baton.Variable(self.`consuming`), "continue": Baton.Variable(self.`continue`), "copy": Baton.Variable(self.copy), "count": Baton.Variable(self.count), "default": Baton.Variable(self.`default`), "defer": Baton.Variable(self.`defer`), "deinit": Baton.Variable(self.`deinit`), "discard": Baton.Variable(self.discard), "do": Baton.Variable(self.`do`), "document": Baton.Variable(self.document), "each": Baton.Variable(self.`each`), "else": Baton.Variable(self.`else`), "enum": Baton.Variable(self.`enum`), "errorBehavior": Baton.Variable(self.errorBehavior), "errors": Baton.Variable(self.errors), "extension": Baton.Variable(self.`extension`), "fallthrough": Baton.Variable(self.`fallthrough`), "false": Baton.Variable(self.`false`), "fieldErrors": Baton.Variable(self.fieldErrors), "fields": Baton.Variable(self.fields), "fileprivate": Baton.Variable(self.`fileprivate`), "for": Baton.Variable(self.`for`), "format": Baton.Variable(self.format), "func": Baton.Variable(self.`func`), "guard": Baton.Variable(self.`guard`), "hasDeferred": Baton.Variable(self.hasDeferred), "hasNext": Baton.Variable(self.hasNext), "hasPrevious": Baton.Variable(self.hasPrevious), "hash": Baton.Variable(self.hash), "hasher": Baton.Variable(self.hasher), "if": Baton.Variable(self.`if`), "import": Baton.Variable(self.`import`), "in": Baton.Variable(self.`in`), "init": Baton.Variable(self.`init`), "inout": Baton.Variable(self.`inout`), "internal": Baton.Variable(self.`internal`), "is": Baton.Variable(self.`is`), "isLoadingNext": Baton.Variable(self.isLoadingNext), "isLoadingPrevious": Baton.Variable(self.isLoadingPrevious), "isPresent": Baton.Variable(self.isPresent), "isolated": Baton.Variable(self.`isolated`), "let": Baton.Variable(self.`let`), "lhs": Baton.Variable(self.lhs), "loadNext": Baton.Variable(self.loadNext), "loadPrevious": Baton.Variable(self.loadPrevious), "missing": Baton.Variable(self.missing), "missingRequiredField": Baton.Variable(self.missingRequiredField), "name": Baton.Variable(self.name), "nil": Baton.Variable(self.`nil`), "nodes": Baton.Variable(self.nodes), "open": Baton.Variable(self.`open`), "operator": Baton.Variable(self.`operator`), "optimistic": Baton.Variable(self.optimistic), "plan": Baton.Variable(self.plan), "precedencegroup": Baton.Variable(self.`precedencegroup`), "private": Baton.Variable(self.`private`), "protocol": Baton.Variable(self.`protocol`), "public": Baton.Variable(self.`public`), "recordID": Baton.Variable(self.recordID), "refetch": Baton.Variable(self.refetch), "refetchable": Baton.Variable(self.refetchable), "repeat": Baton.Variable(self.`repeat`), "rethrows": Baton.Variable(self.`rethrows`), "retry": Baton.Variable(self.retry), "return": Baton.Variable(self.`return`), "rhs": Baton.Variable(self.rhs), "satisfied": Baton.Variable(self.satisfied), "schemaDigest": Baton.Variable(self.schemaDigest), "selection": Baton.Variable(self.selection), "selection0": Baton.Variable(self.selection0), "self": Baton.Variable(self.`self`), "selfValue": Baton.Variable(self.selfValue), "sending": Baton.Variable(self.`sending`), "some": Baton.Variable(self.`some`), "static": Baton.Variable(self.`static`), "struct": Baton.Variable(self.`struct`), "subscript": Baton.Variable(self.`subscript`), "subscription": Baton.Variable(self.subscription), "super": Baton.Variable(self.`super`), "switch": Baton.Variable(self.`switch`), "text": Baton.Variable(self.text), "then": Baton.Variable(self.then), "throw": Baton.Variable(self.`throw`), "throwing": Baton.Variable(self.throwing), "throws": Baton.Variable(self.`throws`), "throwsOnFieldError": Baton.Variable(self.throwsOnFieldError), "transient": Baton.Variable(self.transient), "true": Baton.Variable(self.`true`), "try": Baton.Variable(self.`try`), "typealias": Baton.Variable(self.`typealias`), "unsafe": Baton.Variable(self.unsafe), "var": Baton.Variable(self.`var`), "variable": Baton.Variable(self.variable), "where": Baton.Variable(self.`where`), "while": Baton.Variable(self.`while`), "id": Baton.Variable(self.id)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.AbstractSlots == rhs.AbstractSlots && lhs.Action == rhs.Action && lhs.`Any` == rhs.`Any` && lhs.Bool == rhs.Bool && lhs.Double == rhs.Double && lhs.Fragment == rhs.Fragment && lhs.Hasher == rhs.Hasher && lhs.Int == rhs.Int && lhs.MainActor == rhs.MainActor && lhs.Op == rhs.Op && lhs.Operation == rhs.Operation && lhs.OptimisticResponse == rhs.OptimisticResponse && lhs.Optional == rhs.Optional && lhs.Owner == rhs.Owner && lhs.`Protocol` == rhs.`Protocol` && lhs.Query == rhs.Query && lhs.RefetchQuery == rhs.RefetchQuery && lhs.Result == rhs.Result && lhs.`Self` == rhs.`Self` && lhs.Sendable == rhs.Sendable && lhs.Set == rhs.Set && lhs.Spread == rhs.Spread && lhs.String == rhs.String && lhs.Swift == rhs.Swift && lhs.`Type` == rhs.`Type` && lhs.`_` == rhs.`_` && lhs.anchor == rhs.anchor && lhs.`any` == rhs.`any` && lhs.`as` == rhs.`as` && lhs.`associatedtype` == rhs.`associatedtype` && lhs.async == rhs.async && lhs.`await` == rhs.`await` && lhs.`borrowing` == rhs.`borrowing` && lhs.bound == rhs.bound && lhs.`break` == rhs.`break` && lhs.bubbles == rhs.bubbles && lhs.cacheExpiration == rhs.cacheExpiration && lhs.callAsFunction == rhs.callAsFunction && lhs.`case` == rhs.`case` && lhs.`catch` == rhs.`catch` && lhs.caught == rhs.caught && lhs.child == rhs.child && lhs.`class` == rhs.`class` && lhs.commit == rhs.commit && lhs.connection == rhs.connection && lhs.connectionID == rhs.connectionID && lhs.consume == rhs.consume && lhs.`consuming` == rhs.`consuming` && lhs.`continue` == rhs.`continue` && lhs.copy == rhs.copy && lhs.count == rhs.count && lhs.`default` == rhs.`default` && lhs.`defer` == rhs.`defer` && lhs.`deinit` == rhs.`deinit` && lhs.discard == rhs.discard && lhs.`do` == rhs.`do` && lhs.document == rhs.document && lhs.`each` == rhs.`each` && lhs.`else` == rhs.`else` && lhs.`enum` == rhs.`enum` && lhs.errorBehavior == rhs.errorBehavior && lhs.errors == rhs.errors && lhs.`extension` == rhs.`extension` && lhs.`fallthrough` == rhs.`fallthrough` && lhs.`false` == rhs.`false` && lhs.fieldErrors == rhs.fieldErrors && lhs.fields == rhs.fields && lhs.`fileprivate` == rhs.`fileprivate` && lhs.`for` == rhs.`for` && lhs.format == rhs.format && lhs.`func` == rhs.`func` && lhs.`guard` == rhs.`guard` && lhs.hasDeferred == rhs.hasDeferred && lhs.hasNext == rhs.hasNext && lhs.hasPrevious == rhs.hasPrevious && lhs.hash == rhs.hash && lhs.hasher == rhs.hasher && lhs.`if` == rhs.`if` && lhs.`import` == rhs.`import` && lhs.`in` == rhs.`in` && lhs.`init` == rhs.`init` && lhs.`inout` == rhs.`inout` && lhs.`internal` == rhs.`internal` && lhs.`is` == rhs.`is` && lhs.isLoadingNext == rhs.isLoadingNext && lhs.isLoadingPrevious == rhs.isLoadingPrevious && lhs.isPresent == rhs.isPresent && lhs.`isolated` == rhs.`isolated` && lhs.`let` == rhs.`let` && lhs.lhs == rhs.lhs && lhs.loadNext == rhs.loadNext && lhs.loadPrevious == rhs.loadPrevious && lhs.missing == rhs.missing && lhs.missingRequiredField == rhs.missingRequiredField && lhs.name == rhs.name && lhs.`nil` == rhs.`nil` && lhs.nodes == rhs.nodes && lhs.`open` == rhs.`open` && lhs.`operator` == rhs.`operator` && lhs.optimistic == rhs.optimistic && lhs.plan == rhs.plan && lhs.`precedencegroup` == rhs.`precedencegroup` && lhs.`private` == rhs.`private` && lhs.`protocol` == rhs.`protocol` && lhs.`public` == rhs.`public` && lhs.recordID == rhs.recordID && lhs.refetch == rhs.refetch && lhs.refetchable == rhs.refetchable && lhs.`repeat` == rhs.`repeat` && lhs.`rethrows` == rhs.`rethrows` && lhs.retry == rhs.retry && lhs.`return` == rhs.`return` && lhs.rhs == rhs.rhs && lhs.satisfied == rhs.satisfied && lhs.schemaDigest == rhs.schemaDigest && lhs.`self` == rhs.`self` && lhs.selfValue == rhs.selfValue && lhs.`sending` == rhs.`sending` && lhs.`some` == rhs.`some` && lhs.`static` == rhs.`static` && lhs.`struct` == rhs.`struct` && lhs.`subscript` == rhs.`subscript` && lhs.subscription == rhs.subscription && lhs.`super` == rhs.`super` && lhs.`switch` == rhs.`switch` && lhs.text == rhs.text && lhs.then == rhs.then && lhs.`throw` == rhs.`throw` && lhs.throwing == rhs.throwing && lhs.`throws` == rhs.`throws` && lhs.throwsOnFieldError == rhs.throwsOnFieldError && lhs.transient == rhs.transient && lhs.`true` == rhs.`true` && lhs.`try` == rhs.`try` && lhs.`typealias` == rhs.`typealias` && lhs.unsafe == rhs.unsafe && lhs.`var` == rhs.`var` && lhs.variable == rhs.variable && lhs.`where` == rhs.`where` && lhs.`while` == rhs.`while` && lhs.id == rhs.id
+        lhs.AbstractSlots == rhs.AbstractSlots && lhs.Action == rhs.Action && lhs.`Any` == rhs.`Any` && lhs.Bool == rhs.Bool && lhs.Double == rhs.Double && lhs.Fragment == rhs.Fragment && lhs.Hasher == rhs.Hasher && lhs.Int == rhs.Int && lhs.MainActor == rhs.MainActor && lhs.Op == rhs.Op && lhs.Operation == rhs.Operation && lhs.OptimisticResponse == rhs.OptimisticResponse && lhs.Optional == rhs.Optional && lhs.Owner == rhs.Owner && lhs.`Protocol` == rhs.`Protocol` && lhs.Query == rhs.Query && lhs.RefetchQuery == rhs.RefetchQuery && lhs.Result == rhs.Result && lhs.`Self` == rhs.`Self` && lhs.Sendable == rhs.Sendable && lhs.Set == rhs.Set && lhs.Spread == rhs.Spread && lhs.String == rhs.String && lhs.Swift == rhs.Swift && lhs.`Type` == rhs.`Type` && lhs.`_` == rhs.`_` && lhs.anchor == rhs.anchor && lhs.`any` == rhs.`any` && lhs.`as` == rhs.`as` && lhs.`associatedtype` == rhs.`associatedtype` && lhs.async == rhs.async && lhs.`await` == rhs.`await` && lhs.`borrowing` == rhs.`borrowing` && lhs.bound == rhs.bound && lhs.`break` == rhs.`break` && lhs.bubbles == rhs.bubbles && lhs.cacheExpiration == rhs.cacheExpiration && lhs.callAsFunction == rhs.callAsFunction && lhs.`case` == rhs.`case` && lhs.`catch` == rhs.`catch` && lhs.caught == rhs.caught && lhs.child == rhs.child && lhs.`class` == rhs.`class` && lhs.commit == rhs.commit && lhs.connection == rhs.connection && lhs.connectionID == rhs.connectionID && lhs.consume == rhs.consume && lhs.`consuming` == rhs.`consuming` && lhs.`continue` == rhs.`continue` && lhs.copy == rhs.copy && lhs.count == rhs.count && lhs.`default` == rhs.`default` && lhs.`defer` == rhs.`defer` && lhs.`deinit` == rhs.`deinit` && lhs.discard == rhs.discard && lhs.`do` == rhs.`do` && lhs.document == rhs.document && lhs.`each` == rhs.`each` && lhs.`else` == rhs.`else` && lhs.`enum` == rhs.`enum` && lhs.errorBehavior == rhs.errorBehavior && lhs.errors == rhs.errors && lhs.`extension` == rhs.`extension` && lhs.`fallthrough` == rhs.`fallthrough` && lhs.`false` == rhs.`false` && lhs.fieldErrors == rhs.fieldErrors && lhs.fields == rhs.fields && lhs.`fileprivate` == rhs.`fileprivate` && lhs.`for` == rhs.`for` && lhs.format == rhs.format && lhs.`func` == rhs.`func` && lhs.`guard` == rhs.`guard` && lhs.hasDeferred == rhs.hasDeferred && lhs.hasNext == rhs.hasNext && lhs.hasPrevious == rhs.hasPrevious && lhs.hash == rhs.hash && lhs.hasher == rhs.hasher && lhs.`if` == rhs.`if` && lhs.`import` == rhs.`import` && lhs.`in` == rhs.`in` && lhs.`init` == rhs.`init` && lhs.`inout` == rhs.`inout` && lhs.`internal` == rhs.`internal` && lhs.`is` == rhs.`is` && lhs.isLoadingNext == rhs.isLoadingNext && lhs.isLoadingPrevious == rhs.isLoadingPrevious && lhs.isPresent == rhs.isPresent && lhs.`isolated` == rhs.`isolated` && lhs.`let` == rhs.`let` && lhs.lhs == rhs.lhs && lhs.loadNext == rhs.loadNext && lhs.loadPrevious == rhs.loadPrevious && lhs.missing == rhs.missing && lhs.missingRequiredField == rhs.missingRequiredField && lhs.name == rhs.name && lhs.`nil` == rhs.`nil` && lhs.nodes == rhs.nodes && lhs.`open` == rhs.`open` && lhs.`operator` == rhs.`operator` && lhs.optimistic == rhs.optimistic && lhs.plan == rhs.plan && lhs.`precedencegroup` == rhs.`precedencegroup` && lhs.`private` == rhs.`private` && lhs.`protocol` == rhs.`protocol` && lhs.`public` == rhs.`public` && lhs.recordID == rhs.recordID && lhs.refetch == rhs.refetch && lhs.refetchable == rhs.refetchable && lhs.`repeat` == rhs.`repeat` && lhs.`rethrows` == rhs.`rethrows` && lhs.retry == rhs.retry && lhs.`return` == rhs.`return` && lhs.rhs == rhs.rhs && lhs.satisfied == rhs.satisfied && lhs.schemaDigest == rhs.schemaDigest && lhs.selection == rhs.selection && lhs.selection0 == rhs.selection0 && lhs.`self` == rhs.`self` && lhs.selfValue == rhs.selfValue && lhs.`sending` == rhs.`sending` && lhs.`some` == rhs.`some` && lhs.`static` == rhs.`static` && lhs.`struct` == rhs.`struct` && lhs.`subscript` == rhs.`subscript` && lhs.subscription == rhs.subscription && lhs.`super` == rhs.`super` && lhs.`switch` == rhs.`switch` && lhs.text == rhs.text && lhs.then == rhs.then && lhs.`throw` == rhs.`throw` && lhs.throwing == rhs.throwing && lhs.`throws` == rhs.`throws` && lhs.throwsOnFieldError == rhs.throwsOnFieldError && lhs.transient == rhs.transient && lhs.`true` == rhs.`true` && lhs.`try` == rhs.`try` && lhs.`typealias` == rhs.`typealias` && lhs.unsafe == rhs.unsafe && lhs.`var` == rhs.`var` && lhs.variable == rhs.variable && lhs.`where` == rhs.`where` && lhs.`while` == rhs.`while` && lhs.id == rhs.id
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -3973,6 +4021,8 @@ fragment HostileArguments_character_YwmvO on Character {
         hasher.combine(self.rhs)
         hasher.combine(self.satisfied)
         hasher.combine(self.schemaDigest)
+        hasher.combine(self.selection)
+        hasher.combine(self.selection0)
         hasher.combine(self.`self`)
         hasher.combine(self.selfValue)
         hasher.combine(self.`sending`)
@@ -4001,19 +4051,21 @@ fragment HostileArguments_character_YwmvO on Character {
         hasher.combine(self.id)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
-            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_keyed, key: [.variable("id")]), selection: Baton.Selection(type: Types.Node, key: ["id"], abstract: true, variants: [
-                .init(types: [Types.Character], key: ["id"], fields: [
-                    .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false, guards: [[Guards.Type_true], [Guards.Protocol_true], [Guards.Any_true], [Guards.self_true], [Guards.Self_true], [Guards.init_true], [Guards.deinit_true], [Guards.subscript_true], [Guards.class_true], [Guards.struct_true], [Guards.enum_true], [Guards.func_true], [Guards.var_true], [Guards.let_true], [Guards.import_true], [Guards.extension_true], [Guards.operator_true], [Guards.static_true], [Guards.default_true], [Guards.case_true], [Guards.switch_true], [Guards.if_true], [Guards.else_true], [Guards.for_true], [Guards.in_true], [Guards.while_true], [Guards.repeat_true], [Guards.return_true], [Guards.break_true], [Guards.continue_true], [Guards.where_true], [Guards.is_true], [Guards.as_true], [Guards.try_true], [Guards.throw_true], [Guards.throws_true], [Guards.guard_true], [Guards.defer_true], [Guards.do_true], [Guards.catch_true], [Guards.true_true], [Guards.false_true], [Guards.nil_true], [Guards.super_true], [Guards.internal_true], [Guards.private_true], [Guards.public_true], [Guards.fileprivate_true], [Guards.open_true], [Guards.inout_true], [Guards.typealias_true], [Guards.associatedtype_true], [Guards.protocol_true], [Guards.some_true], [Guards.any_true], [Guards.rethrows_true], [Guards.fallthrough_true], [Guards.precedencegroup_true], [Guards.__true], [Guards.async_true], [Guards.borrowing_true], [Guards.consume_true], [Guards.consuming_true], [Guards.copy_true], [Guards.discard_true], [Guards.each_true], [Guards.isolated_true], [Guards.sending_true], [Guards.then_true], [Guards.unsafe_true], [Guards.await_true], [Guards.anchor_true], [Guards.recordID_true], [Guards.satisfied_true], [Guards.missingRequiredField_true], [Guards.fieldErrors_true], [Guards.isPresent_true], [Guards.throwing_true], [Guards.caught_true], [Guards.refetchable_true], [Guards.refetch_true], [Guards.connection_true], [Guards.nodes_true], [Guards.hasNext_true], [Guards.hasPrevious_true], [Guards.isLoadingNext_true], [Guards.isLoadingPrevious_true], [Guards.connectionID_true], [Guards.loadNext_true], [Guards.loadPrevious_true], [Guards.bound_true], [Guards.errors_true], [Guards.child_true], [Guards.missing_true], [Guards.count_true], [Guards.fields_true], [Guards.lhs_true], [Guards.rhs_true], [Guards.hasher_true], [Guards.optimistic_true], [Guards.selfValue_true], [Guards.Fragment_true], [Guards.Spread_true], [Guards.Owner_true], [Guards.Query_true], [Guards.Operation_true], [Guards.RefetchQuery_true], [Guards.name_true], [Guards.document_true], [Guards.text_true], [Guards.plan_true], [Guards.errorBehavior_true], [Guards.throwsOnFieldError_true], [Guards.bubbles_true], [Guards.hasDeferred_true], [Guards.cacheExpiration_true], [Guards.Action_true], [Guards.OptimisticResponse_true], [Guards.hash_true], [Guards.commit_true], [Guards.callAsFunction_true], [Guards.Op_true], [Guards.variable_true], [Guards.retry_true], [Guards.subscription_true], [Guards.AbstractSlots_true], [Guards.schemaDigest_true], [Guards.format_true], [Guards.transient_true], [Guards.Swift_true], [Guards.Set_true], [Guards.Result_true], [Guards.Optional_true], [Guards.String_true], [Guards.Int_true], [Guards.Double_true], [Guards.Bool_true], [Guards.MainActor_true], [Guards.Hasher_true], [Guards.Sendable_true]]),
-                ]),
-                .init(types: nil, fields: [
-                    .scalar("__typename", key: .fixed(Slots.Node.__typename), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                ]),
-            ])),
-        ]), transient: Types.transient)
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient)
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+        .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_keyed, key: [.variable("id")]), selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.Node, key: ["id"], abstract: true, variants: [
+        .init(types: [Types.Character], key: ["id"], fields: [
+            .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
+            .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false, guards: [[Guards.Type_true], [Guards.Protocol_true], [Guards.Any_true], [Guards.self_true], [Guards.Self_true], [Guards.init_true], [Guards.deinit_true], [Guards.subscript_true], [Guards.class_true], [Guards.struct_true], [Guards.enum_true], [Guards.func_true], [Guards.var_true], [Guards.let_true], [Guards.import_true], [Guards.extension_true], [Guards.operator_true], [Guards.static_true], [Guards.default_true], [Guards.case_true], [Guards.switch_true], [Guards.if_true], [Guards.else_true], [Guards.for_true], [Guards.in_true], [Guards.while_true], [Guards.repeat_true], [Guards.return_true], [Guards.break_true], [Guards.continue_true], [Guards.where_true], [Guards.is_true], [Guards.as_true], [Guards.try_true], [Guards.throw_true], [Guards.throws_true], [Guards.guard_true], [Guards.defer_true], [Guards.do_true], [Guards.catch_true], [Guards.true_true], [Guards.false_true], [Guards.nil_true], [Guards.super_true], [Guards.internal_true], [Guards.private_true], [Guards.public_true], [Guards.fileprivate_true], [Guards.open_true], [Guards.inout_true], [Guards.typealias_true], [Guards.associatedtype_true], [Guards.protocol_true], [Guards.some_true], [Guards.any_true], [Guards.rethrows_true], [Guards.fallthrough_true], [Guards.precedencegroup_true], [Guards.__true], [Guards.async_true], [Guards.borrowing_true], [Guards.consume_true], [Guards.consuming_true], [Guards.copy_true], [Guards.discard_true], [Guards.each_true], [Guards.isolated_true], [Guards.sending_true], [Guards.then_true], [Guards.unsafe_true], [Guards.await_true], [Guards.anchor_true], [Guards.recordID_true], [Guards.satisfied_true], [Guards.missingRequiredField_true], [Guards.fieldErrors_true], [Guards.isPresent_true], [Guards.throwing_true], [Guards.caught_true], [Guards.refetchable_true], [Guards.refetch_true], [Guards.connection_true], [Guards.nodes_true], [Guards.hasNext_true], [Guards.hasPrevious_true], [Guards.isLoadingNext_true], [Guards.isLoadingPrevious_true], [Guards.connectionID_true], [Guards.loadNext_true], [Guards.loadPrevious_true], [Guards.bound_true], [Guards.errors_true], [Guards.child_true], [Guards.missing_true], [Guards.count_true], [Guards.fields_true], [Guards.lhs_true], [Guards.rhs_true], [Guards.hasher_true], [Guards.selection0_true], [Guards.selection_true], [Guards.optimistic_true], [Guards.selfValue_true], [Guards.Fragment_true], [Guards.Spread_true], [Guards.Owner_true], [Guards.Query_true], [Guards.Operation_true], [Guards.RefetchQuery_true], [Guards.name_true], [Guards.document_true], [Guards.text_true], [Guards.plan_true], [Guards.errorBehavior_true], [Guards.throwsOnFieldError_true], [Guards.bubbles_true], [Guards.hasDeferred_true], [Guards.cacheExpiration_true], [Guards.Action_true], [Guards.OptimisticResponse_true], [Guards.hash_true], [Guards.commit_true], [Guards.callAsFunction_true], [Guards.Op_true], [Guards.variable_true], [Guards.retry_true], [Guards.subscription_true], [Guards.AbstractSlots_true], [Guards.schemaDigest_true], [Guards.format_true], [Guards.transient_true], [Guards.Swift_true], [Guards.Set_true], [Guards.Result_true], [Guards.Optional_true], [Guards.String_true], [Guards.Int_true], [Guards.Double_true], [Guards.Bool_true], [Guards.MainActor_true], [Guards.Hasher_true], [Guards.Sendable_true]]),
+        ]),
+        .init(types: nil, fields: [
+            .scalar("__typename", key: .fixed(Slots.Node.__typename), kind: .string, list: false),
+            .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
+        ]),
+    ])
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -4024,7 +4076,7 @@ fragment HostileArguments_character_YwmvO on Character {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             @MainActor public var hostileArguments: HostileArguments_character? {
-                let bound = anchor.binding(Sites.HostileArgumentsRefetchQuery_hostileArguments) { () -> [String: Baton.Variable?] in ["Type": anchor.variables["Type"], "Protocol": anchor.variables["Protocol"], "Any": anchor.variables["Any"], "self": anchor.variables["self"], "Self": anchor.variables["Self"], "init": anchor.variables["init"], "deinit": anchor.variables["deinit"], "subscript": anchor.variables["subscript"], "class": anchor.variables["class"], "struct": anchor.variables["struct"], "enum": anchor.variables["enum"], "func": anchor.variables["func"], "var": anchor.variables["var"], "let": anchor.variables["let"], "import": anchor.variables["import"], "extension": anchor.variables["extension"], "operator": anchor.variables["operator"], "static": anchor.variables["static"], "default": anchor.variables["default"], "case": anchor.variables["case"], "switch": anchor.variables["switch"], "if": anchor.variables["if"], "else": anchor.variables["else"], "for": anchor.variables["for"], "in": anchor.variables["in"], "while": anchor.variables["while"], "repeat": anchor.variables["repeat"], "return": anchor.variables["return"], "break": anchor.variables["break"], "continue": anchor.variables["continue"], "where": anchor.variables["where"], "is": anchor.variables["is"], "as": anchor.variables["as"], "try": anchor.variables["try"], "throw": anchor.variables["throw"], "throws": anchor.variables["throws"], "guard": anchor.variables["guard"], "defer": anchor.variables["defer"], "do": anchor.variables["do"], "catch": anchor.variables["catch"], "true": anchor.variables["true"], "false": anchor.variables["false"], "nil": anchor.variables["nil"], "super": anchor.variables["super"], "internal": anchor.variables["internal"], "private": anchor.variables["private"], "public": anchor.variables["public"], "fileprivate": anchor.variables["fileprivate"], "open": anchor.variables["open"], "inout": anchor.variables["inout"], "typealias": anchor.variables["typealias"], "associatedtype": anchor.variables["associatedtype"], "protocol": anchor.variables["protocol"], "some": anchor.variables["some"], "any": anchor.variables["any"], "rethrows": anchor.variables["rethrows"], "fallthrough": anchor.variables["fallthrough"], "precedencegroup": anchor.variables["precedencegroup"], "_": anchor.variables["_"], "async": anchor.variables["async"], "borrowing": anchor.variables["borrowing"], "consume": anchor.variables["consume"], "consuming": anchor.variables["consuming"], "copy": anchor.variables["copy"], "discard": anchor.variables["discard"], "each": anchor.variables["each"], "isolated": anchor.variables["isolated"], "sending": anchor.variables["sending"], "then": anchor.variables["then"], "unsafe": anchor.variables["unsafe"], "await": anchor.variables["await"], "anchor": anchor.variables["anchor"], "recordID": anchor.variables["recordID"], "satisfied": anchor.variables["satisfied"], "missingRequiredField": anchor.variables["missingRequiredField"], "fieldErrors": anchor.variables["fieldErrors"], "isPresent": anchor.variables["isPresent"], "throwing": anchor.variables["throwing"], "caught": anchor.variables["caught"], "refetchable": anchor.variables["refetchable"], "refetch": anchor.variables["refetch"], "connection": anchor.variables["connection"], "nodes": anchor.variables["nodes"], "hasNext": anchor.variables["hasNext"], "hasPrevious": anchor.variables["hasPrevious"], "isLoadingNext": anchor.variables["isLoadingNext"], "isLoadingPrevious": anchor.variables["isLoadingPrevious"], "connectionID": anchor.variables["connectionID"], "loadNext": anchor.variables["loadNext"], "loadPrevious": anchor.variables["loadPrevious"], "bound": anchor.variables["bound"], "errors": anchor.variables["errors"], "child": anchor.variables["child"], "missing": anchor.variables["missing"], "count": anchor.variables["count"], "fields": anchor.variables["fields"], "lhs": anchor.variables["lhs"], "rhs": anchor.variables["rhs"], "hasher": anchor.variables["hasher"], "optimistic": anchor.variables["optimistic"], "selfValue": anchor.variables["selfValue"], "Fragment": anchor.variables["Fragment"], "Spread": anchor.variables["Spread"], "Owner": anchor.variables["Owner"], "Query": anchor.variables["Query"], "Operation": anchor.variables["Operation"], "RefetchQuery": anchor.variables["RefetchQuery"], "name": anchor.variables["name"], "document": anchor.variables["document"], "text": anchor.variables["text"], "plan": anchor.variables["plan"], "errorBehavior": anchor.variables["errorBehavior"], "throwsOnFieldError": anchor.variables["throwsOnFieldError"], "bubbles": anchor.variables["bubbles"], "hasDeferred": anchor.variables["hasDeferred"], "cacheExpiration": anchor.variables["cacheExpiration"], "Action": anchor.variables["Action"], "OptimisticResponse": anchor.variables["OptimisticResponse"], "hash": anchor.variables["hash"], "commit": anchor.variables["commit"], "callAsFunction": anchor.variables["callAsFunction"], "Op": anchor.variables["Op"], "variable": anchor.variables["variable"], "retry": anchor.variables["retry"], "subscription": anchor.variables["subscription"], "AbstractSlots": anchor.variables["AbstractSlots"], "schemaDigest": anchor.variables["schemaDigest"], "format": anchor.variables["format"], "transient": anchor.variables["transient"], "Swift": anchor.variables["Swift"], "Set": anchor.variables["Set"], "Result": anchor.variables["Result"], "Optional": anchor.variables["Optional"], "String": anchor.variables["String"], "Int": anchor.variables["Int"], "Double": anchor.variables["Double"], "Bool": anchor.variables["Bool"], "MainActor": anchor.variables["MainActor"], "Hasher": anchor.variables["Hasher"], "Sendable": anchor.variables["Sendable"]] }
+                let bound = anchor.binding(Sites.HostileArgumentsRefetchQuery_hostileArguments) { () -> [String: Baton.Variable?] in ["Type": anchor.variables["Type"], "Protocol": anchor.variables["Protocol"], "Any": anchor.variables["Any"], "self": anchor.variables["self"], "Self": anchor.variables["Self"], "init": anchor.variables["init"], "deinit": anchor.variables["deinit"], "subscript": anchor.variables["subscript"], "class": anchor.variables["class"], "struct": anchor.variables["struct"], "enum": anchor.variables["enum"], "func": anchor.variables["func"], "var": anchor.variables["var"], "let": anchor.variables["let"], "import": anchor.variables["import"], "extension": anchor.variables["extension"], "operator": anchor.variables["operator"], "static": anchor.variables["static"], "default": anchor.variables["default"], "case": anchor.variables["case"], "switch": anchor.variables["switch"], "if": anchor.variables["if"], "else": anchor.variables["else"], "for": anchor.variables["for"], "in": anchor.variables["in"], "while": anchor.variables["while"], "repeat": anchor.variables["repeat"], "return": anchor.variables["return"], "break": anchor.variables["break"], "continue": anchor.variables["continue"], "where": anchor.variables["where"], "is": anchor.variables["is"], "as": anchor.variables["as"], "try": anchor.variables["try"], "throw": anchor.variables["throw"], "throws": anchor.variables["throws"], "guard": anchor.variables["guard"], "defer": anchor.variables["defer"], "do": anchor.variables["do"], "catch": anchor.variables["catch"], "true": anchor.variables["true"], "false": anchor.variables["false"], "nil": anchor.variables["nil"], "super": anchor.variables["super"], "internal": anchor.variables["internal"], "private": anchor.variables["private"], "public": anchor.variables["public"], "fileprivate": anchor.variables["fileprivate"], "open": anchor.variables["open"], "inout": anchor.variables["inout"], "typealias": anchor.variables["typealias"], "associatedtype": anchor.variables["associatedtype"], "protocol": anchor.variables["protocol"], "some": anchor.variables["some"], "any": anchor.variables["any"], "rethrows": anchor.variables["rethrows"], "fallthrough": anchor.variables["fallthrough"], "precedencegroup": anchor.variables["precedencegroup"], "_": anchor.variables["_"], "async": anchor.variables["async"], "borrowing": anchor.variables["borrowing"], "consume": anchor.variables["consume"], "consuming": anchor.variables["consuming"], "copy": anchor.variables["copy"], "discard": anchor.variables["discard"], "each": anchor.variables["each"], "isolated": anchor.variables["isolated"], "sending": anchor.variables["sending"], "then": anchor.variables["then"], "unsafe": anchor.variables["unsafe"], "await": anchor.variables["await"], "anchor": anchor.variables["anchor"], "recordID": anchor.variables["recordID"], "satisfied": anchor.variables["satisfied"], "missingRequiredField": anchor.variables["missingRequiredField"], "fieldErrors": anchor.variables["fieldErrors"], "isPresent": anchor.variables["isPresent"], "throwing": anchor.variables["throwing"], "caught": anchor.variables["caught"], "refetchable": anchor.variables["refetchable"], "refetch": anchor.variables["refetch"], "connection": anchor.variables["connection"], "nodes": anchor.variables["nodes"], "hasNext": anchor.variables["hasNext"], "hasPrevious": anchor.variables["hasPrevious"], "isLoadingNext": anchor.variables["isLoadingNext"], "isLoadingPrevious": anchor.variables["isLoadingPrevious"], "connectionID": anchor.variables["connectionID"], "loadNext": anchor.variables["loadNext"], "loadPrevious": anchor.variables["loadPrevious"], "bound": anchor.variables["bound"], "errors": anchor.variables["errors"], "child": anchor.variables["child"], "missing": anchor.variables["missing"], "count": anchor.variables["count"], "fields": anchor.variables["fields"], "lhs": anchor.variables["lhs"], "rhs": anchor.variables["rhs"], "hasher": anchor.variables["hasher"], "selection0": anchor.variables["selection0"], "selection": anchor.variables["selection"], "optimistic": anchor.variables["optimistic"], "selfValue": anchor.variables["selfValue"], "Fragment": anchor.variables["Fragment"], "Spread": anchor.variables["Spread"], "Owner": anchor.variables["Owner"], "Query": anchor.variables["Query"], "Operation": anchor.variables["Operation"], "RefetchQuery": anchor.variables["RefetchQuery"], "name": anchor.variables["name"], "document": anchor.variables["document"], "text": anchor.variables["text"], "plan": anchor.variables["plan"], "errorBehavior": anchor.variables["errorBehavior"], "throwsOnFieldError": anchor.variables["throwsOnFieldError"], "bubbles": anchor.variables["bubbles"], "hasDeferred": anchor.variables["hasDeferred"], "cacheExpiration": anchor.variables["cacheExpiration"], "Action": anchor.variables["Action"], "OptimisticResponse": anchor.variables["OptimisticResponse"], "hash": anchor.variables["hash"], "commit": anchor.variables["commit"], "callAsFunction": anchor.variables["callAsFunction"], "Op": anchor.variables["Op"], "variable": anchor.variables["variable"], "retry": anchor.variables["retry"], "subscription": anchor.variables["subscription"], "AbstractSlots": anchor.variables["AbstractSlots"], "schemaDigest": anchor.variables["schemaDigest"], "format": anchor.variables["format"], "transient": anchor.variables["transient"], "Swift": anchor.variables["Swift"], "Set": anchor.variables["Set"], "Result": anchor.variables["Result"], "Optional": anchor.variables["Optional"], "String": anchor.variables["String"], "Int": anchor.variables["Int"], "Double": anchor.variables["Double"], "Bool": anchor.variables["Bool"], "MainActor": anchor.variables["MainActor"], "Hasher": anchor.variables["Hasher"], "Sendable": anchor.variables["Sendable"]] }
                 guard anchor.record.is(Types.Character) else { return nil }
                 return .init(anchor: bound.entering())
             }
@@ -4150,6 +4202,8 @@ fragment HostileBodies_character on Character {
   lhs: name
   rhs: name
   hasher: name
+  selection0: name
+  selection: name
   optimistic: name
   selfValue: name
   Fragment: name
@@ -4239,170 +4293,175 @@ fragment HostileDeferred_character on Character {
         hasher.combine(self.id)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
-            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_keyed, key: [.variable("id")]), selection: Baton.Selection(type: Types.Node, key: ["id"], abstract: true, variants: [
-                .init(types: [Types.Character], key: ["id"], fields: [
-                    .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("Type", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Protocol", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Any", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("self", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("init", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("deinit", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("subscript", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("class", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("struct", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("enum", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("func", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("var", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("let", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("import", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("extension", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("operator", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("static", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("default", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("case", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("switch", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("if", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("else", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("for", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("in", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("while", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("repeat", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("return", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("break", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("continue", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("where", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("is", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("as", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("try", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("throw", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("throws", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("guard", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("defer", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("do", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("catch", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("true", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("false", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("nil", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("super", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("internal", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("private", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("public", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("fileprivate", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("open", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("inout", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("typealias", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("associatedtype", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("protocol", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("some", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("any", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("rethrows", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("fallthrough", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("precedencegroup", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("_", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("async", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("await", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("borrowing", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("consume", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("consuming", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("copy", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("discard", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("each", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("isolated", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("sending", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("then", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("unsafe", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("satisfied", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("missingRequiredField", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("fieldErrors", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("isPresent", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("throwing", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("caught", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("refetchable", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("refetch", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("connection", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("nodes", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("hasNext", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("hasPrevious", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("isLoadingNext", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("isLoadingPrevious", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("connectionID", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("loadNext", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("loadPrevious", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("bound", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("errors", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("child", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("missing", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("count", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("fields", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("lhs", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("rhs", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("hasher", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("optimistic", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("selfValue", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Fragment", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Spread", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Owner", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Query", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Operation", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("RefetchQuery", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("variables", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("resolution", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("document", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("text", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("plan", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("errorBehavior", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("throwsOnFieldError", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("bubbles", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("hasDeferred", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("cacheExpiration", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Data", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Action", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("OptimisticResponse", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("hash", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("commit", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("callAsFunction", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Op", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("variable", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("hashValue", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("phase", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("isRefreshing", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("isStale", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("retry", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("subscription", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Guards", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("AbstractSlots", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("schemaDigest", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("format", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("transient", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Baton", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Swift", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Set", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Result", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Optional", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("String", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Int", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Double", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Bool", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("MainActor", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Hasher", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Sendable", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("species", key: .fixed(Slots.Character.species), kind: .string, list: false),
-                    .linked("origin", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                        .scalar("name", key: .fixed(Slots.Location.name), kind: .string, list: false),
-                        .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                    ])),
-                    .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileBodies_character$defer$HostileDeferred_character"),
-                ]),
-                .init(types: nil, fields: [
-                    .scalar("__typename", key: .fixed(Slots.Node.__typename), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                ]),
-            ])),
-        ]), transient: Types.transient)
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient)
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+        .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_keyed, key: [.variable("id")]), selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.Node, key: ["id"], abstract: true, variants: [
+        .init(types: [Types.Character], key: ["id"], fields: [
+            .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
+            .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("Type", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("Protocol", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("Any", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("self", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("init", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("deinit", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("subscript", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("class", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("struct", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("enum", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("func", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("var", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("let", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("import", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("extension", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("operator", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("static", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("default", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("case", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("switch", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("if", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("else", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("for", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("in", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("while", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("repeat", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("return", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("break", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("continue", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("where", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("is", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("as", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("try", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("throw", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("throws", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("guard", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("defer", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("do", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("catch", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("true", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("false", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("nil", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("super", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("internal", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("private", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("public", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("fileprivate", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("open", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("inout", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("typealias", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("associatedtype", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("protocol", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("some", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("any", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("rethrows", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("fallthrough", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("precedencegroup", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("_", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("async", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("await", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("borrowing", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("consume", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("consuming", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("copy", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("discard", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("each", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("isolated", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("sending", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("then", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("unsafe", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("satisfied", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("missingRequiredField", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("fieldErrors", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("isPresent", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("throwing", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("caught", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("refetchable", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("refetch", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("connection", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("nodes", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("hasNext", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("hasPrevious", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("isLoadingNext", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("isLoadingPrevious", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("connectionID", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("loadNext", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("loadPrevious", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("bound", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("errors", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("child", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("missing", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("count", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("fields", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("lhs", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("rhs", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("hasher", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("selection0", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("selection", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("optimistic", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("selfValue", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("Fragment", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("Spread", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("Owner", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("Query", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("Operation", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("RefetchQuery", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("variables", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("resolution", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("document", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("text", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("plan", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("errorBehavior", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("throwsOnFieldError", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("bubbles", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("hasDeferred", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("cacheExpiration", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("Data", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("Action", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("OptimisticResponse", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("hash", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("commit", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("callAsFunction", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("Op", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("variable", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("hashValue", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("phase", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("isRefreshing", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("isStale", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("retry", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("subscription", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("Guards", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("AbstractSlots", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("schemaDigest", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("format", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("transient", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("Baton", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("Swift", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("Set", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("Result", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("Optional", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("String", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("Int", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("Double", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("Bool", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("MainActor", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("Hasher", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("Sendable", key: .fixed(Slots.Character.name), kind: .string, list: false),
+            .scalar("species", key: .fixed(Slots.Character.species), kind: .string, list: false),
+            .linked("origin", key: .fixed(Slots.Character.origin), plural: false, selection: selection2),
+            .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileBodies_character$defer$HostileDeferred_character"),
+        ]),
+        .init(types: nil, fields: [
+            .scalar("__typename", key: .fixed(Slots.Node.__typename), kind: .string, list: false),
+            .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
+        ]),
+    ])
+    private static let selection2: Baton.Selection = Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
+        .scalar("name", key: .fixed(Slots.Location.name), kind: .string, list: false),
+        .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
+    ])
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -4542,6 +4601,8 @@ fragment HostileConnection_character_1G22uz on Character {
     lhs: totalCount
     rhs: totalCount
     hasher: totalCount
+    selection0: totalCount
+    selection: totalCount
     optimistic: totalCount
     selfValue: totalCount
     Fragment: totalCount
@@ -4623,172 +4684,180 @@ fragment HostileConnection_character_1G22uz on Character {
         hasher.combine(self.id)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
-            .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_keyed, key: [.variable("id")]), selection: Baton.Selection(type: Types.Node, key: ["id"], abstract: true, variants: [
-                .init(types: [Types.Character], key: ["id"], fields: [
-                    .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .linked("notes", key: .dynamic(Slots.Character.notes_a9400e), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character.__HostileConnection_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo), after: .variable("cursor")), selection: Baton.Selection(type: Types.NoteConnection, key: [], abstract: false, fields: [
-                        .scalar("Type", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("Protocol", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("Any", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("self", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("init", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("deinit", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("subscript", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("class", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("struct", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("enum", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("func", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("var", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("let", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("import", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("extension", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("operator", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("static", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("default", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("case", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("switch", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("if", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("else", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("for", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("in", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("while", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("repeat", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("return", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("break", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("continue", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("where", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("is", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("as", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("try", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("throw", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("throws", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("guard", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("defer", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("do", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("catch", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("true", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("false", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("nil", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("super", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("internal", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("private", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("public", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("fileprivate", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("open", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("inout", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("typealias", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("associatedtype", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("protocol", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("some", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("any", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("rethrows", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("fallthrough", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("precedencegroup", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("_", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("async", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("await", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("borrowing", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("consume", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("consuming", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("copy", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("discard", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("each", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("isolated", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("sending", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("then", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("unsafe", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("satisfied", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("missingRequiredField", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("fieldErrors", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("isPresent", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("throwing", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("caught", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("refetchable", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("refetch", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("connection", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("loadNext", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("loadPrevious", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("bound", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("errors", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("child", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("missing", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("count", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("fields", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("lhs", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("rhs", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("hasher", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("optimistic", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("selfValue", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("Fragment", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("Spread", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("Owner", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("Query", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("Operation", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("RefetchQuery", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("variables", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("resolution", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("name", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("document", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("text", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("plan", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("errorBehavior", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("throwsOnFieldError", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("bubbles", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("hasDeferred", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("cacheExpiration", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("Data", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("Action", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("OptimisticResponse", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("hash", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("commit", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("callAsFunction", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("Op", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("variable", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("hashValue", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("phase", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("isRefreshing", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("isStale", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("retry", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("subscription", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("Sites", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("Guards", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("AbstractSlots", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("schemaDigest", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("format", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("transient", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("Baton", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("Swift", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("Set", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("Result", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("Optional", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("String", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("Int", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("Double", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("Bool", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("MainActor", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("Hasher", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .scalar("Sendable", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                        .linked("edges", key: .fixed(Slots.NoteConnection.edges), plural: true, selection: Baton.Selection(type: Types.NoteEdge, key: [], abstract: false, fields: [
-                            .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                                .scalar("__typename", key: .fixed(Slots.Note.__typename), kind: .string, list: false),
-                                .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                            ])),
-                            .scalar("cursor", key: .fixed(Slots.NoteEdge.cursor), kind: .string, list: false),
-                        ])),
-                        .linked("pageInfo", key: .fixed(Slots.NoteConnection.pageInfo), plural: false, selection: Baton.Selection(type: Types.PageInfo, key: [], abstract: false, fields: [
-                            .scalar("endCursor", key: .fixed(Slots.PageInfo.endCursor), kind: .string, list: false),
-                            .scalar("hasNextPage", key: .fixed(Slots.PageInfo.hasNextPage), kind: .bool, list: false),
-                        ])),
-                    ])),
-                ]),
-                .init(types: nil, fields: [
-                    .scalar("__typename", key: .fixed(Slots.Node.__typename), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                ]),
-            ])),
-        ]), transient: Types.transient)
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient)
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+        .linked("node", key: .dynamic(Slots.Query.node_8f7d08), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_keyed, key: [.variable("id")]), selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.Node, key: ["id"], abstract: true, variants: [
+        .init(types: [Types.Character], key: ["id"], fields: [
+            .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
+            .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .linked("notes", key: .dynamic(Slots.Character.notes_a9400e), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character.__HostileConnection_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo), after: .variable("cursor")), selection: selection2),
+        ]),
+        .init(types: nil, fields: [
+            .scalar("__typename", key: .fixed(Slots.Node.__typename), kind: .string, list: false),
+            .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
+        ]),
+    ])
+    private static let selection2: Baton.Selection = Baton.Selection(type: Types.NoteConnection, key: [], abstract: false, fields: [
+        .scalar("Type", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("Protocol", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("Any", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("self", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("init", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("deinit", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("subscript", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("class", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("struct", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("enum", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("func", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("var", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("let", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("import", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("extension", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("operator", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("static", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("default", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("case", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("switch", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("if", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("else", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("for", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("in", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("while", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("repeat", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("return", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("break", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("continue", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("where", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("is", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("as", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("try", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("throw", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("throws", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("guard", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("defer", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("do", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("catch", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("true", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("false", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("nil", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("super", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("internal", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("private", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("public", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("fileprivate", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("open", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("inout", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("typealias", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("associatedtype", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("protocol", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("some", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("any", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("rethrows", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("fallthrough", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("precedencegroup", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("_", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("async", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("await", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("borrowing", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("consume", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("consuming", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("copy", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("discard", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("each", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("isolated", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("sending", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("then", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("unsafe", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("satisfied", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("missingRequiredField", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("fieldErrors", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("isPresent", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("throwing", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("caught", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("refetchable", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("refetch", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("connection", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("loadNext", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("loadPrevious", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("bound", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("errors", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("child", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("missing", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("count", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("fields", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("lhs", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("rhs", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("hasher", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("selection0", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("selection", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("optimistic", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("selfValue", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("Fragment", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("Spread", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("Owner", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("Query", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("Operation", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("RefetchQuery", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("variables", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("resolution", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("name", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("document", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("text", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("plan", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("errorBehavior", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("throwsOnFieldError", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("bubbles", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("hasDeferred", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("cacheExpiration", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("Data", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("Action", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("OptimisticResponse", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("hash", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("commit", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("callAsFunction", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("Op", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("variable", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("hashValue", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("phase", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("isRefreshing", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("isStale", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("retry", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("subscription", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("Sites", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("Guards", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("AbstractSlots", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("schemaDigest", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("format", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("transient", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("Baton", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("Swift", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("Set", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("Result", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("Optional", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("String", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("Int", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("Double", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("Bool", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("MainActor", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("Hasher", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .scalar("Sendable", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .linked("edges", key: .fixed(Slots.NoteConnection.edges), plural: true, selection: selection4),
+        .linked("pageInfo", key: .fixed(Slots.NoteConnection.pageInfo), plural: false, selection: selection3),
+    ])
+    private static let selection3: Baton.Selection = Baton.Selection(type: Types.PageInfo, key: [], abstract: false, fields: [
+        .scalar("endCursor", key: .fixed(Slots.PageInfo.endCursor), kind: .string, list: false),
+        .scalar("hasNextPage", key: .fixed(Slots.PageInfo.hasNextPage), kind: .bool, list: false),
+    ])
+    private static let selection4: Baton.Selection = Baton.Selection(type: Types.NoteEdge, key: [], abstract: false, fields: [
+        .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: selection5),
+        .scalar("cursor", key: .fixed(Slots.NoteEdge.cursor), kind: .string, list: false),
+    ])
+    private static let selection5: Baton.Selection = Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
+        .scalar("__typename", key: .fixed(Slots.Note.__typename), kind: .string, list: false),
+        .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
+    ])
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -4839,12 +4908,14 @@ fragment _hostileHidden on Character {
     public func hash(into hasher: inout Hasher) {
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
-            .linked("character", key: .fixed(Slots.Query.character_c74a1e), plural: false, lookup: Baton.Lookup(type: Types.Character, key: [.literal("1")]), selection: Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
-                .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-            ])),
-        ]), transient: Types.transient)
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient)
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+        .linked("character", key: .fixed(Slots.Query.character_c74a1e), plural: false, lookup: Baton.Lookup(type: Types.Character, key: [.literal("1")]), selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
+        .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+    ])
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -4960,6 +5031,8 @@ nonisolated public struct HostileMutationVariables: Baton.Mutation {
     public var lhs: Bool
     public var rhs: Bool
     public var hasher: Bool
+    public var selection0: Bool
+    public var selection: Bool
     public var selfValue: Bool
     public var Fragment: Bool
     public var Spread: Bool
@@ -5004,7 +5077,7 @@ nonisolated public struct HostileMutationVariables: Baton.Mutation {
     public var Hasher: Bool
     public var Sendable: Bool
 
-    public init(`Type`: Bool, `Protocol`: Bool, `Any`: Bool, `self` selfValue2: Bool, `init`: Bool, `deinit`: Bool, `subscript`: Bool, `class`: Bool, `struct`: Bool, `enum`: Bool, `func`: Bool, `import`: Bool, `extension`: Bool, `operator`: Bool, `static`: Bool, `default`: Bool, `case`: Bool, `switch`: Bool, `if`: Bool, `else`: Bool, `for`: Bool, `in`: Bool, `while`: Bool, `repeat`: Bool, `return`: Bool, `break`: Bool, `continue`: Bool, `where`: Bool, `is`: Bool, `as`: Bool, `try`: Bool, `throw`: Bool, `throws`: Bool, `guard`: Bool, `defer`: Bool, `do`: Bool, `catch`: Bool, `true`: Bool, `false`: Bool, `nil`: Bool, `super`: Bool, `internal`: Bool, `private`: Bool, `public`: Bool, `fileprivate`: Bool, `open`: Bool, `inout`: Bool, `typealias`: Bool, `associatedtype`: Bool, `protocol`: Bool, `some`: Bool, `any`: Bool, `rethrows`: Bool, `fallthrough`: Bool, `precedencegroup`: Bool, `_`: Bool, `var`: Bool, `let`: Bool, `Self`: Bool, async: Bool, `borrowing`: Bool, consume: Bool, `consuming`: Bool, copy: Bool, discard: Bool, `each`: Bool, `isolated`: Bool, `sending`: Bool, then: Bool, unsafe: Bool, `await`: Bool, anchor: Bool, recordID: Bool, satisfied: Bool, missingRequiredField: Bool, fieldErrors: Bool, isPresent: Bool, throwing: Bool, caught: Bool, refetchable: Bool, refetch: Bool, connection: Bool, nodes: Bool, hasNext: Bool, hasPrevious: Bool, isLoadingNext: Bool, isLoadingPrevious: Bool, connectionID: Bool, loadNext: Bool, loadPrevious: Bool, bound: Bool, errors: Bool, child: Bool, missing: Bool, count: Bool, fields: Bool, lhs: Bool, rhs: Bool, hasher: Bool, selfValue: Bool, Fragment: Bool, Spread: Bool, Owner: Bool, Query: Bool, Operation: Bool, RefetchQuery: Bool, resolution: Bool, name: Bool, document: Bool, text: Bool, plan: Bool, errorBehavior: Bool, throwsOnFieldError: Bool, bubbles: Bool, hasDeferred: Bool, cacheExpiration: Bool, hash: Bool, commit: Bool, callAsFunction: Bool, Op: Bool, variable: Bool, phase: Bool, isRefreshing: Bool, isStale: Bool, retry: Bool, subscription: Bool, Sites: Bool, AbstractSlots: Bool, schemaDigest: Bool, format: Bool, transient: Bool, Swift: Bool, Set: Bool, Result: Bool, Optional: Bool, String: Bool, Int: Bool, Double: Bool, Bool: Bool, MainActor: Bool, Hasher: Bool, Sendable: Bool) {
+    public init(`Type`: Bool, `Protocol`: Bool, `Any`: Bool, `self` selfValue2: Bool, `init`: Bool, `deinit`: Bool, `subscript`: Bool, `class`: Bool, `struct`: Bool, `enum`: Bool, `func`: Bool, `import`: Bool, `extension`: Bool, `operator`: Bool, `static`: Bool, `default`: Bool, `case`: Bool, `switch`: Bool, `if`: Bool, `else`: Bool, `for`: Bool, `in`: Bool, `while`: Bool, `repeat`: Bool, `return`: Bool, `break`: Bool, `continue`: Bool, `where`: Bool, `is`: Bool, `as`: Bool, `try`: Bool, `throw`: Bool, `throws`: Bool, `guard`: Bool, `defer`: Bool, `do`: Bool, `catch`: Bool, `true`: Bool, `false`: Bool, `nil`: Bool, `super`: Bool, `internal`: Bool, `private`: Bool, `public`: Bool, `fileprivate`: Bool, `open`: Bool, `inout`: Bool, `typealias`: Bool, `associatedtype`: Bool, `protocol`: Bool, `some`: Bool, `any`: Bool, `rethrows`: Bool, `fallthrough`: Bool, `precedencegroup`: Bool, `_`: Bool, `var`: Bool, `let`: Bool, `Self`: Bool, async: Bool, `borrowing`: Bool, consume: Bool, `consuming`: Bool, copy: Bool, discard: Bool, `each`: Bool, `isolated`: Bool, `sending`: Bool, then: Bool, unsafe: Bool, `await`: Bool, anchor: Bool, recordID: Bool, satisfied: Bool, missingRequiredField: Bool, fieldErrors: Bool, isPresent: Bool, throwing: Bool, caught: Bool, refetchable: Bool, refetch: Bool, connection: Bool, nodes: Bool, hasNext: Bool, hasPrevious: Bool, isLoadingNext: Bool, isLoadingPrevious: Bool, connectionID: Bool, loadNext: Bool, loadPrevious: Bool, bound: Bool, errors: Bool, child: Bool, missing: Bool, count: Bool, fields: Bool, lhs: Bool, rhs: Bool, hasher: Bool, selection0: Bool, selection: Bool, selfValue: Bool, Fragment: Bool, Spread: Bool, Owner: Bool, Query: Bool, Operation: Bool, RefetchQuery: Bool, resolution: Bool, name: Bool, document: Bool, text: Bool, plan: Bool, errorBehavior: Bool, throwsOnFieldError: Bool, bubbles: Bool, hasDeferred: Bool, cacheExpiration: Bool, hash: Bool, commit: Bool, callAsFunction: Bool, Op: Bool, variable: Bool, phase: Bool, isRefreshing: Bool, isStale: Bool, retry: Bool, subscription: Bool, Sites: Bool, AbstractSlots: Bool, schemaDigest: Bool, format: Bool, transient: Bool, Swift: Bool, Set: Bool, Result: Bool, Optional: Bool, String: Bool, Int: Bool, Double: Bool, Bool: Bool, MainActor: Bool, Hasher: Bool, Sendable: Bool) {
         self.`Type` = `Type`
         self.`Protocol` = `Protocol`
         self.`Any` = `Any`
@@ -5104,6 +5177,8 @@ nonisolated public struct HostileMutationVariables: Baton.Mutation {
         self.lhs = lhs
         self.rhs = rhs
         self.hasher = hasher
+        self.selection0 = selection0
+        self.selection = selection
         self.selfValue = selfValue
         self.Fragment = Fragment
         self.Spread = Spread
@@ -5251,6 +5326,8 @@ mutation HostileMutationVariables(
   $lhs: Boolean!
   $rhs: Boolean!
   $hasher: Boolean!
+  $selection0: Boolean!
+  $selection: Boolean!
   $selfValue: Boolean!
   $Fragment: Boolean!
   $Spread: Boolean!
@@ -5397,6 +5474,8 @@ mutation HostileMutationVariables(
       name @include(if: $lhs)
       name @include(if: $rhs)
       name @include(if: $hasher)
+      name @include(if: $selection0)
+      name @include(if: $selection)
       name @include(if: $selfValue)
       name @include(if: $Fragment)
       name @include(if: $Spread)
@@ -5446,11 +5525,11 @@ mutation HostileMutationVariables(
 """#)
 
     public var variables: Baton.Variables {
-        Baton.Variables(["Type": Baton.Variable(self.`Type`), "Protocol": Baton.Variable(self.`Protocol`), "Any": Baton.Variable(self.`Any`), "self": Baton.Variable(self.`self`), "init": Baton.Variable(self.`init`), "deinit": Baton.Variable(self.`deinit`), "subscript": Baton.Variable(self.`subscript`), "class": Baton.Variable(self.`class`), "struct": Baton.Variable(self.`struct`), "enum": Baton.Variable(self.`enum`), "func": Baton.Variable(self.`func`), "import": Baton.Variable(self.`import`), "extension": Baton.Variable(self.`extension`), "operator": Baton.Variable(self.`operator`), "static": Baton.Variable(self.`static`), "default": Baton.Variable(self.`default`), "case": Baton.Variable(self.`case`), "switch": Baton.Variable(self.`switch`), "if": Baton.Variable(self.`if`), "else": Baton.Variable(self.`else`), "for": Baton.Variable(self.`for`), "in": Baton.Variable(self.`in`), "while": Baton.Variable(self.`while`), "repeat": Baton.Variable(self.`repeat`), "return": Baton.Variable(self.`return`), "break": Baton.Variable(self.`break`), "continue": Baton.Variable(self.`continue`), "where": Baton.Variable(self.`where`), "is": Baton.Variable(self.`is`), "as": Baton.Variable(self.`as`), "try": Baton.Variable(self.`try`), "throw": Baton.Variable(self.`throw`), "throws": Baton.Variable(self.`throws`), "guard": Baton.Variable(self.`guard`), "defer": Baton.Variable(self.`defer`), "do": Baton.Variable(self.`do`), "catch": Baton.Variable(self.`catch`), "true": Baton.Variable(self.`true`), "false": Baton.Variable(self.`false`), "nil": Baton.Variable(self.`nil`), "super": Baton.Variable(self.`super`), "internal": Baton.Variable(self.`internal`), "private": Baton.Variable(self.`private`), "public": Baton.Variable(self.`public`), "fileprivate": Baton.Variable(self.`fileprivate`), "open": Baton.Variable(self.`open`), "inout": Baton.Variable(self.`inout`), "typealias": Baton.Variable(self.`typealias`), "associatedtype": Baton.Variable(self.`associatedtype`), "protocol": Baton.Variable(self.`protocol`), "some": Baton.Variable(self.`some`), "any": Baton.Variable(self.`any`), "rethrows": Baton.Variable(self.`rethrows`), "fallthrough": Baton.Variable(self.`fallthrough`), "precedencegroup": Baton.Variable(self.`precedencegroup`), "_": Baton.Variable(self.`_`), "var": Baton.Variable(self.`var`), "let": Baton.Variable(self.`let`), "Self": Baton.Variable(self.`Self`), "async": Baton.Variable(self.async), "borrowing": Baton.Variable(self.`borrowing`), "consume": Baton.Variable(self.consume), "consuming": Baton.Variable(self.`consuming`), "copy": Baton.Variable(self.copy), "discard": Baton.Variable(self.discard), "each": Baton.Variable(self.`each`), "isolated": Baton.Variable(self.`isolated`), "sending": Baton.Variable(self.`sending`), "then": Baton.Variable(self.then), "unsafe": Baton.Variable(self.unsafe), "await": Baton.Variable(self.`await`), "anchor": Baton.Variable(self.anchor), "recordID": Baton.Variable(self.recordID), "satisfied": Baton.Variable(self.satisfied), "missingRequiredField": Baton.Variable(self.missingRequiredField), "fieldErrors": Baton.Variable(self.fieldErrors), "isPresent": Baton.Variable(self.isPresent), "throwing": Baton.Variable(self.throwing), "caught": Baton.Variable(self.caught), "refetchable": Baton.Variable(self.refetchable), "refetch": Baton.Variable(self.refetch), "connection": Baton.Variable(self.connection), "nodes": Baton.Variable(self.nodes), "hasNext": Baton.Variable(self.hasNext), "hasPrevious": Baton.Variable(self.hasPrevious), "isLoadingNext": Baton.Variable(self.isLoadingNext), "isLoadingPrevious": Baton.Variable(self.isLoadingPrevious), "connectionID": Baton.Variable(self.connectionID), "loadNext": Baton.Variable(self.loadNext), "loadPrevious": Baton.Variable(self.loadPrevious), "bound": Baton.Variable(self.bound), "errors": Baton.Variable(self.errors), "child": Baton.Variable(self.child), "missing": Baton.Variable(self.missing), "count": Baton.Variable(self.count), "fields": Baton.Variable(self.fields), "lhs": Baton.Variable(self.lhs), "rhs": Baton.Variable(self.rhs), "hasher": Baton.Variable(self.hasher), "selfValue": Baton.Variable(self.selfValue), "Fragment": Baton.Variable(self.Fragment), "Spread": Baton.Variable(self.Spread), "Owner": Baton.Variable(self.Owner), "Query": Baton.Variable(self.Query), "Operation": Baton.Variable(self.Operation), "RefetchQuery": Baton.Variable(self.RefetchQuery), "resolution": Baton.Variable(self.resolution), "name": Baton.Variable(self.name), "document": Baton.Variable(self.document), "text": Baton.Variable(self.text), "plan": Baton.Variable(self.plan), "errorBehavior": Baton.Variable(self.errorBehavior), "throwsOnFieldError": Baton.Variable(self.throwsOnFieldError), "bubbles": Baton.Variable(self.bubbles), "hasDeferred": Baton.Variable(self.hasDeferred), "cacheExpiration": Baton.Variable(self.cacheExpiration), "hash": Baton.Variable(self.hash), "commit": Baton.Variable(self.commit), "callAsFunction": Baton.Variable(self.callAsFunction), "Op": Baton.Variable(self.Op), "variable": Baton.Variable(self.variable), "phase": Baton.Variable(self.phase), "isRefreshing": Baton.Variable(self.isRefreshing), "isStale": Baton.Variable(self.isStale), "retry": Baton.Variable(self.retry), "subscription": Baton.Variable(self.subscription), "Sites": Baton.Variable(self.Sites), "AbstractSlots": Baton.Variable(self.AbstractSlots), "schemaDigest": Baton.Variable(self.schemaDigest), "format": Baton.Variable(self.format), "transient": Baton.Variable(self.transient), "Swift": Baton.Variable(self.Swift), "Set": Baton.Variable(self.Set), "Result": Baton.Variable(self.Result), "Optional": Baton.Variable(self.Optional), "String": Baton.Variable(self.String), "Int": Baton.Variable(self.Int), "Double": Baton.Variable(self.Double), "Bool": Baton.Variable(self.Bool), "MainActor": Baton.Variable(self.MainActor), "Hasher": Baton.Variable(self.Hasher), "Sendable": Baton.Variable(self.Sendable)])
+        Baton.Variables(["Type": Baton.Variable(self.`Type`), "Protocol": Baton.Variable(self.`Protocol`), "Any": Baton.Variable(self.`Any`), "self": Baton.Variable(self.`self`), "init": Baton.Variable(self.`init`), "deinit": Baton.Variable(self.`deinit`), "subscript": Baton.Variable(self.`subscript`), "class": Baton.Variable(self.`class`), "struct": Baton.Variable(self.`struct`), "enum": Baton.Variable(self.`enum`), "func": Baton.Variable(self.`func`), "import": Baton.Variable(self.`import`), "extension": Baton.Variable(self.`extension`), "operator": Baton.Variable(self.`operator`), "static": Baton.Variable(self.`static`), "default": Baton.Variable(self.`default`), "case": Baton.Variable(self.`case`), "switch": Baton.Variable(self.`switch`), "if": Baton.Variable(self.`if`), "else": Baton.Variable(self.`else`), "for": Baton.Variable(self.`for`), "in": Baton.Variable(self.`in`), "while": Baton.Variable(self.`while`), "repeat": Baton.Variable(self.`repeat`), "return": Baton.Variable(self.`return`), "break": Baton.Variable(self.`break`), "continue": Baton.Variable(self.`continue`), "where": Baton.Variable(self.`where`), "is": Baton.Variable(self.`is`), "as": Baton.Variable(self.`as`), "try": Baton.Variable(self.`try`), "throw": Baton.Variable(self.`throw`), "throws": Baton.Variable(self.`throws`), "guard": Baton.Variable(self.`guard`), "defer": Baton.Variable(self.`defer`), "do": Baton.Variable(self.`do`), "catch": Baton.Variable(self.`catch`), "true": Baton.Variable(self.`true`), "false": Baton.Variable(self.`false`), "nil": Baton.Variable(self.`nil`), "super": Baton.Variable(self.`super`), "internal": Baton.Variable(self.`internal`), "private": Baton.Variable(self.`private`), "public": Baton.Variable(self.`public`), "fileprivate": Baton.Variable(self.`fileprivate`), "open": Baton.Variable(self.`open`), "inout": Baton.Variable(self.`inout`), "typealias": Baton.Variable(self.`typealias`), "associatedtype": Baton.Variable(self.`associatedtype`), "protocol": Baton.Variable(self.`protocol`), "some": Baton.Variable(self.`some`), "any": Baton.Variable(self.`any`), "rethrows": Baton.Variable(self.`rethrows`), "fallthrough": Baton.Variable(self.`fallthrough`), "precedencegroup": Baton.Variable(self.`precedencegroup`), "_": Baton.Variable(self.`_`), "var": Baton.Variable(self.`var`), "let": Baton.Variable(self.`let`), "Self": Baton.Variable(self.`Self`), "async": Baton.Variable(self.async), "borrowing": Baton.Variable(self.`borrowing`), "consume": Baton.Variable(self.consume), "consuming": Baton.Variable(self.`consuming`), "copy": Baton.Variable(self.copy), "discard": Baton.Variable(self.discard), "each": Baton.Variable(self.`each`), "isolated": Baton.Variable(self.`isolated`), "sending": Baton.Variable(self.`sending`), "then": Baton.Variable(self.then), "unsafe": Baton.Variable(self.unsafe), "await": Baton.Variable(self.`await`), "anchor": Baton.Variable(self.anchor), "recordID": Baton.Variable(self.recordID), "satisfied": Baton.Variable(self.satisfied), "missingRequiredField": Baton.Variable(self.missingRequiredField), "fieldErrors": Baton.Variable(self.fieldErrors), "isPresent": Baton.Variable(self.isPresent), "throwing": Baton.Variable(self.throwing), "caught": Baton.Variable(self.caught), "refetchable": Baton.Variable(self.refetchable), "refetch": Baton.Variable(self.refetch), "connection": Baton.Variable(self.connection), "nodes": Baton.Variable(self.nodes), "hasNext": Baton.Variable(self.hasNext), "hasPrevious": Baton.Variable(self.hasPrevious), "isLoadingNext": Baton.Variable(self.isLoadingNext), "isLoadingPrevious": Baton.Variable(self.isLoadingPrevious), "connectionID": Baton.Variable(self.connectionID), "loadNext": Baton.Variable(self.loadNext), "loadPrevious": Baton.Variable(self.loadPrevious), "bound": Baton.Variable(self.bound), "errors": Baton.Variable(self.errors), "child": Baton.Variable(self.child), "missing": Baton.Variable(self.missing), "count": Baton.Variable(self.count), "fields": Baton.Variable(self.fields), "lhs": Baton.Variable(self.lhs), "rhs": Baton.Variable(self.rhs), "hasher": Baton.Variable(self.hasher), "selection0": Baton.Variable(self.selection0), "selection": Baton.Variable(self.selection), "selfValue": Baton.Variable(self.selfValue), "Fragment": Baton.Variable(self.Fragment), "Spread": Baton.Variable(self.Spread), "Owner": Baton.Variable(self.Owner), "Query": Baton.Variable(self.Query), "Operation": Baton.Variable(self.Operation), "RefetchQuery": Baton.Variable(self.RefetchQuery), "resolution": Baton.Variable(self.resolution), "name": Baton.Variable(self.name), "document": Baton.Variable(self.document), "text": Baton.Variable(self.text), "plan": Baton.Variable(self.plan), "errorBehavior": Baton.Variable(self.errorBehavior), "throwsOnFieldError": Baton.Variable(self.throwsOnFieldError), "bubbles": Baton.Variable(self.bubbles), "hasDeferred": Baton.Variable(self.hasDeferred), "cacheExpiration": Baton.Variable(self.cacheExpiration), "hash": Baton.Variable(self.hash), "commit": Baton.Variable(self.commit), "callAsFunction": Baton.Variable(self.callAsFunction), "Op": Baton.Variable(self.Op), "variable": Baton.Variable(self.variable), "phase": Baton.Variable(self.phase), "isRefreshing": Baton.Variable(self.isRefreshing), "isStale": Baton.Variable(self.isStale), "retry": Baton.Variable(self.retry), "subscription": Baton.Variable(self.subscription), "Sites": Baton.Variable(self.Sites), "AbstractSlots": Baton.Variable(self.AbstractSlots), "schemaDigest": Baton.Variable(self.schemaDigest), "format": Baton.Variable(self.format), "transient": Baton.Variable(self.transient), "Swift": Baton.Variable(self.Swift), "Set": Baton.Variable(self.Set), "Result": Baton.Variable(self.Result), "Optional": Baton.Variable(self.Optional), "String": Baton.Variable(self.String), "Int": Baton.Variable(self.Int), "Double": Baton.Variable(self.Double), "Bool": Baton.Variable(self.Bool), "MainActor": Baton.Variable(self.MainActor), "Hasher": Baton.Variable(self.Hasher), "Sendable": Baton.Variable(self.Sendable)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.`Type` == rhs.`Type` && lhs.`Protocol` == rhs.`Protocol` && lhs.`Any` == rhs.`Any` && lhs.`self` == rhs.`self` && lhs.`init` == rhs.`init` && lhs.`deinit` == rhs.`deinit` && lhs.`subscript` == rhs.`subscript` && lhs.`class` == rhs.`class` && lhs.`struct` == rhs.`struct` && lhs.`enum` == rhs.`enum` && lhs.`func` == rhs.`func` && lhs.`import` == rhs.`import` && lhs.`extension` == rhs.`extension` && lhs.`operator` == rhs.`operator` && lhs.`static` == rhs.`static` && lhs.`default` == rhs.`default` && lhs.`case` == rhs.`case` && lhs.`switch` == rhs.`switch` && lhs.`if` == rhs.`if` && lhs.`else` == rhs.`else` && lhs.`for` == rhs.`for` && lhs.`in` == rhs.`in` && lhs.`while` == rhs.`while` && lhs.`repeat` == rhs.`repeat` && lhs.`return` == rhs.`return` && lhs.`break` == rhs.`break` && lhs.`continue` == rhs.`continue` && lhs.`where` == rhs.`where` && lhs.`is` == rhs.`is` && lhs.`as` == rhs.`as` && lhs.`try` == rhs.`try` && lhs.`throw` == rhs.`throw` && lhs.`throws` == rhs.`throws` && lhs.`guard` == rhs.`guard` && lhs.`defer` == rhs.`defer` && lhs.`do` == rhs.`do` && lhs.`catch` == rhs.`catch` && lhs.`true` == rhs.`true` && lhs.`false` == rhs.`false` && lhs.`nil` == rhs.`nil` && lhs.`super` == rhs.`super` && lhs.`internal` == rhs.`internal` && lhs.`private` == rhs.`private` && lhs.`public` == rhs.`public` && lhs.`fileprivate` == rhs.`fileprivate` && lhs.`open` == rhs.`open` && lhs.`inout` == rhs.`inout` && lhs.`typealias` == rhs.`typealias` && lhs.`associatedtype` == rhs.`associatedtype` && lhs.`protocol` == rhs.`protocol` && lhs.`some` == rhs.`some` && lhs.`any` == rhs.`any` && lhs.`rethrows` == rhs.`rethrows` && lhs.`fallthrough` == rhs.`fallthrough` && lhs.`precedencegroup` == rhs.`precedencegroup` && lhs.`_` == rhs.`_` && lhs.`var` == rhs.`var` && lhs.`let` == rhs.`let` && lhs.`Self` == rhs.`Self` && lhs.async == rhs.async && lhs.`borrowing` == rhs.`borrowing` && lhs.consume == rhs.consume && lhs.`consuming` == rhs.`consuming` && lhs.copy == rhs.copy && lhs.discard == rhs.discard && lhs.`each` == rhs.`each` && lhs.`isolated` == rhs.`isolated` && lhs.`sending` == rhs.`sending` && lhs.then == rhs.then && lhs.unsafe == rhs.unsafe && lhs.`await` == rhs.`await` && lhs.anchor == rhs.anchor && lhs.recordID == rhs.recordID && lhs.satisfied == rhs.satisfied && lhs.missingRequiredField == rhs.missingRequiredField && lhs.fieldErrors == rhs.fieldErrors && lhs.isPresent == rhs.isPresent && lhs.throwing == rhs.throwing && lhs.caught == rhs.caught && lhs.refetchable == rhs.refetchable && lhs.refetch == rhs.refetch && lhs.connection == rhs.connection && lhs.nodes == rhs.nodes && lhs.hasNext == rhs.hasNext && lhs.hasPrevious == rhs.hasPrevious && lhs.isLoadingNext == rhs.isLoadingNext && lhs.isLoadingPrevious == rhs.isLoadingPrevious && lhs.connectionID == rhs.connectionID && lhs.loadNext == rhs.loadNext && lhs.loadPrevious == rhs.loadPrevious && lhs.bound == rhs.bound && lhs.errors == rhs.errors && lhs.child == rhs.child && lhs.missing == rhs.missing && lhs.count == rhs.count && lhs.fields == rhs.fields && lhs.lhs == rhs.lhs && lhs.rhs == rhs.rhs && lhs.hasher == rhs.hasher && lhs.selfValue == rhs.selfValue && lhs.Fragment == rhs.Fragment && lhs.Spread == rhs.Spread && lhs.Owner == rhs.Owner && lhs.Query == rhs.Query && lhs.Operation == rhs.Operation && lhs.RefetchQuery == rhs.RefetchQuery && lhs.resolution == rhs.resolution && lhs.name == rhs.name && lhs.document == rhs.document && lhs.text == rhs.text && lhs.plan == rhs.plan && lhs.errorBehavior == rhs.errorBehavior && lhs.throwsOnFieldError == rhs.throwsOnFieldError && lhs.bubbles == rhs.bubbles && lhs.hasDeferred == rhs.hasDeferred && lhs.cacheExpiration == rhs.cacheExpiration && lhs.hash == rhs.hash && lhs.commit == rhs.commit && lhs.callAsFunction == rhs.callAsFunction && lhs.Op == rhs.Op && lhs.variable == rhs.variable && lhs.phase == rhs.phase && lhs.isRefreshing == rhs.isRefreshing && lhs.isStale == rhs.isStale && lhs.retry == rhs.retry && lhs.subscription == rhs.subscription && lhs.Sites == rhs.Sites && lhs.AbstractSlots == rhs.AbstractSlots && lhs.schemaDigest == rhs.schemaDigest && lhs.format == rhs.format && lhs.transient == rhs.transient && lhs.Swift == rhs.Swift && lhs.Set == rhs.Set && lhs.Result == rhs.Result && lhs.Optional == rhs.Optional && lhs.String == rhs.String && lhs.Int == rhs.Int && lhs.Double == rhs.Double && lhs.Bool == rhs.Bool && lhs.MainActor == rhs.MainActor && lhs.Hasher == rhs.Hasher && lhs.Sendable == rhs.Sendable
+        lhs.`Type` == rhs.`Type` && lhs.`Protocol` == rhs.`Protocol` && lhs.`Any` == rhs.`Any` && lhs.`self` == rhs.`self` && lhs.`init` == rhs.`init` && lhs.`deinit` == rhs.`deinit` && lhs.`subscript` == rhs.`subscript` && lhs.`class` == rhs.`class` && lhs.`struct` == rhs.`struct` && lhs.`enum` == rhs.`enum` && lhs.`func` == rhs.`func` && lhs.`import` == rhs.`import` && lhs.`extension` == rhs.`extension` && lhs.`operator` == rhs.`operator` && lhs.`static` == rhs.`static` && lhs.`default` == rhs.`default` && lhs.`case` == rhs.`case` && lhs.`switch` == rhs.`switch` && lhs.`if` == rhs.`if` && lhs.`else` == rhs.`else` && lhs.`for` == rhs.`for` && lhs.`in` == rhs.`in` && lhs.`while` == rhs.`while` && lhs.`repeat` == rhs.`repeat` && lhs.`return` == rhs.`return` && lhs.`break` == rhs.`break` && lhs.`continue` == rhs.`continue` && lhs.`where` == rhs.`where` && lhs.`is` == rhs.`is` && lhs.`as` == rhs.`as` && lhs.`try` == rhs.`try` && lhs.`throw` == rhs.`throw` && lhs.`throws` == rhs.`throws` && lhs.`guard` == rhs.`guard` && lhs.`defer` == rhs.`defer` && lhs.`do` == rhs.`do` && lhs.`catch` == rhs.`catch` && lhs.`true` == rhs.`true` && lhs.`false` == rhs.`false` && lhs.`nil` == rhs.`nil` && lhs.`super` == rhs.`super` && lhs.`internal` == rhs.`internal` && lhs.`private` == rhs.`private` && lhs.`public` == rhs.`public` && lhs.`fileprivate` == rhs.`fileprivate` && lhs.`open` == rhs.`open` && lhs.`inout` == rhs.`inout` && lhs.`typealias` == rhs.`typealias` && lhs.`associatedtype` == rhs.`associatedtype` && lhs.`protocol` == rhs.`protocol` && lhs.`some` == rhs.`some` && lhs.`any` == rhs.`any` && lhs.`rethrows` == rhs.`rethrows` && lhs.`fallthrough` == rhs.`fallthrough` && lhs.`precedencegroup` == rhs.`precedencegroup` && lhs.`_` == rhs.`_` && lhs.`var` == rhs.`var` && lhs.`let` == rhs.`let` && lhs.`Self` == rhs.`Self` && lhs.async == rhs.async && lhs.`borrowing` == rhs.`borrowing` && lhs.consume == rhs.consume && lhs.`consuming` == rhs.`consuming` && lhs.copy == rhs.copy && lhs.discard == rhs.discard && lhs.`each` == rhs.`each` && lhs.`isolated` == rhs.`isolated` && lhs.`sending` == rhs.`sending` && lhs.then == rhs.then && lhs.unsafe == rhs.unsafe && lhs.`await` == rhs.`await` && lhs.anchor == rhs.anchor && lhs.recordID == rhs.recordID && lhs.satisfied == rhs.satisfied && lhs.missingRequiredField == rhs.missingRequiredField && lhs.fieldErrors == rhs.fieldErrors && lhs.isPresent == rhs.isPresent && lhs.throwing == rhs.throwing && lhs.caught == rhs.caught && lhs.refetchable == rhs.refetchable && lhs.refetch == rhs.refetch && lhs.connection == rhs.connection && lhs.nodes == rhs.nodes && lhs.hasNext == rhs.hasNext && lhs.hasPrevious == rhs.hasPrevious && lhs.isLoadingNext == rhs.isLoadingNext && lhs.isLoadingPrevious == rhs.isLoadingPrevious && lhs.connectionID == rhs.connectionID && lhs.loadNext == rhs.loadNext && lhs.loadPrevious == rhs.loadPrevious && lhs.bound == rhs.bound && lhs.errors == rhs.errors && lhs.child == rhs.child && lhs.missing == rhs.missing && lhs.count == rhs.count && lhs.fields == rhs.fields && lhs.lhs == rhs.lhs && lhs.rhs == rhs.rhs && lhs.hasher == rhs.hasher && lhs.selection0 == rhs.selection0 && lhs.selection == rhs.selection && lhs.selfValue == rhs.selfValue && lhs.Fragment == rhs.Fragment && lhs.Spread == rhs.Spread && lhs.Owner == rhs.Owner && lhs.Query == rhs.Query && lhs.Operation == rhs.Operation && lhs.RefetchQuery == rhs.RefetchQuery && lhs.resolution == rhs.resolution && lhs.name == rhs.name && lhs.document == rhs.document && lhs.text == rhs.text && lhs.plan == rhs.plan && lhs.errorBehavior == rhs.errorBehavior && lhs.throwsOnFieldError == rhs.throwsOnFieldError && lhs.bubbles == rhs.bubbles && lhs.hasDeferred == rhs.hasDeferred && lhs.cacheExpiration == rhs.cacheExpiration && lhs.hash == rhs.hash && lhs.commit == rhs.commit && lhs.callAsFunction == rhs.callAsFunction && lhs.Op == rhs.Op && lhs.variable == rhs.variable && lhs.phase == rhs.phase && lhs.isRefreshing == rhs.isRefreshing && lhs.isStale == rhs.isStale && lhs.retry == rhs.retry && lhs.subscription == rhs.subscription && lhs.Sites == rhs.Sites && lhs.AbstractSlots == rhs.AbstractSlots && lhs.schemaDigest == rhs.schemaDigest && lhs.format == rhs.format && lhs.transient == rhs.transient && lhs.Swift == rhs.Swift && lhs.Set == rhs.Set && lhs.Result == rhs.Result && lhs.Optional == rhs.Optional && lhs.String == rhs.String && lhs.Int == rhs.Int && lhs.Double == rhs.Double && lhs.Bool == rhs.Bool && lhs.MainActor == rhs.MainActor && lhs.Hasher == rhs.Hasher && lhs.Sendable == rhs.Sendable
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -5553,6 +5632,8 @@ mutation HostileMutationVariables(
         hasher.combine(self.lhs)
         hasher.combine(self.rhs)
         hasher.combine(self.hasher)
+        hasher.combine(self.selection0)
+        hasher.combine(self.selection)
         hasher.combine(self.selfValue)
         hasher.combine(self.Fragment)
         hasher.combine(self.Spread)
@@ -5598,14 +5679,17 @@ mutation HostileMutationVariables(
         hasher.combine(self.Sendable)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, key: [], abstract: false, fields: [
-            .linked("setFavorite", key: .fixed(Slots.Mutation.setFavorite), plural: false, caught: true, selection: Baton.Selection(type: Types.FavoritePayload, key: [], abstract: false, fields: [
-                .linked("character", key: .fixed(Slots.FavoritePayload.character), plural: false, caught: true, selection: Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false, caught: true),
-                    .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false, caught: true, guards: [[Guards.Type_true], [Guards.Protocol_true], [Guards.Any_true], [Guards.self_true], [Guards.init_true], [Guards.deinit_true], [Guards.subscript_true], [Guards.class_true], [Guards.struct_true], [Guards.enum_true], [Guards.func_true], [Guards.import_true], [Guards.extension_true], [Guards.operator_true], [Guards.static_true], [Guards.default_true], [Guards.case_true], [Guards.switch_true], [Guards.if_true], [Guards.else_true], [Guards.for_true], [Guards.in_true], [Guards.while_true], [Guards.repeat_true], [Guards.return_true], [Guards.break_true], [Guards.continue_true], [Guards.where_true], [Guards.is_true], [Guards.as_true], [Guards.try_true], [Guards.throw_true], [Guards.throws_true], [Guards.guard_true], [Guards.defer_true], [Guards.do_true], [Guards.catch_true], [Guards.true_true], [Guards.false_true], [Guards.nil_true], [Guards.super_true], [Guards.internal_true], [Guards.private_true], [Guards.public_true], [Guards.fileprivate_true], [Guards.open_true], [Guards.inout_true], [Guards.typealias_true], [Guards.associatedtype_true], [Guards.protocol_true], [Guards.some_true], [Guards.any_true], [Guards.rethrows_true], [Guards.fallthrough_true], [Guards.precedencegroup_true], [Guards.__true], [Guards.var_true], [Guards.let_true], [Guards.Self_true], [Guards.async_true], [Guards.borrowing_true], [Guards.consume_true], [Guards.consuming_true], [Guards.copy_true], [Guards.discard_true], [Guards.each_true], [Guards.isolated_true], [Guards.sending_true], [Guards.then_true], [Guards.unsafe_true], [Guards.await_true], [Guards.anchor_true], [Guards.recordID_true], [Guards.satisfied_true], [Guards.missingRequiredField_true], [Guards.fieldErrors_true], [Guards.isPresent_true], [Guards.throwing_true], [Guards.caught_true], [Guards.refetchable_true], [Guards.refetch_true], [Guards.connection_true], [Guards.nodes_true], [Guards.hasNext_true], [Guards.hasPrevious_true], [Guards.isLoadingNext_true], [Guards.isLoadingPrevious_true], [Guards.connectionID_true], [Guards.loadNext_true], [Guards.loadPrevious_true], [Guards.bound_true], [Guards.errors_true], [Guards.child_true], [Guards.missing_true], [Guards.count_true], [Guards.fields_true], [Guards.lhs_true], [Guards.rhs_true], [Guards.hasher_true], [Guards.selfValue_true], [Guards.Fragment_true], [Guards.Spread_true], [Guards.Owner_true], [Guards.Query_true], [Guards.Operation_true], [Guards.RefetchQuery_true], [Guards.resolution_true], [Guards.name_true], [Guards.document_true], [Guards.text_true], [Guards.plan_true], [Guards.errorBehavior_true], [Guards.throwsOnFieldError_true], [Guards.bubbles_true], [Guards.hasDeferred_true], [Guards.cacheExpiration_true], [Guards.hash_true], [Guards.commit_true], [Guards.callAsFunction_true], [Guards.Op_true], [Guards.variable_true], [Guards.phase_true], [Guards.isRefreshing_true], [Guards.isStale_true], [Guards.retry_true], [Guards.subscription_true], [Guards.Sites_true], [Guards.AbstractSlots_true], [Guards.schemaDigest_true], [Guards.format_true], [Guards.transient_true], [Guards.Swift_true], [Guards.Set_true], [Guards.Result_true], [Guards.Optional_true], [Guards.String_true], [Guards.Int_true], [Guards.Double_true], [Guards.Bool_true], [Guards.MainActor_true], [Guards.Hasher_true], [Guards.Sendable_true]]),
-                ])),
-            ])),
-        ]), transient: Types.transient)
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient)
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Mutation, key: [], abstract: false, fields: [
+        .linked("setFavorite", key: .fixed(Slots.Mutation.setFavorite), plural: false, caught: true, selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.FavoritePayload, key: [], abstract: false, fields: [
+        .linked("character", key: .fixed(Slots.FavoritePayload.character), plural: false, caught: true, selection: selection2),
+    ])
+    private static let selection2: Baton.Selection = Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
+        .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false, caught: true),
+        .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false, caught: true, guards: [[Guards.Type_true], [Guards.Protocol_true], [Guards.Any_true], [Guards.self_true], [Guards.init_true], [Guards.deinit_true], [Guards.subscript_true], [Guards.class_true], [Guards.struct_true], [Guards.enum_true], [Guards.func_true], [Guards.import_true], [Guards.extension_true], [Guards.operator_true], [Guards.static_true], [Guards.default_true], [Guards.case_true], [Guards.switch_true], [Guards.if_true], [Guards.else_true], [Guards.for_true], [Guards.in_true], [Guards.while_true], [Guards.repeat_true], [Guards.return_true], [Guards.break_true], [Guards.continue_true], [Guards.where_true], [Guards.is_true], [Guards.as_true], [Guards.try_true], [Guards.throw_true], [Guards.throws_true], [Guards.guard_true], [Guards.defer_true], [Guards.do_true], [Guards.catch_true], [Guards.true_true], [Guards.false_true], [Guards.nil_true], [Guards.super_true], [Guards.internal_true], [Guards.private_true], [Guards.public_true], [Guards.fileprivate_true], [Guards.open_true], [Guards.inout_true], [Guards.typealias_true], [Guards.associatedtype_true], [Guards.protocol_true], [Guards.some_true], [Guards.any_true], [Guards.rethrows_true], [Guards.fallthrough_true], [Guards.precedencegroup_true], [Guards.__true], [Guards.var_true], [Guards.let_true], [Guards.Self_true], [Guards.async_true], [Guards.borrowing_true], [Guards.consume_true], [Guards.consuming_true], [Guards.copy_true], [Guards.discard_true], [Guards.each_true], [Guards.isolated_true], [Guards.sending_true], [Guards.then_true], [Guards.unsafe_true], [Guards.await_true], [Guards.anchor_true], [Guards.recordID_true], [Guards.satisfied_true], [Guards.missingRequiredField_true], [Guards.fieldErrors_true], [Guards.isPresent_true], [Guards.throwing_true], [Guards.caught_true], [Guards.refetchable_true], [Guards.refetch_true], [Guards.connection_true], [Guards.nodes_true], [Guards.hasNext_true], [Guards.hasPrevious_true], [Guards.isLoadingNext_true], [Guards.isLoadingPrevious_true], [Guards.connectionID_true], [Guards.loadNext_true], [Guards.loadPrevious_true], [Guards.bound_true], [Guards.errors_true], [Guards.child_true], [Guards.missing_true], [Guards.count_true], [Guards.fields_true], [Guards.lhs_true], [Guards.rhs_true], [Guards.hasher_true], [Guards.selection0_true], [Guards.selection_true], [Guards.selfValue_true], [Guards.Fragment_true], [Guards.Spread_true], [Guards.Owner_true], [Guards.Query_true], [Guards.Operation_true], [Guards.RefetchQuery_true], [Guards.resolution_true], [Guards.name_true], [Guards.document_true], [Guards.text_true], [Guards.plan_true], [Guards.errorBehavior_true], [Guards.throwsOnFieldError_true], [Guards.bubbles_true], [Guards.hasDeferred_true], [Guards.cacheExpiration_true], [Guards.hash_true], [Guards.commit_true], [Guards.callAsFunction_true], [Guards.Op_true], [Guards.variable_true], [Guards.phase_true], [Guards.isRefreshing_true], [Guards.isStale_true], [Guards.retry_true], [Guards.subscription_true], [Guards.Sites_true], [Guards.AbstractSlots_true], [Guards.schemaDigest_true], [Guards.format_true], [Guards.transient_true], [Guards.Swift_true], [Guards.Set_true], [Guards.Result_true], [Guards.Optional_true], [Guards.String_true], [Guards.Int_true], [Guards.Double_true], [Guards.Bool_true], [Guards.MainActor_true], [Guards.Hasher_true], [Guards.Sendable_true]]),
+    ])
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -5634,12 +5718,12 @@ mutation HostileMutationVariables(
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
                 @MainActor public var id: String? { anchor.string(Slots.Character.id) }
-                @MainActor public var name: String? { (anchor.owner.selects(Guards.Type_true) || anchor.owner.selects(Guards.Protocol_true) || anchor.owner.selects(Guards.Any_true) || anchor.owner.selects(Guards.self_true) || anchor.owner.selects(Guards.init_true) || anchor.owner.selects(Guards.deinit_true) || anchor.owner.selects(Guards.subscript_true) || anchor.owner.selects(Guards.class_true) || anchor.owner.selects(Guards.struct_true) || anchor.owner.selects(Guards.enum_true) || anchor.owner.selects(Guards.func_true) || anchor.owner.selects(Guards.import_true) || anchor.owner.selects(Guards.extension_true) || anchor.owner.selects(Guards.operator_true) || anchor.owner.selects(Guards.static_true) || anchor.owner.selects(Guards.default_true) || anchor.owner.selects(Guards.case_true) || anchor.owner.selects(Guards.switch_true) || anchor.owner.selects(Guards.if_true) || anchor.owner.selects(Guards.else_true) || anchor.owner.selects(Guards.for_true) || anchor.owner.selects(Guards.in_true) || anchor.owner.selects(Guards.while_true) || anchor.owner.selects(Guards.repeat_true) || anchor.owner.selects(Guards.return_true) || anchor.owner.selects(Guards.break_true) || anchor.owner.selects(Guards.continue_true) || anchor.owner.selects(Guards.where_true) || anchor.owner.selects(Guards.is_true) || anchor.owner.selects(Guards.as_true) || anchor.owner.selects(Guards.try_true) || anchor.owner.selects(Guards.throw_true) || anchor.owner.selects(Guards.throws_true) || anchor.owner.selects(Guards.guard_true) || anchor.owner.selects(Guards.defer_true) || anchor.owner.selects(Guards.do_true) || anchor.owner.selects(Guards.catch_true) || anchor.owner.selects(Guards.true_true) || anchor.owner.selects(Guards.false_true) || anchor.owner.selects(Guards.nil_true) || anchor.owner.selects(Guards.super_true) || anchor.owner.selects(Guards.internal_true) || anchor.owner.selects(Guards.private_true) || anchor.owner.selects(Guards.public_true) || anchor.owner.selects(Guards.fileprivate_true) || anchor.owner.selects(Guards.open_true) || anchor.owner.selects(Guards.inout_true) || anchor.owner.selects(Guards.typealias_true) || anchor.owner.selects(Guards.associatedtype_true) || anchor.owner.selects(Guards.protocol_true) || anchor.owner.selects(Guards.some_true) || anchor.owner.selects(Guards.any_true) || anchor.owner.selects(Guards.rethrows_true) || anchor.owner.selects(Guards.fallthrough_true) || anchor.owner.selects(Guards.precedencegroup_true) || anchor.owner.selects(Guards.__true) || anchor.owner.selects(Guards.var_true) || anchor.owner.selects(Guards.let_true) || anchor.owner.selects(Guards.Self_true) || anchor.owner.selects(Guards.async_true) || anchor.owner.selects(Guards.borrowing_true) || anchor.owner.selects(Guards.consume_true) || anchor.owner.selects(Guards.consuming_true) || anchor.owner.selects(Guards.copy_true) || anchor.owner.selects(Guards.discard_true) || anchor.owner.selects(Guards.each_true) || anchor.owner.selects(Guards.isolated_true) || anchor.owner.selects(Guards.sending_true) || anchor.owner.selects(Guards.then_true) || anchor.owner.selects(Guards.unsafe_true) || anchor.owner.selects(Guards.await_true) || anchor.owner.selects(Guards.anchor_true) || anchor.owner.selects(Guards.recordID_true) || anchor.owner.selects(Guards.satisfied_true) || anchor.owner.selects(Guards.missingRequiredField_true) || anchor.owner.selects(Guards.fieldErrors_true) || anchor.owner.selects(Guards.isPresent_true) || anchor.owner.selects(Guards.throwing_true) || anchor.owner.selects(Guards.caught_true) || anchor.owner.selects(Guards.refetchable_true) || anchor.owner.selects(Guards.refetch_true) || anchor.owner.selects(Guards.connection_true) || anchor.owner.selects(Guards.nodes_true) || anchor.owner.selects(Guards.hasNext_true) || anchor.owner.selects(Guards.hasPrevious_true) || anchor.owner.selects(Guards.isLoadingNext_true) || anchor.owner.selects(Guards.isLoadingPrevious_true) || anchor.owner.selects(Guards.connectionID_true) || anchor.owner.selects(Guards.loadNext_true) || anchor.owner.selects(Guards.loadPrevious_true) || anchor.owner.selects(Guards.bound_true) || anchor.owner.selects(Guards.errors_true) || anchor.owner.selects(Guards.child_true) || anchor.owner.selects(Guards.missing_true) || anchor.owner.selects(Guards.count_true) || anchor.owner.selects(Guards.fields_true) || anchor.owner.selects(Guards.lhs_true) || anchor.owner.selects(Guards.rhs_true) || anchor.owner.selects(Guards.hasher_true) || anchor.owner.selects(Guards.selfValue_true) || anchor.owner.selects(Guards.Fragment_true) || anchor.owner.selects(Guards.Spread_true) || anchor.owner.selects(Guards.Owner_true) || anchor.owner.selects(Guards.Query_true) || anchor.owner.selects(Guards.Operation_true) || anchor.owner.selects(Guards.RefetchQuery_true) || anchor.owner.selects(Guards.resolution_true) || anchor.owner.selects(Guards.name_true) || anchor.owner.selects(Guards.document_true) || anchor.owner.selects(Guards.text_true) || anchor.owner.selects(Guards.plan_true) || anchor.owner.selects(Guards.errorBehavior_true) || anchor.owner.selects(Guards.throwsOnFieldError_true) || anchor.owner.selects(Guards.bubbles_true) || anchor.owner.selects(Guards.hasDeferred_true) || anchor.owner.selects(Guards.cacheExpiration_true) || anchor.owner.selects(Guards.hash_true) || anchor.owner.selects(Guards.commit_true) || anchor.owner.selects(Guards.callAsFunction_true) || anchor.owner.selects(Guards.Op_true) || anchor.owner.selects(Guards.variable_true) || anchor.owner.selects(Guards.phase_true) || anchor.owner.selects(Guards.isRefreshing_true) || anchor.owner.selects(Guards.isStale_true) || anchor.owner.selects(Guards.retry_true) || anchor.owner.selects(Guards.subscription_true) || anchor.owner.selects(Guards.Sites_true) || anchor.owner.selects(Guards.AbstractSlots_true) || anchor.owner.selects(Guards.schemaDigest_true) || anchor.owner.selects(Guards.format_true) || anchor.owner.selects(Guards.transient_true) || anchor.owner.selects(Guards.Swift_true) || anchor.owner.selects(Guards.Set_true) || anchor.owner.selects(Guards.Result_true) || anchor.owner.selects(Guards.Optional_true) || anchor.owner.selects(Guards.String_true) || anchor.owner.selects(Guards.Int_true) || anchor.owner.selects(Guards.Double_true) || anchor.owner.selects(Guards.Bool_true) || anchor.owner.selects(Guards.MainActor_true) || anchor.owner.selects(Guards.Hasher_true) || anchor.owner.selects(Guards.Sendable_true)) ? anchor.string(Slots.Character.name) : nil }
+                @MainActor public var name: String? { (anchor.owner.selects(Guards.Type_true) || anchor.owner.selects(Guards.Protocol_true) || anchor.owner.selects(Guards.Any_true) || anchor.owner.selects(Guards.self_true) || anchor.owner.selects(Guards.init_true) || anchor.owner.selects(Guards.deinit_true) || anchor.owner.selects(Guards.subscript_true) || anchor.owner.selects(Guards.class_true) || anchor.owner.selects(Guards.struct_true) || anchor.owner.selects(Guards.enum_true) || anchor.owner.selects(Guards.func_true) || anchor.owner.selects(Guards.import_true) || anchor.owner.selects(Guards.extension_true) || anchor.owner.selects(Guards.operator_true) || anchor.owner.selects(Guards.static_true) || anchor.owner.selects(Guards.default_true) || anchor.owner.selects(Guards.case_true) || anchor.owner.selects(Guards.switch_true) || anchor.owner.selects(Guards.if_true) || anchor.owner.selects(Guards.else_true) || anchor.owner.selects(Guards.for_true) || anchor.owner.selects(Guards.in_true) || anchor.owner.selects(Guards.while_true) || anchor.owner.selects(Guards.repeat_true) || anchor.owner.selects(Guards.return_true) || anchor.owner.selects(Guards.break_true) || anchor.owner.selects(Guards.continue_true) || anchor.owner.selects(Guards.where_true) || anchor.owner.selects(Guards.is_true) || anchor.owner.selects(Guards.as_true) || anchor.owner.selects(Guards.try_true) || anchor.owner.selects(Guards.throw_true) || anchor.owner.selects(Guards.throws_true) || anchor.owner.selects(Guards.guard_true) || anchor.owner.selects(Guards.defer_true) || anchor.owner.selects(Guards.do_true) || anchor.owner.selects(Guards.catch_true) || anchor.owner.selects(Guards.true_true) || anchor.owner.selects(Guards.false_true) || anchor.owner.selects(Guards.nil_true) || anchor.owner.selects(Guards.super_true) || anchor.owner.selects(Guards.internal_true) || anchor.owner.selects(Guards.private_true) || anchor.owner.selects(Guards.public_true) || anchor.owner.selects(Guards.fileprivate_true) || anchor.owner.selects(Guards.open_true) || anchor.owner.selects(Guards.inout_true) || anchor.owner.selects(Guards.typealias_true) || anchor.owner.selects(Guards.associatedtype_true) || anchor.owner.selects(Guards.protocol_true) || anchor.owner.selects(Guards.some_true) || anchor.owner.selects(Guards.any_true) || anchor.owner.selects(Guards.rethrows_true) || anchor.owner.selects(Guards.fallthrough_true) || anchor.owner.selects(Guards.precedencegroup_true) || anchor.owner.selects(Guards.__true) || anchor.owner.selects(Guards.var_true) || anchor.owner.selects(Guards.let_true) || anchor.owner.selects(Guards.Self_true) || anchor.owner.selects(Guards.async_true) || anchor.owner.selects(Guards.borrowing_true) || anchor.owner.selects(Guards.consume_true) || anchor.owner.selects(Guards.consuming_true) || anchor.owner.selects(Guards.copy_true) || anchor.owner.selects(Guards.discard_true) || anchor.owner.selects(Guards.each_true) || anchor.owner.selects(Guards.isolated_true) || anchor.owner.selects(Guards.sending_true) || anchor.owner.selects(Guards.then_true) || anchor.owner.selects(Guards.unsafe_true) || anchor.owner.selects(Guards.await_true) || anchor.owner.selects(Guards.anchor_true) || anchor.owner.selects(Guards.recordID_true) || anchor.owner.selects(Guards.satisfied_true) || anchor.owner.selects(Guards.missingRequiredField_true) || anchor.owner.selects(Guards.fieldErrors_true) || anchor.owner.selects(Guards.isPresent_true) || anchor.owner.selects(Guards.throwing_true) || anchor.owner.selects(Guards.caught_true) || anchor.owner.selects(Guards.refetchable_true) || anchor.owner.selects(Guards.refetch_true) || anchor.owner.selects(Guards.connection_true) || anchor.owner.selects(Guards.nodes_true) || anchor.owner.selects(Guards.hasNext_true) || anchor.owner.selects(Guards.hasPrevious_true) || anchor.owner.selects(Guards.isLoadingNext_true) || anchor.owner.selects(Guards.isLoadingPrevious_true) || anchor.owner.selects(Guards.connectionID_true) || anchor.owner.selects(Guards.loadNext_true) || anchor.owner.selects(Guards.loadPrevious_true) || anchor.owner.selects(Guards.bound_true) || anchor.owner.selects(Guards.errors_true) || anchor.owner.selects(Guards.child_true) || anchor.owner.selects(Guards.missing_true) || anchor.owner.selects(Guards.count_true) || anchor.owner.selects(Guards.fields_true) || anchor.owner.selects(Guards.lhs_true) || anchor.owner.selects(Guards.rhs_true) || anchor.owner.selects(Guards.hasher_true) || anchor.owner.selects(Guards.selection0_true) || anchor.owner.selects(Guards.selection_true) || anchor.owner.selects(Guards.selfValue_true) || anchor.owner.selects(Guards.Fragment_true) || anchor.owner.selects(Guards.Spread_true) || anchor.owner.selects(Guards.Owner_true) || anchor.owner.selects(Guards.Query_true) || anchor.owner.selects(Guards.Operation_true) || anchor.owner.selects(Guards.RefetchQuery_true) || anchor.owner.selects(Guards.resolution_true) || anchor.owner.selects(Guards.name_true) || anchor.owner.selects(Guards.document_true) || anchor.owner.selects(Guards.text_true) || anchor.owner.selects(Guards.plan_true) || anchor.owner.selects(Guards.errorBehavior_true) || anchor.owner.selects(Guards.throwsOnFieldError_true) || anchor.owner.selects(Guards.bubbles_true) || anchor.owner.selects(Guards.hasDeferred_true) || anchor.owner.selects(Guards.cacheExpiration_true) || anchor.owner.selects(Guards.hash_true) || anchor.owner.selects(Guards.commit_true) || anchor.owner.selects(Guards.callAsFunction_true) || anchor.owner.selects(Guards.Op_true) || anchor.owner.selects(Guards.variable_true) || anchor.owner.selects(Guards.phase_true) || anchor.owner.selects(Guards.isRefreshing_true) || anchor.owner.selects(Guards.isStale_true) || anchor.owner.selects(Guards.retry_true) || anchor.owner.selects(Guards.subscription_true) || anchor.owner.selects(Guards.Sites_true) || anchor.owner.selects(Guards.AbstractSlots_true) || anchor.owner.selects(Guards.schemaDigest_true) || anchor.owner.selects(Guards.format_true) || anchor.owner.selects(Guards.transient_true) || anchor.owner.selects(Guards.Swift_true) || anchor.owner.selects(Guards.Set_true) || anchor.owner.selects(Guards.Result_true) || anchor.owner.selects(Guards.Optional_true) || anchor.owner.selects(Guards.String_true) || anchor.owner.selects(Guards.Int_true) || anchor.owner.selects(Guards.Double_true) || anchor.owner.selects(Guards.Bool_true) || anchor.owner.selects(Guards.MainActor_true) || anchor.owner.selects(Guards.Hasher_true) || anchor.owner.selects(Guards.Sendable_true)) ? anchor.string(Slots.Character.name) : nil }
                 /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
                 @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
                     var errors: [Baton.FieldError] = []
                     anchor.collectError(Slots.Character.id, into: &errors)
-                    if (anchor.owner.selects(Guards.Type_true) || anchor.owner.selects(Guards.Protocol_true) || anchor.owner.selects(Guards.Any_true) || anchor.owner.selects(Guards.self_true) || anchor.owner.selects(Guards.init_true) || anchor.owner.selects(Guards.deinit_true) || anchor.owner.selects(Guards.subscript_true) || anchor.owner.selects(Guards.class_true) || anchor.owner.selects(Guards.struct_true) || anchor.owner.selects(Guards.enum_true) || anchor.owner.selects(Guards.func_true) || anchor.owner.selects(Guards.import_true) || anchor.owner.selects(Guards.extension_true) || anchor.owner.selects(Guards.operator_true) || anchor.owner.selects(Guards.static_true) || anchor.owner.selects(Guards.default_true) || anchor.owner.selects(Guards.case_true) || anchor.owner.selects(Guards.switch_true) || anchor.owner.selects(Guards.if_true) || anchor.owner.selects(Guards.else_true) || anchor.owner.selects(Guards.for_true) || anchor.owner.selects(Guards.in_true) || anchor.owner.selects(Guards.while_true) || anchor.owner.selects(Guards.repeat_true) || anchor.owner.selects(Guards.return_true) || anchor.owner.selects(Guards.break_true) || anchor.owner.selects(Guards.continue_true) || anchor.owner.selects(Guards.where_true) || anchor.owner.selects(Guards.is_true) || anchor.owner.selects(Guards.as_true) || anchor.owner.selects(Guards.try_true) || anchor.owner.selects(Guards.throw_true) || anchor.owner.selects(Guards.throws_true) || anchor.owner.selects(Guards.guard_true) || anchor.owner.selects(Guards.defer_true) || anchor.owner.selects(Guards.do_true) || anchor.owner.selects(Guards.catch_true) || anchor.owner.selects(Guards.true_true) || anchor.owner.selects(Guards.false_true) || anchor.owner.selects(Guards.nil_true) || anchor.owner.selects(Guards.super_true) || anchor.owner.selects(Guards.internal_true) || anchor.owner.selects(Guards.private_true) || anchor.owner.selects(Guards.public_true) || anchor.owner.selects(Guards.fileprivate_true) || anchor.owner.selects(Guards.open_true) || anchor.owner.selects(Guards.inout_true) || anchor.owner.selects(Guards.typealias_true) || anchor.owner.selects(Guards.associatedtype_true) || anchor.owner.selects(Guards.protocol_true) || anchor.owner.selects(Guards.some_true) || anchor.owner.selects(Guards.any_true) || anchor.owner.selects(Guards.rethrows_true) || anchor.owner.selects(Guards.fallthrough_true) || anchor.owner.selects(Guards.precedencegroup_true) || anchor.owner.selects(Guards.__true) || anchor.owner.selects(Guards.var_true) || anchor.owner.selects(Guards.let_true) || anchor.owner.selects(Guards.Self_true) || anchor.owner.selects(Guards.async_true) || anchor.owner.selects(Guards.borrowing_true) || anchor.owner.selects(Guards.consume_true) || anchor.owner.selects(Guards.consuming_true) || anchor.owner.selects(Guards.copy_true) || anchor.owner.selects(Guards.discard_true) || anchor.owner.selects(Guards.each_true) || anchor.owner.selects(Guards.isolated_true) || anchor.owner.selects(Guards.sending_true) || anchor.owner.selects(Guards.then_true) || anchor.owner.selects(Guards.unsafe_true) || anchor.owner.selects(Guards.await_true) || anchor.owner.selects(Guards.anchor_true) || anchor.owner.selects(Guards.recordID_true) || anchor.owner.selects(Guards.satisfied_true) || anchor.owner.selects(Guards.missingRequiredField_true) || anchor.owner.selects(Guards.fieldErrors_true) || anchor.owner.selects(Guards.isPresent_true) || anchor.owner.selects(Guards.throwing_true) || anchor.owner.selects(Guards.caught_true) || anchor.owner.selects(Guards.refetchable_true) || anchor.owner.selects(Guards.refetch_true) || anchor.owner.selects(Guards.connection_true) || anchor.owner.selects(Guards.nodes_true) || anchor.owner.selects(Guards.hasNext_true) || anchor.owner.selects(Guards.hasPrevious_true) || anchor.owner.selects(Guards.isLoadingNext_true) || anchor.owner.selects(Guards.isLoadingPrevious_true) || anchor.owner.selects(Guards.connectionID_true) || anchor.owner.selects(Guards.loadNext_true) || anchor.owner.selects(Guards.loadPrevious_true) || anchor.owner.selects(Guards.bound_true) || anchor.owner.selects(Guards.errors_true) || anchor.owner.selects(Guards.child_true) || anchor.owner.selects(Guards.missing_true) || anchor.owner.selects(Guards.count_true) || anchor.owner.selects(Guards.fields_true) || anchor.owner.selects(Guards.lhs_true) || anchor.owner.selects(Guards.rhs_true) || anchor.owner.selects(Guards.hasher_true) || anchor.owner.selects(Guards.selfValue_true) || anchor.owner.selects(Guards.Fragment_true) || anchor.owner.selects(Guards.Spread_true) || anchor.owner.selects(Guards.Owner_true) || anchor.owner.selects(Guards.Query_true) || anchor.owner.selects(Guards.Operation_true) || anchor.owner.selects(Guards.RefetchQuery_true) || anchor.owner.selects(Guards.resolution_true) || anchor.owner.selects(Guards.name_true) || anchor.owner.selects(Guards.document_true) || anchor.owner.selects(Guards.text_true) || anchor.owner.selects(Guards.plan_true) || anchor.owner.selects(Guards.errorBehavior_true) || anchor.owner.selects(Guards.throwsOnFieldError_true) || anchor.owner.selects(Guards.bubbles_true) || anchor.owner.selects(Guards.hasDeferred_true) || anchor.owner.selects(Guards.cacheExpiration_true) || anchor.owner.selects(Guards.hash_true) || anchor.owner.selects(Guards.commit_true) || anchor.owner.selects(Guards.callAsFunction_true) || anchor.owner.selects(Guards.Op_true) || anchor.owner.selects(Guards.variable_true) || anchor.owner.selects(Guards.phase_true) || anchor.owner.selects(Guards.isRefreshing_true) || anchor.owner.selects(Guards.isStale_true) || anchor.owner.selects(Guards.retry_true) || anchor.owner.selects(Guards.subscription_true) || anchor.owner.selects(Guards.Sites_true) || anchor.owner.selects(Guards.AbstractSlots_true) || anchor.owner.selects(Guards.schemaDigest_true) || anchor.owner.selects(Guards.format_true) || anchor.owner.selects(Guards.transient_true) || anchor.owner.selects(Guards.Swift_true) || anchor.owner.selects(Guards.Set_true) || anchor.owner.selects(Guards.Result_true) || anchor.owner.selects(Guards.Optional_true) || anchor.owner.selects(Guards.String_true) || anchor.owner.selects(Guards.Int_true) || anchor.owner.selects(Guards.Double_true) || anchor.owner.selects(Guards.Bool_true) || anchor.owner.selects(Guards.MainActor_true) || anchor.owner.selects(Guards.Hasher_true) || anchor.owner.selects(Guards.Sendable_true)) {
+                    if (anchor.owner.selects(Guards.Type_true) || anchor.owner.selects(Guards.Protocol_true) || anchor.owner.selects(Guards.Any_true) || anchor.owner.selects(Guards.self_true) || anchor.owner.selects(Guards.init_true) || anchor.owner.selects(Guards.deinit_true) || anchor.owner.selects(Guards.subscript_true) || anchor.owner.selects(Guards.class_true) || anchor.owner.selects(Guards.struct_true) || anchor.owner.selects(Guards.enum_true) || anchor.owner.selects(Guards.func_true) || anchor.owner.selects(Guards.import_true) || anchor.owner.selects(Guards.extension_true) || anchor.owner.selects(Guards.operator_true) || anchor.owner.selects(Guards.static_true) || anchor.owner.selects(Guards.default_true) || anchor.owner.selects(Guards.case_true) || anchor.owner.selects(Guards.switch_true) || anchor.owner.selects(Guards.if_true) || anchor.owner.selects(Guards.else_true) || anchor.owner.selects(Guards.for_true) || anchor.owner.selects(Guards.in_true) || anchor.owner.selects(Guards.while_true) || anchor.owner.selects(Guards.repeat_true) || anchor.owner.selects(Guards.return_true) || anchor.owner.selects(Guards.break_true) || anchor.owner.selects(Guards.continue_true) || anchor.owner.selects(Guards.where_true) || anchor.owner.selects(Guards.is_true) || anchor.owner.selects(Guards.as_true) || anchor.owner.selects(Guards.try_true) || anchor.owner.selects(Guards.throw_true) || anchor.owner.selects(Guards.throws_true) || anchor.owner.selects(Guards.guard_true) || anchor.owner.selects(Guards.defer_true) || anchor.owner.selects(Guards.do_true) || anchor.owner.selects(Guards.catch_true) || anchor.owner.selects(Guards.true_true) || anchor.owner.selects(Guards.false_true) || anchor.owner.selects(Guards.nil_true) || anchor.owner.selects(Guards.super_true) || anchor.owner.selects(Guards.internal_true) || anchor.owner.selects(Guards.private_true) || anchor.owner.selects(Guards.public_true) || anchor.owner.selects(Guards.fileprivate_true) || anchor.owner.selects(Guards.open_true) || anchor.owner.selects(Guards.inout_true) || anchor.owner.selects(Guards.typealias_true) || anchor.owner.selects(Guards.associatedtype_true) || anchor.owner.selects(Guards.protocol_true) || anchor.owner.selects(Guards.some_true) || anchor.owner.selects(Guards.any_true) || anchor.owner.selects(Guards.rethrows_true) || anchor.owner.selects(Guards.fallthrough_true) || anchor.owner.selects(Guards.precedencegroup_true) || anchor.owner.selects(Guards.__true) || anchor.owner.selects(Guards.var_true) || anchor.owner.selects(Guards.let_true) || anchor.owner.selects(Guards.Self_true) || anchor.owner.selects(Guards.async_true) || anchor.owner.selects(Guards.borrowing_true) || anchor.owner.selects(Guards.consume_true) || anchor.owner.selects(Guards.consuming_true) || anchor.owner.selects(Guards.copy_true) || anchor.owner.selects(Guards.discard_true) || anchor.owner.selects(Guards.each_true) || anchor.owner.selects(Guards.isolated_true) || anchor.owner.selects(Guards.sending_true) || anchor.owner.selects(Guards.then_true) || anchor.owner.selects(Guards.unsafe_true) || anchor.owner.selects(Guards.await_true) || anchor.owner.selects(Guards.anchor_true) || anchor.owner.selects(Guards.recordID_true) || anchor.owner.selects(Guards.satisfied_true) || anchor.owner.selects(Guards.missingRequiredField_true) || anchor.owner.selects(Guards.fieldErrors_true) || anchor.owner.selects(Guards.isPresent_true) || anchor.owner.selects(Guards.throwing_true) || anchor.owner.selects(Guards.caught_true) || anchor.owner.selects(Guards.refetchable_true) || anchor.owner.selects(Guards.refetch_true) || anchor.owner.selects(Guards.connection_true) || anchor.owner.selects(Guards.nodes_true) || anchor.owner.selects(Guards.hasNext_true) || anchor.owner.selects(Guards.hasPrevious_true) || anchor.owner.selects(Guards.isLoadingNext_true) || anchor.owner.selects(Guards.isLoadingPrevious_true) || anchor.owner.selects(Guards.connectionID_true) || anchor.owner.selects(Guards.loadNext_true) || anchor.owner.selects(Guards.loadPrevious_true) || anchor.owner.selects(Guards.bound_true) || anchor.owner.selects(Guards.errors_true) || anchor.owner.selects(Guards.child_true) || anchor.owner.selects(Guards.missing_true) || anchor.owner.selects(Guards.count_true) || anchor.owner.selects(Guards.fields_true) || anchor.owner.selects(Guards.lhs_true) || anchor.owner.selects(Guards.rhs_true) || anchor.owner.selects(Guards.hasher_true) || anchor.owner.selects(Guards.selection0_true) || anchor.owner.selects(Guards.selection_true) || anchor.owner.selects(Guards.selfValue_true) || anchor.owner.selects(Guards.Fragment_true) || anchor.owner.selects(Guards.Spread_true) || anchor.owner.selects(Guards.Owner_true) || anchor.owner.selects(Guards.Query_true) || anchor.owner.selects(Guards.Operation_true) || anchor.owner.selects(Guards.RefetchQuery_true) || anchor.owner.selects(Guards.resolution_true) || anchor.owner.selects(Guards.name_true) || anchor.owner.selects(Guards.document_true) || anchor.owner.selects(Guards.text_true) || anchor.owner.selects(Guards.plan_true) || anchor.owner.selects(Guards.errorBehavior_true) || anchor.owner.selects(Guards.throwsOnFieldError_true) || anchor.owner.selects(Guards.bubbles_true) || anchor.owner.selects(Guards.hasDeferred_true) || anchor.owner.selects(Guards.cacheExpiration_true) || anchor.owner.selects(Guards.hash_true) || anchor.owner.selects(Guards.commit_true) || anchor.owner.selects(Guards.callAsFunction_true) || anchor.owner.selects(Guards.Op_true) || anchor.owner.selects(Guards.variable_true) || anchor.owner.selects(Guards.phase_true) || anchor.owner.selects(Guards.isRefreshing_true) || anchor.owner.selects(Guards.isStale_true) || anchor.owner.selects(Guards.retry_true) || anchor.owner.selects(Guards.subscription_true) || anchor.owner.selects(Guards.Sites_true) || anchor.owner.selects(Guards.AbstractSlots_true) || anchor.owner.selects(Guards.schemaDigest_true) || anchor.owner.selects(Guards.format_true) || anchor.owner.selects(Guards.transient_true) || anchor.owner.selects(Guards.Swift_true) || anchor.owner.selects(Guards.Set_true) || anchor.owner.selects(Guards.Result_true) || anchor.owner.selects(Guards.Optional_true) || anchor.owner.selects(Guards.String_true) || anchor.owner.selects(Guards.Int_true) || anchor.owner.selects(Guards.Double_true) || anchor.owner.selects(Guards.Bool_true) || anchor.owner.selects(Guards.MainActor_true) || anchor.owner.selects(Guards.Hasher_true) || anchor.owner.selects(Guards.Sendable_true)) {
                         anchor.collectError(Slots.Character.name, into: &errors)
                     }
                     return errors
@@ -5703,8 +5787,8 @@ mutation HostileMutationVariables(
 extension HostileMutationVariables.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
-    public func callAsFunction(`Type`: Bool, `Protocol`: Bool, `Any`: Bool, `self` selfValue2: Bool, `init`: Bool, `deinit`: Bool, `subscript`: Bool, `class`: Bool, `struct`: Bool, `enum`: Bool, `func`: Bool, `import`: Bool, `extension`: Bool, `operator`: Bool, `static`: Bool, `default`: Bool, `case`: Bool, `switch`: Bool, `if`: Bool, `else`: Bool, `for`: Bool, `in`: Bool, `while`: Bool, `repeat`: Bool, `return`: Bool, `break`: Bool, `continue`: Bool, `where`: Bool, `is`: Bool, `as`: Bool, `try`: Bool, `throw`: Bool, `throws`: Bool, `guard`: Bool, `defer`: Bool, `do`: Bool, `catch`: Bool, `true`: Bool, `false`: Bool, `nil`: Bool, `super`: Bool, `internal`: Bool, `private`: Bool, `public`: Bool, `fileprivate`: Bool, `open`: Bool, `inout`: Bool, `typealias`: Bool, `associatedtype`: Bool, `protocol`: Bool, `some`: Bool, `any`: Bool, `rethrows`: Bool, `fallthrough`: Bool, `precedencegroup`: Bool, `_`: Bool, `var`: Bool, `let`: Bool, `Self`: Bool, async: Bool, `borrowing`: Bool, consume: Bool, `consuming`: Bool, copy: Bool, discard: Bool, `each`: Bool, `isolated`: Bool, `sending`: Bool, then: Bool, unsafe: Bool, `await`: Bool, anchor: Bool, recordID: Bool, satisfied: Bool, missingRequiredField: Bool, fieldErrors: Bool, isPresent: Bool, throwing: Bool, caught: Bool, refetchable: Bool, refetch: Bool, connection: Bool, nodes: Bool, hasNext: Bool, hasPrevious: Bool, isLoadingNext: Bool, isLoadingPrevious: Bool, connectionID: Bool, loadNext: Bool, loadPrevious: Bool, bound: Bool, errors: Bool, child: Bool, missing: Bool, count: Bool, fields: Bool, lhs: Bool, rhs: Bool, hasher: Bool, selfValue: Bool, Fragment: Bool, Spread: Bool, Owner: Bool, Query: Bool, Operation: Bool, RefetchQuery: Bool, resolution: Bool, name: Bool, document: Bool, text: Bool, plan: Bool, errorBehavior: Bool, throwsOnFieldError: Bool, bubbles: Bool, hasDeferred: Bool, cacheExpiration: Bool, hash: Bool, commit: Bool, callAsFunction: Bool, Op: Bool, variable: Bool, phase: Bool, isRefreshing: Bool, isStale: Bool, retry: Bool, subscription: Bool, Sites: Bool, AbstractSlots: Bool, schemaDigest: Bool, format: Bool, transient: Bool, Swift: Bool, Set: Bool, Result: Bool, Optional: Bool, String: Bool, Int: Bool, Double: Bool, Bool: Bool, MainActor: Bool, Hasher: Bool, Sendable: Bool, optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
-        try await self.commit(.init(Type: `Type`, Protocol: `Protocol`, Any: `Any`, self: selfValue2, init: `init`, deinit: `deinit`, subscript: `subscript`, class: `class`, struct: `struct`, enum: `enum`, func: `func`, import: `import`, extension: `extension`, operator: `operator`, static: `static`, default: `default`, case: `case`, switch: `switch`, if: `if`, else: `else`, for: `for`, in: `in`, while: `while`, repeat: `repeat`, return: `return`, break: `break`, continue: `continue`, where: `where`, is: `is`, as: `as`, try: `try`, throw: `throw`, throws: `throws`, guard: `guard`, defer: `defer`, do: `do`, catch: `catch`, true: `true`, false: `false`, nil: `nil`, super: `super`, internal: `internal`, private: `private`, public: `public`, fileprivate: `fileprivate`, open: `open`, `inout`: `inout`, typealias: `typealias`, associatedtype: `associatedtype`, protocol: `protocol`, some: `some`, any: `any`, rethrows: `rethrows`, fallthrough: `fallthrough`, precedencegroup: `precedencegroup`, `_`: `_`, var: `var`, let: `let`, Self: `Self`, async: async, borrowing: `borrowing`, consume: consume, consuming: `consuming`, copy: copy, discard: discard, each: `each`, isolated: `isolated`, sending: `sending`, then: then, unsafe: unsafe, await: `await`, anchor: anchor, recordID: recordID, satisfied: satisfied, missingRequiredField: missingRequiredField, fieldErrors: fieldErrors, isPresent: isPresent, throwing: throwing, caught: caught, refetchable: refetchable, refetch: refetch, connection: connection, nodes: nodes, hasNext: hasNext, hasPrevious: hasPrevious, isLoadingNext: isLoadingNext, isLoadingPrevious: isLoadingPrevious, connectionID: connectionID, loadNext: loadNext, loadPrevious: loadPrevious, bound: bound, errors: errors, child: child, missing: missing, count: count, fields: fields, lhs: lhs, rhs: rhs, hasher: hasher, selfValue: selfValue, Fragment: Fragment, Spread: Spread, Owner: Owner, Query: Query, Operation: Operation, RefetchQuery: RefetchQuery, resolution: resolution, name: name, document: document, text: text, plan: plan, errorBehavior: errorBehavior, throwsOnFieldError: throwsOnFieldError, bubbles: bubbles, hasDeferred: hasDeferred, cacheExpiration: cacheExpiration, hash: hash, commit: commit, callAsFunction: callAsFunction, Op: Op, variable: variable, phase: phase, isRefreshing: isRefreshing, isStale: isStale, retry: retry, subscription: subscription, Sites: Sites, AbstractSlots: AbstractSlots, schemaDigest: schemaDigest, format: format, transient: transient, Swift: Swift, Set: Set, Result: Result, Optional: Optional, String: String, Int: Int, Double: Double, Bool: Bool, MainActor: MainActor, Hasher: Hasher, Sendable: Sendable), optimistic: optimistic?.variable)
+    public func callAsFunction(`Type`: Bool, `Protocol`: Bool, `Any`: Bool, `self` selfValue2: Bool, `init`: Bool, `deinit`: Bool, `subscript`: Bool, `class`: Bool, `struct`: Bool, `enum`: Bool, `func`: Bool, `import`: Bool, `extension`: Bool, `operator`: Bool, `static`: Bool, `default`: Bool, `case`: Bool, `switch`: Bool, `if`: Bool, `else`: Bool, `for`: Bool, `in`: Bool, `while`: Bool, `repeat`: Bool, `return`: Bool, `break`: Bool, `continue`: Bool, `where`: Bool, `is`: Bool, `as`: Bool, `try`: Bool, `throw`: Bool, `throws`: Bool, `guard`: Bool, `defer`: Bool, `do`: Bool, `catch`: Bool, `true`: Bool, `false`: Bool, `nil`: Bool, `super`: Bool, `internal`: Bool, `private`: Bool, `public`: Bool, `fileprivate`: Bool, `open`: Bool, `inout`: Bool, `typealias`: Bool, `associatedtype`: Bool, `protocol`: Bool, `some`: Bool, `any`: Bool, `rethrows`: Bool, `fallthrough`: Bool, `precedencegroup`: Bool, `_`: Bool, `var`: Bool, `let`: Bool, `Self`: Bool, async: Bool, `borrowing`: Bool, consume: Bool, `consuming`: Bool, copy: Bool, discard: Bool, `each`: Bool, `isolated`: Bool, `sending`: Bool, then: Bool, unsafe: Bool, `await`: Bool, anchor: Bool, recordID: Bool, satisfied: Bool, missingRequiredField: Bool, fieldErrors: Bool, isPresent: Bool, throwing: Bool, caught: Bool, refetchable: Bool, refetch: Bool, connection: Bool, nodes: Bool, hasNext: Bool, hasPrevious: Bool, isLoadingNext: Bool, isLoadingPrevious: Bool, connectionID: Bool, loadNext: Bool, loadPrevious: Bool, bound: Bool, errors: Bool, child: Bool, missing: Bool, count: Bool, fields: Bool, lhs: Bool, rhs: Bool, hasher: Bool, selection0: Bool, selection: Bool, selfValue: Bool, Fragment: Bool, Spread: Bool, Owner: Bool, Query: Bool, Operation: Bool, RefetchQuery: Bool, resolution: Bool, name: Bool, document: Bool, text: Bool, plan: Bool, errorBehavior: Bool, throwsOnFieldError: Bool, bubbles: Bool, hasDeferred: Bool, cacheExpiration: Bool, hash: Bool, commit: Bool, callAsFunction: Bool, Op: Bool, variable: Bool, phase: Bool, isRefreshing: Bool, isStale: Bool, retry: Bool, subscription: Bool, Sites: Bool, AbstractSlots: Bool, schemaDigest: Bool, format: Bool, transient: Bool, Swift: Bool, Set: Bool, Result: Bool, Optional: Bool, String: Bool, Int: Bool, Double: Bool, Bool: Bool, MainActor: Bool, Hasher: Bool, Sendable: Bool, optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
+        try await self.commit(.init(Type: `Type`, Protocol: `Protocol`, Any: `Any`, self: selfValue2, init: `init`, deinit: `deinit`, subscript: `subscript`, class: `class`, struct: `struct`, enum: `enum`, func: `func`, import: `import`, extension: `extension`, operator: `operator`, static: `static`, default: `default`, case: `case`, switch: `switch`, if: `if`, else: `else`, for: `for`, in: `in`, while: `while`, repeat: `repeat`, return: `return`, break: `break`, continue: `continue`, where: `where`, is: `is`, as: `as`, try: `try`, throw: `throw`, throws: `throws`, guard: `guard`, defer: `defer`, do: `do`, catch: `catch`, true: `true`, false: `false`, nil: `nil`, super: `super`, internal: `internal`, private: `private`, public: `public`, fileprivate: `fileprivate`, open: `open`, `inout`: `inout`, typealias: `typealias`, associatedtype: `associatedtype`, protocol: `protocol`, some: `some`, any: `any`, rethrows: `rethrows`, fallthrough: `fallthrough`, precedencegroup: `precedencegroup`, `_`: `_`, var: `var`, let: `let`, Self: `Self`, async: async, borrowing: `borrowing`, consume: consume, consuming: `consuming`, copy: copy, discard: discard, each: `each`, isolated: `isolated`, sending: `sending`, then: then, unsafe: unsafe, await: `await`, anchor: anchor, recordID: recordID, satisfied: satisfied, missingRequiredField: missingRequiredField, fieldErrors: fieldErrors, isPresent: isPresent, throwing: throwing, caught: caught, refetchable: refetchable, refetch: refetch, connection: connection, nodes: nodes, hasNext: hasNext, hasPrevious: hasPrevious, isLoadingNext: isLoadingNext, isLoadingPrevious: isLoadingPrevious, connectionID: connectionID, loadNext: loadNext, loadPrevious: loadPrevious, bound: bound, errors: errors, child: child, missing: missing, count: count, fields: fields, lhs: lhs, rhs: rhs, hasher: hasher, selection0: selection0, selection: selection, selfValue: selfValue, Fragment: Fragment, Spread: Spread, Owner: Owner, Query: Query, Operation: Operation, RefetchQuery: RefetchQuery, resolution: resolution, name: name, document: document, text: text, plan: plan, errorBehavior: errorBehavior, throwsOnFieldError: throwsOnFieldError, bubbles: bubbles, hasDeferred: hasDeferred, cacheExpiration: cacheExpiration, hash: hash, commit: commit, callAsFunction: callAsFunction, Op: Op, variable: variable, phase: phase, isRefreshing: isRefreshing, isStale: isStale, retry: retry, subscription: subscription, Sites: Sites, AbstractSlots: AbstractSlots, schemaDigest: schemaDigest, format: format, transient: transient, Swift: Swift, Set: Set, Result: Result, Optional: Optional, String: String, Int: Int, Double: Double, Bool: Bool, MainActor: MainActor, Hasher: Hasher, Sendable: Sendable), optimistic: optimistic?.variable)
     }
 }
 
@@ -5741,13 +5825,16 @@ mutation HostileNamesake(
         hasher.combine(self.HostileNamesake)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, key: [], abstract: false, fields: [
-            .linked("setFavorite", key: .fixed(Slots.Mutation.setFavorite), plural: false, selection: Baton.Selection(type: Types.FavoritePayload, key: [], abstract: false, fields: [
-                .linked("character", key: .fixed(Slots.FavoritePayload.character), plural: false, selection: Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                ])),
-            ])),
-        ]), transient: Types.transient)
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient)
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Mutation, key: [], abstract: false, fields: [
+        .linked("setFavorite", key: .fixed(Slots.Mutation.setFavorite), plural: false, selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.FavoritePayload, key: [], abstract: false, fields: [
+        .linked("character", key: .fixed(Slots.FavoritePayload.character), plural: false, selection: selection2),
+    ])
+    private static let selection2: Baton.Selection = Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
+        .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+    ])
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -5924,6 +6011,8 @@ mutation HostilePayload {
       lhs: name
       rhs: name
       hasher: name
+      selection0: name
+      selection: name
       optimistic: name
       selfValue: name
       Fragment: name
@@ -6268,6 +6357,12 @@ mutation HostilePayload {
     hasher: note {
       id
     }
+    selection0: note {
+      id
+    }
+    selection: note {
+      id
+    }
     optimistic: note {
       id
     }
@@ -6439,607 +6534,322 @@ mutation HostilePayload {
     public func hash(into hasher: inout Hasher) {
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, key: [], abstract: false, fields: [
-            .linked("setFavorite", key: .fixed(Slots.Mutation.setFavorite), plural: false, selection: Baton.Selection(type: Types.FavoritePayload, key: [], abstract: false, fields: [
-                .linked("character", key: .fixed(Slots.FavoritePayload.character), plural: false, selection: Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
-                    .scalar("Type", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Protocol", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Any", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("self", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Self", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("init", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("deinit", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("subscript", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("class", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("struct", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("enum", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("func", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("var", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("let", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("import", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("extension", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("operator", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("static", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("default", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("case", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("switch", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("if", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("else", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("for", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("in", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("while", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("repeat", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("return", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("break", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("continue", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("where", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("is", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("as", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("try", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("throw", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("throws", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("guard", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("defer", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("do", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("catch", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("true", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("false", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("nil", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("super", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("internal", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("private", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("public", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("fileprivate", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("open", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("inout", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("typealias", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("associatedtype", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("protocol", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("some", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("any", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("rethrows", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("fallthrough", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("precedencegroup", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("_", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("async", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("borrowing", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("consume", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("consuming", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("copy", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("discard", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("each", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("isolated", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("sending", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("then", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("unsafe", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("await", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("satisfied", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("missingRequiredField", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("fieldErrors", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("isPresent", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("throwing", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("caught", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("refetchable", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("refetch", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("connection", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("nodes", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("hasNext", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("hasPrevious", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("isLoadingNext", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("isLoadingPrevious", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("connectionID", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("loadNext", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("loadPrevious", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("bound", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("errors", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("child", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("missing", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("count", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("lhs", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("rhs", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("hasher", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("optimistic", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("selfValue", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Fragment", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Spread", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Owner", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Query", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Operation", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("RefetchQuery", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("fields", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("variables", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("resolution", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("document", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("text", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("plan", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("errorBehavior", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("throwsOnFieldError", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("bubbles", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("hasDeferred", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("cacheExpiration", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Data", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Action", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("OptimisticResponse", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("hash", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("commit", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("callAsFunction", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Op", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("hashValue", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("phase", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("isRefreshing", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("isStale", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("retry", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("subscription", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Types", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Sites", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Guards", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("AbstractSlots", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("schemaDigest", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("format", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("transient", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Baton", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Swift", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Set", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Result", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Optional", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("String", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Int", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Double", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Bool", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("MainActor", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Hasher", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("Sendable", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                ])),
-            ])),
-            .linked("addNote", key: .fixed(Slots.Mutation.addNote), plural: false, selection: Baton.Selection(type: Types.AddNotePayload, key: [], abstract: false, fields: [
-                .linked("Type", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("Protocol", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("Any", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("self", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("Self", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("init", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("deinit", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("subscript", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("class", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("struct", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("enum", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("func", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("var", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("let", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("import", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("extension", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("operator", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("static", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("default", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("case", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("switch", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("if", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("else", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("for", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("in", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("while", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("repeat", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("return", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("break", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("continue", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("where", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("is", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("as", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("try", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("throw", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("throws", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("guard", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("defer", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("do", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("catch", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("true", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("false", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("nil", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("super", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("internal", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("private", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("public", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("fileprivate", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("open", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("inout", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("typealias", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("associatedtype", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("protocol", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("some", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("any", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("rethrows", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("fallthrough", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("precedencegroup", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("_", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("async", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("borrowing", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("consume", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("consuming", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("copy", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("discard", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("each", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("isolated", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("sending", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("then", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("unsafe", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("await", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("satisfied", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("missingRequiredField", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("fieldErrors", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("isPresent", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("throwing", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("caught", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("refetchable", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("refetch", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("connection", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("nodes", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("hasNext", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("hasPrevious", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("isLoadingNext", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("isLoadingPrevious", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("connectionID", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("loadNext", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("loadPrevious", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("bound", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("errors", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("child", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("missing", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("count", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("lhs", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("rhs", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("hasher", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("optimistic", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("selfValue", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("Fragment", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("Spread", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("Owner", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("Query", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("Operation", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("RefetchQuery", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("fields", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("variables", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("resolution", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("name", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("document", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("text", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("plan", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("errorBehavior", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("throwsOnFieldError", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("bubbles", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("hasDeferred", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("cacheExpiration", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("Data", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("Action", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("OptimisticResponse", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("hash", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("commit", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("callAsFunction", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("Op", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("hashValue", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("phase", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("isRefreshing", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("isStale", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("retry", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("subscription", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("Types", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("Sites", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("Guards", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("AbstractSlots", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("schemaDigest", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("format", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("transient", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("Baton", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("Swift", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("Set", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("Result", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("Optional", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("String", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("Int", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("Double", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("Bool", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("MainActor", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("Hasher", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-                .linked("Sendable", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                ])),
-            ])),
-        ]), transient: Types.transient)
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient)
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Mutation, key: [], abstract: false, fields: [
+        .linked("setFavorite", key: .fixed(Slots.Mutation.setFavorite), plural: false, selection: selection3),
+        .linked("addNote", key: .fixed(Slots.Mutation.addNote), plural: false, selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.AddNotePayload, key: [], abstract: false, fields: [
+        .linked("Type", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("Protocol", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("Any", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("self", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("Self", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("init", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("deinit", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("subscript", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("class", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("struct", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("enum", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("func", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("var", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("let", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("import", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("extension", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("operator", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("static", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("default", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("case", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("switch", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("if", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("else", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("for", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("in", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("while", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("repeat", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("return", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("break", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("continue", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("where", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("is", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("as", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("try", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("throw", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("throws", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("guard", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("defer", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("do", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("catch", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("true", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("false", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("nil", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("super", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("internal", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("private", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("public", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("fileprivate", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("open", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("inout", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("typealias", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("associatedtype", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("protocol", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("some", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("any", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("rethrows", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("fallthrough", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("precedencegroup", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("_", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("async", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("borrowing", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("consume", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("consuming", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("copy", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("discard", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("each", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("isolated", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("sending", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("then", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("unsafe", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("await", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("satisfied", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("missingRequiredField", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("fieldErrors", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("isPresent", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("throwing", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("caught", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("refetchable", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("refetch", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("connection", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("nodes", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("hasNext", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("hasPrevious", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("isLoadingNext", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("isLoadingPrevious", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("connectionID", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("loadNext", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("loadPrevious", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("bound", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("errors", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("child", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("missing", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("count", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("lhs", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("rhs", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("hasher", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("selection0", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("selection", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("optimistic", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("selfValue", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("Fragment", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("Spread", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("Owner", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("Query", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("Operation", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("RefetchQuery", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("fields", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("variables", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("resolution", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("name", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("document", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("text", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("plan", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("errorBehavior", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("throwsOnFieldError", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("bubbles", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("hasDeferred", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("cacheExpiration", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("Data", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("Action", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("OptimisticResponse", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("hash", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("commit", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("callAsFunction", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("Op", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("hashValue", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("phase", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("isRefreshing", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("isStale", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("retry", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("subscription", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("Types", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("Sites", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("Guards", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("AbstractSlots", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("schemaDigest", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("format", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("transient", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("Baton", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("Swift", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("Set", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("Result", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("Optional", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("String", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("Int", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("Double", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("Bool", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("MainActor", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("Hasher", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+        .linked("Sendable", key: .fixed(Slots.AddNotePayload.note), plural: false, selection: selection2),
+    ])
+    private static let selection2: Baton.Selection = Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
+        .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
+    ])
+    private static let selection3: Baton.Selection = Baton.Selection(type: Types.FavoritePayload, key: [], abstract: false, fields: [
+        .linked("character", key: .fixed(Slots.FavoritePayload.character), plural: false, selection: selection4),
+    ])
+    private static let selection4: Baton.Selection = Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
+        .scalar("Type", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Protocol", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Any", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("self", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Self", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("init", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("deinit", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("subscript", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("class", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("struct", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("enum", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("func", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("var", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("let", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("import", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("extension", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("operator", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("static", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("default", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("case", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("switch", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("if", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("else", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("for", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("in", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("while", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("repeat", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("return", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("break", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("continue", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("where", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("is", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("as", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("try", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("throw", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("throws", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("guard", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("defer", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("do", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("catch", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("true", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("false", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("nil", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("super", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("internal", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("private", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("public", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("fileprivate", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("open", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("inout", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("typealias", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("associatedtype", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("protocol", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("some", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("any", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("rethrows", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("fallthrough", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("precedencegroup", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("_", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("async", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("borrowing", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("consume", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("consuming", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("copy", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("discard", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("each", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("isolated", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("sending", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("then", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("unsafe", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("await", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("satisfied", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("missingRequiredField", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("fieldErrors", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("isPresent", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("throwing", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("caught", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("refetchable", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("refetch", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("connection", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("nodes", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("hasNext", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("hasPrevious", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("isLoadingNext", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("isLoadingPrevious", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("connectionID", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("loadNext", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("loadPrevious", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("bound", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("errors", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("child", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("missing", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("count", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("lhs", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("rhs", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("hasher", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("selection0", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("selection", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("optimistic", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("selfValue", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Fragment", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Spread", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Owner", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Query", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Operation", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("RefetchQuery", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("fields", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("variables", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("resolution", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("document", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("text", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("plan", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("errorBehavior", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("throwsOnFieldError", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("bubbles", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("hasDeferred", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("cacheExpiration", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Data", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Action", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("OptimisticResponse", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("hash", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("commit", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("callAsFunction", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Op", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("hashValue", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("phase", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("isRefreshing", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("isStale", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("retry", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("subscription", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Types", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Sites", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Guards", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("AbstractSlots", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("schemaDigest", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("format", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("transient", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Baton", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Swift", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Set", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Result", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Optional", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("String", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Int", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Double", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Bool", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("MainActor", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Hasher", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Sendable", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+    ])
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -7151,6 +6961,8 @@ mutation HostilePayload {
                 @MainActor public var lhs: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var rhs: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var hasher: String? { anchor.string(Slots.Character.name) }
+                @MainActor public var selection0: String? { anchor.string(Slots.Character.name) }
+                @MainActor public var selection: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var optimistic: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var selfValue: String? { anchor.string(Slots.Character.name) }
                 @MainActor public var Fragment: String? { anchor.string(Slots.Character.name) }
@@ -7305,6 +7117,8 @@ mutation HostilePayload {
             @MainActor public var lhs: Lhs? { anchor.linked(Slots.AddNotePayload.note).map(Lhs.init(anchor:)) }
             @MainActor public var rhs: Rhs? { anchor.linked(Slots.AddNotePayload.note).map(Rhs.init(anchor:)) }
             @MainActor public var hasher: Hasher2? { anchor.linked(Slots.AddNotePayload.note).map(Hasher2.init(anchor:)) }
+            @MainActor public var selection0: Selection0? { anchor.linked(Slots.AddNotePayload.note).map(Selection0.init(anchor:)) }
+            @MainActor public var selection: Selection? { anchor.linked(Slots.AddNotePayload.note).map(Selection.init(anchor:)) }
             @MainActor public var optimistic: Optimistic? { anchor.linked(Slots.AddNotePayload.note).map(Optimistic.init(anchor:)) }
             @MainActor public var selfValue: SelfValue? { anchor.linked(Slots.AddNotePayload.note).map(SelfValue.init(anchor:)) }
             @MainActor public var Fragment: FragmentLens? { anchor.linked(Slots.AddNotePayload.note).map(FragmentLens.init(anchor:)) }
@@ -7934,6 +7748,18 @@ mutation HostilePayload {
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
+            nonisolated public struct Selection0: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                @MainActor public var id: String? { anchor.string(Slots.Note.id) }
+            }
+
+            nonisolated public struct Selection: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                @MainActor public var id: String? { anchor.string(Slots.Note.id) }
+            }
+
             nonisolated public struct Optimistic: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
@@ -8375,6 +8201,8 @@ mutation HostilePayload {
                 public var lhs: String?
                 public var rhs: String?
                 public var hasher: String?
+                public var selection0: String?
+                public var selection: String?
                 public var optimistic: String?
                 public var selfValue: String?
                 public var Fragment: String?
@@ -8428,7 +8256,7 @@ mutation HostilePayload {
                 public var Hasher: String?
                 public var Sendable: String?
                 public var id: String?
-                public init(`Type`: String? = nil, `Protocol`: String? = nil, `Any`: String? = nil, `self` selfValue2: String? = nil, `Self`: String? = nil, `init`: String? = nil, `deinit`: String? = nil, `subscript`: String? = nil, `class`: String? = nil, `struct`: String? = nil, `enum`: String? = nil, `func`: String? = nil, `var`: String? = nil, `let`: String? = nil, `import`: String? = nil, `extension`: String? = nil, `operator`: String? = nil, `static`: String? = nil, `default`: String? = nil, `case`: String? = nil, `switch`: String? = nil, `if`: String? = nil, `else`: String? = nil, `for`: String? = nil, `in`: String? = nil, `while`: String? = nil, `repeat`: String? = nil, `return`: String? = nil, `break`: String? = nil, `continue`: String? = nil, `where`: String? = nil, `is`: String? = nil, `as`: String? = nil, `try`: String? = nil, `throw`: String? = nil, `throws`: String? = nil, `guard`: String? = nil, `defer`: String? = nil, `do`: String? = nil, `catch`: String? = nil, `true`: String? = nil, `false`: String? = nil, `nil`: String? = nil, `super`: String? = nil, `internal`: String? = nil, `private`: String? = nil, `public`: String? = nil, `fileprivate`: String? = nil, `open`: String? = nil, `inout`: String? = nil, `typealias`: String? = nil, `associatedtype`: String? = nil, `protocol`: String? = nil, `some`: String? = nil, `any`: String? = nil, `rethrows`: String? = nil, `fallthrough`: String? = nil, `precedencegroup`: String? = nil, `_`: String? = nil, async: String? = nil, `borrowing`: String? = nil, consume: String? = nil, `consuming`: String? = nil, copy: String? = nil, discard: String? = nil, `each`: String? = nil, `isolated`: String? = nil, `sending`: String? = nil, then: String? = nil, unsafe: String? = nil, `await`: String? = nil, satisfied: String? = nil, missingRequiredField: String? = nil, fieldErrors: String? = nil, isPresent: String? = nil, throwing: String? = nil, caught: String? = nil, refetchable: String? = nil, refetch: String? = nil, connection: String? = nil, nodes: String? = nil, hasNext: String? = nil, hasPrevious: String? = nil, isLoadingNext: String? = nil, isLoadingPrevious: String? = nil, connectionID: String? = nil, loadNext: String? = nil, loadPrevious: String? = nil, bound: String? = nil, errors: String? = nil, child: String? = nil, missing: String? = nil, count: String? = nil, lhs: String? = nil, rhs: String? = nil, hasher: String? = nil, optimistic: String? = nil, selfValue: String? = nil, Fragment: String? = nil, Spread: String? = nil, Owner: String? = nil, Query: String? = nil, Operation: String? = nil, RefetchQuery: String? = nil, fields: String? = nil, variables: String? = nil, resolution: String? = nil, name: String? = nil, document: String? = nil, text: String? = nil, plan: String? = nil, errorBehavior: String? = nil, throwsOnFieldError: String? = nil, bubbles: String? = nil, hasDeferred: String? = nil, cacheExpiration: String? = nil, Data: String? = nil, Action: String? = nil, OptimisticResponse: String? = nil, hash: String? = nil, commit: String? = nil, callAsFunction: String? = nil, Op: String? = nil, hashValue: String? = nil, phase: String? = nil, isRefreshing: String? = nil, isStale: String? = nil, retry: String? = nil, subscription: String? = nil, Types: String? = nil, Sites: String? = nil, Guards: String? = nil, AbstractSlots: String? = nil, schemaDigest: String? = nil, format: String? = nil, transient: String? = nil, Baton: String? = nil, Swift: String? = nil, Set: String? = nil, Result: String? = nil, Optional: String? = nil, String: String? = nil, Int: String? = nil, Double: String? = nil, Bool: String? = nil, MainActor: String? = nil, Hasher: String? = nil, Sendable: String? = nil, id: String? = nil) {
+                public init(`Type`: String? = nil, `Protocol`: String? = nil, `Any`: String? = nil, `self` selfValue2: String? = nil, `Self`: String? = nil, `init`: String? = nil, `deinit`: String? = nil, `subscript`: String? = nil, `class`: String? = nil, `struct`: String? = nil, `enum`: String? = nil, `func`: String? = nil, `var`: String? = nil, `let`: String? = nil, `import`: String? = nil, `extension`: String? = nil, `operator`: String? = nil, `static`: String? = nil, `default`: String? = nil, `case`: String? = nil, `switch`: String? = nil, `if`: String? = nil, `else`: String? = nil, `for`: String? = nil, `in`: String? = nil, `while`: String? = nil, `repeat`: String? = nil, `return`: String? = nil, `break`: String? = nil, `continue`: String? = nil, `where`: String? = nil, `is`: String? = nil, `as`: String? = nil, `try`: String? = nil, `throw`: String? = nil, `throws`: String? = nil, `guard`: String? = nil, `defer`: String? = nil, `do`: String? = nil, `catch`: String? = nil, `true`: String? = nil, `false`: String? = nil, `nil`: String? = nil, `super`: String? = nil, `internal`: String? = nil, `private`: String? = nil, `public`: String? = nil, `fileprivate`: String? = nil, `open`: String? = nil, `inout`: String? = nil, `typealias`: String? = nil, `associatedtype`: String? = nil, `protocol`: String? = nil, `some`: String? = nil, `any`: String? = nil, `rethrows`: String? = nil, `fallthrough`: String? = nil, `precedencegroup`: String? = nil, `_`: String? = nil, async: String? = nil, `borrowing`: String? = nil, consume: String? = nil, `consuming`: String? = nil, copy: String? = nil, discard: String? = nil, `each`: String? = nil, `isolated`: String? = nil, `sending`: String? = nil, then: String? = nil, unsafe: String? = nil, `await`: String? = nil, satisfied: String? = nil, missingRequiredField: String? = nil, fieldErrors: String? = nil, isPresent: String? = nil, throwing: String? = nil, caught: String? = nil, refetchable: String? = nil, refetch: String? = nil, connection: String? = nil, nodes: String? = nil, hasNext: String? = nil, hasPrevious: String? = nil, isLoadingNext: String? = nil, isLoadingPrevious: String? = nil, connectionID: String? = nil, loadNext: String? = nil, loadPrevious: String? = nil, bound: String? = nil, errors: String? = nil, child: String? = nil, missing: String? = nil, count: String? = nil, lhs: String? = nil, rhs: String? = nil, hasher: String? = nil, selection0: String? = nil, selection: String? = nil, optimistic: String? = nil, selfValue: String? = nil, Fragment: String? = nil, Spread: String? = nil, Owner: String? = nil, Query: String? = nil, Operation: String? = nil, RefetchQuery: String? = nil, fields: String? = nil, variables: String? = nil, resolution: String? = nil, name: String? = nil, document: String? = nil, text: String? = nil, plan: String? = nil, errorBehavior: String? = nil, throwsOnFieldError: String? = nil, bubbles: String? = nil, hasDeferred: String? = nil, cacheExpiration: String? = nil, Data: String? = nil, Action: String? = nil, OptimisticResponse: String? = nil, hash: String? = nil, commit: String? = nil, callAsFunction: String? = nil, Op: String? = nil, hashValue: String? = nil, phase: String? = nil, isRefreshing: String? = nil, isStale: String? = nil, retry: String? = nil, subscription: String? = nil, Types: String? = nil, Sites: String? = nil, Guards: String? = nil, AbstractSlots: String? = nil, schemaDigest: String? = nil, format: String? = nil, transient: String? = nil, Baton: String? = nil, Swift: String? = nil, Set: String? = nil, Result: String? = nil, Optional: String? = nil, String: String? = nil, Int: String? = nil, Double: String? = nil, Bool: String? = nil, MainActor: String? = nil, Hasher: String? = nil, Sendable: String? = nil, id: String? = nil) {
                     self.`Type` = `Type`
                     self.`Protocol` = `Protocol`
                     self.`Any` = `Any`
@@ -8525,6 +8353,8 @@ mutation HostilePayload {
                     self.lhs = lhs
                     self.rhs = rhs
                     self.hasher = hasher
+                    self.selection0 = selection0
+                    self.selection = selection
                     self.optimistic = optimistic
                     self.selfValue = selfValue
                     self.Fragment = Fragment
@@ -8677,6 +8507,8 @@ mutation HostilePayload {
                     if let lhs { fields2["lhs"] = .init(lhs) }
                     if let rhs { fields2["rhs"] = .init(rhs) }
                     if let hasher { fields2["hasher"] = .init(hasher) }
+                    if let selection0 { fields2["selection0"] = .init(selection0) }
+                    if let selection { fields2["selection"] = .init(selection) }
                     if let optimistic { fields2["optimistic"] = .init(optimistic) }
                     if let selfValue { fields2["selfValue"] = .init(selfValue) }
                     if let Fragment { fields2["Fragment"] = .init(Fragment) }
@@ -8833,6 +8665,8 @@ mutation HostilePayload {
             public var lhs: Lhs?
             public var rhs: Rhs?
             public var hasher: Hasher2?
+            public var selection0: Selection0?
+            public var selection: Selection?
             public var optimistic: Optimistic?
             public var selfValue: SelfValue?
             public var Fragment: Fragment2?
@@ -8885,7 +8719,7 @@ mutation HostilePayload {
             public var MainActor: MainActor2?
             public var Hasher: Hasher3?
             public var Sendable: SendableResponse?
-            public init(`Type`: TypeResponse? = nil, `Protocol`: ProtocolResponse? = nil, `Any`: AnyResponse? = nil, `self` selfValue2: SelfResponse? = nil, `Self`: SelfResponse2? = nil, `init`: Init? = nil, `deinit`: Deinit? = nil, `subscript`: Subscript? = nil, `class`: Class? = nil, `struct`: Struct? = nil, `enum`: Enum? = nil, `func`: Func? = nil, `var`: Var? = nil, `let`: Let? = nil, `import`: Import? = nil, `extension`: Extension? = nil, `operator`: Operator? = nil, `static`: Static? = nil, `default`: Default? = nil, `case`: Case? = nil, `switch`: Switch? = nil, `if`: If? = nil, `else`: Else? = nil, `for`: For? = nil, `in`: In? = nil, `while`: While? = nil, `repeat`: Repeat? = nil, `return`: Return? = nil, `break`: Break? = nil, `continue`: Continue? = nil, `where`: Where? = nil, `is`: Is? = nil, `as`: As? = nil, `try`: Try? = nil, `throw`: Throw? = nil, `throws`: Throws? = nil, `guard`: Guard? = nil, `defer`: Defer? = nil, `do`: Do? = nil, `catch`: Catch? = nil, `true`: True? = nil, `false`: False? = nil, `nil`: Nil? = nil, `super`: Super? = nil, `internal`: Internal? = nil, `private`: Private? = nil, `public`: Public? = nil, `fileprivate`: Fileprivate? = nil, `open`: Open? = nil, `inout`: Inout? = nil, `typealias`: Typealias? = nil, `associatedtype`: Associatedtype? = nil, `protocol`: ProtocolResponse2? = nil, `some`: Some? = nil, `any`: AnyResponse2? = nil, `rethrows`: Rethrows? = nil, `fallthrough`: Fallthrough? = nil, `precedencegroup`: Precedencegroup? = nil, `_`: _2? = nil, async: Async? = nil, `borrowing`: Borrowing? = nil, consume: Consume? = nil, `consuming`: Consuming? = nil, copy: Copy? = nil, discard: Discard? = nil, `each`: Each? = nil, `isolated`: Isolated? = nil, `sending`: Sending? = nil, then: Then? = nil, unsafe: Unsafe? = nil, `await`: Await? = nil, satisfied: Satisfied? = nil, missingRequiredField: MissingRequiredField? = nil, fieldErrors: FieldErrors? = nil, isPresent: IsPresent? = nil, throwing: Throwing? = nil, caught: Caught? = nil, refetchable: Refetchable? = nil, refetch: Refetch? = nil, connection: Connection? = nil, nodes: Nodes? = nil, hasNext: HasNext? = nil, hasPrevious: HasPrevious? = nil, isLoadingNext: IsLoadingNext? = nil, isLoadingPrevious: IsLoadingPrevious? = nil, connectionID: ConnectionID? = nil, loadNext: LoadNext? = nil, loadPrevious: LoadPrevious? = nil, bound: Bound? = nil, errors: Errors? = nil, child: Child? = nil, missing: Missing? = nil, count: Count? = nil, lhs: Lhs? = nil, rhs: Rhs? = nil, hasher: Hasher2? = nil, optimistic: Optimistic? = nil, selfValue: SelfValue? = nil, Fragment: Fragment2? = nil, Spread: Spread2? = nil, Owner: Owner2? = nil, Query: Query2? = nil, Operation: Operation2? = nil, RefetchQuery: RefetchQuery2? = nil, fields: Fields? = nil, variables: Variables? = nil, resolution: Resolution? = nil, name: Name? = nil, document: Document? = nil, text: Text? = nil, plan: Plan? = nil, errorBehavior: ErrorBehavior? = nil, throwsOnFieldError: ThrowsOnFieldError? = nil, bubbles: Bubbles? = nil, hasDeferred: HasDeferred? = nil, cacheExpiration: CacheExpiration? = nil, Data: Data2? = nil, Action: Action2? = nil, OptimisticResponse: OptimisticResponse2? = nil, hash: Hash? = nil, commit: Commit? = nil, callAsFunction: CallAsFunction? = nil, Op: Op2? = nil, hashValue: HashValue? = nil, phase: Phase? = nil, isRefreshing: IsRefreshing? = nil, isStale: IsStale? = nil, retry: Retry? = nil, subscription: Subscription? = nil, Types: Types2? = nil, Sites: Sites2? = nil, Guards: Guards2? = nil, AbstractSlots: AbstractSlots2? = nil, schemaDigest: SchemaDigest? = nil, format: Format? = nil, transient: Transient? = nil, Baton: BatonResponse? = nil, Swift: Swift2? = nil, Set: Set2? = nil, Result: Result2? = nil, Optional: Optional2? = nil, String: StringResponse? = nil, Int: IntResponse? = nil, Double: DoubleResponse? = nil, Bool: BoolResponse? = nil, MainActor: MainActor2? = nil, Hasher: Hasher3? = nil, Sendable: SendableResponse? = nil) {
+            public init(`Type`: TypeResponse? = nil, `Protocol`: ProtocolResponse? = nil, `Any`: AnyResponse? = nil, `self` selfValue2: SelfResponse? = nil, `Self`: SelfResponse2? = nil, `init`: Init? = nil, `deinit`: Deinit? = nil, `subscript`: Subscript? = nil, `class`: Class? = nil, `struct`: Struct? = nil, `enum`: Enum? = nil, `func`: Func? = nil, `var`: Var? = nil, `let`: Let? = nil, `import`: Import? = nil, `extension`: Extension? = nil, `operator`: Operator? = nil, `static`: Static? = nil, `default`: Default? = nil, `case`: Case? = nil, `switch`: Switch? = nil, `if`: If? = nil, `else`: Else? = nil, `for`: For? = nil, `in`: In? = nil, `while`: While? = nil, `repeat`: Repeat? = nil, `return`: Return? = nil, `break`: Break? = nil, `continue`: Continue? = nil, `where`: Where? = nil, `is`: Is? = nil, `as`: As? = nil, `try`: Try? = nil, `throw`: Throw? = nil, `throws`: Throws? = nil, `guard`: Guard? = nil, `defer`: Defer? = nil, `do`: Do? = nil, `catch`: Catch? = nil, `true`: True? = nil, `false`: False? = nil, `nil`: Nil? = nil, `super`: Super? = nil, `internal`: Internal? = nil, `private`: Private? = nil, `public`: Public? = nil, `fileprivate`: Fileprivate? = nil, `open`: Open? = nil, `inout`: Inout? = nil, `typealias`: Typealias? = nil, `associatedtype`: Associatedtype? = nil, `protocol`: ProtocolResponse2? = nil, `some`: Some? = nil, `any`: AnyResponse2? = nil, `rethrows`: Rethrows? = nil, `fallthrough`: Fallthrough? = nil, `precedencegroup`: Precedencegroup? = nil, `_`: _2? = nil, async: Async? = nil, `borrowing`: Borrowing? = nil, consume: Consume? = nil, `consuming`: Consuming? = nil, copy: Copy? = nil, discard: Discard? = nil, `each`: Each? = nil, `isolated`: Isolated? = nil, `sending`: Sending? = nil, then: Then? = nil, unsafe: Unsafe? = nil, `await`: Await? = nil, satisfied: Satisfied? = nil, missingRequiredField: MissingRequiredField? = nil, fieldErrors: FieldErrors? = nil, isPresent: IsPresent? = nil, throwing: Throwing? = nil, caught: Caught? = nil, refetchable: Refetchable? = nil, refetch: Refetch? = nil, connection: Connection? = nil, nodes: Nodes? = nil, hasNext: HasNext? = nil, hasPrevious: HasPrevious? = nil, isLoadingNext: IsLoadingNext? = nil, isLoadingPrevious: IsLoadingPrevious? = nil, connectionID: ConnectionID? = nil, loadNext: LoadNext? = nil, loadPrevious: LoadPrevious? = nil, bound: Bound? = nil, errors: Errors? = nil, child: Child? = nil, missing: Missing? = nil, count: Count? = nil, lhs: Lhs? = nil, rhs: Rhs? = nil, hasher: Hasher2? = nil, selection0: Selection0? = nil, selection: Selection? = nil, optimistic: Optimistic? = nil, selfValue: SelfValue? = nil, Fragment: Fragment2? = nil, Spread: Spread2? = nil, Owner: Owner2? = nil, Query: Query2? = nil, Operation: Operation2? = nil, RefetchQuery: RefetchQuery2? = nil, fields: Fields? = nil, variables: Variables? = nil, resolution: Resolution? = nil, name: Name? = nil, document: Document? = nil, text: Text? = nil, plan: Plan? = nil, errorBehavior: ErrorBehavior? = nil, throwsOnFieldError: ThrowsOnFieldError? = nil, bubbles: Bubbles? = nil, hasDeferred: HasDeferred? = nil, cacheExpiration: CacheExpiration? = nil, Data: Data2? = nil, Action: Action2? = nil, OptimisticResponse: OptimisticResponse2? = nil, hash: Hash? = nil, commit: Commit? = nil, callAsFunction: CallAsFunction? = nil, Op: Op2? = nil, hashValue: HashValue? = nil, phase: Phase? = nil, isRefreshing: IsRefreshing? = nil, isStale: IsStale? = nil, retry: Retry? = nil, subscription: Subscription? = nil, Types: Types2? = nil, Sites: Sites2? = nil, Guards: Guards2? = nil, AbstractSlots: AbstractSlots2? = nil, schemaDigest: SchemaDigest? = nil, format: Format? = nil, transient: Transient? = nil, Baton: BatonResponse? = nil, Swift: Swift2? = nil, Set: Set2? = nil, Result: Result2? = nil, Optional: Optional2? = nil, String: StringResponse? = nil, Int: IntResponse? = nil, Double: DoubleResponse? = nil, Bool: BoolResponse? = nil, MainActor: MainActor2? = nil, Hasher: Hasher3? = nil, Sendable: SendableResponse? = nil) {
                 self.`Type` = `Type`
                 self.`Protocol` = `Protocol`
                 self.`Any` = `Any`
@@ -8982,6 +8816,8 @@ mutation HostilePayload {
                 self.lhs = lhs
                 self.rhs = rhs
                 self.hasher = hasher
+                self.selection0 = selection0
+                self.selection = selection
                 self.optimistic = optimistic
                 self.selfValue = selfValue
                 self.Fragment = Fragment
@@ -9133,6 +8969,8 @@ mutation HostilePayload {
                 if let lhs { fields2["lhs"] = lhs.variable }
                 if let rhs { fields2["rhs"] = rhs.variable }
                 if let hasher { fields2["hasher"] = hasher.variable }
+                if let selection0 { fields2["selection0"] = selection0.variable }
+                if let selection { fields2["selection"] = selection.variable }
                 if let optimistic { fields2["optimistic"] = optimistic.variable }
                 if let selfValue { fields2["selfValue"] = selfValue.variable }
                 if let Fragment { fields2["Fragment"] = Fragment.variable }
@@ -10437,6 +10275,32 @@ mutation HostilePayload {
             }
 
             /// A partial response to show before the server answers; absent fields leave the store untouched.
+            nonisolated public struct Selection0: Sendable {
+                public var id: String?
+                public init(id: String? = nil) {
+                    self.id = id
+                }
+                public var variable: Baton.Variable {
+                    var fields: [String: Baton.Variable] = [:]
+                    if let id { fields["id"] = .init(id) }
+                    return .object(fields)
+                }
+            }
+
+            /// A partial response to show before the server answers; absent fields leave the store untouched.
+            nonisolated public struct Selection: Sendable {
+                public var id: String?
+                public init(id: String? = nil) {
+                    self.id = id
+                }
+                public var variable: Baton.Variable {
+                    var fields: [String: Baton.Variable] = [:]
+                    if let id { fields["id"] = .init(id) }
+                    return .object(fields)
+                }
+            }
+
+            /// A partial response to show before the server answers; absent fields leave the store untouched.
             nonisolated public struct Optimistic: Sendable {
                 public var id: String?
                 public init(id: String? = nil) {
@@ -11263,6 +11127,8 @@ fragment HostileAbstract_node on Node {
   lhs: id
   rhs: id
   hasher: id
+  selection0: id
+  selection: id
   optimistic: id
   selfValue: id
   Fragment: id
@@ -11627,6 +11493,12 @@ fragment HostileLinks_character on Character {
   hasher: origin {
     id
   }
+  selection0: origin {
+    id
+  }
+  selection: origin {
+    id
+  }
   optimistic: origin {
     id
   }
@@ -11883,6 +11755,8 @@ fragment HostileScalars_character on Character {
   lhs: name
   rhs: name
   hasher: name
+  selection0: name
+  selection: name
   optimistic: name
   selfValue: name
   Fragment: name
@@ -11961,944 +11835,661 @@ fragment HostileSpreads_character on Character {
     public func hash(into hasher: inout Hasher) {
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
-            .linked("scalarsCharacter", key: .fixed(Slots.Query.character_c74a1e), plural: false, lookup: Baton.Lookup(type: Types.Character, key: [.literal("1")]), selection: Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
-                .scalar("Type", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Protocol", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Any", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("self", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Self", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("init", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("deinit", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("subscript", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("class", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("struct", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("enum", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("func", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("var", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("let", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("import", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("extension", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("operator", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("static", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("default", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("case", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("switch", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("if", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("else", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("for", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("in", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("while", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("repeat", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("return", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("break", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("continue", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("where", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("is", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("as", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("try", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("throw", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("throws", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("guard", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("defer", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("do", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("catch", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("true", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("false", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("nil", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("super", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("internal", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("private", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("public", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("fileprivate", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("open", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("inout", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("typealias", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("associatedtype", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("protocol", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("some", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("any", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("rethrows", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("fallthrough", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("precedencegroup", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("_", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("async", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("await", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("borrowing", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("consume", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("consuming", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("copy", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("discard", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("each", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("isolated", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("sending", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("then", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("unsafe", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("satisfied", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("missingRequiredField", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("fieldErrors", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("isPresent", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("throwing", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("caught", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("refetchable", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("refetch", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("connection", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("nodes", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("hasNext", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("hasPrevious", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("isLoadingNext", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("isLoadingPrevious", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("connectionID", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("loadNext", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("loadPrevious", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("bound", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("errors", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("child", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("missing", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("count", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("fields", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("lhs", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("rhs", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("hasher", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("optimistic", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("selfValue", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Fragment", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Spread", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Owner", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Query", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Operation", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("RefetchQuery", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("variables", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("resolution", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("document", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("text", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("plan", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("errorBehavior", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("throwsOnFieldError", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("bubbles", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("hasDeferred", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("cacheExpiration", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Data", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Action", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("OptimisticResponse", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("hash", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("commit", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("callAsFunction", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Op", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("variable", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("hashValue", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("phase", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("isRefreshing", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("isStale", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("retry", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("subscription", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Types", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Sites", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Guards", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("AbstractSlots", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("schemaDigest", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("format", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("transient", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Baton", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Swift", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Set", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Result", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Optional", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("String", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Int", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Double", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Bool", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("MainActor", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Hasher", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Sendable", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-            ])),
-            .linked("linksCharacter", key: .fixed(Slots.Query.character_c74a1e), plural: false, lookup: Baton.Lookup(type: Types.Character, key: [.literal("1")]), selection: Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
-                .linked("Type", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("Protocol", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("Any", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("self", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("Self", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("init", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("deinit", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("subscript", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("class", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("struct", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("enum", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("func", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("var", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("let", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("import", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("extension", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("operator", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("static", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("default", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("case", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("switch", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("if", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("else", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("for", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("in", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("while", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("repeat", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("return", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("break", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("continue", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("where", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("is", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("as", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("try", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("throw", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("throws", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("guard", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("defer", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("do", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("catch", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("true", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("false", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("nil", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("super", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("internal", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("private", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("public", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("fileprivate", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("open", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("inout", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("typealias", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("associatedtype", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("protocol", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("some", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("any", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("rethrows", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("fallthrough", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("precedencegroup", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("_", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("async", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("await", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("borrowing", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("consume", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("consuming", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("copy", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("discard", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("each", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("isolated", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("sending", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("then", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("unsafe", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("satisfied", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("missingRequiredField", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("fieldErrors", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("isPresent", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("throwing", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("caught", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("refetchable", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("refetch", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("connection", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("nodes", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("hasNext", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("hasPrevious", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("isLoadingNext", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("isLoadingPrevious", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("connectionID", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("loadNext", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("loadPrevious", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("bound", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("errors", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("child", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("missing", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("count", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("fields", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("lhs", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("rhs", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("hasher", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("optimistic", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("selfValue", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("Fragment", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("Spread", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("Owner", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("Query", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("Operation", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("RefetchQuery", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("variables", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("resolution", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("name", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("document", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("text", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("plan", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("errorBehavior", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("throwsOnFieldError", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("bubbles", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("hasDeferred", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("cacheExpiration", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("Data", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("Action", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("OptimisticResponse", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("hash", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("commit", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("callAsFunction", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("Op", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("variable", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("hashValue", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("phase", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("isRefreshing", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("isStale", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("retry", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("subscription", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("Types", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("Sites", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("Guards", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("AbstractSlots", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("schemaDigest", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("format", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("transient", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("Baton", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("Swift", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("Set", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("Result", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("Optional", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("String", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("Int", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("Double", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("Bool", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("MainActor", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("Hasher", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .linked("Sendable", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-            ])),
-            .linked("selectionsCharacter", key: .fixed(Slots.Query.character_c74a1e), plural: false, lookup: Baton.Lookup(type: Types.Character, key: [.literal("1")]), selection: Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
-                .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-            ])),
-            .linked("spreadTargetCharacter", key: .fixed(Slots.Query.character_c74a1e), plural: false, lookup: Baton.Lookup(type: Types.Character, key: [.literal("1")]), selection: Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
-                .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-            ])),
-            .linked("spreadsCharacter", key: .fixed(Slots.Query.character_c74a1e), plural: false, lookup: Baton.Lookup(type: Types.Character, key: [.literal("1")]), selection: Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
-                .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-            ])),
-            .linked("connectionNodesCharacter", key: .fixed(Slots.Query.character_c74a1e), plural: false, lookup: Baton.Lookup(type: Types.Character, key: [.literal("1")]), selection: Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
-                .linked("notes", key: .fixed(Slots.Character.notes_29a6d8), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character.__HostileConnectionNodes_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo)), selection: Baton.Selection(type: Types.NoteConnection, key: [], abstract: false, fields: [
-                    .scalar("nodes", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
-                    .linked("edges", key: .fixed(Slots.NoteConnection.edges), plural: true, selection: Baton.Selection(type: Types.NoteEdge, key: [], abstract: false, fields: [
-                        .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                            .scalar("__typename", key: .fixed(Slots.Note.__typename), kind: .string, list: false),
-                            .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
-                        ])),
-                        .scalar("cursor", key: .fixed(Slots.NoteEdge.cursor), kind: .string, list: false),
-                    ])),
-                    .linked("pageInfo", key: .fixed(Slots.NoteConnection.pageInfo), plural: false, selection: Baton.Selection(type: Types.PageInfo, key: [], abstract: false, fields: [
-                        .scalar("endCursor", key: .fixed(Slots.PageInfo.endCursor), kind: .string, list: false),
-                        .scalar("hasNextPage", key: .fixed(Slots.PageInfo.hasNextPage), kind: .bool, list: false),
-                    ])),
-                ])),
-                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-            ])),
-            .linked("abstractNode", key: .fixed(Slots.Query.node_c27cc2), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_keyed, key: [.literal("1")]), selection: Baton.Selection(type: Types.Node, key: ["id"], abstract: true, variants: [
-                .init(types: [Types.Character], key: ["id"], fields: [
-                    .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
-                    .scalar("Type", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("Protocol", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("Any", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("self", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("Self", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("init", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("deinit", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("subscript", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("class", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("struct", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("enum", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("func", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("var", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("let", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("import", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("extension", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("operator", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("static", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("default", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("case", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("switch", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("if", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("else", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("for", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("in", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("while", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("repeat", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("return", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("break", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("continue", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("where", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("is", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("as", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("try", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("throw", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("throws", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("guard", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("defer", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("do", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("catch", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("true", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("false", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("nil", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("super", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("internal", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("private", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("public", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("fileprivate", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("open", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("inout", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("typealias", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("associatedtype", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("protocol", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("some", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("any", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("rethrows", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("fallthrough", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("precedencegroup", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("_", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("async", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("await", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("borrowing", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("consume", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("consuming", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("copy", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("discard", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("each", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("isolated", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("sending", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("then", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("unsafe", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("satisfied", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("missingRequiredField", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("fieldErrors", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("isPresent", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("throwing", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("caught", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("refetchable", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("refetch", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("connection", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("nodes", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("hasNext", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("hasPrevious", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("isLoadingNext", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("isLoadingPrevious", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("connectionID", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("loadNext", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("loadPrevious", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("bound", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("errors", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("child", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("missing", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("count", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("fields", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("lhs", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("rhs", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("hasher", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("optimistic", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("selfValue", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("Fragment", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("Spread", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("Owner", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("Query", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("Operation", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("RefetchQuery", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("variables", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("resolution", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("name", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("document", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("text", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("plan", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("errorBehavior", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("throwsOnFieldError", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("bubbles", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("hasDeferred", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("cacheExpiration", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("Data", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("Action", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("OptimisticResponse", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("hash", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("commit", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("callAsFunction", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("Op", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("variable", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("hashValue", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("phase", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("isRefreshing", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("isStale", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("retry", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("subscription", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("Sites", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("Guards", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("schemaDigest", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("format", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("transient", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("Baton", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("Swift", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("Set", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("Result", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("Optional", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("String", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("Int", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("Double", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("Bool", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("MainActor", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("Hasher", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("Sendable", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                    .scalar("status", key: .fixed(Slots.Character.status), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                ]),
-                .init(types: nil, fields: [
-                    .scalar("__typename", key: .fixed(Slots.Node.__typename), kind: .string, list: false),
-                    .scalar("Type", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("Protocol", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("Any", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("self", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("Self", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("init", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("deinit", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("subscript", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("class", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("struct", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("enum", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("func", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("var", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("let", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("import", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("extension", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("operator", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("static", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("default", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("case", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("switch", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("if", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("else", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("for", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("in", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("while", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("repeat", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("return", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("break", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("continue", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("where", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("is", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("as", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("try", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("throw", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("throws", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("guard", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("defer", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("do", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("catch", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("true", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("false", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("nil", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("super", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("internal", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("private", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("public", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("fileprivate", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("open", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("inout", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("typealias", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("associatedtype", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("protocol", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("some", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("any", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("rethrows", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("fallthrough", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("precedencegroup", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("_", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("async", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("await", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("borrowing", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("consume", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("consuming", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("copy", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("discard", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("each", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("isolated", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("sending", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("then", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("unsafe", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("satisfied", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("missingRequiredField", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("fieldErrors", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("isPresent", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("throwing", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("caught", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("refetchable", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("refetch", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("connection", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("nodes", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("hasNext", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("hasPrevious", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("isLoadingNext", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("isLoadingPrevious", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("connectionID", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("loadNext", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("loadPrevious", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("bound", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("errors", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("child", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("missing", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("count", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("fields", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("lhs", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("rhs", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("hasher", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("optimistic", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("selfValue", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("Fragment", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("Spread", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("Owner", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("Query", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("Operation", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("RefetchQuery", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("variables", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("resolution", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("name", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("document", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("text", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("plan", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("errorBehavior", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("throwsOnFieldError", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("bubbles", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("hasDeferred", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("cacheExpiration", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("Data", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("Action", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("OptimisticResponse", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("hash", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("commit", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("callAsFunction", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("Op", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("variable", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("hashValue", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("phase", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("isRefreshing", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("isStale", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("retry", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("subscription", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("Sites", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("Guards", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("schemaDigest", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("format", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("transient", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("Baton", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("Swift", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("Set", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("Result", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("Optional", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("String", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("Int", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("Double", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("Bool", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("MainActor", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("Hasher", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("Sendable", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
-                ]),
-            ])),
-        ]), transient: Types.transient)
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient)
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+        .linked("scalarsCharacter", key: .fixed(Slots.Query.character_c74a1e), plural: false, lookup: Baton.Lookup(type: Types.Character, key: [.literal("1")]), selection: selection10),
+        .linked("linksCharacter", key: .fixed(Slots.Query.character_c74a1e), plural: false, lookup: Baton.Lookup(type: Types.Character, key: [.literal("1")]), selection: selection8),
+        .linked("selectionsCharacter", key: .fixed(Slots.Query.character_c74a1e), plural: false, lookup: Baton.Lookup(type: Types.Character, key: [.literal("1")]), selection: selection7),
+        .linked("spreadTargetCharacter", key: .fixed(Slots.Query.character_c74a1e), plural: false, lookup: Baton.Lookup(type: Types.Character, key: [.literal("1")]), selection: selection7),
+        .linked("spreadsCharacter", key: .fixed(Slots.Query.character_c74a1e), plural: false, lookup: Baton.Lookup(type: Types.Character, key: [.literal("1")]), selection: selection7),
+        .linked("connectionNodesCharacter", key: .fixed(Slots.Query.character_c74a1e), plural: false, lookup: Baton.Lookup(type: Types.Character, key: [.literal("1")]), selection: selection2),
+        .linked("abstractNode", key: .fixed(Slots.Query.node_c27cc2), plural: false, lookup: Baton.Lookup(type: nil, possibleTypes: Types.Node_keyed, key: [.literal("1")]), selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.Node, key: ["id"], abstract: true, variants: [
+        .init(types: [Types.Character], key: ["id"], fields: [
+            .scalar("__typename", key: .fixed(Slots.Character.__typename), kind: .string, list: false),
+            .scalar("Type", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("Protocol", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("Any", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("self", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("Self", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("init", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("deinit", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("subscript", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("class", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("struct", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("enum", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("func", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("var", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("let", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("import", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("extension", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("operator", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("static", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("default", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("case", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("switch", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("if", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("else", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("for", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("in", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("while", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("repeat", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("return", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("break", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("continue", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("where", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("is", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("as", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("try", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("throw", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("throws", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("guard", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("defer", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("do", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("catch", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("true", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("false", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("nil", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("super", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("internal", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("private", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("public", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("fileprivate", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("open", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("inout", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("typealias", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("associatedtype", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("protocol", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("some", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("any", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("rethrows", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("fallthrough", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("precedencegroup", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("_", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("async", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("await", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("borrowing", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("consume", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("consuming", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("copy", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("discard", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("each", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("isolated", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("sending", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("then", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("unsafe", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("satisfied", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("missingRequiredField", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("fieldErrors", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("isPresent", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("throwing", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("caught", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("refetchable", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("refetch", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("connection", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("nodes", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("hasNext", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("hasPrevious", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("isLoadingNext", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("isLoadingPrevious", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("connectionID", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("loadNext", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("loadPrevious", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("bound", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("errors", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("child", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("missing", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("count", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("fields", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("lhs", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("rhs", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("hasher", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("selection0", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("selection", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("optimistic", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("selfValue", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("Fragment", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("Spread", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("Owner", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("Query", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("Operation", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("RefetchQuery", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("variables", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("resolution", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("name", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("document", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("text", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("plan", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("errorBehavior", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("throwsOnFieldError", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("bubbles", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("hasDeferred", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("cacheExpiration", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("Data", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("Action", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("OptimisticResponse", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("hash", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("commit", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("callAsFunction", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("Op", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("variable", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("hashValue", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("phase", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("isRefreshing", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("isStale", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("retry", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("subscription", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("Sites", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("Guards", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("schemaDigest", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("format", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("transient", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("Baton", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("Swift", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("Set", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("Result", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("Optional", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("String", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("Int", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("Double", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("Bool", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("MainActor", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("Hasher", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("Sendable", key: .fixed(Slots.Character.id), kind: .string, list: false),
+            .scalar("status", key: .fixed(Slots.Character.status), kind: .string, list: false),
+            .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+        ]),
+        .init(types: nil, fields: [
+            .scalar("__typename", key: .fixed(Slots.Node.__typename), kind: .string, list: false),
+            .scalar("Type", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("Protocol", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("Any", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("self", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("Self", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("init", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("deinit", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("subscript", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("class", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("struct", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("enum", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("func", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("var", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("let", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("import", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("extension", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("operator", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("static", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("default", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("case", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("switch", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("if", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("else", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("for", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("in", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("while", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("repeat", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("return", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("break", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("continue", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("where", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("is", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("as", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("try", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("throw", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("throws", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("guard", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("defer", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("do", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("catch", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("true", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("false", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("nil", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("super", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("internal", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("private", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("public", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("fileprivate", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("open", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("inout", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("typealias", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("associatedtype", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("protocol", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("some", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("any", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("rethrows", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("fallthrough", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("precedencegroup", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("_", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("async", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("await", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("borrowing", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("consume", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("consuming", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("copy", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("discard", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("each", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("isolated", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("sending", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("then", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("unsafe", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("satisfied", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("missingRequiredField", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("fieldErrors", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("isPresent", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("throwing", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("caught", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("refetchable", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("refetch", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("connection", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("nodes", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("hasNext", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("hasPrevious", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("isLoadingNext", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("isLoadingPrevious", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("connectionID", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("loadNext", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("loadPrevious", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("bound", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("errors", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("child", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("missing", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("count", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("fields", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("lhs", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("rhs", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("hasher", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("selection0", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("selection", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("optimistic", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("selfValue", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("Fragment", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("Spread", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("Owner", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("Query", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("Operation", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("RefetchQuery", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("variables", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("resolution", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("name", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("document", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("text", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("plan", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("errorBehavior", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("throwsOnFieldError", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("bubbles", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("hasDeferred", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("cacheExpiration", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("Data", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("Action", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("OptimisticResponse", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("hash", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("commit", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("callAsFunction", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("Op", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("variable", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("hashValue", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("phase", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("isRefreshing", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("isStale", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("retry", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("subscription", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("Sites", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("Guards", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("schemaDigest", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("format", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("transient", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("Baton", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("Swift", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("Set", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("Result", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("Optional", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("String", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("Int", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("Double", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("Bool", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("MainActor", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("Hasher", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("Sendable", key: .fixed(Slots.Node.id), kind: .string, list: false),
+            .scalar("id", key: .fixed(Slots.Node.id), kind: .string, list: false),
+        ]),
+    ])
+    private static let selection2: Baton.Selection = Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
+        .linked("notes", key: .fixed(Slots.Character.notes_29a6d8), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character.__HostileConnectionNodes_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo)), selection: selection3),
+        .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+    ])
+    private static let selection3: Baton.Selection = Baton.Selection(type: Types.NoteConnection, key: [], abstract: false, fields: [
+        .scalar("nodes", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+        .linked("edges", key: .fixed(Slots.NoteConnection.edges), plural: true, selection: selection5),
+        .linked("pageInfo", key: .fixed(Slots.NoteConnection.pageInfo), plural: false, selection: selection4),
+    ])
+    private static let selection4: Baton.Selection = Baton.Selection(type: Types.PageInfo, key: [], abstract: false, fields: [
+        .scalar("endCursor", key: .fixed(Slots.PageInfo.endCursor), kind: .string, list: false),
+        .scalar("hasNextPage", key: .fixed(Slots.PageInfo.hasNextPage), kind: .bool, list: false),
+    ])
+    private static let selection5: Baton.Selection = Baton.Selection(type: Types.NoteEdge, key: [], abstract: false, fields: [
+        .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: selection6),
+        .scalar("cursor", key: .fixed(Slots.NoteEdge.cursor), kind: .string, list: false),
+    ])
+    private static let selection6: Baton.Selection = Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
+        .scalar("__typename", key: .fixed(Slots.Note.__typename), kind: .string, list: false),
+        .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
+    ])
+    private static let selection7: Baton.Selection = Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
+        .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+    ])
+    private static let selection8: Baton.Selection = Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
+        .linked("Type", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("Protocol", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("Any", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("self", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("Self", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("init", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("deinit", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("subscript", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("class", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("struct", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("enum", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("func", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("var", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("let", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("import", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("extension", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("operator", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("static", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("default", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("case", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("switch", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("if", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("else", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("for", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("in", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("while", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("repeat", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("return", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("break", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("continue", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("where", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("is", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("as", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("try", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("throw", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("throws", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("guard", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("defer", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("do", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("catch", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("true", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("false", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("nil", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("super", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("internal", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("private", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("public", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("fileprivate", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("open", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("inout", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("typealias", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("associatedtype", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("protocol", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("some", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("any", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("rethrows", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("fallthrough", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("precedencegroup", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("_", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("async", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("await", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("borrowing", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("consume", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("consuming", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("copy", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("discard", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("each", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("isolated", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("sending", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("then", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("unsafe", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("satisfied", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("missingRequiredField", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("fieldErrors", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("isPresent", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("throwing", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("caught", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("refetchable", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("refetch", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("connection", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("nodes", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("hasNext", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("hasPrevious", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("isLoadingNext", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("isLoadingPrevious", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("connectionID", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("loadNext", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("loadPrevious", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("bound", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("errors", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("child", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("missing", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("count", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("fields", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("lhs", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("rhs", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("hasher", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("selection0", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("selection", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("optimistic", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("selfValue", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("Fragment", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("Spread", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("Owner", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("Query", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("Operation", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("RefetchQuery", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("variables", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("resolution", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("name", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("document", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("text", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("plan", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("errorBehavior", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("throwsOnFieldError", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("bubbles", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("hasDeferred", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("cacheExpiration", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("Data", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("Action", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("OptimisticResponse", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("hash", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("commit", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("callAsFunction", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("Op", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("variable", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("hashValue", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("phase", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("isRefreshing", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("isStale", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("retry", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("subscription", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("Types", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("Sites", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("Guards", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("AbstractSlots", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("schemaDigest", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("format", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("transient", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("Baton", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("Swift", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("Set", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("Result", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("Optional", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("String", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("Int", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("Double", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("Bool", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("MainActor", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("Hasher", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .linked("Sendable", key: .fixed(Slots.Character.origin), plural: false, selection: selection9),
+        .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+    ])
+    private static let selection9: Baton.Selection = Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
+        .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
+    ])
+    private static let selection10: Baton.Selection = Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
+        .scalar("Type", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Protocol", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Any", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("self", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Self", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("init", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("deinit", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("subscript", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("class", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("struct", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("enum", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("func", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("var", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("let", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("import", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("extension", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("operator", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("static", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("default", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("case", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("switch", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("if", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("else", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("for", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("in", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("while", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("repeat", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("return", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("break", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("continue", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("where", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("is", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("as", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("try", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("throw", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("throws", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("guard", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("defer", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("do", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("catch", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("true", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("false", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("nil", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("super", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("internal", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("private", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("public", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("fileprivate", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("open", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("inout", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("typealias", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("associatedtype", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("protocol", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("some", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("any", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("rethrows", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("fallthrough", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("precedencegroup", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("_", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("async", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("await", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("borrowing", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("consume", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("consuming", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("copy", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("discard", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("each", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("isolated", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("sending", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("then", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("unsafe", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("satisfied", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("missingRequiredField", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("fieldErrors", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("isPresent", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("throwing", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("caught", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("refetchable", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("refetch", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("connection", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("nodes", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("hasNext", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("hasPrevious", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("isLoadingNext", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("isLoadingPrevious", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("connectionID", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("loadNext", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("loadPrevious", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("bound", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("errors", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("child", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("missing", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("count", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("fields", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("lhs", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("rhs", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("hasher", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("selection0", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("selection", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("optimistic", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("selfValue", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Fragment", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Spread", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Owner", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Query", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Operation", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("RefetchQuery", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("variables", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("resolution", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("document", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("text", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("plan", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("errorBehavior", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("throwsOnFieldError", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("bubbles", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("hasDeferred", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("cacheExpiration", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Data", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Action", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("OptimisticResponse", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("hash", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("commit", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("callAsFunction", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Op", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("variable", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("hashValue", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("phase", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("isRefreshing", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("isStale", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("retry", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("subscription", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Types", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Sites", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Guards", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("AbstractSlots", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("schemaDigest", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("format", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("transient", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Baton", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Swift", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Set", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Result", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Optional", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("String", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Int", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Double", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Bool", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("MainActor", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Hasher", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Sendable", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+    ])
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -13063,6 +12654,8 @@ query HostileRequired {
     lhs: name
     rhs: name
     hasher: name
+    selection0: name
+    selection: name
     optimistic: name
     selfValue: name
     Fragment: name
@@ -13135,163 +12728,168 @@ query HostileRequired {
     public func hash(into hasher: inout Hasher) {
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
-            .linked("character", key: .fixed(Slots.Query.character_c74a1e), plural: false, lookup: Baton.Lookup(type: Types.Character, key: [.literal("1")]), selection: Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
-                .scalar("Type", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Protocol", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Any", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("self", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Self", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("init", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("deinit", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("subscript", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("class", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("struct", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("enum", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("func", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("var", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("let", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("import", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("extension", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("operator", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("static", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("default", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("case", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("switch", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("if", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("else", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("for", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("in", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("while", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("repeat", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("return", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("break", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("continue", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("where", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("is", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("as", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("try", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("throw", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("throws", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("guard", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("defer", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("do", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("catch", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("true", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("false", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("nil", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("super", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("internal", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("private", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("public", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("fileprivate", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("open", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("inout", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("typealias", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("associatedtype", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("protocol", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("some", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("any", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("rethrows", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("fallthrough", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("precedencegroup", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("_", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("async", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("await", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("borrowing", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("consume", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("consuming", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("copy", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("discard", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("each", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("isolated", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("sending", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("then", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("unsafe", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("satisfied", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("missingRequiredField", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("fieldErrors", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("isPresent", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("throwing", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("caught", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("refetchable", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("refetch", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("connection", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("nodes", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("hasNext", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("hasPrevious", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("isLoadingNext", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("isLoadingPrevious", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("connectionID", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("loadNext", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("loadPrevious", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("bound", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("errors", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("child", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("missing", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("count", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("fields", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("lhs", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("rhs", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("hasher", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("optimistic", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("selfValue", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Fragment", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Spread", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Owner", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Query", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Operation", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("RefetchQuery", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("variables", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("resolution", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("document", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("text", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("plan", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("errorBehavior", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("throwsOnFieldError", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("bubbles", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("hasDeferred", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("cacheExpiration", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Data", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Action", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("OptimisticResponse", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("hash", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("commit", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("callAsFunction", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Op", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("variable", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("hashValue", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("phase", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("isRefreshing", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("isStale", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("retry", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("subscription", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Sites", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Guards", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("AbstractSlots", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("schemaDigest", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("format", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("transient", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Baton", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Swift", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Set", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Result", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Optional", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("String", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Int", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Double", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Bool", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("MainActor", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Hasher", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("Sendable", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .linked("origin", key: .fixed(Slots.Character.origin), plural: false, selection: Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
-                    .scalar("name", key: .fixed(Slots.Location.name), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
-                ])),
-                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-            ])),
-        ]), transient: Types.transient)
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient)
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+        .linked("character", key: .fixed(Slots.Query.character_c74a1e), plural: false, lookup: Baton.Lookup(type: Types.Character, key: [.literal("1")]), selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
+        .scalar("Type", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Protocol", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Any", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("self", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Self", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("init", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("deinit", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("subscript", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("class", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("struct", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("enum", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("func", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("var", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("let", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("import", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("extension", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("operator", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("static", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("default", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("case", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("switch", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("if", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("else", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("for", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("in", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("while", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("repeat", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("return", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("break", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("continue", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("where", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("is", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("as", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("try", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("throw", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("throws", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("guard", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("defer", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("do", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("catch", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("true", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("false", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("nil", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("super", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("internal", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("private", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("public", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("fileprivate", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("open", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("inout", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("typealias", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("associatedtype", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("protocol", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("some", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("any", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("rethrows", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("fallthrough", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("precedencegroup", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("_", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("async", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("await", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("borrowing", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("consume", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("consuming", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("copy", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("discard", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("each", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("isolated", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("sending", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("then", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("unsafe", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("satisfied", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("missingRequiredField", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("fieldErrors", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("isPresent", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("throwing", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("caught", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("refetchable", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("refetch", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("connection", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("nodes", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("hasNext", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("hasPrevious", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("isLoadingNext", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("isLoadingPrevious", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("connectionID", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("loadNext", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("loadPrevious", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("bound", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("errors", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("child", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("missing", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("count", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("fields", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("lhs", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("rhs", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("hasher", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("selection0", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("selection", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("optimistic", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("selfValue", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Fragment", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Spread", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Owner", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Query", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Operation", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("RefetchQuery", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("variables", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("resolution", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("document", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("text", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("plan", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("errorBehavior", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("throwsOnFieldError", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("bubbles", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("hasDeferred", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("cacheExpiration", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Data", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Action", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("OptimisticResponse", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("hash", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("commit", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("callAsFunction", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Op", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("variable", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("hashValue", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("phase", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("isRefreshing", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("isStale", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("retry", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("subscription", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Sites", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Guards", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("AbstractSlots", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("schemaDigest", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("format", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("transient", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Baton", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Swift", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Set", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Result", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Optional", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("String", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Int", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Double", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Bool", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("MainActor", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Hasher", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Sendable", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .linked("origin", key: .fixed(Slots.Character.origin), plural: false, selection: selection2),
+        .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+    ])
+    private static let selection2: Baton.Selection = Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
+        .scalar("name", key: .fixed(Slots.Location.name), kind: .string, list: false),
+        .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
+    ])
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -13409,6 +13007,8 @@ query HostileRequired {
             @MainActor public var lhs: String? { anchor.string(Slots.Character.name) }
             @MainActor public var rhs: String? { anchor.string(Slots.Character.name) }
             @MainActor public var hasher: String? { anchor.string(Slots.Character.name) }
+            @MainActor public var selection0: String? { anchor.string(Slots.Character.name) }
+            @MainActor public var selection: String? { anchor.string(Slots.Character.name) }
             @MainActor public var optimistic: String? { anchor.string(Slots.Character.name) }
             @MainActor public var selfValue: String? { anchor.string(Slots.Character.name) }
             @MainActor public var Fragment: String? { anchor.string(Slots.Character.name) }
@@ -13593,6 +13193,8 @@ nonisolated public struct HostileSubscriptionVariables: Baton.Subscription {
     public var lhs: Bool
     public var rhs: Bool
     public var hasher: Bool
+    public var selection0: Bool
+    public var selection: Bool
     public var optimistic: Bool
     public var selfValue: Bool
     public var Fragment: Bool
@@ -13639,7 +13241,7 @@ nonisolated public struct HostileSubscriptionVariables: Baton.Subscription {
     public var Sendable: Bool
     @_spi(Generated) public var resolution: Baton.SubscriptionHandle<Self>? = nil
 
-    public init(`Type`: Bool, `Protocol`: Bool, `Any`: Bool, `self` selfValue2: Bool, `init`: Bool, `deinit`: Bool, `subscript`: Bool, `class`: Bool, `struct`: Bool, `enum`: Bool, `func`: Bool, `var`: Bool, `let`: Bool, `import`: Bool, `extension`: Bool, `operator`: Bool, `static`: Bool, `default`: Bool, `case`: Bool, `switch`: Bool, `if`: Bool, `else`: Bool, `for`: Bool, `in`: Bool, `while`: Bool, `repeat`: Bool, `return`: Bool, `break`: Bool, `continue`: Bool, `where`: Bool, `is`: Bool, `as`: Bool, `try`: Bool, `throw`: Bool, `throws`: Bool, `guard`: Bool, `defer`: Bool, `do`: Bool, `catch`: Bool, `true`: Bool, `false`: Bool, `nil`: Bool, `super`: Bool, `internal`: Bool, `private`: Bool, `public`: Bool, `fileprivate`: Bool, `open`: Bool, `inout`: Bool, `typealias`: Bool, `associatedtype`: Bool, `protocol`: Bool, `some`: Bool, `any`: Bool, `rethrows`: Bool, `fallthrough`: Bool, `precedencegroup`: Bool, `_`: Bool, `Self`: Bool, async: Bool, `borrowing`: Bool, consume: Bool, `consuming`: Bool, copy: Bool, discard: Bool, `each`: Bool, `isolated`: Bool, `sending`: Bool, then: Bool, unsafe: Bool, `await`: Bool, anchor: Bool, recordID: Bool, satisfied: Bool, missingRequiredField: Bool, fieldErrors: Bool, isPresent: Bool, throwing: Bool, caught: Bool, refetchable: Bool, refetch: Bool, connection: Bool, nodes: Bool, hasNext: Bool, hasPrevious: Bool, isLoadingNext: Bool, isLoadingPrevious: Bool, connectionID: Bool, loadNext: Bool, loadPrevious: Bool, bound: Bool, errors: Bool, child: Bool, missing: Bool, count: Bool, fields: Bool, lhs: Bool, rhs: Bool, hasher: Bool, optimistic: Bool, selfValue: Bool, Fragment: Bool, Spread: Bool, Owner: Bool, Query: Bool, Operation: Bool, RefetchQuery: Bool, name: Bool, document: Bool, text: Bool, plan: Bool, errorBehavior: Bool, throwsOnFieldError: Bool, bubbles: Bool, hasDeferred: Bool, cacheExpiration: Bool, Action: Bool, OptimisticResponse: Bool, hash: Bool, commit: Bool, callAsFunction: Bool, Op: Bool, variable: Bool, phase: Bool, isRefreshing: Bool, isStale: Bool, retry: Bool, Sites: Bool, AbstractSlots: Bool, schemaDigest: Bool, format: Bool, transient: Bool, Swift: Bool, Set: Bool, Result: Bool, Optional: Bool, String: Bool, Int: Bool, Double: Bool, Bool: Bool, MainActor: Bool, Hasher: Bool, Sendable: Bool) {
+    public init(`Type`: Bool, `Protocol`: Bool, `Any`: Bool, `self` selfValue2: Bool, `init`: Bool, `deinit`: Bool, `subscript`: Bool, `class`: Bool, `struct`: Bool, `enum`: Bool, `func`: Bool, `var`: Bool, `let`: Bool, `import`: Bool, `extension`: Bool, `operator`: Bool, `static`: Bool, `default`: Bool, `case`: Bool, `switch`: Bool, `if`: Bool, `else`: Bool, `for`: Bool, `in`: Bool, `while`: Bool, `repeat`: Bool, `return`: Bool, `break`: Bool, `continue`: Bool, `where`: Bool, `is`: Bool, `as`: Bool, `try`: Bool, `throw`: Bool, `throws`: Bool, `guard`: Bool, `defer`: Bool, `do`: Bool, `catch`: Bool, `true`: Bool, `false`: Bool, `nil`: Bool, `super`: Bool, `internal`: Bool, `private`: Bool, `public`: Bool, `fileprivate`: Bool, `open`: Bool, `inout`: Bool, `typealias`: Bool, `associatedtype`: Bool, `protocol`: Bool, `some`: Bool, `any`: Bool, `rethrows`: Bool, `fallthrough`: Bool, `precedencegroup`: Bool, `_`: Bool, `Self`: Bool, async: Bool, `borrowing`: Bool, consume: Bool, `consuming`: Bool, copy: Bool, discard: Bool, `each`: Bool, `isolated`: Bool, `sending`: Bool, then: Bool, unsafe: Bool, `await`: Bool, anchor: Bool, recordID: Bool, satisfied: Bool, missingRequiredField: Bool, fieldErrors: Bool, isPresent: Bool, throwing: Bool, caught: Bool, refetchable: Bool, refetch: Bool, connection: Bool, nodes: Bool, hasNext: Bool, hasPrevious: Bool, isLoadingNext: Bool, isLoadingPrevious: Bool, connectionID: Bool, loadNext: Bool, loadPrevious: Bool, bound: Bool, errors: Bool, child: Bool, missing: Bool, count: Bool, fields: Bool, lhs: Bool, rhs: Bool, hasher: Bool, selection0: Bool, selection: Bool, optimistic: Bool, selfValue: Bool, Fragment: Bool, Spread: Bool, Owner: Bool, Query: Bool, Operation: Bool, RefetchQuery: Bool, name: Bool, document: Bool, text: Bool, plan: Bool, errorBehavior: Bool, throwsOnFieldError: Bool, bubbles: Bool, hasDeferred: Bool, cacheExpiration: Bool, Action: Bool, OptimisticResponse: Bool, hash: Bool, commit: Bool, callAsFunction: Bool, Op: Bool, variable: Bool, phase: Bool, isRefreshing: Bool, isStale: Bool, retry: Bool, Sites: Bool, AbstractSlots: Bool, schemaDigest: Bool, format: Bool, transient: Bool, Swift: Bool, Set: Bool, Result: Bool, Optional: Bool, String: Bool, Int: Bool, Double: Bool, Bool: Bool, MainActor: Bool, Hasher: Bool, Sendable: Bool) {
         self.`Type` = `Type`
         self.`Protocol` = `Protocol`
         self.`Any` = `Any`
@@ -13739,6 +13341,8 @@ nonisolated public struct HostileSubscriptionVariables: Baton.Subscription {
         self.lhs = lhs
         self.rhs = rhs
         self.hasher = hasher
+        self.selection0 = selection0
+        self.selection = selection
         self.optimistic = optimistic
         self.selfValue = selfValue
         self.Fragment = Fragment
@@ -13887,6 +13491,8 @@ subscription HostileSubscriptionVariables(
   $lhs: Boolean!
   $rhs: Boolean!
   $hasher: Boolean!
+  $selection0: Boolean!
+  $selection: Boolean!
   $optimistic: Boolean!
   $selfValue: Boolean!
   $Fragment: Boolean!
@@ -14036,6 +13642,8 @@ subscription HostileSubscriptionVariables(
       cursor @include(if: $lhs)
       cursor @include(if: $rhs)
       cursor @include(if: $hasher)
+      cursor @include(if: $selection0)
+      cursor @include(if: $selection)
       cursor @include(if: $optimistic)
       cursor @include(if: $selfValue)
       cursor @include(if: $Fragment)
@@ -14086,11 +13694,11 @@ subscription HostileSubscriptionVariables(
 """#)
 
     public var variables: Baton.Variables {
-        Baton.Variables(["Type": Baton.Variable(self.`Type`), "Protocol": Baton.Variable(self.`Protocol`), "Any": Baton.Variable(self.`Any`), "self": Baton.Variable(self.`self`), "init": Baton.Variable(self.`init`), "deinit": Baton.Variable(self.`deinit`), "subscript": Baton.Variable(self.`subscript`), "class": Baton.Variable(self.`class`), "struct": Baton.Variable(self.`struct`), "enum": Baton.Variable(self.`enum`), "func": Baton.Variable(self.`func`), "var": Baton.Variable(self.`var`), "let": Baton.Variable(self.`let`), "import": Baton.Variable(self.`import`), "extension": Baton.Variable(self.`extension`), "operator": Baton.Variable(self.`operator`), "static": Baton.Variable(self.`static`), "default": Baton.Variable(self.`default`), "case": Baton.Variable(self.`case`), "switch": Baton.Variable(self.`switch`), "if": Baton.Variable(self.`if`), "else": Baton.Variable(self.`else`), "for": Baton.Variable(self.`for`), "in": Baton.Variable(self.`in`), "while": Baton.Variable(self.`while`), "repeat": Baton.Variable(self.`repeat`), "return": Baton.Variable(self.`return`), "break": Baton.Variable(self.`break`), "continue": Baton.Variable(self.`continue`), "where": Baton.Variable(self.`where`), "is": Baton.Variable(self.`is`), "as": Baton.Variable(self.`as`), "try": Baton.Variable(self.`try`), "throw": Baton.Variable(self.`throw`), "throws": Baton.Variable(self.`throws`), "guard": Baton.Variable(self.`guard`), "defer": Baton.Variable(self.`defer`), "do": Baton.Variable(self.`do`), "catch": Baton.Variable(self.`catch`), "true": Baton.Variable(self.`true`), "false": Baton.Variable(self.`false`), "nil": Baton.Variable(self.`nil`), "super": Baton.Variable(self.`super`), "internal": Baton.Variable(self.`internal`), "private": Baton.Variable(self.`private`), "public": Baton.Variable(self.`public`), "fileprivate": Baton.Variable(self.`fileprivate`), "open": Baton.Variable(self.`open`), "inout": Baton.Variable(self.`inout`), "typealias": Baton.Variable(self.`typealias`), "associatedtype": Baton.Variable(self.`associatedtype`), "protocol": Baton.Variable(self.`protocol`), "some": Baton.Variable(self.`some`), "any": Baton.Variable(self.`any`), "rethrows": Baton.Variable(self.`rethrows`), "fallthrough": Baton.Variable(self.`fallthrough`), "precedencegroup": Baton.Variable(self.`precedencegroup`), "_": Baton.Variable(self.`_`), "Self": Baton.Variable(self.`Self`), "async": Baton.Variable(self.async), "borrowing": Baton.Variable(self.`borrowing`), "consume": Baton.Variable(self.consume), "consuming": Baton.Variable(self.`consuming`), "copy": Baton.Variable(self.copy), "discard": Baton.Variable(self.discard), "each": Baton.Variable(self.`each`), "isolated": Baton.Variable(self.`isolated`), "sending": Baton.Variable(self.`sending`), "then": Baton.Variable(self.then), "unsafe": Baton.Variable(self.unsafe), "await": Baton.Variable(self.`await`), "anchor": Baton.Variable(self.anchor), "recordID": Baton.Variable(self.recordID), "satisfied": Baton.Variable(self.satisfied), "missingRequiredField": Baton.Variable(self.missingRequiredField), "fieldErrors": Baton.Variable(self.fieldErrors), "isPresent": Baton.Variable(self.isPresent), "throwing": Baton.Variable(self.throwing), "caught": Baton.Variable(self.caught), "refetchable": Baton.Variable(self.refetchable), "refetch": Baton.Variable(self.refetch), "connection": Baton.Variable(self.connection), "nodes": Baton.Variable(self.nodes), "hasNext": Baton.Variable(self.hasNext), "hasPrevious": Baton.Variable(self.hasPrevious), "isLoadingNext": Baton.Variable(self.isLoadingNext), "isLoadingPrevious": Baton.Variable(self.isLoadingPrevious), "connectionID": Baton.Variable(self.connectionID), "loadNext": Baton.Variable(self.loadNext), "loadPrevious": Baton.Variable(self.loadPrevious), "bound": Baton.Variable(self.bound), "errors": Baton.Variable(self.errors), "child": Baton.Variable(self.child), "missing": Baton.Variable(self.missing), "count": Baton.Variable(self.count), "fields": Baton.Variable(self.fields), "lhs": Baton.Variable(self.lhs), "rhs": Baton.Variable(self.rhs), "hasher": Baton.Variable(self.hasher), "optimistic": Baton.Variable(self.optimistic), "selfValue": Baton.Variable(self.selfValue), "Fragment": Baton.Variable(self.Fragment), "Spread": Baton.Variable(self.Spread), "Owner": Baton.Variable(self.Owner), "Query": Baton.Variable(self.Query), "Operation": Baton.Variable(self.Operation), "RefetchQuery": Baton.Variable(self.RefetchQuery), "name": Baton.Variable(self.name), "document": Baton.Variable(self.document), "text": Baton.Variable(self.text), "plan": Baton.Variable(self.plan), "errorBehavior": Baton.Variable(self.errorBehavior), "throwsOnFieldError": Baton.Variable(self.throwsOnFieldError), "bubbles": Baton.Variable(self.bubbles), "hasDeferred": Baton.Variable(self.hasDeferred), "cacheExpiration": Baton.Variable(self.cacheExpiration), "Action": Baton.Variable(self.Action), "OptimisticResponse": Baton.Variable(self.OptimisticResponse), "hash": Baton.Variable(self.hash), "commit": Baton.Variable(self.commit), "callAsFunction": Baton.Variable(self.callAsFunction), "Op": Baton.Variable(self.Op), "variable": Baton.Variable(self.variable), "phase": Baton.Variable(self.phase), "isRefreshing": Baton.Variable(self.isRefreshing), "isStale": Baton.Variable(self.isStale), "retry": Baton.Variable(self.retry), "Sites": Baton.Variable(self.Sites), "AbstractSlots": Baton.Variable(self.AbstractSlots), "schemaDigest": Baton.Variable(self.schemaDigest), "format": Baton.Variable(self.format), "transient": Baton.Variable(self.transient), "Swift": Baton.Variable(self.Swift), "Set": Baton.Variable(self.Set), "Result": Baton.Variable(self.Result), "Optional": Baton.Variable(self.Optional), "String": Baton.Variable(self.String), "Int": Baton.Variable(self.Int), "Double": Baton.Variable(self.Double), "Bool": Baton.Variable(self.Bool), "MainActor": Baton.Variable(self.MainActor), "Hasher": Baton.Variable(self.Hasher), "Sendable": Baton.Variable(self.Sendable)])
+        Baton.Variables(["Type": Baton.Variable(self.`Type`), "Protocol": Baton.Variable(self.`Protocol`), "Any": Baton.Variable(self.`Any`), "self": Baton.Variable(self.`self`), "init": Baton.Variable(self.`init`), "deinit": Baton.Variable(self.`deinit`), "subscript": Baton.Variable(self.`subscript`), "class": Baton.Variable(self.`class`), "struct": Baton.Variable(self.`struct`), "enum": Baton.Variable(self.`enum`), "func": Baton.Variable(self.`func`), "var": Baton.Variable(self.`var`), "let": Baton.Variable(self.`let`), "import": Baton.Variable(self.`import`), "extension": Baton.Variable(self.`extension`), "operator": Baton.Variable(self.`operator`), "static": Baton.Variable(self.`static`), "default": Baton.Variable(self.`default`), "case": Baton.Variable(self.`case`), "switch": Baton.Variable(self.`switch`), "if": Baton.Variable(self.`if`), "else": Baton.Variable(self.`else`), "for": Baton.Variable(self.`for`), "in": Baton.Variable(self.`in`), "while": Baton.Variable(self.`while`), "repeat": Baton.Variable(self.`repeat`), "return": Baton.Variable(self.`return`), "break": Baton.Variable(self.`break`), "continue": Baton.Variable(self.`continue`), "where": Baton.Variable(self.`where`), "is": Baton.Variable(self.`is`), "as": Baton.Variable(self.`as`), "try": Baton.Variable(self.`try`), "throw": Baton.Variable(self.`throw`), "throws": Baton.Variable(self.`throws`), "guard": Baton.Variable(self.`guard`), "defer": Baton.Variable(self.`defer`), "do": Baton.Variable(self.`do`), "catch": Baton.Variable(self.`catch`), "true": Baton.Variable(self.`true`), "false": Baton.Variable(self.`false`), "nil": Baton.Variable(self.`nil`), "super": Baton.Variable(self.`super`), "internal": Baton.Variable(self.`internal`), "private": Baton.Variable(self.`private`), "public": Baton.Variable(self.`public`), "fileprivate": Baton.Variable(self.`fileprivate`), "open": Baton.Variable(self.`open`), "inout": Baton.Variable(self.`inout`), "typealias": Baton.Variable(self.`typealias`), "associatedtype": Baton.Variable(self.`associatedtype`), "protocol": Baton.Variable(self.`protocol`), "some": Baton.Variable(self.`some`), "any": Baton.Variable(self.`any`), "rethrows": Baton.Variable(self.`rethrows`), "fallthrough": Baton.Variable(self.`fallthrough`), "precedencegroup": Baton.Variable(self.`precedencegroup`), "_": Baton.Variable(self.`_`), "Self": Baton.Variable(self.`Self`), "async": Baton.Variable(self.async), "borrowing": Baton.Variable(self.`borrowing`), "consume": Baton.Variable(self.consume), "consuming": Baton.Variable(self.`consuming`), "copy": Baton.Variable(self.copy), "discard": Baton.Variable(self.discard), "each": Baton.Variable(self.`each`), "isolated": Baton.Variable(self.`isolated`), "sending": Baton.Variable(self.`sending`), "then": Baton.Variable(self.then), "unsafe": Baton.Variable(self.unsafe), "await": Baton.Variable(self.`await`), "anchor": Baton.Variable(self.anchor), "recordID": Baton.Variable(self.recordID), "satisfied": Baton.Variable(self.satisfied), "missingRequiredField": Baton.Variable(self.missingRequiredField), "fieldErrors": Baton.Variable(self.fieldErrors), "isPresent": Baton.Variable(self.isPresent), "throwing": Baton.Variable(self.throwing), "caught": Baton.Variable(self.caught), "refetchable": Baton.Variable(self.refetchable), "refetch": Baton.Variable(self.refetch), "connection": Baton.Variable(self.connection), "nodes": Baton.Variable(self.nodes), "hasNext": Baton.Variable(self.hasNext), "hasPrevious": Baton.Variable(self.hasPrevious), "isLoadingNext": Baton.Variable(self.isLoadingNext), "isLoadingPrevious": Baton.Variable(self.isLoadingPrevious), "connectionID": Baton.Variable(self.connectionID), "loadNext": Baton.Variable(self.loadNext), "loadPrevious": Baton.Variable(self.loadPrevious), "bound": Baton.Variable(self.bound), "errors": Baton.Variable(self.errors), "child": Baton.Variable(self.child), "missing": Baton.Variable(self.missing), "count": Baton.Variable(self.count), "fields": Baton.Variable(self.fields), "lhs": Baton.Variable(self.lhs), "rhs": Baton.Variable(self.rhs), "hasher": Baton.Variable(self.hasher), "selection0": Baton.Variable(self.selection0), "selection": Baton.Variable(self.selection), "optimistic": Baton.Variable(self.optimistic), "selfValue": Baton.Variable(self.selfValue), "Fragment": Baton.Variable(self.Fragment), "Spread": Baton.Variable(self.Spread), "Owner": Baton.Variable(self.Owner), "Query": Baton.Variable(self.Query), "Operation": Baton.Variable(self.Operation), "RefetchQuery": Baton.Variable(self.RefetchQuery), "name": Baton.Variable(self.name), "document": Baton.Variable(self.document), "text": Baton.Variable(self.text), "plan": Baton.Variable(self.plan), "errorBehavior": Baton.Variable(self.errorBehavior), "throwsOnFieldError": Baton.Variable(self.throwsOnFieldError), "bubbles": Baton.Variable(self.bubbles), "hasDeferred": Baton.Variable(self.hasDeferred), "cacheExpiration": Baton.Variable(self.cacheExpiration), "Action": Baton.Variable(self.Action), "OptimisticResponse": Baton.Variable(self.OptimisticResponse), "hash": Baton.Variable(self.hash), "commit": Baton.Variable(self.commit), "callAsFunction": Baton.Variable(self.callAsFunction), "Op": Baton.Variable(self.Op), "variable": Baton.Variable(self.variable), "phase": Baton.Variable(self.phase), "isRefreshing": Baton.Variable(self.isRefreshing), "isStale": Baton.Variable(self.isStale), "retry": Baton.Variable(self.retry), "Sites": Baton.Variable(self.Sites), "AbstractSlots": Baton.Variable(self.AbstractSlots), "schemaDigest": Baton.Variable(self.schemaDigest), "format": Baton.Variable(self.format), "transient": Baton.Variable(self.transient), "Swift": Baton.Variable(self.Swift), "Set": Baton.Variable(self.Set), "Result": Baton.Variable(self.Result), "Optional": Baton.Variable(self.Optional), "String": Baton.Variable(self.String), "Int": Baton.Variable(self.Int), "Double": Baton.Variable(self.Double), "Bool": Baton.Variable(self.Bool), "MainActor": Baton.Variable(self.MainActor), "Hasher": Baton.Variable(self.Hasher), "Sendable": Baton.Variable(self.Sendable)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.`Type` == rhs.`Type` && lhs.`Protocol` == rhs.`Protocol` && lhs.`Any` == rhs.`Any` && lhs.`self` == rhs.`self` && lhs.`init` == rhs.`init` && lhs.`deinit` == rhs.`deinit` && lhs.`subscript` == rhs.`subscript` && lhs.`class` == rhs.`class` && lhs.`struct` == rhs.`struct` && lhs.`enum` == rhs.`enum` && lhs.`func` == rhs.`func` && lhs.`var` == rhs.`var` && lhs.`let` == rhs.`let` && lhs.`import` == rhs.`import` && lhs.`extension` == rhs.`extension` && lhs.`operator` == rhs.`operator` && lhs.`static` == rhs.`static` && lhs.`default` == rhs.`default` && lhs.`case` == rhs.`case` && lhs.`switch` == rhs.`switch` && lhs.`if` == rhs.`if` && lhs.`else` == rhs.`else` && lhs.`for` == rhs.`for` && lhs.`in` == rhs.`in` && lhs.`while` == rhs.`while` && lhs.`repeat` == rhs.`repeat` && lhs.`return` == rhs.`return` && lhs.`break` == rhs.`break` && lhs.`continue` == rhs.`continue` && lhs.`where` == rhs.`where` && lhs.`is` == rhs.`is` && lhs.`as` == rhs.`as` && lhs.`try` == rhs.`try` && lhs.`throw` == rhs.`throw` && lhs.`throws` == rhs.`throws` && lhs.`guard` == rhs.`guard` && lhs.`defer` == rhs.`defer` && lhs.`do` == rhs.`do` && lhs.`catch` == rhs.`catch` && lhs.`true` == rhs.`true` && lhs.`false` == rhs.`false` && lhs.`nil` == rhs.`nil` && lhs.`super` == rhs.`super` && lhs.`internal` == rhs.`internal` && lhs.`private` == rhs.`private` && lhs.`public` == rhs.`public` && lhs.`fileprivate` == rhs.`fileprivate` && lhs.`open` == rhs.`open` && lhs.`inout` == rhs.`inout` && lhs.`typealias` == rhs.`typealias` && lhs.`associatedtype` == rhs.`associatedtype` && lhs.`protocol` == rhs.`protocol` && lhs.`some` == rhs.`some` && lhs.`any` == rhs.`any` && lhs.`rethrows` == rhs.`rethrows` && lhs.`fallthrough` == rhs.`fallthrough` && lhs.`precedencegroup` == rhs.`precedencegroup` && lhs.`_` == rhs.`_` && lhs.`Self` == rhs.`Self` && lhs.async == rhs.async && lhs.`borrowing` == rhs.`borrowing` && lhs.consume == rhs.consume && lhs.`consuming` == rhs.`consuming` && lhs.copy == rhs.copy && lhs.discard == rhs.discard && lhs.`each` == rhs.`each` && lhs.`isolated` == rhs.`isolated` && lhs.`sending` == rhs.`sending` && lhs.then == rhs.then && lhs.unsafe == rhs.unsafe && lhs.`await` == rhs.`await` && lhs.anchor == rhs.anchor && lhs.recordID == rhs.recordID && lhs.satisfied == rhs.satisfied && lhs.missingRequiredField == rhs.missingRequiredField && lhs.fieldErrors == rhs.fieldErrors && lhs.isPresent == rhs.isPresent && lhs.throwing == rhs.throwing && lhs.caught == rhs.caught && lhs.refetchable == rhs.refetchable && lhs.refetch == rhs.refetch && lhs.connection == rhs.connection && lhs.nodes == rhs.nodes && lhs.hasNext == rhs.hasNext && lhs.hasPrevious == rhs.hasPrevious && lhs.isLoadingNext == rhs.isLoadingNext && lhs.isLoadingPrevious == rhs.isLoadingPrevious && lhs.connectionID == rhs.connectionID && lhs.loadNext == rhs.loadNext && lhs.loadPrevious == rhs.loadPrevious && lhs.bound == rhs.bound && lhs.errors == rhs.errors && lhs.child == rhs.child && lhs.missing == rhs.missing && lhs.count == rhs.count && lhs.fields == rhs.fields && lhs.lhs == rhs.lhs && lhs.rhs == rhs.rhs && lhs.hasher == rhs.hasher && lhs.optimistic == rhs.optimistic && lhs.selfValue == rhs.selfValue && lhs.Fragment == rhs.Fragment && lhs.Spread == rhs.Spread && lhs.Owner == rhs.Owner && lhs.Query == rhs.Query && lhs.Operation == rhs.Operation && lhs.RefetchQuery == rhs.RefetchQuery && lhs.name == rhs.name && lhs.document == rhs.document && lhs.text == rhs.text && lhs.plan == rhs.plan && lhs.errorBehavior == rhs.errorBehavior && lhs.throwsOnFieldError == rhs.throwsOnFieldError && lhs.bubbles == rhs.bubbles && lhs.hasDeferred == rhs.hasDeferred && lhs.cacheExpiration == rhs.cacheExpiration && lhs.Action == rhs.Action && lhs.OptimisticResponse == rhs.OptimisticResponse && lhs.hash == rhs.hash && lhs.commit == rhs.commit && lhs.callAsFunction == rhs.callAsFunction && lhs.Op == rhs.Op && lhs.variable == rhs.variable && lhs.phase == rhs.phase && lhs.isRefreshing == rhs.isRefreshing && lhs.isStale == rhs.isStale && lhs.retry == rhs.retry && lhs.Sites == rhs.Sites && lhs.AbstractSlots == rhs.AbstractSlots && lhs.schemaDigest == rhs.schemaDigest && lhs.format == rhs.format && lhs.transient == rhs.transient && lhs.Swift == rhs.Swift && lhs.Set == rhs.Set && lhs.Result == rhs.Result && lhs.Optional == rhs.Optional && lhs.String == rhs.String && lhs.Int == rhs.Int && lhs.Double == rhs.Double && lhs.Bool == rhs.Bool && lhs.MainActor == rhs.MainActor && lhs.Hasher == rhs.Hasher && lhs.Sendable == rhs.Sendable
+        lhs.`Type` == rhs.`Type` && lhs.`Protocol` == rhs.`Protocol` && lhs.`Any` == rhs.`Any` && lhs.`self` == rhs.`self` && lhs.`init` == rhs.`init` && lhs.`deinit` == rhs.`deinit` && lhs.`subscript` == rhs.`subscript` && lhs.`class` == rhs.`class` && lhs.`struct` == rhs.`struct` && lhs.`enum` == rhs.`enum` && lhs.`func` == rhs.`func` && lhs.`var` == rhs.`var` && lhs.`let` == rhs.`let` && lhs.`import` == rhs.`import` && lhs.`extension` == rhs.`extension` && lhs.`operator` == rhs.`operator` && lhs.`static` == rhs.`static` && lhs.`default` == rhs.`default` && lhs.`case` == rhs.`case` && lhs.`switch` == rhs.`switch` && lhs.`if` == rhs.`if` && lhs.`else` == rhs.`else` && lhs.`for` == rhs.`for` && lhs.`in` == rhs.`in` && lhs.`while` == rhs.`while` && lhs.`repeat` == rhs.`repeat` && lhs.`return` == rhs.`return` && lhs.`break` == rhs.`break` && lhs.`continue` == rhs.`continue` && lhs.`where` == rhs.`where` && lhs.`is` == rhs.`is` && lhs.`as` == rhs.`as` && lhs.`try` == rhs.`try` && lhs.`throw` == rhs.`throw` && lhs.`throws` == rhs.`throws` && lhs.`guard` == rhs.`guard` && lhs.`defer` == rhs.`defer` && lhs.`do` == rhs.`do` && lhs.`catch` == rhs.`catch` && lhs.`true` == rhs.`true` && lhs.`false` == rhs.`false` && lhs.`nil` == rhs.`nil` && lhs.`super` == rhs.`super` && lhs.`internal` == rhs.`internal` && lhs.`private` == rhs.`private` && lhs.`public` == rhs.`public` && lhs.`fileprivate` == rhs.`fileprivate` && lhs.`open` == rhs.`open` && lhs.`inout` == rhs.`inout` && lhs.`typealias` == rhs.`typealias` && lhs.`associatedtype` == rhs.`associatedtype` && lhs.`protocol` == rhs.`protocol` && lhs.`some` == rhs.`some` && lhs.`any` == rhs.`any` && lhs.`rethrows` == rhs.`rethrows` && lhs.`fallthrough` == rhs.`fallthrough` && lhs.`precedencegroup` == rhs.`precedencegroup` && lhs.`_` == rhs.`_` && lhs.`Self` == rhs.`Self` && lhs.async == rhs.async && lhs.`borrowing` == rhs.`borrowing` && lhs.consume == rhs.consume && lhs.`consuming` == rhs.`consuming` && lhs.copy == rhs.copy && lhs.discard == rhs.discard && lhs.`each` == rhs.`each` && lhs.`isolated` == rhs.`isolated` && lhs.`sending` == rhs.`sending` && lhs.then == rhs.then && lhs.unsafe == rhs.unsafe && lhs.`await` == rhs.`await` && lhs.anchor == rhs.anchor && lhs.recordID == rhs.recordID && lhs.satisfied == rhs.satisfied && lhs.missingRequiredField == rhs.missingRequiredField && lhs.fieldErrors == rhs.fieldErrors && lhs.isPresent == rhs.isPresent && lhs.throwing == rhs.throwing && lhs.caught == rhs.caught && lhs.refetchable == rhs.refetchable && lhs.refetch == rhs.refetch && lhs.connection == rhs.connection && lhs.nodes == rhs.nodes && lhs.hasNext == rhs.hasNext && lhs.hasPrevious == rhs.hasPrevious && lhs.isLoadingNext == rhs.isLoadingNext && lhs.isLoadingPrevious == rhs.isLoadingPrevious && lhs.connectionID == rhs.connectionID && lhs.loadNext == rhs.loadNext && lhs.loadPrevious == rhs.loadPrevious && lhs.bound == rhs.bound && lhs.errors == rhs.errors && lhs.child == rhs.child && lhs.missing == rhs.missing && lhs.count == rhs.count && lhs.fields == rhs.fields && lhs.lhs == rhs.lhs && lhs.rhs == rhs.rhs && lhs.hasher == rhs.hasher && lhs.selection0 == rhs.selection0 && lhs.selection == rhs.selection && lhs.optimistic == rhs.optimistic && lhs.selfValue == rhs.selfValue && lhs.Fragment == rhs.Fragment && lhs.Spread == rhs.Spread && lhs.Owner == rhs.Owner && lhs.Query == rhs.Query && lhs.Operation == rhs.Operation && lhs.RefetchQuery == rhs.RefetchQuery && lhs.name == rhs.name && lhs.document == rhs.document && lhs.text == rhs.text && lhs.plan == rhs.plan && lhs.errorBehavior == rhs.errorBehavior && lhs.throwsOnFieldError == rhs.throwsOnFieldError && lhs.bubbles == rhs.bubbles && lhs.hasDeferred == rhs.hasDeferred && lhs.cacheExpiration == rhs.cacheExpiration && lhs.Action == rhs.Action && lhs.OptimisticResponse == rhs.OptimisticResponse && lhs.hash == rhs.hash && lhs.commit == rhs.commit && lhs.callAsFunction == rhs.callAsFunction && lhs.Op == rhs.Op && lhs.variable == rhs.variable && lhs.phase == rhs.phase && lhs.isRefreshing == rhs.isRefreshing && lhs.isStale == rhs.isStale && lhs.retry == rhs.retry && lhs.Sites == rhs.Sites && lhs.AbstractSlots == rhs.AbstractSlots && lhs.schemaDigest == rhs.schemaDigest && lhs.format == rhs.format && lhs.transient == rhs.transient && lhs.Swift == rhs.Swift && lhs.Set == rhs.Set && lhs.Result == rhs.Result && lhs.Optional == rhs.Optional && lhs.String == rhs.String && lhs.Int == rhs.Int && lhs.Double == rhs.Double && lhs.Bool == rhs.Bool && lhs.MainActor == rhs.MainActor && lhs.Hasher == rhs.Hasher && lhs.Sendable == rhs.Sendable
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -14193,6 +13801,8 @@ subscription HostileSubscriptionVariables(
         hasher.combine(self.lhs)
         hasher.combine(self.rhs)
         hasher.combine(self.hasher)
+        hasher.combine(self.selection0)
+        hasher.combine(self.selection)
         hasher.combine(self.optimistic)
         hasher.combine(self.selfValue)
         hasher.combine(self.Fragment)
@@ -14239,16 +13849,20 @@ subscription HostileSubscriptionVariables(
         hasher.combine(self.Sendable)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Subscription, key: [], abstract: false, fields: [
-            .linked("noteAdded", key: .fixed(Slots.Subscription.noteAdded_cab094), plural: false, caught: true, selection: Baton.Selection(type: Types.NoteAddedPayload, key: [], abstract: false, fields: [
-                .linked("noteEdge", key: .fixed(Slots.NoteAddedPayload.noteEdge), plural: false, caught: true, selection: Baton.Selection(type: Types.NoteEdge, key: [], abstract: false, fields: [
-                    .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, caught: true, selection: Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
-                        .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false, caught: true),
-                    ])),
-                    .scalar("cursor", key: .fixed(Slots.NoteEdge.cursor), kind: .string, list: false, caught: true, guards: [[Guards.Type_true], [Guards.Protocol_true], [Guards.Any_true], [Guards.self_true], [Guards.init_true], [Guards.deinit_true], [Guards.subscript_true], [Guards.class_true], [Guards.struct_true], [Guards.enum_true], [Guards.func_true], [Guards.var_true], [Guards.let_true], [Guards.import_true], [Guards.extension_true], [Guards.operator_true], [Guards.static_true], [Guards.default_true], [Guards.case_true], [Guards.switch_true], [Guards.if_true], [Guards.else_true], [Guards.for_true], [Guards.in_true], [Guards.while_true], [Guards.repeat_true], [Guards.return_true], [Guards.break_true], [Guards.continue_true], [Guards.where_true], [Guards.is_true], [Guards.as_true], [Guards.try_true], [Guards.throw_true], [Guards.throws_true], [Guards.guard_true], [Guards.defer_true], [Guards.do_true], [Guards.catch_true], [Guards.true_true], [Guards.false_true], [Guards.nil_true], [Guards.super_true], [Guards.internal_true], [Guards.private_true], [Guards.public_true], [Guards.fileprivate_true], [Guards.open_true], [Guards.inout_true], [Guards.typealias_true], [Guards.associatedtype_true], [Guards.protocol_true], [Guards.some_true], [Guards.any_true], [Guards.rethrows_true], [Guards.fallthrough_true], [Guards.precedencegroup_true], [Guards.__true], [Guards.Self_true], [Guards.async_true], [Guards.borrowing_true], [Guards.consume_true], [Guards.consuming_true], [Guards.copy_true], [Guards.discard_true], [Guards.each_true], [Guards.isolated_true], [Guards.sending_true], [Guards.then_true], [Guards.unsafe_true], [Guards.await_true], [Guards.anchor_true], [Guards.recordID_true], [Guards.satisfied_true], [Guards.missingRequiredField_true], [Guards.fieldErrors_true], [Guards.isPresent_true], [Guards.throwing_true], [Guards.caught_true], [Guards.refetchable_true], [Guards.refetch_true], [Guards.connection_true], [Guards.nodes_true], [Guards.hasNext_true], [Guards.hasPrevious_true], [Guards.isLoadingNext_true], [Guards.isLoadingPrevious_true], [Guards.connectionID_true], [Guards.loadNext_true], [Guards.loadPrevious_true], [Guards.bound_true], [Guards.errors_true], [Guards.child_true], [Guards.missing_true], [Guards.count_true], [Guards.fields_true], [Guards.lhs_true], [Guards.rhs_true], [Guards.hasher_true], [Guards.optimistic_true], [Guards.selfValue_true], [Guards.Fragment_true], [Guards.Spread_true], [Guards.Owner_true], [Guards.Query_true], [Guards.Operation_true], [Guards.RefetchQuery_true], [Guards.name_true], [Guards.document_true], [Guards.text_true], [Guards.plan_true], [Guards.errorBehavior_true], [Guards.throwsOnFieldError_true], [Guards.bubbles_true], [Guards.hasDeferred_true], [Guards.cacheExpiration_true], [Guards.Action_true], [Guards.OptimisticResponse_true], [Guards.hash_true], [Guards.commit_true], [Guards.callAsFunction_true], [Guards.Op_true], [Guards.variable_true], [Guards.phase_true], [Guards.isRefreshing_true], [Guards.isStale_true], [Guards.retry_true], [Guards.Sites_true], [Guards.AbstractSlots_true], [Guards.schemaDigest_true], [Guards.format_true], [Guards.transient_true], [Guards.Swift_true], [Guards.Set_true], [Guards.Result_true], [Guards.Optional_true], [Guards.String_true], [Guards.Int_true], [Guards.Double_true], [Guards.Bool_true], [Guards.MainActor_true], [Guards.Hasher_true], [Guards.Sendable_true]]),
-                ])),
-            ])),
-        ]), transient: Types.transient)
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient)
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Subscription, key: [], abstract: false, fields: [
+        .linked("noteAdded", key: .fixed(Slots.Subscription.noteAdded_cab094), plural: false, caught: true, selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.NoteAddedPayload, key: [], abstract: false, fields: [
+        .linked("noteEdge", key: .fixed(Slots.NoteAddedPayload.noteEdge), plural: false, caught: true, selection: selection2),
+    ])
+    private static let selection2: Baton.Selection = Baton.Selection(type: Types.NoteEdge, key: [], abstract: false, fields: [
+        .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, caught: true, selection: selection3),
+        .scalar("cursor", key: .fixed(Slots.NoteEdge.cursor), kind: .string, list: false, caught: true, guards: [[Guards.Type_true], [Guards.Protocol_true], [Guards.Any_true], [Guards.self_true], [Guards.init_true], [Guards.deinit_true], [Guards.subscript_true], [Guards.class_true], [Guards.struct_true], [Guards.enum_true], [Guards.func_true], [Guards.var_true], [Guards.let_true], [Guards.import_true], [Guards.extension_true], [Guards.operator_true], [Guards.static_true], [Guards.default_true], [Guards.case_true], [Guards.switch_true], [Guards.if_true], [Guards.else_true], [Guards.for_true], [Guards.in_true], [Guards.while_true], [Guards.repeat_true], [Guards.return_true], [Guards.break_true], [Guards.continue_true], [Guards.where_true], [Guards.is_true], [Guards.as_true], [Guards.try_true], [Guards.throw_true], [Guards.throws_true], [Guards.guard_true], [Guards.defer_true], [Guards.do_true], [Guards.catch_true], [Guards.true_true], [Guards.false_true], [Guards.nil_true], [Guards.super_true], [Guards.internal_true], [Guards.private_true], [Guards.public_true], [Guards.fileprivate_true], [Guards.open_true], [Guards.inout_true], [Guards.typealias_true], [Guards.associatedtype_true], [Guards.protocol_true], [Guards.some_true], [Guards.any_true], [Guards.rethrows_true], [Guards.fallthrough_true], [Guards.precedencegroup_true], [Guards.__true], [Guards.Self_true], [Guards.async_true], [Guards.borrowing_true], [Guards.consume_true], [Guards.consuming_true], [Guards.copy_true], [Guards.discard_true], [Guards.each_true], [Guards.isolated_true], [Guards.sending_true], [Guards.then_true], [Guards.unsafe_true], [Guards.await_true], [Guards.anchor_true], [Guards.recordID_true], [Guards.satisfied_true], [Guards.missingRequiredField_true], [Guards.fieldErrors_true], [Guards.isPresent_true], [Guards.throwing_true], [Guards.caught_true], [Guards.refetchable_true], [Guards.refetch_true], [Guards.connection_true], [Guards.nodes_true], [Guards.hasNext_true], [Guards.hasPrevious_true], [Guards.isLoadingNext_true], [Guards.isLoadingPrevious_true], [Guards.connectionID_true], [Guards.loadNext_true], [Guards.loadPrevious_true], [Guards.bound_true], [Guards.errors_true], [Guards.child_true], [Guards.missing_true], [Guards.count_true], [Guards.fields_true], [Guards.lhs_true], [Guards.rhs_true], [Guards.hasher_true], [Guards.selection0_true], [Guards.selection_true], [Guards.optimistic_true], [Guards.selfValue_true], [Guards.Fragment_true], [Guards.Spread_true], [Guards.Owner_true], [Guards.Query_true], [Guards.Operation_true], [Guards.RefetchQuery_true], [Guards.name_true], [Guards.document_true], [Guards.text_true], [Guards.plan_true], [Guards.errorBehavior_true], [Guards.throwsOnFieldError_true], [Guards.bubbles_true], [Guards.hasDeferred_true], [Guards.cacheExpiration_true], [Guards.Action_true], [Guards.OptimisticResponse_true], [Guards.hash_true], [Guards.commit_true], [Guards.callAsFunction_true], [Guards.Op_true], [Guards.variable_true], [Guards.phase_true], [Guards.isRefreshing_true], [Guards.isStale_true], [Guards.retry_true], [Guards.Sites_true], [Guards.AbstractSlots_true], [Guards.schemaDigest_true], [Guards.format_true], [Guards.transient_true], [Guards.Swift_true], [Guards.Set_true], [Guards.Result_true], [Guards.Optional_true], [Guards.String_true], [Guards.Int_true], [Guards.Double_true], [Guards.Bool_true], [Guards.MainActor_true], [Guards.Hasher_true], [Guards.Sendable_true]]),
+    ])
+    private static let selection3: Baton.Selection = Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
+        .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false, caught: true),
+    ])
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -14277,12 +13891,12 @@ subscription HostileSubscriptionVariables(
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
                 @MainActor public var node: Node? { anchor.linked(Slots.NoteEdge.node).map(Node.init(anchor:)) }
-                @MainActor public var cursor: String? { (anchor.owner.selects(Guards.Type_true) || anchor.owner.selects(Guards.Protocol_true) || anchor.owner.selects(Guards.Any_true) || anchor.owner.selects(Guards.self_true) || anchor.owner.selects(Guards.init_true) || anchor.owner.selects(Guards.deinit_true) || anchor.owner.selects(Guards.subscript_true) || anchor.owner.selects(Guards.class_true) || anchor.owner.selects(Guards.struct_true) || anchor.owner.selects(Guards.enum_true) || anchor.owner.selects(Guards.func_true) || anchor.owner.selects(Guards.var_true) || anchor.owner.selects(Guards.let_true) || anchor.owner.selects(Guards.import_true) || anchor.owner.selects(Guards.extension_true) || anchor.owner.selects(Guards.operator_true) || anchor.owner.selects(Guards.static_true) || anchor.owner.selects(Guards.default_true) || anchor.owner.selects(Guards.case_true) || anchor.owner.selects(Guards.switch_true) || anchor.owner.selects(Guards.if_true) || anchor.owner.selects(Guards.else_true) || anchor.owner.selects(Guards.for_true) || anchor.owner.selects(Guards.in_true) || anchor.owner.selects(Guards.while_true) || anchor.owner.selects(Guards.repeat_true) || anchor.owner.selects(Guards.return_true) || anchor.owner.selects(Guards.break_true) || anchor.owner.selects(Guards.continue_true) || anchor.owner.selects(Guards.where_true) || anchor.owner.selects(Guards.is_true) || anchor.owner.selects(Guards.as_true) || anchor.owner.selects(Guards.try_true) || anchor.owner.selects(Guards.throw_true) || anchor.owner.selects(Guards.throws_true) || anchor.owner.selects(Guards.guard_true) || anchor.owner.selects(Guards.defer_true) || anchor.owner.selects(Guards.do_true) || anchor.owner.selects(Guards.catch_true) || anchor.owner.selects(Guards.true_true) || anchor.owner.selects(Guards.false_true) || anchor.owner.selects(Guards.nil_true) || anchor.owner.selects(Guards.super_true) || anchor.owner.selects(Guards.internal_true) || anchor.owner.selects(Guards.private_true) || anchor.owner.selects(Guards.public_true) || anchor.owner.selects(Guards.fileprivate_true) || anchor.owner.selects(Guards.open_true) || anchor.owner.selects(Guards.inout_true) || anchor.owner.selects(Guards.typealias_true) || anchor.owner.selects(Guards.associatedtype_true) || anchor.owner.selects(Guards.protocol_true) || anchor.owner.selects(Guards.some_true) || anchor.owner.selects(Guards.any_true) || anchor.owner.selects(Guards.rethrows_true) || anchor.owner.selects(Guards.fallthrough_true) || anchor.owner.selects(Guards.precedencegroup_true) || anchor.owner.selects(Guards.__true) || anchor.owner.selects(Guards.Self_true) || anchor.owner.selects(Guards.async_true) || anchor.owner.selects(Guards.borrowing_true) || anchor.owner.selects(Guards.consume_true) || anchor.owner.selects(Guards.consuming_true) || anchor.owner.selects(Guards.copy_true) || anchor.owner.selects(Guards.discard_true) || anchor.owner.selects(Guards.each_true) || anchor.owner.selects(Guards.isolated_true) || anchor.owner.selects(Guards.sending_true) || anchor.owner.selects(Guards.then_true) || anchor.owner.selects(Guards.unsafe_true) || anchor.owner.selects(Guards.await_true) || anchor.owner.selects(Guards.anchor_true) || anchor.owner.selects(Guards.recordID_true) || anchor.owner.selects(Guards.satisfied_true) || anchor.owner.selects(Guards.missingRequiredField_true) || anchor.owner.selects(Guards.fieldErrors_true) || anchor.owner.selects(Guards.isPresent_true) || anchor.owner.selects(Guards.throwing_true) || anchor.owner.selects(Guards.caught_true) || anchor.owner.selects(Guards.refetchable_true) || anchor.owner.selects(Guards.refetch_true) || anchor.owner.selects(Guards.connection_true) || anchor.owner.selects(Guards.nodes_true) || anchor.owner.selects(Guards.hasNext_true) || anchor.owner.selects(Guards.hasPrevious_true) || anchor.owner.selects(Guards.isLoadingNext_true) || anchor.owner.selects(Guards.isLoadingPrevious_true) || anchor.owner.selects(Guards.connectionID_true) || anchor.owner.selects(Guards.loadNext_true) || anchor.owner.selects(Guards.loadPrevious_true) || anchor.owner.selects(Guards.bound_true) || anchor.owner.selects(Guards.errors_true) || anchor.owner.selects(Guards.child_true) || anchor.owner.selects(Guards.missing_true) || anchor.owner.selects(Guards.count_true) || anchor.owner.selects(Guards.fields_true) || anchor.owner.selects(Guards.lhs_true) || anchor.owner.selects(Guards.rhs_true) || anchor.owner.selects(Guards.hasher_true) || anchor.owner.selects(Guards.optimistic_true) || anchor.owner.selects(Guards.selfValue_true) || anchor.owner.selects(Guards.Fragment_true) || anchor.owner.selects(Guards.Spread_true) || anchor.owner.selects(Guards.Owner_true) || anchor.owner.selects(Guards.Query_true) || anchor.owner.selects(Guards.Operation_true) || anchor.owner.selects(Guards.RefetchQuery_true) || anchor.owner.selects(Guards.name_true) || anchor.owner.selects(Guards.document_true) || anchor.owner.selects(Guards.text_true) || anchor.owner.selects(Guards.plan_true) || anchor.owner.selects(Guards.errorBehavior_true) || anchor.owner.selects(Guards.throwsOnFieldError_true) || anchor.owner.selects(Guards.bubbles_true) || anchor.owner.selects(Guards.hasDeferred_true) || anchor.owner.selects(Guards.cacheExpiration_true) || anchor.owner.selects(Guards.Action_true) || anchor.owner.selects(Guards.OptimisticResponse_true) || anchor.owner.selects(Guards.hash_true) || anchor.owner.selects(Guards.commit_true) || anchor.owner.selects(Guards.callAsFunction_true) || anchor.owner.selects(Guards.Op_true) || anchor.owner.selects(Guards.variable_true) || anchor.owner.selects(Guards.phase_true) || anchor.owner.selects(Guards.isRefreshing_true) || anchor.owner.selects(Guards.isStale_true) || anchor.owner.selects(Guards.retry_true) || anchor.owner.selects(Guards.Sites_true) || anchor.owner.selects(Guards.AbstractSlots_true) || anchor.owner.selects(Guards.schemaDigest_true) || anchor.owner.selects(Guards.format_true) || anchor.owner.selects(Guards.transient_true) || anchor.owner.selects(Guards.Swift_true) || anchor.owner.selects(Guards.Set_true) || anchor.owner.selects(Guards.Result_true) || anchor.owner.selects(Guards.Optional_true) || anchor.owner.selects(Guards.String_true) || anchor.owner.selects(Guards.Int_true) || anchor.owner.selects(Guards.Double_true) || anchor.owner.selects(Guards.Bool_true) || anchor.owner.selects(Guards.MainActor_true) || anchor.owner.selects(Guards.Hasher_true) || anchor.owner.selects(Guards.Sendable_true)) ? anchor.requiredString(Slots.NoteEdge.cursor) : nil }
+                @MainActor public var cursor: String? { (anchor.owner.selects(Guards.Type_true) || anchor.owner.selects(Guards.Protocol_true) || anchor.owner.selects(Guards.Any_true) || anchor.owner.selects(Guards.self_true) || anchor.owner.selects(Guards.init_true) || anchor.owner.selects(Guards.deinit_true) || anchor.owner.selects(Guards.subscript_true) || anchor.owner.selects(Guards.class_true) || anchor.owner.selects(Guards.struct_true) || anchor.owner.selects(Guards.enum_true) || anchor.owner.selects(Guards.func_true) || anchor.owner.selects(Guards.var_true) || anchor.owner.selects(Guards.let_true) || anchor.owner.selects(Guards.import_true) || anchor.owner.selects(Guards.extension_true) || anchor.owner.selects(Guards.operator_true) || anchor.owner.selects(Guards.static_true) || anchor.owner.selects(Guards.default_true) || anchor.owner.selects(Guards.case_true) || anchor.owner.selects(Guards.switch_true) || anchor.owner.selects(Guards.if_true) || anchor.owner.selects(Guards.else_true) || anchor.owner.selects(Guards.for_true) || anchor.owner.selects(Guards.in_true) || anchor.owner.selects(Guards.while_true) || anchor.owner.selects(Guards.repeat_true) || anchor.owner.selects(Guards.return_true) || anchor.owner.selects(Guards.break_true) || anchor.owner.selects(Guards.continue_true) || anchor.owner.selects(Guards.where_true) || anchor.owner.selects(Guards.is_true) || anchor.owner.selects(Guards.as_true) || anchor.owner.selects(Guards.try_true) || anchor.owner.selects(Guards.throw_true) || anchor.owner.selects(Guards.throws_true) || anchor.owner.selects(Guards.guard_true) || anchor.owner.selects(Guards.defer_true) || anchor.owner.selects(Guards.do_true) || anchor.owner.selects(Guards.catch_true) || anchor.owner.selects(Guards.true_true) || anchor.owner.selects(Guards.false_true) || anchor.owner.selects(Guards.nil_true) || anchor.owner.selects(Guards.super_true) || anchor.owner.selects(Guards.internal_true) || anchor.owner.selects(Guards.private_true) || anchor.owner.selects(Guards.public_true) || anchor.owner.selects(Guards.fileprivate_true) || anchor.owner.selects(Guards.open_true) || anchor.owner.selects(Guards.inout_true) || anchor.owner.selects(Guards.typealias_true) || anchor.owner.selects(Guards.associatedtype_true) || anchor.owner.selects(Guards.protocol_true) || anchor.owner.selects(Guards.some_true) || anchor.owner.selects(Guards.any_true) || anchor.owner.selects(Guards.rethrows_true) || anchor.owner.selects(Guards.fallthrough_true) || anchor.owner.selects(Guards.precedencegroup_true) || anchor.owner.selects(Guards.__true) || anchor.owner.selects(Guards.Self_true) || anchor.owner.selects(Guards.async_true) || anchor.owner.selects(Guards.borrowing_true) || anchor.owner.selects(Guards.consume_true) || anchor.owner.selects(Guards.consuming_true) || anchor.owner.selects(Guards.copy_true) || anchor.owner.selects(Guards.discard_true) || anchor.owner.selects(Guards.each_true) || anchor.owner.selects(Guards.isolated_true) || anchor.owner.selects(Guards.sending_true) || anchor.owner.selects(Guards.then_true) || anchor.owner.selects(Guards.unsafe_true) || anchor.owner.selects(Guards.await_true) || anchor.owner.selects(Guards.anchor_true) || anchor.owner.selects(Guards.recordID_true) || anchor.owner.selects(Guards.satisfied_true) || anchor.owner.selects(Guards.missingRequiredField_true) || anchor.owner.selects(Guards.fieldErrors_true) || anchor.owner.selects(Guards.isPresent_true) || anchor.owner.selects(Guards.throwing_true) || anchor.owner.selects(Guards.caught_true) || anchor.owner.selects(Guards.refetchable_true) || anchor.owner.selects(Guards.refetch_true) || anchor.owner.selects(Guards.connection_true) || anchor.owner.selects(Guards.nodes_true) || anchor.owner.selects(Guards.hasNext_true) || anchor.owner.selects(Guards.hasPrevious_true) || anchor.owner.selects(Guards.isLoadingNext_true) || anchor.owner.selects(Guards.isLoadingPrevious_true) || anchor.owner.selects(Guards.connectionID_true) || anchor.owner.selects(Guards.loadNext_true) || anchor.owner.selects(Guards.loadPrevious_true) || anchor.owner.selects(Guards.bound_true) || anchor.owner.selects(Guards.errors_true) || anchor.owner.selects(Guards.child_true) || anchor.owner.selects(Guards.missing_true) || anchor.owner.selects(Guards.count_true) || anchor.owner.selects(Guards.fields_true) || anchor.owner.selects(Guards.lhs_true) || anchor.owner.selects(Guards.rhs_true) || anchor.owner.selects(Guards.hasher_true) || anchor.owner.selects(Guards.selection0_true) || anchor.owner.selects(Guards.selection_true) || anchor.owner.selects(Guards.optimistic_true) || anchor.owner.selects(Guards.selfValue_true) || anchor.owner.selects(Guards.Fragment_true) || anchor.owner.selects(Guards.Spread_true) || anchor.owner.selects(Guards.Owner_true) || anchor.owner.selects(Guards.Query_true) || anchor.owner.selects(Guards.Operation_true) || anchor.owner.selects(Guards.RefetchQuery_true) || anchor.owner.selects(Guards.name_true) || anchor.owner.selects(Guards.document_true) || anchor.owner.selects(Guards.text_true) || anchor.owner.selects(Guards.plan_true) || anchor.owner.selects(Guards.errorBehavior_true) || anchor.owner.selects(Guards.throwsOnFieldError_true) || anchor.owner.selects(Guards.bubbles_true) || anchor.owner.selects(Guards.hasDeferred_true) || anchor.owner.selects(Guards.cacheExpiration_true) || anchor.owner.selects(Guards.Action_true) || anchor.owner.selects(Guards.OptimisticResponse_true) || anchor.owner.selects(Guards.hash_true) || anchor.owner.selects(Guards.commit_true) || anchor.owner.selects(Guards.callAsFunction_true) || anchor.owner.selects(Guards.Op_true) || anchor.owner.selects(Guards.variable_true) || anchor.owner.selects(Guards.phase_true) || anchor.owner.selects(Guards.isRefreshing_true) || anchor.owner.selects(Guards.isStale_true) || anchor.owner.selects(Guards.retry_true) || anchor.owner.selects(Guards.Sites_true) || anchor.owner.selects(Guards.AbstractSlots_true) || anchor.owner.selects(Guards.schemaDigest_true) || anchor.owner.selects(Guards.format_true) || anchor.owner.selects(Guards.transient_true) || anchor.owner.selects(Guards.Swift_true) || anchor.owner.selects(Guards.Set_true) || anchor.owner.selects(Guards.Result_true) || anchor.owner.selects(Guards.Optional_true) || anchor.owner.selects(Guards.String_true) || anchor.owner.selects(Guards.Int_true) || anchor.owner.selects(Guards.Double_true) || anchor.owner.selects(Guards.Bool_true) || anchor.owner.selects(Guards.MainActor_true) || anchor.owner.selects(Guards.Hasher_true) || anchor.owner.selects(Guards.Sendable_true)) ? anchor.requiredString(Slots.NoteEdge.cursor) : nil }
                 /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
                 @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
                     var errors: [Baton.FieldError] = []
                     anchor.collectErrors(Slots.NoteEdge.node, within: Node.fieldErrors, into: &errors)
-                    if (anchor.owner.selects(Guards.Type_true) || anchor.owner.selects(Guards.Protocol_true) || anchor.owner.selects(Guards.Any_true) || anchor.owner.selects(Guards.self_true) || anchor.owner.selects(Guards.init_true) || anchor.owner.selects(Guards.deinit_true) || anchor.owner.selects(Guards.subscript_true) || anchor.owner.selects(Guards.class_true) || anchor.owner.selects(Guards.struct_true) || anchor.owner.selects(Guards.enum_true) || anchor.owner.selects(Guards.func_true) || anchor.owner.selects(Guards.var_true) || anchor.owner.selects(Guards.let_true) || anchor.owner.selects(Guards.import_true) || anchor.owner.selects(Guards.extension_true) || anchor.owner.selects(Guards.operator_true) || anchor.owner.selects(Guards.static_true) || anchor.owner.selects(Guards.default_true) || anchor.owner.selects(Guards.case_true) || anchor.owner.selects(Guards.switch_true) || anchor.owner.selects(Guards.if_true) || anchor.owner.selects(Guards.else_true) || anchor.owner.selects(Guards.for_true) || anchor.owner.selects(Guards.in_true) || anchor.owner.selects(Guards.while_true) || anchor.owner.selects(Guards.repeat_true) || anchor.owner.selects(Guards.return_true) || anchor.owner.selects(Guards.break_true) || anchor.owner.selects(Guards.continue_true) || anchor.owner.selects(Guards.where_true) || anchor.owner.selects(Guards.is_true) || anchor.owner.selects(Guards.as_true) || anchor.owner.selects(Guards.try_true) || anchor.owner.selects(Guards.throw_true) || anchor.owner.selects(Guards.throws_true) || anchor.owner.selects(Guards.guard_true) || anchor.owner.selects(Guards.defer_true) || anchor.owner.selects(Guards.do_true) || anchor.owner.selects(Guards.catch_true) || anchor.owner.selects(Guards.true_true) || anchor.owner.selects(Guards.false_true) || anchor.owner.selects(Guards.nil_true) || anchor.owner.selects(Guards.super_true) || anchor.owner.selects(Guards.internal_true) || anchor.owner.selects(Guards.private_true) || anchor.owner.selects(Guards.public_true) || anchor.owner.selects(Guards.fileprivate_true) || anchor.owner.selects(Guards.open_true) || anchor.owner.selects(Guards.inout_true) || anchor.owner.selects(Guards.typealias_true) || anchor.owner.selects(Guards.associatedtype_true) || anchor.owner.selects(Guards.protocol_true) || anchor.owner.selects(Guards.some_true) || anchor.owner.selects(Guards.any_true) || anchor.owner.selects(Guards.rethrows_true) || anchor.owner.selects(Guards.fallthrough_true) || anchor.owner.selects(Guards.precedencegroup_true) || anchor.owner.selects(Guards.__true) || anchor.owner.selects(Guards.Self_true) || anchor.owner.selects(Guards.async_true) || anchor.owner.selects(Guards.borrowing_true) || anchor.owner.selects(Guards.consume_true) || anchor.owner.selects(Guards.consuming_true) || anchor.owner.selects(Guards.copy_true) || anchor.owner.selects(Guards.discard_true) || anchor.owner.selects(Guards.each_true) || anchor.owner.selects(Guards.isolated_true) || anchor.owner.selects(Guards.sending_true) || anchor.owner.selects(Guards.then_true) || anchor.owner.selects(Guards.unsafe_true) || anchor.owner.selects(Guards.await_true) || anchor.owner.selects(Guards.anchor_true) || anchor.owner.selects(Guards.recordID_true) || anchor.owner.selects(Guards.satisfied_true) || anchor.owner.selects(Guards.missingRequiredField_true) || anchor.owner.selects(Guards.fieldErrors_true) || anchor.owner.selects(Guards.isPresent_true) || anchor.owner.selects(Guards.throwing_true) || anchor.owner.selects(Guards.caught_true) || anchor.owner.selects(Guards.refetchable_true) || anchor.owner.selects(Guards.refetch_true) || anchor.owner.selects(Guards.connection_true) || anchor.owner.selects(Guards.nodes_true) || anchor.owner.selects(Guards.hasNext_true) || anchor.owner.selects(Guards.hasPrevious_true) || anchor.owner.selects(Guards.isLoadingNext_true) || anchor.owner.selects(Guards.isLoadingPrevious_true) || anchor.owner.selects(Guards.connectionID_true) || anchor.owner.selects(Guards.loadNext_true) || anchor.owner.selects(Guards.loadPrevious_true) || anchor.owner.selects(Guards.bound_true) || anchor.owner.selects(Guards.errors_true) || anchor.owner.selects(Guards.child_true) || anchor.owner.selects(Guards.missing_true) || anchor.owner.selects(Guards.count_true) || anchor.owner.selects(Guards.fields_true) || anchor.owner.selects(Guards.lhs_true) || anchor.owner.selects(Guards.rhs_true) || anchor.owner.selects(Guards.hasher_true) || anchor.owner.selects(Guards.optimistic_true) || anchor.owner.selects(Guards.selfValue_true) || anchor.owner.selects(Guards.Fragment_true) || anchor.owner.selects(Guards.Spread_true) || anchor.owner.selects(Guards.Owner_true) || anchor.owner.selects(Guards.Query_true) || anchor.owner.selects(Guards.Operation_true) || anchor.owner.selects(Guards.RefetchQuery_true) || anchor.owner.selects(Guards.name_true) || anchor.owner.selects(Guards.document_true) || anchor.owner.selects(Guards.text_true) || anchor.owner.selects(Guards.plan_true) || anchor.owner.selects(Guards.errorBehavior_true) || anchor.owner.selects(Guards.throwsOnFieldError_true) || anchor.owner.selects(Guards.bubbles_true) || anchor.owner.selects(Guards.hasDeferred_true) || anchor.owner.selects(Guards.cacheExpiration_true) || anchor.owner.selects(Guards.Action_true) || anchor.owner.selects(Guards.OptimisticResponse_true) || anchor.owner.selects(Guards.hash_true) || anchor.owner.selects(Guards.commit_true) || anchor.owner.selects(Guards.callAsFunction_true) || anchor.owner.selects(Guards.Op_true) || anchor.owner.selects(Guards.variable_true) || anchor.owner.selects(Guards.phase_true) || anchor.owner.selects(Guards.isRefreshing_true) || anchor.owner.selects(Guards.isStale_true) || anchor.owner.selects(Guards.retry_true) || anchor.owner.selects(Guards.Sites_true) || anchor.owner.selects(Guards.AbstractSlots_true) || anchor.owner.selects(Guards.schemaDigest_true) || anchor.owner.selects(Guards.format_true) || anchor.owner.selects(Guards.transient_true) || anchor.owner.selects(Guards.Swift_true) || anchor.owner.selects(Guards.Set_true) || anchor.owner.selects(Guards.Result_true) || anchor.owner.selects(Guards.Optional_true) || anchor.owner.selects(Guards.String_true) || anchor.owner.selects(Guards.Int_true) || anchor.owner.selects(Guards.Double_true) || anchor.owner.selects(Guards.Bool_true) || anchor.owner.selects(Guards.MainActor_true) || anchor.owner.selects(Guards.Hasher_true) || anchor.owner.selects(Guards.Sendable_true)) {
+                    if (anchor.owner.selects(Guards.Type_true) || anchor.owner.selects(Guards.Protocol_true) || anchor.owner.selects(Guards.Any_true) || anchor.owner.selects(Guards.self_true) || anchor.owner.selects(Guards.init_true) || anchor.owner.selects(Guards.deinit_true) || anchor.owner.selects(Guards.subscript_true) || anchor.owner.selects(Guards.class_true) || anchor.owner.selects(Guards.struct_true) || anchor.owner.selects(Guards.enum_true) || anchor.owner.selects(Guards.func_true) || anchor.owner.selects(Guards.var_true) || anchor.owner.selects(Guards.let_true) || anchor.owner.selects(Guards.import_true) || anchor.owner.selects(Guards.extension_true) || anchor.owner.selects(Guards.operator_true) || anchor.owner.selects(Guards.static_true) || anchor.owner.selects(Guards.default_true) || anchor.owner.selects(Guards.case_true) || anchor.owner.selects(Guards.switch_true) || anchor.owner.selects(Guards.if_true) || anchor.owner.selects(Guards.else_true) || anchor.owner.selects(Guards.for_true) || anchor.owner.selects(Guards.in_true) || anchor.owner.selects(Guards.while_true) || anchor.owner.selects(Guards.repeat_true) || anchor.owner.selects(Guards.return_true) || anchor.owner.selects(Guards.break_true) || anchor.owner.selects(Guards.continue_true) || anchor.owner.selects(Guards.where_true) || anchor.owner.selects(Guards.is_true) || anchor.owner.selects(Guards.as_true) || anchor.owner.selects(Guards.try_true) || anchor.owner.selects(Guards.throw_true) || anchor.owner.selects(Guards.throws_true) || anchor.owner.selects(Guards.guard_true) || anchor.owner.selects(Guards.defer_true) || anchor.owner.selects(Guards.do_true) || anchor.owner.selects(Guards.catch_true) || anchor.owner.selects(Guards.true_true) || anchor.owner.selects(Guards.false_true) || anchor.owner.selects(Guards.nil_true) || anchor.owner.selects(Guards.super_true) || anchor.owner.selects(Guards.internal_true) || anchor.owner.selects(Guards.private_true) || anchor.owner.selects(Guards.public_true) || anchor.owner.selects(Guards.fileprivate_true) || anchor.owner.selects(Guards.open_true) || anchor.owner.selects(Guards.inout_true) || anchor.owner.selects(Guards.typealias_true) || anchor.owner.selects(Guards.associatedtype_true) || anchor.owner.selects(Guards.protocol_true) || anchor.owner.selects(Guards.some_true) || anchor.owner.selects(Guards.any_true) || anchor.owner.selects(Guards.rethrows_true) || anchor.owner.selects(Guards.fallthrough_true) || anchor.owner.selects(Guards.precedencegroup_true) || anchor.owner.selects(Guards.__true) || anchor.owner.selects(Guards.Self_true) || anchor.owner.selects(Guards.async_true) || anchor.owner.selects(Guards.borrowing_true) || anchor.owner.selects(Guards.consume_true) || anchor.owner.selects(Guards.consuming_true) || anchor.owner.selects(Guards.copy_true) || anchor.owner.selects(Guards.discard_true) || anchor.owner.selects(Guards.each_true) || anchor.owner.selects(Guards.isolated_true) || anchor.owner.selects(Guards.sending_true) || anchor.owner.selects(Guards.then_true) || anchor.owner.selects(Guards.unsafe_true) || anchor.owner.selects(Guards.await_true) || anchor.owner.selects(Guards.anchor_true) || anchor.owner.selects(Guards.recordID_true) || anchor.owner.selects(Guards.satisfied_true) || anchor.owner.selects(Guards.missingRequiredField_true) || anchor.owner.selects(Guards.fieldErrors_true) || anchor.owner.selects(Guards.isPresent_true) || anchor.owner.selects(Guards.throwing_true) || anchor.owner.selects(Guards.caught_true) || anchor.owner.selects(Guards.refetchable_true) || anchor.owner.selects(Guards.refetch_true) || anchor.owner.selects(Guards.connection_true) || anchor.owner.selects(Guards.nodes_true) || anchor.owner.selects(Guards.hasNext_true) || anchor.owner.selects(Guards.hasPrevious_true) || anchor.owner.selects(Guards.isLoadingNext_true) || anchor.owner.selects(Guards.isLoadingPrevious_true) || anchor.owner.selects(Guards.connectionID_true) || anchor.owner.selects(Guards.loadNext_true) || anchor.owner.selects(Guards.loadPrevious_true) || anchor.owner.selects(Guards.bound_true) || anchor.owner.selects(Guards.errors_true) || anchor.owner.selects(Guards.child_true) || anchor.owner.selects(Guards.missing_true) || anchor.owner.selects(Guards.count_true) || anchor.owner.selects(Guards.fields_true) || anchor.owner.selects(Guards.lhs_true) || anchor.owner.selects(Guards.rhs_true) || anchor.owner.selects(Guards.hasher_true) || anchor.owner.selects(Guards.selection0_true) || anchor.owner.selects(Guards.selection_true) || anchor.owner.selects(Guards.optimistic_true) || anchor.owner.selects(Guards.selfValue_true) || anchor.owner.selects(Guards.Fragment_true) || anchor.owner.selects(Guards.Spread_true) || anchor.owner.selects(Guards.Owner_true) || anchor.owner.selects(Guards.Query_true) || anchor.owner.selects(Guards.Operation_true) || anchor.owner.selects(Guards.RefetchQuery_true) || anchor.owner.selects(Guards.name_true) || anchor.owner.selects(Guards.document_true) || anchor.owner.selects(Guards.text_true) || anchor.owner.selects(Guards.plan_true) || anchor.owner.selects(Guards.errorBehavior_true) || anchor.owner.selects(Guards.throwsOnFieldError_true) || anchor.owner.selects(Guards.bubbles_true) || anchor.owner.selects(Guards.hasDeferred_true) || anchor.owner.selects(Guards.cacheExpiration_true) || anchor.owner.selects(Guards.Action_true) || anchor.owner.selects(Guards.OptimisticResponse_true) || anchor.owner.selects(Guards.hash_true) || anchor.owner.selects(Guards.commit_true) || anchor.owner.selects(Guards.callAsFunction_true) || anchor.owner.selects(Guards.Op_true) || anchor.owner.selects(Guards.variable_true) || anchor.owner.selects(Guards.phase_true) || anchor.owner.selects(Guards.isRefreshing_true) || anchor.owner.selects(Guards.isStale_true) || anchor.owner.selects(Guards.retry_true) || anchor.owner.selects(Guards.Sites_true) || anchor.owner.selects(Guards.AbstractSlots_true) || anchor.owner.selects(Guards.schemaDigest_true) || anchor.owner.selects(Guards.format_true) || anchor.owner.selects(Guards.transient_true) || anchor.owner.selects(Guards.Swift_true) || anchor.owner.selects(Guards.Set_true) || anchor.owner.selects(Guards.Result_true) || anchor.owner.selects(Guards.Optional_true) || anchor.owner.selects(Guards.String_true) || anchor.owner.selects(Guards.Int_true) || anchor.owner.selects(Guards.Double_true) || anchor.owner.selects(Guards.Bool_true) || anchor.owner.selects(Guards.MainActor_true) || anchor.owner.selects(Guards.Hasher_true) || anchor.owner.selects(Guards.Sendable_true)) {
                         anchor.collectError(Slots.NoteEdge.cursor, into: &errors)
                     }
                     return errors
@@ -14419,6 +14033,8 @@ nonisolated public struct HostileVariables: Baton.Query {
     public var lhs: String
     public var rhs: String
     public var hasher: String
+    public var selection0: String
+    public var selection: String
     public var optimistic: String
     public var selfValue: String
     public var Fragment: String
@@ -14464,7 +14080,7 @@ nonisolated public struct HostileVariables: Baton.Query {
     public var Sendable: String
     @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
 
-    public init(`Type`: String, `Protocol`: String, `Any`: String, `self` selfValue2: String, `init`: String, `deinit`: String, `subscript`: String, `class`: String, `struct`: String, `enum`: String, `func`: String, `var`: String, `let`: String, `import`: String, `extension`: String, `operator`: String, `static`: String, `default`: String, `case`: String, `switch`: String, `if`: String, `else`: String, `for`: String, `in`: String, `while`: String, `repeat`: String, `return`: String, `break`: String, `continue`: String, `where`: String, `is`: String, `as`: String, `try`: String, `throw`: String, `throws`: String, `guard`: String, `defer`: String, `do`: String, `catch`: String, `true`: String, `false`: String, `nil`: String, `super`: String, `internal`: String, `private`: String, `public`: String, `fileprivate`: String, `open`: String, `inout`: String, `typealias`: String, `associatedtype`: String, `protocol`: String, `some`: String, `any`: String, `rethrows`: String, `fallthrough`: String, `precedencegroup`: String, `_`: String, `Self`: String, async: String, `borrowing`: String, consume: String, `consuming`: String, copy: String, discard: String, `each`: String, `isolated`: String, `sending`: String, then: String, unsafe: String, `await`: String, anchor: String, recordID: String, satisfied: String, missingRequiredField: String, fieldErrors: String, isPresent: String, throwing: String, caught: String, refetchable: String, refetch: String, connection: String, nodes: String, hasNext: String, hasPrevious: String, isLoadingNext: String, isLoadingPrevious: String, connectionID: String, loadNext: String, loadPrevious: String, bound: String, errors: String, child: String, missing: String, count: String, fields: String, lhs: String, rhs: String, hasher: String, optimistic: String, selfValue: String, Fragment: String, Spread: String, Owner: String, Query: String, Operation: String, RefetchQuery: String, name: String, document: String, text: String, plan: String, errorBehavior: String, throwsOnFieldError: String, bubbles: String, hasDeferred: String, cacheExpiration: String, Action: String, OptimisticResponse: String, hash: String, commit: String, callAsFunction: String, Op: String, variable: String, retry: String, subscription: String, Sites: String, Guards: String, AbstractSlots: String, schemaDigest: String, format: String, transient: String, Swift: String, Set: String, Result: String, Optional: String, String: String, Int: String, Double: String, Bool: String, MainActor: String, Hasher: String, Sendable: String) {
+    public init(`Type`: String, `Protocol`: String, `Any`: String, `self` selfValue2: String, `init`: String, `deinit`: String, `subscript`: String, `class`: String, `struct`: String, `enum`: String, `func`: String, `var`: String, `let`: String, `import`: String, `extension`: String, `operator`: String, `static`: String, `default`: String, `case`: String, `switch`: String, `if`: String, `else`: String, `for`: String, `in`: String, `while`: String, `repeat`: String, `return`: String, `break`: String, `continue`: String, `where`: String, `is`: String, `as`: String, `try`: String, `throw`: String, `throws`: String, `guard`: String, `defer`: String, `do`: String, `catch`: String, `true`: String, `false`: String, `nil`: String, `super`: String, `internal`: String, `private`: String, `public`: String, `fileprivate`: String, `open`: String, `inout`: String, `typealias`: String, `associatedtype`: String, `protocol`: String, `some`: String, `any`: String, `rethrows`: String, `fallthrough`: String, `precedencegroup`: String, `_`: String, `Self`: String, async: String, `borrowing`: String, consume: String, `consuming`: String, copy: String, discard: String, `each`: String, `isolated`: String, `sending`: String, then: String, unsafe: String, `await`: String, anchor: String, recordID: String, satisfied: String, missingRequiredField: String, fieldErrors: String, isPresent: String, throwing: String, caught: String, refetchable: String, refetch: String, connection: String, nodes: String, hasNext: String, hasPrevious: String, isLoadingNext: String, isLoadingPrevious: String, connectionID: String, loadNext: String, loadPrevious: String, bound: String, errors: String, child: String, missing: String, count: String, fields: String, lhs: String, rhs: String, hasher: String, selection0: String, selection: String, optimistic: String, selfValue: String, Fragment: String, Spread: String, Owner: String, Query: String, Operation: String, RefetchQuery: String, name: String, document: String, text: String, plan: String, errorBehavior: String, throwsOnFieldError: String, bubbles: String, hasDeferred: String, cacheExpiration: String, Action: String, OptimisticResponse: String, hash: String, commit: String, callAsFunction: String, Op: String, variable: String, retry: String, subscription: String, Sites: String, Guards: String, AbstractSlots: String, schemaDigest: String, format: String, transient: String, Swift: String, Set: String, Result: String, Optional: String, String: String, Int: String, Double: String, Bool: String, MainActor: String, Hasher: String, Sendable: String) {
         self.`Type` = `Type`
         self.`Protocol` = `Protocol`
         self.`Any` = `Any`
@@ -14564,6 +14180,8 @@ nonisolated public struct HostileVariables: Baton.Query {
         self.lhs = lhs
         self.rhs = rhs
         self.hasher = hasher
+        self.selection0 = selection0
+        self.selection = selection
         self.optimistic = optimistic
         self.selfValue = selfValue
         self.Fragment = Fragment
@@ -14711,6 +14329,8 @@ query HostileVariables(
   $lhs: ID!
   $rhs: ID!
   $hasher: ID!
+  $selection0: ID!
+  $selection: ID!
   $optimistic: ID!
   $selfValue: ID!
   $Fragment: ID!
@@ -14755,7 +14375,7 @@ query HostileVariables(
   $Hasher: ID!
   $Sendable: ID!
 ) {
-  charactersByIds(ids: [$Type, $Protocol, $Any, $self, $init, $deinit, $subscript, $class, $struct, $enum, $func, $var, $let, $import, $extension, $operator, $static, $default, $case, $switch, $if, $else, $for, $in, $while, $repeat, $return, $break, $continue, $where, $is, $as, $try, $throw, $throws, $guard, $defer, $do, $catch, $true, $false, $nil, $super, $internal, $private, $public, $fileprivate, $open, $inout, $typealias, $associatedtype, $protocol, $some, $any, $rethrows, $fallthrough, $precedencegroup, $_, $Self, $async, $borrowing, $consume, $consuming, $copy, $discard, $each, $isolated, $sending, $then, $unsafe, $await, $anchor, $recordID, $satisfied, $missingRequiredField, $fieldErrors, $isPresent, $throwing, $caught, $refetchable, $refetch, $connection, $nodes, $hasNext, $hasPrevious, $isLoadingNext, $isLoadingPrevious, $connectionID, $loadNext, $loadPrevious, $bound, $errors, $child, $missing, $count, $fields, $lhs, $rhs, $hasher, $optimistic, $selfValue, $Fragment, $Spread, $Owner, $Query, $Operation, $RefetchQuery, $name, $document, $text, $plan, $errorBehavior, $throwsOnFieldError, $bubbles, $hasDeferred, $cacheExpiration, $Action, $OptimisticResponse, $hash, $commit, $callAsFunction, $Op, $variable, $retry, $subscription, $Sites, $Guards, $AbstractSlots, $schemaDigest, $format, $transient, $Swift, $Set, $Result, $Optional, $String, $Int, $Double, $Bool, $MainActor, $Hasher, $Sendable]) {
+  charactersByIds(ids: [$Type, $Protocol, $Any, $self, $init, $deinit, $subscript, $class, $struct, $enum, $func, $var, $let, $import, $extension, $operator, $static, $default, $case, $switch, $if, $else, $for, $in, $while, $repeat, $return, $break, $continue, $where, $is, $as, $try, $throw, $throws, $guard, $defer, $do, $catch, $true, $false, $nil, $super, $internal, $private, $public, $fileprivate, $open, $inout, $typealias, $associatedtype, $protocol, $some, $any, $rethrows, $fallthrough, $precedencegroup, $_, $Self, $async, $borrowing, $consume, $consuming, $copy, $discard, $each, $isolated, $sending, $then, $unsafe, $await, $anchor, $recordID, $satisfied, $missingRequiredField, $fieldErrors, $isPresent, $throwing, $caught, $refetchable, $refetch, $connection, $nodes, $hasNext, $hasPrevious, $isLoadingNext, $isLoadingPrevious, $connectionID, $loadNext, $loadPrevious, $bound, $errors, $child, $missing, $count, $fields, $lhs, $rhs, $hasher, $selection0, $selection, $optimistic, $selfValue, $Fragment, $Spread, $Owner, $Query, $Operation, $RefetchQuery, $name, $document, $text, $plan, $errorBehavior, $throwsOnFieldError, $bubbles, $hasDeferred, $cacheExpiration, $Action, $OptimisticResponse, $hash, $commit, $callAsFunction, $Op, $variable, $retry, $subscription, $Sites, $Guards, $AbstractSlots, $schemaDigest, $format, $transient, $Swift, $Set, $Result, $Optional, $String, $Int, $Double, $Bool, $MainActor, $Hasher, $Sendable]) {
     id
   }
 }
@@ -14763,11 +14383,11 @@ query HostileVariables(
     @_spi(Generated) public static let throwsOnFieldError = true
 
     public var variables: Baton.Variables {
-        Baton.Variables(["Type": Baton.Variable(self.`Type`), "Protocol": Baton.Variable(self.`Protocol`), "Any": Baton.Variable(self.`Any`), "self": Baton.Variable(self.`self`), "init": Baton.Variable(self.`init`), "deinit": Baton.Variable(self.`deinit`), "subscript": Baton.Variable(self.`subscript`), "class": Baton.Variable(self.`class`), "struct": Baton.Variable(self.`struct`), "enum": Baton.Variable(self.`enum`), "func": Baton.Variable(self.`func`), "var": Baton.Variable(self.`var`), "let": Baton.Variable(self.`let`), "import": Baton.Variable(self.`import`), "extension": Baton.Variable(self.`extension`), "operator": Baton.Variable(self.`operator`), "static": Baton.Variable(self.`static`), "default": Baton.Variable(self.`default`), "case": Baton.Variable(self.`case`), "switch": Baton.Variable(self.`switch`), "if": Baton.Variable(self.`if`), "else": Baton.Variable(self.`else`), "for": Baton.Variable(self.`for`), "in": Baton.Variable(self.`in`), "while": Baton.Variable(self.`while`), "repeat": Baton.Variable(self.`repeat`), "return": Baton.Variable(self.`return`), "break": Baton.Variable(self.`break`), "continue": Baton.Variable(self.`continue`), "where": Baton.Variable(self.`where`), "is": Baton.Variable(self.`is`), "as": Baton.Variable(self.`as`), "try": Baton.Variable(self.`try`), "throw": Baton.Variable(self.`throw`), "throws": Baton.Variable(self.`throws`), "guard": Baton.Variable(self.`guard`), "defer": Baton.Variable(self.`defer`), "do": Baton.Variable(self.`do`), "catch": Baton.Variable(self.`catch`), "true": Baton.Variable(self.`true`), "false": Baton.Variable(self.`false`), "nil": Baton.Variable(self.`nil`), "super": Baton.Variable(self.`super`), "internal": Baton.Variable(self.`internal`), "private": Baton.Variable(self.`private`), "public": Baton.Variable(self.`public`), "fileprivate": Baton.Variable(self.`fileprivate`), "open": Baton.Variable(self.`open`), "inout": Baton.Variable(self.`inout`), "typealias": Baton.Variable(self.`typealias`), "associatedtype": Baton.Variable(self.`associatedtype`), "protocol": Baton.Variable(self.`protocol`), "some": Baton.Variable(self.`some`), "any": Baton.Variable(self.`any`), "rethrows": Baton.Variable(self.`rethrows`), "fallthrough": Baton.Variable(self.`fallthrough`), "precedencegroup": Baton.Variable(self.`precedencegroup`), "_": Baton.Variable(self.`_`), "Self": Baton.Variable(self.`Self`), "async": Baton.Variable(self.async), "borrowing": Baton.Variable(self.`borrowing`), "consume": Baton.Variable(self.consume), "consuming": Baton.Variable(self.`consuming`), "copy": Baton.Variable(self.copy), "discard": Baton.Variable(self.discard), "each": Baton.Variable(self.`each`), "isolated": Baton.Variable(self.`isolated`), "sending": Baton.Variable(self.`sending`), "then": Baton.Variable(self.then), "unsafe": Baton.Variable(self.unsafe), "await": Baton.Variable(self.`await`), "anchor": Baton.Variable(self.anchor), "recordID": Baton.Variable(self.recordID), "satisfied": Baton.Variable(self.satisfied), "missingRequiredField": Baton.Variable(self.missingRequiredField), "fieldErrors": Baton.Variable(self.fieldErrors), "isPresent": Baton.Variable(self.isPresent), "throwing": Baton.Variable(self.throwing), "caught": Baton.Variable(self.caught), "refetchable": Baton.Variable(self.refetchable), "refetch": Baton.Variable(self.refetch), "connection": Baton.Variable(self.connection), "nodes": Baton.Variable(self.nodes), "hasNext": Baton.Variable(self.hasNext), "hasPrevious": Baton.Variable(self.hasPrevious), "isLoadingNext": Baton.Variable(self.isLoadingNext), "isLoadingPrevious": Baton.Variable(self.isLoadingPrevious), "connectionID": Baton.Variable(self.connectionID), "loadNext": Baton.Variable(self.loadNext), "loadPrevious": Baton.Variable(self.loadPrevious), "bound": Baton.Variable(self.bound), "errors": Baton.Variable(self.errors), "child": Baton.Variable(self.child), "missing": Baton.Variable(self.missing), "count": Baton.Variable(self.count), "fields": Baton.Variable(self.fields), "lhs": Baton.Variable(self.lhs), "rhs": Baton.Variable(self.rhs), "hasher": Baton.Variable(self.hasher), "optimistic": Baton.Variable(self.optimistic), "selfValue": Baton.Variable(self.selfValue), "Fragment": Baton.Variable(self.Fragment), "Spread": Baton.Variable(self.Spread), "Owner": Baton.Variable(self.Owner), "Query": Baton.Variable(self.Query), "Operation": Baton.Variable(self.Operation), "RefetchQuery": Baton.Variable(self.RefetchQuery), "name": Baton.Variable(self.name), "document": Baton.Variable(self.document), "text": Baton.Variable(self.text), "plan": Baton.Variable(self.plan), "errorBehavior": Baton.Variable(self.errorBehavior), "throwsOnFieldError": Baton.Variable(self.throwsOnFieldError), "bubbles": Baton.Variable(self.bubbles), "hasDeferred": Baton.Variable(self.hasDeferred), "cacheExpiration": Baton.Variable(self.cacheExpiration), "Action": Baton.Variable(self.Action), "OptimisticResponse": Baton.Variable(self.OptimisticResponse), "hash": Baton.Variable(self.hash), "commit": Baton.Variable(self.commit), "callAsFunction": Baton.Variable(self.callAsFunction), "Op": Baton.Variable(self.Op), "variable": Baton.Variable(self.variable), "retry": Baton.Variable(self.retry), "subscription": Baton.Variable(self.subscription), "Sites": Baton.Variable(self.Sites), "Guards": Baton.Variable(self.Guards), "AbstractSlots": Baton.Variable(self.AbstractSlots), "schemaDigest": Baton.Variable(self.schemaDigest), "format": Baton.Variable(self.format), "transient": Baton.Variable(self.transient), "Swift": Baton.Variable(self.Swift), "Set": Baton.Variable(self.Set), "Result": Baton.Variable(self.Result), "Optional": Baton.Variable(self.Optional), "String": Baton.Variable(self.String), "Int": Baton.Variable(self.Int), "Double": Baton.Variable(self.Double), "Bool": Baton.Variable(self.Bool), "MainActor": Baton.Variable(self.MainActor), "Hasher": Baton.Variable(self.Hasher), "Sendable": Baton.Variable(self.Sendable)])
+        Baton.Variables(["Type": Baton.Variable(self.`Type`), "Protocol": Baton.Variable(self.`Protocol`), "Any": Baton.Variable(self.`Any`), "self": Baton.Variable(self.`self`), "init": Baton.Variable(self.`init`), "deinit": Baton.Variable(self.`deinit`), "subscript": Baton.Variable(self.`subscript`), "class": Baton.Variable(self.`class`), "struct": Baton.Variable(self.`struct`), "enum": Baton.Variable(self.`enum`), "func": Baton.Variable(self.`func`), "var": Baton.Variable(self.`var`), "let": Baton.Variable(self.`let`), "import": Baton.Variable(self.`import`), "extension": Baton.Variable(self.`extension`), "operator": Baton.Variable(self.`operator`), "static": Baton.Variable(self.`static`), "default": Baton.Variable(self.`default`), "case": Baton.Variable(self.`case`), "switch": Baton.Variable(self.`switch`), "if": Baton.Variable(self.`if`), "else": Baton.Variable(self.`else`), "for": Baton.Variable(self.`for`), "in": Baton.Variable(self.`in`), "while": Baton.Variable(self.`while`), "repeat": Baton.Variable(self.`repeat`), "return": Baton.Variable(self.`return`), "break": Baton.Variable(self.`break`), "continue": Baton.Variable(self.`continue`), "where": Baton.Variable(self.`where`), "is": Baton.Variable(self.`is`), "as": Baton.Variable(self.`as`), "try": Baton.Variable(self.`try`), "throw": Baton.Variable(self.`throw`), "throws": Baton.Variable(self.`throws`), "guard": Baton.Variable(self.`guard`), "defer": Baton.Variable(self.`defer`), "do": Baton.Variable(self.`do`), "catch": Baton.Variable(self.`catch`), "true": Baton.Variable(self.`true`), "false": Baton.Variable(self.`false`), "nil": Baton.Variable(self.`nil`), "super": Baton.Variable(self.`super`), "internal": Baton.Variable(self.`internal`), "private": Baton.Variable(self.`private`), "public": Baton.Variable(self.`public`), "fileprivate": Baton.Variable(self.`fileprivate`), "open": Baton.Variable(self.`open`), "inout": Baton.Variable(self.`inout`), "typealias": Baton.Variable(self.`typealias`), "associatedtype": Baton.Variable(self.`associatedtype`), "protocol": Baton.Variable(self.`protocol`), "some": Baton.Variable(self.`some`), "any": Baton.Variable(self.`any`), "rethrows": Baton.Variable(self.`rethrows`), "fallthrough": Baton.Variable(self.`fallthrough`), "precedencegroup": Baton.Variable(self.`precedencegroup`), "_": Baton.Variable(self.`_`), "Self": Baton.Variable(self.`Self`), "async": Baton.Variable(self.async), "borrowing": Baton.Variable(self.`borrowing`), "consume": Baton.Variable(self.consume), "consuming": Baton.Variable(self.`consuming`), "copy": Baton.Variable(self.copy), "discard": Baton.Variable(self.discard), "each": Baton.Variable(self.`each`), "isolated": Baton.Variable(self.`isolated`), "sending": Baton.Variable(self.`sending`), "then": Baton.Variable(self.then), "unsafe": Baton.Variable(self.unsafe), "await": Baton.Variable(self.`await`), "anchor": Baton.Variable(self.anchor), "recordID": Baton.Variable(self.recordID), "satisfied": Baton.Variable(self.satisfied), "missingRequiredField": Baton.Variable(self.missingRequiredField), "fieldErrors": Baton.Variable(self.fieldErrors), "isPresent": Baton.Variable(self.isPresent), "throwing": Baton.Variable(self.throwing), "caught": Baton.Variable(self.caught), "refetchable": Baton.Variable(self.refetchable), "refetch": Baton.Variable(self.refetch), "connection": Baton.Variable(self.connection), "nodes": Baton.Variable(self.nodes), "hasNext": Baton.Variable(self.hasNext), "hasPrevious": Baton.Variable(self.hasPrevious), "isLoadingNext": Baton.Variable(self.isLoadingNext), "isLoadingPrevious": Baton.Variable(self.isLoadingPrevious), "connectionID": Baton.Variable(self.connectionID), "loadNext": Baton.Variable(self.loadNext), "loadPrevious": Baton.Variable(self.loadPrevious), "bound": Baton.Variable(self.bound), "errors": Baton.Variable(self.errors), "child": Baton.Variable(self.child), "missing": Baton.Variable(self.missing), "count": Baton.Variable(self.count), "fields": Baton.Variable(self.fields), "lhs": Baton.Variable(self.lhs), "rhs": Baton.Variable(self.rhs), "hasher": Baton.Variable(self.hasher), "selection0": Baton.Variable(self.selection0), "selection": Baton.Variable(self.selection), "optimistic": Baton.Variable(self.optimistic), "selfValue": Baton.Variable(self.selfValue), "Fragment": Baton.Variable(self.Fragment), "Spread": Baton.Variable(self.Spread), "Owner": Baton.Variable(self.Owner), "Query": Baton.Variable(self.Query), "Operation": Baton.Variable(self.Operation), "RefetchQuery": Baton.Variable(self.RefetchQuery), "name": Baton.Variable(self.name), "document": Baton.Variable(self.document), "text": Baton.Variable(self.text), "plan": Baton.Variable(self.plan), "errorBehavior": Baton.Variable(self.errorBehavior), "throwsOnFieldError": Baton.Variable(self.throwsOnFieldError), "bubbles": Baton.Variable(self.bubbles), "hasDeferred": Baton.Variable(self.hasDeferred), "cacheExpiration": Baton.Variable(self.cacheExpiration), "Action": Baton.Variable(self.Action), "OptimisticResponse": Baton.Variable(self.OptimisticResponse), "hash": Baton.Variable(self.hash), "commit": Baton.Variable(self.commit), "callAsFunction": Baton.Variable(self.callAsFunction), "Op": Baton.Variable(self.Op), "variable": Baton.Variable(self.variable), "retry": Baton.Variable(self.retry), "subscription": Baton.Variable(self.subscription), "Sites": Baton.Variable(self.Sites), "Guards": Baton.Variable(self.Guards), "AbstractSlots": Baton.Variable(self.AbstractSlots), "schemaDigest": Baton.Variable(self.schemaDigest), "format": Baton.Variable(self.format), "transient": Baton.Variable(self.transient), "Swift": Baton.Variable(self.Swift), "Set": Baton.Variable(self.Set), "Result": Baton.Variable(self.Result), "Optional": Baton.Variable(self.Optional), "String": Baton.Variable(self.String), "Int": Baton.Variable(self.Int), "Double": Baton.Variable(self.Double), "Bool": Baton.Variable(self.Bool), "MainActor": Baton.Variable(self.MainActor), "Hasher": Baton.Variable(self.Hasher), "Sendable": Baton.Variable(self.Sendable)])
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.`Type` == rhs.`Type` && lhs.`Protocol` == rhs.`Protocol` && lhs.`Any` == rhs.`Any` && lhs.`self` == rhs.`self` && lhs.`init` == rhs.`init` && lhs.`deinit` == rhs.`deinit` && lhs.`subscript` == rhs.`subscript` && lhs.`class` == rhs.`class` && lhs.`struct` == rhs.`struct` && lhs.`enum` == rhs.`enum` && lhs.`func` == rhs.`func` && lhs.`var` == rhs.`var` && lhs.`let` == rhs.`let` && lhs.`import` == rhs.`import` && lhs.`extension` == rhs.`extension` && lhs.`operator` == rhs.`operator` && lhs.`static` == rhs.`static` && lhs.`default` == rhs.`default` && lhs.`case` == rhs.`case` && lhs.`switch` == rhs.`switch` && lhs.`if` == rhs.`if` && lhs.`else` == rhs.`else` && lhs.`for` == rhs.`for` && lhs.`in` == rhs.`in` && lhs.`while` == rhs.`while` && lhs.`repeat` == rhs.`repeat` && lhs.`return` == rhs.`return` && lhs.`break` == rhs.`break` && lhs.`continue` == rhs.`continue` && lhs.`where` == rhs.`where` && lhs.`is` == rhs.`is` && lhs.`as` == rhs.`as` && lhs.`try` == rhs.`try` && lhs.`throw` == rhs.`throw` && lhs.`throws` == rhs.`throws` && lhs.`guard` == rhs.`guard` && lhs.`defer` == rhs.`defer` && lhs.`do` == rhs.`do` && lhs.`catch` == rhs.`catch` && lhs.`true` == rhs.`true` && lhs.`false` == rhs.`false` && lhs.`nil` == rhs.`nil` && lhs.`super` == rhs.`super` && lhs.`internal` == rhs.`internal` && lhs.`private` == rhs.`private` && lhs.`public` == rhs.`public` && lhs.`fileprivate` == rhs.`fileprivate` && lhs.`open` == rhs.`open` && lhs.`inout` == rhs.`inout` && lhs.`typealias` == rhs.`typealias` && lhs.`associatedtype` == rhs.`associatedtype` && lhs.`protocol` == rhs.`protocol` && lhs.`some` == rhs.`some` && lhs.`any` == rhs.`any` && lhs.`rethrows` == rhs.`rethrows` && lhs.`fallthrough` == rhs.`fallthrough` && lhs.`precedencegroup` == rhs.`precedencegroup` && lhs.`_` == rhs.`_` && lhs.`Self` == rhs.`Self` && lhs.async == rhs.async && lhs.`borrowing` == rhs.`borrowing` && lhs.consume == rhs.consume && lhs.`consuming` == rhs.`consuming` && lhs.copy == rhs.copy && lhs.discard == rhs.discard && lhs.`each` == rhs.`each` && lhs.`isolated` == rhs.`isolated` && lhs.`sending` == rhs.`sending` && lhs.then == rhs.then && lhs.unsafe == rhs.unsafe && lhs.`await` == rhs.`await` && lhs.anchor == rhs.anchor && lhs.recordID == rhs.recordID && lhs.satisfied == rhs.satisfied && lhs.missingRequiredField == rhs.missingRequiredField && lhs.fieldErrors == rhs.fieldErrors && lhs.isPresent == rhs.isPresent && lhs.throwing == rhs.throwing && lhs.caught == rhs.caught && lhs.refetchable == rhs.refetchable && lhs.refetch == rhs.refetch && lhs.connection == rhs.connection && lhs.nodes == rhs.nodes && lhs.hasNext == rhs.hasNext && lhs.hasPrevious == rhs.hasPrevious && lhs.isLoadingNext == rhs.isLoadingNext && lhs.isLoadingPrevious == rhs.isLoadingPrevious && lhs.connectionID == rhs.connectionID && lhs.loadNext == rhs.loadNext && lhs.loadPrevious == rhs.loadPrevious && lhs.bound == rhs.bound && lhs.errors == rhs.errors && lhs.child == rhs.child && lhs.missing == rhs.missing && lhs.count == rhs.count && lhs.fields == rhs.fields && lhs.lhs == rhs.lhs && lhs.rhs == rhs.rhs && lhs.hasher == rhs.hasher && lhs.optimistic == rhs.optimistic && lhs.selfValue == rhs.selfValue && lhs.Fragment == rhs.Fragment && lhs.Spread == rhs.Spread && lhs.Owner == rhs.Owner && lhs.Query == rhs.Query && lhs.Operation == rhs.Operation && lhs.RefetchQuery == rhs.RefetchQuery && lhs.name == rhs.name && lhs.document == rhs.document && lhs.text == rhs.text && lhs.plan == rhs.plan && lhs.errorBehavior == rhs.errorBehavior && lhs.throwsOnFieldError == rhs.throwsOnFieldError && lhs.bubbles == rhs.bubbles && lhs.hasDeferred == rhs.hasDeferred && lhs.cacheExpiration == rhs.cacheExpiration && lhs.Action == rhs.Action && lhs.OptimisticResponse == rhs.OptimisticResponse && lhs.hash == rhs.hash && lhs.commit == rhs.commit && lhs.callAsFunction == rhs.callAsFunction && lhs.Op == rhs.Op && lhs.variable == rhs.variable && lhs.retry == rhs.retry && lhs.subscription == rhs.subscription && lhs.Sites == rhs.Sites && lhs.Guards == rhs.Guards && lhs.AbstractSlots == rhs.AbstractSlots && lhs.schemaDigest == rhs.schemaDigest && lhs.format == rhs.format && lhs.transient == rhs.transient && lhs.Swift == rhs.Swift && lhs.Set == rhs.Set && lhs.Result == rhs.Result && lhs.Optional == rhs.Optional && lhs.String == rhs.String && lhs.Int == rhs.Int && lhs.Double == rhs.Double && lhs.Bool == rhs.Bool && lhs.MainActor == rhs.MainActor && lhs.Hasher == rhs.Hasher && lhs.Sendable == rhs.Sendable
+        lhs.`Type` == rhs.`Type` && lhs.`Protocol` == rhs.`Protocol` && lhs.`Any` == rhs.`Any` && lhs.`self` == rhs.`self` && lhs.`init` == rhs.`init` && lhs.`deinit` == rhs.`deinit` && lhs.`subscript` == rhs.`subscript` && lhs.`class` == rhs.`class` && lhs.`struct` == rhs.`struct` && lhs.`enum` == rhs.`enum` && lhs.`func` == rhs.`func` && lhs.`var` == rhs.`var` && lhs.`let` == rhs.`let` && lhs.`import` == rhs.`import` && lhs.`extension` == rhs.`extension` && lhs.`operator` == rhs.`operator` && lhs.`static` == rhs.`static` && lhs.`default` == rhs.`default` && lhs.`case` == rhs.`case` && lhs.`switch` == rhs.`switch` && lhs.`if` == rhs.`if` && lhs.`else` == rhs.`else` && lhs.`for` == rhs.`for` && lhs.`in` == rhs.`in` && lhs.`while` == rhs.`while` && lhs.`repeat` == rhs.`repeat` && lhs.`return` == rhs.`return` && lhs.`break` == rhs.`break` && lhs.`continue` == rhs.`continue` && lhs.`where` == rhs.`where` && lhs.`is` == rhs.`is` && lhs.`as` == rhs.`as` && lhs.`try` == rhs.`try` && lhs.`throw` == rhs.`throw` && lhs.`throws` == rhs.`throws` && lhs.`guard` == rhs.`guard` && lhs.`defer` == rhs.`defer` && lhs.`do` == rhs.`do` && lhs.`catch` == rhs.`catch` && lhs.`true` == rhs.`true` && lhs.`false` == rhs.`false` && lhs.`nil` == rhs.`nil` && lhs.`super` == rhs.`super` && lhs.`internal` == rhs.`internal` && lhs.`private` == rhs.`private` && lhs.`public` == rhs.`public` && lhs.`fileprivate` == rhs.`fileprivate` && lhs.`open` == rhs.`open` && lhs.`inout` == rhs.`inout` && lhs.`typealias` == rhs.`typealias` && lhs.`associatedtype` == rhs.`associatedtype` && lhs.`protocol` == rhs.`protocol` && lhs.`some` == rhs.`some` && lhs.`any` == rhs.`any` && lhs.`rethrows` == rhs.`rethrows` && lhs.`fallthrough` == rhs.`fallthrough` && lhs.`precedencegroup` == rhs.`precedencegroup` && lhs.`_` == rhs.`_` && lhs.`Self` == rhs.`Self` && lhs.async == rhs.async && lhs.`borrowing` == rhs.`borrowing` && lhs.consume == rhs.consume && lhs.`consuming` == rhs.`consuming` && lhs.copy == rhs.copy && lhs.discard == rhs.discard && lhs.`each` == rhs.`each` && lhs.`isolated` == rhs.`isolated` && lhs.`sending` == rhs.`sending` && lhs.then == rhs.then && lhs.unsafe == rhs.unsafe && lhs.`await` == rhs.`await` && lhs.anchor == rhs.anchor && lhs.recordID == rhs.recordID && lhs.satisfied == rhs.satisfied && lhs.missingRequiredField == rhs.missingRequiredField && lhs.fieldErrors == rhs.fieldErrors && lhs.isPresent == rhs.isPresent && lhs.throwing == rhs.throwing && lhs.caught == rhs.caught && lhs.refetchable == rhs.refetchable && lhs.refetch == rhs.refetch && lhs.connection == rhs.connection && lhs.nodes == rhs.nodes && lhs.hasNext == rhs.hasNext && lhs.hasPrevious == rhs.hasPrevious && lhs.isLoadingNext == rhs.isLoadingNext && lhs.isLoadingPrevious == rhs.isLoadingPrevious && lhs.connectionID == rhs.connectionID && lhs.loadNext == rhs.loadNext && lhs.loadPrevious == rhs.loadPrevious && lhs.bound == rhs.bound && lhs.errors == rhs.errors && lhs.child == rhs.child && lhs.missing == rhs.missing && lhs.count == rhs.count && lhs.fields == rhs.fields && lhs.lhs == rhs.lhs && lhs.rhs == rhs.rhs && lhs.hasher == rhs.hasher && lhs.selection0 == rhs.selection0 && lhs.selection == rhs.selection && lhs.optimistic == rhs.optimistic && lhs.selfValue == rhs.selfValue && lhs.Fragment == rhs.Fragment && lhs.Spread == rhs.Spread && lhs.Owner == rhs.Owner && lhs.Query == rhs.Query && lhs.Operation == rhs.Operation && lhs.RefetchQuery == rhs.RefetchQuery && lhs.name == rhs.name && lhs.document == rhs.document && lhs.text == rhs.text && lhs.plan == rhs.plan && lhs.errorBehavior == rhs.errorBehavior && lhs.throwsOnFieldError == rhs.throwsOnFieldError && lhs.bubbles == rhs.bubbles && lhs.hasDeferred == rhs.hasDeferred && lhs.cacheExpiration == rhs.cacheExpiration && lhs.Action == rhs.Action && lhs.OptimisticResponse == rhs.OptimisticResponse && lhs.hash == rhs.hash && lhs.commit == rhs.commit && lhs.callAsFunction == rhs.callAsFunction && lhs.Op == rhs.Op && lhs.variable == rhs.variable && lhs.retry == rhs.retry && lhs.subscription == rhs.subscription && lhs.Sites == rhs.Sites && lhs.Guards == rhs.Guards && lhs.AbstractSlots == rhs.AbstractSlots && lhs.schemaDigest == rhs.schemaDigest && lhs.format == rhs.format && lhs.transient == rhs.transient && lhs.Swift == rhs.Swift && lhs.Set == rhs.Set && lhs.Result == rhs.Result && lhs.Optional == rhs.Optional && lhs.String == rhs.String && lhs.Int == rhs.Int && lhs.Double == rhs.Double && lhs.Bool == rhs.Bool && lhs.MainActor == rhs.MainActor && lhs.Hasher == rhs.Hasher && lhs.Sendable == rhs.Sendable
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -14870,6 +14490,8 @@ query HostileVariables(
         hasher.combine(self.lhs)
         hasher.combine(self.rhs)
         hasher.combine(self.hasher)
+        hasher.combine(self.selection0)
+        hasher.combine(self.selection)
         hasher.combine(self.optimistic)
         hasher.combine(self.selfValue)
         hasher.combine(self.Fragment)
@@ -14915,20 +14537,22 @@ query HostileVariables(
         hasher.combine(self.Sendable)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
-            .linked("charactersByIds", key: .dynamic(Slots.Query.charactersByIds_e131c9), plural: true, selection: Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
-                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-            ])),
-        ]), transient: Types.transient)
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient)
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+        .linked("charactersByIds", key: .dynamic(Slots.Query.charactersByIds_88b07a), plural: true, selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
+        .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+    ])
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
-        @MainActor public var charactersByIds: Baton.List<CharactersByIds>? { anchor.list(anchor.owner.slot(Slots.Query.charactersByIds_e131c9)) }
+        @MainActor public var charactersByIds: Baton.List<CharactersByIds>? { anchor.list(anchor.owner.slot(Slots.Query.charactersByIds_88b07a)) }
         /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
         @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
             var errors: [Baton.FieldError] = []
-            anchor.collectErrors(list: anchor.owner.slot(Slots.Query.charactersByIds_e131c9), within: CharactersByIds.fieldErrors, into: &errors)
+            anchor.collectErrors(list: anchor.owner.slot(Slots.Query.charactersByIds_88b07a), within: CharactersByIds.fieldErrors, into: &errors)
             return errors
         }
         /// The lens, or the field errors in it as a thrown `FieldErrors`.

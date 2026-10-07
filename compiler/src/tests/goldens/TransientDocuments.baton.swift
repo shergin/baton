@@ -34,16 +34,19 @@ query TestCharacterSecret {
     public func hash(into hasher: inout Hasher) {
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
-            .linked("character", key: .fixed(Slots.Query.character_9e6829), plural: false, lookup: Baton.Lookup(type: Types.Character, key: [.literal("1")]), selection: Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
-                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .linked("secret", key: .fixed(Slots.Character.secret), plural: false, selection: Baton.Selection(type: Types.Secret, key: ["id"], abstract: false, fields: [
-                    .scalar("id", key: .fixed(Slots.Secret.id), kind: .string, list: false),
-                    .scalar("body", key: .fixed(Slots.Secret.body), kind: .string, list: false),
-                ])),
-            ])),
-        ]), transient: Types.transient)
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient)
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+        .linked("character", key: .fixed(Slots.Query.character_9e6829), plural: false, lookup: Baton.Lookup(type: Types.Character, key: [.literal("1")]), selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
+        .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+        .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .linked("secret", key: .fixed(Slots.Character.secret), plural: false, selection: selection2),
+    ])
+    private static let selection2: Baton.Selection = Baton.Selection(type: Types.Secret, key: ["id"], abstract: false, fields: [
+        .scalar("id", key: .fixed(Slots.Secret.id), kind: .string, list: false),
+        .scalar("body", key: .fixed(Slots.Secret.body), kind: .string, list: false),
+    ])
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -104,16 +107,19 @@ query TestSecrets(
         hasher.combine(self.code)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
-            .linked("secrets", key: .dynamic(Slots.Query.secrets_df579e), plural: true, transient: true, selection: Baton.Selection(type: Types.Secret, key: ["id"], abstract: false, fields: [
-                .scalar("id", key: .fixed(Slots.Secret.id), kind: .string, list: false),
-                .scalar("body", key: .fixed(Slots.Secret.body), kind: .string, list: false),
-            ])),
-            .linked("character", key: .fixed(Slots.Query.character_9e6829), plural: false, lookup: Baton.Lookup(type: Types.Character, key: [.literal("1")]), selection: Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
-                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
-            ])),
-        ]), transient: Types.transient)
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient)
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+        .linked("secrets", key: .dynamic(Slots.Query.secrets_df579e), plural: true, transient: true, selection: selection2),
+        .linked("character", key: .fixed(Slots.Query.character_9e6829), plural: false, lookup: Baton.Lookup(type: Types.Character, key: [.literal("1")]), selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
+        .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+        .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
+    ])
+    private static let selection2: Baton.Selection = Baton.Selection(type: Types.Secret, key: ["id"], abstract: false, fields: [
+        .scalar("id", key: .fixed(Slots.Secret.id), kind: .string, list: false),
+        .scalar("body", key: .fixed(Slots.Secret.body), kind: .string, list: false),
+    ])
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor

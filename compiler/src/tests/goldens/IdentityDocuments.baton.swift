@@ -36,13 +36,15 @@ query TestAssetNameQuery(
         hasher.combine(self.uuid)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
-            .linked("asset", key: .dynamic(Slots.Query.asset_9e39ed), plural: false, lookup: Baton.Lookup(type: Types.Asset, key: [.variable("uuid")]), selection: Baton.Selection(type: Types.Asset, key: ["uuid"], abstract: false, fields: [
-                .scalar("name", key: .fixed(Slots.Asset.name), kind: .string, list: false),
-                .scalar("id", key: .fixed(Slots.Asset.id), kind: .string, list: false),
-                .scalar("uuid", key: .fixed(Slots.Asset.uuid), kind: .string, list: false),
-            ])),
-        ]), transient: Types.transient)
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient)
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+        .linked("asset", key: .dynamic(Slots.Query.asset_9e39ed), plural: false, lookup: Baton.Lookup(type: Types.Asset, key: [.variable("uuid")]), selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.Asset, key: ["uuid"], abstract: false, fields: [
+        .scalar("name", key: .fixed(Slots.Asset.name), kind: .string, list: false),
+        .scalar("id", key: .fixed(Slots.Asset.id), kind: .string, list: false),
+        .scalar("uuid", key: .fixed(Slots.Asset.uuid), kind: .string, list: false),
+    ])
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -95,17 +97,20 @@ query TestAssetQuery(
         hasher.combine(self.uuid)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
-            .linked("asset", key: .dynamic(Slots.Query.asset_9e39ed), plural: false, lookup: Baton.Lookup(type: Types.Asset, key: [.variable("uuid")]), selection: Baton.Selection(type: Types.Asset, key: ["uuid"], abstract: false, fields: [
-                .linked("owner", key: .fixed(Slots.Asset.owner), plural: false, selection: Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
-                    .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-                ])),
-                .scalar("uuid", key: .fixed(Slots.Asset.uuid), kind: .string, list: false),
-                .scalar("name", key: .fixed(Slots.Asset.name), kind: .string, list: false),
-                .scalar("id", key: .fixed(Slots.Asset.id), kind: .string, list: false),
-            ])),
-        ]), transient: Types.transient)
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient)
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+        .linked("asset", key: .dynamic(Slots.Query.asset_9e39ed), plural: false, lookup: Baton.Lookup(type: Types.Asset, key: [.variable("uuid")]), selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.Asset, key: ["uuid"], abstract: false, fields: [
+        .linked("owner", key: .fixed(Slots.Asset.owner), plural: false, selection: selection2),
+        .scalar("uuid", key: .fixed(Slots.Asset.uuid), kind: .string, list: false),
+        .scalar("name", key: .fixed(Slots.Asset.name), kind: .string, list: false),
+        .scalar("id", key: .fixed(Slots.Asset.id), kind: .string, list: false),
+    ])
+    private static let selection2: Baton.Selection = Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
+        .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+    ])
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -158,14 +163,16 @@ query TestAssetsQuery {
     public func hash(into hasher: inout Hasher) {
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
-            .linked("assets", key: .fixed(Slots.Query.assets), plural: true, selection: Baton.Selection(type: Types.Asset, key: ["uuid"], abstract: false, fields: [
-                .scalar("name", key: .fixed(Slots.Asset.name), kind: .string, list: false),
-                .scalar("size", key: .fixed(Slots.Asset.size), kind: .int, list: false),
-                .scalar("id", key: .fixed(Slots.Asset.id), kind: .string, list: false),
-                .scalar("uuid", key: .fixed(Slots.Asset.uuid), kind: .string, list: false),
-            ])),
-        ]), transient: Types.transient)
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient)
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+        .linked("assets", key: .fixed(Slots.Query.assets), plural: true, selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.Asset, key: ["uuid"], abstract: false, fields: [
+        .scalar("name", key: .fixed(Slots.Asset.name), kind: .string, list: false),
+        .scalar("size", key: .fixed(Slots.Asset.size), kind: .int, list: false),
+        .scalar("id", key: .fixed(Slots.Asset.id), kind: .string, list: false),
+        .scalar("uuid", key: .fixed(Slots.Asset.uuid), kind: .string, list: false),
+    ])
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -219,13 +226,15 @@ query TestQuoteQuery(
         hasher.combine(self.quote)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
-            .linked("quote", key: .dynamic(Slots.Query.quote_bd29fc), plural: false, lookup: Baton.Lookup(type: Types.Quote, key: [.variable("base"), .variable("quote")]), selection: Baton.Selection(type: Types.Quote, key: ["base", "quote"], abstract: false, fields: [
-                .scalar("base", key: .fixed(Slots.Quote.base), kind: .string, list: false),
-                .scalar("quote", key: .fixed(Slots.Quote.quote), kind: .string, list: false),
-                .scalar("rate", key: .fixed(Slots.Quote.rate), kind: .double, list: false),
-            ])),
-        ]), transient: Types.transient)
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient)
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+        .linked("quote", key: .dynamic(Slots.Query.quote_bd29fc), plural: false, lookup: Baton.Lookup(type: Types.Quote, key: [.variable("base"), .variable("quote")]), selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.Quote, key: ["base", "quote"], abstract: false, fields: [
+        .scalar("base", key: .fixed(Slots.Quote.base), kind: .string, list: false),
+        .scalar("quote", key: .fixed(Slots.Quote.quote), kind: .string, list: false),
+        .scalar("rate", key: .fixed(Slots.Quote.rate), kind: .double, list: false),
+    ])
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -271,13 +280,15 @@ query TestQuotesQuery {
     public func hash(into hasher: inout Hasher) {
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
-            .linked("quotes", key: .fixed(Slots.Query.quotes), plural: true, selection: Baton.Selection(type: Types.Quote, key: ["base", "quote"], abstract: false, fields: [
-                .scalar("rate", key: .fixed(Slots.Quote.rate), kind: .double, list: false),
-                .scalar("base", key: .fixed(Slots.Quote.base), kind: .string, list: false),
-                .scalar("quote", key: .fixed(Slots.Quote.quote), kind: .string, list: false),
-            ])),
-        ]), transient: Types.transient)
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient)
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+        .linked("quotes", key: .fixed(Slots.Query.quotes), plural: true, selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.Quote, key: ["base", "quote"], abstract: false, fields: [
+        .scalar("rate", key: .fixed(Slots.Quote.rate), kind: .double, list: false),
+        .scalar("base", key: .fixed(Slots.Quote.base), kind: .string, list: false),
+        .scalar("quote", key: .fixed(Slots.Quote.quote), kind: .string, list: false),
+    ])
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor

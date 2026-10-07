@@ -5,6 +5,13 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- An operation's plan declares each distinct selection once, as a static
+  member with its type stated, where it was one nested expression that
+  copied a fragment at every spread. A union inside a union no longer
+  exhausts the Swift compiler: the case of issue 34 that was killed at
+  12 GB compiles in 1.7 s and 0.24 GB, and its plan holds 82 selections
+  where it held 2,258. Recorded in
+  `docs/decisions/a-plan-declares-each-selection-once.md`.
 - An object under an interface or union takes its type from its
   `__typename` by a byte comparison with the names the plan lists, where
   the ingest made a string and took the registry's lock for every object;

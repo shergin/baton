@@ -78,16 +78,18 @@ query TestAssetPricesQuery {
     public func hash(into hasher: inout Hasher) {
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
-            .linked("assets", key: .fixed(Slots.Query.assets), plural: true, selection: Baton.Selection(type: Types.Asset, key: ["uuid"], abstract: false, fields: [
-                .scalar("uuid", key: .fixed(Slots.Asset.uuid), kind: .string, list: false),
-                .scalar("price", key: .fixed(Slots.Asset.price), kind: .custom, list: false),
-                .scalar("listedAt", key: .fixed(Slots.Asset.listedAt), kind: .custom, list: false),
-                .scalar("page", key: .fixed(Slots.Asset.page), kind: .custom, list: false),
-                .scalar("prices", key: .fixed(Slots.Asset.prices), kind: .custom, list: true),
-                .scalar("id", key: .fixed(Slots.Asset.id), kind: .string, list: false),
-            ])),
-        ]), transient: Types.transient)
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient)
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+        .linked("assets", key: .fixed(Slots.Query.assets), plural: true, selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.Asset, key: ["uuid"], abstract: false, fields: [
+        .scalar("uuid", key: .fixed(Slots.Asset.uuid), kind: .string, list: false),
+        .scalar("price", key: .fixed(Slots.Asset.price), kind: .custom, list: false),
+        .scalar("listedAt", key: .fixed(Slots.Asset.listedAt), kind: .custom, list: false),
+        .scalar("page", key: .fixed(Slots.Asset.page), kind: .custom, list: false),
+        .scalar("prices", key: .fixed(Slots.Asset.prices), kind: .custom, list: true),
+        .scalar("id", key: .fixed(Slots.Asset.id), kind: .string, list: false),
+    ])
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -161,16 +163,18 @@ fragment TestThrowingPrices_asset on Asset {
         hasher.combine(self.among)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
-            .linked("assetsPricedAbove", key: .dynamic(Slots.Query.assetsPricedAbove_914469), plural: true, selection: Baton.Selection(type: Types.Asset, key: ["uuid"], abstract: false, fields: [
-                .scalar("uuid", key: .fixed(Slots.Asset.uuid), kind: .string, list: false),
-                .scalar("price", key: .fixed(Slots.Asset.price), kind: .custom, list: false, caught: true),
-                .scalar("listedAt", key: .fixed(Slots.Asset.listedAt), kind: .custom, list: false, caught: true),
-                .scalar("page", key: .fixed(Slots.Asset.page), kind: .custom, list: false, caught: true),
-                .scalar("prices", key: .fixed(Slots.Asset.prices), kind: .custom, list: true),
-                .scalar("id", key: .fixed(Slots.Asset.id), kind: .string, list: false),
-            ])),
-        ]), transient: Types.transient)
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient)
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+        .linked("assetsPricedAbove", key: .dynamic(Slots.Query.assetsPricedAbove_914469), plural: true, selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.Asset, key: ["uuid"], abstract: false, fields: [
+        .scalar("uuid", key: .fixed(Slots.Asset.uuid), kind: .string, list: false),
+        .scalar("price", key: .fixed(Slots.Asset.price), kind: .custom, list: false, caught: true),
+        .scalar("listedAt", key: .fixed(Slots.Asset.listedAt), kind: .custom, list: false, caught: true),
+        .scalar("page", key: .fixed(Slots.Asset.page), kind: .custom, list: false, caught: true),
+        .scalar("prices", key: .fixed(Slots.Asset.prices), kind: .custom, list: true),
+        .scalar("id", key: .fixed(Slots.Asset.id), kind: .string, list: false),
+    ])
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor

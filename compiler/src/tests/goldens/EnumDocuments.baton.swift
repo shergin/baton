@@ -39,12 +39,14 @@ query TestCharactersWithStatus(
         hasher.combine(self.`any`)
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
-            .linked("charactersWithStatus", key: .dynamic(Slots.Query.charactersWithStatus_deb51f), plural: true, selection: Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
-                .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
-                .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
-            ])),
-        ]), transient: Types.transient)
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient)
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+        .linked("charactersWithStatus", key: .dynamic(Slots.Query.charactersWithStatus_deb51f), plural: true, selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
+        .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+    ])
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -85,11 +87,13 @@ mutation TestSetStatuses {
     public func hash(into hasher: inout Hasher) {
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Mutation, key: [], abstract: false, fields: [
-            .linked("setLists", key: .fixed(Slots.Mutation.setLists), plural: false, selection: Baton.Selection(type: Types.ListsPayload, key: [], abstract: false, fields: [
-                .scalar("statuses", key: .fixed(Slots.ListsPayload.statuses), kind: .string, list: true),
-            ])),
-        ]), transient: Types.transient)
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient)
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Mutation, key: [], abstract: false, fields: [
+        .linked("setLists", key: .fixed(Slots.Mutation.setLists), plural: false, selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.ListsPayload, key: [], abstract: false, fields: [
+        .scalar("statuses", key: .fixed(Slots.ListsPayload.statuses), kind: .string, list: true),
+    ])
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor

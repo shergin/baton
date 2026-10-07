@@ -44,6 +44,7 @@ principle, the proof belongs here.
 - [A storage key leaves a null argument out](a-storage-key-leaves-a-null-argument-out.md)
 - [One runtime module, with edges as targets and a checked rule inside](one-runtime-module.md)
 - [The emitter writes Swift from typed pieces, not strings](the-emitter-writes-typed-pieces.md)
+- [A plan declares each of its selections once](a-plan-declares-each-selection-once.md)
 - [A handle keeps its fetch and derives its phase](a-handle-derives-its-phase.md)
 - [A failure says its kind](a-failure-says-its-kind.md)
 - [The decided architecture is built first, one release a step](the-decided-architecture-is-built-first.md)

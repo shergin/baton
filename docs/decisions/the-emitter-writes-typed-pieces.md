@@ -1,6 +1,9 @@
 # The emitter writes Swift from typed pieces, not strings
 
-Status: accepted, 2026-10-04. Serves
+Status: accepted, 2026-10-04; superseded on 2026-10-06 on the plan's
+printer, which
+[declares each of its selections once](a-plan-declares-each-selection-once.md);
+the rest stands as decided here. Serves
 [The compiler decides](../principles/compiler-decides.md) and
 [Two runtimes, one compiler](../principles/two-runtimes-one-compiler.md).
 Reopen when the Kotlin emitter starts, to weigh a quasi-quoter with back

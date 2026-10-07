@@ -49,7 +49,7 @@ const CONTEXTUAL_KEYWORDS: [&str; 12] = [
 
 /// What the generated code declares or spells that no list of the rules
 /// holds.
-const GENERATED_NAMES: [&str; 29] = [
+const GENERATED_NAMES: [&str; 31] = [
     // The checks every lens may have, and the methods of a lens.
     "satisfied",
     "missingRequiredField",
@@ -75,6 +75,9 @@ const GENERATED_NAMES: [&str; 29] = [
     "commit",
     "callAsFunction",
     "Op",
+    // The selections of an operation's plan, numbered from the first.
+    "selection",
+    "selection0",
     // What the runtime's protocols give a generated type.
     "hashValue",
     "phase",

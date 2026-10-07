@@ -492,6 +492,28 @@ fn a_key_with_a_variable_is_written_as_its_field_name_and_its_arguments() {
 }
 
 #[test]
+fn a_selection_that_recurs_in_a_plan_is_declared_once_and_referred_to_wherever_it_is_selected() {
+    let swift = emitted(
+        "query ProbeQuery { first: character(id: \"1\") { origin { name } } second: character(id: \"2\") { origin { name } } }",
+    );
+    // The root, the character both aliases select, and the location.
+    let declarations = swift
+        .lines()
+        .filter(|line| line.contains("private static let selection"))
+        .count();
+    assert_eq!(declarations, 3, "{swift}");
+    assert!(
+        swift.contains("public static let plan = Baton.Plan(root: selection0"),
+        "{swift}"
+    );
+    assert_eq!(
+        swift.matches("selection: selection1)").count(),
+        2,
+        "{swift}"
+    );
+}
+
+#[test]
 fn a_selection_names_the_field_that_keys_its_records_or_nil_for_a_type_without_one() {
     let swift = emitted("query ProbeQuery { characters { info { count } results { name } } }");
     assert!(

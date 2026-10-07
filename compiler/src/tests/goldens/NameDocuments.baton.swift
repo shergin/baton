@@ -29,11 +29,13 @@ query TestCaughtNames {
     public func hash(into hasher: inout Hasher) {
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
-            .linked("types", key: .fixed(Slots.Query.types), plural: false, caught: true, selection: Baton.Selection(type: Types.Types, key: [], abstract: false, fields: [
-                .scalar("Baton", key: .fixed(Slots.Types_.Baton_), kind: .string, list: false, caught: true),
-            ])),
-        ]), transient: Types.transient)
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient)
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+        .linked("types", key: .fixed(Slots.Query.types), plural: false, caught: true, selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.Types, key: [], abstract: false, fields: [
+        .scalar("Baton", key: .fixed(Slots.Types_.Baton_), kind: .string, list: false, caught: true),
+    ])
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -91,14 +93,16 @@ query TestNames {
     public func hash(into hasher: inout Hasher) {
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
-            .linked("types", key: .fixed(Slots.Query.types), plural: false, selection: Baton.Selection(type: Types.Types, key: [], abstract: false, fields: [
-                .scalar("Type", key: .fixed(Slots.Types_.Type_), kind: .string, list: false),
-                .scalar("Protocol", key: .fixed(Slots.Types_.Protocol_), kind: .string, list: false),
-                .scalar("Baton", key: .fixed(Slots.Types_.Baton_), kind: .string, list: false),
-                .scalar("Any", key: .fixed(Slots.Types_.Any_), kind: .string, list: false),
-            ])),
-        ]), transient: Types.transient)
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient)
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+        .linked("types", key: .fixed(Slots.Query.types), plural: false, selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.Types, key: [], abstract: false, fields: [
+        .scalar("Type", key: .fixed(Slots.Types_.Type_), kind: .string, list: false),
+        .scalar("Protocol", key: .fixed(Slots.Types_.Protocol_), kind: .string, list: false),
+        .scalar("Baton", key: .fixed(Slots.Types_.Baton_), kind: .string, list: false),
+        .scalar("Any", key: .fixed(Slots.Types_.Any_), kind: .string, list: false),
+    ])
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
@@ -166,26 +170,28 @@ query TestSpellings {
     public func hash(into hasher: inout Hasher) {
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
-            .linked("spellings", key: .fixed(Slots.Query.spellings), plural: true, selection: Baton.Selection(type: Types.Spelling, key: ["id"], abstract: true, memberships: [.init("__isSpelled", Types.Spelled)], variants: [
-                .init(types: [Types.Any_, Types.Baton_, Types.Protocol_, Types.Set, Types.Type_], key: ["id"], fields: [
-                    .scalar("__typename", key: .fixed(Slots.Spelling.__typename), kind: .string, list: false),
-                    .scalar("label", key: .fixed(Slots.Spelling.label), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Spelling.id), kind: .string, list: false),
-                ]),
-                .init(types: [Types.Episode], key: ["id"], fields: [
-                    .scalar("__typename", key: .fixed(Slots.Episode.__typename), kind: .string, list: false),
-                    .scalar("id", key: .fixed(Slots.Episode.id), kind: .string, list: false),
-                ]),
-                .init(types: nil, condition: Types.Spelled, fields: [
-                    .scalar("__typename", key: .fixed(Slots.Spelling.__typename), kind: .string, list: false),
-                    .scalar("label", key: .fixed(Slots.Spelling.label), kind: .string, list: false),
-                ]),
-                .init(types: nil, fields: [
-                    .scalar("__typename", key: .fixed(Slots.Spelling.__typename), kind: .string, list: false),
-                ]),
-            ])),
-        ]), transient: Types.transient)
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient)
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+        .linked("spellings", key: .fixed(Slots.Query.spellings), plural: true, selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.Spelling, key: ["id"], abstract: true, memberships: [.init("__isSpelled", Types.Spelled)], variants: [
+        .init(types: [Types.Any_, Types.Baton_, Types.Protocol_, Types.Set, Types.Type_], key: ["id"], fields: [
+            .scalar("__typename", key: .fixed(Slots.Spelling.__typename), kind: .string, list: false),
+            .scalar("label", key: .fixed(Slots.Spelling.label), kind: .string, list: false),
+            .scalar("id", key: .fixed(Slots.Spelling.id), kind: .string, list: false),
+        ]),
+        .init(types: [Types.Episode], key: ["id"], fields: [
+            .scalar("__typename", key: .fixed(Slots.Episode.__typename), kind: .string, list: false),
+            .scalar("id", key: .fixed(Slots.Episode.id), kind: .string, list: false),
+        ]),
+        .init(types: nil, condition: Types.Spelled, fields: [
+            .scalar("__typename", key: .fixed(Slots.Spelling.__typename), kind: .string, list: false),
+            .scalar("label", key: .fixed(Slots.Spelling.label), kind: .string, list: false),
+        ]),
+        .init(types: nil, fields: [
+            .scalar("__typename", key: .fixed(Slots.Spelling.__typename), kind: .string, list: false),
+        ]),
+    ])
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor

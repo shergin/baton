@@ -1,5 +1,6 @@
 //! The normalization plan as `Baton.Plan` static data.
 
+use std::collections::HashMap;
 use std::fmt::Write as _;
 
 use super::swift::{constant_text, keyed_types_reference, swift_literal, type_reference};
@@ -11,163 +12,254 @@ use crate::pipeline::{
     ArgumentValuePlan, ConnectionPlan, ConstantPlan, EditPlan, LookupPlan, StorageKeyPlan, TypeKind,
 };
 
-/// The `Baton.Selection(...)` expression of a normalization plan, laid out
-/// over several lines for a declaration written at `depth`.
-pub(super) fn selection_plan(selection: &NormalizationSelection, depth: usize) -> String {
-    let mut output = String::new();
-    write_selection(&mut output, selection, depth);
-    output
+/// The selections of a normalization plan, each written once. A selection
+/// that recurs, as a fragment spread on every member of a union does, is
+/// one declaration every field that selects it refers to, and each
+/// declaration states its type, so Swift checks the plan a declaration at a
+/// time. Written as one nested expression, the plan grew with the product of
+/// its spreads, and checking it could exhaust the compiler's memory.
+pub(super) struct PlanSelections {
+    /// The initializer of each declaration, in the order written: a
+    /// selection before any that refers to it, so the root is last.
+    initializers: Vec<Initializer>,
+    /// The index of each initializer written so far: an equal initializer
+    /// is an equal selection.
+    indices: HashMap<Initializer, usize>,
+    /// The depth the declarations are written at.
+    depth: usize,
 }
 
-/// Writes a selection: its fields when every type reads the same, else its
-/// variants.
-fn write_selection(output: &mut String, selection: &NormalizationSelection, depth: usize) {
-    let type_name = &selection.type_name;
-    let pad = "    ".repeat(depth);
-    let _ = write!(
-        output,
-        "Baton.Selection(type: {}, key: {}, abstract: {}",
-        type_reference(type_name),
-        key_expression(&selection.key),
-        selection.is_abstract
-    );
-    if !selection.memberships.is_empty() {
-        let answers: Vec<String> = selection
-            .memberships
-            .iter()
-            .map(|(key, condition)| {
-                format!(
-                    ".init({}, {})",
-                    swift_literal(key),
-                    type_reference(condition)
-                )
-            })
-            .collect();
-        let _ = write!(output, ", memberships: [{}]", answers.join(", "));
-    }
-    if let [only] = selection.variants.as_slice()
-        && only.types.is_none()
-    {
-        output.push_str(", fields: [");
-        plan_fields(output, only.slot_type(selection), &only.fields, depth);
-        output.push_str("])");
-        return;
-    }
-    output.push_str(", variants: [");
-    for variant in &selection.variants {
-        let types = match &variant.types {
-            Some(types) => {
-                let names: Vec<String> = types.iter().map(|name| type_reference(name)).collect();
-                format!("[{}]", names.join(", "))
-            }
-            None => "nil".to_string(),
+/// A selection's initializer before its declarations are numbered: its text,
+/// and where in it each selection it refers to goes, by the index that
+/// selection was written at.
+#[derive(Clone, PartialEq, Eq, Hash)]
+struct Initializer {
+    text: String,
+    references: Vec<(usize, usize)>,
+}
+
+impl PlanSelections {
+    /// The selections of the plan rooted at `root`, for declarations written
+    /// at `depth`.
+    pub(super) fn new(root: &NormalizationSelection, depth: usize) -> PlanSelections {
+        let mut selections = PlanSelections {
+            initializers: Vec::new(),
+            indices: HashMap::new(),
+            depth,
         };
-        let key = variant
-            .key
-            .as_ref()
-            .map(|key| format!(", key: {}", key_expression(key)))
-            .unwrap_or_default();
-        let condition = variant
-            .condition
-            .as_ref()
-            .map(|condition| format!(", condition: {}", type_reference(condition)))
-            .unwrap_or_default();
-        let _ = write!(
-            output,
-            "\n{pad}    .init(types: {types}{key}{condition}, fields: ["
-        );
-        plan_fields(
-            output,
-            variant.slot_type(selection),
-            &variant.fields,
-            depth + 1,
-        );
-        output.push_str("]),");
+        selections.reference(root);
+        selections
     }
-    let _ = write!(output, "\n{pad}])");
+
+    /// The name of the root selection, the plan's.
+    pub(super) fn root(&self) -> String {
+        PlanSelections::name(0)
+    }
+
+    /// Each declaration's name and initializer, the root first and every
+    /// selection after the first that refers to it, so the plan reads from
+    /// the top down.
+    pub(super) fn declarations(&self) -> Vec<(String, String)> {
+        let last = self.initializers.len() - 1;
+        self.initializers
+            .iter()
+            .rev()
+            .enumerate()
+            .map(|(number, initializer)| {
+                let mut text = String::with_capacity(initializer.text.len());
+                let mut written = 0;
+                for (offset, index) in &initializer.references {
+                    text.push_str(&initializer.text[written..*offset]);
+                    text.push_str(&PlanSelections::name(last - index));
+                    written = *offset;
+                }
+                text.push_str(&initializer.text[written..]);
+                (PlanSelections::name(number), text)
+            })
+            .collect()
+    }
+
+    /// The name of the declaration numbered `number` from the root, a static
+    /// member of the operation. Only the plan's selections take this form
+    /// among the operation's static members, and a nested type is never
+    /// named like one, so the name is free. The references spell it bare: in
+    /// a static initializer Swift finds the static member before a variable
+    /// named like it, where `Self.` would read a variable named `Self`.
+    fn name(number: usize) -> String {
+        format!("selection{number}")
+    }
+
+    /// The index `selection`'s initializer is written at, once when no equal
+    /// selection has been.
+    fn reference(&mut self, selection: &NormalizationSelection) -> usize {
+        let mut initializer = Initializer {
+            text: String::new(),
+            references: Vec::new(),
+        };
+        self.write_selection(&mut initializer, selection);
+        if let Some(index) = self.indices.get(&initializer) {
+            return *index;
+        }
+        let index = self.initializers.len();
+        self.indices.insert(initializer.clone(), index);
+        self.initializers.push(initializer);
+        index
+    }
+
+    /// Writes a selection: its fields when every type reads the same, else
+    /// its variants.
+    fn write_selection(&mut self, output: &mut Initializer, selection: &NormalizationSelection) {
+        let type_name = &selection.type_name;
+        let pad = "    ".repeat(self.depth);
+        let _ = write!(
+            output.text,
+            "Baton.Selection(type: {}, key: {}, abstract: {}",
+            type_reference(type_name),
+            key_expression(&selection.key),
+            selection.is_abstract
+        );
+        if !selection.memberships.is_empty() {
+            let answers: Vec<String> = selection
+                .memberships
+                .iter()
+                .map(|(key, condition)| {
+                    format!(
+                        ".init({}, {})",
+                        swift_literal(key),
+                        type_reference(condition)
+                    )
+                })
+                .collect();
+            let _ = write!(output.text, ", memberships: [{}]", answers.join(", "));
+        }
+        if let [only] = selection.variants.as_slice()
+            && only.types.is_none()
+        {
+            output.text.push_str(", fields: [");
+            self.plan_fields(output, only.slot_type(selection), &only.fields, 0);
+            output.text.push_str("])");
+            return;
+        }
+        output.text.push_str(", variants: [");
+        for variant in &selection.variants {
+            let types = match &variant.types {
+                Some(types) => {
+                    let names: Vec<String> =
+                        types.iter().map(|name| type_reference(name)).collect();
+                    format!("[{}]", names.join(", "))
+                }
+                None => "nil".to_string(),
+            };
+            let key = variant
+                .key
+                .as_ref()
+                .map(|key| format!(", key: {}", key_expression(key)))
+                .unwrap_or_default();
+            let condition = variant
+                .condition
+                .as_ref()
+                .map(|condition| format!(", condition: {}", type_reference(condition)))
+                .unwrap_or_default();
+            let _ = write!(
+                output.text,
+                "\n{pad}    .init(types: {types}{key}{condition}, fields: ["
+            );
+            self.plan_fields(output, variant.slot_type(selection), &variant.fields, 1);
+            output.text.push_str("]),");
+        }
+        let _ = write!(output.text, "\n{pad}])");
+    }
+
+    /// The fields of one variant, their slots on `type_name`, `indent`
+    /// levels inside the declaration.
+    fn plan_fields(
+        &mut self,
+        output: &mut Initializer,
+        type_name: &str,
+        fields: &[NormalizationField],
+        indent: usize,
+    ) {
+        let pad = "    ".repeat(self.depth + indent);
+        for field in fields {
+            let _ = write!(output.text, "\n{pad}    ");
+            let slot = plan_key(type_name, &field.key);
+            let edit_argument = field
+                .edit
+                .as_ref()
+                .map(|edit| format!(", edit: {}", edit_expression(edit)))
+                .unwrap_or_default();
+            let deferred_argument = field
+                .deferred
+                .as_ref()
+                .map(|label| format!(", deferred: {}", swift_literal(label)))
+                .unwrap_or_default();
+            let caught_argument = if field.caught { ", caught: true" } else { "" };
+            let client_argument = if field.client { ", client: true" } else { "" };
+            let transient_argument = if field.transient {
+                ", transient: true"
+            } else {
+                ""
+            };
+            let guards_argument = guards_expression(&field.guards);
+            match &field.kind {
+                NormalizationKind::Scalar { type_ } => {
+                    let list = type_.is_list();
+                    let kind = match type_.base_kind() {
+                        TypeKind::Int => "int",
+                        TypeKind::Float => "double",
+                        TypeKind::Boolean => "bool",
+                        TypeKind::String | TypeKind::Id | TypeKind::Enum => "string",
+                        _ => "custom",
+                    };
+                    let _ = write!(
+                        output.text,
+                        ".scalar({}, key: {slot}, kind: .{kind}, list: {list}{edit_argument}{deferred_argument}{caught_argument}{client_argument}{transient_argument}{guards_argument}),",
+                        swift_literal(&field.response_key)
+                    );
+                }
+                NormalizationKind::Linked {
+                    plural,
+                    lookup,
+                    connection,
+                    selection,
+                } => {
+                    let lookup_argument = match lookup {
+                        Some(lookup) => format!(
+                            ", lookup: {}",
+                            lookup_expression(lookup, &selection.type_name)
+                        ),
+                        None => String::new(),
+                    };
+                    let connection_argument = connection
+                        .as_ref()
+                        .map(|connection| {
+                            format!(
+                                ", connection: {}",
+                                connection_expression(type_name, &selection.type_name, connection)
+                            )
+                        })
+                        .unwrap_or_default();
+                    let _ = write!(
+                        output.text,
+                        ".linked({}, key: {slot}, plural: {plural}{lookup_argument}{connection_argument}{edit_argument}{deferred_argument}{caught_argument}{client_argument}{transient_argument}{guards_argument}, selection: ",
+                        swift_literal(&field.response_key)
+                    );
+                    let index = self.reference(selection);
+                    output.references.push((output.text.len(), index));
+                    output.text.push_str("),");
+                }
+            }
+        }
+        if !fields.is_empty() {
+            let _ = write!(output.text, "\n{pad}");
+        }
+    }
 }
 
 /// The response keys of the fields that key a record, as a Swift array.
 fn key_expression(key: &[String]) -> String {
     let fields: Vec<String> = key.iter().map(|field| swift_literal(field)).collect();
     format!("[{}]", fields.join(", "))
-}
-
-/// The fields of one variant, their slots on `type_name`.
-fn plan_fields(output: &mut String, type_name: &str, fields: &[NormalizationField], depth: usize) {
-    let pad = "    ".repeat(depth);
-    for field in fields {
-        let _ = write!(output, "\n{pad}    ");
-        let slot = plan_key(type_name, &field.key);
-        let edit_argument = field
-            .edit
-            .as_ref()
-            .map(|edit| format!(", edit: {}", edit_expression(edit)))
-            .unwrap_or_default();
-        let deferred_argument = field
-            .deferred
-            .as_ref()
-            .map(|label| format!(", deferred: {}", swift_literal(label)))
-            .unwrap_or_default();
-        let caught_argument = if field.caught { ", caught: true" } else { "" };
-        let client_argument = if field.client { ", client: true" } else { "" };
-        let transient_argument = if field.transient {
-            ", transient: true"
-        } else {
-            ""
-        };
-        let guards_argument = guards_expression(&field.guards);
-        match &field.kind {
-            NormalizationKind::Scalar { type_ } => {
-                let list = type_.is_list();
-                let kind = match type_.base_kind() {
-                    TypeKind::Int => "int",
-                    TypeKind::Float => "double",
-                    TypeKind::Boolean => "bool",
-                    TypeKind::String | TypeKind::Id | TypeKind::Enum => "string",
-                    _ => "custom",
-                };
-                let _ = write!(
-                    output,
-                    ".scalar({}, key: {slot}, kind: .{kind}, list: {list}{edit_argument}{deferred_argument}{caught_argument}{client_argument}{transient_argument}{guards_argument}),",
-                    swift_literal(&field.response_key)
-                );
-            }
-            NormalizationKind::Linked {
-                plural,
-                lookup,
-                connection,
-                selection,
-            } => {
-                let lookup_argument = match lookup {
-                    Some(lookup) => format!(
-                        ", lookup: {}",
-                        lookup_expression(lookup, &selection.type_name)
-                    ),
-                    None => String::new(),
-                };
-                let connection_argument = connection
-                    .as_ref()
-                    .map(|connection| {
-                        format!(
-                            ", connection: {}",
-                            connection_expression(type_name, &selection.type_name, connection)
-                        )
-                    })
-                    .unwrap_or_default();
-                let _ = write!(
-                    output,
-                    ".linked({}, key: {slot}, plural: {plural}{lookup_argument}{connection_argument}{edit_argument}{deferred_argument}{caught_argument}{client_argument}{transient_argument}{guards_argument}, selection: ",
-                    swift_literal(&field.response_key)
-                );
-                write_selection(output, selection, depth + 1);
-                output.push_str("),");
-            }
-        }
-    }
-    if !fields.is_empty() {
-        let _ = write!(output, "\n{pad}");
-    }
 }
 
 /// The key expression inside a plan: a fixed slot, or the key with

@@ -39,21 +39,23 @@ query TestTokenizerQuery {
     public func hash(into hasher: inout Hasher) {
     }
 
-    @_spi(Generated) public static let plan = Baton.Plan(root: Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
-            .linked("tokenizer", key: .fixed(Slots.Query.tokenizer), plural: false, selection: Baton.Selection(type: Types.Tokenizer, key: ["id"], abstract: false, fields: [
-                .scalar("id", key: .fixed(Slots.Tokenizer.id), kind: .string, list: false),
-                .scalar("text", key: .fixed(Slots.Tokenizer.text), kind: .string, list: false),
-                .scalar("strings", key: .fixed(Slots.Tokenizer.strings), kind: .string, list: true),
-                .scalar("count", key: .fixed(Slots.Tokenizer.count), kind: .int, list: false),
-                .scalar("counts", key: .fixed(Slots.Tokenizer.counts), kind: .int, list: true),
-                .scalar("ratio", key: .fixed(Slots.Tokenizer.ratio), kind: .double, list: false),
-                .scalar("ratios", key: .fixed(Slots.Tokenizer.ratios), kind: .double, list: true),
-                .scalar("flag", key: .fixed(Slots.Tokenizer.flag), kind: .bool, list: false),
-                .scalar("flags", key: .fixed(Slots.Tokenizer.flags), kind: .bool, list: true),
-                .scalar("json", key: .fixed(Slots.Tokenizer.json), kind: .custom, list: false),
-                .scalar("jsons", key: .fixed(Slots.Tokenizer.jsons), kind: .custom, list: true),
-            ])),
-        ]), transient: Types.transient)
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient)
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+        .linked("tokenizer", key: .fixed(Slots.Query.tokenizer), plural: false, selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.Tokenizer, key: ["id"], abstract: false, fields: [
+        .scalar("id", key: .fixed(Slots.Tokenizer.id), kind: .string, list: false),
+        .scalar("text", key: .fixed(Slots.Tokenizer.text), kind: .string, list: false),
+        .scalar("strings", key: .fixed(Slots.Tokenizer.strings), kind: .string, list: true),
+        .scalar("count", key: .fixed(Slots.Tokenizer.count), kind: .int, list: false),
+        .scalar("counts", key: .fixed(Slots.Tokenizer.counts), kind: .int, list: true),
+        .scalar("ratio", key: .fixed(Slots.Tokenizer.ratio), kind: .double, list: false),
+        .scalar("ratios", key: .fixed(Slots.Tokenizer.ratios), kind: .double, list: true),
+        .scalar("flag", key: .fixed(Slots.Tokenizer.flag), kind: .bool, list: false),
+        .scalar("flags", key: .fixed(Slots.Tokenizer.flags), kind: .bool, list: true),
+        .scalar("json", key: .fixed(Slots.Tokenizer.json), kind: .custom, list: false),
+        .scalar("jsons", key: .fixed(Slots.Tokenizer.jsons), kind: .custom, list: true),
+    ])
 
     nonisolated public struct Data: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
