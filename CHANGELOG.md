@@ -3,7 +3,7 @@
 Notable changes, written so a person can read them. Pre-1.0, breaking changes
 are expected and listed without apology.
 
-## Unreleased
+## 0.9.0 (Krendel) — 2026-10-07
 
 - `Payload`, bytes in a response's shape, is what the door takes:
   `commitPayload` takes a `Payload` where it took `Data`, and

@@ -211,6 +211,12 @@ will break freely until 1.0.
   and the collector, an environment that ends, a session's keys in its
   store; enums, input objects, mapped scalars and configured identity; one
   transport verb; the image evicting by launch.
+- **0.9.0 (Krendel).** The ground before Kotlin: the runtime contract under
+  `spec/` and scripts as the second kind of fixture, the verdict on the
+  root with the phase derived from it, a payload at the door, an
+  operation's resolution in place of a placeholder environment, lenses
+  equatable by anchor, `@inline` built, and a compiler whose plan carries
+  facts and whose `decide` stage spells nothing, for a second emitter.
 
 Still to come: the road to 1.0. Each release is described in full in
 [`CHANGELOG.md`](CHANGELOG.md).
