@@ -1311,6 +1311,29 @@
       "text": "query TestRosterQuery($page:Int){characters(page:$page){results{id,name,status}}}"
     },
     {
+      "name": "TestScanningValueQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/InlineDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        },
+        {
+          "name": "withName",
+          "type": "Boolean!"
+        }
+      ],
+      "fragments": [
+        "TestCharacterValue_character",
+        "TestNamedValue_character",
+        "TestNotesValue_character",
+        "TestOriginValue_location",
+        "TestScanningValue_character"
+      ],
+      "text": "query TestScanningValueQuery($id:ID!,$withName:Boolean!){character(id:$id){...TestScanningValue_character_3ODEFE,id}}fragment TestCharacterValue_character on Character{id,name,status,origin{...TestOriginValue_location,id},episode{id,name}}fragment TestNamedValue_character on Character{name}fragment TestNotesValue_character_35kO5h on Character{notes(first:1){totalCount}}fragment TestOriginValue_location on Location{id,name,dimension}fragment TestScanningValue_character_3ODEFE on Character{id,...TestNotesValue_character_35kO5h,...TestNamedValue_character@include(if:$withName),...TestCharacterValue_character}"
+    },
+    {
       "name": "TestSearch",
       "kind": "query",
       "source": "swift/Tests/BatonTests/WriteDocuments.swift",
@@ -1747,7 +1770,8 @@
       "operations": [
         "TestCaughtValueQuery",
         "TestDeferredValueQuery",
-        "TestInlineQuery"
+        "TestInlineQuery",
+        "TestScanningValueQuery"
       ],
       "text": "fragment TestCharacterValue_character on Character @inline {\n  id\n  name\n  status\n  origin {\n    ...TestOriginValue_location\n  }\n  episode {\n    id\n    name\n  }\n}"
     },
@@ -1845,6 +1869,15 @@
       "text": "fragment TestName_character on Character {\n  name\n}"
     },
     {
+      "name": "TestNamedValue_character",
+      "type": "Character",
+      "source": "swift/Tests/BatonTests/InlineDocuments.swift",
+      "operations": [
+        "TestScanningValueQuery"
+      ],
+      "text": "fragment TestNamedValue_character on Character @inline {\n  name\n}"
+    },
+    {
       "name": "TestNamed_named",
       "type": "Named",
       "source": "swift/Tests/BatonTests/ConditionDocuments.swift",
@@ -1867,7 +1900,8 @@
       "type": "Character",
       "source": "swift/Tests/BatonTests/InlineDocuments.swift",
       "operations": [
-        "TestInlineQuery"
+        "TestInlineQuery",
+        "TestScanningValueQuery"
       ],
       "text": "fragment TestNotesValue_character on Character @inline @argumentDefinitions(\n  count: {type: \"Int\", defaultValue: 2}\n) {\n  notes(first: $count) {\n    totalCount\n  }\n}"
     },
@@ -1900,7 +1934,8 @@
       "operations": [
         "TestCaughtValueQuery",
         "TestDeferredValueQuery",
-        "TestInlineQuery"
+        "TestInlineQuery",
+        "TestScanningValueQuery"
       ],
       "text": "fragment TestOriginValue_location on Location @inline {\n  id\n  name\n  dimension\n}"
     },
@@ -1980,6 +2015,15 @@
         "TestTwoSpreads"
       ],
       "text": "fragment TestRow_character on Character {\n  name\n  status\n  image\n}"
+    },
+    {
+      "name": "TestScanningValue_character",
+      "type": "Character",
+      "source": "swift/Tests/BatonTests/InlineDocuments.swift",
+      "operations": [
+        "TestScanningValueQuery"
+      ],
+      "text": "fragment TestScanningValue_character on Character @inline @throwOnFieldError @argumentDefinitions(\n  withName: {type: \"Boolean!\"}\n) {\n  id\n  ...TestNotesValue_character @arguments(count: 1)\n  ...TestNamedValue_character @include(if: $withName) @alias(as: \"named\")\n  ... @alias(as: \"caughtCharacter\") @catch {\n    ...TestCharacterValue_character\n  }\n}"
     },
     {
       "name": "TestStrict_character",

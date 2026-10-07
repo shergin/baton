@@ -43,19 +43,20 @@ impl Writer {
 
     /// `head {`, what `body` writes one level deeper, and the closing brace.
     pub(super) fn block(&mut self, head: impl AsRef<str>, body: impl FnOnce(&mut Writer)) {
-        self.closed_block(head, "}", body);
+        self.closed_block(format!("{} {{", head.as_ref()), "}", body);
     }
 
-    /// `head {`, what `body` writes one level deeper, and `close`: the
-    /// closing brace and what follows it on its line, as `}()` closes a
-    /// closure called where it stands.
+    /// `opening`, a line that ends inside the brace it opens, as
+    /// `x = { () -> T in` does, what `body` writes one level deeper, and
+    /// `close`: the closing brace and what follows it on its line, as `}()`
+    /// closes a closure called where it stands.
     pub(super) fn closed_block(
         &mut self,
-        head: impl AsRef<str>,
+        opening: impl AsRef<str>,
         close: &str,
         body: impl FnOnce(&mut Writer),
     ) {
-        self.line(format!("{} {{", head.as_ref()));
+        self.line(opening);
         self.depth += 1;
         body(self);
         self.depth -= 1;

@@ -4,11 +4,12 @@ prove accepted but never compile: the name of a fragment, a query, a
 mutation, a subscription and a refetch query, and of a fragment a query or
 a mutation spreads; each name as a fragment spread plainly, with
 arguments, under `@defer` and under `@catch`; and each name as an `@inline`
-fragment, as one a value spreads, and as one a query spreads plainly, with
+fragment, as one a value spreads, as one a query spreads plainly, with
 arguments, under a condition with an alias, under `@defer` and caught under
-an alias. Each is a type of the whole
-module, and one named like a type the target's own sources spell would
-change what they mean, so the corpus cannot hold them. A name batonc refuses
+an alias, and as one a value spreads in each of those forms but `@defer`.
+Each is a type of the whole module, and one named like a type the target's
+own sources spell would change what they mean, so the corpus cannot hold
+them. A name batonc refuses
 is refused; a name it accepts whose Swift does not type-check is a defect.
 
 From the repository root, after `scripts/build-compiler.sh` and a debug
@@ -61,6 +62,14 @@ query Probe($flag: Boolean!) {
   }
 }
 query Deferring { character(id: 1) { ...HOSTILE @defer } }""",
+    "value-inner-spread-forms": """fragment HOSTILE on Character @inline @argumentDefinitions(flag: {type: "Boolean!", defaultValue: true}) { name @include(if: $flag) }
+fragment Probe_character on Character @inline @throwOnFieldError @argumentDefinitions(withName: {type: "Boolean!", defaultValue: true}) {
+  id
+  ...HOSTILE @arguments(flag: false) @alias(as: "boundValue")
+  ...HOSTILE @include(if: $withName) @alias(as: "conditionalValue")
+  ... @alias(as: "caughtValue") @catch { ...HOSTILE }
+}
+query Probe { character(id: 1) { ...Probe_character } }""",
 }
 
 

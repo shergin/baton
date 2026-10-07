@@ -66,6 +66,38 @@ struct InlineDocuments {
         """)
     var resultValue: TestResultValue_searchResult
 
+    @Fragment("""
+        fragment TestNamedValue_character on Character @inline {
+          name
+        }
+        """)
+    var namedValue: TestNamedValue_character
+
+    /// A value whose errors include those of the values it spreads: one
+    /// with arguments, read in the scope they bind, one under a condition,
+    /// read under it, and one caught under an alias, which catches its own.
+    @Fragment("""
+        fragment TestScanningValue_character on Character
+          @inline
+          @throwOnFieldError
+          @argumentDefinitions(withName: { type: "Boolean!" }) {
+          id
+          ...TestNotesValue_character @arguments(count: 1)
+          ...TestNamedValue_character @include(if: $withName) @alias(as: "named")
+          ... @alias(as: "caughtCharacter") @catch { ...TestCharacterValue_character }
+        }
+        """)
+    var scanningValue: TestScanningValue_character
+
+    @Query("""
+        query TestScanningValueQuery($id: ID!, $withName: Boolean!) {
+          character(id: $id) {
+            ...TestScanningValue_character @arguments(withName: $withName)
+          }
+        }
+        """)
+    var scanningValueQuery: TestScanningValueQuery
+
     @Query("""
         query TestInlineQuery($id: ID!, $withNotes: Boolean!) {
           character(id: $id) {

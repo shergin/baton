@@ -128,6 +128,7 @@ const VALUE_SPREAD: &str = "an aliased spread of a value inside a value";
 const INLINE_FRAGMENT_NAME: &str = "an inline fragment's name";
 const VALUE_SPREAD_NAME: &str = "the name of an inline fragment a value spreads";
 const QUERY_VALUE_SPREADS: &str = "the name of an inline fragment a query spreads in every form";
+const VALUE_SPREADS: &str = "the name of an inline fragment a value spreads in every form";
 
 /// A position a document's name can take, and what the compiler makes of a
 /// hostile name there.
@@ -508,6 +509,16 @@ fn positions() -> Vec<Position> {
             "the fragment `HOSTILE`",
             "rename the fragment",
             &[DATA, SITES, GUARDS],
+        ),
+        // With arguments, under a condition with an alias and caught under
+        // an alias, inside a value whose errors include them.
+        top_level(
+            VALUE_SPREADS,
+            r#"fragment HOSTILE on Character @inline @argumentDefinitions(flag: {type: "Boolean!", defaultValue: true}) { name @include(if: $flag) } fragment Probe_character on Character @inline @throwOnFieldError @argumentDefinitions(withName: {type: "Boolean!", defaultValue: true}) { id ...HOSTILE @arguments(flag: false) @alias(as: "boundValue") ...HOSTILE @include(if: $withName) @alias(as: "conditionalValue") ... @alias(as: "caughtValue") @catch { ...HOSTILE } } query Probe { character(id: 1) { ...Probe_character } }"#,
+            HOSTILE,
+            "the fragment `HOSTILE`",
+            "rename the fragment",
+            &[SITES, GUARDS],
         ),
     ]
 }

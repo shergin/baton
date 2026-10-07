@@ -159,6 +159,31 @@ nonisolated public struct TestCharacterValue_character: Swift.Sendable, Swift.Ha
     }
 }
 
+/// Value of `fragment TestNamedValue_character on Character @inline`.
+nonisolated public struct TestNamedValue_character: Swift.Sendable, Swift.Hashable {
+    public let name: String?
+    public init(name: String?) {
+        self.name = name
+    }
+    /// Reads the fragment's fields out of the record, once, at the call.
+    @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+        self.name = anchor.string(Slots.Character.name)
+    }
+    /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+    @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+        var errors: [Baton.FieldError] = []
+        anchor.collectError(Slots.Character.name, into: &errors)
+        return errors
+    }
+    /// The value, or the field errors in it as a thrown `FieldErrors`.
+    @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+    /// The value, or the field errors in it as a `Result`.
+    @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+        let errors = fieldErrors(anchor)
+        return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+    }
+}
+
 /// Value of `fragment TestNotesValue_character on Character @inline`.
 nonisolated public struct TestNotesValue_character: Swift.Sendable, Swift.Hashable {
     public let notes: Notes
@@ -169,6 +194,19 @@ nonisolated public struct TestNotesValue_character: Swift.Sendable, Swift.Hashab
     @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
         self.notes = Notes(anchor: anchor.requiredLinked(anchor.owner.slot(Slots.Character.notes_041c11), type: Types.NoteConnection))
     }
+    /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+    @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+        var errors: [Baton.FieldError] = []
+        anchor.collectErrors(anchor.owner.slot(Slots.Character.notes_041c11), within: Notes.fieldErrors, into: &errors)
+        return errors
+    }
+    /// The value, or the field errors in it as a thrown `FieldErrors`.
+    @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+    /// The value, or the field errors in it as a `Result`.
+    @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+        let errors = fieldErrors(anchor)
+        return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+    }
 
     nonisolated public struct Notes: Swift.Sendable, Swift.Hashable {
         public let totalCount: Int
@@ -178,6 +216,19 @@ nonisolated public struct TestNotesValue_character: Swift.Sendable, Swift.Hashab
         /// Reads the fragment's fields out of the record, once, at the call.
         @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
             self.totalCount = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.NoteConnection.totalCount, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
         }
     }
 }
@@ -255,6 +306,59 @@ nonisolated public struct TestResultValue_searchResult: Swift.Sendable, Swift.Ha
             self.name = anchor.string(Slots.Location.name)
             self.dimension = anchor.string(Slots.Location.dimension)
         }
+    }
+}
+
+/// Value of `fragment TestScanningValue_character on Character @inline`.
+nonisolated public struct TestScanningValue_character: Swift.Sendable, Swift.Hashable {
+    public let id: String?
+    public let testNotesValue: TestNotesValue_character
+    public let named: TestNamedValue_character?
+    public let caughtCharacter: Result<TestCharacterValue_character, Baton.FieldErrors>
+    public init(id: String?, testNotesValue: TestNotesValue_character, named: TestNamedValue_character?, caughtCharacter: Result<TestCharacterValue_character, Baton.FieldErrors>) {
+        self.id = id
+        self.testNotesValue = testNotesValue
+        self.named = named
+        self.caughtCharacter = caughtCharacter
+    }
+    /// Reads the fragment's fields out of the record, once, at the call.
+    @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+        self.id = anchor.string(Slots.Character.id)
+        self.testNotesValue = { () -> TestNotesValue_character in
+            let bound = anchor.binding(Sites.TestScanningValue_character_testNotesValue) { () -> [String: Baton.Variable?] in ["count": .int(1)] }
+            return .init(anchor: bound.entering())
+        }()
+        self.named = { () -> TestNamedValue_character? in
+            guard anchor.owner.selects(Guards.withName_true) else { return nil }
+            return .init(anchor: anchor.entering())
+        }()
+        self.caughtCharacter = { () -> Result<TestCharacterValue_character, Baton.FieldErrors> in
+            typealias Fragment = TestCharacterValue_character
+            let errors = Fragment.fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor.entering())) : .failure(.init(errors))
+        }()
+    }
+    /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+    @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+        var errors: [Baton.FieldError] = []
+        anchor.collectError(Slots.Character.id, into: &errors)
+        do {
+            typealias Fragment = TestNotesValue_character
+            let bound = anchor.binding(Sites.TestScanningValue_character_testNotesValue) { () -> [String: Baton.Variable?] in ["count": .int(1)] }
+            errors.append(contentsOf: Fragment.fieldErrors(bound))
+        }
+        do {
+            typealias Fragment = TestNamedValue_character
+            if anchor.owner.selects(Guards.withName_true) { errors.append(contentsOf: Fragment.fieldErrors(anchor)) }
+        }
+        return errors
+    }
+    /// The value, or the field errors in it as a thrown `FieldErrors`.
+    @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+    /// The value, or the field errors in it as a `Result`.
+    @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+        let errors = fieldErrors(anchor)
+        return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
     }
 }
 
@@ -568,6 +672,76 @@ nonisolated public struct TestResultValuesQuery: Baton.Query {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             @MainActor public var testResultValue: TestResultValue_searchResult { .init(anchor: anchor.entering()) }
+        }
+    }
+}
+
+/// Operation value for `query TestScanningValueQuery`.
+nonisolated public struct TestScanningValueQuery: Baton.Query {
+    public var id: String
+    public var withName: Bool
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+
+    public init(id: String, withName: Bool) {
+        self.id = id
+        self.withName = withName
+    }
+
+    public static let name = "TestScanningValueQuery"
+    public static let document: Baton.Document = .text(#"query TestScanningValueQuery($id:ID!,$withName:Boolean!){character(id:$id){...TestScanningValue_character_3ODEFE,id}}fragment TestCharacterValue_character on Character{id,name,status,origin{...TestOriginValue_location,id},episode{id,name}}fragment TestNamedValue_character on Character{name}fragment TestNotesValue_character_35kO5h on Character{notes(first:1){totalCount}}fragment TestOriginValue_location on Location{id,name,dimension}fragment TestScanningValue_character_3ODEFE on Character{id,...TestNotesValue_character_35kO5h,...TestNamedValue_character@include(if:$withName),...TestCharacterValue_character}"#)
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["id": Baton.Variable(self.id), "withName": Baton.Variable(self.withName)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.id == rhs.id && lhs.withName == rhs.withName
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.id)
+        hasher.combine(self.withName)
+    }
+
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient)
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+        .linked("character", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: [.variable("id")]), selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
+        .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+        .linked("notes", key: .fixed(Slots.Character.notes_f89852), plural: false, selection: selection4),
+        .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("status", key: .fixed(Slots.Character.status), kind: .string, list: false),
+        .linked("origin", key: .fixed(Slots.Character.origin), plural: false, selection: selection3),
+        .linked("episode", key: .fixed(Slots.Character.episode), plural: true, selection: selection2),
+    ])
+    private static let selection2: Baton.Selection = Baton.Selection(type: Types.Episode, key: ["id"], abstract: false, fields: [
+        .scalar("id", key: .fixed(Slots.Episode.id), kind: .string, list: false),
+        .scalar("name", key: .fixed(Slots.Episode.name), kind: .string, list: false),
+    ])
+    private static let selection3: Baton.Selection = Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
+        .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
+        .scalar("name", key: .fixed(Slots.Location.name), kind: .string, list: false),
+        .scalar("dimension", key: .fixed(Slots.Location.dimension), kind: .string, list: false),
+    ])
+    private static let selection4: Baton.Selection = Baton.Selection(type: Types.NoteConnection, key: [], abstract: false, fields: [
+        .scalar("totalCount", key: .fixed(Slots.NoteConnection.totalCount), kind: .int, list: false),
+    ])
+
+    nonisolated public struct Data: Baton.Lens {
+        @_spi(Generated) public let anchor: Baton.Anchor
+        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        @MainActor public var character: Character? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(Character.init(anchor:)) }
+
+        nonisolated public struct Character: Baton.Lens {
+            @_spi(Generated) public let anchor: Baton.Anchor
+            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            @MainActor public var testScanningValue: TestScanningValue_character {
+                get throws {
+                    let bound = anchor.binding(Sites.TestScanningValueQuery_testScanningValue) { () -> [String: Baton.Variable?] in ["withName": anchor.variables["withName"]] }
+                    return try .throwing(bound.entering())
+                }
+            }
         }
     }
 }
