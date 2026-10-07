@@ -219,7 +219,7 @@ fn validate_warns_at_the_name_of_a_fragment_no_operation_spreads_and_succeeds() 
     assert_eq!(
         warnings,
         [format!(
-            "{path}:4:10: warning: fragment `Unused_character` is spread by no operation; nothing can read its lens"
+            "{path}:4:10: warning: fragment `Unused_character` is spread by no operation; nothing can read it"
         )],
         "{errors}"
     );

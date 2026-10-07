@@ -58,7 +58,7 @@ const QUERY: &str = "query Screen { character(id: \"1\") { id ...Row_character }
 const ROW: &str = "fragment Row_character on Character { name }";
 
 fn message(name: &str) -> String {
-    format!("fragment `{name}` is spread by no operation; nothing can read its lens")
+    format!("fragment `{name}` is spread by no operation; nothing can read it")
 }
 
 #[test]
