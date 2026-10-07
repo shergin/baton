@@ -54,7 +54,7 @@ the verdict settled at the commit and kept on the root.
   in the environment's loop.
 - The gate: the phase scripts are written first, so the move is
   behaviour-frozen under `spec/`; the commit of the strict fixture with a
-  retained handle stays within the spread of today's 939 us; the
+  retained handle stays within the spread of today's 939 µs; the
   deterministic counts in `benchmarks/counts.txt` do not change.
 
 ## Evidence
@@ -62,9 +62,9 @@ the verdict settled at the commit and kept on the root.
 - [`BENCHMARKS.md`](../../BENCHMARKS.md), "The re-evaluation a commit runs,
   for the handle step", the ground step of 2026-10-05 on an Apple M1 Pro:
   the fixture under `@throwOnFieldError`, 899 records. The verdict costs
-  567 us untracked and 4.56 ms in a body's tracking scope, against the 50 us
-  the first record allowed a read. The commit costs 939 us with the handle
-  retained, against 136 us without it; that walk is the one this record
+  567 µs untracked and 4.56 ms in a body's tracking scope, against the 50 µs
+  the first record allowed a read. The commit costs 939 µs with the handle
+  retained, against 136 µs without it; that walk is the one this record
   moves, not adds.
 - The runtime as built, by reading: `Store.swift` raises
   `nullsOrErrorsChanged` and calls `phasesNeedSettling` in
@@ -86,5 +86,5 @@ the verdict settled at the commit and kept on the root.
   so it cannot tell the operation's own selection from a spread's, and
   `@throwOnFieldError` weighs only the operation's own.
 - The phase derived at read time by a walk of the selection, as the
-  superseded record measured: 567 us a read untracked, and every slot it
+  superseded record measured: 567 µs a read untracked, and every slot it
   read registered in the body.
