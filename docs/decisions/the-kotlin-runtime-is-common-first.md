@@ -1,6 +1,7 @@
 # The Kotlin runtime is common first, and a platform is an actual
 
-Status: accepted, 2026-10-07; amended 2026-10-07, the first actual. Serves
+Status: accepted, 2026-10-07; amended 2026-10-07, the first actual, and
+the primitives a target supplies. Serves
 [Two runtimes, one compiler](../principles/two-runtimes-one-compiler.md).
 Answers [#24](https://github.com/shergin/baton/issues/24) and shapes
 [#6](https://github.com/shergin/baton/issues/6). Not built yet. Reopen when
@@ -27,7 +28,10 @@ Kotlin runtime on the platform's equivalents.
 
 - `commonMain` holds everything the principle calls the runtime.
 - `expect` and `actual` cover the image's engine, the transports and the
-  activity signal, and nothing else.
+  activity signal, and the two primitives common Kotlin lacks that the
+  runtime cannot do without: a thread's identity, by which the store is
+  held to the thread that created it, and a double's shortest text, by
+  which a key renders a float as the contract spells it. Nothing else.
 - The JVM is the first actual and the development target, through
   Compose for Desktop: the runtime is built, the oracle and the scripts
   run, and the host API is designed on a Mac, with no emulator in the
@@ -74,6 +78,9 @@ Kotlin runtime on the platform's equivalents.
 ## Not chosen
 
 - Android first, then a port: a rewrite of every file the port touches.
+- A main-thread check as an actual: the store is confined to the thread
+  that created it instead, which is the main thread in an app and the test
+  thread in a test, so the platform's notion of main is never asked.
 - Android as the development target: an emulator and the Android Gradle
   plugin on every iteration of a runtime none of whose common code is
   Android's.

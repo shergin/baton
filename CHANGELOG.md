@@ -25,7 +25,9 @@ are expected and listed without apology.
 - The common-first record is amended: the JVM, through Compose for
   Desktop, is the first actual and the development target of the Kotlin
   runtime; Android is the first shipped target and the ingest budget's
-  home.
+  home. It names the two primitives a target supplies beside the image,
+  the transports and the activity signal: a thread's identity and a
+  double's shortest text.
 - The authors' documents are under `spec/sources/`, one `.graphql` file
   each, with the configuration they compile with in `spec/tests/baton.json`,
   so a second runtime's harness compiles its lenses from the specification
