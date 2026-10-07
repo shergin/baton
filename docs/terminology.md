@@ -240,7 +240,7 @@ labelled argument per variable and an optional `optimistic:` response,
 Here: an observable object identified by typename plus key, holding interned
 slots and per-field errors. A record of a concrete type the build never
 saw takes its variant from the response's own `__isX` answers, as
-[membership](#documents) says. Its values are sized by
+[membership](#generated) says. Its values are sized by
 what was written, not by how many storage keys the type has, and the keys
 rendered from variables written to it are kept in a short list apart. A
 record `@deleteRecord` removed is *deleted*: links to it read as null, lists
