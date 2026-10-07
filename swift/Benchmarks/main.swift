@@ -130,6 +130,21 @@ struct BenchmarkDocuments {
         """)
     var assetPrices: BenchAssetPrices
 
+    @Fragment("""
+        fragment BenchRowValue_character on Character @inline {
+          name status species type gender image created
+          origin { name }
+        }
+        """)
+    var rowValue: BenchRowValue_character
+
+    @Query("""
+        query BenchValueFixture($page: Int) {
+          characters(page: $page) { results { ...BenchRowValue_character } }
+        }
+        """)
+    var valueFixture: BenchValueFixture
+
     @Query("""
         query BenchSearch($name: String!) {
           search(name: $name) {
@@ -339,6 +354,45 @@ func run() async throws {
                 sink &+= row.image?.utf8.count ?? 0
                 sink &+= row.created?.utf8.count ?? 0
                 sink &+= row.origin?.name?.utf8.count ?? 0
+            } onChange: {}
+        }
+        if sink == 42 { print("") }
+    }
+    // The same 8 fields as an `@inline` fragment's value, over the same
+    // records: the spread's accessor builds the struct in one call, and the
+    // body reads the struct. Per field, so the rows compare with the lens's.
+    let valueRoot = BenchValueFixture.Data(anchor: Anchor(record: store.root, variables: BenchValueFixture(page: 1).variables, store: store))
+    let valueRows = Array(valueRoot.characters!.results!)
+    measure("untracked value read, a value of 8 fields built per row, per field", iterations: 50, ops: reads * 20) {
+        var sink = 0
+        for _ in 0..<20 {
+            for row in valueRows {
+                let value = row.benchRowValue
+                sink &+= value.name?.utf8.count ?? 0
+                sink &+= value.status?.utf8.count ?? 0
+                sink &+= value.species?.utf8.count ?? 0
+                sink &+= value.type?.utf8.count ?? 0
+                sink &+= value.gender?.utf8.count ?? 0
+                sink &+= value.image?.utf8.count ?? 0
+                sink &+= value.created?.utf8.count ?? 0
+                sink &+= value.origin?.name?.utf8.count ?? 0
+            }
+        }
+        if sink == 42 { print("") }
+    }
+    measure("tracked value read, one row body building its value, per field", iterations: 50, ops: reads) {
+        var sink = 0
+        for row in valueRows {
+            withObservationTracking {
+                let value = row.benchRowValue
+                sink &+= value.name?.utf8.count ?? 0
+                sink &+= value.status?.utf8.count ?? 0
+                sink &+= value.species?.utf8.count ?? 0
+                sink &+= value.type?.utf8.count ?? 0
+                sink &+= value.gender?.utf8.count ?? 0
+                sink &+= value.image?.utf8.count ?? 0
+                sink &+= value.created?.utf8.count ?? 0
+                sink &+= value.origin?.name?.utf8.count ?? 0
             } onChange: {}
         }
         if sink == 42 { print("") }

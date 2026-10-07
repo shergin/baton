@@ -21,6 +21,34 @@ Best ingest and best commit of the fixture at each release below.
   <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
 
+## Unreleased, an `@inline` fragment read as a value — 2026-10-06
+
+Revision: the working tree of the `@inline` build on top of `500db24`, one
+`--quick` run. Machine: Apple M1 Pro (MacBook Pro), macOS 26.5.2, release
+build. Not a quiet machine; read each row against its neighbour from the
+same run.
+
+A fragment marked `@inline` compiles to a struct of its fields, built by
+the spread's accessor in one call through the readers a lens's accessors
+use (`docs/decisions/a-fragment-has-one-reading.md`). The value rows read
+the 20 characters of the fixture page, 8 fields each (7 scalars and the
+name behind a link), as the lens rows beside them do.
+
+| Measurement | Lens | Value |
+|---|---|---|
+| Untracked read of 8 fields per row, per field | 34.9 ns | 41.6 ns |
+| Tracked read, one row body of 8 fields, per field | 662 ns | 653 ns |
+
+The value's 6.7 ns per field over the lens is the struct: the same eight
+slot loads, then the strings retained into stored properties. Inside a
+tracking body the registration dominates and the two are the same.
+
+Generated code, measured on a fragment of 7 scalars and one link with one
+field compiled both ways: 1,225 bytes and 19 lines as a lens, 1,832 bytes
+and 43 lines as a value. The value's memberwise initializer and its
+reading initializer are the difference; a lens has one accessor line per
+field.
+
 ## Unreleased, the writer merges a record memory has not read — 2026-10-06
 
 Revision: the working tree of the merge change on top of `89364b0`, one

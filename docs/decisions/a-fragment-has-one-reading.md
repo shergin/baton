@@ -9,7 +9,9 @@ fragment beside its own, or if adopters' views start taking inline values.
 Sharpened 2026-10-06, before the build, with the rules it gained: what an
 inline fragment contains and that its spread takes Relay's directives but
 `@catch`, the `Hashable` value under `@catch`, operation roots, a value
-held by a view, and where a read of the value registers. The decision is unchanged.
+held by a view, and where a read of the value registers. The decision is unchanged. Built
+2026-10-06, on the owner's call, ahead of the trigger it was to wait for;
+the Decision reads as built.
 
 ## Context
 
@@ -41,7 +43,7 @@ value, for code outside views.
   because a value type beside the lens of the same fragment is the model
   the lens replaced: every marked view fragment would have a copy to hand
   around.
-- The frozen reading is Relay's `@inline` *(planned)*. The compiler emits a
+- The frozen reading is Relay's `@inline`. The compiler emits a
   plain `Sendable`, `Hashable` struct for the fragment: a stored property
   per field, a nested value per link, an array per plural link, and an
   initializer, so a test builds one. The spread's accessor on the parent's
@@ -52,8 +54,14 @@ value, for code outside views.
   normal spread inside an inline fragment as a spread and hands back a
   fragment reference inside the data. The value is `Hashable` by value; a
   lens inside it would be equal by identity.
-- The value is terminal. No Baton API accepts one, and `@Fragment` on a
-  view's property refuses an inline fragment.
+- The value is terminal. No Baton API accepts one: the value is not a
+  `Lens`, so `ForEach`, an operation's `Data` and every reader refuse it by
+  type. The compiler cannot see whether the property under `@Fragment`
+  belongs to a view, since the marker scanner reads the attribute and the
+  property and not the type that holds them, so a view that declares an
+  inline fragment is not refused: it gets a value its parent builds in
+  its own body, where that read registers. The rule is written, not
+  enforced.
 - Terminal does not mean never near a view. A view may hold a value as a
   plain parameter of its own initializer: a sheet given the price as of the
   tap is the intended use. What is refused is a Baton API that takes one.
@@ -68,14 +76,22 @@ value, for code outside views.
   a condition around the spread, and its defer transform, which runs before
   the inline transform, lifts `@defer` the same way; `@catch` stays on the
   spread and is refused there. A restriction Relay does not have needs a
-  reason, and there is none. The spread table in `directives.rs`
-  (`SPREAD`) gains a branch that refuses `@catch` on an inline fragment's
-  spread when this is built.
-- The value is `Hashable` unconditionally, and `@catch` breaks that as
-  built: a caught field reads as a `Result` whose failure is `FieldErrors`,
-  which is not `Hashable`. Open for the build: `FieldErrors` gains
-  `Hashable`, which is the proposal, or the value's conformance is
-  conditional.
+  reason, and there is none. As built, no branch of the spread table was
+  needed: Relay's schema gives `@catch` no place on a spread, so its
+  validation refuses one before Baton reads the document. The caught form
+  is `... @alias(as:) @catch { ...Value }`, which reads a `Result` of the
+  value.
+- The value is `Hashable` unconditionally. A caught field reads as a
+  `Result` whose failure is `FieldErrors`, and a mapped scalar as the type
+  `baton.json` names, so both are `Hashable` as built: `FieldErrors` gained
+  it, and `MappedScalar` requires it; a mapped type of the app's own that
+  was not `Hashable` becomes it.
+- `@required` inside an inline fragment is refused by Relay's own
+  transform, so a value bubbles nothing and no field of it throws. A
+  non-null mapped scalar in a value reads optional, since a stored
+  property cannot throw and a text that does not convert has no zero to
+  read as; under `@throwOnFieldError` the failed conversion is among the
+  fragment's field errors and throws at the spread.
 - An operation root is not inline. `@inline` marks a fragment definition
   only, in Relay and here. A query that needs its answer as a value spreads
   one inline fragment at its root and calls that accessor on the main
@@ -86,22 +102,30 @@ value, for code outside views.
   so the parent subscribes to those fields and re-renders when they change.
   The departure is on purpose: the accessor is where a lens registers a
   read.
-- This is the principle's explicit snapshot, generated. When it is built,
-  the principle's line on generated code says that it speaks of lenses.
-- It waits behind the work the adopter's other issues ask for first: the
-  session, the fetch, the write path, the wire. An adopter who shows code
-  off the main actor copying many fields of many fragments by hand moves it
-  up. A copy of a few scalars at the call works today, and until `@inline`
-  is built the compiler keeps rejecting it.
+- This is the principle's explicit snapshot, generated. The principle's
+  line on generated code says that it speaks of lenses.
+- It was to wait behind the work the adopter's other issues asked for
+  first, the session, the fetch, the write path and the wire, and then for
+  an adopter's code off the main actor copying many fields of many
+  fragments by hand. The four were built first. The owner called the build
+  on 2026-10-06 ahead of that trigger, the design being settled and the
+  cost bounded; the trigger stays recorded as what would have moved it.
 
 ## Evidence
 
 - Relay's documentation of `@inline` and `readInlineData`, read 2026-10-04
   ([GraphQL directives](https://relay.dev/docs/api-reference/graphql-and-directives/)):
   for functions outside rendering; a plain value, not subscribed.
-- The compiler as built: `directives.rs` gives `@inline` no place, and the
-  directive test `a_directive_baton_gives_no_meaning_is_an_error_at_it`
-  pins the error.
+- The compiler before the build: `directives.rs` gave `@inline` no place,
+  and the directive test `a_directive_baton_gives_no_meaning_is_an_error_at_it`
+  pinned the error.
+- The compiler as built, probed on 2026-10-06 with `batonc validate`: a
+  lens fragment spread inside an inline fragment is refused at the spread,
+  `@connection` and `@refetchable` on an inline fragment at its name,
+  `@required` inside one by Relay's transform, and `@catch` on a spread by
+  Relay's schema. Relay's inline-data transform runs in the reader
+  pipeline Baton already applies; the lowering turns the marker it leaves
+  back into a spread.
 - The lens as built: a `nonisolated` struct that is `Sendable`, with
   `@MainActor` accessors. It can be carried across an isolation boundary
   and read on one side of it only.
@@ -123,10 +147,16 @@ value, for code outside views.
   `directive @inline on FRAGMENT_DEFINITION`.
 - `FieldErrors` as built (`Errors.swift:45`) is `Error` and `Sendable` but
   not `Hashable`; `FieldError` (line 9) is `Hashable`.
-- The demand is one issue naming four cases. No call site has been shown,
-  which is why the build waits.
-- Not measured yet: the generated code an inline fragment adds, and what
-  reading one out costs. Both are recorded when it is built.
+- The demand is one issue naming four cases. No call site had been shown
+  when the owner called the build.
+- Measured on 2026-10-06, on the bench (Apple M1 Pro, release, `--quick`)
+  and recorded in `BENCHMARKS.md`: an untracked read of a value of 8
+  fields built per row costs 41.6 ns per field against 34.9 ns through
+  the lens's accessors; inside a tracking body, 653 ns against 662 ns.
+  The generated code for a fragment of 7 scalars and one link is 1,832
+  bytes and 43 lines as a value against 1,225 bytes and 19 lines as a
+  lens: the memberwise initializer and the reading initializer, where a
+  lens has one accessor line per field.
 
 ## Not chosen
 
@@ -134,6 +164,13 @@ value, for code outside views.
   marked fragment.
 - Refusing conditions and `@defer` on an inline fragment's spread, which
   Relay allows, for no reason a document would show.
+- A throwing `init(anchor:)` for a value holding a non-null mapped scalar,
+  which would make the spread's accessor throw where the fragment states
+  no error policy: the scalar reads optional instead.
+- A check that the property under `@Fragment` belongs to a view: the
+  marker scanner does not see the type that holds the property, and a
+  guess from its text would refuse views it cannot name and pass ones it
+  cannot see.
 - Refusing the need, which was the first answer. Every crossing of the
   main actor's boundary stays a hand copy that nothing checks, a function
   outside a view cannot state the data it needs as a value, and a document

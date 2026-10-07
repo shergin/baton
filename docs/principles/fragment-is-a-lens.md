@@ -41,8 +41,11 @@ registered, so a view body depends on the fields it read and nothing else.
 
 - There is no model to copy, mutate, persist or keep in sync. The store is the
   only data.
-- Generated code is one line per field plus a few data tables. No `Codable`,
-  no `Hashable` beyond identity, no initializers except opt-in test builders.
+- Generated code for a lens is one line per field plus a few data tables.
+  No `Codable`, no `Hashable` beyond identity, no initializers except
+  opt-in test builders. The explicit snapshot is generated too, as a
+  fragment's other reading: an `@inline` fragment compiles to a value, not
+  a lens ([the decision](../decisions/a-fragment-has-one-reading.md)).
 - A lens is valid only on the main actor, where the store lives. Code that
   needs a value elsewhere hops there or takes an explicit snapshot.
 - Equality of lenses is identity: same record, same context. SwiftUI's
@@ -55,8 +58,8 @@ registered, so a view body depends on the fields it read and nothing else.
 - Decoding responses into `Codable` models and normalizing from the models.
 - A parent reading a child's fields through a shared struct.
 - Fragment references as protocols a generic view is constrained by.
-- Materializing a snapshot of a fragment to compare it against the previous
-  one.
+- Materializing a snapshot of a fragment to decide what re-renders;
+  Observation decides that.
 
 See [The store is the UI's state](store-is-the-ui-state.md) for what a read
 registers, and [The compiler decides](compiler-decides.md) for who emits the
