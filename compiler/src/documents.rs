@@ -1,10 +1,101 @@
 //! Collects every GraphQL document the compiler will see: literals embedded in
-//! Swift files and standalone `.graphql` files, each remembering where it came
-//! from so diagnostics can point back into the host file.
+//! the files of a host language and standalone `.graphql` files, each
+//! remembering where it came from so diagnostics can point back into the host
+//! file. A host language is a `HostLanguage`, found by the extension of its
+//! files; Swift's is `swift::SwiftHost`.
 
+use std::fmt;
 use std::path::{Path, PathBuf};
 
-use crate::swift::{self, EmbeddedDocument, Position, ScanError};
+use crate::diagnostics::Rendered;
+use crate::pipeline::Plan;
+use crate::swift::SwiftHost;
+
+/// A language whose source files hold GraphQL documents: how the documents
+/// are found in a file, what the output a source writes is named, and what
+/// the host files are checked for once the documents compile.
+pub trait HostLanguage: Sync {
+    /// The extensions of the language's source files, without the dot.
+    fn extensions(&self) -> &'static [&'static str];
+
+    /// The documents embedded in `source`, and each problem the scan found
+    /// with where it is. A problem does not stop the scan.
+    fn scan(&self, source: &str) -> (Vec<EmbeddedDocument>, Vec<(Position, String)>);
+
+    /// The name of the output `source` writes, a source of any language,
+    /// unique among the sources under `root`.
+    fn output_name(&self, source: &Path, root: &Path) -> String;
+
+    /// The name of the shared file.
+    fn shared_output_name(&self) -> &'static str;
+
+    /// Whether `path` names an output the compiler writes in this language,
+    /// which an output directory may hold from an earlier run.
+    fn is_output(&self, path: &Path) -> bool;
+
+    /// What the language's host files are checked for once their documents
+    /// compile to `plan`, as warnings.
+    fn check(&self, documents: &[Document], plan: &Plan) -> Vec<Rendered>;
+}
+
+/// The host languages the compiler reads.
+pub const HOSTS: [&dyn HostLanguage; 1] = [&SwiftHost];
+
+/// The host language whose files have the extension of `path`.
+pub fn host_of(path: &Path) -> Option<&'static dyn HostLanguage> {
+    let extension = extension(path);
+    HOSTS
+        .into_iter()
+        .find(|host| host.extensions().contains(&extension))
+}
+
+/// The marker that introduced an embedded document.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize)]
+pub enum Marker {
+    Fragment,
+    Query,
+    Mutation,
+    Subscription,
+}
+
+impl fmt::Display for Marker {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter.write_str(match self {
+            Marker::Fragment => "@Fragment",
+            Marker::Query => "@Query",
+            Marker::Mutation => "@Mutation",
+            Marker::Subscription => "@Subscription",
+        })
+    }
+}
+
+/// A 1-based position in a source file. Columns count characters.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize)]
+pub struct Position {
+    pub line: u32,
+    pub column: u32,
+}
+
+/// The property declaration that follows a marker, when there is one.
+#[derive(Clone, Debug, PartialEq, Eq, serde::Serialize)]
+pub struct Property {
+    pub name: String,
+    /// The written type, e.g. `CharacterRow_character` or `Foo?`.
+    pub type_name: String,
+}
+
+/// One GraphQL document found inside a host file.
+#[derive(Clone, Debug, serde::Serialize)]
+pub struct EmbeddedDocument {
+    pub marker: Marker,
+    /// Where the marker starts.
+    pub attribute: Position,
+    /// Where the first character of `text` sits in the file.
+    pub start: Position,
+    /// The literal's content, verbatim.
+    pub text: String,
+    pub property: Option<Property>,
+}
 
 /// One GraphQL source text and the place it lives.
 #[derive(Clone, Debug, serde::Serialize)]
@@ -16,7 +107,7 @@ pub struct Document {
     /// Position of the text's first character inside the host file.
     pub start: Position,
     pub text: String,
-    /// The Swift marker and property, when the document came from Swift.
+    /// The marker and property, when the document came from a host file.
     pub embedded: Option<EmbeddedDocument>,
 }
 
@@ -28,17 +119,18 @@ pub enum CollectError {
         path: PathBuf,
         source: std::io::Error,
     },
-    #[error("{path}:{line}:{column}: error: {error}")]
+    #[error("{path}:{line}:{column}: error: {message}")]
     Scan {
         path: PathBuf,
         line: u32,
         column: u32,
-        error: ScanError,
+        message: String,
     },
 }
 
-/// Reads the given files. Swift files are scanned for marker attributes;
-/// `.graphql` and `.gql` files are taken whole; anything else is ignored.
+/// Reads the given files. A host language's files are scanned for its
+/// markers; `.graphql` and `.gql` files are taken whole; anything else is
+/// ignored.
 pub fn collect(paths: &[PathBuf]) -> (Vec<Document>, Vec<CollectError>) {
     let mut documents = Vec::new();
     let mut errors = Vec::new();
@@ -53,28 +145,28 @@ pub fn collect(paths: &[PathBuf]) -> (Vec<Document>, Vec<CollectError>) {
                 continue;
             }
         };
-        match extension(path) {
-            "swift" => {
-                let (embedded, scan_errors) = swift::scan(&source);
-                for error in scan_errors {
-                    let position = error.position();
-                    errors.push(CollectError::Scan {
-                        path: path.clone(),
-                        line: position.line,
-                        column: position.column,
-                        error,
-                    });
-                }
-                for (index, document) in embedded.into_iter().enumerate() {
-                    documents.push(Document {
-                        path: path.clone(),
-                        index,
-                        start: document.start,
-                        text: document.text.clone(),
-                        embedded: Some(document),
-                    });
-                }
+        if let Some(host) = host_of(path) {
+            let (embedded, problems) = host.scan(&source);
+            for (position, message) in problems {
+                errors.push(CollectError::Scan {
+                    path: path.clone(),
+                    line: position.line,
+                    column: position.column,
+                    message,
+                });
             }
+            for (index, document) in embedded.into_iter().enumerate() {
+                documents.push(Document {
+                    path: path.clone(),
+                    index,
+                    start: document.start,
+                    text: document.text.clone(),
+                    embedded: Some(document),
+                });
+            }
+            continue;
+        }
+        match extension(path) {
             "graphql" | "gql" => documents.push(Document {
                 path: path.clone(),
                 index: 0,

@@ -475,7 +475,7 @@ fn emitted(text: &str) -> String {
     let documents = [crate::documents::Document {
         path: PathBuf::from("Probe.graphql"),
         index: 0,
-        start: crate::swift::Position { line: 1, column: 1 },
+        start: crate::documents::Position { line: 1, column: 1 },
         text: text.to_string(),
         embedded: None,
     }];

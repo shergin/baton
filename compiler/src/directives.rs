@@ -8,7 +8,7 @@ use common::{Diagnostic, Location, SourceLocationKey};
 use graphql_syntax::{Directive, ExecutableDefinition, OperationKind, Selection};
 use intern::Lookup;
 
-use crate::swift::Marker;
+use crate::documents::Marker;
 
 /// The directives each place takes. A query also states its cache
 /// expiration, the one directive that is not Relay's

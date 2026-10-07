@@ -22,7 +22,7 @@ fn document(text: &str) -> Document {
     Document {
         path: PathBuf::from("Pipeline.swift"),
         index: 0,
-        start: crate::swift::Position { line: 1, column: 1 },
+        start: crate::documents::Position { line: 1, column: 1 },
         text: text.to_string(),
         embedded: None,
     }

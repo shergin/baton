@@ -1,72 +1,29 @@
 //! Finds GraphQL embedded in Swift source: a marker attribute (`@Fragment`,
 //! `@Query`, `@Mutation`, `@Subscription`, each also qualified as
-//! `@Baton.Query`) followed by a string literal, plain or raw.
+//! `@Baton.Query`) followed by a string literal, plain or raw. `SwiftHost`
+//! is Swift as a host language: this scan, the names of the outputs, and the
+//! check of the properties that hold the documents.
 //!
 //! The literal's text is taken verbatim, with its indentation, so every
 //! character of the GraphQL sits at its exact file position and diagnostics
 //! map back without arithmetic. Swift strips the indentation at run time; the
 //! runtime value of the literal is never used.
 
-use std::fmt;
+use std::path::Path;
 
-/// The attribute that introduced an embedded document.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize)]
-pub enum Marker {
-    Fragment,
-    Query,
-    Mutation,
-    Subscription,
-}
+use crate::diagnostics::{self, Rendered};
+use crate::documents::{Document, EmbeddedDocument, HostLanguage, Marker, Position, Property};
+use crate::pipeline;
 
-impl Marker {
-    fn from_identifier(identifier: &str) -> Option<Marker> {
-        match identifier {
-            "Fragment" => Some(Marker::Fragment),
-            "Query" => Some(Marker::Query),
-            "Mutation" => Some(Marker::Mutation),
-            "Subscription" => Some(Marker::Subscription),
-            _ => None,
-        }
+/// The marker an attribute's identifier names, if any.
+fn marker_named(identifier: &str) -> Option<Marker> {
+    match identifier {
+        "Fragment" => Some(Marker::Fragment),
+        "Query" => Some(Marker::Query),
+        "Mutation" => Some(Marker::Mutation),
+        "Subscription" => Some(Marker::Subscription),
+        _ => None,
     }
-}
-
-impl fmt::Display for Marker {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        formatter.write_str(match self {
-            Marker::Fragment => "@Fragment",
-            Marker::Query => "@Query",
-            Marker::Mutation => "@Mutation",
-            Marker::Subscription => "@Subscription",
-        })
-    }
-}
-
-/// A 1-based position in a source file. Columns count characters.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize)]
-pub struct Position {
-    pub line: u32,
-    pub column: u32,
-}
-
-/// The property declaration that follows a marker attribute, when there is one.
-#[derive(Clone, Debug, PartialEq, Eq, serde::Serialize)]
-pub struct Property {
-    pub name: String,
-    /// The written type, e.g. `CharacterRow_character` or `Foo?`.
-    pub type_name: String,
-}
-
-/// One GraphQL document found inside a Swift file.
-#[derive(Clone, Debug, serde::Serialize)]
-pub struct EmbeddedDocument {
-    pub marker: Marker,
-    /// Where the attribute starts.
-    pub attribute: Position,
-    /// Where the first character of `text` sits in the file.
-    pub start: Position,
-    /// The literal's content, verbatim.
-    pub text: String,
-    pub property: Option<Property>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
@@ -98,6 +55,128 @@ pub fn scan(source: &str) -> (Vec<EmbeddedDocument>, Vec<ScanError>) {
     let mut scanner = Scanner::new(source);
     scanner.run();
     (scanner.documents, scanner.errors)
+}
+
+/// Swift as a host language.
+pub struct SwiftHost;
+
+/// What every generated Swift file's name ends in.
+const OUTPUT_SUFFIX: &str = ".baton.swift";
+
+impl HostLanguage for SwiftHost {
+    fn extensions(&self) -> &'static [&'static str] {
+        &["swift"]
+    }
+
+    fn scan(&self, source: &str) -> (Vec<EmbeddedDocument>, Vec<(Position, String)>) {
+        let (documents, errors) = scan(source);
+        let problems = errors
+            .into_iter()
+            .map(|error| (error.position(), error.to_string()))
+            .collect();
+        (documents, problems)
+    }
+
+    /// The source's path relative to `root`, each directory separator an
+    /// underscore, with `.baton.swift` in place of a `.swift` extension and
+    /// after any other, so `Thing.swift` and `Thing.graphql`, or two files of
+    /// one name in two directories, write two outputs. The build plugin names
+    /// its outputs by the same rule.
+    fn output_name(&self, source: &Path, root: &Path) -> String {
+        let relative = source.strip_prefix(root).unwrap_or(source);
+        let parts: Vec<String> = relative
+            .components()
+            .filter_map(|component| match component {
+                std::path::Component::Normal(part) => Some(part.to_string_lossy().into_owned()),
+                std::path::Component::ParentDir => Some("..".to_string()),
+                _ => None,
+            })
+            .collect();
+        let joined = parts.join("_");
+        let stem = joined.strip_suffix(".swift").unwrap_or(&joined);
+        format!("{stem}{OUTPUT_SUFFIX}")
+    }
+
+    fn shared_output_name(&self) -> &'static str {
+        "Baton.baton.swift"
+    }
+
+    fn is_output(&self, path: &Path) -> bool {
+        path.to_string_lossy().ends_with(OUTPUT_SUFFIX)
+    }
+
+    /// Warns when the property holding a document is not typed as that
+    /// document's generated type: the one Baton convention the compiler can
+    /// check for free. The definition is found by where it came from, its
+    /// file and its place among the file's documents, never by searching the
+    /// text for a name.
+    fn check(&self, documents: &[Document], plan: &pipeline::Plan) -> Vec<Rendered> {
+        let mut rendered = Vec::new();
+        for document in documents {
+            let is_swift = document
+                .path
+                .extension()
+                .and_then(|extension| extension.to_str())
+                .is_some_and(|extension| self.extensions().contains(&extension));
+            if !is_swift {
+                continue;
+            }
+            let Some(embedded) = &document.embedded else {
+                continue;
+            };
+            let Some(property) = &embedded.property else {
+                continue;
+            };
+            let path = document.path.to_string_lossy();
+            let expected = match embedded.marker {
+                Marker::Fragment => plan
+                    .fragments
+                    .iter()
+                    .find(|fragment| fragment.source == path && fragment.document == document.index)
+                    .map(|fragment| fragment.name.as_str()),
+                marker => plan
+                    .operations
+                    .iter()
+                    .find(|operation| {
+                        operation.source == path
+                            && operation.document == document.index
+                            && Some(operation.kind) == kind_of(marker)
+                    })
+                    .map(|operation| operation.name.as_str()),
+            };
+            let Some(expected) = expected else { continue };
+            // Module-qualified spellings are accepted: `App.Foo` names `Foo`.
+            let written = property.type_name.trim_end_matches('?');
+            let names = |name: &str| written == name || written.ends_with(&format!(".{name}"));
+            let matches = match embedded.marker {
+                Marker::Mutation => names(expected) || names(&format!("{expected}.Action")),
+                _ => names(expected),
+            };
+            if !matches {
+                rendered.push(diagnostics::own(
+                    &document.path,
+                    document.start.line,
+                    document.start.column,
+                    "warning",
+                    format!(
+                        "{} declares `{expected}` but the property `{}` is typed `{}`; Baton expects the property type to be `{expected}`",
+                        embedded.marker, property.name, property.type_name
+                    ),
+                ));
+            }
+        }
+        rendered
+    }
+}
+
+/// The operation kind a marker declares; none for a fragment's.
+fn kind_of(marker: Marker) -> Option<pipeline::OperationKind> {
+    match marker {
+        Marker::Query => Some(pipeline::OperationKind::Query),
+        Marker::Mutation => Some(pipeline::OperationKind::Mutation),
+        Marker::Subscription => Some(pipeline::OperationKind::Subscription),
+        Marker::Fragment => None,
+    }
 }
 
 struct Scanner<'a> {
@@ -302,7 +381,7 @@ impl<'a> Scanner<'a> {
             self.advance();
             identifier = self.read_identifier();
         }
-        let Some(marker) = Marker::from_identifier(&identifier) else {
+        let Some(marker) = marker_named(&identifier) else {
             return;
         };
         self.skip_whitespace();

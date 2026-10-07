@@ -20,7 +20,7 @@ fn decided(text: &str) -> NormalizationSelection {
     let document = Document {
         path: PathBuf::from("Decide.swift"),
         index: 0,
-        start: crate::swift::Position { line: 1, column: 1 },
+        start: crate::documents::Position { line: 1, column: 1 },
         text: text.to_string(),
         embedded: None,
     };
@@ -600,7 +600,7 @@ fn mapped_fragment(text: &str, name: &str) -> ReaderPlan {
     let document = Document {
         path: PathBuf::from("Decide.swift"),
         index: 0,
-        start: crate::swift::Position { line: 1, column: 1 },
+        start: crate::documents::Position { line: 1, column: 1 },
         text: text.to_string(),
         embedded: None,
     };
@@ -711,7 +711,7 @@ fn fragment_lenses(text: &str) -> BTreeMap<String, ReaderPlan> {
     let document = Document {
         path: PathBuf::from("Decide.swift"),
         index: 0,
-        start: crate::swift::Position { line: 1, column: 1 },
+        start: crate::documents::Position { line: 1, column: 1 },
         text: text.to_string(),
         embedded: None,
     };

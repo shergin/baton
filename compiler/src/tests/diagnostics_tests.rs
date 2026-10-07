@@ -10,7 +10,7 @@ fn document(text: &str) -> Document {
     Document {
         path: PathBuf::from("Screen.swift"),
         index: 0,
-        start: crate::swift::Position {
+        start: crate::documents::Position {
             line: 10,
             column: 5,
         },

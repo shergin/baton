@@ -30,7 +30,7 @@ fn decided_variables(text: &str) -> Vec<VariableValue> {
     let document = Document {
         path: PathBuf::from("Probe.swift"),
         index: 0,
-        start: crate::swift::Position { line: 1, column: 1 },
+        start: crate::documents::Position { line: 1, column: 1 },
         text: text.to_string(),
         embedded: None,
     };

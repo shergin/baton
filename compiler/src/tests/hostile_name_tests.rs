@@ -864,7 +864,7 @@ fn compile(text: &str) -> Result<emit::Output, Vec<String>> {
     let documents = [Document {
         path: PathBuf::from(PROBE),
         index: 0,
-        start: crate::swift::Position { line: 1, column: 1 },
+        start: crate::documents::Position { line: 1, column: 1 },
         text: text.to_string(),
         embedded: None,
     }];

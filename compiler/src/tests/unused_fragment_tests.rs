@@ -6,8 +6,8 @@ use std::path::{Path, PathBuf};
 
 use crate::config::Config;
 use crate::documents::Document;
+use crate::documents::Position;
 use crate::pipeline::compile;
-use crate::swift::Position;
 
 use super::*;
 

@@ -32,9 +32,14 @@ use std::process::ExitCode;
 
 use crate::config::Config;
 use crate::diagnostics::Rendered;
-use crate::documents::Document;
+use crate::documents::{Document, HOSTS, HostLanguage};
 use crate::naming::NameError;
-use crate::swift::Marker;
+use crate::swift::SwiftHost;
+
+/// The host language the target writes, which names the outputs: every
+/// source's, the shared file, and the files of an output directory the
+/// compiler owns.
+const OUTPUTS: &dyn HostLanguage = &SwiftHost;
 
 fn main() -> ExitCode {
     let arguments: Vec<String> = std::env::args().skip(1).collect();
@@ -286,7 +291,7 @@ fn plan(arguments: &[String]) -> Result<(), DriverError> {
 
 /// One compilation of a target's documents: the schema sources, the
 /// documents, the plan, and the lines the compiler itself reports after the
-/// front end, property types and unused fragments.
+/// front end, the host files' checks and unused fragments.
 struct Compilation {
     sources: SchemaSources,
     documents: Vec<Document>,
@@ -324,7 +329,10 @@ fn compile_documents(options: &Options) -> Result<Compilation, DriverError> {
     if !errors.is_empty() {
         return Err(DriverError::Reported);
     }
-    let mut rendered = check_property_types(&documents, &plan);
+    let mut rendered: Vec<Rendered> = HOSTS
+        .into_iter()
+        .flat_map(|host| host.check(&documents, &plan))
+        .collect();
     rendered.extend(unused_fragments(&documents, &plan));
     Ok(Compilation {
         sources,
@@ -388,11 +396,14 @@ fn generate(arguments: &[String]) -> Result<(), DriverError> {
             .map(|document| &document.path)
             .collect::<BTreeSet<_>>()
         {
-            targets.push((path.clone(), out_dir.join(output_name(path, &root))));
+            targets.push((path.clone(), out_dir.join(OUTPUTS.output_name(path, &root))));
         }
     }
-    let shared_path =
-        shared_path.or_else(|| out_dir.as_ref().map(|dir| dir.join("Baton.baton.swift")));
+    let shared_path = shared_path.or_else(|| {
+        out_dir
+            .as_ref()
+            .map(|dir| dir.join(OUTPUTS.shared_output_name()))
+    });
     check_targets(&targets, shared_path.as_deref(), &output)?;
 
     // Every declared output is planned, so the build system never sees a
@@ -448,8 +459,8 @@ fn generate(arguments: &[String]) -> Result<(), DriverError> {
 }
 
 /// `--check`: compares every planned output with the file at its path and
-/// names each that is stale or missing, and each `.baton.swift` in the
-/// output directory that nothing writes any more; reports when any is.
+/// names each that is stale or missing, and each output in the output
+/// directory that nothing writes any more; reports when any is.
 fn check_outputs(planned: &[(PathBuf, String)], out_dir: Option<&Path>) -> Result<(), DriverError> {
     let mut stale = 0;
     for (path, text) in planned {
@@ -472,7 +483,7 @@ fn check_outputs(planned: &[(PathBuf, String)], out_dir: Option<&Path>) -> Resul
             .collect();
         for entry in std::fs::read_dir(out_dir).into_iter().flatten().flatten() {
             let path = entry.path();
-            if !path.to_string_lossy().ends_with(".baton.swift") {
+            if !OUTPUTS.is_output(&path) {
                 continue;
             }
             let Ok(canonical) = std::fs::canonicalize(&path) else {
@@ -574,7 +585,7 @@ fn persisted_documents(plan: &pipeline::Plan) -> String {
 /// Removes from `out_dir` every generated file this run did not write: the
 /// output of a source since renamed or removed, which a build that compiles
 /// the directory would otherwise still see. The directory is the compiler's
-/// own, so only its `.baton.swift` files are touched.
+/// own, so only the outputs `OUTPUTS` names are touched.
 fn remove_stale_outputs(out_dir: &Path, written: &[&Path]) -> Result<(), DriverError> {
     let Ok(entries) = std::fs::read_dir(out_dir) else {
         return Ok(());
@@ -585,7 +596,7 @@ fn remove_stale_outputs(out_dir: &Path, written: &[&Path]) -> Result<(), DriverE
         .collect();
     for entry in entries.flatten() {
         let path = entry.path();
-        if !path.to_string_lossy().ends_with(".baton.swift") {
+        if !OUTPUTS.is_output(&path) {
             continue;
         }
         let Ok(canonical) = std::fs::canonicalize(&path) else {
@@ -600,26 +611,6 @@ fn remove_stale_outputs(out_dir: &Path, written: &[&Path]) -> Result<(), DriverE
         })?;
     }
     Ok(())
-}
-
-/// The output a source writes: its path relative to `root`, each directory
-/// separator an underscore, with `.baton.swift` in place of a `.swift`
-/// extension and after any other, so `Thing.swift` and `Thing.graphql`, or
-/// two files of one name in two directories, write two outputs. The build
-/// plugin names its outputs by the same rule.
-fn output_name(source: &Path, root: &Path) -> String {
-    let relative = source.strip_prefix(root).unwrap_or(source);
-    let parts: Vec<String> = relative
-        .components()
-        .filter_map(|component| match component {
-            std::path::Component::Normal(part) => Some(part.to_string_lossy().into_owned()),
-            std::path::Component::ParentDir => Some("..".to_string()),
-            _ => None,
-        })
-        .collect();
-    let joined = parts.join("_");
-    let stem = joined.strip_suffix(".swift").unwrap_or(&joined);
-    format!("{stem}.baton.swift")
 }
 
 /// Fails when a file holding GraphQL has no output, whose lenses would be
@@ -682,70 +673,6 @@ fn write_output(path: &Path, text: &str) -> Result<(), DriverError> {
         })?;
     }
     write_if_changed(path, text)
-}
-
-/// Warns when the property holding a document is not typed as that document's
-/// generated type: the one Baton convention the compiler can check for free.
-/// The definition is found by where it came from, its file and its place
-/// among the file's documents, never by searching the text for a name.
-fn check_property_types(documents: &[Document], plan: &pipeline::Plan) -> Vec<Rendered> {
-    let mut rendered = Vec::new();
-    for document in documents {
-        let Some(embedded) = &document.embedded else {
-            continue;
-        };
-        let Some(property) = &embedded.property else {
-            continue;
-        };
-        let path = document.path.to_string_lossy();
-        let expected = match embedded.marker {
-            Marker::Fragment => plan
-                .fragments
-                .iter()
-                .find(|fragment| fragment.source == path && fragment.document == document.index)
-                .map(|fragment| fragment.name.as_str()),
-            marker => plan
-                .operations
-                .iter()
-                .find(|operation| {
-                    operation.source == path
-                        && operation.document == document.index
-                        && Some(operation.kind) == kind_of(marker)
-                })
-                .map(|operation| operation.name.as_str()),
-        };
-        let Some(expected) = expected else { continue };
-        // Module-qualified spellings are accepted: `App.Foo` names `Foo`.
-        let written = property.type_name.trim_end_matches('?');
-        let names = |name: &str| written == name || written.ends_with(&format!(".{name}"));
-        let matches = match embedded.marker {
-            Marker::Mutation => names(expected) || names(&format!("{expected}.Action")),
-            _ => names(expected),
-        };
-        if !matches {
-            rendered.push(diagnostics::own(
-                &document.path,
-                document.start.line,
-                document.start.column,
-                "warning",
-                format!(
-                    "{} declares `{expected}` but the property `{}` is typed `{}`; Baton expects the property type to be `{expected}`",
-                    embedded.marker, property.name, property.type_name
-                ),
-            ));
-        }
-    }
-    rendered
-}
-
-/// The operation kind a marker declares; none for a fragment's.
-fn kind_of(marker: Marker) -> Option<pipeline::OperationKind> {
-    match marker {
-        Marker::Query => Some(pipeline::OperationKind::Query),
-        Marker::Mutation => Some(pipeline::OperationKind::Mutation),
-        Marker::Subscription => Some(pipeline::OperationKind::Subscription),
-        Marker::Fragment => None,
-    }
 }
 
 fn write_if_changed(path: &Path, text: &str) -> Result<(), DriverError> {
@@ -847,7 +774,7 @@ fn synthetic_document(index: usize, text: String) -> Document {
     Document {
         path: PathBuf::from(format!("Synthetic{index}.swift")),
         index: 0,
-        start: swift::Position { line: 1, column: 1 },
+        start: documents::Position { line: 1, column: 1 },
         text,
         embedded: None,
     }

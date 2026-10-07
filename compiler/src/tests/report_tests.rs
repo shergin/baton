@@ -34,7 +34,7 @@ fn compiled_at(config: &str, documents: &[(&str, &str)]) -> Plan {
         .map(|(index, (path, text))| Document {
             path: PathBuf::from(path),
             index,
-            start: crate::swift::Position { line: 1, column: 1 },
+            start: crate::documents::Position { line: 1, column: 1 },
             text: text.to_string(),
             embedded: None,
         })
