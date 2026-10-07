@@ -105,12 +105,12 @@ A fragment beside the view that renders it, and one query for the screen:
 ```swift
 struct CharacterRow: View {
     @Fragment("""
-        fragment CharacterRow_character on Character {
-          name
-          status
-          image
-        }
-        """)
+    fragment CharacterRow_character on Character {
+      name
+      status
+      image
+    }
+    """)
     var character: CharacterRow_character
 
     var body: some View {
@@ -124,24 +124,28 @@ struct CharacterRow: View {
 
 struct CharactersScreen: View {
     @Query("""
-        query CharactersScreenQuery($page: Int) {
-          characters(page: $page) {
-            results { id ...CharacterRow_character }
-          }
-        }
-        """)
+    query CharactersScreenQuery($page: Int) {
+      characters(page: $page) {
+        results { id ...CharacterRow_character }
+      }
+    }
+    """)
     var characters: CharactersScreenQuery
 
     var body: some View {
         switch characters.phase {
         case .ready(let data):
             List(data.characters?.results ?? []) {
-                CharacterRow(character: $0.characterRow)
+                CharacterRow(
+                    character: $0.characterRow
+                )
             }
         case .loading:
             ProgressView()
         case .failed(let error):
-            ErrorView(error) { characters.retry() }
+            ErrorView(error) {
+                characters.retry()
+            }
         }
     }
 }
@@ -161,7 +165,9 @@ struct CharactersScreen: View {
     }
     """)
 @Composable
-fun CharacterRow(character: CharacterRow_character) {
+fun CharacterRow(
+    character: CharacterRow_character,
+) {
     Row {
         Avatar(url = character.image)
         Text(character.name ?: "Unknown")
@@ -178,20 +184,20 @@ fun CharacterRow(character: CharacterRow_character) {
     """)
 @Composable
 fun CharactersScreen(page: Int) {
-    val characters = rememberQuery(
+    val query = rememberQuery(
         CharactersScreenQuery(page = page),
     )
-    when (val phase = characters.phase) {
+    when (val phase = query.phase) {
         is Phase.Ready -> LazyColumn {
-            val results = phase.data.characters?.results
-                .orEmpty()
-            items(results, key = { it.recordID }) {
+            val characters = phase.data.characters
+            items(characters?.results.orEmpty()) {
                 CharacterRow(it.characterRow)
             }
         }
-        Phase.Loading -> CircularProgressIndicator()
+        Phase.Loading ->
+            CircularProgressIndicator()
         is Phase.Failed -> ErrorView(phase.error) {
-            characters.retry()
+            query.retry()
         }
     }
 }
@@ -214,28 +220,33 @@ owns the merged pages, and the view reads them like any other field:
 ```swift
 struct IssueList: View {
     @Fragment("""
-        fragment IssueList_repository on Repository
-        @refetchable(queryName: "IssueListPaginationQuery")
-        @argumentDefinitions(
-          count: {type: "Int", defaultValue: 20}
-          cursor: {type: "String"}
-        ) {
-          issues(
-            first: $count, after: $cursor, states: OPEN
-          ) @connection(key: "IssueList_issues") {
-            edges { node { id ...IssueRow_issue } }
-          }
-        }
-        """)
+    fragment IssueList_repository on Repository
+    @refetchable(
+      queryName: "IssueListPaginationQuery"
+    )
+    @argumentDefinitions(
+      count: {type: "Int", defaultValue: 20}
+      cursor: {type: "String"}
+    ) {
+      issues(
+        first: $count
+        after: $cursor
+        states: OPEN
+      ) @connection(key: "IssueList_issues") {
+        edges { node { id ...IssueRow_issue } }
+      }
+    }
+    """)
     var repository: IssueList_repository
 
     var body: some View {
-        ForEach(repository.issues.nodes) { issue in
+        let issues = repository.issues
+        ForEach(issues.nodes) { issue in
             IssueRow(issue: issue.issueRow)
         }
-        if repository.issues.hasNext {
+        if issues.hasNext {
             ProgressView().task {
-                try? await repository.issues.loadNext()
+                try? await issues.loadNext()
             }
         }
     }
@@ -250,13 +261,17 @@ struct IssueList: View {
 ```kotlin
 @Fragment($$"""
     fragment IssueList_repository on Repository
-    @refetchable(queryName: "IssueListPaginationQuery")
+    @refetchable(
+      queryName: "IssueListPaginationQuery"
+    )
     @argumentDefinitions(
       count: {type: "Int", defaultValue: 20}
       cursor: {type: "String"}
     ) {
       issues(
-        first: $count, after: $cursor, states: OPEN
+        first: $count
+        after: $cursor
+        states: OPEN
       ) @connection(key: "IssueList_issues") {
         edges { node { id ...IssueRow_issue } }
       }
@@ -266,7 +281,7 @@ struct IssueList: View {
 fun IssueList(repository: IssueList_repository) {
     val issues = repository.issues
     LazyColumn {
-        items(issues.nodes, key = { it.recordID }) {
+        items(issues.nodes) {
             IssueRow(it.issueRow)
         }
         if (issues.hasNext) item {
