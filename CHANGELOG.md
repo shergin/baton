@@ -18,6 +18,12 @@ are expected and listed without apology.
   Desktop, is the first actual and the development target of the Kotlin
   runtime; Android is the first shipped target and the ingest budget's
   home.
+- The authors' documents are under `spec/sources/`, one `.graphql` file
+  each, with the configuration they compile with in `spec/tests/baton.json`,
+  so a second runtime's harness compiles its lenses from the specification
+  alone. The compiler's tests check them against the Swift test target's
+  markers and prove they plan what the markers plan. The manifest is format
+  3: `sources` names the directory and the configuration.
 
 ## 0.9.0 (Krendel) — 2026-10-07
 

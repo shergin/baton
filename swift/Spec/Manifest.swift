@@ -11,9 +11,12 @@ public struct Manifest: Decodable, Sendable {
     public let cases: [Case]
     /// The scripts' files under `spec/`, in the order they run.
     public let scripts: [String]
+    /// The authors' documents the cases and scripts read, and the
+    /// configuration they compile with.
+    public let sources: Sources
 
     private enum CodingKeys: String, CodingKey {
-        case format, cases, scripts
+        case format, cases, scripts, sources
     }
 
     public init(from decoder: any Decoder) throws {
@@ -21,6 +24,15 @@ public struct Manifest: Decodable, Sendable {
         format = try container.decode(Int.self, forKey: .format)
         cases = try container.decode([Case].self, forKey: .cases)
         scripts = try container.decodeIfPresent([String].self, forKey: .scripts) ?? []
+        sources = try container.decode(Sources.self, forKey: .sources)
+    }
+
+    /// Where the authors' documents are: a directory of `.graphql` files, one
+    /// for each document, and the `baton.json` they compile with, both paths
+    /// under `spec/`.
+    public struct Sources: Decodable, Sendable {
+        public let config: String
+        public let directory: String
     }
 
     public struct Case: Decodable, Sendable {

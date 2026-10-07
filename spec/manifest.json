@@ -1,5 +1,9 @@
 {
-  "format": 2,
+  "format": 3,
+  "sources": {
+    "config": "tests/baton.json",
+    "directory": "sources"
+  },
   "cases": [
     {
       "name": "rickandmorty/characters-page-1",

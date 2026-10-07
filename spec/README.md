@@ -41,14 +41,22 @@ and the documents; `BATON_BLESS=1 cargo test` in `compiler/` writes
   for byte by the compiler's tests, which also prove that they plan what
   the markers plan.
 - `scripts/`: the scripts, below: steps over time and what each leaves.
-- `manifest.json`: the cases and the scripts, below.
+- `manifest.json`: the sources, the cases and the scripts, below.
 - `runtime.md`: the contract, one paragraph a rule, each ending with the
   fixture that holds it or the word *unheld*.
 
 ## The manifest
 
-`manifest.json` lists the cases. `format` is the manifest's own version,
-raised when a field changes meaning. Each case has:
+`manifest.json` lists the cases. Its fields:
+
+| Field | Meaning |
+|---|---|
+| `format` | The manifest's own version, raised when a field changes meaning: 3. Format 3 adds `sources`. |
+| `sources` | The authors' documents: `directory`, the directory of `.graphql` files, and `config`, the `baton.json` they compile with, both under `spec/`. A runtime's harness compiles its lenses by running `batonc` over the directory with the configuration. |
+| `cases` | The cases, below. |
+| `scripts` | The scripts' files under `spec/`, in the order they run, below. |
+
+Each case has:
 
 | Field | Meaning |
 |---|---|
