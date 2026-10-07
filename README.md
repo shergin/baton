@@ -14,9 +14,10 @@ against the schema at build time, and emits a small typed lens per fragment.
 The runtime normalizes responses into records that the UI framework itself
 observes.
 
-Baton is aligned with Relay, not Apollo: the same directives, the same
-conventions, the same compiler lineage. A team running Relay on the web and
-Baton on native speaks one language. Where Relay's design is React's rather
+Baton is aligned with Relay, not Apollo (but
+[works great with an Apollo backend](#works-with-your-server)): the same
+directives, the same conventions, the same compiler lineage. A team running
+Relay on the web and Baton on native speaks one language. Where Relay's design is React's rather
 than GraphQL's (snapshots, re-reads, suspension by thrown promises), Baton
 leaves it out: SwiftUI's Observation and Compose's snapshot state already know
 which view read which field.
