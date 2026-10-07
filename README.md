@@ -27,6 +27,14 @@ live in [`docs/principles/`](docs/principles/). The vocabulary is
 other native clients is at the end, and at length in
 [`docs/comparison.md`](docs/comparison.md).
 
+**Try it on your app.** The quickest way to know what Baton does for your
+app is to ask your coding agent to integrate it on a branch, measure the
+screens that matter before and after, and report back. Whatever stands in
+the way, a blocker, a missing feature or a number that disappoints, belongs
+in an [issue](https://github.com/shergin/baton/issues). It is your chance to
+make the app faster and its GraphQL much more pleasant to work with, and to
+shape Baton while it is young.
+
 ## What it is, and will be
 
 - **A fragment per view.** GraphQL lives in the Swift file, next to the view
@@ -307,6 +315,20 @@ compiler was built keeps its first answer until told
 `BATON_COMPILER=local`. A package that depends on Baton downloads the
 compiler bundle its release published; releases before the first that
 publishes one need the checkout's.
+
+## Works with your server
+
+Baton asks nothing of the server beyond the GraphQL specification. A query
+or mutation is a standard GraphQL-over-HTTP request, so Apollo Server,
+Apollo Router, GraphQL Yoga, Hive Gateway, Hasura and any other
+spec-compliant server answer it as they are, with no plugin or adapter.
+Point the compiler at the schema, wherever it comes from, and build.
+`@defer`, subscriptions and persisted operations follow each server's own
+conventions, and a federated graph looks like any other server.
+
+Baton strives to support each backend's own features wherever they fit the
+design and make sense for a client. If yours does something Baton does not
+speak yet, open an issue.
 
 ## Caton
 
