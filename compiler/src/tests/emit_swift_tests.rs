@@ -3,6 +3,7 @@
 //! property in each of its forms, the local alias a body names a type by,
 //! and the head of a check.
 
+use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
 use super::*;
@@ -40,7 +41,7 @@ fn decided_variables(text: &str) -> Vec<VariableValue> {
         &Config::default(),
     )
     .unwrap_or_else(|errors| panic!("the document does not compile: {errors:?}"));
-    let program = crate::decide::program(&compiled.plan)
+    let program = crate::decide::program(&compiled.plan, &BTreeMap::new())
         .unwrap_or_else(|errors| panic!("the document declares names twice: {errors:?}"));
     program
         .operations
@@ -128,19 +129,26 @@ fn the_runtime_is_named_by_its_module_in_a_type_and_in_an_expression() {
 /// The scalar shape of a nullable `primitive`, or of a nullable list of it
 /// whose elements are non-null or not.
 fn shape_of(primitive: Primitive, elements_non_null: Option<bool>) -> ScalarShape {
-    let (kind, mapped, name) = match primitive {
-        Primitive::String => (TypeKind::String, None, None),
-        Primitive::Int => (TypeKind::Int, None, None),
-        Primitive::Double => (TypeKind::Float, None, None),
-        Primitive::Bool => (TypeKind::Boolean, None, None),
-        Primitive::Mapped(name) => (TypeKind::CustomScalar, Some(name), None),
-        Primitive::Enum(name) => (TypeKind::Enum, None, Some(name)),
+    // A mapped scalar is named for the Swift type it reads as, and mapped
+    // to that type.
+    let (kind, name) = match &primitive {
+        Primitive::String => (TypeKind::String, None),
+        Primitive::Int => (TypeKind::Int, None),
+        Primitive::Double => (TypeKind::Float, None),
+        Primitive::Bool => (TypeKind::Boolean, None),
+        Primitive::Mapped(name) => (TypeKind::CustomScalar, Some(name.clone())),
+        Primitive::Enum(name) => (TypeKind::Enum, Some(name.clone())),
+    };
+    let name = name.unwrap_or_else(|| format!("{kind:?}"));
+    let host_types: BTreeMap<String, String> = match &primitive {
+        Primitive::Mapped(_) => BTreeMap::from([(name.clone(), name.clone())]),
+        _ => BTreeMap::new(),
     };
     let element = TypePlan::Named {
-        name: name.unwrap_or_else(|| format!("{kind:?}")),
+        name,
         kind,
         non_null: elements_non_null.unwrap_or(false),
-        mapped,
+        mapped: primitive.is_mapped(),
     };
     let type_ = match elements_non_null {
         None => element,
@@ -149,7 +157,7 @@ fn shape_of(primitive: Primitive, elements_non_null: Option<bool>) -> ScalarShap
             non_null: false,
         },
     };
-    ScalarShape::of(&type_)
+    ScalarShape::of(&type_, &host_types)
 }
 
 #[test]

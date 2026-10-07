@@ -68,6 +68,9 @@ pub(super) struct Readers {
     /// What a nested lens may not be named: the names a lens spells, and
     /// the program's fragments and operations.
     lens_names: Reserved,
+    /// The Swift type each mapped scalar reads as, by the scalar's name, as
+    /// the configuration names it.
+    pub host_types: BTreeMap<String, String>,
     /// The identifiers of the spreads with arguments, numbered in the order
     /// the lenses are decided.
     pub sites: BTreeSet<String>,
@@ -142,7 +145,7 @@ struct LensFacts {
 }
 
 impl Readers {
-    pub(super) fn new(plan: &Plan) -> Readers {
+    pub(super) fn new(plan: &Plan, host_types: &BTreeMap<String, String>) -> Readers {
         let mut deferred_fragments = BTreeSet::new();
         let mut caught_fragments = BTreeSet::new();
         for fragment in &plan.fragments {
@@ -207,6 +210,7 @@ impl Readers {
                     .chain(plan.enums.keys().map(|name| enum_type_name(name)))
                     .chain(plan.inputs.keys().map(|name| input_type_name(name))),
             ),
+            host_types: host_types.clone(),
             sites: BTreeSet::new(),
             duplicates: Vec::new(),
         }
@@ -304,10 +308,17 @@ impl Readers {
         let connection = connection.map(|connection| {
             self.connection_members(connection, type_name, &members, facts.nodes, context)
         });
-        let satisfied = bubbles.then(|| satisfied(type_name, type_is_abstract, &members));
-        let mut field_errors = context
-            .scans_errors()
-            .then(|| field_errors(type_name, type_is_abstract, &members, context.response_path));
+        let satisfied =
+            bubbles.then(|| satisfied(type_name, type_is_abstract, &members, &self.host_types));
+        let mut field_errors = context.scans_errors().then(|| {
+            field_errors(
+                type_name,
+                type_is_abstract,
+                &members,
+                context.response_path,
+                &self.host_types,
+            )
+        });
         // A value is one frozen selection: the errors inside the values it
         // spreads are its own, but for a spread that catches them itself.
         // A lens's spread keeps its fragment's policy, as the fragment is
@@ -581,9 +592,13 @@ impl Readers {
         for member in members {
             let read = match &member.selection {
                 SelectionPlan::Scalar { name, .. } if name == "__typename" => continue,
-                SelectionPlan::Scalar { .. } => {
-                    scalar_read(member, type_name, type_is_abstract, context)
-                }
+                SelectionPlan::Scalar { .. } => scalar_read(
+                    member,
+                    type_name,
+                    type_is_abstract,
+                    context,
+                    &self.host_types,
+                ),
                 SelectionPlan::Linked { .. } => {
                     linked_read(member, type_name, type_is_abstract, nested, context)
                 }
@@ -910,6 +925,7 @@ fn scalar_read(
     type_name: &str,
     type_is_abstract: bool,
     context: Context<'_>,
+    host_types: &BTreeMap<String, String>,
 ) -> Read {
     let SelectionPlan::Scalar {
         name,
@@ -928,7 +944,7 @@ fn scalar_read(
     // A mapped scalar's schema promises the text, not the conversion: the
     // read is non-null only where a directive says what a failure does, and
     // there as the schema types the field.
-    let non_null = if type_.mapped().is_some() {
+    let non_null = if type_.is_mapped() {
         required.is_some()
             || (*non_null && (context.handles_errors() || catch.is_some()))
             || (*semantic_non_null && context.handles_errors())
@@ -948,13 +964,13 @@ fn scalar_read(
         // not convert has no zero to read as; a value's stored property
         // cannot throw, so in an inline fragment it reads optional, and
         // under `@throwOnFieldError` the failure throws at the spread.
-        _ if non_null && type_.mapped().is_some() && context.inline => ScalarForm::Optional,
+        _ if non_null && type_.is_mapped() && context.inline => ScalarForm::Optional,
         _ if non_null => ScalarForm::Required,
         _ => ScalarForm::Optional,
     };
     Read::Scalar(ScalarRead {
         slot: SlotAccess::of(type_name, type_is_abstract, storage_key),
-        shape: ScalarShape::of(type_),
+        shape: ScalarShape::of(type_, host_types),
         form,
         path: format!(
             "{}{}",

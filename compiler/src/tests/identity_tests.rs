@@ -334,7 +334,7 @@ fn emitted(config: &str, text: &str) -> String {
     config.path = PathBuf::from("baton.json");
     let compiled = compile(&sdl, &path, &[], &[document(text)], &config)
         .unwrap_or_else(|errors| panic!("{errors:?}"));
-    let output = crate::emit::emit(&compiled.plan).expect("the plan emits");
+    let output = crate::emit::emit(&compiled.plan, &config).expect("the plan emits");
     output
         .files
         .into_values()
@@ -524,7 +524,7 @@ fn a_lookup_without_a_type_keeps_its_own_set_beside_a_lens_testing_the_same_cond
     let text = "query Probe { node(id: \"1\") { __typename } namesake(name: \"a\") { ...ProbeNode @alias } } fragment ProbeNode on Node { id }";
     let compiled = compile(&sdl, &path, &[], &[document(text)], &config)
         .unwrap_or_else(|errors| panic!("{errors:?}"));
-    let output = crate::emit::emit(&compiled.plan).expect("the plan emits");
+    let output = crate::emit::emit(&compiled.plan, &config).expect("the plan emits");
     let shared = &output.shared;
     assert!(
         shared.contains("static let Node_keyed = Baton.Members(Node, [Character, Location, Note])"),
@@ -562,7 +562,7 @@ fn a_schema_type_named_like_a_set_of_types_is_refused_rather_than_declared_twice
         let text = "query Probe { node(id: \"1\") { __typename } namesake(name: \"a\") { ...ProbeNode @alias } probe { id } } fragment ProbeNode on Node { id }";
         let compiled = compile(&sdl, &path, &[], &[document(text)], &config)
             .unwrap_or_else(|errors| panic!("{errors:?}"));
-        let errors: Vec<String> = crate::emit::emit(&compiled.plan)
+        let errors: Vec<String> = crate::emit::emit(&compiled.plan, &config)
             .err()
             .unwrap_or_else(|| panic!("`{set}` is declared once"))
             .iter()

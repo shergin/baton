@@ -2,7 +2,7 @@
 //! forms and guards, the surface its kind has, its checks and the lenses
 //! nested in it. The lens printer writes it as it is.
 
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 
 use super::Guard;
 use super::keys::SlotRef;
@@ -343,17 +343,18 @@ impl Primitive {
 }
 
 impl ScalarShape {
-    /// The shape of a field of the type.
-    pub fn of(type_: &TypePlan) -> ScalarShape {
+    /// The shape of a field of the type, a mapped scalar read as the Swift
+    /// type `host_types` names for it.
+    pub fn of(type_: &TypePlan, host_types: &BTreeMap<String, String>) -> ScalarShape {
         ScalarShape {
-            primitive: Self::primitive(type_),
+            primitive: Self::primitive(type_, host_types),
             list: ListShape::of(type_),
         }
     }
 
-    pub fn primitive(type_: &TypePlan) -> Primitive {
-        if let Some(mapped) = type_.mapped() {
-            return Primitive::Mapped(mapped.to_string());
+    pub fn primitive(type_: &TypePlan, host_types: &BTreeMap<String, String>) -> Primitive {
+        if type_.is_mapped() {
+            return Primitive::Mapped(host_type(type_.base_name(), host_types));
         }
         match type_.base_kind() {
             TypeKind::Int => Primitive::Int,
@@ -363,6 +364,16 @@ impl ScalarShape {
             _ => Primitive::String,
         }
     }
+}
+
+/// The Swift type `host_types` names for the mapped scalar `scalar`. The
+/// lowering marks a scalar mapped only when the configuration names it, and
+/// the configuration's validation refuses a mapping without a Swift type.
+pub(super) fn host_type(scalar: &str, host_types: &BTreeMap<String, String>) -> String {
+    host_types
+        .get(scalar)
+        .unwrap_or_else(|| panic!("the configuration names no Swift type for `{scalar}`"))
+        .clone()
 }
 
 #[derive(Debug, Clone, PartialEq)]

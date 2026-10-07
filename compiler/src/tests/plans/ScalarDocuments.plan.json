@@ -23,7 +23,7 @@
             "name": "Decimal",
             "kind": "custom_scalar",
             "non_null": false,
-            "mapped": "Foundation.Decimal"
+            "mapped": true
           },
           "non_null": false,
           "semantic_non_null": false,
@@ -47,7 +47,7 @@
             "name": "DateTime",
             "kind": "custom_scalar",
             "non_null": true,
-            "mapped": "Foundation.Date"
+            "mapped": true
           },
           "non_null": true,
           "semantic_non_null": false,
@@ -71,7 +71,7 @@
             "name": "Url",
             "kind": "custom_scalar",
             "non_null": false,
-            "mapped": "Foundation.URL"
+            "mapped": true
           },
           "non_null": false,
           "semantic_non_null": false,
@@ -111,7 +111,7 @@
             "name": "Decimal",
             "kind": "custom_scalar",
             "non_null": false,
-            "mapped": "Foundation.Decimal"
+            "mapped": true
           },
           "non_null": false,
           "semantic_non_null": false,
@@ -152,7 +152,7 @@
             "name": "Decimal",
             "kind": "custom_scalar",
             "non_null": false,
-            "mapped": "Foundation.Decimal"
+            "mapped": true
           },
           "non_null": false,
           "semantic_non_null": false,
@@ -176,7 +176,7 @@
               "name": "Decimal",
               "kind": "custom_scalar",
               "non_null": false,
-              "mapped": "Foundation.Decimal"
+              "mapped": true
             },
             "non_null": false
           },
@@ -275,7 +275,7 @@
                 "name": "Decimal",
                 "kind": "custom_scalar",
                 "non_null": false,
-                "mapped": "Foundation.Decimal"
+                "mapped": true
               },
               "non_null": false,
               "semantic_non_null": false,
@@ -297,7 +297,7 @@
                 "name": "DateTime",
                 "kind": "custom_scalar",
                 "non_null": true,
-                "mapped": "Foundation.Date"
+                "mapped": true
               },
               "non_null": true,
               "semantic_non_null": false,
@@ -319,7 +319,7 @@
                 "name": "Url",
                 "kind": "custom_scalar",
                 "non_null": false,
-                "mapped": "Foundation.URL"
+                "mapped": true
               },
               "non_null": false,
               "semantic_non_null": false,
@@ -343,7 +343,7 @@
                   "name": "Decimal",
                   "kind": "custom_scalar",
                   "non_null": false,
-                  "mapped": "Foundation.Decimal"
+                  "mapped": true
                 },
                 "non_null": false
               },
@@ -429,7 +429,7 @@
                 "name": "Decimal",
                 "kind": "custom_scalar",
                 "non_null": false,
-                "mapped": "Foundation.Decimal"
+                "mapped": true
               },
               "non_null": false,
               "semantic_non_null": false,
@@ -451,7 +451,7 @@
                 "name": "DateTime",
                 "kind": "custom_scalar",
                 "non_null": true,
-                "mapped": "Foundation.Date"
+                "mapped": true
               },
               "non_null": true,
               "semantic_non_null": false,
@@ -473,7 +473,7 @@
                 "name": "Url",
                 "kind": "custom_scalar",
                 "non_null": false,
-                "mapped": "Foundation.URL"
+                "mapped": true
               },
               "non_null": false,
               "semantic_non_null": false,
@@ -497,7 +497,7 @@
                   "name": "Decimal",
                   "kind": "custom_scalar",
                   "non_null": false,
-                  "mapped": "Foundation.Decimal"
+                  "mapped": true
                 },
                 "non_null": false
               },
@@ -551,7 +551,7 @@
             "name": "Decimal",
             "kind": "custom_scalar",
             "non_null": true,
-            "mapped": "Foundation.Decimal"
+            "mapped": true
           },
           "default_value": null
         },
@@ -564,7 +564,7 @@
               "name": "Decimal",
               "kind": "custom_scalar",
               "non_null": true,
-              "mapped": "Foundation.Decimal"
+              "mapped": true
             },
             "non_null": false
           },
@@ -754,7 +754,7 @@
                 "name": "Decimal",
                 "kind": "custom_scalar",
                 "non_null": false,
-                "mapped": "Foundation.Decimal"
+                "mapped": true
               },
               "non_null": false,
               "semantic_non_null": false,
@@ -776,7 +776,7 @@
                 "name": "DateTime",
                 "kind": "custom_scalar",
                 "non_null": true,
-                "mapped": "Foundation.Date"
+                "mapped": true
               },
               "non_null": true,
               "semantic_non_null": false,
@@ -798,7 +798,7 @@
                 "name": "Url",
                 "kind": "custom_scalar",
                 "non_null": false,
-                "mapped": "Foundation.URL"
+                "mapped": true
               },
               "non_null": false,
               "semantic_non_null": false,
@@ -822,7 +822,7 @@
                   "name": "Decimal",
                   "kind": "custom_scalar",
                   "non_null": false,
-                  "mapped": "Foundation.Decimal"
+                  "mapped": true
                 },
                 "non_null": false
               },

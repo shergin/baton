@@ -204,10 +204,11 @@ pub enum TypePlan {
         name: String,
         kind: TypeKind,
         non_null: bool,
-        /// The Swift type a custom scalar reads as, when `baton.json` maps
-        /// it; the store keeps the text either way.
-        #[serde(skip_serializing_if = "Option::is_none")]
-        mapped: Option<String>,
+        /// Whether `baton.json` maps the custom scalar to a host type, which
+        /// each language's writer resolves by the scalar's name; the store
+        /// keeps the text either way.
+        #[serde(skip_serializing_if = "is_false")]
+        mapped: bool,
     },
     List {
         element: Box<TypePlan>,
@@ -257,10 +258,10 @@ impl TypePlan {
         }
     }
 
-    /// The Swift type the base reads as, when it is a mapped custom scalar.
-    pub fn mapped(&self) -> Option<&str> {
+    /// Whether the base is a custom scalar `baton.json` maps to a host type.
+    pub fn is_mapped(&self) -> bool {
         match self.base() {
-            TypePlan::Named { mapped, .. } => mapped.as_deref(),
+            TypePlan::Named { mapped, .. } => *mapped,
             TypePlan::List { .. } => unreachable!("the base of a type is named"),
         }
     }

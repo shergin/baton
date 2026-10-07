@@ -7,15 +7,28 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use super::keys::SlotRef;
 use super::lens::{
-    AliasGuard, ErrorCheck, ErrorLine, Read, ReaderPlan, SatisfiedCheck, SlotAccess, SpreadGuard,
-    TypeTest,
+    AliasGuard, ErrorCheck, ErrorLine, Primitive, Read, ReaderPlan, SatisfiedCheck, ScalarShape,
+    SlotAccess, SpreadGuard, TypeTest,
 };
 use super::{Guard, NormalizationKind, NormalizationSelection, Program};
 use crate::names::{
     Kind, NameError, Reserved, STANDARD_LIBRARY_NAMES, Scope, Written, enum_type_name,
     input_type_name, keyed_types, possible_types, type_constant,
 };
-use crate::pipeline::{InputFieldPlan, OperationKind, Plan};
+use crate::pipeline::{OperationKind, Plan, TypePlan};
+
+/// A field of an input object as its struct declares it: the schema's
+/// field, and what its base reads as when it is a scalar.
+#[derive(Debug, Clone, PartialEq)]
+pub struct InputField {
+    pub name: String,
+    pub type_: TypePlan,
+    /// The field's type contains the input itself outside a list, so the
+    /// struct boxes the field.
+    pub indirect: bool,
+    /// What the base reads as, for a scalar or an enum.
+    pub primitive: Primitive,
+}
 
 /// What the shared file declares.
 #[derive(Debug, Clone, Default, PartialEq)]
@@ -46,7 +59,7 @@ pub struct Shared {
     pub enums: BTreeMap<String, Vec<String>>,
     /// The schema's input objects the documents' variables name, with their
     /// fields, each declared as a Swift struct.
-    pub inputs: BTreeMap<String, Vec<InputFieldPlan>>,
+    pub inputs: BTreeMap<String, Vec<InputField>>,
     /// The slots of the schema extensions' fields, which the registry marks
     /// as the client's: a lens reads one as absent, not missing, until a
     /// payload writes it.
@@ -60,12 +73,31 @@ pub struct Shared {
 
 impl Shared {
     /// What the lenses, plans and builders of `program` use.
-    pub(super) fn collect(plan: &Plan, program: &Program) -> Shared {
+    pub(super) fn collect(
+        plan: &Plan,
+        program: &Program,
+        host_types: &BTreeMap<String, String>,
+    ) -> Shared {
         let mut shared = Shared {
             schema_digest: plan.schema_digest.clone(),
             root_names: plan.root_names.clone(),
             enums: plan.enums.clone(),
-            inputs: plan.inputs.clone(),
+            inputs: plan
+                .inputs
+                .iter()
+                .map(|(name, fields)| {
+                    let fields = fields
+                        .iter()
+                        .map(|field| InputField {
+                            name: field.name.clone(),
+                            type_: field.type_.clone(),
+                            indirect: field.indirect,
+                            primitive: ScalarShape::primitive(&field.type_, host_types),
+                        })
+                        .collect();
+                    (name.clone(), fields)
+                })
+                .collect(),
             transient_types: plan.transient_types.clone(),
             ..Shared::default()
         };

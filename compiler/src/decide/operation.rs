@@ -1,7 +1,7 @@
 //! The operation half of the decide pass: an operation value's variables and
 //! the names it declares, and a mutation's optimistic-response builders.
 
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 
 use super::lens::{ListShape, Primitive, ReaderPlan, ScalarShape, hideable_name};
 use super::reader::Readers;
@@ -110,7 +110,7 @@ pub(super) fn operation(
         .iter()
         .map(|variable| VariableValue {
             name: variable.name.clone(),
-            shape: variable_shape(variable),
+            shape: variable_shape(variable, &readers.host_types),
             non_null: variable.type_.non_null(),
             local: local_name(&variable.name, &names),
         })
@@ -126,6 +126,7 @@ pub(super) fn operation(
             "OptimisticResponse",
             &normalization,
             builder_names,
+            &readers.host_types,
             duplicates,
         )
     });
@@ -290,6 +291,7 @@ fn builder(
     name: &str,
     selection: &NormalizationSelection,
     builder_names: &Reserved,
+    host_types: &BTreeMap<String, String>,
     duplicates: &mut Vec<NameError>,
 ) -> BuilderPlan {
     // Every field any variant reads, once: the response is written for
@@ -325,7 +327,7 @@ fn builder(
         let key = field.response_key.clone();
         let value = match &field.kind {
             NormalizationKind::Scalar { type_ } => BuilderValue::Scalar {
-                shape: ScalarShape::of(type_),
+                shape: ScalarShape::of(type_, host_types),
             },
             NormalizationKind::Linked {
                 plural,
@@ -355,6 +357,7 @@ fn builder(
                 &name,
                 child,
                 builder_names,
+                host_types,
                 duplicates,
             )
         })
@@ -395,7 +398,7 @@ fn numbered(base: &str, taken: &[&str]) -> String {
 
 /// A variable's shape: the scalars as the accessors read them, anything
 /// else as the request carries it.
-fn variable_shape(variable: &VariablePlan) -> VariableShape {
+fn variable_shape(variable: &VariablePlan, host_types: &BTreeMap<String, String>) -> VariableShape {
     let base = match variable.type_.base_kind() {
         TypeKind::Int
         | TypeKind::Float
@@ -403,7 +406,9 @@ fn variable_shape(variable: &VariablePlan) -> VariableShape {
         | TypeKind::String
         | TypeKind::Id
         | TypeKind::Enum
-        | TypeKind::CustomScalar => VariableBase::Scalar(ScalarShape::primitive(&variable.type_)),
+        | TypeKind::CustomScalar => {
+            VariableBase::Scalar(ScalarShape::primitive(&variable.type_, host_types))
+        }
         _ => VariableBase::Input(variable.type_.base_name().to_string()),
     };
     VariableShape {

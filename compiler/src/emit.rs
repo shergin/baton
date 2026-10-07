@@ -22,6 +22,7 @@ mod writer;
 
 use std::collections::BTreeMap;
 
+use crate::config::Config;
 use crate::decide;
 use crate::names::NameError;
 use crate::pipeline::Plan;
@@ -45,9 +46,10 @@ const HEADER: &str =
 /// code names in the runtime raises it, here and in the runtime together.
 pub const FORMAT: u32 = 17;
 
-/// The Swift of a plan, or the names it would have declared twice.
-pub fn emit(plan: &Plan) -> Result<Output, Vec<NameError>> {
-    let program = decide::program(plan)?;
+/// The Swift of a plan, or the names it would have declared twice. A mapped
+/// scalar reads as the Swift type `config` names for it.
+pub fn emit(plan: &Plan, config: &Config) -> Result<Output, Vec<NameError>> {
+    let program = decide::program(plan, &config.swift_types())?;
     let mut files: BTreeMap<String, String> = BTreeMap::new();
     for fragment in &program.fragments {
         let text = if fragment.inline {

@@ -11,11 +11,11 @@
 use std::fmt;
 
 use super::writer::Writer;
-use crate::decide::{Primitive, ScalarShape, VariableBase, VariableValue};
+use crate::decide::{InputField, Primitive, ScalarShape, VariableBase, VariableValue};
 use crate::names::{
     enum_type_name, escape, input_type_name, keyed_types, possible_types, type_constant,
 };
-use crate::pipeline::{ArgumentValuePlan, ConstantPlan, TypeKind, TypePlan};
+use crate::pipeline::{ArgumentValuePlan, ConstantPlan, TypeKind};
 
 /// The runtime's module.
 pub(super) const RUNTIME: &str = "Baton";
@@ -136,10 +136,11 @@ fn primitive_type(primitive: &Primitive) -> SwiftType {
 /// An input object's field as its struct types it: a scalar, an enum or a
 /// mapped scalar as an accessor reads it, a nested input as its struct, a
 /// list as an array, optional unless the schema types it non-null.
-pub(super) fn input_field_type(type_: &TypePlan) -> SwiftType {
+pub(super) fn input_field_type(field: &InputField) -> SwiftType {
+    let type_ = &field.type_;
     let base = match type_.base_kind() {
         TypeKind::InputObject => SwiftType::Named(input_type_name(type_.base_name())),
-        _ => primitive_type(&ScalarShape::primitive(type_)),
+        _ => primitive_type(&field.primitive),
     };
     let shape = match type_.element() {
         Some(element) => base.optional_if(!element.non_null()).array(),

@@ -2,7 +2,11 @@
 //! the `@required` fields that bubble, `fieldErrors` under an error policy
 //! or for a catch, and `isPresent` for a deferred spread.
 
-use super::lens::{ErrorCheck, ErrorLine, Guarded, ReaderPlan, SatisfiedCheck, SlotAccess};
+use std::collections::BTreeMap;
+
+use super::lens::{
+    ErrorCheck, ErrorLine, Guarded, ReaderPlan, SatisfiedCheck, SlotAccess, host_type,
+};
 use super::members::{Member, collects_errors, condition_lens, own_members};
 use crate::pipeline::{RequiredAction, SelectionPlan, TypePlan};
 
@@ -35,6 +39,7 @@ pub(super) fn satisfied(
     type_name: &str,
     type_is_abstract: bool,
     members: &[Member],
+    host_types: &BTreeMap<String, String>,
 ) -> Vec<Guarded<Option<SatisfiedCheck>>> {
     own_members(members)
         .map(|member| {
@@ -46,7 +51,8 @@ pub(super) fn satisfied(
                     storage_key,
                     type_:
                         TypePlan::Named {
-                            mapped: Some(swift_type),
+                            name: scalar,
+                            mapped: true,
                             ..
                         },
                     ..
@@ -54,7 +60,7 @@ pub(super) fn satisfied(
                     slot: SlotAccess::of(type_name, type_is_abstract, storage_key),
                     path: required.path.clone(),
                     log: required.action == RequiredAction::Log,
-                    swift_type: swift_type.clone(),
+                    swift_type: host_type(scalar, host_types),
                 }),
                 SelectionPlan::Scalar {
                     required: Some(required),
@@ -104,6 +110,7 @@ pub(super) fn field_errors(
     type_is_abstract: bool,
     members: &[Member],
     response_path: &str,
+    host_types: &BTreeMap<String, String>,
 ) -> Vec<ErrorCheck> {
     let mut checks = Vec::new();
     for member in members {
@@ -152,13 +159,11 @@ pub(super) fn field_errors(
                 // the policy handles, under the field's own path. A list
                 // keeps the list rule: an element that does not convert is
                 // reported and left out.
-                if let Some(swift_type) = type_.mapped()
-                    && !type_.is_list()
-                {
+                if type_.is_mapped() && !type_.is_list() {
                     lines.push(ErrorLine::Converts {
                         slot,
                         path: format!("{response_path}{}", alias.as_deref().unwrap_or(name)),
-                        swift_type: swift_type.to_string(),
+                        swift_type: host_type(type_.base_name(), host_types),
                     });
                 }
             }

@@ -875,7 +875,7 @@ fn compile(text: &str) -> Result<emit::Output, Vec<String>> {
                 .collect());
         }
     };
-    emit::emit(&plan).map_err(|errors| {
+    emit::emit(&plan, &config).map_err(|errors| {
         errors
             .iter()
             .map(|error| match error {

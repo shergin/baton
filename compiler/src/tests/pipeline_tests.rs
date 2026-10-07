@@ -154,7 +154,7 @@ fn a_root_type_the_schema_names_otherwise_is_interned_by_the_store_root_name() {
         &Config::default(),
     )
     .unwrap_or_else(|errors| panic!("{errors:?}"));
-    let shared = crate::emit::emit(&compiled.plan)
+    let shared = crate::emit::emit(&compiled.plan, &Config::default())
         .expect("the plan emits")
         .shared;
     assert!(shared.contains("static let QueryRoot = Baton.Registry.type(\"Query\")"));
@@ -270,7 +270,7 @@ fn on_error_null_sends_the_value_and_types_non_null_fields_by_their_semantic_nul
         .unwrap_or_else(|errors| panic!("{errors:?}"));
     let operation = &compiled.plan.operations[0];
     assert_eq!(operation.error_behavior, Some(OnError::Null));
-    let output = crate::emit::emit(&compiled.plan).expect("the plan emits");
+    let output = crate::emit::emit(&compiled.plan, &Config::default()).expect("the plan emits");
     let file = output
         .files
         .values()
@@ -284,7 +284,7 @@ fn on_error_null_sends_the_value_and_types_non_null_fields_by_their_semantic_nul
 
     let plain = compile(&sdl, &path, &[], &[document(text)], &Config::default())
         .unwrap_or_else(|errors| panic!("{errors:?}"));
-    let plain_file = crate::emit::emit(&plain.plan).expect("the plan emits");
+    let plain_file = crate::emit::emit(&plain.plan, &Config::default()).expect("the plan emits");
     let plain_file = plain_file
         .files
         .values()
@@ -307,7 +307,7 @@ fn a_query_states_its_cache_expiration_in_its_plan_and_its_swift_and_not_in_the_
         "a directive the schema extension declares is not sent: {}",
         operation.text
     );
-    let output = crate::emit::emit(&compiled.plan).expect("the plan emits");
+    let output = crate::emit::emit(&compiled.plan, &Config::default()).expect("the plan emits");
     let file = output
         .files
         .values()
@@ -320,7 +320,7 @@ fn a_query_states_its_cache_expiration_in_its_plan_and_its_swift_and_not_in_the_
     let plain = compile(&sdl, &path, &[], &[document(QUERY)], &Config::default())
         .unwrap_or_else(|errors| panic!("{errors:?}"));
     assert_eq!(plain.plan.operations[0].cache_expiration, None);
-    let plain_output = crate::emit::emit(&plain.plan).expect("the plan emits");
+    let plain_output = crate::emit::emit(&plain.plan, &Config::default()).expect("the plan emits");
     let plain_file = plain_output
         .files
         .values()
@@ -371,7 +371,7 @@ fn slots_are_nested_per_type_so_a_type_and_a_field_never_run_together() {
         &Config::default(),
     )
     .unwrap_or_else(|errors| panic!("{errors:?}"));
-    let shared = crate::emit::emit(&compiled.plan)
+    let shared = crate::emit::emit(&compiled.plan, &Config::default())
         .expect("the plan emits")
         .shared;
     assert!(shared.contains(
@@ -393,7 +393,7 @@ fn a_linked_field_named_like_a_swift_type_gets_a_lens_of_another_name() {
         &Config::default(),
     )
     .unwrap_or_else(|errors| panic!("{errors:?}"));
-    let output = crate::emit::emit(&compiled.plan).expect("the plan emits");
+    let output = crate::emit::emit(&compiled.plan, &Config::default()).expect("the plan emits");
     let file = output
         .files
         .values()
@@ -415,7 +415,7 @@ fn a_type_constant_swift_would_misread_takes_an_underscore_and_meets_no_other() 
         &Config::default(),
     )
     .unwrap_or_else(|errors| panic!("{errors:?}"));
-    let output = crate::emit::emit(&compiled.plan).expect("the plan emits");
+    let output = crate::emit::emit(&compiled.plan, &Config::default()).expect("the plan emits");
     for declaration in [
         "    static let Baton_ = Baton.Registry.type(\"Baton\")\n",
         "    static let Type_ = Baton.Registry.type(\"Type\")\n",
@@ -446,7 +446,7 @@ fn a_slot_name_swift_would_misread_takes_an_underscore_and_meets_no_other() {
         &Config::default(),
     )
     .unwrap_or_else(|errors| panic!("{errors:?}"));
-    let shared = crate::emit::emit(&compiled.plan)
+    let shared = crate::emit::emit(&compiled.plan, &Config::default())
         .expect("the plan emits")
         .shared;
     assert!(
@@ -547,7 +547,7 @@ fn shelf_swift(text: &str) -> String {
         &Config::default(),
     )
     .unwrap_or_else(|errors| panic!("{errors:?}"));
-    let output = crate::emit::emit(&compiled.plan).expect("the plan emits");
+    let output = crate::emit::emit(&compiled.plan, &Config::default()).expect("the plan emits");
     output
         .files
         .into_values()
@@ -591,7 +591,7 @@ fn a_type_plan_keeps_every_list_and_the_nullability_of_each_level() {
         name: "Int".to_string(),
         kind: TypeKind::Int,
         non_null: true,
-        mapped: None,
+        mapped: false,
     };
     let row = TypePlan::List {
         element: Box::new(int.clone()),

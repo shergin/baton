@@ -333,9 +333,10 @@ fn compile_documents(options: &Options) -> Result<Compilation, DriverError> {
     })
 }
 
-/// The Swift of a plan, or the name errors printed and reported.
-fn emitted(plan: &pipeline::Plan, documents: &[Document]) -> Result<emit::Output, DriverError> {
-    emit::emit(plan).map_err(|errors| {
+/// The Swift of a compilation, or the name errors printed and reported.
+fn emitted(compilation: &Compilation) -> Result<emit::Output, DriverError> {
+    let documents = &compilation.documents;
+    emit::emit(&compilation.plan, &compilation.sources.config).map_err(|errors| {
         for error in &errors {
             match error {
                 NameError::Clash(clash) => eprintln!(
@@ -373,7 +374,7 @@ fn generate(arguments: &[String]) -> Result<(), DriverError> {
     let shared_path = options.values.get("shared").map(PathBuf::from);
     let compilation = compile_documents(&options)?;
     let (documents, plan) = (&compilation.documents, &compilation.plan);
-    let output = emitted(plan, documents)?;
+    let output = emitted(&compilation)?;
 
     let root = std::env::current_dir().unwrap_or_default();
     let mut targets: Vec<(PathBuf, PathBuf)> = options.emits.clone();
@@ -491,7 +492,7 @@ fn check_outputs(planned: &[(PathBuf, String)], out_dir: Option<&Path>) -> Resul
 fn validate(arguments: &[String]) -> Result<(), DriverError> {
     let options = parse_options("validate", arguments, &["schema", "config"])?;
     let compilation = compile_documents(&options)?;
-    emitted(&compilation.plan, &compilation.documents)?;
+    emitted(&compilation)?;
     finish(&compilation.rendered)
 }
 

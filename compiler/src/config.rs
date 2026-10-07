@@ -244,4 +244,10 @@ impl Config {
             .map(|directory| directory.join(&self.schema))
             .unwrap_or_else(|| PathBuf::from(&self.schema))
     }
+
+    /// The Swift type each mapped custom scalar reads as, by the scalar's
+    /// name: what the Swift writer resolves a mapped scalar by.
+    pub fn swift_types(&self) -> BTreeMap<String, String> {
+        self.custom_scalar_types.clone()
+    }
 }

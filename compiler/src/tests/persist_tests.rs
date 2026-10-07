@@ -28,7 +28,7 @@ fn compiled(config: &str, texts: &[&str]) -> crate::pipeline::plan::Plan {
 
 /// The Swift emitted for the one host file of `plan`.
 fn emitted(plan: &crate::pipeline::plan::Plan) -> String {
-    crate::emit::emit(plan)
+    crate::emit::emit(plan, &Config::default())
         .expect("the plan emits")
         .files
         .into_values()

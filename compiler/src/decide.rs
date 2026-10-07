@@ -24,7 +24,7 @@ mod members;
 mod operation;
 mod reader;
 
-pub use collect::Shared;
+pub use collect::{InputField, Shared};
 pub use keys::{KeyPart, SlotRef, constant_json};
 pub use lens::{
     Accessor, AliasGuard, AliasedRead, Binding, BoundArgument, ConditionRead, ConnectionMembers,
@@ -66,9 +66,13 @@ pub struct FragmentLens {
 /// Decides everything the emitters print for `plan`, or returns the names
 /// some scope would declare twice. The fragments are decided before the
 /// operations and each lens before the lenses nested in it, the order that
-/// numbers argument sites.
-pub fn program(plan: &Plan) -> Result<Program, Vec<NameError>> {
-    let mut readers = reader::Readers::new(plan);
+/// numbers argument sites. A mapped scalar reads as the Swift type
+/// `host_types` names for it: the plan carries the scalar's name only.
+pub fn program(
+    plan: &Plan,
+    host_types: &BTreeMap<String, String>,
+) -> Result<Program, Vec<NameError>> {
+    let mut readers = reader::Readers::new(plan, host_types);
     let builder_names = Reserved::builders(
         plan.enums
             .keys()
@@ -105,7 +109,7 @@ pub fn program(plan: &Plan) -> Result<Program, Vec<NameError>> {
         operations,
         shared: Shared::default(),
     };
-    program.shared = Shared::collect(plan, &program);
+    program.shared = Shared::collect(plan, &program, host_types);
     let mut all = std::mem::take(&mut readers.duplicates);
     all.extend(duplicates);
     all.extend(program.shared.duplicates(plan));

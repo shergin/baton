@@ -226,7 +226,7 @@ pub(super) fn shared_text(shared: &Shared) -> String {
                 let mut parameters: Vec<String> = Vec::new();
                 for field in fields {
                     let property = input_field_name(&field.name);
-                    let swift_type = input_field_type(&field.type_);
+                    let swift_type = input_field_type(field);
                     if field.indirect {
                         // A field whose type contains this input is boxed: a
                         // value type cannot hold itself. The box's name begins

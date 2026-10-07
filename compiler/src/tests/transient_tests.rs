@@ -103,7 +103,7 @@ fn the_plan_and_the_emitted_swift_mark_the_root_field_named_and_no_other() {
             ("character".to_string(), false)
         ]
     );
-    let output = crate::emit::emit(&plan).expect("the plan emits");
+    let output = crate::emit::emit(&plan, &Config::default()).expect("the plan emits");
     let swift: String = output.files.values().cloned().collect();
     let secrets = swift
         .lines()
@@ -129,7 +129,8 @@ fn the_plan_and_the_emitted_swift_mark_the_root_field_named_and_no_other() {
 
 #[test]
 fn the_shared_file_declares_one_rule_set_and_every_plan_of_the_module_carries_it() {
-    let output = crate::emit::emit(&compiled(CONFIG, SECRETS)).expect("the plan emits");
+    let output =
+        crate::emit::emit(&compiled(CONFIG, SECRETS), &Config::default()).expect("the plan emits");
     for line in [
         r#"static let Secret = Baton.Registry.type("Secret", transient: true)"#,
         r#"static let transient = Baton.Transient(types: [Secret], fields: [(Query, "secrets")])"#,
@@ -150,7 +151,8 @@ fn the_shared_file_declares_one_rule_set_and_every_plan_of_the_module_carries_it
         "every plan of the module carries the rules:\n{swift}"
     );
 
-    let plain = crate::emit::emit(&compiled("{}", SECRETS)).expect("the plan emits");
+    let plain =
+        crate::emit::emit(&compiled("{}", SECRETS), &Config::default()).expect("the plan emits");
     assert!(!plain.shared.contains("transient"), "{}", plain.shared);
     let swift: String = plain.files.values().cloned().collect();
     assert!(!swift.contains("Types.transient"), "{swift}");
@@ -158,7 +160,7 @@ fn the_shared_file_declares_one_rule_set_and_every_plan_of_the_module_carries_it
 
 #[test]
 fn a_module_that_selects_no_transient_field_still_marks_the_transient_types() {
-    let shared = crate::emit::emit(&compiled(CONFIG, QUERY))
+    let shared = crate::emit::emit(&compiled(CONFIG, QUERY), &Config::default())
         .expect("the plan emits")
         .shared;
     assert!(

@@ -1266,9 +1266,8 @@ impl Lowering<'_> {
                         self.inputs.borrow_mut().insert(name.clone(), fields);
                     }
                 }
-                let mapped = (kind == TypeKind::CustomScalar)
-                    .then(|| self.config.custom_scalar_types.get(&name).cloned())
-                    .flatten();
+                let mapped = kind == TypeKind::CustomScalar
+                    && self.config.custom_scalar_types.contains_key(&name);
                 TypePlan::Named {
                     name,
                     kind,

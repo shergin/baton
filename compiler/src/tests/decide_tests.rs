@@ -252,7 +252,7 @@ fn named(kind: TypeKind) -> TypePlan {
         name: format!("{kind:?}"),
         kind,
         non_null: false,
-        mapped: None,
+        mapped: false,
     }
 }
 
@@ -286,7 +286,7 @@ fn non_null(type_: TypePlan) -> TypePlan {
 fn an_id_and_an_unmapped_custom_scalar_are_kept_as_their_text() {
     for kind in [TypeKind::String, TypeKind::Id, TypeKind::CustomScalar] {
         assert_eq!(
-            ScalarShape::of(&named(kind)).primitive,
+            ScalarShape::of(&named(kind), &BTreeMap::new()).primitive,
             Primitive::String,
             "{kind:?}"
         );
@@ -299,14 +299,14 @@ fn an_enum_reads_as_the_enum_its_schema_type_names() {
         name: "Status".to_string(),
         kind: TypeKind::Enum,
         non_null: false,
-        mapped: None,
+        mapped: false,
     };
     assert_eq!(
-        ScalarShape::of(&status).primitive,
+        ScalarShape::of(&status, &BTreeMap::new()).primitive,
         Primitive::Enum("Status".to_string())
     );
     assert_eq!(
-        ScalarShape::of(&list_of(status)).primitive,
+        ScalarShape::of(&list_of(status), &BTreeMap::new()).primitive,
         Primitive::Enum("Status".to_string())
     );
 }
@@ -314,15 +314,15 @@ fn an_enum_reads_as_the_enum_its_schema_type_names() {
 #[test]
 fn a_float_is_kept_as_a_double_a_boolean_as_a_bool_and_an_int_as_an_int() {
     assert_eq!(
-        ScalarShape::of(&named(TypeKind::Float)).primitive,
+        ScalarShape::of(&named(TypeKind::Float), &BTreeMap::new()).primitive,
         Primitive::Double
     );
     assert_eq!(
-        ScalarShape::of(&named(TypeKind::Boolean)).primitive,
+        ScalarShape::of(&named(TypeKind::Boolean), &BTreeMap::new()).primitive,
         Primitive::Bool
     );
     assert_eq!(
-        ScalarShape::of(&named(TypeKind::Int)).primitive,
+        ScalarShape::of(&named(TypeKind::Int), &BTreeMap::new()).primitive,
         Primitive::Int
     );
 }
@@ -335,13 +335,16 @@ fn elements_non_null(shape: ScalarShape) -> Option<bool> {
 
 #[test]
 fn a_scalar_shape_is_a_list_exactly_when_its_field_is() {
-    let float_list = ScalarShape::of(&list_of(named(TypeKind::Float)));
+    let float_list = ScalarShape::of(&list_of(named(TypeKind::Float)), &BTreeMap::new());
     assert_eq!(float_list.primitive, Primitive::Double);
     assert_eq!(elements_non_null(float_list), Some(false));
-    let id_list = ScalarShape::of(&non_null(list_of(non_null(named(TypeKind::Id)))));
+    let id_list = ScalarShape::of(
+        &non_null(list_of(non_null(named(TypeKind::Id)))),
+        &BTreeMap::new(),
+    );
     assert_eq!(id_list.primitive, Primitive::String);
     assert_eq!(elements_non_null(id_list), Some(true));
-    let id = ScalarShape::of(&non_null(named(TypeKind::Id)));
+    let id = ScalarShape::of(&non_null(named(TypeKind::Id)), &BTreeMap::new());
     assert_eq!(id.primitive, Primitive::String);
     assert_eq!(elements_non_null(id), None);
 }
@@ -356,7 +359,7 @@ fn a_list_shape_follows_its_elements_nullability_not_its_own() {
     ];
     for (type_, expected) in shapes {
         assert_eq!(
-            elements_non_null(ScalarShape::of(&type_)),
+            elements_non_null(ScalarShape::of(&type_, &BTreeMap::new())),
             Some(expected),
             "{type_:?}"
         );
@@ -616,7 +619,8 @@ fn mapped_fragment(text: &str, name: &str) -> ReaderPlan {
         &config,
     )
     .unwrap_or_else(|errors| panic!("the document does not compile: {errors:?}"));
-    let program = program(&compiled.plan).unwrap_or_else(|errors| panic!("{errors:?}"));
+    let program = program(&compiled.plan, &config.swift_types())
+        .unwrap_or_else(|errors| panic!("{errors:?}"));
     program
         .fragments
         .into_iter()
@@ -718,7 +722,7 @@ fn fragment_lenses(text: &str) -> BTreeMap<String, ReaderPlan> {
         &Config::default(),
     )
     .unwrap_or_else(|errors| panic!("the document does not compile: {errors:?}"));
-    program(&compiled.plan)
+    program(&compiled.plan, &BTreeMap::new())
         .unwrap_or_else(|errors| panic!("{errors:?}"))
         .fragments
         .into_iter()
