@@ -5,6 +5,19 @@ are expected and listed without apology.
 
 ## Unreleased
 
+## 0.8.0 (Back Straight) — 2026-10-06
+
+The spine: the architecture the decision records describe, built. A
+handle's fetch and a subscription's stream are values beside its phase,
+and a failure says its kind; every write is a batch through one door; the
+store owns the roots that keep records alive, stamps their ages at the
+commit and collects from them alone; an environment ends; and the keys a
+session renders are its store's. Around it, the shapes a production schema
+has read as Swift types (enums, input objects, mapped scalars, configured
+identity, client fields), the transport has one verb, the image evicts by
+launch and keeps the rows a partial response did not name, and the
+compiler validates, prints and reports what it compiled.
+
 - The runtime reads a plural link out as values: `values`, `requiredValues`,
   `caughtValues` and `caughtRequiredValues` on an anchor build one value per
   linked record at the read, for the `@inline` fragment the compiler is

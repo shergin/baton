@@ -206,11 +206,13 @@ will break freely until 1.0.
   lists of lists refused by the compiler, the plugin's inputs and outputs
   told truly, the hostile-name sweep in CI, the numbers the next steps are
   measured against, and the first published compiler bundle.
+- **0.8.0 (Back Straight).** The spine: the fetch and the stream as values
+  beside the phase, one door for every write, the store owning roots, ages
+  and the collector, an environment that ends, a session's keys in its
+  store; enums, input objects, mapped scalars and configured identity; one
+  transport verb; the image evicting by launch.
 
-Still to come: the architecture the [decision records](docs/decisions/)
-describe, built
-[one release a step](docs/decisions/the-decided-architecture-is-built-first.md),
-then the road to 1.0. Each release is described in full in
+Still to come: the road to 1.0. Each release is described in full in
 [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Using it
