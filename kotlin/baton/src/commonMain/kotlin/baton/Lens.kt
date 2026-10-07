@@ -25,8 +25,5 @@ class Anchor @Generated constructor(val record: Record, val owner: Owner) {
     override fun hashCode(): Int = record.hashCode() * 31 + owner.hashCode()
 }
 
-/** A record: a type and the cells of its slots. Defined with the store. */
-class Record internal constructor(val type: TypeID, val key: String)
-
 /** The scope a lens reads under: the operation's variables, the store, and the environment that can fetch. Defined with the store. */
 class Owner internal constructor(val variables: Variables)
