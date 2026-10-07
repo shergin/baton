@@ -5,6 +5,15 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- Five decisions recorded before the Kotlin lane, in `docs/decisions/`: the
+  verdict is the root's and the phase is derived from it (superseding in
+  part *The phase stays stored*; built behind a gate once the phase scripts
+  exist); a payload is bytes in a response's shape, Relay's word, which the
+  door and the optimistic builders will take in place of a `Variable`; a
+  mapped scalar's host type is named per language under Relay's
+  `customScalarTypes`, so the plan carries the scalar's name; the Kotlin
+  runtime is common first with a platform as an actual (issue 24); and a
+  format is per emitter.
 - `spec/runtime.md`, the runtime contract: what a runtime does with a plan,
   a response and a store, in no language's terms, one paragraph a rule,
   each ending with the fixture that holds it or the word *unheld*, so a
