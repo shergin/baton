@@ -72,7 +72,8 @@ object Registry {
                 typeNames = current.typeNames + name,
                 slotIndices = current.slotIndices + emptyMap(),
                 slotKeys = current.slotKeys + listOf(emptyList()),
-                clientSlots = current.clientSlots + emptySet(),
+                // A set is iterable: `+` with a bare set would add its elements, none, not the set.
+                clientSlots = current.clientSlots + listOf(emptySet()),
                 transientTypes = current.transientTypes + transient,
             ) to id
         }
