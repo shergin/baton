@@ -15,6 +15,28 @@ value class TypeID(val raw: Int) {
 data class Slot(val type: TypeID, val index: Int)
 
 /**
+ * A storage key read on an interface or a union, whose slot depends on the
+ * record's concrete type: `on(type)` interns the slot once per type and
+ * answers from a table after. A key the store numbered resolves through the
+ * store's keys, so a rendering and a later constant meet at one slot.
+ */
+@Generated
+class AbstractSlot internal constructor(val storageKey: String, private val keys: Keys?) {
+    constructor(storageKey: String) : this(storageKey, null)
+
+    private var indices: IntArray = IntArray(0)
+
+    fun on(type: TypeID): Slot {
+        val position = type.raw
+        if (position < indices.size && indices[position] != Int.MIN_VALUE) return Slot(type, indices[position])
+        val slot = keys?.slot(type, storageKey) ?: Registry.slot(type, storageKey)
+        if (position >= indices.size) indices = indices.copyOf(position + 1).also { grown -> for (i in indices.size..position) grown[i] = Int.MIN_VALUE }
+        indices[position] = slot.index
+        return slot
+    }
+}
+
+/**
  * The process-wide numbering of types and of each type's storage keys, which
  * generated code fills from its `Types` and `Slots` objects and the store
  * reads on every row. Registration is rare and reads are constant, so the

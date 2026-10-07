@@ -34,6 +34,7 @@ class Owner private constructor(
     // Caches by identity, scanned linearly as Swift's owner scans them: a
     // lens reads a handful of keys, conditions and sites.
     private val slots = ArrayList<Pair<DynamicKey, Slot>>()
+    private val abstractSlots = ArrayList<Pair<DynamicKey, AbstractSlot>>()
     private val conditions = ArrayList<Pair<Guard, Boolean>>()
     private val bound = ArrayList<Pair<ArgumentSite, Owner>>()
     private var inertOwner: Owner? = null
@@ -53,6 +54,18 @@ class Owner private constructor(
         store?.adoptConstants()
         slots.add(key to slot)
         return slot
+    }
+
+    /** The key's slot under these variables on [type], for a key read on an interface or a union. */
+    @Generated
+    fun slot(key: DynamicKey, on: TypeID): Slot {
+        for ((cached, slot) in abstractSlots) if (cached === key) return slot.on(on)
+        store?.checkThread()
+        keys.reconcile()
+        store?.adoptConstants()
+        val slot = AbstractSlot(key.render(variables), keys)
+        abstractSlots.add(key to slot)
+        return slot.on(on)
     }
 
     /** Whether a guarded field is selected under this owner's variables: `@include(if:)` when the variable is true, `@skip(if:)` when it is false. */
