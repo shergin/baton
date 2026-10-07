@@ -1353,7 +1353,19 @@ struct PersistenceTests {
         try FileManager.default.attributesOfItem(atPath: path)[.protectionKey] as? FileProtectionType
     }
 
-    @Test("an image made with a protection class carries it on its file and its write-ahead log")
+    /// Whether the volume the images are made on keeps a file's protection
+    /// class: a file written under `.complete` reports it back. A volume
+    /// without data protection, a virtual machine's among them, reports
+    /// none, whatever the file was made with.
+    nonisolated static let volumeKeepsProtection: Bool = {
+        let probe = FileManager.default.temporaryDirectory.appendingPathComponent("baton-\(UUID().uuidString).probe")
+        defer { try? FileManager.default.removeItem(at: probe) }
+        guard (try? Data().write(to: probe, options: .completeFileProtection)) != nil else { return false }
+        let attributes = try? FileManager.default.attributesOfItem(atPath: probe.path)
+        return attributes?[.protectionKey] as? FileProtectionType == .complete
+    }()
+
+    @Test("an image made with a protection class carries it on its file and its write-ahead log", .enabled(if: volumeKeepsProtection, "the volume keeps no protection class"))
     func protectionIsTheFiles() async throws {
         let environment = launch(protection: .complete)
         environment.store.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables, in: environment.store.keys)))
@@ -1373,7 +1385,7 @@ struct PersistenceTests {
         let protected = launch(protection: .complete)
         #expect(throws: NotStored.self) { try stored(Fixture(page: 1), in: protected) }
         #expect(protected.store.hydratedRecords == 0)
-        #expect(try protection(of: image.url.path) == .complete)
+        if Self.volumeKeepsProtection { #expect(try protection(of: image.url.path) == .complete) }
         try await seed(protected)
         let again = launch(protection: .complete)
         _ = try stored(Fixture(page: 1), in: again)
