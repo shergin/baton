@@ -334,10 +334,12 @@ fn compile_documents(options: &Options) -> Result<Compilation, DriverError> {
     })
 }
 
-/// The Swift of a compilation, or the name errors printed and reported.
+/// The Swift of a compilation, decided in the target's names and printed
+/// by it, or the name errors printed and reported.
 fn emitted(compilation: &Compilation) -> Result<emit::Output, DriverError> {
     let documents = &compilation.documents;
-    emit::emit(&compilation.plan, &compilation.sources.config).map_err(|errors| {
+    let target = emit::Swift::new(&compilation.sources.config);
+    let program = decide::program(&compilation.plan, target.naming()).map_err(|errors| {
         for error in &errors {
             match error {
                 NameError::Clash(clash) => eprintln!(
@@ -348,7 +350,8 @@ fn emitted(compilation: &Compilation) -> Result<emit::Output, DriverError> {
             }
         }
         DriverError::Reported
-    })
+    })?;
+    Ok(target.emit(&program))
 }
 
 /// Prints the compiler's own lines and reports when one is an error.

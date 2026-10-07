@@ -13,7 +13,7 @@ fn emitted(text: &str) -> String {
     config.path = PathBuf::from("baton.json");
     let compiled = compile(&sdl, &path, &[], &[document(text)], &config)
         .unwrap_or_else(|errors| panic!("{errors:?}"));
-    let output = crate::emit::emit(&compiled.plan, &config)
+    let output = crate::emit::swift(&compiled.plan, &config)
         .unwrap_or_else(|errors| panic!("the document declares names twice: {errors:?}"));
     output.files.into_values().collect::<Vec<_>>().join("\n")
 }

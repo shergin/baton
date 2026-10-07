@@ -234,7 +234,7 @@ fn a_schema_extensions_entry_naming_a_directory_reads_its_graphql_files_in_name_
 
 /// The shared file `text` compiles to with the given extensions.
 fn shared(extensions: &[(String, String)], text: &str) -> String {
-    crate::emit::emit(&compiled(extensions, text), &config())
+    crate::emit::swift(&compiled(extensions, text), &config())
         .expect("the plan emits")
         .shared
 }

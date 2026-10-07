@@ -17,6 +17,7 @@ use super::*;
 use crate::config::Config;
 use crate::names::SwiftNaming;
 use crate::naming::Naming;
+use crate::pipeline::Plan;
 use crate::{diagnostics, documents, pipeline};
 
 fn repository() -> PathBuf {
@@ -134,7 +135,7 @@ fn golden_name(source: &str, extension: &str) -> String {
 /// name, the shared file among them.
 fn emit_swift_tests() -> BTreeMap<String, String> {
     let plan = compile_swift_tests();
-    let output = emit(&plan, &swift_tests_config()).unwrap_or_else(|duplicates| {
+    let output = swift(&plan, &swift_tests_config()).unwrap_or_else(|duplicates| {
         let messages: Vec<String> = duplicates.iter().map(ToString::to_string).collect();
         panic!(
             "the test documents emit names twice:\n{}",
@@ -487,7 +488,7 @@ fn emitted(text: &str) -> String {
         &config,
     )
     .unwrap_or_else(|errors| panic!("the document does not compile: {errors:?}"));
-    let output = emit(&compiled.plan, &config)
+    let output = swift(&compiled.plan, &config)
         .unwrap_or_else(|errors| panic!("the document declares names twice: {errors:?}"));
     let mut swift: String = output.files.values().cloned().collect();
     swift.push_str(&output.shared);

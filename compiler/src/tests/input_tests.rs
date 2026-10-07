@@ -17,7 +17,7 @@ fn emitted_against(sdl: &str, text: &str) -> Result<crate::emit::Output, Vec<Str
                 .map(|error| error.message().to_string())
                 .collect::<Vec<_>>()
         })?;
-    crate::emit::emit(&compiled.plan, &config).map_err(|errors| {
+    crate::emit::swift(&compiled.plan, &config).map_err(|errors| {
         errors
             .iter()
             .map(|error| match error {

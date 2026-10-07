@@ -5,6 +5,10 @@
 //! `@semanticNonNull`, `@defer`), and the shared file of interned types and
 //! slots. It prints what `decide` settled and decides nothing itself.
 //!
+//! The target, `Swift`, keeps Swift's names and its printers together: the
+//! driver decides the plan in the target's names, then has the target print
+//! the decided program.
+//!
 //! Output per host file `X.swift` is `X.baton.swift`; the per-target
 //! `Baton.baton.swift` carries `Types` and `Slots`. One printer per output:
 //! `shared` writes the shared file, `lens` the lenses, `value` the values,
@@ -23,10 +27,8 @@ mod writer;
 use std::collections::BTreeMap;
 
 use crate::config::Config;
-use crate::decide;
+use crate::decide::Program;
 use crate::names::SwiftNaming;
-use crate::naming::NameError;
-use crate::pipeline::Plan;
 
 /// Generated Swift, grouped by the source file that declared the documents.
 pub struct Output {
@@ -47,35 +49,66 @@ const HEADER: &str =
 /// code names in the runtime raises it, here and in the runtime together.
 pub const FORMAT: u32 = 17;
 
-/// The Swift of a plan, or the names it would have declared twice. A mapped
-/// scalar reads as the Swift type `config` names for it.
-pub fn emit(plan: &Plan, config: &Config) -> Result<Output, Vec<NameError>> {
-    let program = decide::program(plan, &SwiftNaming::new(config))?;
-    let mut files: BTreeMap<String, String> = BTreeMap::new();
-    for fragment in &program.fragments {
-        let text = if fragment.inline {
-            value::fragment_text(fragment)
-        } else {
-            lens::fragment_text(fragment)
-        };
-        files
-            .entry(fragment.source.clone())
-            .or_default()
-            .push_str(&text);
+/// The Swift target: Swift's names, which the program is decided in, and
+/// the printers that write the decided program.
+pub struct Swift {
+    naming: SwiftNaming,
+}
+
+impl Swift {
+    /// The target `config` configures: a mapped scalar reads as the Swift
+    /// type `config` names for it.
+    pub fn new(config: &Config) -> Swift {
+        Swift {
+            naming: SwiftNaming::new(config),
+        }
     }
-    for operation in &program.operations {
-        files
-            .entry(operation.source.clone())
-            .or_default()
-            .push_str(&operation::operation_text(operation, &program.shared));
+
+    /// The names to decide a program in for this target.
+    pub fn naming(&self) -> &SwiftNaming {
+        &self.naming
     }
-    for text in files.values_mut() {
-        *text = format!("{HEADER}\n{text}");
+
+    /// The Swift of a program decided in this target's names.
+    pub fn emit(&self, program: &Program) -> Output {
+        let mut files: BTreeMap<String, String> = BTreeMap::new();
+        for fragment in &program.fragments {
+            let text = if fragment.inline {
+                value::fragment_text(fragment)
+            } else {
+                lens::fragment_text(fragment)
+            };
+            files
+                .entry(fragment.source.clone())
+                .or_default()
+                .push_str(&text);
+        }
+        for operation in &program.operations {
+            files
+                .entry(operation.source.clone())
+                .or_default()
+                .push_str(&operation::operation_text(operation, &program.shared));
+        }
+        for text in files.values_mut() {
+            *text = format!("{HEADER}\n{text}");
+        }
+        Output {
+            shared: shared::shared_text(&program.shared),
+            files,
+        }
     }
-    Ok(Output {
-        shared: shared::shared_text(&program.shared),
-        files,
-    })
+}
+
+/// The Swift of `plan` as the driver writes it for the target `config`
+/// configures, or the names some scope would declare twice.
+#[cfg(test)]
+pub fn swift(
+    plan: &crate::pipeline::Plan,
+    config: &Config,
+) -> Result<Output, Vec<crate::naming::NameError>> {
+    let target = Swift::new(config);
+    let program = crate::decide::program(plan, target.naming())?;
+    Ok(target.emit(&program))
 }
 
 #[cfg(test)]

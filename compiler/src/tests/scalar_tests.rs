@@ -43,7 +43,7 @@ fn emitted_under(config: &str, text: &str) -> String {
     config.path = PathBuf::from("baton.json");
     let compiled = compile(&sdl, &path, &[], &[document(text)], &config)
         .unwrap_or_else(|errors| panic!("{errors:?}"));
-    let output = crate::emit::emit(&compiled.plan, &config).expect("the plan emits");
+    let output = crate::emit::swift(&compiled.plan, &config).expect("the plan emits");
     output.files.into_values().collect::<Vec<_>>().join("\n")
 }
 
