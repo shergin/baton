@@ -2,8 +2,11 @@
 
 Status: accepted, 2026-10-04; superseded on 2026-10-06 on the plan's
 printer, which
-[declares each of its selections once](a-plan-declares-each-selection-once.md);
-the rest stands as decided here. Serves
+[declares each of its selections once](a-plan-declares-each-selection-once.md),
+and on 2026-10-07 on the names `decide` allocates, which now come from a
+naming the target supplies (`Naming`, with `SwiftNaming` behind it) and
+host files from a table of languages, so the Kotlin emitter the reopening
+line waits for has its seams; the rest stands as decided here. Serves
 [The compiler decides](../principles/compiler-decides.md) and
 [Two runtimes, one compiler](../principles/two-runtimes-one-compiler.md).
 Reopen when the Kotlin emitter starts, to weigh a quasi-quoter with back

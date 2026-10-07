@@ -5,6 +5,12 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- The compiler's `decide` stage spells nothing itself: it asks a naming the
+  target supplies for every identifier, suffix, family and member name it
+  needs, and the driver decides first and prints through the Swift target
+  after; host files are found through a table of languages, with the Swift
+  scanner and its checks behind it. The generated code does not change by
+  a byte; the seams are those a Kotlin emitter needs.
 - Scripts, the second kind of fixture under `spec/`: a file under
   `spec/scripts/` runs steps over time in one environment over one store,
   through a transport the steps answer, and after any step compares the
