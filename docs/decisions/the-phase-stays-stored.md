@@ -6,6 +6,10 @@ by that record's own reopening line: its bench failed. Serves
 [The store is the UI's state](../principles/store-is-the-ui-state.md).
 Reopen if the verdict is made to cost less than a walk of every record the
 operation's own selection reaches, under the 50 µs a read that record set.
+Superseded in part on 2026-10-07 by
+[The verdict is the root's, and the phase is derived from it](the-verdict-is-the-roots.md),
+on the stored phase and the chain that settles it; the fetch as a value
+stands.
 
 ## Context
 

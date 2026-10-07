@@ -11,6 +11,9 @@ its own reopening line, by
 fetch as a value is built as decided (`61c3ac4`). The policy and the
 revalidation it left open are answered by
 [Revalidation is one call the app makes](revalidation-is-the-apps-call.md).
+Its derived phase is restored on 2026-10-07 by another route, the verdict
+settled at the commit and kept on the root, by
+[The verdict is the root's, and the phase is derived from it](the-verdict-is-the-roots.md).
 
 ## Context
 
