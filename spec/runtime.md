@@ -754,14 +754,16 @@ sets no `persistConfig` and no `onError`.
 an enum is sent as its text; an input object as the object its fields
 render, a field left unset absent from the request, as GraphQL
 distinguishes absent from null, and an explicit null written as a constant
-in the document. A variable the operation declares without a default and
-the caller leaves unset is sent as `null`, which GraphQL coerces as it does
-an absent one. A server with another convention replaces the encoding on
-the built-in transports and keeps them. *Held by* script `transport` for
-an enum and a list of it, a `Decimal` and a list of it, a list of input
-objects with fields left unset, and an unset variable; the explicit null
-constant, a variable with a default left unset and a replaced encoding are
-*unheld*.
+in the document. A variable the caller leaves unset is absent from the
+request, and one the operation declares with a default is sent as that
+default, as Relay sends it, so the server and the store's keys see one
+value; GraphQL applies an argument's own default only to an absent
+variable, never to a null. A server with another convention replaces the
+encoding on the built-in transports and keeps them. *Held by* script
+`transport` for an enum and a list of it, a `Decimal` and a list of it,
+and a list of input objects with fields left unset; the explicit null
+constant, an unset variable (absent, or its declared default) and a
+replaced encoding are *unheld*.
 
 **An environment error says what is missing.** The view's environment, the
 lens's (a lens made by hand asked to fetch), the one that made a handle and

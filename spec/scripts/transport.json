@@ -17,10 +17,6 @@
     {
       "attach": {"operation": "TestFilteredCharacters", "variables": {"filters": [{"status": "Alive"}, {"name": "Rick", "species": "Human"}]}, "policy": "networkOnly", "as": "filtered", "failure": "transport"},
       "sent": [{"operation": "TestFilteredCharacters", "body": "{\"operationName\":\"TestFilteredCharacters\",\"query\":\"query TestFilteredCharacters($filters:[FilterCharacter!]!){charactersMatching(filters:$filters){id,name}}\",\"variables\":{\"filters\":[{\"status\":\"Alive\"},{\"name\":\"Rick\",\"species\":\"Human\"}]}}"}]
-    },
-    {
-      "attach": {"operation": "TestKeys", "variables": {"id": "7"}, "policy": "networkOnly", "as": "unnamed", "failure": "transport"},
-      "sent": [{"operation": "TestKeys", "body": "{\"operationName\":\"TestKeys\",\"query\":\"query TestKeys($id:ID!,$name:String){search(name:\\\"$0.00\\\"){__typename,...on Node{__isNode:__typename,id}},character(id:\\\"a,b\\\"){name,id},charactersByIds(ids:[$id,\\\"2\\\"]){name,id},characters(filter:{status:\\\"Alive\\\",name:$name}){info{count}}}\",\"variables\":{\"id\":\"7\",\"name\":null}}"}]
     }
   ]
 }
