@@ -5,11 +5,6 @@ class IngestError internal constructor(val offset: Int, override val message: St
     override fun toString(): String = "ingest error at byte $offset: $message"
 }
 
-/** A request error: the response's `data` is null, and its `errors` say why. Nothing is written. */
-internal class GraphQLErrors(val errors: List<FieldError>) : Exception() {
-    override val message: String get() = errors.joinToString("; ") { it.message }
-}
-
 /** One step of a response path: a field by response key, or a list index. */
 internal sealed interface PathSegment {
     data class Name(val name: String) : PathSegment

@@ -35,13 +35,6 @@ internal sealed interface Value {
 }
 
 /**
- * An entry of a response's `errors` that landed on a field: its message, its
- * response path dotted with list indices (`character.episode.2.name`), and
- * the server's `extensions`, when it sent any.
- */
-internal data class FieldError(val message: String, val path: String, val extensions: Variable? = null)
-
-/**
  * One normalized object in the store: its type, its key, a cell per slot, a
  * field error beside a cell where the response put one, and whether
  * `@deleteRecord` removed it.
