@@ -668,10 +668,11 @@ while the data stays in the store and ages as ready data does. The verdict
 is settled after the fetch, after every attach that finds the data, and
 after every commit that changed a null, a link, an error or a deletion; a
 verdict equal to the last is no change (the same errors, the same path).
-*Held by* script `phase`; a verdict equal to the last is *unheld*. The
-decision record *A handle keeps its fetch
-and derives its phase* and the one that supersedes it say where the
-verdict is kept; this contract says when it changes.
+The verdict is the root's, settled by the store, and the handle's phase is
+derived from it, from whether the root holds the data, and from the fetch;
+with data the phase reads the verdict and not the fetch, so a body that
+reads the phase is not woken by a fetch that changed nothing. *Held by*
+script `phase`; a verdict equal to the last is *unheld*.
 
 **A subscription's handle holds a stream.** The stream is a value: idle, or
 parked while the environment is inactive; connecting until the first

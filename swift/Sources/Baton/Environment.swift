@@ -45,7 +45,6 @@ public final class Environment {
         self.store = store
         self.transport = transport
         self.subscriptions = subscriptions
-        store.phasesNeedSettling = { [weak self] in self?.reevaluate() }
     }
 
     /// An environment over HTTP. With `persistence`, the store keeps an image
@@ -92,14 +91,6 @@ public final class Environment {
         handle.preloaded = handle.isFetching
         if handle.retainCount == 0 { evict(store.park(handle.key)) }
         return handle
-    }
-
-    /// Settles again the phases a commit's field errors or nulls can change:
-    /// those of retained `@throwOnFieldError` and bubbling operations.
-    func reevaluate() {
-        for handle in handles.values where handle.retainCount > 0 {
-            handle.reevaluate()
-        }
     }
 
     /// Marks every handle's data stale. Retained handles whose holders allow
@@ -230,21 +221,24 @@ public final class Environment {
     func commit(_ payload: Data, plan: ResolvedSelection, root: Store.Root, replacing layer: UUID? = nil, checkingCancellation: Bool = true, complete: Bool = true) async throws -> Committed {
         let changes = try await Ingest.normalized(payload, plan: plan, rootKey: root.record.key, complete: complete)
         if checkingCancellation { try Task.checkCancellation() }
-        return commit(changes, replacing: layer, dating: root)
+        return commit(changes, replacing: layer, dating: root, complete: complete)
     }
 
     /// The door's lower half: a change set committed as a server batch, and
-    /// the root dated when the change set completes its operation's response.
-    /// The parts of a deferred stream after the first arrive here as the
-    /// change sets the delivery assembled, and the last of them dates.
-    func commit(_ changes: ChangeSet, replacing layer: UUID? = nil, dating root: Store.Root? = nil) -> Committed {
+    /// the root dated when the change set completes its operation's response,
+    /// which makes its data present when the response was complete; a
+    /// payload committed by hand may carry part of the selection, and leaves
+    /// presence to the next check. The parts of a deferred stream after the
+    /// first arrive here as the change sets the delivery assembled, and the
+    /// last of them dates.
+    func commit(_ changes: ChangeSet, replacing layer: UUID? = nil, dating root: Store.Root? = nil, complete: Bool = true) -> Committed {
         // The terminal check: a response that lands after the end, which
         // cancellation could not reach, a fetch awaited in a task of the
         // app's own or a mutation the server applied, reaches neither
         // memory nor the image.
         guard !ended else { return Committed() }
         store.commit(changes, replacingOptimistic: layer)
-        if let root { evict(store.date(root)) }
+        if let root { evict(store.date(root, present: complete)) }
         var committed = Committed()
         committed.add(changes)
         return committed

@@ -916,6 +916,136 @@ struct PhaseTests {
         #expect(!handle.isRefreshing)
     }
 
+    /// How often each of two bodies was woken: one that reads a handle's
+    /// phase and one that reads whether it is refreshing. Each observation
+    /// is armed again after it fires, as a body tracks again when it runs.
+    @MainActor
+    final class Wakes<Op: Baton.Query> {
+        let handle: OperationHandle<Op>
+        private(set) var phase = 0
+        private(set) var refreshing = 0
+
+        init(_ handle: OperationHandle<Op>) {
+            self.handle = handle
+            watchPhase()
+            watchRefreshing()
+        }
+
+        private func watchPhase() {
+            withObservationTracking { _ = handle.phase } onChange: {
+                Task { @MainActor in
+                    self.phase += 1
+                    self.watchPhase()
+                }
+            }
+        }
+
+        private func watchRefreshing() {
+            withObservationTracking { _ = handle.isRefreshing } onChange: {
+                Task { @MainActor in
+                    self.refreshing += 1
+                    self.watchRefreshing()
+                }
+            }
+        }
+    }
+
+    /// Lets the wakes a change scheduled on the main actor be counted.
+    func drain() async {
+        for _ in 0..<10 { await Task.yield() }
+    }
+
+    /// Makes `handle` ready on `response`, then refetches it with an equal
+    /// response, and returns how often a body reading its phase and one
+    /// reading whether it is refreshing were woken: when the fetch started,
+    /// and when it committed.
+    func wakesOfAnEqualRefetch<Op: Baton.Query>(_ handle: OperationHandle<Op>, answeredBy response: Data, through gate: GatedTransport) async -> (started: (phase: Int, refreshing: Int), committed: (phase: Int, refreshing: Int)) {
+        let retention = handle.retain()
+        defer { withExtendedLifetime(retention) {} }
+        await until { gate.pending == 1 }
+        gate.respond(response)
+        await settled(handle)
+        await handle.settle()
+        guard case .ready = handle.phase else {
+            Issue.record("expected ready, got \(handle.phase)")
+            return ((0, 0), (0, 0))
+        }
+        let wakes = Wakes(handle)
+        let refetch = Task { try? await handle.refetch() }
+        await until { gate.pending == 1 }
+        await drain()
+        #expect(handle.isRefreshing)
+        let started = (phase: wakes.phase, refreshing: wakes.refreshing)
+        gate.respond(response)
+        await refetch.value
+        await drain()
+        #expect(!handle.isRefreshing)
+        guard case .ready = handle.phase else {
+            Issue.record("expected ready after the equal response, got \(handle.phase)")
+            return (started, (wakes.phase, wakes.refreshing))
+        }
+        return (started, (wakes.phase, wakes.refreshing))
+    }
+
+    @Test("a body that reads the phase of a ready handle is woken neither when a refetch starts nor when it commits an equal response, while a body that reads whether it is refreshing is woken by both")
+    func anEqualRefetchWakesNoPhaseReader() async throws {
+        let gate = GatedTransport()
+        let environment = Environment(transport: gate)
+        environment.log = nil
+        let list = await wakesOfAnEqualRefetch(environment.handle(for: TestList(page: 1)), answeredBy: fixtureData, through: gate)
+        #expect(list.started.phase == 0, "the fetch starting does not move the phase")
+        #expect(list.started.refreshing == 1)
+        #expect(list.committed.phase == 0, "an equal response does not move the phase")
+        #expect(list.committed.refreshing == 2)
+
+        // An operation that throws on field errors reads the root's verdict
+        // and the errors its response carried with no field to hold them;
+        // an equal response moves neither.
+        let strictGate = GatedTransport()
+        let strictEnvironment = Environment(transport: strictGate)
+        strictEnvironment.log = nil
+        let strict = await wakesOfAnEqualRefetch(strictEnvironment.handle(for: TestStrictQuery(id: "1")), answeredBy: fixture("character-name-shown"), through: strictGate)
+        #expect(strict.started.phase == 0, "the fetch starting does not move the phase")
+        #expect(strict.started.refreshing == 1)
+        #expect(strict.committed.phase == 0, "an equal response does not move the phase")
+        #expect(strict.committed.refreshing == 2)
+    }
+
+    @Test("a body that reads the phase of an operation that throws on field errors is woken when a commit lands a field error in its selection and when a commit clears it")
+    func aFieldErrorCommitWakesThePhaseReader() async throws {
+        let environment = Environment(transport: RecordedTransport([TestStrictQuery.name: fixture("character-name-shown")]))
+        environment.log = nil
+        let handle = environment.handle(for: TestStrictQuery(id: "1"))
+        let retention = handle.retain()
+        defer { withExtendedLifetime(retention) {} }
+        await settled(handle)
+        await handle.settle()
+        guard case .ready = handle.phase else {
+            Issue.record("expected ready, got \(handle.phase)")
+            return
+        }
+        let wakes = Wakes(handle)
+        let plan = TestStrictQuery.plan.resolve(TestStrictQuery(id: "1").variables, in: environment.store.keys)
+
+        environment.store.commit(try Ingest.normalize(fixture("character-name-hidden"), plan: plan))
+        await drain()
+        #expect(wakes.phase == 1)
+        guard case .failed(let error as FieldErrors) = handle.phase else {
+            Issue.record("expected the field error the commit landed, got \(handle.phase)")
+            return
+        }
+        #expect(error.errors.map(\.message) == ["name hidden"])
+
+        environment.store.commit(try Ingest.normalize(fixture("character-name-shown"), plan: plan))
+        await drain()
+        #expect(wakes.phase == 2)
+        guard case .ready = handle.phase else {
+            Issue.record("expected ready once a commit clears the field error, got \(handle.phase)")
+            return
+        }
+        #expect(wakes.refreshing == 0, "no fetch ran")
+    }
+
     @Test("a query value reads its handle's fetch once resolved, and an idle fetch before")
     func aQueryValueReadsTheFetch() async throws {
         let gate = GatedTransport()

@@ -13,6 +13,22 @@ are expected and listed without apology.
   constant doubled the count, made created records count, and showed the
   key twice in the dump, so a count or a dump compared across test runs
   differed by what else the process had touched.
+- A handle stores no phase. The root, which is the store's, holds whether
+  the store has the operation's data and the verdict on it, what the data
+  deserves by `@throwOnFieldError` and a bubbling `@required`, settled by
+  the store at the end of a batch that changed a null, a link, an error or
+  a deletion, and when the handle finds or fetches the data; the handle's
+  `phase` is derived from the root and its own `fetch` when it is read.
+  The settling chain from the store through the environment to every
+  retained handle is gone, and with it the store's last covert pointer to
+  its environment. With data the phase reads the verdict and not the
+  fetch, so a body that reads the phase is not woken by a fetch that
+  changed nothing. Two readings change: a `storeOnly` handle that found no
+  data reads ready once the operation's response is committed by any route
+  or it is attached again over data the store now holds, and a handle that
+  failed with nothing to show reads ready when it is attached again over
+  such data; before, both stayed failed. Recorded in
+  `docs/decisions/the-verdict-is-the-roots.md`.
 - The compiler's `decide` stage spells nothing itself: it asks a naming the
   target supplies for every identifier, suffix, family and member name it
   needs, and the driver decides first and prints through the Swift target

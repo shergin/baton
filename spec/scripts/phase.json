@@ -96,6 +96,43 @@
       "payload": {"operation": "TestRequiredOrigin", "variables": {"id": "1"}, "response": "tests/required-origin-1.json"},
       "phase": {"handle": "required", "phase": "ready"},
       "reads": [{"handle": "required", "path": "character.origin.name", "value": "Earth (C-137)"}]
+    },
+    {
+      "attach": {"operation": "TestHeaderQuery", "variables": {"id": "9"}, "policy": "storeOnly", "as": "waiting"},
+      "phase": {"handle": "waiting", "phase": {"failed": "missingData"}},
+      "fetch": {"handle": "waiting", "fetch": "idle"}
+    },
+    {
+      "commit": {"operation": "TestHeaderQuery", "variables": {"id": "9"}, "response": "rickandmorty/character-header-9.json"},
+      "phase": {"handle": "waiting", "phase": "ready", "isRefreshing": false},
+      "fetch": {"handle": "waiting", "fetch": "idle"},
+      "reads": [{"handle": "waiting", "path": "character.name", "value": "Agency Director"}]
+    },
+    {
+      "attach": {"operation": "TestHeaderQuery", "variables": {"id": "9"}, "policy": "storeOnly", "as": "waitingAgain"},
+      "phase": [
+        {"handle": "waitingAgain", "phase": "ready", "isRefreshing": false},
+        {"handle": "waiting", "phase": "ready", "isRefreshing": false}
+      ],
+      "fetch": {"handle": "waitingAgain", "fetch": "idle"},
+      "reads": [{"handle": "waitingAgain", "path": "character.name", "value": "Agency Director"}]
+    },
+    {
+      "attach": {"operation": "TestHeaderQuery", "variables": {"id": "3"}, "policy": "storeOrNetwork", "as": "summer", "failure": "transport"},
+      "phase": {"handle": "summer", "phase": {"failed": "transport"}},
+      "fetch": {"handle": "summer", "fetch": {"failed": "transport"}}
+    },
+    {
+      "payload": {"operation": "TestHeaderQuery", "variables": {"id": "3"}, "response": "tests/character-header-3.json"}
+    },
+    {
+      "attach": {"operation": "TestHeaderQuery", "variables": {"id": "3"}, "policy": "storeOrNetwork", "as": "summerAgain"},
+      "phase": [
+        {"handle": "summerAgain", "phase": "ready", "isRefreshing": false},
+        {"handle": "summer", "phase": "ready", "isRefreshing": false}
+      ],
+      "fetch": {"handle": "summerAgain", "fetch": {"failed": "transport"}},
+      "reads": [{"handle": "summerAgain", "path": "character.name", "value": "Summer Smith"}]
     }
   ]
 }

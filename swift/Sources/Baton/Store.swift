@@ -19,9 +19,6 @@ public final class Store {
     /// The record subscription payloads hang off.
     package let subscriptionRoot: Record
     private var records: [String: Record] = [:]
-    /// Called once a batch that changed a null, an error or a link has
-    /// notified, for the phases that read them; the environment sets it.
-    var phasesNeedSettling: (() -> Void)?
     /// Whether the store's session has ended: it holds nothing, commits
     /// nothing more and reports nothing.
     package private(set) var ended = false
@@ -96,7 +93,7 @@ public final class Store {
     var hydratedRootSlots: Set<Int32> = []
     /// Whether the batch in progress changed a field error, a null, a link,
     /// or whether a record is deleted: what `@throwOnFieldError` and
-    /// bubbling `@required` read.
+    /// bubbling `@required` read, so the roots' verdicts are settled again.
     private var nullsOrErrorsChanged = false
 
     public init(persistence: Persistence? = nil, cacheExpiration: Duration? = nil, releaseBufferSize: Int = 10) {
@@ -131,7 +128,6 @@ public final class Store {
         records = [Store.rootKey: root, Store.mutationRootKey: mutationRoot, Store.subscriptionRootKey: subscriptionRoot]
         placeholders.removeAll()
         log = nil
-        phasesNeedSettling = nil
     }
 
     /// A store dropped without an end clears its records, so that records
@@ -181,6 +177,10 @@ public final class Store {
     package var count: Int { records.count }
 
     package func existing(_ key: String) -> Record? { records[key] }
+
+    /// Every record the store holds, by key; for the store dumps under `spec/`.
+    package var recordsByKey: [String: Record] { records }
+
     /// Every field a record holds, by storage key, with its error; a key the
     /// store holds at two slots, a rendering and the constant adopted for
     /// it, is one field. For the store dumps under `spec/` and the
@@ -192,10 +192,6 @@ public final class Store {
             return (keys.text(of: slot), value, error)
         }
     }
-
-
-    /// Every record the store holds, by key; for the store dumps under `spec/`.
-    package var recordsByKey: [String: Record] { records }
 
     /// The record for a key, created on first sight.
     func record(key: String, type: TypeID, idOffset: Int32) -> Record {
@@ -276,14 +272,14 @@ public final class Store {
         private var flags: [ObjectIdentifier: (record: Record, was: Bool)] = [:]
 
         private struct Original {
-            /// Whether the slot counts among the changed: a twin's write is
-            /// the same key written again, notified on its own channel and
-            /// counted with its twin.
-            let counted: Bool
             let record: Record
             let slot: Slot
             let value: Value
             let error: FieldError?
+            /// Whether the slot counts among the changed: a twin's write is
+            /// the same key written again, notified on its own channel and
+            /// counted with its twin.
+            let counted: Bool
         }
 
         init(direct: Bool = false) {
@@ -421,7 +417,7 @@ public final class Store {
     @discardableResult
     package func commit(_ changes: ChangeSet, replacingOptimistic id: UUID?) -> Int {
         adoptConstants()
-        defer { reevaluateIfNeeded() }
+        defer { settleVerdictsIfNeeded() }
         if id == nil, optimisticLayers.isEmpty {
             var batch = Batch(.server, direct: true)
             applyServer(changes, into: &batch)
@@ -435,12 +431,12 @@ public final class Store {
         return finish(batch)
     }
 
-    /// Lets the environment settle the phases that read errors and nulls,
-    /// once the batch that changed one has notified.
-    private func reevaluateIfNeeded() {
+    /// Settles the roots' verdicts once a batch that changed a null, a link,
+    /// an error or a deletion has notified.
+    private func settleVerdictsIfNeeded() {
         guard nullsOrErrorsChanged else { return }
         nullsOrErrorsChanged = false
-        phasesNeedSettling?()
+        settleVerdicts()
     }
 
     /// Applies a server's payload and hands the image what it changed, and
@@ -532,7 +528,7 @@ public final class Store {
 
     /// Applies an optimistic response on top of everything else.
     package func applyOptimistic(_ changes: ChangeSet) -> UUID {
-        defer { reevaluateIfNeeded() }
+        defer { settleVerdictsIfNeeded() }
         var batch = Batch(.optimistic)
         var layer = OptimisticLayer(id: UUID(), changes: changes)
         apply(changes, into: &batch)
@@ -545,7 +541,7 @@ public final class Store {
     /// Removes an optimistic layer; later layers are re-applied over the gap.
     package func revertOptimistic(_ id: UUID) {
         guard let index = optimisticLayers.firstIndex(where: { $0.id == id }) else { return }
-        defer { reevaluateIfNeeded() }
+        defer { settleVerdictsIfNeeded() }
         var batch = Batch(.optimistic)
         revertLayers(from: index, into: &batch)
         optimisticLayers.remove(at: index)
@@ -813,12 +809,12 @@ public final class Store {
                     // Nobody can have read a record this batch created: its
                     // slots, and their twins, are written without a
                     // notification and count among nothing changed.
-                    if !twins.isEmpty, let twin = twins[entry.slot], let previous = record.writeSilently(twin, value) {
-                        batch.record(.slot(record, twin, previous))
-                    }
                     if let previous = record.writeSilently(entry.slot, value) {
                         batch.record(.slot(record, entry.slot, previous))
                         noteNulls(previous, value)
+                    }
+                    if !twins.isEmpty, let twin = twins[entry.slot], let previous = record.writeSilently(twin, value) {
+                        batch.record(.slot(record, twin, previous))
                     }
                 } else {
                     set(record, entry.slot, value, &batch)

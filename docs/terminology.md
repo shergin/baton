@@ -280,12 +280,15 @@ environment shares among equal fetches. Relay also calls the code behind
 `@connection` and the edge directives handles; here "handle" is only the
 operation handle, and an edge directive in a plan is an [edit](#lists).
 Here: the live side of a query value, made by the environment and shared by
-equal values: its phase, its [fetch](#runtime) as a value, whether it is
-refreshing, when it was fetched, and its place among the store's roots while
-retained or in the release buffer. A subscription's handle is the same for a
-subscription: the stream held open as a value, its events, its last error.
-See [the contract](../spec/runtime.md#8-the-handle-policies-phase-fetch)
-and [the decision](decisions/a-handle-derives-its-phase.md).
+equal values: a view of its root, which is the store's and holds whether
+the data is there, what it deserves and when it was fetched, and of its
+[fetch](#runtime), which is the environment's; its [phase](#generated) is
+derived from the two, and whether it is refreshing. A subscription's
+handle is the same for a subscription: the stream held open as a value,
+its events, its last error. See
+[the contract](../spec/runtime.md#8-the-handle-policies-phase-fetch),
+[the decision](decisions/a-handle-derives-its-phase.md) and
+[the verdict's](decisions/the-verdict-is-the-roots.md).
 Swift: `OperationHandle`, with `isRefreshing` and `fetchTime`;
 `SubscriptionHandle`, whose stream is `stream`.
 
@@ -296,17 +299,24 @@ synchronously readable; previous data stays visible while refreshing, and
 the handle says a fetch runs behind it: behind ready data, or behind a
 failure on field errors or a `@required` null, whose data is in the store,
 which a retry leaves in place as a refetch does; after any other failure a
-retry shows loading. Stored on the handle and settled after each commit.
-Deriving it when it is read, from what the store holds and from the
-handle's [fetch](#runtime), was decided behind a gate, and the gate failed
-on the bench (`BENCHMARKS.md`, 2026-10-05: the verdict costs 567 µs
-untracked and 4.56 ms in a body's tracking scope on the strict fixture,
-against the 50 µs the gate allowed), so the phase stays stored and a
-fetch's failure is read beside it as the fetch's value. See
-[the contract](../spec/runtime.md#8-the-handle-policies-phase-fetch),
-[the decision](decisions/the-phase-stays-stored.md), which superseded
-[the first one](decisions/a-handle-derives-its-phase.md) on that point.
-Swift: the handle says it with `isRefreshing`; the retry is `retry()`.
+retry shows loading. Derived when it is read and stored nowhere: from the
+root, whether the store holds the operation's data and the verdict on it
+(what the data deserves by the operation's policies, settled by the store
+after a batch that changed a null, a link, an error or a deletion, and when
+the data is found or fetched), and from the handle, what the network did,
+its [fetch](#runtime). With data the phase reads the verdict and not the
+fetch, so a fetch that changed nothing wakes no body that reads it.
+Deriving it by a walk at every read was refused on the bench
+(`BENCHMARKS.md`, 2026-10-05: 567 µs untracked and 4.56 ms in a body's
+tracking scope on the strict fixture); settling the verdict at the commit
+and keeping it on the root costs what the stored phase cost. See
+[the contract](../spec/runtime.md#8-the-handle-policies-phase-fetch) and
+[the decision](decisions/the-verdict-is-the-roots.md), which superseded
+[the stored phase](decisions/the-phase-stays-stored.md) in part and
+restored [the first decision](decisions/a-handle-derives-its-phase.md) by
+another route.
+Swift: the handle says it with `isRefreshing`; the retry is `retry()`; the
+root's facts are `Store.Root.present` and `verdict`.
 
 **Action.** *Composition: lens, operation value, environment.* The word
 follows SwiftUI's `dismiss` and `openURL`.

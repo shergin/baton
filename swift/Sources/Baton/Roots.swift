@@ -8,10 +8,31 @@ import Observation
 /// write queue, and from nothing else, and runs when a root left or a commit
 /// dropped a link.
 extension Store {
+    /// What an operation's data deserves, by the operation's own policies:
+    /// sound; failed on the uncaught field errors in the operation's own
+    /// selection, under `@throwOnFieldError`; or failed on the first
+    /// `@required` field that is null and bubbles to the root. A fact about
+    /// data, kept on the root and settled by the store; the handle derives
+    /// its phase from it and stores none.
+    enum Verdict: Equatable {
+        case sound
+        case fieldErrors([FieldError])
+        case requiredMissing(path: String)
+    }
+
+    /// What judges an operation's data: the handle of an operation with a
+    /// policy, whose generated code walks the operation's own selection.
+    @MainActor
+    protocol Judge: AnyObject {
+        func judge() -> Verdict
+    }
+
     /// A root entry: the operation's selection, the record it starts from,
-    /// how many hold it, and its age: when the store last received the
-    /// operation's response, and under which invalidation. Observable, so a
-    /// body that reads a handle's fetch time follows the commit that moves it.
+    /// how many hold it, its age (when the store last received the
+    /// operation's response, and under which invalidation), whether the
+    /// store holds its data, and the verdict on that data. Observable, so a
+    /// body that reads a handle's phase or fetch time follows the commit
+    /// that moves them.
     @MainActor
     @Observable
     final class Root {
@@ -33,9 +54,46 @@ extension Store {
         /// The fetch a heal asked for, by its number: a miss under that
         /// fetch's data is unexpected, and healed no further.
         @ObservationIgnored fileprivate(set) var healedAt: Int?
+        /// Whether the store holds the operation's data: a check found it,
+        /// or the operation's response committed. Once present, it stays so
+        /// for the root's life; a root pushed out and made again starts over.
+        private(set) var present = false
+        /// What the data deserves, settled by `settle()`: after a batch that
+        /// changed a null, a link, an error or a deletion, and when the
+        /// handle finds or fetches the data. A verdict equal to the last is
+        /// no change, so a body reading a phase it did not move is not woken.
+        private(set) var verdict: Verdict = .sound
+        /// Who judges the data: the handle of an operation with a policy,
+        /// held weakly since it holds the root; none for an operation whose
+        /// data is always sound.
+        @ObservationIgnored weak var judge: (any Judge)?
 
         /// Whether a holder's policy allows the network.
         var allowsNetwork: Bool { networkHolders > 0 }
+
+        /// Settles the verdict by the judge, when the root has one and holds
+        /// data.
+        func settle() {
+            guard present, let judge else { return }
+            let next = judge.judge()
+            if next != verdict { verdict = next }
+        }
+
+        /// A check found the operation's data in the store. The verdict is
+        /// settled on it, since a root nobody held saw no batch settle it.
+        func found() {
+            if !present { present = true }
+            settle()
+        }
+
+        /// The operation's own response just committed. The batch settled
+        /// the verdict of a held root whose nulls or errors it changed; the
+        /// first response, and a root nobody holds, are settled here.
+        func committed() {
+            let first = !present
+            if first { present = true }
+            if first || holders == 0 { settle() }
+        }
 
         init(key: String, resolved: ResolvedSelection, record: Record) {
             self.key = key
@@ -139,12 +197,14 @@ extension Store {
     }
 
     /// Dates a root: the store just committed its operation's response, in
-    /// this launch, which the image is told. A query just written that
-    /// nothing retains waits in the release buffer, as Relay's does; the keys
-    /// of the roots pushed out are returned.
-    func date(_ root: Root) -> [String] {
+    /// this launch, which the image is told, and which makes the data
+    /// present when the response was complete, whoever asked for it. A
+    /// query just written that nothing retains waits in the release buffer,
+    /// as Relay's does; the keys of the roots pushed out are returned.
+    func date(_ root: Root, present: Bool = true) -> [String] {
         root.stamp(now, epoch: invalidationEpoch)
         root.fetches += 1
+        if present { root.committed() }
         // An operation selecting a transient root field leaves no stamp: the
         // stamp carries the operation's variables, which would name what the
         // field was asked with.
@@ -178,6 +238,16 @@ extension Store {
 
     /// The roots: retained, waiting in the buffer, or a completed mutation's.
     package var rootCount: Int { roots.count }
+
+    /// Settles the verdict of every retained root that holds data, after a
+    /// batch changed a null, a link, an error or a deletion: what
+    /// `@throwOnFieldError` and a bubbling `@required` read. The one walk the
+    /// runtime makes of its own after a commit, at the data's home.
+    func settleVerdicts() {
+        for root in roots.values where root.holders > 0 && root.present {
+            root.settle()
+        }
+    }
 
     /// Runs a pass on the next turn of the main actor; several reasons in one
     /// turn run one pass.

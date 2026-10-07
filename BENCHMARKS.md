@@ -21,6 +21,37 @@ Best ingest and best commit of the fixture at each release below.
   <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
 
+## Unreleased, the verdict on the root — 2026-10-07
+
+Revision: the working tree of the verdict change on top of `039aa2d`,
+against `039aa2d` itself built the same way, run back to back, `--quick`
+(three samples). Machine: Apple M1 Pro (MacBook Pro), macOS 26.5.2,
+release build; load average 7, not a quiet machine, so read each row
+against its neighbour from the same pair of runs.
+
+The handle stores no phase: the root holds whether the store has the
+operation's data and the verdict on it, settled by the store at the end of
+a batch that changed a null, a link, an error or a deletion, by the handle's
+generated walk, which the root asks for through a protocol
+(`docs/decisions/the-verdict-is-the-roots.md`). The gate: the commit with a
+retained `@throwOnFieldError` handle within the spread of the chain it
+replaced, and the deterministic counts unchanged.
+
+| Measurement | Before | Now |
+|---|---|---|
+| Commit of the errors, no handle retained | 141 µs | 141 µs |
+| The same commit, a `@throwOnFieldError` handle retained | 1.01 ms | 958 µs |
+| The commit that clears them, the handle retained | 784 µs | 745 µs |
+| The same two, the root asking a closure the handle installed | | 1.19 ms, 965 µs |
+| The same two, the judge answering sound without a walk | | 180 µs, 175 µs |
+
+The counts in `benchmarks/counts.txt` did not change. The first shape,
+a closure made in the handle's generic initializer and stored on the root,
+cost the same walk about 200 µs more than the handle's own method did; a
+protocol the handle conforms to, which the root holds weakly and asks,
+costs what the chain cost. The mechanism without the walk is 35 µs over
+the plain commit: the walk is the cost, as it was.
+
 ## Unreleased, an `@inline` fragment read as a value — 2026-10-06
 
 Revision: the working tree of the `@inline` build on top of `500db24`, one

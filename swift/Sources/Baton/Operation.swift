@@ -221,9 +221,6 @@ protocol AnyOperationHandle: AnyObject, Sendable {
     /// The environment ended: what the handle shows says so, and nothing is
     /// fetched again.
     func end()
-    /// Settles the phase again after a commit changed a field error or a
-    /// null, for policies that read them.
-    func reevaluate()
     func cancel()
     /// The environment went inactive: a stream closes while its handle stays
     /// retained; a query reads nothing of it.
@@ -232,18 +229,29 @@ protocol AnyOperationHandle: AnyObject, Sendable {
     func resume()
 }
 
-/// The live side of an operation value: its phase, its fetch, its data, and
-/// its place among the store's roots. Created by the environment, shared by
-/// equal operation values.
+/// The live side of an operation value: a view of its root, which is the
+/// store's and holds whether the data is there and what it deserves, and of
+/// its fetch, which is the environment's; its phase is derived from the two
+/// and stored nowhere. Created by the environment, shared by equal
+/// operation values.
 @MainActor
 @Observable
-public final class OperationHandle<Op: Query>: AnyOperationHandle {
+public final class OperationHandle<Op: Query>: AnyOperationHandle, Store.Judge {
     public let operation: Op
-    public private(set) var phase: Phase<Op.Data> = .loading
     /// The last fetch, as a value: idle, in flight, or failed with its
     /// failure and when it failed. A fetch that fails behind data leaves the
     /// phase as it was and is read here, by every view of the handle.
     public private(set) var fetch: Fetch = .idle
+    /// Whether the environment ended: the handle reads gone, whatever the
+    /// store holds.
+    private var ended = false
+    /// Whether a `storeOnly` attach found the store without the data; the
+    /// phase says so until the data comes or a fetch is started by hand.
+    private var missingData = false
+    /// Whether a `networkOnly` attach by a view nobody shows the handle to
+    /// waits for its own response: loading until it lands, whatever the
+    /// store holds meanwhile.
+    private var awaitsOwnResponse = false
     /// When the store last committed the operation's response, in this launch
     /// or, from the image, an earlier one: the root's age.
     public var fetchTime: ContinuousClock.Instant? { root.fetchTime }
@@ -266,8 +274,9 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
     /// The policy of the last attach, which the retention it makes keeps.
     @ObservationIgnored private var lastPolicy: FetchPolicy = .default
     /// The field errors of the last fetch that no field in the store holds,
-    /// which `@throwOnFieldError` counts until the next fetch.
-    @ObservationIgnored private var unplaced: [FieldError] = []
+    /// which `@throwOnFieldError` counts until the next fetch: the network's
+    /// fact, kept here and weighed with the root's verdict.
+    private var unplaced: [FieldError] = []
 
     init(operation: Op, key: String, environment: Environment) {
         self.operation = operation
@@ -276,26 +285,53 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
         store = environment.store
         root = environment.store.root(key, resolved: Op.plan.resolve(operation.variables, in: environment.store.keys), record: environment.store.root)
         owner = Owner(variables: operation.variables, store: environment.store, environment: environment, root: root)
+        // An operation with a policy judges its root's data.
+        if Op.throwsOnFieldError || Op.bubbles { root.judge = self }
+    }
+
+    /// What the data deserves: generated code's walk of the operation's own
+    /// selection, as Relay's reader of the operation weighs it (a spread's
+    /// fragment weighs its own). The root asks after a batch that changed
+    /// what the verdict reads, and when the data is found or fetched.
+    func judge() -> Store.Verdict {
+        if Op.throwsOnFieldError {
+            let errors = Op.Data.fieldErrors(anchor)
+            if !errors.isEmpty { return .fieldErrors(errors) }
+        }
+        if Op.bubbles, let path = Op.Data.missingRequiredField(anchor) {
+            return .requiredMissing(path: path)
+        }
+        return .sound
     }
 
     /// How many hold the handle's root; for the tests.
     package var retainCount: Int { root.holders }
 
-    /// Moves to the next phase. Ready after ready is no change: both carry a
-    /// lens over the same root, so a fetch that changed nothing re-runs no
-    /// body that reads the phase. Nor is a failure on the same field errors,
-    /// or the same `@required` path, after another.
-    private func settle(_ next: Phase<Op.Data>) {
-        switch (phase, next) {
-        case (.ready, .ready):
-            return
-        case let (.failed(old as FieldErrors), .failed(new as FieldErrors)) where old.errors == new.errors:
-            return
-        case let (.failed(old as RequiredFieldError), .failed(new as RequiredFieldError)) where old.path == new.path:
-            return
-        default:
-            phase = next
+    /// The phase, derived and never stored. With the data in the store it is
+    /// what the data deserves: the root's verdict, weighed with the errors
+    /// the last response carried that no field holds, read without the
+    /// fetch, so a fetch that changed nothing wakes no body that reads the
+    /// phase. Without the data it is what the network did: loading, or the
+    /// fetch's failure. An ended environment reads gone whatever the store
+    /// holds; a `storeOnly` attach that found no data reads so until the
+    /// data comes; a `networkOnly` attach nobody shows waits for its own
+    /// response.
+    public var phase: Phase<Op.Data> {
+        if ended { return .failed(EnvironmentError.gone) }
+        guard root.present, !awaitsOwnResponse else {
+            if case .failed(let failure, _) = fetch { return .failed(failure.error) }
+            if missingData { return .failed(MissingDataError(operationName: Op.name)) }
+            return .loading
         }
+        if Op.throwsOnFieldError {
+            var errors = unplaced
+            if case .fieldErrors(let found) = root.verdict { errors += found }
+            if !errors.isEmpty { return .failed(FieldErrors(errors)) }
+        }
+        if Op.bubbles, case .requiredMissing(let path) = root.verdict {
+            return .failed(RequiredFieldError(bubbledToRootOf: Op.name, path: path))
+        }
+        return .ready(data)
     }
 
     /// Whether a fetch is in flight.
@@ -309,39 +345,16 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
         return showsData
     }
 
-    /// Whether the phase shows data: ready, or failed on field errors or a
-    /// `@required` null, whose data is in the store and ages as ready data
-    /// does.
-    private var showsData: Bool {
-        switch phase {
-        case .ready, .failed(is FieldErrors), .failed(is RequiredFieldError): true
-        case .loading, .failed: false
-        }
-    }
+    /// Whether the phase shows data: the store holds it and the handle shows
+    /// it, ready or failed on what the data deserves, which ages as ready
+    /// data does.
+    private var showsData: Bool { root.present && !awaitsOwnResponse && !ended }
 
     private var anchor: Anchor {
         Anchor(record: store.root, owner: owner)
     }
 
     private var data: Op.Data { Op.Data(anchor: anchor) }
-
-    /// The phase the store's data deserves: ready, unless the operation's
-    /// policies say otherwise. `@throwOnFieldError` fails on an uncaught field
-    /// error in the operation's own selection, as Relay's reader of the
-    /// operation does (a spread's fragment weighs its own), or on one the
-    /// last response carried that no field holds; a root whose `@required`
-    /// fields bubble fails, because there is no null data. The fetch and
-    /// every later commit settle the phase by this one reading.
-    private func evaluate() -> Phase<Op.Data> {
-        if Op.throwsOnFieldError {
-            let errors = unplaced + Op.Data.fieldErrors(anchor)
-            if !errors.isEmpty { return .failed(FieldErrors(errors)) }
-        }
-        if Op.bubbles, let path = Op.Data.missingRequiredField(anchor) {
-            return .failed(RequiredFieldError(bubbledToRootOf: Op.name, path: path))
-        }
-        return .ready(data)
-    }
 
     /// Whether the store holds every field the operation selects; for the
     /// tests.
@@ -373,8 +386,10 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
         if preloaded {
             preloaded = false
             if task != nil { return }
-            if case .ready = phase, !isStale {
-                reevaluate()
+            if root.present, !isStale {
+                // A parked handle saw no commit since the preload's fetch:
+                // its verdict is settled here.
+                root.found()
                 return
             }
         }
@@ -382,7 +397,7 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
             // What the store holds is not asked; a handle no one shows yet
             // waits for its own response, which may be a refetch in flight:
             // nothing shows behind it.
-            if retainCount == 0 { phase = .loading }
+            if retainCount == 0 { awaitsOwnResponse = true }
             fetchUnlessInFlight()
             return
         }
@@ -391,24 +406,16 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
         // The deferred parts the store holds half are cleared and fetched;
         // the initial part renders meanwhile.
         let partial = complete && Op.hasDeferred && !store.deferredPartsHold(resolved)
-        if complete { store.takeAge(root, hydrated: answer == .image) }
         if complete {
-            switch phase {
-            case .loading:
-                phase = evaluate()
-            // A parked handle saw no commit: what it failed on may be gone,
-            // and a field error or a null may have come.
-            case .ready, .failed(is FieldErrors), .failed(is RequiredFieldError):
-                settle(evaluate())
-            default:
-                break
-            }
+            store.takeAge(root, hydrated: answer == .image)
+            // The data is there, and its verdict is settled on it: a parked
+            // handle saw no commit, so what it failed on may be gone and a
+            // field error or a null may have come.
+            root.found()
         }
         switch policy {
         case .storeOnly:
-            if !complete, case .loading = phase {
-                phase = .failed(MissingDataError(operationName: Op.name))
-            }
+            if !complete, !root.present { missingData = true }
         case .storeOrNetwork:
             // An error the last response carried with no field to hold it
             // is in no record a commit could clear; only a fetch clears it.
@@ -427,15 +434,15 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
 
     private func start() {
         task?.cancel()
+        // A fetch started by hand on a `storeOnly` handle supersedes what the
+        // attach found missing: the network answers now.
+        missingData = false
         guard let current = environment, !current.ended else {
             // Nothing can fetch for a handle whose environment is gone or
             // ended: it keeps the data it shows and says why it cannot load
-            // more.
+            // more; without data the phase reads the failure.
             task = nil
             fetch = .failed(.environment(.gone), at: store.now)
-            if case .loading = phase {
-                phase = .failed(EnvironmentError.gone)
-            }
             return
         }
         fetch = .inFlight
@@ -450,7 +457,8 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
                     // completes.
                     guard let self, !Task.isCancelled else { return }
                     unplaced = firstPart.unplaced
-                    settle(evaluate())
+                    awaitsOwnResponse = false
+                    root.committed()
                 }
                 if !Task.isCancelled { unplaced = committed.unplaced }
             } catch {
@@ -462,8 +470,9 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
             task = nil
             switch failure {
             case nil:
+                // The door dated the root and made its data present.
                 fetch = .idle
-                settle(evaluate())
+                awaitsOwnResponse = false
                 // A response whose field errors fail the operation fails its
                 // refetch the same way.
                 if case .failed(let error) = phase { return error }
@@ -477,9 +486,8 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
                 // behind the failure stays visible, and so does a failure the
                 // data is in the store for, which a later commit or attach
                 // can still settle by that data; with nothing to show, the
-                // phase fails.
+                // phase reads the failure.
                 fetch = .failed(Failure(error), at: store.now)
-                if !showsData { phase = .failed(error) }
             }
             return failure
         }
@@ -503,9 +511,9 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
     /// `@required` null stays in place, its data visible, and the fetch
     /// refreshes behind it as `refetch()` does: a fetch that fails at the
     /// transport leaves it for a later commit or attach to settle. Any other
-    /// failure shows loading meanwhile.
+    /// failure shows loading meanwhile, since the fetch in flight is what
+    /// the phase reads without data.
     public func retry() {
-        if case .failed = phase, !showsData { phase = .loading }
         start()
     }
 
@@ -547,18 +555,6 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
     func park() {}
     func resume() {}
 
-    func reevaluate() {
-        guard Op.throwsOnFieldError || Op.bubbles else { return }
-        switch phase {
-        case .loading:
-            return
-        case .failed(let error) where !(error is FieldErrors || error is RequiredFieldError):
-            return
-        default:
-            settle(evaluate())
-        }
-    }
-
     func cancel() {
         task?.cancel()
         task = nil
@@ -571,7 +567,7 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle {
     func end() {
         cancel()
         fetch = .failed(.environment(.gone), at: store.now)
-        phase = .failed(EnvironmentError.gone)
+        ended = true
     }
 }
 
@@ -852,8 +848,6 @@ public final class SubscriptionHandle<Op: Subscription>: AnyOperationHandle {
     func revalidate() {}
 
     func fetchForHeal() {}
-
-    func reevaluate() {}
 
     /// The environment ended: the stream closes and says so.
     func end() {

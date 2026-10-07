@@ -7,10 +7,9 @@ Status: accepted, 2026-10-07. Serves
 part, on the stored phase and the chain that settles it; the fetch as a
 value stands. Restores the derived phase of
 [A handle keeps its fetch and derives its phase](a-handle-derives-its-phase.md)
-by another route. Not built yet: it waits for the phase scripts of format 2
-of `spec/manifest.json`, and ships only through the gate below. Reopen if
-the gate fails, and then the chain stays and this record is superseded on
-that point.
+by another route. Built 2026-10-07, behind the phase script of format 2 of
+`spec/manifest.json` and the gate below. Reopen if a measurement shows the
+walk at the batch's end costing more than the chain it replaced.
 
 ## Context
 
@@ -41,8 +40,8 @@ the verdict settled at the commit and kept on the root.
   `present`, whether the store holds the operation's data.
 - The store settles both at the end of a batch that changed what a verdict
   reads, for roots whose plan has a policy, by the same generated walk the
-  handle runs today. The walk is installed on the root when the handle is
-  made.
+  handle runs today: the root holds its handle weakly as its judge, and
+  asks it. A closure stored on the root was measured and refused (Evidence).
 - The handle's `phase` derives from `root.present`, `root.verdict`, its own
   `fetch` and the errors the last response carried with no field to hold
   them. Nothing walks at read, and no phase is stored. A verdict that did
@@ -74,7 +73,13 @@ the verdict settled at the commit and kept on the root.
   reads `Op.Data.fieldErrors` and `Op.Data.missingRequiredField` and stores
   the result through `settle`. `Roots.swift` declares `Root` `@Observable`
   with `fetchTime`.
-- Nothing is measured for the new shape yet. The gate is the measurement.
+- [`BENCHMARKS.md`](../../BENCHMARKS.md), the verdict step, 2026-10-07,
+  an A/B against `039aa2d` on the same loaded machine: the commit with a
+  retained handle 958 µs against 1.01 ms, the clearing commit 745 against
+  784 µs, the plain commit equal, the counts unchanged. The gate held. A
+  closure made in the handle's generic initializer and stored on the root
+  cost the same walk 200 µs more; the root asks the handle through a
+  protocol instead.
 
 ## Not chosen
 
