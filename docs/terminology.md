@@ -410,6 +410,7 @@ record it read, and by nothing else. See
 [what it leaves to a runtime](../spec/runtime.md#11-what-is-not-the-contract).
 Swift: an Observation key path, one per slot index and shared by every
 record.
+Kotlin: the cell itself, Compose snapshot state, one per slot of a record.
 
 **Store.** *Concept: store.* Relay's word.
 Here: all records, retained roots and lifetime state; owned by the main
@@ -417,6 +418,8 @@ thread; read synchronously; written by atomic commits. See
 [the contract](../spec/runtime.md#4-the-commit) and
 [The store is the UI's state](principles/store-is-the-ui-state.md).
 Swift: the main thread is the main actor, which owns the store.
+Kotlin: the store belongs to the thread that made it, and its entry points
+check the caller's.
 
 **Commit, change set.** *Composition: store, plan.*
 Here: a change set is the output of ingesting one response or applying one

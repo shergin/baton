@@ -5,6 +5,14 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- The Kotlin runtime has its store and its ingest: a response's bytes
+  become a change set by the plan, with no JSON tree between, and the
+  commit writes it into records whose cells are Compose snapshot state, so
+  a read in composition registers the field and a write tells its readers
+  alone. Connections merge, edge directives edit, errors land on their
+  fields and deferred parts on their records, and every case of
+  `spec/manifest.json` leaves its dump byte for byte on the JVM. The
+  lenses, layers, retention and the image follow.
 - `URLSessionTransport` reads a request error answered with a 4xx or 5xx
   status as `application/graphql-response+json`, as GraphQL Yoga, Hive
   Gateway and Apollo Router do for a document that fails to parse or
