@@ -100,6 +100,7 @@ A fragment beside the view that renders it, and one query for the screen:
 <tr><th>SwiftUI</th><th>Compose</th></tr>
 <tr valign="top">
 <td>
+<sub>
 
 ```swift
 struct CharacterRow: View {
@@ -134,10 +135,8 @@ struct CharactersScreen: View {
     var body: some View {
         switch characters.phase {
         case .ready(let data):
-            List {
-                ForEach(data.characters?.results ?? []) { character in
-                    CharacterRow(character: character.characterRow)
-                }
+            List(data.characters?.results ?? []) {
+                CharacterRow(character: $0.characterRow)
             }
         case .loading:
             ProgressView()
@@ -148,8 +147,10 @@ struct CharactersScreen: View {
 }
 ```
 
+</sub>
 </td>
 <td>
+<sub>
 
 ```kotlin
 @Fragment($$"""
@@ -177,20 +178,26 @@ fun CharacterRow(character: CharacterRow_character) {
     """)
 @Composable
 fun CharactersScreen(page: Int) {
-    val characters = rememberQuery(CharactersScreenQuery(page = page))
+    val characters = rememberQuery(
+        CharactersScreenQuery(page = page),
+    )
     when (val phase = characters.phase) {
         is Phase.Ready -> LazyColumn {
-            val results = phase.data.characters?.results.orEmpty()
-            items(results, key = { it.recordID }) { character ->
-                CharacterRow(character.characterRow)
+            val results = phase.data.characters?.results
+                .orEmpty()
+            items(results, key = { it.recordID }) {
+                CharacterRow(it.characterRow)
             }
         }
         Phase.Loading -> CircularProgressIndicator()
-        is Phase.Failed -> ErrorView(phase.error) { characters.retry() }
+        is Phase.Failed -> ErrorView(phase.error) {
+            characters.retry()
+        }
     }
 }
 ```
 
+</sub>
 </td>
 </tr>
 </table>
@@ -202,6 +209,7 @@ owns the merged pages, and the view reads them like any other field:
 <tr><th>SwiftUI</th><th>Compose</th></tr>
 <tr valign="top">
 <td>
+<sub>
 
 ```swift
 struct IssueList: View {
@@ -212,8 +220,9 @@ struct IssueList: View {
           count: {type: "Int", defaultValue: 20}
           cursor: {type: "String"}
         ) {
-          issues(first: $count, after: $cursor, states: OPEN)
-          @connection(key: "IssueList_issues") {
+          issues(
+            first: $count, after: $cursor, states: OPEN
+          ) @connection(key: "IssueList_issues") {
             edges { node { id ...IssueRow_issue } }
           }
         }
@@ -233,8 +242,10 @@ struct IssueList: View {
 }
 ```
 
+</sub>
 </td>
 <td>
+<sub>
 
 ```kotlin
 @Fragment($$"""
@@ -244,8 +255,9 @@ struct IssueList: View {
       count: {type: "Int", defaultValue: 20}
       cursor: {type: "String"}
     ) {
-      issues(first: $count, after: $cursor, states: OPEN)
-      @connection(key: "IssueList_issues") {
+      issues(
+        first: $count, after: $cursor, states: OPEN
+      ) @connection(key: "IssueList_issues") {
         edges { node { id ...IssueRow_issue } }
       }
     }
@@ -254,8 +266,8 @@ struct IssueList: View {
 fun IssueList(repository: IssueList_repository) {
     val issues = repository.issues
     LazyColumn {
-        items(issues.nodes, key = { it.recordID }) { issue ->
-            IssueRow(issue.issueRow)
+        items(issues.nodes, key = { it.recordID }) {
+            IssueRow(it.issueRow)
         }
         if (issues.hasNext) item {
             CircularProgressIndicator()
@@ -267,6 +279,7 @@ fun IssueList(repository: IssueList_repository) {
 }
 ```
 
+</sub>
 </td>
 </tr>
 </table>
