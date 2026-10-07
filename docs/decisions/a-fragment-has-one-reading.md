@@ -6,6 +6,10 @@ Status: accepted, 2026-10-04. Serves
 [What earns a concept](../principles/what-earns-a-concept.md). Reopen if a
 real screen needs both readings of one fragment and cannot spread an inline
 fragment beside its own, or if adopters' views start taking inline values.
+Sharpened 2026-10-06, before the build, with the rules it gained: what an
+inline fragment contains and what its spread takes, the `Hashable` value
+under `@catch`, operation roots, a value held by a view, and where a read
+of the value registers. The decision is unchanged.
 
 ## Context
 
@@ -44,8 +48,40 @@ value, for code outside views.
   lens reads it out, on the main actor, when it is called.
 - A fragment is a lens or inline, never both. No lens gets a `snapshot()`.
 - An inline fragment spreads only inline fragments: a value holds no lens.
+  This is Baton's rule, stricter than Relay's, whose transform leaves a
+  normal spread inside an inline fragment as a spread and hands back a
+  fragment reference inside the data. The value is `Hashable` by value; a
+  lens inside it would be equal by identity.
 - The value is terminal. No Baton API accepts one, and `@Fragment` on a
   view's property refuses an inline fragment.
+- Terminal does not mean never near a view. A view may hold a value as a
+  plain parameter of its own initializer: a sheet given the price as of the
+  tap is the intended use. What is refused is a Baton API that takes one.
+- `@connection` and `@refetchable` have no meaning on a frozen value, and
+  are refused on an inline fragment and inside one.
+- The spread of an inline fragment takes `@alias` and `@arguments` only;
+  `@include`, `@skip`, `@defer` and `@catch` on it are errors. Relay keeps
+  the spread's arguments and refuses `@catch` there; it lifts `@include`,
+  `@skip` and `@defer` off the spread before its check, so refusing those
+  three is stricter than Relay. They wait for a case that needs a value
+  that may be absent; a refusal lifted then breaks no document. The spread
+  table in `directives.rs` (`SPREAD`) gains a branch for an inline
+  fragment's spread when this is built.
+- The value is `Hashable` unconditionally, and `@catch` breaks that as
+  built: a caught field reads as a `Result` whose failure is `FieldErrors`,
+  which is not `Hashable`. Open for the build: `FieldErrors` gains
+  `Hashable`, which is the proposal, or the value's conformance is
+  conditional.
+- An operation root is not inline. `@inline` marks a fragment definition
+  only, in Relay and here. A query that needs its answer as a value spreads
+  one inline fragment at its root and calls that accessor on the main
+  actor.
+- The spread's accessor reads the value when it is called, so only a body
+  that calls it depends on the inline fields, and a tap handler that calls
+  it registers nothing. Relay reads inline data with the parent fragment,
+  so the parent subscribes to those fields and re-renders when they change.
+  The departure is on purpose: the accessor is where a lens registers a
+  read.
 - This is the principle's explicit snapshot, generated. When it is built,
   the principle's line on generated code says that it speaks of lenses.
 - It waits behind the work the adopter's other issues ask for first: the
@@ -65,6 +101,24 @@ value, for code outside views.
 - The lens as built: a `nonisolated` struct that is `Sendable`, with
   `@MainActor` accessors. It can be carried across an isolation boundary
   and read on one side of it only.
+- Relay's `inline_data_fragment` transform at the pinned revision, read
+  2026-10-06. `validate_inline_spread_directives` rejects every directive
+  on an inline fragment's spread but `@alias` and
+  `@dangerously_unaliased_fixme`. The transform recurses into inline
+  fragments only, so a normal spread inside one stays a spread; it rejects
+  a cycle of inline fragments; it replaces the spread with the fragment's
+  selections, which is why the parent's read covers them; and
+  `InlineDirectiveMetadata` keeps the spread's `arguments` and the
+  fragment's `variable_definitions`. Its fixtures `alias`,
+  `dangerously_unaliased`, `recursive` and `variables` show the two allowed
+  directives, nesting, and arguments. `@include` and `@skip` never reach
+  the check: Relay's IR builder lifts them into a condition around the
+  spread (`recursive` spreads one under `@include`), and its defer
+  transform, which runs earlier, lifts `@defer` the same way.
+- Relay's directive definitions at the same revision:
+  `directive @inline on FRAGMENT_DEFINITION`.
+- `FieldErrors` as built (`Errors.swift:45`) is `Error` and `Sendable` but
+  not `Hashable`; `FieldError` (line 9) is `Hashable`.
 - The demand is one issue naming four cases. No call site has been shown,
   which is why the build waits.
 - Not measured yet: the generated code an inline fragment adds, and what
