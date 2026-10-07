@@ -12,6 +12,7 @@ use super::swift::{
     SwiftType, member, parameter, raw_literal, runtime_value, swift_literal, variable_type,
 };
 use super::writer::Writer;
+use crate::config::OnError;
 use crate::decide::{OperationValue, Shared, VariableValue};
 use crate::names::call_label;
 use crate::pipeline::OperationKind;
@@ -43,6 +44,15 @@ pub(super) fn operation_text(operation: &OperationValue, shared: &Shared) -> Str
         action(&mut writer, operation);
     }
     writer.finish()
+}
+
+/// The case of `Baton.ErrorBehavior` that names an `onError` value.
+fn error_behavior_case(behavior: OnError) -> &'static str {
+    match behavior {
+        OnError::Propagate => "propagate",
+        OnError::Null => "null",
+        OnError::Abort => "abort",
+    }
 }
 
 /// What an operation value declares: its variables, its static data, its
@@ -95,10 +105,11 @@ fn value_members(
         "public static let document: {} = {document}",
         SwiftType::runtime("Document")
     ));
-    if let Some(behavior) = &operation.error_behavior {
+    if let Some(behavior) = operation.error_behavior {
         writer.line(format!(
-            "@_spi(Generated) public static let errorBehavior: {} = .{behavior}",
-            SwiftType::runtime("ErrorBehavior").optional()
+            "@_spi(Generated) public static let errorBehavior: {} = .{}",
+            SwiftType::runtime("ErrorBehavior").optional(),
+            error_behavior_case(behavior)
         ));
     }
     if let Some(seconds) = operation.cache_expiration {

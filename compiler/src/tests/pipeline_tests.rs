@@ -4,7 +4,7 @@
 use std::path::{Path, PathBuf};
 
 use super::*;
-use crate::config::Config;
+use crate::config::{Config, OnError};
 use crate::documents::Document;
 
 fn schema() -> (String, String) {
@@ -269,7 +269,7 @@ fn on_error_null_sends_the_value_and_types_non_null_fields_by_their_semantic_nul
     let compiled = compile(&sdl, &path, &[], &[document(text)], &config)
         .unwrap_or_else(|errors| panic!("{errors:?}"));
     let operation = &compiled.plan.operations[0];
-    assert_eq!(operation.error_behavior.as_deref(), Some("null"));
+    assert_eq!(operation.error_behavior, Some(OnError::Null));
     let output = crate::emit::emit(&compiled.plan).expect("the plan emits");
     let file = output
         .files

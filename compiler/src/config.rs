@@ -152,23 +152,12 @@ impl Algorithm {
 }
 
 /// The GraphQL specification's `onError` values.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Deserialize, serde::Serialize)]
 #[serde(rename_all = "UPPERCASE")]
 pub enum OnError {
     Propagate,
     Null,
     Abort,
-}
-
-impl OnError {
-    /// The case of `Baton.ErrorBehavior` that names it.
-    pub fn swift_case(self) -> &'static str {
-        match self {
-            OnError::Propagate => "propagate",
-            OnError::Null => "null",
-            OnError::Abort => "abort",
-        }
-    }
 }
 
 #[derive(Debug, Clone, Default, serde::Deserialize)]

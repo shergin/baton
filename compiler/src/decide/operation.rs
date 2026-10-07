@@ -6,6 +6,7 @@ use std::collections::BTreeSet;
 use super::lens::{ListShape, Primitive, ReaderPlan, ScalarShape, hideable_name};
 use super::reader::Readers;
 use super::{NormalizationField, NormalizationKind, NormalizationSelection};
+use crate::config::OnError;
 use crate::names::{Kind, NameError, Reserved, Scope, Written, escape};
 use crate::pipeline::{FragmentPlan, OperationKind, OperationPlan, TypeKind, VariablePlan};
 
@@ -21,8 +22,8 @@ pub struct OperationValue {
     /// The id the operation is sent by, under `persistConfig`.
     pub id: Option<String>,
     pub text: String,
-    /// `Baton.ErrorBehavior`'s case.
-    pub error_behavior: Option<String>,
+    /// The `onError` value the operation sends.
+    pub error_behavior: Option<OnError>,
     /// `@cacheExpiration(seconds:)`, when the query states one.
     pub cache_expiration: Option<f64>,
     pub throws_on_field_error: bool,
@@ -135,7 +136,7 @@ pub(super) fn operation(
         variables,
         id: operation.id.clone(),
         text: operation.text.clone(),
-        error_behavior: operation.error_behavior.clone(),
+        error_behavior: operation.error_behavior,
         cache_expiration: operation.cache_expiration,
         throws_on_field_error: operation.throws_on_field_error,
         bubbles: operation.bubbles,

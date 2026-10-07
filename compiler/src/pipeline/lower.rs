@@ -405,10 +405,7 @@ impl Lowering<'_> {
                     .is_some()
             }),
             has_deferred: has_deferred(&normalization),
-            error_behavior: self
-                .config
-                .on_error
-                .map(|behavior| behavior.swift_case().to_string()),
+            error_behavior: self.config.on_error,
             cache_expiration: self.cache_expiration(operation),
             reader,
             normalization,

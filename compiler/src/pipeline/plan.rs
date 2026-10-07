@@ -4,6 +4,8 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 
+use crate::config::OnError;
+
 /// The plan IR for one compilation: every fragment's reader shape and every
 /// operation's reader shape, normalization shape, text and id.
 #[derive(Debug, Default, Clone, serde::Serialize)]
@@ -139,8 +141,8 @@ pub struct OperationPlan {
     pub bubbles: bool,
     /// Whether any part of the response may arrive incrementally.
     pub has_deferred: bool,
-    /// The `onError` value `baton.json` names, as `Baton.ErrorBehavior`'s case.
-    pub error_behavior: Option<String>,
+    /// The `onError` value `baton.json` names.
+    pub error_behavior: Option<OnError>,
     /// `@cacheExpiration(seconds:)`: how old the query's data may be before
     /// it reads as stale; none takes the store's default.
     #[serde(skip_serializing_if = "Option::is_none")]
