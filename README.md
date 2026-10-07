@@ -320,52 +320,15 @@ that is quick to generate, easy to review, and hard to get silently wrong.
 
 ## Status
 
-0.6.0 (Anchor Leg). Reads, writes, lists, errors and persistence run through
-every layer, with tests and benchmarks behind the claims: cached data in the
-first body, one changed field re-rendering one row, memory bounded by a
-release buffer rather than by how far the user scrolls, optimistic responses
-that show at once, rebase under every commit and revert on failure,
-connections that merge their pages in the store and grow by one notification
-per page, field errors stored beside their fields and read through Relay's
-directives, deferred fragments that arrive after the first frame,
-subscriptions, and a store that outlives the process. A launch draws the
-screens it showed last time from disk, before the network answers. The API
-will break freely until 1.0.
-
-- **0.1.0 (Starting Blocks).** The compiler over Relay's front end, lens
-  types, the observable store, the one-pass ingest, `@Fragment` and `@Query`
-  for SwiftUI, lookups, the Rick and Morty sample.
-- **0.2.0 (First Leg).** Retained roots, the release buffer, collection, the
-  four fetch policies, invalidation and expiration, preload.
-- **0.3.0 (Exchange Zone).** `@Mutation` as an action value, optimistic
-  layers, abstract types, lookups by id across types, the GitHub sample.
-- **0.4.0 (Hand-off).** `@connection` with merged pages and `loadNext`,
-  `@refetchable`, fragment arguments, `@alias(as:)`, the edge directives.
-- **0.5.0 (Baton Pass).** Field errors beside their fields, `@required`,
-  `@catch`, `@throwOnFieldError` with `@semanticNonNull`, `onError`, `@defer`
-  over the incremental formats, subscriptions over `graphql-transport-ws`.
-- **0.6.0 (Anchor Leg).** The store's image on disk through the system's
-  SQLite, written behind every commit and read back by the availability
-  check, with ages that survive a launch.
-- **0.7.0 (Split Time).** The ground before the spine: the runtime's
-  boundaries checked as a ratchet, the test transports in `BatonTesting`,
-  lists of lists refused by the compiler, the plugin's inputs and outputs
-  told truly, the hostile-name sweep in CI, the numbers the next steps are
-  measured against, and the first published compiler bundle.
-- **0.8.0 (Back Straight).** The spine: the fetch and the stream as values
-  beside the phase, one door for every write, the store owning roots, ages
-  and the collector, an environment that ends, a session's keys in its
-  store; enums, input objects, mapped scalars and configured identity; one
-  transport verb; the image evicting by launch.
-- **0.9.0 (Krendel).** The ground before Kotlin: the runtime contract under
-  `spec/` and scripts as the second kind of fixture, the verdict on the
-  root with the phase derived from it, a payload at the door, an
-  operation's resolution in place of a placeholder environment, lenses
-  equatable by anchor, `@inline` built, and a compiler whose plan carries
-  facts and whose `decide` stage spells nothing, for a second emitter.
-
-Still to come: the road to 1.0. Each release is described in full in
-[`CHANGELOG.md`](CHANGELOG.md).
+0.9.0 (Krendel). On Swift, reads, writes, lists, errors and persistence run
+through every layer, with tests and benchmarks behind the claims: cached
+data in the first body, one changed field re-rendering one row, optimistic
+responses that show at once and revert on failure, connections that merge
+their pages in the store, field errors read through Relay's directives,
+deferred fragments, subscriptions, and a store that outlives the process.
+The Kotlin runtime has begun, held to the same compiler and the same
+fixtures under `spec/`. The API will break freely until 1.0; each release is
+in [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Works with your server
 
