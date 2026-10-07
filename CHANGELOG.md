@@ -5,6 +5,10 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- A lens is `Equatable`, by its anchor: the same record, the same scope and
+  the same origin, by identity, as the principle always said. A row view
+  whose stored state is a lens conforms in one line and opts into
+  `.equatable()`, so a parent's re-render skips it.
 - Five decisions recorded before the Kotlin lane, in `docs/decisions/`: the
   verdict is the root's and the phase is derived from it (superseding in
   part *The phase stays stored*; built behind a gate once the phase scripts

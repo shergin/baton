@@ -73,7 +73,8 @@ one accessor per field it declares; an operation root compiles to
 `CharactersScreenQuery.Data`, and a linked field to a nested struct such as
 `Data.Characters`. A spread is an accessor such as `characterRow` that
 returns the child's lens, and a plural link is a `Baton.List`, a
-`RandomAccessCollection` of lenses. A view declares
+`RandomAccessCollection` of lenses. A lens is `Equatable` by its anchor,
+so a row view may be too. A view declares
 `@Fragment("…") var character: CharacterRow_character`. The anchor a lens
 holds, the initializer that takes one and every reader behind the accessors
 are `@_spi(Generated)`, which the generated files import and an app's files
