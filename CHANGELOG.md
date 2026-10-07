@@ -3,6 +3,13 @@
 Notable changes, written so a person can read them. Pre-1.0, breaking changes
 are expected and listed without apology.
 
+## Unreleased
+
+- The common-first record is amended: the JVM, through Compose for
+  Desktop, is the first actual and the development target of the Kotlin
+  runtime; Android is the first shipped target and the ingest budget's
+  home.
+
 ## 0.9.0 (Krendel) — 2026-10-07
 
 - `Payload`, bytes in a response's shape, is what the door takes:
