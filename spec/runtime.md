@@ -763,9 +763,13 @@ for a query or a mutation, the parts of a deferred response, the events of
 a subscription. The built-in HTTP transport posts the body, asks for
 `multipart/mixed` for an incremental response and `text/event-stream` for a
 subscription (`graphql-sse`, distinct connections), reads credentials per
-attempt, and fails a response outside 2xx with its status and body; the
-socket transport speaks `graphql-transport-ws`. A failure without a
-response has status 0 and says what went wrong. A mutation is never sent
+attempt, and fails a response outside 2xx with its status and body,
+except a request error: a response outside 2xx whose media type is
+`application/graphql-response+json` and whose body is errors and no data
+(or null data) fails with those errors, the request kind of failure, as a
+2xx response of errors and no data does, so a subscription refused so ends
+rather than waits. The socket transport speaks `graphql-transport-ws`. A
+failure without a response has status 0 and says what went wrong. A mutation is never sent
 twice by anything the runtime does. *Unheld*; the framings are proved in
 the Swift tests alone.
 

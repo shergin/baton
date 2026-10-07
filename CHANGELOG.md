@@ -5,6 +5,15 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- `URLSessionTransport` reads a request error answered with a 4xx or 5xx
+  status as `application/graphql-response+json`, as GraphQL Yoga, Hive
+  Gateway and Apollo Router do for a document that fails to parse or
+  validate or an unknown persisted document: it throws the server's
+  `GraphQLErrors`, the request kind of failure, where it threw a
+  `TransportError` with the body as text. A query fails with the server's
+  errors and their `extensions`, and a subscription refused so ends rather
+  than reconnecting by backoff. Another body outside 2xx, and any
+  `application/json` one, is still a `TransportError`.
 - The common-first record is amended: the JVM, through Compose for
   Desktop, is the first actual and the development target of the Kotlin
   runtime; Android is the first shipped target and the ingest budget's

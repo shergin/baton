@@ -98,7 +98,9 @@ extension Transport {
 /// A response with an HTTP status outside 200 to 299, or, with status 0, a
 /// request that got no response: a socket that closed under it, or a
 /// recorded transport with nothing recorded for it. A connection that fails
-/// under `URLSession` throws the system's `URLError` instead.
+/// under `URLSession` throws the system's `URLError` instead, and a request
+/// error answered as `application/graphql-response+json` with a 4xx or 5xx
+/// status throws `GraphQLErrors`.
 public struct TransportError: Error, CustomStringConvertible, Sendable, LocalizedError {
     /// The response's HTTP status, or 0 when there was none, as the web's
     /// `XMLHttpRequest` reports it.
@@ -195,6 +197,11 @@ public struct URLSessionTransport: Transport {
                         }
                     }
                     if let response, !(200..<300).contains(response.statusCode) {
+                        // A server of the GraphQL-over-HTTP media type answers
+                        // a request error, a response without data, with a 4xx
+                        // or 5xx status: its errors are the request kind of
+                        // failure, not the transport's.
+                        if Self.answersInGraphQLResponse(response), let errors = Self.requestErrors(body) { throw errors }
                         throw TransportError(statusCode: response.statusCode, body: String(decoding: body, as: UTF8.self))
                     }
                     if var reader = parts {
@@ -211,6 +218,44 @@ public struct URLSessionTransport: Transport {
             }
             continuation.onTermination = { _ in task.cancel() }
         }
+    }
+
+    /// Whether the response's media type is `application/graphql-response+json`,
+    /// whose body is a GraphQL response whatever the status. The older
+    /// `application/json` promises that only with a 2xx status.
+    private static func answersInGraphQLResponse(_ response: HTTPURLResponse) -> Bool {
+        let contentType = response.value(forHTTPHeaderField: "Content-Type") ?? ""
+        let mediaType = contentType.split(separator: ";", maxSplits: 1).first ?? ""
+        return mediaType.trimmingCharacters(in: .whitespaces).lowercased() == "application/graphql-response+json"
+    }
+
+    /// The errors of a body that is a GraphQL response with errors and no
+    /// data, or nil for any other body.
+    private static func requestErrors(_ body: Data) -> GraphQLErrors? {
+        let bytes = [UInt8](body)
+        guard !bytes.isEmpty else { return nil }
+        var errors: [Ingest.ResponseError] = []
+        var hasData = false
+        do {
+            try bytes.withUnsafeBufferPointer { buffer in
+                var scanner = Ingest.Scanner(base: buffer.baseAddress!, count: buffer.count)
+                try scanner.members { key, scanner in
+                    switch key {
+                    case "errors":
+                        errors = try scanner.responseErrors()
+                    case "data":
+                        hasData = scanner.peek() != 0x6E
+                        try scanner.skipValue()
+                    default:
+                        try scanner.skipValue()
+                    }
+                }
+            }
+        } catch {
+            return nil
+        }
+        guard !hasData, !errors.isEmpty else { return nil }
+        return GraphQLErrors(errors: errors.map { FieldError(message: $0.message, path: $0.path.map { Ingest.render($0) } ?? "", extensions: $0.extensions) })
     }
 }
 

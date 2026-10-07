@@ -209,6 +209,68 @@ struct TransportTests {
         let payload = try await answer.value
         #expect(String(decoding: payload, as: UTF8.self) == #"{"data":{"a":1}}"#)
     }
+
+    /// A transport over `RefusingServer`, answering with the status, media
+    /// type and body named, its requests marked with a key of their own.
+    func refusingTransport(key: String, status: Int, contentType: String, body: String = "validation-failed") -> URLSessionTransport {
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [RefusingServer.self]
+        let headers = ["X-Stub-Key": key, "X-Stub-Status": String(status), "X-Stub-Content-Type": contentType, "X-Stub-Body": body]
+        return URLSessionTransport(url: URL(string: "https://stub.invalid/graphql")!, headers: headers, session: URLSession(configuration: configuration))
+    }
+
+    @Test("a query answered with a 4xx status as application/graphql-response+json with errors and no data fails with the server's GraphQL errors, extensions kept, not a transport error", arguments: [400, 422])
+    func a_query_refused_as_a_graphql_response_fails_with_its_graphql_errors(status: Int) async throws {
+        let environment = Environment(transport: refusingTransport(key: UUID().uuidString, status: status, contentType: "application/graphql-response+json; charset=utf-8"))
+        environment.log = nil
+        let handle = environment.handle(for: TestProfileQuery(id: "1"))
+        let retention = handle.retain()
+        await handle.settle()
+        guard case .failed(let error) = handle.phase, let errors = error as? GraphQLErrors else {
+            Issue.record("expected .failed(GraphQLErrors), got \(handle.phase)")
+            return
+        }
+        #expect(errors.messages == [#"Cannot query field "nope" on type "Query"."#])
+        #expect(errors.errors.map(\.extensions) == [.object(["code": .string("GRAPHQL_VALIDATION_FAILED")])])
+        #expect(errors.errors.map(\.path) == [""])
+        withExtendedLifetime(retention) {}
+    }
+
+    @Test("a subscription answered with 400 as application/graphql-response+json ends with the request failure and is not opened again")
+    func a_subscription_refused_as_a_graphql_response_ends_without_reconnecting() async throws {
+        let key = UUID().uuidString
+        let environment = Environment(transport: RecordedTransport(), subscriptions: refusingTransport(key: key, status: 400, contentType: "application/graphql-response+json"))
+        environment.log = nil
+        let live = environment.subscriptionHandle(for: TestNoteAdded(characterId: "1", connections: []))
+        let retention = live.retain()
+        await until { !live.isActive }
+        guard case .ended(.request(let errors)?) = live.stream else {
+            Issue.record("expected the stream ended by a request failure, got \(live.stream)")
+            _ = consume retention
+            return
+        }
+        #expect(errors.messages == [#"Cannot query field "nope" on type "Query"."#])
+        #expect((live.error as? GraphQLErrors)?.messages == errors.messages, "the error that ended the stream is the handle's error")
+        #expect(live.resumptions == 0)
+        #expect(RefusingServer.requests(for: key) == 1)
+        _ = consume retention
+    }
+
+    @Test("a response outside 2xx stays a transport error with its status and body when it is application/json, or not a GraphQL response of errors and no data", arguments: [
+        (400, "application/json", "validation-failed"),
+        (502, "application/graphql-response+json", "html"),
+        (500, "application/graphql-response+json", "character-errors"),
+    ])
+    func a_response_outside_2xx_that_is_no_request_error_stays_a_transport_error(status: Int, contentType: String, body: String) async throws {
+        let transport = refusingTransport(key: UUID().uuidString, status: status, contentType: contentType, body: body)
+        do {
+            _ = try await transport.payload(textRequest)
+            Issue.record("a \(status) response delivered a payload")
+        } catch let error as TransportError {
+            #expect(error.statusCode == status)
+            #expect(error.body == String(decoding: RefusingServer.body(body), as: UTF8.self))
+        }
+    }
 }
 
 /// A count read and raised from any thread.
@@ -287,6 +349,40 @@ final class EventStreamServer: URLProtocol, @unchecked Sendable {
             client?.urlProtocol(self, didLoad: body.subdata(in: offset..<end))
             offset = end
         }
+        client?.urlProtocolDidFinishLoading(self)
+    }
+}
+
+/// A server of the GraphQL-over-HTTP specification that refuses every
+/// request: it answers with the status and media type the request's
+/// `X-Stub-Status` and `X-Stub-Content-Type` headers name, and the body its
+/// `X-Stub-Body` header names, a recorded response or `html` for a page a
+/// proxy sends, and counts the requests by their `X-Stub-Key` header.
+final class RefusingServer: URLProtocol, @unchecked Sendable {
+    private static let lock = NSLock()
+    nonisolated(unsafe) private static var counts: [String: Int] = [:]
+
+    static func requests(for key: String) -> Int { lock.withLock { counts[key] ?? 0 } }
+
+    /// The body a name stands for.
+    static func body(_ name: String) -> Data {
+        name == "html" ? Data("<html><body>Bad Gateway</body></html>".utf8) : fixture(name)
+    }
+
+    override class func canInit(with request: URLRequest) -> Bool { true }
+    override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
+    override func stopLoading() {}
+
+    override func startLoading() {
+        if let key = request.value(forHTTPHeaderField: "X-Stub-Key") {
+            Self.lock.withLock { Self.counts[key, default: 0] += 1 }
+        }
+        let status = Int(request.value(forHTTPHeaderField: "X-Stub-Status") ?? "") ?? 400
+        let contentType = request.value(forHTTPHeaderField: "X-Stub-Content-Type") ?? "application/graphql-response+json"
+        let body = Self.body(request.value(forHTTPHeaderField: "X-Stub-Body") ?? "validation-failed")
+        let response = HTTPURLResponse(url: request.url!, statusCode: status, httpVersion: "HTTP/1.1", headerFields: ["Content-Type": contentType])!
+        client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+        client?.urlProtocol(self, didLoad: body)
         client?.urlProtocolDidFinishLoading(self)
     }
 }
