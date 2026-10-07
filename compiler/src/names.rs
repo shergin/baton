@@ -88,7 +88,7 @@ struct Declaration {
 /// these names would shadow it for the lens and everything nested in it, or
 /// not compile; an identifier a lens comes to spell unqualified joins the
 /// list in the same change.
-pub const RESERVED_TYPE_NAMES: [&str; 17] = [
+pub const RESERVED_TYPE_NAMES: [&str; 18] = [
     // Swift lets no type member take these names.
     "Type",
     "Self",
@@ -96,7 +96,9 @@ pub const RESERVED_TYPE_NAMES: [&str; 17] = [
     "Any",
     // The attribute on every accessor and check.
     "MainActor",
-    // The runtime's module and the module's shared enums.
+    // The standard library's module, which an `@inline` fragment's value
+    // conforms through, the runtime's module and the module's shared enums.
+    "Swift",
     "Baton",
     "Types",
     "Slots",

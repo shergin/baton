@@ -90,6 +90,9 @@ pub(super) struct Context<'a> {
     /// ending in a dot, or empty at the root: what a field's error is
     /// reported under.
     response_path: &'a str,
+    /// In an `@inline` fragment: the reads fill a value's stored
+    /// properties, which cannot throw.
+    inline: bool,
 }
 
 impl Context<'_> {
@@ -205,6 +208,7 @@ impl Readers {
             within_catch: false,
             caught_spread: self.caught_fragments.contains(&fragment.name),
             response_path: "",
+            inline: fragment.inline,
         };
         self.lens(
             &fragment.name,
@@ -230,6 +234,7 @@ impl Readers {
             within_catch: false,
             caught_spread: false,
             response_path: "",
+            inline: false,
         };
         let mut data = self.lens(
             "Data",
@@ -831,6 +836,11 @@ fn scalar_read(
         (_, Some(RequiredAction::Throw)) => ScalarForm::Throwing {
             path: required_path(required),
         },
+        // A non-null mapped scalar reads throwing, since a text that does
+        // not convert has no zero to read as; a value's stored property
+        // cannot throw, so in an inline fragment it reads optional, and
+        // under `@throwOnFieldError` the failure throws at the spread.
+        _ if non_null && type_.mapped().is_some() && context.inline => ScalarForm::Optional,
         _ if non_null => ScalarForm::Required,
         _ => ScalarForm::Optional,
     };

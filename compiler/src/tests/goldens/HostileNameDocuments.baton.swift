@@ -992,7 +992,7 @@ nonisolated public struct HostileLinks_character: Baton.Lens {
     @MainActor public var format: Format? { anchor.linked(Slots.Character.origin).map(Format.init(anchor:)) }
     @MainActor public var transient: Transient? { anchor.linked(Slots.Character.origin).map(Transient.init(anchor:)) }
     @MainActor public var Baton: BatonLens? { anchor.linked(Slots.Character.origin).map(BatonLens.init(anchor:)) }
-    @MainActor public var Swift: Swift2? { anchor.linked(Slots.Character.origin).map(Swift2.init(anchor:)) }
+    @MainActor public var Swift: SwiftLens? { anchor.linked(Slots.Character.origin).map(SwiftLens.init(anchor:)) }
     @MainActor public var Set: Set2? { anchor.linked(Slots.Character.origin).map(Set2.init(anchor:)) }
     @MainActor public var Result: ResultLens? { anchor.linked(Slots.Character.origin).map(ResultLens.init(anchor:)) }
     @MainActor public var Optional: OptionalLens? { anchor.linked(Slots.Character.origin).map(OptionalLens.init(anchor:)) }
@@ -1844,7 +1844,7 @@ nonisolated public struct HostileLinks_character: Baton.Lens {
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
     }
 
-    nonisolated public struct Swift2: Baton.Lens {
+    nonisolated public struct SwiftLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
         @MainActor public var id: String? { anchor.string(Slots.Location.id) }
@@ -2212,7 +2212,7 @@ nonisolated public struct HostileSelections_character: Baton.Lens {
     @MainActor public var format: Format { Format(anchor: anchor) }
     @MainActor public var transient: Transient { Transient(anchor: anchor) }
     @MainActor public var Baton: BatonLens { BatonLens(anchor: anchor) }
-    @MainActor public var Swift: Swift2 { Swift2(anchor: anchor) }
+    @MainActor public var Swift: SwiftLens { SwiftLens(anchor: anchor) }
     @MainActor public var Set: Set2 { Set2(anchor: anchor) }
     @MainActor public var Result: ResultLens { ResultLens(anchor: anchor) }
     @MainActor public var Optional: OptionalLens { OptionalLens(anchor: anchor) }
@@ -3064,7 +3064,7 @@ nonisolated public struct HostileSelections_character: Baton.Lens {
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
     }
 
-    nonisolated public struct Swift2: Baton.Lens {
+    nonisolated public struct SwiftLens: Baton.Lens {
         @_spi(Generated) public let anchor: Baton.Anchor
         @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
         @MainActor public var name: String? { anchor.string(Slots.Character.name) }
@@ -5578,7 +5578,7 @@ nonisolated public struct HostilePayload: Baton.Mutation {
             @MainActor public var format: Format? { anchor.linked(Slots.AddNotePayload.note).map(Format.init(anchor:)) }
             @MainActor public var transient: Transient? { anchor.linked(Slots.AddNotePayload.note).map(Transient.init(anchor:)) }
             @MainActor public var Baton: BatonLens? { anchor.linked(Slots.AddNotePayload.note).map(BatonLens.init(anchor:)) }
-            @MainActor public var Swift: Swift2? { anchor.linked(Slots.AddNotePayload.note).map(Swift2.init(anchor:)) }
+            @MainActor public var Swift: SwiftLens? { anchor.linked(Slots.AddNotePayload.note).map(SwiftLens.init(anchor:)) }
             @MainActor public var Set: Set2? { anchor.linked(Slots.AddNotePayload.note).map(Set2.init(anchor:)) }
             @MainActor public var Result: ResultLens? { anchor.linked(Slots.AddNotePayload.note).map(ResultLens.init(anchor:)) }
             @MainActor public var Optional: OptionalLens? { anchor.linked(Slots.AddNotePayload.note).map(OptionalLens.init(anchor:)) }
@@ -6424,7 +6424,7 @@ nonisolated public struct HostilePayload: Baton.Mutation {
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }
             }
 
-            nonisolated public struct Swift2: Baton.Lens {
+            nonisolated public struct SwiftLens: Baton.Lens {
                 @_spi(Generated) public let anchor: Baton.Anchor
                 @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
                 @MainActor public var id: String? { anchor.string(Slots.Note.id) }

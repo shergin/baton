@@ -18,7 +18,7 @@ a native runtime make better, and what Baton leaves out on purpose. Each
 | `useRefetchableFragment` | `@refetchable(queryName:)` and `refetch()` on the lens |
 | `@required(action: NONE / LOG / THROW)`, `@catch`, `@throwOnFieldError` | The same directives; `@catch` reads as `Result`, `@required(action: THROW)` and `@throwOnFieldError` fail the phase, `LOG` logs through the environment's `log` |
 | `@defer` | `@defer`; the first part renders, `isPresent` says whether the rest arrived |
-| `@inline` | `@inline` waits for its trigger; spread the fragment |
+| `@inline` and `readInlineData` | `@inline`; the fragment compiles to a `Sendable`, `Hashable` struct, and the spread's accessor on the parent's lens builds it when called, on the main actor |
 | `@argumentDefinitions`, `@arguments` | The same |
 | `RelayEnvironmentProvider` | `.environment(\.baton, environment)` |
 | `Environment` with `Network.create(fetch, subscribe)` | `Environment(transport:subscriptions:)`; a transport has one verb, `send`, yielding a stream of payloads |

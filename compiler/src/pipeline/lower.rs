@@ -15,9 +15,10 @@ use intern::string_key::Intern;
 use relay_transforms::CLIENT_EXTENSION_DIRECTIVE_NAME;
 use relay_transforms::{
     CATCH_DIRECTIVE_NAME, CHILDREN_CAN_BUBBLE_METADATA_KEY, CatchMetadataDirective, CatchTo,
-    FragmentAliasMetadata, Programs, RefetchableMetadata, RequiredAction as RelayRequiredAction,
-    RequiredMetadataDirective, extract_connection_metadata_from_directive,
-    extract_handle_field_directives, extract_values_from_handle_field_directive,
+    FragmentAliasMetadata, INLINE_DIRECTIVE_NAME, InlineDirectiveMetadata, Programs,
+    RefetchableMetadata, RequiredAction as RelayRequiredAction, RequiredMetadataDirective,
+    extract_connection_metadata_from_directive, extract_handle_field_directives,
+    extract_values_from_handle_field_directive,
 };
 use schema::{SDLSchema, Schema, Type, TypeReference};
 
@@ -233,6 +234,10 @@ impl Origin {
 
 impl Lowering<'_> {
     fn fragment(&self, fragment: &FragmentDefinition) -> FragmentPlan {
+        let inline = fragment.directives.named(*INLINE_DIRECTIVE_NAME).is_some();
+        if inline {
+            self.check_inline(fragment);
+        }
         let mut plan = FragmentPlan {
             name: fragment.name.item.0.lookup().to_string(),
             origin: Origin::of(fragment.name.location),
@@ -269,6 +274,7 @@ impl Lowering<'_> {
                 .directives
                 .named(*CHILDREN_CAN_BUBBLE_METADATA_KEY)
                 .is_some(),
+            inline,
             reader: self.selections(
                 &fragment.selections,
                 fragment.type_condition,
@@ -438,6 +444,66 @@ impl Lowering<'_> {
 
     /// The `@refetchable` metadata Relay attached: the generated query's name
     /// and variables, the id variable, and the one connection it paginates.
+    /// What an `@inline` fragment may not say: `@refetchable` and
+    /// `@connection`, since a value is not live and paginates nothing, and
+    /// a spread of a lens fragment, since a value holds no lens
+    /// (`docs/decisions/a-fragment-has-one-reading.md`).
+    fn check_inline(&self, fragment: &FragmentDefinition) {
+        let name = fragment.name.item;
+        if RefetchableMetadata::find(&fragment.directives).is_some() {
+            self.diagnostics.borrow_mut().push(Diagnostic::error(
+                format!(
+                    "`{name}` is `@inline` and `@refetchable`; a value is not live, so an inline fragment is not refetched"
+                ),
+                fragment.name.location,
+            ));
+        }
+        if extract_connection_metadata_from_directive(&fragment.directives).is_some() {
+            self.diagnostics.borrow_mut().push(Diagnostic::error(
+                format!(
+                    "`{name}` is `@inline` and selects a `@connection`; a value paginates nothing, so an inline fragment reads the field without `@connection`"
+                ),
+                fragment.name.location,
+            ));
+        }
+        self.check_inline_spreads(name, &fragment.selections);
+    }
+
+    /// Relay's inline-data transform replaces the spread of an inline
+    /// fragment with its selections and leaves any other spread as it is,
+    /// so a spread still standing inside an inline fragment names a lens.
+    fn check_inline_spreads(
+        &self,
+        name: graphql_ir::FragmentDefinitionName,
+        selections: &[Selection],
+    ) {
+        for selection in selections {
+            match selection {
+                Selection::FragmentSpread(spread) => {
+                    self.diagnostics.borrow_mut().push(Diagnostic::error(
+                        format!(
+                            "`...{}` spreads a lens fragment inside the `@inline` fragment `{name}`; a value holds no lens, so an inline fragment spreads only inline fragments",
+                            spread.fragment.item
+                        ),
+                        spread.fragment.location,
+                    ));
+                }
+                Selection::LinkedField(field) => {
+                    self.check_inline_spreads(name, &field.selections);
+                }
+                Selection::InlineFragment(inline) => {
+                    if InlineDirectiveMetadata::find(&inline.directives).is_none() {
+                        self.check_inline_spreads(name, &inline.selections);
+                    }
+                }
+                Selection::Condition(condition) => {
+                    self.check_inline_spreads(name, &condition.selections);
+                }
+                Selection::ScalarField(_) => {}
+            }
+        }
+    }
+
     fn refetch(&self, fragment: &FragmentDefinition) -> Option<RefetchPlan> {
         let metadata = RefetchableMetadata::find(&fragment.directives)?;
         let operation = metadata.operation_name.0.lookup().to_string();
@@ -956,6 +1022,13 @@ impl Lowering<'_> {
         caught: bool,
         client: bool,
     ) -> SelectionPlan {
+        // Relay's inline-data transform replaced the spread of an `@inline`
+        // fragment with the fragment's selections under a marked inline
+        // fragment. The lens reads the spread, as it reads any spread: the
+        // accessor builds the fragment's value instead of its lens.
+        if let Some(metadata) = InlineDirectiveMetadata::find(&inline.directives) {
+            return self.inline_spread(metadata);
+        }
         // Relay groups a selection's client fields under an inline fragment
         // it marks; everything under it is the client's.
         let client = client
@@ -970,6 +1043,10 @@ impl Lowering<'_> {
                 match inline.selections.first() {
                     Some(Selection::FragmentSpread(spread)) => {
                         Some(spread.fragment.item.0.lookup().to_string())
+                    }
+                    Some(Selection::InlineFragment(wrapped)) => {
+                        InlineDirectiveMetadata::find(&wrapped.directives)
+                            .map(|metadata| metadata.fragment_name.0.lookup().to_string())
                     }
                     _ => None,
                 }
@@ -1022,12 +1099,35 @@ impl Lowering<'_> {
     }
 
     fn fragment_spread(&self, spread: &FragmentSpread) -> SelectionPlan {
+        self.spread(
+            spread.fragment.item,
+            spread.fragment.location,
+            &spread.arguments,
+        )
+    }
+
+    /// The spread of an `@inline` fragment, from the metadata Relay's
+    /// transform left where the spread stood.
+    fn inline_spread(&self, metadata: &InlineDirectiveMetadata) -> SelectionPlan {
+        self.spread(
+            metadata.fragment_name,
+            common::Location::generated(),
+            &metadata.arguments,
+        )
+    }
+
+    fn spread(
+        &self,
+        fragment: graphql_ir::FragmentDefinitionName,
+        location: common::Location,
+        arguments: &[graphql_ir::Argument],
+    ) -> SelectionPlan {
         SelectionPlan::Spread {
-            fragment: spread.fragment.item.0.lookup().to_string(),
+            fragment: fragment.0.lookup().to_string(),
             type_condition: self
                 .programs
                 .reader
-                .fragment(spread.fragment.item)
+                .fragment(fragment)
                 .map(|fragment| {
                     self.schema
                         .get_type_name(fragment.type_condition)
@@ -1037,12 +1137,11 @@ impl Lowering<'_> {
                 .unwrap_or_else(|| {
                     self.internal(
                         "the spread names a fragment the reader program lacks",
-                        spread.fragment.location,
+                        location,
                     );
                     String::new()
                 }),
-            arguments: spread
-                .arguments
+            arguments: arguments
                 .iter()
                 .map(|argument| ArgumentPlan {
                     name: argument.name.item.0.lookup().to_string(),

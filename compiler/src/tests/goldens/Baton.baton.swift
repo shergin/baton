@@ -9,7 +9,7 @@ nonisolated enum Types {
     static let schemaDigest = "b65cad080c007ba5a285087d8c06e099"
     /// The format of this generated code, which the runtime that reads it
     /// declares; a runtime of another format fails to compile this line.
-    static let format = Baton.Format15.self
+    static let format = Baton.Format16.self
     static let AddNotePayload = Baton.Registry.type("AddNotePayload")
     static let Any_ = Baton.Registry.type("Any")
     static let Asset = Baton.Registry.type("Asset")
@@ -455,6 +455,7 @@ nonisolated enum Guards {
     static let variable_true = Baton.Guard("variable", passing: true)
     static let where_true = Baton.Guard("where", passing: true)
     static let while_true = Baton.Guard("while", passing: true)
+    static let withNotes_true = Baton.Guard("withNotes", passing: true)
     static let withOrigin_true = Baton.Guard("withOrigin", passing: true)
     static let withStatus_true = Baton.Guard("withStatus", passing: true)
 }
@@ -471,6 +472,7 @@ nonisolated enum Sites {
     static let TestHiddenNotesQuery_testHiddenNotes = Baton.ArgumentSite()
     static let TestHiddenRecentNotesPaginationQuery_testHiddenRecentNotes = Baton.ArgumentSite()
     static let TestHiddenRecentNotesQuery_testHiddenRecentNotes = Baton.ArgumentSite()
+    static let TestInlineQuery_notesValue = Baton.ArgumentSite()
     static let TestNotesPaginationQuery_testNotes = Baton.ArgumentSite()
     static let TestNotesQuery_testNotes = Baton.ArgumentSite()
     static let TestNotesSizedQuery_testNotes = Baton.ArgumentSite()

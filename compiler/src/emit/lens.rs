@@ -1,7 +1,9 @@
 //! Lens types: a fragment's lens and every lens nested in a lens, their
 //! accessors, the connection and refetch surface, and the `satisfied`,
 //! `missingRequiredField`, `fieldErrors` and `isPresent` checks, printed
-//! from the `ReaderPlan`.
+//! from the `ReaderPlan`. What an accessor reads is a piece the value
+//! printer shares: an `@inline` fragment's value reads the same
+//! expressions once, into stored properties.
 //!
 //! A lens names the runtime's module only in a type, and a fragment or a
 //! query only from its context or through a local alias: the pieces in
@@ -64,7 +66,7 @@ pub(super) fn lens(writer: &mut Writer, lens: &ReaderPlan) {
             }
         }
         if let Some(checks) = &lens.field_errors {
-            field_errors_function(writer, checks);
+            field_errors_function(writer, checks, "lens");
         }
         if let Some(checks) = &lens.is_present {
             is_present_function(writer, checks);
@@ -88,13 +90,39 @@ fn accessor(writer: &mut Writer, accessor: &Accessor) {
     }
 }
 
+/// What an accessor reads: the type it reads as, the expression, and
+/// whether the expression throws.
+pub(super) struct Piece {
+    pub(super) swift_type: SwiftType,
+    pub(super) expression: String,
+    pub(super) throws: bool,
+}
+
+impl Piece {
+    fn new(swift_type: SwiftType, expression: String, throws: bool) -> Piece {
+        Piece {
+            swift_type,
+            expression,
+            throws,
+        }
+    }
+}
+
 /// A scalar accessor: plain, `@required`, `@catch` or throwing.
 fn scalar_accessor(writer: &mut Writer, name: &str, read: &ScalarRead, condition: Option<&str>) {
+    let piece = scalar_piece(read);
+    Computed::new(name, piece.swift_type)
+        .throwing(piece.throws)
+        .reads(writer, &piece.expression, condition);
+}
+
+/// What a scalar field reads: plain, `@required`, `@catch` or throwing.
+pub(super) fn scalar_piece(read: &ScalarRead) -> Piece {
     let slot = slot_expression(&read.slot);
     let reader = scalar_reader(&read.shape);
     let value = scalar_type(&read.shape);
     if read.shape.primitive.is_mapped() && read.shape.list.is_none() {
-        return mapped_accessor(writer, name, read, condition, slot, value);
+        return mapped_piece(read, slot, value);
     }
     let required_reader = format!("required{}", capitalize(reader));
     let (swift_type, body, throws) = match &read.form {
@@ -123,24 +151,15 @@ fn scalar_accessor(writer: &mut Writer, name: &str, read: &ScalarRead, condition
         ),
         ScalarForm::Required => (value, format!("anchor.{required_reader}({slot})"), false),
     };
-    Computed::new(name, swift_type)
-        .throwing(throws)
-        .reads(writer, &body, condition);
+    Piece::new(swift_type, body, throws)
 }
 
-/// A mapped scalar's accessor: the conversion can fail, so the accessor is
+/// What a mapped scalar reads: the conversion can fail, so the accessor is
 /// optional unless a directive says what a failure does. `@required` and
 /// `@throwOnFieldError` make it non-optional and throwing, since a value
 /// that does not convert has no zero to read as; `@catch` makes it a
 /// `Result` whose failure carries the conversion's error.
-fn mapped_accessor(
-    writer: &mut Writer,
-    name: &str,
-    read: &ScalarRead,
-    condition: Option<&str>,
-    slot: String,
-    value: SwiftType,
-) {
+fn mapped_piece(read: &ScalarRead, slot: String, value: SwiftType) -> Piece {
     let path = swift_literal(&read.path);
     let (swift_type, body, throws) = match &read.form {
         ScalarForm::Caught { non_null: true } => (
@@ -170,14 +189,23 @@ fn mapped_accessor(
             true,
         ),
     };
-    Computed::new(name, swift_type)
-        .throwing(throws)
-        .reads(writer, &body, condition);
+    Piece::new(swift_type, body, throws)
 }
 
 /// A linked accessor: plain, bubbling, `@required`, `@catch` or throwing,
 /// singular or plural.
 fn linked_accessor(writer: &mut Writer, name: &str, read: &LinkedRead, condition: Option<&str>) {
+    let piece = linked_piece(read, false);
+    Computed::new(name, piece.swift_type)
+        .throwing(piece.throws)
+        .reads(writer, &piece.expression, condition);
+}
+
+/// What a linked field reads: plain, bubbling, `@required`, `@catch` or
+/// throwing, singular or plural. In a value, a plural link reads as an
+/// array of the nested values, and a nested value is built in a closure,
+/// since its initializer reads on the main actor.
+pub(super) fn linked_piece(read: &LinkedRead, value: bool) -> Piece {
     let slot = slot_expression(&read.slot);
     let lens = SwiftType::named(&read.lens);
     let nested = lens.to_string();
@@ -189,36 +217,54 @@ fn linked_accessor(writer: &mut Writer, name: &str, read: &LinkedRead, condition
     };
     let guarded = if read.bubbles {
         format!(".flatMap {{ {nested}.satisfied($0) ? {nested}(anchor: $0) : nil }}")
+    } else if value {
+        format!(".map {{ {nested}(anchor: $0) }}")
     } else {
         format!(".map({nested}.init(anchor:))")
     };
+    let (list_type, list_reader, build) = if value {
+        (
+            lens.clone().array(),
+            "Values",
+            format!(" {{ {nested}(anchor: $0) }}"),
+        )
+    } else {
+        (lens.clone().list(), "List", String::new())
+    };
     let (swift_type, body, throws) = match &read.form {
         LinkedForm::CaughtList { non_null: true } => (
-            lens.list().caught(),
-            format!("anchor.caughtRequiredList({slot}, within: {nested}.fieldErrors{keep})"),
+            list_type.caught(),
+            format!(
+                "anchor.caughtRequired{list_reader}({slot}, within: {nested}.fieldErrors{keep}){build}"
+            ),
             false,
         ),
         LinkedForm::CaughtList { non_null: false } => (
-            lens.list().optional().caught(),
-            format!("anchor.caughtList({slot}, within: {nested}.fieldErrors{keep})"),
+            list_type.optional().caught(),
+            format!(
+                "anchor.caught{list_reader}({slot}, within: {nested}.fieldErrors{keep}){build}"
+            ),
             false,
         ),
         LinkedForm::ThrowingList { path } => (
-            lens.list(),
+            list_type,
             format!(
-                "try anchor.throwingList({slot}, path: {}{keep})",
+                "try anchor.throwing{list_reader}({slot}, path: {}{keep}){build}",
                 swift_literal(path)
             ),
             true,
         ),
         LinkedForm::RequiredList => (
-            lens.list(),
-            format!("anchor.requiredList({slot}{keep})"),
+            list_type,
+            format!("anchor.required{list_reader}({slot}{keep}){build}"),
             false,
         ),
         LinkedForm::List => (
-            lens.list().optional(),
-            format!("anchor.list({slot}{keep})"),
+            list_type.optional(),
+            format!(
+                "anchor.{}({slot}{keep}){build}",
+                if value { "values" } else { "list" }
+            ),
             false,
         ),
         LinkedForm::Caught { optional } => {
@@ -261,9 +307,16 @@ fn linked_accessor(writer: &mut Writer, name: &str, read: &LinkedRead, condition
             false,
         ),
     };
-    Computed::new(name, swift_type)
-        .throwing(throws)
-        .reads(writer, &body, condition);
+    Piece::new(swift_type, body, throws)
+}
+
+/// What a spread reads: one expression when nothing guards it and nothing
+/// is bound, else the statements of a body that ends in a return.
+pub(super) struct SpreadPiece {
+    pub(super) swift_type: SwiftType,
+    pub(super) throws: bool,
+    pub(super) expression: Option<String>,
+    pub(super) statements: Vec<String>,
 }
 
 /// A spread's accessor: the fragment's lens over the record, in the scope
@@ -271,6 +324,21 @@ fn linked_accessor(writer: &mut Writer, name: &str, read: &LinkedRead, condition
 /// the lens from its own type, as `.init(anchor:)`, and calls the
 /// fragment's checks through a local alias.
 fn spread_accessor(writer: &mut Writer, name: &str, read: &SpreadRead) {
+    let piece = spread_piece(read);
+    let property = Computed::new(name, piece.swift_type).throwing(piece.throws);
+    match &piece.expression {
+        Some(expression) => property.reads(writer, expression, None),
+        None => property.body(writer, |writer| {
+            for statement in &piece.statements {
+                writer.line(statement);
+            }
+        }),
+    }
+}
+
+/// What a spread reads. The same text builds the fragment's lens or its
+/// value: both are made from their own type, as `.init(anchor:)`.
+pub(super) fn spread_piece(read: &SpreadRead) -> SpreadPiece {
     let fragment = &read.fragment;
     let alias = LocalAlias::fragment(fragment, &[fragment]);
     let anchor = if read.binding.is_some() {
@@ -321,17 +389,22 @@ fn spread_accessor(writer: &mut Writer, name: &str, read: &SpreadRead) {
     } else {
         "nil"
     };
-    let property = Computed::new(name, swift_type).throwing(throws);
     if let Some(make) = &make
         && read.binding.is_none()
         && guards.is_empty()
     {
-        property.reads(writer, make, None);
-        return;
+        return SpreadPiece {
+            swift_type,
+            throws,
+            expression: Some(make.clone()),
+            statements: Vec::new(),
+        };
     }
-    property.body(writer, |writer| {
+    let mut statements = Vec::new();
+    {
+        let writer = &mut statements;
         if checks {
-            alias.declare(writer);
+            writer.push(alias.declaration());
         }
         if let Some(binding) = &read.binding {
             let bindings: Vec<String> = binding
@@ -348,7 +421,7 @@ fn spread_accessor(writer: &mut Writer, name: &str, read: &SpreadRead) {
                 .collect();
             // The closure states its type: inferred from the literal, the
             // time Swift takes to check it doubles with each argument.
-            writer.line(format!(
+            writer.push(format!(
                 "let bound = anchor.binding(Sites.{}) {{ () -> [String: {}] in [{}] }}",
                 binding.site,
                 SwiftType::runtime("Variable").optional(),
@@ -356,26 +429,38 @@ fn spread_accessor(writer: &mut Writer, name: &str, read: &SpreadRead) {
             ));
         }
         if !guards.is_empty() {
-            writer.line(format!(
+            writer.push(format!(
                 "guard {} else {{ return {miss} }}",
                 guards.join(", ")
             ));
         }
         match &make {
-            Some(make) => writer.line(format!("return {make}")),
+            Some(make) => writer.push(format!("return {make}")),
             None => {
-                writer.line(format!("let errors = {alias}.fieldErrors({anchor})"));
-                writer.line(format!(
+                writer.push(format!("let errors = {alias}.fieldErrors({anchor})"));
+                writer.push(format!(
                     "return errors.isEmpty ? .success(.init(anchor: {anchor}.entering())) : .failure(.init(errors))"
                 ));
             }
         }
-    });
+    }
+    SpreadPiece {
+        swift_type,
+        throws,
+        expression: None,
+        statements,
+    }
 }
 
 /// An aliased selection's accessor: its nested lens, optional under its
 /// guards, a `Result` under `@catch`.
 fn aliased_accessor(writer: &mut Writer, name: &str, read: &AliasedRead) {
+    let (piece, condition) = aliased_piece(read);
+    Computed::new(name, piece.swift_type).reads(writer, &piece.expression, condition.as_deref());
+}
+
+/// What an aliased selection reads, and the condition it reads under.
+pub(super) fn aliased_piece(read: &AliasedRead) -> (Piece, Option<String>) {
     let lens = SwiftType::named(&read.lens);
     let nested = lens.to_string();
     let guards: Vec<String> = read
@@ -395,7 +480,7 @@ fn aliased_accessor(writer: &mut Writer, name: &str, read: &AliasedRead) {
     } else {
         (lens, format!("{nested}(anchor: anchor)"))
     };
-    Computed::new(name, swift_type).reads(writer, &expression, condition.as_deref());
+    (Piece::new(swift_type, expression, false), condition)
 }
 
 /// A type condition's accessor: its nested lens when the record satisfies
@@ -406,6 +491,13 @@ fn condition_accessor(
     read: &ConditionRead,
     condition: Option<&str>,
 ) {
+    let (piece, test) = condition_piece(read, condition);
+    Computed::new(name, piece.swift_type).reads(writer, &piece.expression, Some(&test));
+}
+
+/// What a type condition reads, and the test it reads under, which joins
+/// the member's own condition.
+pub(super) fn condition_piece(read: &ConditionRead, condition: Option<&str>) -> (Piece, String) {
     let lens = SwiftType::named(&read.lens);
     let test = type_test(&read.test);
     let test = match condition {
@@ -413,7 +505,7 @@ fn condition_accessor(
         None => test,
     };
     let expression = format!("{lens}(anchor: anchor)");
-    Computed::new(name, lens).reads(writer, &expression, Some(&test));
+    (Piece::new(lens, expression, false), test)
 }
 
 /// The `@refetchable` surface of a fragment lens: the descriptor of its
@@ -671,12 +763,40 @@ fn missing_required_function(writer: &mut Writer, entries: &[Guarded<Option<Sati
 
 /// `fieldErrors`, `throwing` and `caught`: the field errors in this
 /// selection, excluding fields caught by their own `@catch`, plus the
-/// `@required(action: THROW)` fields that are null.
-fn field_errors_function(writer: &mut Writer, checks: &[ErrorCheck]) {
+/// `@required(action: THROW)` fields that are null. `noun` is what the type
+/// is, a lens or a value, for the documentation.
+pub(super) fn field_errors_function(writer: &mut Writer, checks: &[ErrorCheck], noun: &str) {
     let errors = SwiftType::runtime("FieldError").array();
     let this = SwiftType::own;
     writer.doc("The field errors in this selection, for `@catch` and `@throwOnFieldError`.");
-    writer.block(check_head("fieldErrors", &errors, false), |writer| {
+    let head = check_head("fieldErrors", &errors, false);
+    // A selection of spreads alone scans nothing of its own: the spreads
+    // keep their fragments' policies.
+    if checks.is_empty() {
+        writer.line(format!("{head} {{ [] }}"));
+    } else {
+        field_errors_body(writer, head, checks, &errors);
+    }
+    writer.doc(format!(
+        "The {noun}, or the field errors in it as a thrown `FieldErrors`."
+    ));
+    writer.line(format!(
+        "{} {{ try caught(anchor).get() }}",
+        check_head("throwing", &this(), true)
+    ));
+    writer.doc(format!(
+        "The {noun}, or the field errors in it as a `Result`."
+    ));
+    writer.block(check_head("caught", &this().caught(), false), |writer| {
+        writer.line("let errors = fieldErrors(anchor)");
+        writer.line(
+            "return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))",
+        );
+    });
+}
+
+fn field_errors_body(writer: &mut Writer, head: String, checks: &[ErrorCheck], errors: &SwiftType) {
+    writer.block(head, |writer| {
         writer.line(format!("var errors: {errors} = []"));
         for check in checks {
             match check {
@@ -701,18 +821,6 @@ fn field_errors_function(writer: &mut Writer, checks: &[ErrorCheck]) {
             }
         }
         writer.line("return errors");
-    });
-    writer.doc("The lens, or the field errors in it as a thrown `FieldErrors`.");
-    writer.line(format!(
-        "{} {{ try caught(anchor).get() }}",
-        check_head("throwing", &this(), true)
-    ));
-    writer.doc("The lens, or the field errors in it as a `Result`.");
-    writer.block(check_head("caught", &this().caught(), false), |writer| {
-        writer.line("let errors = fieldErrors(anchor)");
-        writer.line(
-            "return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))",
-        );
     });
 }
 
@@ -768,7 +876,7 @@ fn error_line(writer: &mut Writer, line: &ErrorLine) {
 
 /// `isPresent`: whether the fragment's own fields have arrived, for a
 /// spread under `@defer`.
-fn is_present_function(writer: &mut Writer, checks: &[Guarded<SlotAccess>]) {
+pub(super) fn is_present_function(writer: &mut Writer, checks: &[Guarded<SlotAccess>]) {
     let checks: Vec<String> = checks
         .iter()
         .map(|check| {
@@ -794,7 +902,7 @@ fn is_present_function(writer: &mut Writer, checks: &[Guarded<SlotAccess>]) {
 /// A slot as a value: the static slot, or on an interface or union the
 /// abstract slot taken on the record's type. A key with variables is
 /// resolved by the anchor's owner, once.
-fn slot_expression(access: &SlotAccess) -> String {
+pub(super) fn slot_expression(access: &SlotAccess) -> String {
     let slot = &access.slot;
     match (access.on_record_type, slot.has_variables()) {
         (false, false) => slot.path("Slots"),
@@ -819,7 +927,7 @@ fn type_test(test: &TypeTest) -> String {
 }
 
 /// The Swift test of a member's guards, or none when it is always fetched.
-fn guard_condition(guards: &[Vec<Guard>]) -> Option<String> {
+pub(super) fn guard_condition(guards: &[Vec<Guard>]) -> Option<String> {
     if guards.is_empty() {
         return None;
     }

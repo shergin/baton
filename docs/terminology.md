@@ -122,17 +122,23 @@ absent rather than empty, and the rest of the operation renders meanwhile.
 
 **Inline data fragment.** *Composition: document, directive.* Relay:
 `@inline`, a fragment whose data a function outside rendering reads as a
-plain value with `readInlineData`; the value is not live. Here:
-*(planned)*, and until then the compiler rejects the directive. A fragment
-so marked compiles to a `Sendable` value of its fields in place of a lens,
-read out by the spread's accessor on the parent's lens: for code off the
-main actor, and for rules tested with values. A fragment is a lens or
-inline, never both, and no API takes the value. An inline fragment spreads
-only inline fragments and takes no `@connection` or `@refetchable`, and its
-spread takes what any spread takes but `@catch`, a conditional or
-deferred one yielding an optional value. A view holds a value only as a
-parameter of its own initializer, and an operation root needed as a value
-spreads one inline fragment. See
+plain value with `readInlineData`; the value is not live. Here: a fragment
+so marked compiles to a `Sendable`, `Hashable` struct of its fields in
+place of a lens, a nested struct per link, an array per plural link, and
+an initializer that takes the fields, so a test builds one. The spread's
+accessor on the parent's lens builds it from the record when it is called,
+on the main actor, and its reads register as a lens's do: for code off the
+main actor, for rules tested with values, and for the value as of a tap. A
+fragment is a lens or inline, never both, and no API takes the value. An
+inline fragment spreads only inline fragments and takes no `@connection`,
+`@refetchable` or `@required`, the last by Relay's rule; a non-null mapped
+scalar in it reads optional, since a stored property cannot throw, and
+under `@throwOnFieldError` a text that does not convert throws at the
+spread. Its spread takes what any spread takes; `@catch` has no place on a
+spread in Relay's schema, and `... @alias(as:) @catch { ...Value }` reads a
+`Result`. A conditional or deferred spread yields an optional value. A view
+holds a value only as a parameter of its own initializer, and an operation
+root needed as a value spreads one inline fragment. See
 [the decision](decisions/a-fragment-has-one-reading.md).
 
 **Variables.** *Concept: operation value.* GraphQL: an operation's

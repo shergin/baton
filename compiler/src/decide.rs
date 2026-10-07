@@ -48,13 +48,16 @@ pub struct Program {
     pub shared: Shared,
 }
 
-/// A fragment's lens and where it was declared.
+/// A fragment's lens and where it was declared. An `@inline` fragment's is
+/// printed as a value: the same accessors, as stored properties read once.
 #[derive(Debug, Clone, PartialEq)]
 pub struct FragmentLens {
     pub name: String,
     /// The file the fragment was declared in.
     pub source: String,
     pub type_condition: String,
+    /// `@inline`: the fragment reads as a value.
+    pub inline: bool,
     pub lens: ReaderPlan,
 }
 
@@ -78,6 +81,7 @@ pub fn program(plan: &Plan) -> Result<Program, Vec<NameError>> {
             name: fragment.name.clone(),
             source: fragment.source.clone(),
             type_condition: fragment.type_condition.clone(),
+            inline: fragment.inline,
             lens: readers.fragment(fragment),
         })
         .collect();

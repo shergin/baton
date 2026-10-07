@@ -241,7 +241,11 @@ impl LocalAlias {
 
     /// The declaration a body opens with.
     pub(super) fn declare(&self, writer: &mut Writer) {
-        writer.line(format!("typealias {} = {}", self.name, self.target));
+        writer.line(self.declaration());
+    }
+
+    pub(super) fn declaration(&self) -> String {
+        format!("typealias {} = {}", self.name, self.target)
     }
 }
 

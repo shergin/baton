@@ -1,6 +1,6 @@
 //! What a document may say: the directives Baton gives a meaning to, where
 //! it gives it, and one definition of the marker's own kind per marker.
-//! Relay's transforms accept more, and some of it, such as `@inline` or
+//! Relay's transforms accept more, and some of it, such as
 //! `@relay(plural:)`, compiles and then does nothing; here it is an error
 //! at the directive.
 
@@ -15,7 +15,12 @@ use crate::swift::Marker;
 /// (`docs/decisions/an-operation-states-its-expiration.md`).
 const QUERY: &[&str] = &["throwOnFieldError", "cacheExpiration"];
 const OPERATION: &[&str] = &["throwOnFieldError"];
-const FRAGMENT: &[&str] = &["argumentDefinitions", "refetchable", "throwOnFieldError"];
+const FRAGMENT: &[&str] = &[
+    "argumentDefinitions",
+    "refetchable",
+    "throwOnFieldError",
+    "inline",
+];
 const FIELD: &[&str] = &[
     "include",
     "skip",

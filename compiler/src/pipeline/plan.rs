@@ -84,6 +84,9 @@ pub struct FragmentPlan {
     pub throws_on_field_error: bool,
     /// Whether a `@required` field of the fragment can null the whole fragment.
     pub bubbles: bool,
+    /// `@inline`: the fragment reads as a value, not a lens.
+    #[serde(skip_serializing_if = "is_false")]
+    pub inline: bool,
     pub reader: Vec<SelectionPlan>,
 }
 

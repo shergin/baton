@@ -1,15 +1,15 @@
-//! The Swift emitter: lens types, operation values, plan tables, mutation
-//! actions with their optimistic builders, connection lenses with their
-//! pagination, the error and nullability surface (`@required`, `@catch`,
-//! `@throwOnFieldError`, `@semanticNonNull`, `@defer`), and the shared file
-//! of interned types and slots. It prints what `decide` settled and decides
-//! nothing itself.
+//! The Swift emitter: lens types, the values of `@inline` fragments,
+//! operation values, plan tables, mutation actions with their optimistic
+//! builders, connection lenses with their pagination, the error and
+//! nullability surface (`@required`, `@catch`, `@throwOnFieldError`,
+//! `@semanticNonNull`, `@defer`), and the shared file of interned types and
+//! slots. It prints what `decide` settled and decides nothing itself.
 //!
 //! Output per host file `X.swift` is `X.baton.swift`; the per-target
 //! `Baton.baton.swift` carries `Types` and `Slots`. One printer per output:
-//! `shared` writes the shared file, `lens` the lenses, `operation` the
-//! operation values, `plan` their plans and `builder` their optimistic
-//! builders; `swift` holds the literals they share.
+//! `shared` writes the shared file, `lens` the lenses, `value` the values,
+//! `operation` the operation values, `plan` their plans and `builder` their
+//! optimistic builders; `swift` holds the literals they share.
 
 mod builder;
 mod lens;
@@ -17,6 +17,7 @@ mod operation;
 mod plan;
 mod shared;
 mod swift;
+mod value;
 mod writer;
 
 use std::collections::BTreeMap;
@@ -42,17 +43,22 @@ const HEADER: &str =
 /// of its format, so code of another format fails to compile at that line
 /// and the marker says which side is behind. A change to what generated
 /// code names in the runtime raises it, here and in the runtime together.
-pub const FORMAT: u32 = 15;
+pub const FORMAT: u32 = 16;
 
 /// The Swift of a plan, or the names it would have declared twice.
 pub fn emit(plan: &Plan) -> Result<Output, Vec<NameError>> {
     let program = decide::program(plan)?;
     let mut files: BTreeMap<String, String> = BTreeMap::new();
     for fragment in &program.fragments {
+        let text = if fragment.inline {
+            value::fragment_text(fragment)
+        } else {
+            lens::fragment_text(fragment)
+        };
         files
             .entry(fragment.source.clone())
             .or_default()
-            .push_str(&lens::fragment_text(fragment));
+            .push_str(&text);
     }
     for operation in &program.operations {
         files

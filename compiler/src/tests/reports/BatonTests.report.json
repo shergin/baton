@@ -169,6 +169,16 @@
       "text": "query TestAssetQuery($uuid:String!){asset(uuid:$uuid){owner{name,id},uuid,name,id}}"
     },
     {
+      "name": "TestAssetValuesQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/InlineDocuments.swift",
+      "variables": [],
+      "fragments": [
+        "TestAssetValue_asset"
+      ],
+      "text": "query TestAssetValuesQuery{assets{...TestAssetValue_asset,id,uuid}}fragment TestAssetValue_asset on Asset{uuid,name,price,listedAt,page,prices,caughtSize:size}"
+    },
+    {
       "name": "TestAssetsQuery",
       "kind": "query",
       "source": "swift/Tests/BatonTests/IdentityDocuments.swift",
@@ -286,6 +296,22 @@
         "TestCaughtStrict_character"
       ],
       "text": "query TestCaughtSpreads($id:ID!){character(id:$id){id,...TestCaughtProfile_character,...TestCaughtStrict_character},node(id:$id){__typename,id,...on Character{...TestCaughtProfile_character}}}fragment TestCaughtProfile_character on Character{name,origin{name,id}}fragment TestCaughtStrict_character on Character{species}"
+    },
+    {
+      "name": "TestCaughtValueQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/InlineDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [
+        "TestCharacterValue_character",
+        "TestOriginValue_location"
+      ],
+      "text": "query TestCaughtValueQuery($id:ID!){character(id:$id){id,...TestCharacterValue_character}}fragment TestCharacterValue_character on Character{id,name,status,origin{...TestOriginValue_location,id},episode{id,name}}fragment TestOriginValue_location on Location{id,name,dimension}"
     },
     {
       "name": "TestCharacterSecret",
@@ -412,6 +438,22 @@
         "TestNoteText_note"
       ],
       "text": "query TestDeferredNotesPaginationQuery($count:Int=2,$cursor:String,$id:ID!){node(id:$id){__typename,...TestDeferredNotes_character_1G22uz,id}}fragment TestDeferredNotes_character_1G22uz on Character{notes(first:$count,after:$cursor){edges{node{id,...TestNoteText_note@defer(label:\"TestDeferredNotes_character$defer$noteText\"),__typename},cursor},pageInfo{endCursor,hasNextPage}},id}fragment TestNoteText_note on Note{text}"
+    },
+    {
+      "name": "TestDeferredValueQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/InlineDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [
+        "TestCharacterValue_character",
+        "TestOriginValue_location"
+      ],
+      "text": "query TestDeferredValueQuery($id:ID!){character(id:$id){id,...TestCharacterValue_character@defer(label:\"TestDeferredValueQuery$defer$TestCharacterValue_character\")}}fragment TestCharacterValue_character on Character{id,name,status,origin{...TestOriginValue_location,id},episode{id,name}}fragment TestOriginValue_location on Location{id,name,dimension}"
     },
     {
       "name": "TestDeleteNote",
@@ -644,6 +686,28 @@
         "TestHiddenRecentNotes_character"
       ],
       "text": "query TestHiddenRecentNotesQuery($id:ID!){character(id:$id){...TestHiddenRecentNotes_character,id}}fragment TestHiddenRecentNotes_character on Character{notes(last:2){TestHiddenRecentNotes_character:totalCount,TestHiddenRecentNotesPaginationQuery:totalCount,edges{node{id,text,__typename},cursor},pageInfo{hasPreviousPage,startCursor}},id}"
+    },
+    {
+      "name": "TestInlineQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/InlineDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        },
+        {
+          "name": "withNotes",
+          "type": "Boolean!"
+        }
+      ],
+      "fragments": [
+        "TestCard_character",
+        "TestCharacterValue_character",
+        "TestNotesValue_character",
+        "TestOriginValue_location"
+      ],
+      "text": "query TestInlineQuery($id:ID!,$withNotes:Boolean!){character(id:$id){...TestCard_character,...TestNotesValue_character_35kO5h@include(if:$withNotes),id}}fragment TestCard_character on Character{name,...TestCharacterValue_character}fragment TestCharacterValue_character on Character{id,name,status,origin{...TestOriginValue_location,id},episode{id,name}}fragment TestNotesValue_character_35kO5h on Character{notes(first:1){totalCount}}fragment TestOriginValue_location on Location{id,name,dimension}"
     },
     {
       "name": "TestKeys",
@@ -1190,6 +1254,21 @@
       "text": "query TestReservedNames($id:ID!){sites:character(id:$id){id,...TestNotes_character_35kO5h},types:character(id:$id){id},slots:character(id:$id){id}}fragment TestNotes_character_35kO5h on Character{name,notes(first:1){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}"
     },
     {
+      "name": "TestResultValuesQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/InlineDocuments.swift",
+      "variables": [
+        {
+          "name": "name",
+          "type": "String!"
+        }
+      ],
+      "fragments": [
+        "TestResultValue_searchResult"
+      ],
+      "text": "query TestResultValuesQuery($name:String!){search(name:$name){__typename,...TestResultValue_searchResult,...on Node{__isNode:__typename,id}}}fragment TestResultValue_searchResult on SearchResult{__isSearchResult:__typename,...on Character{name,status},...on Location{name,dimension}}"
+    },
+    {
       "name": "TestRootNotesPaginationQuery",
       "kind": "query",
       "source": "swift/Tests/BatonTests/RootConnectionDocuments.swift",
@@ -1593,6 +1672,15 @@
       "text": "fragment TestAppearances_character on Character {\n  episode {\n    name\n    air_date\n  }\n}"
     },
     {
+      "name": "TestAssetValue_asset",
+      "type": "Asset",
+      "source": "swift/Tests/BatonTests/InlineDocuments.swift",
+      "operations": [
+        "TestAssetValuesQuery"
+      ],
+      "text": "fragment TestAssetValue_asset on Asset @inline @throwOnFieldError {\n  uuid\n  name\n  price\n  listedAt\n  page\n  prices\n  caughtSize: size @catch\n}"
+    },
+    {
       "name": "TestAuthorNotes_note",
       "type": "Note",
       "source": "swift/Tests/BatonTests/ListDocuments.swift",
@@ -1601,6 +1689,15 @@
         "TestAuthorNotesQuery"
       ],
       "text": "fragment TestAuthorNotes_note on Note @refetchable(queryName: \"TestAuthorNotesPaginationQuery\") @argumentDefinitions(\n  count: {type: \"Int\", defaultValue: 2}\n  cursor: {type: \"String\"}\n) {\n  id\n  author {\n    id\n    name\n    notes(first: $count, after: $cursor) @connection(key: \"TestAuthorNotes_notes\") {\n      edges {\n        node {\n          id\n          text\n        }\n      }\n    }\n  }\n}"
+    },
+    {
+      "name": "TestCard_character",
+      "type": "Character",
+      "source": "swift/Tests/BatonTests/InlineDocuments.swift",
+      "operations": [
+        "TestInlineQuery"
+      ],
+      "text": "fragment TestCard_character on Character {\n  name\n  ...TestCharacterValue_character\n}"
     },
     {
       "name": "TestCaughtAppearances_character",
@@ -1642,6 +1739,17 @@
         "TestSpreadNames"
       ],
       "text": "fragment TestCaughtStrict_character on Character @throwOnFieldError {\n  species\n}"
+    },
+    {
+      "name": "TestCharacterValue_character",
+      "type": "Character",
+      "source": "swift/Tests/BatonTests/InlineDocuments.swift",
+      "operations": [
+        "TestCaughtValueQuery",
+        "TestDeferredValueQuery",
+        "TestInlineQuery"
+      ],
+      "text": "fragment TestCharacterValue_character on Character @inline {\n  id\n  name\n  status\n  origin {\n    ...TestOriginValue_location\n  }\n  episode {\n    id\n    name\n  }\n}"
     },
     {
       "name": "TestDeferredNotes_character",
@@ -1755,6 +1863,15 @@
       "text": "fragment TestNoteText_note on Note {\n  text\n}"
     },
     {
+      "name": "TestNotesValue_character",
+      "type": "Character",
+      "source": "swift/Tests/BatonTests/InlineDocuments.swift",
+      "operations": [
+        "TestInlineQuery"
+      ],
+      "text": "fragment TestNotesValue_character on Character @inline @argumentDefinitions(\n  count: {type: \"Int\", defaultValue: 2}\n) {\n  notes(first: $count) {\n    totalCount\n  }\n}"
+    },
+    {
       "name": "TestNotes_character",
       "type": "Character",
       "source": "swift/Tests/BatonTests/ListDocuments.swift",
@@ -1775,6 +1892,17 @@
         "TestTwoFieldPartQuery"
       ],
       "text": "fragment TestOriginAndEpisode_character on Character {\n  origin {\n    name\n  }\n  episode {\n    name\n  }\n}"
+    },
+    {
+      "name": "TestOriginValue_location",
+      "type": "Location",
+      "source": "swift/Tests/BatonTests/InlineDocuments.swift",
+      "operations": [
+        "TestCaughtValueQuery",
+        "TestDeferredValueQuery",
+        "TestInlineQuery"
+      ],
+      "text": "fragment TestOriginValue_location on Location @inline {\n  id\n  name\n  dimension\n}"
     },
     {
       "name": "TestProfile_character",
@@ -1822,6 +1950,15 @@
         "TestPricedAssetsQuery"
       ],
       "text": "fragment TestRequiredPrice_asset on Asset {\n  price @required(action: NONE)\n}"
+    },
+    {
+      "name": "TestResultValue_searchResult",
+      "type": "SearchResult",
+      "source": "swift/Tests/BatonTests/InlineDocuments.swift",
+      "operations": [
+        "TestResultValuesQuery"
+      ],
+      "text": "fragment TestResultValue_searchResult on SearchResult @inline {\n  ... on Character {\n    name\n    status\n  }\n  ... on Location {\n    name\n    dimension\n  }\n}"
     },
     {
       "name": "TestRootNotes_query",

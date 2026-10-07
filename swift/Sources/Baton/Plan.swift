@@ -65,7 +65,11 @@ public enum Format13 {}
 public enum Format14 {}
 
 @_spi(Generated)
+@available(*, unavailable, message: "this generated code is of format 15 and the runtime reads format 16: an `@inline` fragment reads as a value, through the readers that build a plural link's values; rebuild with the compiler of this release")
 public enum Format15 {}
+
+@_spi(Generated)
+public enum Format16 {}
 
 /// An operation's normalization plan, emitted by the compiler as static data:
 /// what the response contains and where each value is stored.

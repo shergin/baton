@@ -5,6 +5,20 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- `@inline` is built: a fragment so marked compiles to a `Sendable`,
+  `Hashable` struct of its fields in place of a lens, with a nested struct
+  per link, an array per plural link and an initializer that takes the
+  fields. The spread's accessor on the parent's lens builds the value from
+  the record when it is called, on the main actor, through the readers a
+  lens's accessors use, so what a read registers and reports is the same;
+  a conditional or deferred spread yields an optional value and an aliased
+  `@catch` around one a `Result`. An inline fragment spreads only inline
+  fragments and takes no `@connection`, `@refetchable` or `@required`; a
+  non-null mapped scalar in it reads optional, since a stored property
+  cannot throw. Format 16: generated code names the readers that build a
+  plural link's values. Recorded in
+  `docs/decisions/a-fragment-has-one-reading.md`.
+
 ## 0.8.0 (Back Straight) — 2026-10-06
 
 The spine: the architecture the decision records describe, built. A
