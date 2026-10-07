@@ -20,8 +20,10 @@ pick its name.
   changelog's Unreleased section holds something an adopter can use and the
   local checks pass. It waits for no step, theme or batch of work.
 - The name is chosen automatically, not asked for: whoever cuts the
-  release takes the first name in the list below that no release has used,
-  and writes it into the changelog's heading and the workflow's input.
+  release takes the first name in the list below that no release has used
+  and writes it into the changelog's heading. The release workflow takes no
+  input: it reads the version and the name from that heading, and refuses
+  a version already tagged or a name an earlier release used.
 - The names are breads of Russian, Ukrainian and Belarusian baking, and
   their variants, transliterated into ASCII as one capitalized word, as
   English most often spells them.
@@ -62,9 +64,10 @@ before the next release; a name already used is never used again.
 - The repository: tags `v0.1.0` to `v0.8.0`; 0.8.0's changelog section
   covers the whole spine and the lanes, a month of planned steps in one
   release.
-- The release workflow (`.github/workflows/release.yml`) takes the version
-  and the name as inputs and checks that the changelog has the section
-  `## <version> (<name>)`; nothing else in a release needs a person.
+- The release workflow (`.github/workflows/release.yml`) took the version
+  and the name as inputs and checked that the changelog had the section
+  `## <version> (<name>)`; the heading already held both, and nothing else
+  in a release needed a person.
 
 ## Not chosen
 

@@ -2,19 +2,12 @@
 # architectures, writes the release commit (the version into the compiler's
 # manifest, the bundle's checksum into Package.swift), tags it, and publishes
 # the GitHub release with the bundle and the changelog's section. The
-# changelog's section for the version is written beforehand, as for every
-# release.
+# version and the name are read from the changelog's first released heading,
+# `## <version> (<name>)`, which is written beforehand, as for every release.
 name: release
 
 on:
   workflow_dispatch:
-    inputs:
-      version:
-        description: The version, x.y.z
-        required: true
-      name:
-        description: The release's name
-        required: true
 
 permissions:
   contents: write
@@ -28,9 +21,6 @@ defaults:
 jobs:
   release:
     runs-on: macos-26
-    env:
-      VERSION: ${{ inputs.version }}
-      NAME: ${{ inputs.name }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -38,8 +28,22 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: aarch64-apple-darwin, x86_64-apple-darwin
-      - name: The changelog has the release's section
-        run: grep -q "^## $VERSION ($NAME)" CHANGELOG.md
+      - name: Read the version and the name from the changelog
+        run: |
+          heading="$(grep -m 1 -E '^## [0-9]+\.[0-9]+\.[0-9]+ \([A-Za-z][A-Za-z -]*\)' CHANGELOG.md)"
+          version="$(sed -E 's/^## ([0-9.]+) .*/\1/' <<< "$heading")"
+          name="$(sed -E 's/^## [0-9.]+ \(([^)]*)\).*/\1/' <<< "$heading")"
+          [[ -n "$version" && -n "$name" ]] || { echo "no released heading in CHANGELOG.md" >&2; exit 1; }
+          if [[ -n "$(git ls-remote --tags origin "v$version")" ]]; then
+            echo "v$version is already tagged; write the next release's section first" >&2
+            exit 1
+          fi
+          if (( $(grep -cE "^## [0-9.]+ \($name\)" CHANGELOG.md) > 1 )); then
+            echo "$name names an earlier release" >&2
+            exit 1
+          fi
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+          echo "NAME=$name" >> "$GITHUB_ENV"
       - name: Set the version
         run: |
           sed -i '' "1,/^version = /s/^version = \".*\"/version = \"$VERSION\"/" compiler/Cargo.toml
