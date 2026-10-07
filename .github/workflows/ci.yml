@@ -47,7 +47,8 @@ jobs:
       - run: cargo test
 
   # The Kotlin runtime: the common module built and tested on the JVM, the
-  # development target. On Linux, since nothing in it is Apple's.
+  # development target, and the Kotlin emitter's goldens compiled against it.
+  # On Linux, since nothing in it is Apple's.
   kotlin:
     runs-on: ubuntu-latest
     defaults:
@@ -62,7 +63,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "9.8.0"
-      - run: gradle --no-daemon :baton:build
+      - run: gradle --no-daemon :baton:build :goldens:compileKotlinJvm
 
   # The package on the current Xcode. Every target builds with warnings as
   # errors: the runtime, the macros, both samples, the benchmarks and the
