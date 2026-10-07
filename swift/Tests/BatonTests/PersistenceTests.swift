@@ -796,10 +796,16 @@ struct PersistenceTests {
         #expect(names("notes(first:90)"), "the rows name the rendered key")
         let highest = try #require(integer("SELECT max(id) FROM names"))
 
-        // Two launches that read nothing, so the first launch's rows age out
-        // at the next launch's first batch.
-        await finish(launch())
-        await finish(launch())
+        // Two launches that open the image and read nothing, so the first
+        // launch's rows age out at the next launch's first batch. A launch
+        // ages the rows only once it has opened the image, so each flushes
+        // before it ends.
+        let second = launch()
+        await second.store.persistence?.flush()
+        await finish(second)
+        let third = launch()
+        await third.store.persistence?.flush()
+        await finish(third)
         let fourth = launch()
         try commitNoteCounts(88, in: fourth)
         await fourth.store.persistence?.flush()
@@ -1226,8 +1232,12 @@ struct PersistenceTests {
         _ = try stored(Fixture(page: 1), in: third)
         await finish(third)
 
-        // The fourth launch does not read it; the fifth finds nothing.
-        await finish(launch())
+        // The fourth launch opens the image and reads nothing; the fifth
+        // finds nothing. A launch ages the rows only once it has opened the
+        // image, so the flush waits for the open before the launch ends.
+        let fourth = launch()
+        await fourth.store.persistence?.flush()
+        await finish(fourth)
         #expect(throws: NotStored.self) { try stored(Fixture(page: 1), in: launch()) }
     }
 
