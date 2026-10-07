@@ -8,6 +8,18 @@ package baton
  */
 data class FieldError(val message: String, val path: String, val extensions: Variable? = null) {
     override fun toString(): String = "$path: $message"
+
+    companion object {
+        /** The error a `@required(action: THROW)` field that is null raises. */
+        fun required(path: String): FieldError = FieldError("the @required field is null", path)
+
+        /** The error a `@catch` on a non-null mapped scalar carries when the field is null or missing: it has no zero to read as. */
+        fun nullValue(path: String): FieldError = FieldError("the non-null field is null", path)
+
+        /** The error a mapped scalar raises when its text does not convert through the converter the configuration names. */
+        fun conversion(path: String, converter: ScalarConverter<*>): FieldError =
+            FieldError("the value does not convert through ${converter::class.simpleName}", path)
+    }
 }
 
 /** The field errors a `@catch` caught or a `@throwOnFieldError` threw, in response order. */

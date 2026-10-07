@@ -10,6 +10,15 @@ internal sealed interface LogEvent {
 
     /** An id names live records of several types, so a directive by bare id did nothing. */
     data class AmbiguousIdentity(val id: String, val types: List<String>) : LogEvent
+
+    /** A lens read a field the store never received. */
+    data class Missing(val type: String, val field: String) : LogEvent
+
+    /** A lens read a value its type cannot hold, a null in a non-null field or a value of another kind; it read as a zero value or null. */
+    data class Unexpected(val type: String, val field: String) : LogEvent
+
+    /** A `@required(action: LOG)` field is null; its lens reads as null. */
+    data class RequiredFieldMissing(val type: String, val path: String) : LogEvent
 }
 
 /**
@@ -41,6 +50,12 @@ internal class Store {
 
     /** The environment's log. */
     var log: ((LogEvent) -> Unit)? = null
+
+    /** An operation the store retains, whose data a heal refetches. Defined with retention; an owner keeps its reference. */
+    class Root
+
+    /** The placeholder record of each type a non-null link without a record has read. */
+    private val placeholders = HashMap<TypeID, Record>()
 
     init {
         records[ROOT_KEY] = root
@@ -149,7 +164,7 @@ internal class Store {
      * texts: the two slots become twins, the records' values are copied
      * under the constant, and every later write to either lands in both.
      */
-    private fun adoptConstants() {
+    internal fun adoptConstants() {
         for ((rendered, dense) in keys.takeAdoptions()) {
             twins[rendered] = dense
             twins[dense] = rendered
@@ -158,6 +173,13 @@ internal class Store {
             }
         }
     }
+
+    /**
+     * The placeholder record of a type: what a non-null link with no record
+     * reads, every field missing, never among the store's records and never
+     * written. See `spec/runtime.md`, section 1.
+     */
+    fun placeholder(type: TypeID): Record = placeholders.getOrPut(type) { Record(type, PLACEHOLDER_PREFIX + type.name) }
 
     /** Writes one slot inside a batch, and its twin when it has one. */
     internal fun set(record: Record, slot: Slot, value: Value, batch: Batch) {
@@ -442,6 +464,7 @@ internal class Store {
         const val ROOT_KEY = "client:root"
         const val MUTATION_ROOT_KEY = "client:root:mutation"
         const val SUBSCRIPTION_ROOT_KEY = "client:root:subscription"
+        const val PLACEHOLDER_PREFIX = "client:placeholder:"
 
         /** The key of the root a response of the operation kind is committed under. */
         fun rootKey(kind: OperationKind): String = when (kind) {

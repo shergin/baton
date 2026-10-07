@@ -86,6 +86,12 @@ class Record internal constructor(val type: TypeID, val key: String, internal va
     /** The field error beside a slot. */
     internal fun peekError(slot: Slot): FieldError? = errors?.get(slot.index)
 
+    /** The field error beside a slot, read through the slot's cell, which an error's arrival notifies: in composition, the read registers the slot. */
+    internal fun error(slot: Slot): FieldError? {
+        cell(slot).value
+        return errors?.get(slot.index)
+    }
+
     /** Whether any slot carries an error, for the commit's fast path. */
     internal val hasErrors: Boolean get() = errors != null
 
