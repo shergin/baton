@@ -437,16 +437,4 @@ public final class Environment {
             handles.removeValue(forKey: key)
         }
     }
-
-    /// A placeholder for views outside any `.environment(\.baton, …)`.
-    package static let unconfigured = Environment(transport: UnconfiguredTransport())
-
-    /// The environment a view sees: the injected one, or the placeholder.
-    package static func resolve(_ injected: Environment?) -> Environment { injected ?? unconfigured }
-}
-
-struct UnconfiguredTransport: Transport {
-    func send(_ request: Request) -> AsyncThrowingStream<Data, any Error> {
-        Self.once { throw EnvironmentError.notInjected }
-    }
 }

@@ -31,7 +31,7 @@ nonisolated public struct TestRow_character: Baton.Lens {
 /// Operation value for `query Fixture`.
 nonisolated public struct Fixture: Baton.Query {
     public var page: Int?
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(page: Int? = nil) {
         self.page = page
@@ -181,7 +181,7 @@ nonisolated public struct Fixture: Baton.Query {
 /// Operation value for `query TestEpisodesQuery`.
 nonisolated public struct TestEpisodesQuery: Baton.Query {
     public var id: String
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: String) {
         self.id = id
@@ -238,7 +238,7 @@ nonisolated public struct TestEpisodesQuery: Baton.Query {
 /// Operation value for `query TestFreshCharacter`.
 nonisolated public struct TestFreshCharacter: Baton.Query {
     public var id: String
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: String) {
         self.id = id
@@ -286,7 +286,7 @@ nonisolated public struct TestFreshCharacter: Baton.Query {
 /// Operation value for `query TestHeaderQuery`.
 nonisolated public struct TestHeaderQuery: Baton.Query {
     public var id: String
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: String) {
         self.id = id
@@ -340,7 +340,7 @@ nonisolated public struct TestHeaderQuery: Baton.Query {
 /// Operation value for `query TestList`.
 nonisolated public struct TestList: Baton.Query {
     public var page: Int?
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(page: Int? = nil) {
         self.page = page
@@ -404,7 +404,7 @@ nonisolated public struct TestList: Baton.Query {
 /// Operation value for `query TestQualifiedQuery`.
 nonisolated public struct TestQualifiedQuery: Baton.Query {
     public var id: String
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: String) {
         self.id = id

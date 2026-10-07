@@ -454,7 +454,7 @@ extension TestBuilderNames.Action {
 /// Operation value for `query TestCaughtSpreads`.
 nonisolated public struct TestCaughtSpreads: Baton.Query {
     public var id: String
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: String) {
         self.id = id
@@ -669,7 +669,7 @@ extension TestCommitVariable.Action {
 nonisolated public struct TestConditionNames: Baton.Query {
     public var id: String
     public var name: String
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: String, name: String) {
         self.id = id
@@ -775,7 +775,7 @@ nonisolated public struct TestConditionNames: Baton.Query {
 /// Operation value for `query TestEdgesNamesQuery`.
 nonisolated public struct TestEdgesNamesQuery: Baton.Query {
     public var id: String
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: String) {
         self.id = id
@@ -841,7 +841,7 @@ nonisolated public struct TestEdgesNamesQuery: Baton.Query {
 
 /// Operation value for `query TestEscapedText`.
 nonisolated public struct TestEscapedText: Baton.Query {
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init() {
     }
@@ -893,7 +893,7 @@ nonisolated public struct TestEscapedText: Baton.Query {
 /// Operation value for `query TestFragmentNamedFields`.
 nonisolated public struct TestFragmentNamedFields: Baton.Query {
     public var id: String
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: String) {
         self.id = id
@@ -968,7 +968,7 @@ nonisolated public struct TestFragmentNamedFields: Baton.Query {
 /// Operation value for `query TestHasherVariable`.
 nonisolated public struct TestHasherVariable: Baton.Query {
     public var hasher: String
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(hasher: String) {
         self.hasher = hasher
@@ -1122,7 +1122,7 @@ extension TestListPayload.Action {
 /// Operation value for `query TestLowercaseSpreads`.
 nonisolated public struct TestLowercaseSpreads: Baton.Query {
     public var id: String
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: String) {
         self.id = id
@@ -1285,7 +1285,7 @@ extension TestModuleNamedPayload.Action {
 /// Operation value for `query TestProgramNamesQuery`.
 nonisolated public struct TestProgramNamesQuery: Baton.Query {
     public var id: String
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: String) {
         self.id = id
@@ -1338,7 +1338,7 @@ nonisolated public struct TestProgramNamesQuery: Baton.Query {
 /// Operation value for `query TestProgramNamesRefetchQuery`.
 nonisolated public struct TestProgramNamesRefetchQuery: Baton.Query {
     public var id: String
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: String) {
         self.id = id
@@ -1401,7 +1401,7 @@ nonisolated public struct TestProgramNamesRefetchQuery: Baton.Query {
 /// Operation value for `query TestSpreadNames`.
 nonisolated public struct TestSpreadNames: Baton.Query {
     public var id: String
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: String) {
         self.id = id

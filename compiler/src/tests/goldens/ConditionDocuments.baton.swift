@@ -14,7 +14,7 @@ nonisolated public struct TestConditions: Baton.Query {
     public var id: String
     public var withOrigin: Bool
     public var hideStatus: Bool
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: String, withOrigin: Bool, hideStatus: Bool) {
         self.id = id
@@ -86,7 +86,7 @@ query TestConditions($id:ID!,$withOrigin:Boolean!,$hideStatus:Boolean!){characte
 /// Operation value for `query TestFoldedNode`.
 nonisolated public struct TestFoldedNode: Baton.Query {
     public var name: String
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(name: String) {
         self.name = name
@@ -141,7 +141,7 @@ nonisolated public struct TestFoldedNode: Baton.Query {
 /// Operation value for `query TestNamedSpread`.
 nonisolated public struct TestNamedSpread: Baton.Query {
     public var id: String
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: String) {
         self.id = id
@@ -203,7 +203,7 @@ nonisolated public struct TestNamedSpread: Baton.Query {
 /// Operation value for `query TestNodeDeferred`.
 nonisolated public struct TestNodeDeferred: Baton.Query {
     public var id: String
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: String) {
         self.id = id
@@ -281,7 +281,7 @@ nonisolated public struct TestNodeDeferred: Baton.Query {
 /// Operation value for `query TestNodeFields`.
 nonisolated public struct TestNodeFields: Baton.Query {
     public var id: String
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: String) {
         self.id = id
@@ -342,7 +342,7 @@ nonisolated public struct TestNodeFields: Baton.Query {
 nonisolated public struct TestStrictConditions: Baton.Query {
     public var id: String
     public var withStatus: Bool
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: String, withStatus: Bool) {
         self.id = id
@@ -456,7 +456,7 @@ query TestStrictConditions($id:ID!,$withStatus:Boolean!){character(id:$id){name,
 nonisolated public struct TestTwoSpreads: Baton.Query {
     public var id: String
     public var again: Bool
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: String, again: Bool) {
         self.id = id
@@ -510,7 +510,7 @@ nonisolated public struct TestTwoSpreads: Baton.Query {
 /// Operation value for `query TestUnion`.
 nonisolated public struct TestUnion: Baton.Query {
     public var name: String
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(name: String) {
         self.name = name

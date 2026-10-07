@@ -66,7 +66,7 @@ nonisolated public struct TestRootNotes_query: Baton.Lens {
 nonisolated public struct TestRootNotesPaginationQuery: Baton.Query {
     public var count: Int?
     public var cursor: String?
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(count: Int? = nil, cursor: String? = nil) {
         self.count = count
@@ -124,7 +124,7 @@ nonisolated public struct TestRootNotesPaginationQuery: Baton.Query {
 
 /// Operation value for `query TestRootNotesQuery`.
 nonisolated public struct TestRootNotesQuery: Baton.Query {
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init() {
     }

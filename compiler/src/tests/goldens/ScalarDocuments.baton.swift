@@ -48,7 +48,7 @@ nonisolated public struct TestThrowingPrices_asset: Baton.Lens {
 
 /// Operation value for `query TestAssetPricesQuery`.
 nonisolated public struct TestAssetPricesQuery: Baton.Query {
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init() {
     }
@@ -101,7 +101,7 @@ nonisolated public struct TestAssetPricesQuery: Baton.Query {
 nonisolated public struct TestPricedAssetsQuery: Baton.Query {
     public var price: Foundation.Decimal
     public var among: [Foundation.Decimal]?
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(price: Foundation.Decimal, among: [Foundation.Decimal]? = nil) {
         self.price = price

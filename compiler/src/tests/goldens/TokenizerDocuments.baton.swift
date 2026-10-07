@@ -4,7 +4,7 @@ import Foundation
 
 /// Operation value for `query TestTokenizerQuery`.
 nonisolated public struct TestTokenizerQuery: Baton.Query {
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init() {
     }

@@ -5,6 +5,13 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- A view outside every `.environment(\.baton, ...)` reads
+  `.failed(EnvironmentError.notInjected)` on its first body and makes no
+  handle, and a mutation action in such a view throws the same; the shared
+  placeholder environment, a real store that every view which forgot the
+  injection fetched into, is gone. The absence of an environment is not a
+  session. Format 17: an operation value's `resolution` is a `Resolution`,
+  unresolved, resolved to its handle, or not injected.
 - A lens is `Equatable`, by its anchor: the same record, the same scope and
   the same origin, by identity, as the principle always said. A row view
   whose stored state is a lens conforms in one line and opts into

@@ -4,7 +4,7 @@ import Foundation
 
 /// Operation value for `query TestCaughtNames`.
 nonisolated public struct TestCaughtNames: Baton.Query {
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init() {
     }
@@ -59,7 +59,7 @@ nonisolated public struct TestCaughtNames: Baton.Query {
 
 /// Operation value for `query TestNames`.
 nonisolated public struct TestNames: Baton.Query {
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init() {
     }
@@ -107,7 +107,7 @@ nonisolated public struct TestNames: Baton.Query {
 
 /// Operation value for `query TestSpellings`.
 nonisolated public struct TestSpellings: Baton.Query {
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init() {
     }

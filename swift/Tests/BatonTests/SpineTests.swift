@@ -645,7 +645,7 @@ struct SpineTests {
     func operationValueIdentity() {
         let a = TestHeaderQuery(id: "1")
         var b = TestHeaderQuery(id: "1")
-        b.resolution = nil
+        b.resolution = .notInjected
         #expect(a == b)
         #expect(a.hashValue == b.hashValue)
         #expect(TestHeaderQuery(id: "2") != a)

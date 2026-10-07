@@ -745,15 +745,73 @@ struct LifetimeTests {
         _ = consume emptyRetention
     }
 
-    @Test("a request with nothing to send it fails on what is missing: the view's environment, the lens's, or the subscription transport")
-    func nothingToSendWith() async throws {
-        let unconfigured = Environment.resolve(nil).handle(for: TestList(page: 404))
-        await unconfigured.settle()
-        guard case .failed(let error as EnvironmentError) = unconfigured.phase, error == .notInjected else {
-            Issue.record("expected the missing environment, got \(unconfigured.phase)")
+    @Test("a view outside every environment makes no handle: its query reads as failed on the missing environment, its subscription has no live side, and its mutation throws")
+    func aViewOutsideEveryEnvironmentMakesNoHandle() async throws {
+        final class Seen: @unchecked Sendable {
+            var query: TestList?
+            var subscription: TestNoteAdded?
+            var mutation: MutationAction<TestSetFavorite>?
+        }
+        struct Probe: View {
+            let query: OperationStorage<TestList>
+            let subscription: SubscriptionStorage<TestNoteAdded>
+            let mutation: MutationStorage<TestSetFavorite>
+            let seen: Seen
+            var body: some View {
+                seen.query = query.resolved
+                seen.subscription = subscription.resolved
+                seen.mutation = mutation.action
+                return Text("probe")
+            }
+        }
+        let value = TestList(page: 404)
+        guard case .loading = value.phase else {
+            Issue.record("a value never put in a view is unresolved and reads as loading, got \(value.phase)")
             return
         }
 
+        let seen = Seen()
+        autoreleasepool {
+            let probe = Probe(query: OperationStorage(value), subscription: SubscriptionStorage(TestNoteAdded(characterId: "1", connections: [])), mutation: MutationStorage(), seen: seen)
+            let renderer = ImageRenderer(content: probe)
+            #expect(renderer.cgImage != nil)
+        }
+
+        let query = try #require(seen.query)
+        guard case .notInjected = query.resolution else {
+            Issue.record("no environment, no handle: expected not injected, got \(query.resolution)")
+            return
+        }
+        guard case .failed(let error as EnvironmentError) = query.phase, error == .notInjected else {
+            Issue.record("expected the missing environment, got \(query.phase)")
+            return
+        }
+        guard case .idle = query.fetch else {
+            Issue.record("nothing was fetched, got \(query.fetch)")
+            return
+        }
+        #expect(!query.isRefreshing)
+        await #expect(throws: EnvironmentError.notInjected) { try await query.refetch() }
+        query.retry()
+        guard case .failed(let retried as EnvironmentError) = query.phase, retried == .notInjected else {
+            Issue.record("a retry has nothing to fetch with and changes nothing, got \(query.phase)")
+            return
+        }
+
+        let subscription = try #require(seen.subscription)
+        guard case .notInjected = subscription.resolution else {
+            Issue.record("no environment, no stream: expected not injected, got \(subscription.resolution)")
+            return
+        }
+        #expect(subscription.subscription == nil)
+
+        let mutation = try #require(seen.mutation)
+        await #expect(throws: EnvironmentError.notInjected) { _ = try await mutation.commit(TestSetFavorite(id: "1", favorite: true)) }
+        #expect(!mutation.isInFlight)
+    }
+
+    @Test("a request with nothing to send it fails on what is missing: the lens's environment or the subscription transport")
+    func nothingToSendWith() async throws {
         let store = Store()
         store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables, in: store.keys)))
         let character = try #require(store.existing("Character:1"))

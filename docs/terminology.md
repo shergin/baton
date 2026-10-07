@@ -265,10 +265,14 @@ Here: a value of an operation's variables, compared and hashed by them, the
 thing a parent constructs and a navigation path carries. Inside a view a
 query value resolves to a handle exposing its phase, its data, a refetch and
 a retry, and a subscription value to one exposing its events; the handle
-travels with the value its storage hands out. See
+travels with the value its storage hands out. Outside any view the value
+is unresolved and reads as loading; in a view outside every environment it
+is resolved to no handle and reads as failed with the environment error
+that says so, since the absence of an environment is not a session. See
 [the contract](../spec/runtime.md#8-the-handle-policies-phase-fetch).
 Swift: a `Hashable` struct; the handle exposes `phase`, `data`, `refetch`
-and `retry`.
+and `retry`; the value's `resolution`, generated code's, is a `Resolution`,
+unresolved, resolved to the handle, or not injected.
 
 **Operation handle.** *Composition: store, operation value, environment,
 phase.* Relay: the query reference a loader hands out, and the request the
@@ -791,10 +795,12 @@ plus configuration. Chosen over "client" (Apollo's word) by
 Here the same, injected through the UI framework's environment. A request
 with nothing to send it fails with an environment error, which says what is
 missing: the view's environment, the lens's, the one that made a handle and
-is gone, or the subscription transport. See
+is gone, or the subscription transport. A view outside every environment
+gets no handle and no store stands in for the missing one: its value reads
+as failed, and a mutation action in it throws the same error. See
 [the contract](../spec/runtime.md#8-the-handle-policies-phase-fetch).
 Swift: injected through SwiftUI's environment as `\.baton`; the error is
-`EnvironmentError`.
+`EnvironmentError`, and the view's case is `notInjected`.
 
 **Session, end.** *Concept: environment.* The web's word for one identity's
 stretch of use; Relay has no word for an environment's end, because

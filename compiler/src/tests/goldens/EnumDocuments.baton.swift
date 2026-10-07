@@ -6,7 +6,7 @@ import Foundation
 nonisolated public struct TestCharactersWithStatus: Baton.Query {
     public var status: Status
     public var `any`: [Status]?
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(status: Status, `any`: [Status]? = nil) {
         self.status = status

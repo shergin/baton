@@ -929,7 +929,7 @@ struct PhaseTests {
         let handle = environment.handle(for: operation)
         let retention = handle.retain()
         defer { withExtendedLifetime(retention) {} }
-        operation.resolution = handle
+        operation.resolution = .resolved(handle)
         await until { gate.pending == 1 }
         gate.respond(fixtureData)
         await settled(handle)

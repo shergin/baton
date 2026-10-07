@@ -69,7 +69,11 @@ public enum Format14 {}
 public enum Format15 {}
 
 @_spi(Generated)
+@available(*, unavailable, message: "this generated code is of format 16 and the runtime reads format 17: an operation value's resolution says when no environment was injected; rebuild with the compiler of this release")
 public enum Format16 {}
+
+@_spi(Generated)
+public enum Format17 {}
 
 /// An operation's normalization plan, emitted by the compiler as static data:
 /// what the response contains and where each value is stored.

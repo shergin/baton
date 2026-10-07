@@ -21,6 +21,16 @@ extension EnvironmentValues {
 final class RetainedHandle<Handle: AnyOperationHandle> {
     var handle: Handle?
     var retention: Retention?
+    /// Whether the view saw no environment at its last update: no handle
+    /// was made, and the value says why.
+    var notInjected = false
+
+    /// How the value stands: resolved to the handle, not injected, or, with
+    /// neither, unresolved.
+    var resolution: Resolution<Handle> {
+        if let handle { return .resolved(handle) }
+        return notInjected ? .notInjected : .unresolved
+    }
 }
 
 /// What a `@Query` property expands to: owns the handle for the view's
@@ -40,9 +50,17 @@ public struct OperationStorage<Op: Query>: DynamicProperty {
 
     /// Resolves the value to a handle when the value or the environment the
     /// view sees changed: a handle belongs to the environment that made it.
+    /// A view outside every environment gets no handle: the absence of an
+    /// environment is not a session, and the value says so.
     public nonisolated mutating func update() {
         MainActor.assumeIsolated {
-            let current = Environment.resolve(environment)
+            guard let current = environment else {
+                retained.handle = nil
+                retained.retention = nil
+                retained.notInjected = true
+                return
+            }
+            retained.notInjected = false
             if retained.handle?.operation != value || retained.handle?.environment !== current {
                 let handle = current.handle(for: value, fetchPolicy: fetchPolicy)
                 retained.retention = handle.retain()
@@ -51,10 +69,11 @@ public struct OperationStorage<Op: Query>: DynamicProperty {
         }
     }
 
-    /// The value, resolved. Outside a view it is unresolved and reads as loading.
+    /// The value, resolved. Outside a view it is unresolved and reads as
+    /// loading; in a view outside every environment it reads as failed.
     public var resolved: Op {
         var resolved = value
-        resolved.resolution = retained.handle
+        resolved.resolution = retained.resolution
         return resolved
     }
 }
@@ -87,10 +106,16 @@ public struct SubscriptionStorage<Op: Subscription>: DynamicProperty {
     }
 
     /// Resolves the value to a handle when the value or the environment the
-    /// view sees changed.
+    /// view sees changed; a view outside every environment gets none.
     public nonisolated mutating func update() {
         MainActor.assumeIsolated {
-            let current = Environment.resolve(environment)
+            guard let current = environment else {
+                retained.handle = nil
+                retained.retention = nil
+                retained.notInjected = true
+                return
+            }
+            retained.notInjected = false
             if retained.handle?.operation != value || retained.handle?.environment !== current {
                 let handle = current.subscriptionHandle(for: value)
                 retained.retention = handle.retain()
@@ -103,7 +128,7 @@ public struct SubscriptionStorage<Op: Subscription>: DynamicProperty {
     /// side through it.
     public var resolved: Op {
         var resolved = value
-        resolved.resolution = retained.handle
+        resolved.resolution = retained.resolution
         return resolved
     }
 }

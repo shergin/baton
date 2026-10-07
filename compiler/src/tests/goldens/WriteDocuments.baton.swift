@@ -34,7 +34,7 @@ nonisolated public struct TestRenamePayload_mutation: Baton.Lens {
 /// Operation value for `query TestFavoriteQuery`.
 nonisolated public struct TestFavoriteQuery: Baton.Query {
     public var id: String
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: String) {
         self.id = id
@@ -82,7 +82,7 @@ nonisolated public struct TestFavoriteQuery: Baton.Query {
 /// Operation value for `query TestNode`.
 nonisolated public struct TestNode: Baton.Query {
     public var id: String
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: String) {
         self.id = id
@@ -502,7 +502,7 @@ extension TestRenameWithOrigin.Action {
 /// Operation value for `query TestSearch`.
 nonisolated public struct TestSearch: Baton.Query {
     public var name: String
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(name: String) {
         self.name = name
@@ -584,7 +584,7 @@ nonisolated public struct TestSearch: Baton.Query {
 /// Operation value for `query TestSearchOrigins`.
 nonisolated public struct TestSearchOrigins: Baton.Query {
     public var name: String
-    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(name: String) {
         self.name = name
