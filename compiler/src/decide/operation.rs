@@ -50,9 +50,6 @@ pub struct VariableValue {
     pub default_value: Option<ConstantPlan>,
     /// The name its value goes by as a parameter.
     pub local: String,
-    /// The default the document declares, which a target may send for a
-    /// value left unset.
-    pub default: Option<ConstantPlan>,
 }
 
 /// A builder of a partial response: one struct per selection set, every
@@ -125,7 +122,6 @@ pub(super) fn operation(
             non_null: variable.type_.non_null(),
             default_value: variable.default_value.clone(),
             local: readers.naming.local(&variable.name, &names),
-            default: variable.default_value.clone(),
         })
         .collect();
     let normalization = super::normalization(&operation.root_type, &operation.normalization);

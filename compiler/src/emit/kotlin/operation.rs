@@ -111,7 +111,7 @@ fn variables(
             let read = property_read(class, &variable.local);
             let key = string_literal(&variable.name);
             let value = converters.value_expression(&read, &shape);
-            let line = match (variable.non_null, &variable.default) {
+            let line = match (variable.non_null, &variable.default_value) {
                 (true, _) => format!("put({key}, {value})"),
                 (false, Some(default)) => format!(
                     "put({key}, if ({read} == null) {} else {value})",
