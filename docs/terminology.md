@@ -382,13 +382,15 @@ then the last launch's, and starts again only when nothing is left to evict
 goes a whole launch unread is dropped at the next, and the names no row
 uses go with the rows.
 An image is made for one store and lives as long as it: the environment's
-end closes it and gives the file back, and the next environment makes its
-own, on that file or another; the image that takes a file over counts as a
-launch, though the process is the same, so the rows the closed one wrote
-that it does not read age out a launch sooner. One image in a process holds
-a file; a second made on it runs without it. The file is made with the
-protection class `Persistence(protection:)` names, or its directory's
-default, which Apple's SQLite gives the file and its log. A file that cannot
+end closes it and gives the file back for good, so that nothing the ending
+store commits or reads after reaches the file, and the next environment
+makes its own, on that file or another; the image that takes a file over
+counts as a launch, though the process is the same, so the rows the closed
+one wrote that it does not read age out a launch sooner. One image in a
+process holds a file; a second made on it runs without it. The file is
+made with the protection class `Persistence(protection:)` names, or its
+directory's default, which Apple's SQLite gives the file and its log. A
+file that cannot
 be taken, locked or full, is waited for, not discarded: the writer keeps its
 work for the next commit or read, a read meanwhile misses, and work that
 outgrows 50,000 rows is dropped and the image started again. What keeps one

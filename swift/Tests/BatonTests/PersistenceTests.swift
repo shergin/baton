@@ -40,9 +40,17 @@ struct PersistenceTests {
         await environment.store.persistence?.close()
     }
 
-    /// Commits the fixture through its own plan and waits for the image.
-    func seed(_ environment: Environment) async throws {
+    /// Commits the fixture through its own plan and waits for the image to
+    /// write it, leaving the launch open: a closed image takes no more work.
+    func fill(_ environment: Environment) async throws {
         environment.store.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables, in: environment.store.keys)))
+        await environment.store.persistence?.flush()
+    }
+
+    /// Commits the fixture through its own plan, waits for the image and
+    /// ends the launch.
+    func seed(_ environment: Environment) async throws {
+        try await fill(environment)
         await finish(environment)
     }
 
@@ -221,7 +229,7 @@ struct PersistenceTests {
     @Test("a mutation's answer is in the image and an optimistic response never is")
     func optimisticResponsesStayInMemory() async throws {
         let first = launch()
-        try await seed(first)
+        try await fill(first)
         let rename = TestRename(id: "1", name: "Rick Prime")
         let optimistic = TestRename.OptimisticResponse(rename: .init(character: .init(id: "1", name: "Rick Prime"))).variable
         let json = Data(("{\"data\":" + optimistic.json + "}").utf8)
@@ -1192,7 +1200,7 @@ struct PersistenceTests {
     @Test("records the collector swept are read again from the image when a screen comes back")
     func sweptRecordsComeBack() async throws {
         let environment = launch(releaseBufferSize: 0)
-        try await seed(environment)
+        try await fill(environment)
         let handle = environment.handle(for: Fixture(page: 1), fetchPolicy: .storeOnly)
         let retention = handle.retain()
         _ = consume retention
@@ -1203,6 +1211,7 @@ struct PersistenceTests {
         #expect(environment.store.count == 901)
         #expect(data.characters?.results?.first?.name == "Rick Sanchez")
         #expect(data.characters?.results?.first?.episode.first?.characters.first?.name == "Rick Sanchez")
+        await finish(environment)
     }
 
     @Test("a record that goes a whole launch unread is gone at the next; one that is read stays")
@@ -1874,6 +1883,31 @@ struct PersistenceTests {
         try await seed(launch())
         _ = try stored(Fixture(page: 1), in: launch())
         withExtendedLifetime(closed) {}
+    }
+
+    @Test("a closed image stays closed: a commit after the close is dropped and a read misses, and the next image on the file reads what was written before it")
+    func aCloseIsFinal() async throws {
+        let environment = launch(releaseBufferSize: 0)
+        let store = environment.store
+        try await fill(environment)
+        // Memory lets go of the fixture, so only the image could answer.
+        let handle = environment.handle(for: Fixture(page: 1), fetchPolicy: .storeOnly)
+        let retention = handle.retain()
+        _ = consume retention
+        #expect(store.collect() == 898)
+        await store.persistence?.close()
+
+        store.commit(try Ingest.normalize(renamedJerry, plan: header("5", in: store)))
+        #expect(store.check(TestEpisodesQuery.plan.resolve(TestEpisodesQuery(id: "5").variables, in: store.keys)) == .miss, "Jerry's episodes are in the image alone, which is closed")
+        #expect(store.check(Fixture.plan.resolve(Fixture(page: 1).variables, in: store.keys)) == .miss)
+        await store.persistence?.flush()
+
+        // An image that took its file again would stop a debug build here.
+        let next = launch()
+        let data = try stored(Fixture(page: 1), in: next)
+        #expect(next.store.hydratedRecords > 0)
+        #expect(data.characters?.results?.first { $0.recordID.key == "Character:5" }?.name == "Jerry Smith", "the commit after the close never reached the file")
+        await finish(next)
     }
 
     @Test("a file damaged between a commit and a check is a miss, not a crash")

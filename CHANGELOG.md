@@ -14,6 +14,12 @@ are expected and listed without apology.
   response's cells over the row's; a record the check has read replaces
   its row as before, and so does a deleted one. Recorded in
   `docs/decisions/the-image-is-sqlite.md`.
+- An image's `close()` is final. A commit or a read that reached a closed
+  image opened its file again and took it back from the next environment's
+  image, which then ran without one or, in a debug build, tripped the
+  assertion that one image holds a file. A closed image drops what is
+  queued after and misses every read; `removeAll()` still deletes the
+  file. Recorded in `docs/decisions/an-image-belongs-to-one-store.md`.
 - An operation's text is printed compact, with Relay's printer's own
   option: no newline, indentation or optional space, a comma between
   items, strings as they are. The test target's 115 operations hold

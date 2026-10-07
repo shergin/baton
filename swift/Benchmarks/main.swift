@@ -774,13 +774,17 @@ func persistenceBench(data: Data, edited: Data, variables: Variables) async {
     await third.close()
     try? FileManager.default.removeItem(at: evicted)
 
+    // The image closed above is done with: a closed image takes no more
+    // reads. The next image on the file is a launch that reads what the
+    // last one wrote.
+    let reopened = Persistence(url: url)
     measure("hydration: the check reads 898 rows into an empty store", iterations: 20) {
-        precondition(checks(Store(persistence: persistence)))
+        precondition(checks(Store(persistence: reopened)))
     }
     measure("the same, per record", iterations: 20, ops: 898) {
-        precondition(checks(Store(persistence: persistence)))
+        precondition(checks(Store(persistence: reopened)))
     }
-    let hydrated = Store(persistence: persistence)
+    let hydrated = Store(persistence: reopened)
     let hydratedPlan = plan(for: hydrated)
     precondition(hydrated.check(hydratedPlan) != .miss)
     measure("the check once the records are in memory", iterations: 50) {

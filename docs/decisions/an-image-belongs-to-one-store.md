@@ -43,6 +43,14 @@ purge had not begun.
   image, forget the credential last. A crash before the last step leaves
   the account signed in, with or without its cache, and nothing readable
   by another.
+- Added 2026-10-06: the close is final. As built, a commit or a read that
+  reached a closed image opened its file again and took it back, so that a
+  store still settling after its environment's end could take the file
+  from the next environment's image, which then ran without one for the
+  process, or tripped the assertion that one image holds a file in a debug
+  build. A closed image drops the work queued after its close and misses
+  every read; a removal still deletes the file. The next image is the next
+  store's, and nothing the ending store asks reaches the file.
 
 ## Evidence
 
@@ -58,6 +66,10 @@ purge had not begun.
 - The persistence test of an image closed right behind its commit: it
   gives its file to the next. The hand-over the end needs exists, as
   `close()`.
+- The close made final: CI's floor job twice ended in the assertion of
+  `Disk.init`, an image made on a file a closed image had taken back. The
+  persistence test of a store that commits and reads after its image
+  closed reaches neither the file nor the next image.
 - The marker's limit is an argument, not a test: in the issue's case no
   purge ran, so there was nothing for a marker to record.
 

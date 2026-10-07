@@ -70,9 +70,13 @@ final class Disk: @unchecked Sendable {
     /// leaves the file alone, and does not ask again every second.
     private(set) var off = false
     /// Whether this image holds its file among the process's images: from
-    /// its creation, or from the open after a `release()`, until the next
-    /// `release()` or its end.
+    /// its creation until its `release()` or its end.
     private(set) var holding = false
+    /// Whether the image has given its file back for good. The next image
+    /// on the file is the store that comes after; a read or a write that
+    /// reaches a closed image, from a store that is ending, must not take
+    /// the file from it, so a closed image never opens again.
+    private(set) var closed = false
     /// Whether this image has moved the generation already: a connection
     /// opened again after a failure or a `release()` is the same launch. A
     /// new image on the file moves it again, as a launch does.
@@ -163,10 +167,7 @@ final class Disk: @unchecked Sendable {
     /// the image off for a second, and the work queued meanwhile waits.
     func open() -> Opening {
         if db != nil { return .already }
-        if off { return .unavailable }
-        // A released image takes its file again, unless another took it
-        // over meanwhile.
-        if !holding, !claim() { return .unavailable }
+        if off || closed || !holding { return .unavailable }
         let now = DispatchTime.now().uptimeNanoseconds
         if now < retryAfter { return .unavailable }
         // An image marked to be discarded, for work it dropped or a removal
@@ -346,12 +347,14 @@ final class Disk: @unchecked Sendable {
         }
     }
 
-    /// Closes the connection and gives the file back, so another image may
-    /// take it, as the tests do to run one launch after another. Work that
-    /// comes later takes it again, unless another image has.
+    /// Closes the connection and gives the file back for good, so the next
+    /// image may take it, as the tests do to run one launch after another.
+    /// Work that comes later is dropped and a read misses; a removal still
+    /// deletes the file.
     func release() {
         close()
         letGo()
+        closed = true
     }
 
     private func close() {

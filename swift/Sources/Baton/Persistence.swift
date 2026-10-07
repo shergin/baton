@@ -144,11 +144,13 @@ public final class Persistence: Sendable {
         await Task.detached(priority: .userInitiated) { self.drain() }.value
     }
 
-    /// Writes what is queued, closes the file and gives it back, so a new
-    /// image may take it over: what the environment's end does. Work queued
-    /// later opens it again, unless another image has taken it. The new image
+    /// Writes what is queued, closes the file and gives it back for good, so
+    /// a new image may take it over: what the environment's end does. Work
+    /// queued later is dropped and a read that needs the image misses, since
+    /// the store is ending and the file is the next store's. The new image
     /// counts as a launch, though the process is the same: the rows this
-    /// launch wrote that the new image does not read age out a launch sooner.
+    /// launch wrote that the new image does not read age out a launch
+    /// sooner.
     public func close() async {
         await Task.detached(priority: .userInitiated) {
             self.disk.withLock { disk in
@@ -450,18 +452,16 @@ public final class Persistence: Sendable {
                 finished(work)
                 return
             }
-            // An image that gave its file back takes it again for work, not
-            // to be ready for it: the open its creation scheduled, or a
-            // drain behind `close()`, must not take it from the next image.
+            // A drain behind `close()` has no file to open.
             if work.isEmpty, !disk.holding { return }
             guard opened(disk) else {
                 log.withLock { $0?(.imageUnavailable) }
-                if disk.off { finished(work) } else { keep(work, disk) }
+                if disk.off || disk.closed { finished(work) } else { keep(work, disk) }
                 return
             }
             guard disk.write(work) else {
                 log.withLock { $0?(.imageWriteFailed) }
-                if disk.off { finished(work) } else { keep(work, disk) }
+                if disk.off || disk.closed { finished(work) } else { keep(work, disk) }
                 return
             }
             if !work.isEmpty { log.withLock { $0?(.imageWritten(batches: work.count)) } }
