@@ -1034,8 +1034,11 @@ public final class Store {
         // nothing, swept or never filled, is not in memory: the image may
         // hold it, or have been told to forget it. With the image at hand it
         // is walked, so its merged pages come back with it, and one the
-        // image has no row for stays a miss.
+        // image has no row for stays a miss. The root's link is a cell of
+        // its own in the image, read here, since the walk above hydrates the
+        // root a waited field at a time and waits for no client link.
         for link in variant.clientLinks {
+            if let disk, case .missing = record.peek(link.slot) { hydrate(record, link.slot, from: disk, &walk.batch) }
             guard case .linked(let child, _, _, _) = link.kind, case .ref(let found) = record.peek(link.slot), found.swept || found.isEmpty else { continue }
             guard let disk else { return false }
             let merged = live(found, disk, &walk.batch)

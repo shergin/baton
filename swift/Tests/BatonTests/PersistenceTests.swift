@@ -344,6 +344,23 @@ struct PersistenceTests {
         withExtendedLifetime(fetchedRetention) {}
     }
 
+    @Test("a connection on the query root survives a launch, as one under a record does")
+    func rootConnectionsSurvive() async throws {
+        let first = launch()
+        let operation = TestRootNotesQuery()
+        first.store.commit(try Ingest.normalize(fixture("root-notes-page-1"), plan: TestRootNotesQuery.plan.resolve(operation.variables, in: first.store.keys)))
+        await finish(first)
+
+        let second = launch()
+        let data = try stored(operation, in: second)
+        let restored = data.testRootNotes.notes
+        #expect(restored.nodes.map(\.text) == ["Wubba lubba dub dub", "Portal gun needs charging"])
+        #expect(restored.totalCount == 5)
+        #expect(restored.hasNext)
+        #expect(restored.pageInfo.endCursor == "c2")
+        await finish(second)
+    }
+
     @Test("an entity the image holds satisfies a lookup: a detail renders from a list an earlier launch fetched")
     func lookupsReadTheImage() async throws {
         let first = launch()

@@ -1,0 +1,1 @@
+{"data":{"notes":{"totalCount":5,"edges":[{"cursor":"c1","node":{"__typename":"Note","id":"n1","text":"Wubba lubba dub dub"}},{"cursor":"c2","node":{"__typename":"Note","id":"n2","text":"Portal gun needs charging"}}],"pageInfo":{"endCursor":"c2","hasNextPage":true}}}}

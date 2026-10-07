@@ -95,6 +95,7 @@ struct OracleOperation: Sendable {
         "TestDrafts": { _ in OracleOperation(TestDrafts(), reads: draftsReads) },
         "TestSecrets": { try OracleOperation(TestSecrets(code: $0.string("code")), reads: secretsReads) },
         "TestCharacterSecret": { _ in OracleOperation(TestCharacterSecret(), reads: characterSecretReads) },
+        "TestRootNotesQuery": { _ in OracleOperation(TestRootNotesQuery(), reads: rootNotesReads) },
     ]
 
     /// Binds a manifest case to its operation.
@@ -174,6 +175,15 @@ extension OracleOperation {
         "character.notes.edges.0.node.id": { $0.character?.testNotes.notes.edges?.element(0)?.node?.id.manifestValue ?? .null },
         "character.notes.edges.1.node.text": { $0.character?.testNotes.notes.edges?.element(1)?.node?.text.manifestValue ?? .null },
         "character.notes.pageInfo.hasNextPage": { $0.character?.testNotes.notes.pageInfo.hasNextPage.manifestValue ?? .null },
+    ]
+
+    /// A connection on the query root, read through the root's fragment.
+    static let rootNotesReads: [String: @MainActor @Sendable (TestRootNotesQuery.Data) -> Manifest.Value] = [
+        "notes.totalCount": { $0.testRootNotes.notes.totalCount.manifestValue },
+        "notes.edges.0.node.id": { $0.testRootNotes.notes.edges?.element(0)?.node?.id.manifestValue ?? .null },
+        "notes.edges.0.node.text": { $0.testRootNotes.notes.edges?.element(0)?.node?.text.manifestValue ?? .null },
+        "notes.edges.1.node.text": { $0.testRootNotes.notes.edges?.element(1)?.node?.text.manifestValue ?? .null },
+        "notes.pageInfo.hasNextPage": { $0.testRootNotes.notes.pageInfo.hasNextPage.manifestValue },
     ]
 
     static let notesPaginationReads: [String: @MainActor @Sendable (TestNotesPaginationQuery.Data) -> Manifest.Value] = [

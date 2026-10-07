@@ -2,8 +2,8 @@
 # list-side tests need and the public API lacks: a Node interface, a union, a
 # lookup by id across types, an interface only some of the union's members
 # implement, mutations with payloads, one of them of every kind of scalar
-# list, a field that takes a list of input objects, and a cursor connection of notes on a character with the mutations
-# that edit it, a subscription, the `@defer` directive and a
+# list, a field that takes a list of input objects, and a cursor connection of notes on a character, with the mutations
+# that edit it, and one on the query root, a subscription, the `@defer` directive and a
 # `@semanticNonNull` field, the scalars the tokenizer fixture
 # (`spec/tokenizer/`) reads, types and fields named as Swift and the
 # generated code name their own, two entities keyed otherwise than by `id`
@@ -47,6 +47,7 @@ type Query {
   secrets(code: String!): [Secret]
   quote(base: String!, quote: String!): Quote
   quotes: [Quote]
+  notes(first: Int, after: String, last: Int, before: String): NoteConnection!
 }
 
 type Mutation {

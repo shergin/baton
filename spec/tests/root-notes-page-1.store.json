@@ -1,0 +1,13 @@
+{
+  "Note:n1": {"__typename": "Note", "id": "n1", "text": "Wubba lubba dub dub"},
+  "Note:n2": {"__typename": "Note", "id": "n2", "text": "Portal gun needs charging"},
+  "client:root": {"__TestRootNotes_notes_connection": {"__ref": "client:root:__TestRootNotes_notes_connection"}, "__typename": "Query", "notes(first:2)": {"__ref": "client:root:notes(first:2)"}},
+  "client:root:__TestRootNotes_notes_connection": {"__typename": "NoteConnection", "edges": {"__refs": ["client:root:notes(first:2):edges:0", "client:root:notes(first:2):edges:1"]}, "pageInfo": {"__ref": "client:root:__TestRootNotes_notes_connection:pageInfo"}, "totalCount": 5},
+  "client:root:__TestRootNotes_notes_connection:pageInfo": {"__typename": "PageInfo", "endCursor": "c2", "hasNextPage": true},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:notes(first:2)": {"__typename": "NoteConnection", "edges": {"__refs": ["client:root:notes(first:2):edges:0", "client:root:notes(first:2):edges:1"]}, "pageInfo": {"__ref": "client:root:notes(first:2):pageInfo"}, "totalCount": 5},
+  "client:root:notes(first:2):edges:0": {"__typename": "NoteEdge", "cursor": "c1", "node": {"__ref": "Note:n1"}},
+  "client:root:notes(first:2):edges:1": {"__typename": "NoteEdge", "cursor": "c2", "node": {"__ref": "Note:n2"}},
+  "client:root:notes(first:2):pageInfo": {"__typename": "PageInfo", "endCursor": "c2", "hasNextPage": true},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

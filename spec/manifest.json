@@ -2278,6 +2278,46 @@
         ],
         "value": "Edited"
       }
+    },
+    {
+      "name": "tests/root-notes-page-1",
+      "operation": "TestRootNotesQuery",
+      "kind": "query",
+      "document": "documents/TestRootNotesQuery.graphql",
+      "variables": {},
+      "responses": [
+        "tests/root-notes-page-1.json"
+      ],
+      "records": "tests/root-notes-page-1.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "notes.totalCount",
+          "value": 5
+        },
+        {
+          "path": "notes.edges.0.node.id",
+          "value": "n1"
+        },
+        {
+          "path": "notes.edges.0.node.text",
+          "value": "Wubba lubba dub dub"
+        },
+        {
+          "path": "notes.edges.1.node.text",
+          "value": "Portal gun needs charging"
+        },
+        {
+          "path": "notes.pageInfo.hasNextPage",
+          "value": true
+        }
+      ],
+      "override": {
+        "paths": [
+          "notes.edges.0.node.text"
+        ],
+        "value": "Edited"
+      }
     }
   ]
 }

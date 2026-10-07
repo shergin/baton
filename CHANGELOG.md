@@ -5,6 +5,12 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- A connection on the query root comes back from the image. The
+  availability check hydrates the root a waited field at a time, and the
+  connection's client link, Relay's handle key on the root, was never among
+  them, so a reopened store read the connection as ready and empty while the
+  same connection under a record came back whole; the check now reads the
+  root's cell for the link before walking the connection. Issue 35.
 - An operation's plan declares each distinct selection once, as a static
   member with its type stated, where it was one nested expression that
   copied a fragment at every spread. A union inside a union no longer

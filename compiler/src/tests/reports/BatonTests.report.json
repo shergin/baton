@@ -1,5 +1,5 @@
 {
-  "schemaDigest": "6ebb62f12d31c6016642f7b201a78456",
+  "schemaDigest": "b65cad080c007ba5a285087d8c06e099",
   "operations": [
     {
       "name": "Fixture",
@@ -1190,6 +1190,35 @@
       "text": "query TestReservedNames(\n  $id: ID!\n) {\n  sites: character(id: $id) {\n    id\n    ...TestNotes_character_35kO5h\n  }\n  types: character(id: $id) {\n    id\n  }\n  slots: character(id: $id) {\n    id\n  }\n}\n\nfragment TestNotes_character_35kO5h on Character {\n  name\n  notes(first: 1) {\n    totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}"
     },
     {
+      "name": "TestRootNotesPaginationQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/RootConnectionDocuments.swift",
+      "variables": [
+        {
+          "name": "count",
+          "type": "Int"
+        },
+        {
+          "name": "cursor",
+          "type": "String"
+        }
+      ],
+      "fragments": [
+        "TestRootNotes_query"
+      ],
+      "text": "query TestRootNotesPaginationQuery(\n  $count: Int = 2\n  $cursor: String\n) {\n  ...TestRootNotes_query_1G22uz\n}\n\nfragment TestRootNotes_query_1G22uz on Query {\n  notes(first: $count, after: $cursor) {\n    totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}"
+    },
+    {
+      "name": "TestRootNotesQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/RootConnectionDocuments.swift",
+      "variables": [],
+      "fragments": [
+        "TestRootNotes_query"
+      ],
+      "text": "query TestRootNotesQuery {\n  ...TestRootNotes_query\n}\n\nfragment TestRootNotes_query on Query {\n  notes(first: 2) {\n    totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}"
+    },
+    {
       "name": "TestRosterQuery",
       "kind": "query",
       "source": "swift/Tests/BatonTests/DeliveryDocuments.swift",
@@ -1793,6 +1822,16 @@
         "TestPricedAssetsQuery"
       ],
       "text": "fragment TestRequiredPrice_asset on Asset {\n  price @required(action: NONE)\n}"
+    },
+    {
+      "name": "TestRootNotes_query",
+      "type": "Query",
+      "source": "swift/Tests/BatonTests/RootConnectionDocuments.swift",
+      "operations": [
+        "TestRootNotesPaginationQuery",
+        "TestRootNotesQuery"
+      ],
+      "text": "fragment TestRootNotes_query on Query @refetchable(queryName: \"TestRootNotesPaginationQuery\") @argumentDefinitions(\n  count: {type: \"Int\", defaultValue: 2}\n  cursor: {type: \"String\"}\n) {\n  notes(first: $count, after: $cursor) @connection(key: \"TestRootNotes_notes\") {\n    totalCount\n    edges {\n      node {\n        id\n        text\n      }\n    }\n  }\n}"
     },
     {
       "name": "TestRow_character",

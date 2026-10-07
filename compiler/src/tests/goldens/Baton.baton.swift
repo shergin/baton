@@ -6,7 +6,7 @@ import Foundation
 nonisolated enum Types {
     /// The schema's digest: pass it as the image's `version`, so an image
     /// written under another schema starts again.
-    static let schemaDigest = "6ebb62f12d31c6016642f7b201a78456"
+    static let schemaDigest = "b65cad080c007ba5a285087d8c06e099"
     /// The format of this generated code, which the runtime that reads it
     /// declares; a runtime of another format fails to compile this line.
     static let format = Baton.Format15.self
@@ -210,6 +210,7 @@ nonisolated enum Slots {
         static let label = Baton.Registry.slot(Types.Protocol_, "label")
     }
     nonisolated enum Query {
+        static let __TestRootNotes_notes_connection = Baton.Registry.slot(Types.Query, "__TestRootNotes_notes_connection")
         static let asset_9e39ed = Baton.DynamicKey(Types.Query, "asset", [Baton.KeyArgument("uuid", [.variable("uuid")])])
         static let assets = Baton.Registry.slot(Types.Query, "assets")
         static let assetsPricedAbove_914469 = Baton.DynamicKey(Types.Query, "assetsPricedAbove", [Baton.KeyArgument("among", [.variable("among")]), Baton.KeyArgument("price", [.variable("price")])])
@@ -234,6 +235,8 @@ nonisolated enum Slots {
         static let namesake_9b6471 = Baton.DynamicKey(Types.Query, "namesake", [Baton.KeyArgument("name", [.variable("name")])])
         static let node_8f7d08 = Baton.DynamicKey(Types.Query, "node", [Baton.KeyArgument("id", [.variable("id")])])
         static let node_c27cc2 = Baton.Registry.slot(Types.Query, "node(id:1)")
+        static let notes_a9400e = Baton.DynamicKey(Types.Query, "notes", [Baton.KeyArgument("after", [.variable("cursor")]), Baton.KeyArgument("first", [.variable("count")])])
+        static let notes_29a6d8 = Baton.Registry.slot(Types.Query, "notes(first:2)")
         static let quote_bd29fc = Baton.DynamicKey(Types.Query, "quote", [Baton.KeyArgument("base", [.variable("base")]), Baton.KeyArgument("quote", [.variable("quote")])])
         static let quotes = Baton.Registry.slot(Types.Query, "quotes")
         static let search_6286a6 = Baton.Registry.slot(Types.Query, "search(name:\"$0.00\")")
@@ -474,6 +477,8 @@ nonisolated enum Sites {
     static let TestRecentNotesPaginationQuery_testRecentNotes = Baton.ArgumentSite()
     static let TestRecentNotesQuery_testRecentNotes = Baton.ArgumentSite()
     static let TestReservedNames_testNotes = Baton.ArgumentSite()
+    static let TestRootNotesPaginationQuery_testRootNotes = Baton.ArgumentSite()
+    static let TestRootNotesQuery_testRootNotes = Baton.ArgumentSite()
     static let TestSpreadKeys_testKeyArguments = Baton.ArgumentSite()
     static let TestTwoScopes_testNotes = Baton.ArgumentSite()
     static let TestTwoScopes_testNotes_2 = Baton.ArgumentSite()
