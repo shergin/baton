@@ -89,7 +89,17 @@ shape Baton while it is young.
 
 ## The feel
 
-From the sample; the API will still move before 1.0.
+SwiftUI on the left, from the sample. Compose on the right, as the Kotlin
+runtime is designed: the same documents, the same lenses and the same phase,
+in Kotlin's words. The Kotlin runtime is being built, and both APIs will
+still move before 1.0.
+
+A fragment beside the view that renders it, and one query for the screen:
+
+<table>
+<tr><th>SwiftUI</th><th>Compose</th></tr>
+<tr valign="top">
+<td>
 
 ```swift
 struct CharacterRow: View {
@@ -138,16 +148,72 @@ struct CharactersScreen: View {
 }
 ```
 
+</td>
+<td>
+
+```kotlin
+@Fragment($$"""
+    fragment CharacterRow_character on Character {
+      name
+      status
+      image
+    }
+    """)
+@Composable
+fun CharacterRow(character: CharacterRow_character) {
+    Row {
+        Avatar(url = character.image)
+        Text(character.name ?: "Unknown")
+        Text(character.status ?: "")
+    }
+}
+
+@Query($$"""
+    query CharactersScreenQuery($page: Int) {
+      characters(page: $page) {
+        results { id ...CharacterRow_character }
+      }
+    }
+    """)
+@Composable
+fun CharactersScreen(page: Int) {
+    val characters = rememberQuery(CharactersScreenQuery(page = page))
+    when (val phase = characters.phase) {
+        is Phase.Ready -> LazyColumn {
+            val results = phase.data.characters?.results.orEmpty()
+            items(results, key = { it.recordID }) { character ->
+                CharacterRow(character.characterRow)
+            }
+        }
+        Phase.Loading -> CircularProgressIndicator()
+        is Phase.Failed -> ErrorView(phase.error) { characters.retry() }
+    }
+}
+```
+
+</td>
+</tr>
+</table>
+
 A list is a Relay connection. The fragment owns the pagination, the store
 owns the merged pages, and the view reads them like any other field:
+
+<table>
+<tr><th>SwiftUI</th><th>Compose</th></tr>
+<tr valign="top">
+<td>
 
 ```swift
 struct IssueList: View {
     @Fragment("""
         fragment IssueList_repository on Repository
         @refetchable(queryName: "IssueListPaginationQuery")
-        @argumentDefinitions(count: {type: "Int", defaultValue: 20}, cursor: {type: "String"}) {
-          issues(first: $count, after: $cursor, states: OPEN) @connection(key: "IssueList_issues") {
+        @argumentDefinitions(
+          count: {type: "Int", defaultValue: 20}
+          cursor: {type: "String"}
+        ) {
+          issues(first: $count, after: $cursor, states: OPEN)
+          @connection(key: "IssueList_issues") {
             edges { node { id ...IssueRow_issue } }
           }
         }
@@ -159,11 +225,55 @@ struct IssueList: View {
             IssueRow(issue: issue.issueRow)
         }
         if repository.issues.hasNext {
-            ProgressView().task { try? await repository.issues.loadNext() }
+            ProgressView().task {
+                try? await repository.issues.loadNext()
+            }
         }
     }
 }
 ```
+
+</td>
+<td>
+
+```kotlin
+@Fragment($$"""
+    fragment IssueList_repository on Repository
+    @refetchable(queryName: "IssueListPaginationQuery")
+    @argumentDefinitions(
+      count: {type: "Int", defaultValue: 20}
+      cursor: {type: "String"}
+    ) {
+      issues(first: $count, after: $cursor, states: OPEN)
+      @connection(key: "IssueList_issues") {
+        edges { node { id ...IssueRow_issue } }
+      }
+    }
+    """)
+@Composable
+fun IssueList(repository: IssueList_repository) {
+    val issues = repository.issues
+    LazyColumn {
+        items(issues.nodes, key = { it.recordID }) { issue ->
+            IssueRow(issue.issueRow)
+        }
+        if (issues.hasNext) item {
+            CircularProgressIndicator()
+            LaunchedEffect(issues) {
+                runCatching { issues.loadNext() }
+            }
+        }
+    }
+}
+```
+
+</td>
+</tr>
+</table>
+
+A Kotlin document is a `$$"""…"""` string, since `$` starts a template in a
+plain one and GraphQL's variables need it. The view marker stands on the
+composable, and the composable remembers the operation value it shows.
 
 ## Written by people, or by models
 
