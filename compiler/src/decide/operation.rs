@@ -8,7 +8,9 @@ use super::reader::Readers;
 use super::{NormalizationField, NormalizationKind, NormalizationSelection};
 use crate::config::OnError;
 use crate::naming::{Kind, NameError, Naming, Reserved, Scope, Spelled, Written, numbered};
-use crate::pipeline::{FragmentPlan, OperationKind, OperationPlan, TypeKind, VariablePlan};
+use crate::pipeline::{
+    ConstantPlan, FragmentPlan, OperationKind, OperationPlan, TypeKind, VariablePlan,
+};
 
 /// An operation's value type: its variables, its static data, its plan, its
 /// root lens and, for a mutation, its optimistic-response builder.
@@ -42,6 +44,10 @@ pub struct VariableValue {
     pub shape: VariableShape,
     /// A nullable variable's parameter defaults to nil.
     pub non_null: bool,
+    /// The default the document declares, sent when a nullable variable is
+    /// left unset; a nullable variable without one is then left out of the
+    /// request, as GraphQL distinguishes absent from null.
+    pub default_value: Option<ConstantPlan>,
     /// The name its value goes by as a parameter.
     pub local: String,
 }
@@ -115,6 +121,7 @@ pub(super) fn operation(
             name: variable.name.clone(),
             shape: variable_shape(variable, readers.naming),
             non_null: variable.type_.non_null(),
+            default_value: variable.default_value.clone(),
             local: readers.naming.local(&variable.name, &names),
         })
         .collect();

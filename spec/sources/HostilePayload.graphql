@@ -21,7 +21,7 @@ mutation HostilePayload {
       isLoadingPrevious: name connectionID: name loadNext: name loadPrevious: name
       # The locals, parameters and local aliases of generated bodies.
       bound: name errors: name child: name missing: name count: name lhs: name rhs: name
-      hasher: name selection0: name selection: name optimistic: name selfValue: name Fragment: name Spread: name Owner: name
+      hasher: name selection0: name selection: name optimistic: name selfValue: name values: name Fragment: name Spread: name Owner: name
       Query: name Operation: name RefetchQuery: name fields: name
       # What an operation value, a mutation's action and its optimistic response declare.
       variables: name resolution: name name: name document: name text: name plan: name
@@ -69,7 +69,7 @@ mutation HostilePayload {
     # The locals, parameters and local aliases of generated bodies.
     bound: note { id } errors: note { id } child: note { id } missing: note { id }
     count: note { id } lhs: note { id } rhs: note { id } hasher: note { id } selection0: note { id } selection: note { id }
-    optimistic: note { id } selfValue: note { id } Fragment: note { id } Spread: note { id }
+    optimistic: note { id } selfValue: note { id } values: note { id } Fragment: note { id } Spread: note { id }
     Owner: note { id } Query: note { id } Operation: note { id } RefetchQuery: note { id }
     fields: note { id }
     # What an operation value, a mutation's action and its optimistic response declare.

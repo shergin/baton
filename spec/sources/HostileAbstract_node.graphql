@@ -17,7 +17,7 @@ fragment HostileAbstract_node on Node {
   isLoadingNext: id isLoadingPrevious: id connectionID: id loadNext: id loadPrevious: id
   # The locals, parameters and local aliases of generated bodies.
   bound: id errors: id child: id missing: id count: id fields: id lhs: id rhs: id hasher: id selection0: id selection: id
-  optimistic: id selfValue: id Fragment: id Spread: id Owner: id Query: id Operation: id
+  optimistic: id selfValue: id values: id Fragment: id Spread: id Owner: id Query: id Operation: id
   RefetchQuery: id
   # What an operation value, a mutation's action and its optimistic response declare.
   variables: id resolution: id name: id document: id text: id plan: id errorBehavior: id

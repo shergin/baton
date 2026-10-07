@@ -30,6 +30,10 @@ are expected and listed without apology.
   order, the text without client fields and client directives, an enum and
   a mapped scalar sent as their text, and an input object's unset fields
   left out.
+- A nullable variable left unset is left out of the request, and one the
+  operation declares with a default is sent as that default, where both
+  were sent as `null`; GraphQL applies an argument's default only to an
+  absent variable, so the server and the store's keys now see one value.
 
 ## 0.9.0 (Krendel) — 2026-10-07
 

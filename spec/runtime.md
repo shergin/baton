@@ -760,10 +760,11 @@ default, as Relay sends it, so the server and the store's keys see one
 value; GraphQL applies an argument's own default only to an absent
 variable, never to a null. A server with another convention replaces the
 encoding on the built-in transports and keeps them. *Held by* script
-`transport` for an enum and a list of it, a `Decimal` and a list of it,
-and a list of input objects with fields left unset; the explicit null
-constant, an unset variable (absent, or its declared default) and a
-replaced encoding are *unheld*.
+`transport` for an enum and a list of it, a `Decimal` and a list of it, a
+list of input objects with fields left unset, a nullable variable left
+unset absent from `variables`, and an unset variable declared with a
+default sent as that default; the explicit null constant and a replaced
+encoding are *unheld*.
 
 **An environment error says what is missing.** The view's environment, the
 lens's (a lens made by hand asked to fetch), the one that made a handle and

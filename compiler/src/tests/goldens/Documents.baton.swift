@@ -41,7 +41,9 @@ nonisolated public struct Fixture: Baton.Query {
     public static let document: Baton.Document = .text(#"query Fixture($page:Int){characters(page:$page){info{count,pages,next,prev},results{id,name,status,species,type,gender,image,created,origin{id,name,type,dimension,created},location{id,name,type,dimension,created},episode{id,name,air_date,episode,created,characters{id,name,image}}}}}"#)
 
     public var variables: Baton.Variables {
-        Baton.Variables(["page": Baton.Variable(self.page)])
+        var values: [String: Baton.Variable] = [:]
+        if self.page != nil { values["page"] = Baton.Variable(self.page) }
+        return Baton.Variables(values)
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -350,7 +352,9 @@ nonisolated public struct TestList: Baton.Query {
     public static let document: Baton.Document = .text(#"query TestList($page:Int){characters(page:$page){results{...TestRow_character,...TestHeader_character,id}}}fragment TestHeader_character on Character{name,status,species,image,origin{name,id}}fragment TestRow_character on Character{name,status,image}"#)
 
     public var variables: Baton.Variables {
-        Baton.Variables(["page": Baton.Variable(self.page)])
+        var values: [String: Baton.Variable] = [:]
+        if self.page != nil { values["page"] = Baton.Variable(self.page) }
+        return Baton.Variables(values)
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {

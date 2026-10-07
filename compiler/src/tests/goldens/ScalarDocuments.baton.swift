@@ -112,7 +112,9 @@ nonisolated public struct TestPricedAssetsQuery: Baton.Query {
     public static let document: Baton.Document = .text(#"query TestPricedAssetsQuery($price:Decimal!,$among:[Decimal!]){assetsPricedAbove(price:$price,among:$among){uuid,...TestCaughtPrices_asset,...TestThrowingPrices_asset,...TestRequiredPrice_asset,id}}fragment TestCaughtPrices_asset on Asset{price,listedAt,page}fragment TestRequiredPrice_asset on Asset{price}fragment TestThrowingPrices_asset on Asset{price,prices}"#)
 
     public var variables: Baton.Variables {
-        Baton.Variables(["price": Baton.Variable(self.price), "among": Baton.Variable(self.among)])
+        var values: [String: Baton.Variable] = ["price": Baton.Variable(self.price)]
+        if self.among != nil { values["among"] = Baton.Variable(self.among) }
+        return Baton.Variables(values)
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {

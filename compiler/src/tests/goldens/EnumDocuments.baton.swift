@@ -17,7 +17,9 @@ nonisolated public struct TestCharactersWithStatus: Baton.Query {
     public static let document: Baton.Document = .text(#"query TestCharactersWithStatus($status:Status!,$any:[Status!]){charactersWithStatus(status:$status,any:$any){name,id}}"#)
 
     public var variables: Baton.Variables {
-        Baton.Variables(["status": Baton.Variable(self.status), "any": Baton.Variable(self.`any`)])
+        var values: [String: Baton.Variable] = ["status": Baton.Variable(self.status)]
+        if self.`any` != nil { values["any"] = Baton.Variable(self.`any`) }
+        return Baton.Variables(values)
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {

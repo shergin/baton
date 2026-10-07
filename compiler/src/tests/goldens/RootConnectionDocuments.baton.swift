@@ -77,7 +77,9 @@ nonisolated public struct TestRootNotesPaginationQuery: Baton.Query {
     public static let document: Baton.Document = .text(#"query TestRootNotesPaginationQuery($count:Int=2,$cursor:String){...TestRootNotes_query_1G22uz}fragment TestRootNotes_query_1G22uz on Query{notes(first:$count,after:$cursor){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}}"#)
 
     public var variables: Baton.Variables {
-        Baton.Variables(["count": Baton.Variable(self.count), "cursor": Baton.Variable(self.cursor)])
+        var values: [String: Baton.Variable] = ["count": self.count == nil ? .int(2) : Baton.Variable(self.count)]
+        if self.cursor != nil { values["cursor"] = Baton.Variable(self.cursor) }
+        return Baton.Variables(values)
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {

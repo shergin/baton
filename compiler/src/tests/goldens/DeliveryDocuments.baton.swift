@@ -370,7 +370,9 @@ nonisolated public struct TestRosterQuery: Baton.Query {
     public static let document: Baton.Document = .text(#"query TestRosterQuery($page:Int){characters(page:$page){results{id,name,status}}}"#)
 
     public var variables: Baton.Variables {
-        Baton.Variables(["page": Baton.Variable(self.page)])
+        var values: [String: Baton.Variable] = [:]
+        if self.page != nil { values["page"] = Baton.Variable(self.page) }
+        return Baton.Variables(values)
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {

@@ -26,7 +26,7 @@ mutation HostileMutationVariables(
   $loadNext: Boolean!, $loadPrevious: Boolean!,
   # The locals, parameters and local aliases of generated bodies.
   $bound: Boolean!, $errors: Boolean!, $child: Boolean!, $missing: Boolean!, $count: Boolean!,
-  $fields: Boolean!, $lhs: Boolean!, $rhs: Boolean!, $hasher: Boolean!, $selection0: Boolean!, $selection: Boolean!, $selfValue: Boolean!,
+  $fields: Boolean!, $lhs: Boolean!, $rhs: Boolean!, $hasher: Boolean!, $selection0: Boolean!, $selection: Boolean!, $selfValue: Boolean!, $values: Boolean!,
   $Fragment: Boolean!, $Spread: Boolean!, $Owner: Boolean!, $Query: Boolean!,
   $Operation: Boolean!, $RefetchQuery: Boolean!,
   # What an operation value, a mutation's action and its optimistic response declare.
@@ -101,7 +101,7 @@ mutation HostileMutationVariables(
       ... @include(if: $child) { name } ... @include(if: $missing) { name }
       ... @include(if: $count) { name } ... @include(if: $fields) { name }
       ... @include(if: $lhs) { name } ... @include(if: $rhs) { name }
-      ... @include(if: $hasher) { name } ... @include(if: $selection0) { name } ... @include(if: $selection) { name } ... @include(if: $selfValue) { name }
+      ... @include(if: $hasher) { name } ... @include(if: $selection0) { name } ... @include(if: $selection) { name } ... @include(if: $selfValue) { name } ... @include(if: $values) { name }
       ... @include(if: $Fragment) { name } ... @include(if: $Spread) { name }
       ... @include(if: $Owner) { name } ... @include(if: $Query) { name }
       ... @include(if: $Operation) { name } ... @include(if: $RefetchQuery) { name }

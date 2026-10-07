@@ -199,6 +199,6 @@ struct ScalarTests {
     func mappedVariablesAreSentAsText() throws {
         let query = TestPricedAssetsQuery(price: try #require(Decimal(string: "1.50")), among: [try #require(Decimal(string: "2.25")), try #require(Decimal(string: "0.001"))])
         #expect(query.variables.json == #"{"among":["2.25","0.001"],"price":"1.5"}"#)
-        #expect(TestPricedAssetsQuery(price: 2).variables.json == #"{"among":null,"price":"2"}"#)
+        #expect(TestPricedAssetsQuery(price: 2).variables.json == #"{"price":"2"}"#)
     }
 }

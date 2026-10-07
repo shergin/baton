@@ -107,6 +107,7 @@ fragment HostileArguments_character on Character
   selection: {type: "Boolean", defaultValue: true},
   optimistic: {type: "Boolean", defaultValue: true},
   selfValue: {type: "Boolean", defaultValue: true},
+  values: {type: "Boolean", defaultValue: true},
   Fragment: {type: "Boolean", defaultValue: true},
   Spread: {type: "Boolean", defaultValue: true},
   Owner: {type: "Boolean", defaultValue: true},
@@ -208,7 +209,7 @@ fragment HostileArguments_character on Character
   ... @include(if: $count) { name } ... @include(if: $fields) { name }
   ... @include(if: $lhs) { name } ... @include(if: $rhs) { name }
   ... @include(if: $hasher) { name } ... @include(if: $selection0) { name } ... @include(if: $selection) { name } ... @include(if: $optimistic) { name }
-  ... @include(if: $selfValue) { name } ... @include(if: $Fragment) { name }
+  ... @include(if: $selfValue) { name } ... @include(if: $values) { name } ... @include(if: $Fragment) { name }
   ... @include(if: $Spread) { name } ... @include(if: $Owner) { name }
   ... @include(if: $Query) { name } ... @include(if: $Operation) { name }
   ... @include(if: $RefetchQuery) { name }

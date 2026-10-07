@@ -1085,7 +1085,9 @@ nonisolated public struct TestAuthorNotesPaginationQuery: Baton.Query {
     public static let document: Baton.Document = .text(#"query TestAuthorNotesPaginationQuery($count:Int=2,$cursor:String,$id:ID!){node(id:$id){__typename,...TestAuthorNotes_note_1G22uz,id}}fragment TestAuthorNotes_note_1G22uz on Note{id,author{id,name,notes(first:$count,after:$cursor){edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}}}"#)
 
     public var variables: Baton.Variables {
-        Baton.Variables(["count": Baton.Variable(self.count), "cursor": Baton.Variable(self.cursor), "id": Baton.Variable(self.id)])
+        var values: [String: Baton.Variable] = ["count": self.count == nil ? .int(2) : Baton.Variable(self.count), "id": Baton.Variable(self.id)]
+        if self.cursor != nil { values["cursor"] = Baton.Variable(self.cursor) }
+        return Baton.Variables(values)
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -1250,7 +1252,9 @@ nonisolated public struct TestDeferredNotesPaginationQuery: Baton.Query {
     @_spi(Generated) public static let hasDeferred = true
 
     public var variables: Baton.Variables {
-        Baton.Variables(["count": Baton.Variable(self.count), "cursor": Baton.Variable(self.cursor), "id": Baton.Variable(self.id)])
+        var values: [String: Baton.Variable] = ["count": self.count == nil ? .int(2) : Baton.Variable(self.count), "id": Baton.Variable(self.id)]
+        if self.cursor != nil { values["cursor"] = Baton.Variable(self.cursor) }
+        return Baton.Variables(values)
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -1412,7 +1416,9 @@ nonisolated public struct TestHiddenNotesPaginationQuery: Baton.Query {
     public static let document: Baton.Document = .text(#"query TestHiddenNotesPaginationQuery($count:Int=2,$cursor:String,$id:ID!){node(id:$id){__typename,...TestHiddenNotes_character_1G22uz,id}}fragment TestHiddenNotes_character_1G22uz on Character{TestHiddenNotes_character:name,TestHiddenNotesPaginationQuery:status,notes(first:$count,after:$cursor){TestHiddenNotes_character:totalCount,TestHiddenNotesPaginationQuery:totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}"#)
 
     public var variables: Baton.Variables {
-        Baton.Variables(["count": Baton.Variable(self.count), "cursor": Baton.Variable(self.cursor), "id": Baton.Variable(self.id)])
+        var values: [String: Baton.Variable] = ["count": self.count == nil ? .int(2) : Baton.Variable(self.count), "id": Baton.Variable(self.id)]
+        if self.cursor != nil { values["cursor"] = Baton.Variable(self.cursor) }
+        return Baton.Variables(values)
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -1566,7 +1572,9 @@ nonisolated public struct TestHiddenRecentNotesPaginationQuery: Baton.Query {
     public static let document: Baton.Document = .text(#"query TestHiddenRecentNotesPaginationQuery($count:Int=2,$cursor:String,$id:ID!){node(id:$id){__typename,...TestHiddenRecentNotes_character_1G22uz,id}}fragment TestHiddenRecentNotes_character_1G22uz on Character{notes(last:$count,before:$cursor){TestHiddenRecentNotes_character:totalCount,TestHiddenRecentNotesPaginationQuery:totalCount,edges{node{id,text,__typename},cursor},pageInfo{hasPreviousPage,startCursor}},id}"#)
 
     public var variables: Baton.Variables {
-        Baton.Variables(["count": Baton.Variable(self.count), "cursor": Baton.Variable(self.cursor), "id": Baton.Variable(self.id)])
+        var values: [String: Baton.Variable] = ["count": self.count == nil ? .int(2) : Baton.Variable(self.count), "id": Baton.Variable(self.id)]
+        if self.cursor != nil { values["cursor"] = Baton.Variable(self.cursor) }
+        return Baton.Variables(values)
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -1716,7 +1724,9 @@ nonisolated public struct TestNotesPaginationQuery: Baton.Query {
     public static let document: Baton.Document = .text(#"query TestNotesPaginationQuery($count:Int=2,$cursor:String,$id:ID!){node(id:$id){__typename,...TestNotes_character_1G22uz,id}}fragment TestNotes_character_1G22uz on Character{name,notes(first:$count,after:$cursor){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}"#)
 
     public var variables: Baton.Variables {
-        Baton.Variables(["count": Baton.Variable(self.count), "cursor": Baton.Variable(self.cursor), "id": Baton.Variable(self.id)])
+        var values: [String: Baton.Variable] = ["count": self.count == nil ? .int(2) : Baton.Variable(self.count), "id": Baton.Variable(self.id)]
+        if self.cursor != nil { values["cursor"] = Baton.Variable(self.cursor) }
+        return Baton.Variables(values)
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -1864,7 +1874,9 @@ nonisolated public struct TestNotesSizedQuery: Baton.Query {
     public static let document: Baton.Document = .text(#"query TestNotesSizedQuery($id:ID!,$size:Int){character(id:$id){...TestNotes_character_2H9PL,id}}fragment TestNotes_character_2H9PL on Character{name,notes(first:$size){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}"#)
 
     public var variables: Baton.Variables {
-        Baton.Variables(["id": Baton.Variable(self.id), "size": Baton.Variable(self.size)])
+        var values: [String: Baton.Variable] = ["id": Baton.Variable(self.id)]
+        if self.size != nil { values["size"] = Baton.Variable(self.size) }
+        return Baton.Variables(values)
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -1937,7 +1949,9 @@ nonisolated public struct TestRecentNotesPaginationQuery: Baton.Query {
     public static let document: Baton.Document = .text(#"query TestRecentNotesPaginationQuery($count:Int=2,$cursor:String,$id:ID!){node(id:$id){__typename,...TestRecentNotes_character_1G22uz,id}}fragment TestRecentNotes_character_1G22uz on Character{notes(last:$count,before:$cursor){edges{node{id,text,__typename},cursor},pageInfo{hasPreviousPage,startCursor}},id}"#)
 
     public var variables: Baton.Variables {
-        Baton.Variables(["count": Baton.Variable(self.count), "cursor": Baton.Variable(self.cursor), "id": Baton.Variable(self.id)])
+        var values: [String: Baton.Variable] = ["count": self.count == nil ? .int(2) : Baton.Variable(self.count), "id": Baton.Variable(self.id)]
+        if self.cursor != nil { values["cursor"] = Baton.Variable(self.cursor) }
+        return Baton.Variables(values)
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {

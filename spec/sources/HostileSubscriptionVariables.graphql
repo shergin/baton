@@ -28,7 +28,7 @@ subscription HostileSubscriptionVariables(
   # The locals, parameters and local aliases of generated bodies.
   $bound: Boolean!, $errors: Boolean!, $child: Boolean!, $missing: Boolean!, $count: Boolean!,
   $fields: Boolean!, $lhs: Boolean!, $rhs: Boolean!, $hasher: Boolean!, $selection0: Boolean!, $selection: Boolean!, $optimistic: Boolean!,
-  $selfValue: Boolean!, $Fragment: Boolean!, $Spread: Boolean!, $Owner: Boolean!,
+  $selfValue: Boolean!, $values: Boolean!, $Fragment: Boolean!, $Spread: Boolean!, $Owner: Boolean!,
   $Query: Boolean!, $Operation: Boolean!, $RefetchQuery: Boolean!,
   # What an operation value, a mutation's action and its optimistic response declare.
   $name: Boolean!, $document: Boolean!, $text: Boolean!, $plan: Boolean!,
@@ -103,7 +103,7 @@ subscription HostileSubscriptionVariables(
       ... @include(if: $count) { cursor } ... @include(if: $fields) { cursor }
       ... @include(if: $lhs) { cursor } ... @include(if: $rhs) { cursor }
       ... @include(if: $hasher) { cursor } ... @include(if: $selection0) { cursor } ... @include(if: $selection) { cursor } ... @include(if: $optimistic) { cursor }
-      ... @include(if: $selfValue) { cursor } ... @include(if: $Fragment) { cursor }
+      ... @include(if: $selfValue) { cursor } ... @include(if: $values) { cursor } ... @include(if: $Fragment) { cursor }
       ... @include(if: $Spread) { cursor } ... @include(if: $Owner) { cursor }
       ... @include(if: $Query) { cursor } ... @include(if: $Operation) { cursor }
       ... @include(if: $RefetchQuery) { cursor }

@@ -30,7 +30,7 @@ fragment HostileInlineLinks_character on Character @inline @throwOnFieldError {
   # The locals, parameters and local aliases of generated bodies.
   bound: origin { id } errors: origin { id } child: origin { id } missing: origin { id }
   count: origin { id } fields: origin { id } lhs: origin { id } rhs: origin { id }
-  hasher: origin { id } selection0: origin { id } selection: origin { id } optimistic: origin { id } selfValue: origin { id }
+  hasher: origin { id } selection0: origin { id } selection: origin { id } optimistic: origin { id } selfValue: origin { id } values: origin { id }
   Fragment: origin { id } Spread: origin { id } Owner: origin { id } Query: origin { id }
   Operation: origin { id } RefetchQuery: origin { id }
   # What an operation value, a mutation's action and its optimistic response declare.

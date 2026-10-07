@@ -50,7 +50,7 @@ fragment HostileSelections_character on Character {
   ... @alias(as: "count") { name } ... @alias(as: "fields") { name }
   ... @alias(as: "lhs") { name } ... @alias(as: "rhs") { name }
   ... @alias(as: "hasher") { name } ... @alias(as: "selection0") { name } ... @alias(as: "selection") { name } ... @alias(as: "optimistic") { name }
-  ... @alias(as: "selfValue") { name } ... @alias(as: "Fragment") { name }
+  ... @alias(as: "selfValue") { name } ... @alias(as: "values") { name } ... @alias(as: "Fragment") { name }
   ... @alias(as: "Spread") { name } ... @alias(as: "Owner") { name }
   ... @alias(as: "Query") { name } ... @alias(as: "Operation") { name }
   ... @alias(as: "RefetchQuery") { name }

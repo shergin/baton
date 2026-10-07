@@ -21,7 +21,7 @@ query HostileVariables(
   $loadPrevious: ID!,
   # The locals, parameters and local aliases of generated bodies.
   $bound: ID!, $errors: ID!, $child: ID!, $missing: ID!, $count: ID!, $fields: ID!, $lhs: ID!,
-  $rhs: ID!, $hasher: ID!, $selection0: ID!, $selection: ID!, $optimistic: ID!, $selfValue: ID!, $Fragment: ID!, $Spread: ID!,
+  $rhs: ID!, $hasher: ID!, $selection0: ID!, $selection: ID!, $optimistic: ID!, $selfValue: ID!, $values: ID!, $Fragment: ID!, $Spread: ID!,
   $Owner: ID!, $Query: ID!, $Operation: ID!, $RefetchQuery: ID!,
   # What an operation value, a mutation's action and its optimistic response declare.
   $name: ID!, $document: ID!, $text: ID!, $plan: ID!, $errorBehavior: ID!,
@@ -53,7 +53,7 @@ query HostileVariables(
     $isLoadingNext, $isLoadingPrevious, $connectionID, $loadNext, $loadPrevious,
     # The locals, parameters and local aliases of generated bodies.
     $bound, $errors, $child, $missing, $count, $fields, $lhs, $rhs, $hasher, $selection0, $selection, $optimistic,
-    $selfValue, $Fragment, $Spread, $Owner, $Query, $Operation, $RefetchQuery,
+    $selfValue, $values, $Fragment, $Spread, $Owner, $Query, $Operation, $RefetchQuery,
     # What an operation value, a mutation's action and its optimistic response declare.
     $name, $document, $text, $plan, $errorBehavior, $throwsOnFieldError, $bubbles,
     $hasDeferred, $cacheExpiration, $Action, $OptimisticResponse, $hash, $commit, $callAsFunction, $Op, $variable, $payload,

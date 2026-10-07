@@ -49,7 +49,7 @@ const CONTEXTUAL_KEYWORDS: [&str; 12] = [
 
 /// What the generated code declares or spells that no list of the rules
 /// holds.
-const GENERATED_NAMES: [&str; 31] = [
+const GENERATED_NAMES: [&str; 32] = [
     // The checks every lens may have, and the methods of a lens.
     "satisfied",
     "missingRequiredField",
@@ -70,6 +70,7 @@ const GENERATED_NAMES: [&str; 31] = [
     "lhs",
     "rhs",
     "hasher",
+    "values",
     // What an operation value and a mutation's action declare or call.
     "hash",
     "commit",
@@ -1277,6 +1278,7 @@ fn every_name_the_generated_code_declares_or_binds_is_a_hostile_name() {
         "count",
         "fields",
         "selfValue",
+        "values",
         "lhs",
         "rhs",
         "hasher",

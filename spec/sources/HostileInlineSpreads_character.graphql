@@ -101,7 +101,7 @@ fragment HostileInlineSpreads_character on Character @inline @throwOnFieldError 
   ... @alias(as: "rhs") { ...HostileInlineSpreadTarget_character }
   ... @alias(as: "hasher") { ...HostileInlineSpreadTarget_character } ... @alias(as: "selection0") { ...HostileInlineSpreadTarget_character } ... @alias(as: "selection") { ...HostileInlineSpreadTarget_character }
   ... @alias(as: "optimistic") { ...HostileInlineSpreadTarget_character }
-  ... @alias(as: "selfValue") { ...HostileInlineSpreadTarget_character }
+  ... @alias(as: "selfValue") { ...HostileInlineSpreadTarget_character } ... @alias(as: "values") { ...HostileInlineSpreadTarget_character }
   ... @alias(as: "Fragment") { ...HostileInlineSpreadTarget_character }
   ... @alias(as: "Spread") { ...HostileInlineSpreadTarget_character }
   ... @alias(as: "Owner") { ...HostileInlineSpreadTarget_character }

@@ -28,7 +28,7 @@ fragment HostileConnection_character on Character
     # The locals, parameters and local aliases of generated bodies.
     bound: totalCount errors: totalCount child: totalCount missing: totalCount count: totalCount
     fields: totalCount lhs: totalCount rhs: totalCount hasher: totalCount selection0: totalCount selection: totalCount optimistic: totalCount
-    selfValue: totalCount Fragment: totalCount Spread: totalCount Owner: totalCount
+    selfValue: totalCount values: totalCount Fragment: totalCount Spread: totalCount Owner: totalCount
     Query: totalCount Operation: totalCount RefetchQuery: totalCount
     # What an operation value, a mutation's action and its optimistic response declare.
     variables: totalCount resolution: totalCount name: totalCount document: totalCount

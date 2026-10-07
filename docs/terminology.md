@@ -183,7 +183,9 @@ fields; the main thread is the main actor; the caught spread reads a
 
 **Variables.** *Concept: operation value.* GraphQL: an operation's
 parameters.
-Here: the values an [operation value](#generated) holds.
+Here: the values an [operation value](#generated) holds. A nullable
+variable left unset is absent from the request, or sent as the default the
+operation declares for it, never as null.
 Swift: the stored properties of the operation value.
 
 ## Generated

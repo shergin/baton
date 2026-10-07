@@ -30,7 +30,7 @@ fragment HostileInlinePlurals_character on Character @inline @throwOnFieldError 
   # The locals, parameters and local aliases of generated bodies.
   bound: episode { id } errors: episode { id } child: episode { id } missing: episode { id }
   count: episode { id } fields: episode { id } lhs: episode { id } rhs: episode { id }
-  hasher: episode { id } selection0: episode { id } selection: episode { id } optimistic: episode { id } selfValue: episode { id }
+  hasher: episode { id } selection0: episode { id } selection: episode { id } optimistic: episode { id } selfValue: episode { id } values: episode { id }
   Fragment: episode { id } Spread: episode { id } Owner: episode { id } Query: episode { id }
   Operation: episode { id } RefetchQuery: episode { id }
   # What an operation value, a mutation's action and its optimistic response declare.

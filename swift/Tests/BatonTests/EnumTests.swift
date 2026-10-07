@@ -41,7 +41,7 @@ struct EnumTests {
     func enumVariablesAreSentAsText() {
         let query = TestCharactersWithStatus(status: .DEAD, any: [.ALIVE, .unknown("GHOST")])
         #expect(query.variables.json == #"{"any":["ALIVE","GHOST"],"status":"DEAD"}"#)
-        #expect(TestCharactersWithStatus(status: .ALIVE).variables.json == #"{"any":null,"status":"ALIVE"}"#)
+        #expect(TestCharactersWithStatus(status: .ALIVE).variables.json == #"{"status":"ALIVE"}"#)
     }
 
     @Test("an optimistic response of a list of an enum renders each case as its text and a nil as null")

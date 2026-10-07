@@ -43,7 +43,7 @@ struct HostileNameDocuments {
           loadNext: name loadPrevious: name
           # The locals, parameters and local aliases of generated bodies.
           bound: name errors: name child: name missing: name count: name fields: name lhs: name
-          rhs: name hasher: name selection0: name selection: name optimistic: name selfValue: name Fragment: name Spread: name
+          rhs: name hasher: name selection0: name selection: name optimistic: name selfValue: name values: name Fragment: name Spread: name
           Owner: name Query: name Operation: name RefetchQuery: name
           # What an operation value, a mutation's action and its optimistic response declare.
           variables: name resolution: name name: name document: name text: name plan: name
@@ -96,7 +96,7 @@ struct HostileNameDocuments {
           # The locals, parameters and local aliases of generated bodies.
           bound: origin { id } errors: origin { id } child: origin { id } missing: origin { id }
           count: origin { id } fields: origin { id } lhs: origin { id } rhs: origin { id }
-          hasher: origin { id } selection0: origin { id } selection: origin { id } optimistic: origin { id } selfValue: origin { id }
+          hasher: origin { id } selection0: origin { id } selection: origin { id } optimistic: origin { id } selfValue: origin { id } values: origin { id }
           Fragment: origin { id } Spread: origin { id } Owner: origin { id } Query: origin { id }
           Operation: origin { id } RefetchQuery: origin { id }
           # What an operation value, a mutation's action and its optimistic response declare.
@@ -175,7 +175,7 @@ struct HostileNameDocuments {
           ... @alias(as: "count") { name } ... @alias(as: "fields") { name }
           ... @alias(as: "lhs") { name } ... @alias(as: "rhs") { name }
           ... @alias(as: "hasher") { name } ... @alias(as: "selection0") { name } ... @alias(as: "selection") { name } ... @alias(as: "optimistic") { name }
-          ... @alias(as: "selfValue") { name } ... @alias(as: "Fragment") { name }
+          ... @alias(as: "selfValue") { name } ... @alias(as: "values") { name } ... @alias(as: "Fragment") { name }
           ... @alias(as: "Spread") { name } ... @alias(as: "Owner") { name }
           ... @alias(as: "Query") { name } ... @alias(as: "Operation") { name }
           ... @alias(as: "RefetchQuery") { name }
@@ -322,7 +322,7 @@ struct HostileNameDocuments {
           ... @alias(as: "rhs") { ...HostileSpreadTarget_character }
           ... @alias(as: "hasher") { ...HostileSpreadTarget_character } ... @alias(as: "selection0") { ...HostileSpreadTarget_character } ... @alias(as: "selection") { ...HostileSpreadTarget_character }
           ... @alias(as: "optimistic") { ...HostileSpreadTarget_character }
-          ... @alias(as: "selfValue") { ...HostileSpreadTarget_character }
+          ... @alias(as: "selfValue") { ...HostileSpreadTarget_character } ... @alias(as: "values") { ...HostileSpreadTarget_character }
           ... @alias(as: "Fragment") { ...HostileSpreadTarget_character }
           ... @alias(as: "Spread") { ...HostileSpreadTarget_character }
           ... @alias(as: "Owner") { ...HostileSpreadTarget_character }
@@ -435,7 +435,7 @@ struct HostileNameDocuments {
           loadNext: name loadPrevious: name
           # The locals, parameters and local aliases of generated bodies.
           bound: name errors: name child: name missing: name count: name fields: name lhs: name
-          rhs: name hasher: name selection0: name selection: name optimistic: name selfValue: name Fragment: name Spread: name
+          rhs: name hasher: name selection0: name selection: name optimistic: name selfValue: name values: name Fragment: name Spread: name
           Owner: name Query: name Operation: name RefetchQuery: name
           # What an operation value, a mutation's action and its optimistic response declare.
           variables: name resolution: name name: name document: name text: name plan: name
@@ -493,7 +493,7 @@ struct HostileNameDocuments {
             # The locals, parameters and local aliases of generated bodies.
             bound: totalCount errors: totalCount child: totalCount missing: totalCount count: totalCount
             fields: totalCount lhs: totalCount rhs: totalCount hasher: totalCount selection0: totalCount selection: totalCount optimistic: totalCount
-            selfValue: totalCount Fragment: totalCount Spread: totalCount Owner: totalCount
+            selfValue: totalCount values: totalCount Fragment: totalCount Spread: totalCount Owner: totalCount
             Query: totalCount Operation: totalCount RefetchQuery: totalCount
             # What an operation value, a mutation's action and its optimistic response declare.
             variables: totalCount resolution: totalCount name: totalCount document: totalCount
@@ -570,7 +570,7 @@ struct HostileNameDocuments {
             connectionID: name loadNext: name loadPrevious: name
             # The locals, parameters and local aliases of generated bodies.
             bound: name errors: name child: name missing: name count: name fields: name lhs: name
-            rhs: name hasher: name selection0: name selection: name optimistic: name selfValue: name Fragment: name Spread: name
+            rhs: name hasher: name selection0: name selection: name optimistic: name selfValue: name values: name Fragment: name Spread: name
             Owner: name Query: name Operation: name RefetchQuery: name
             # What an operation value, a mutation's action and its optimistic response declare.
             variables: name resolution: name name: name document: name text: name plan: name
@@ -612,7 +612,7 @@ struct HostileNameDocuments {
           isLoadingNext: id isLoadingPrevious: id connectionID: id loadNext: id loadPrevious: id
           # The locals, parameters and local aliases of generated bodies.
           bound: id errors: id child: id missing: id count: id fields: id lhs: id rhs: id hasher: id selection0: id selection: id
-          optimistic: id selfValue: id Fragment: id Spread: id Owner: id Query: id Operation: id
+          optimistic: id selfValue: id values: id Fragment: id Spread: id Owner: id Query: id Operation: id
           RefetchQuery: id
           # What an operation value, a mutation's action and its optimistic response declare.
           variables: id resolution: id name: id document: id text: id plan: id errorBehavior: id
@@ -657,7 +657,7 @@ struct HostileNameDocuments {
           $loadPrevious: ID!,
           # The locals, parameters and local aliases of generated bodies.
           $bound: ID!, $errors: ID!, $child: ID!, $missing: ID!, $count: ID!, $fields: ID!, $lhs: ID!,
-          $rhs: ID!, $hasher: ID!, $selection0: ID!, $selection: ID!, $optimistic: ID!, $selfValue: ID!, $Fragment: ID!, $Spread: ID!,
+          $rhs: ID!, $hasher: ID!, $selection0: ID!, $selection: ID!, $optimistic: ID!, $selfValue: ID!, $values: ID!, $Fragment: ID!, $Spread: ID!,
           $Owner: ID!, $Query: ID!, $Operation: ID!, $RefetchQuery: ID!,
           # What an operation value, a mutation's action and its optimistic response declare.
           $name: ID!, $document: ID!, $text: ID!, $plan: ID!, $errorBehavior: ID!,
@@ -689,7 +689,7 @@ struct HostileNameDocuments {
             $isLoadingNext, $isLoadingPrevious, $connectionID, $loadNext, $loadPrevious,
             # The locals, parameters and local aliases of generated bodies.
             $bound, $errors, $child, $missing, $count, $fields, $lhs, $rhs, $hasher, $selection0, $selection, $optimistic,
-            $selfValue, $Fragment, $Spread, $Owner, $Query, $Operation, $RefetchQuery,
+            $selfValue, $values, $Fragment, $Spread, $Owner, $Query, $Operation, $RefetchQuery,
             # What an operation value, a mutation's action and its optimistic response declare.
             $name, $document, $text, $plan, $errorBehavior, $throwsOnFieldError, $bubbles,
             $hasDeferred, $cacheExpiration, $Action, $OptimisticResponse, $hash, $commit, $callAsFunction, $Op, $variable, $payload,
@@ -737,7 +737,7 @@ struct HostileNameDocuments {
           $loadNext: Boolean!, $loadPrevious: Boolean!,
           # The locals, parameters and local aliases of generated bodies.
           $bound: Boolean!, $errors: Boolean!, $child: Boolean!, $missing: Boolean!, $count: Boolean!,
-          $fields: Boolean!, $lhs: Boolean!, $rhs: Boolean!, $hasher: Boolean!, $selection0: Boolean!, $selection: Boolean!, $selfValue: Boolean!,
+          $fields: Boolean!, $lhs: Boolean!, $rhs: Boolean!, $hasher: Boolean!, $selection0: Boolean!, $selection: Boolean!, $selfValue: Boolean!, $values: Boolean!,
           $Fragment: Boolean!, $Spread: Boolean!, $Owner: Boolean!, $Query: Boolean!,
           $Operation: Boolean!, $RefetchQuery: Boolean!,
           # What an operation value, a mutation's action and its optimistic response declare.
@@ -812,7 +812,7 @@ struct HostileNameDocuments {
               ... @include(if: $child) { name } ... @include(if: $missing) { name }
               ... @include(if: $count) { name } ... @include(if: $fields) { name }
               ... @include(if: $lhs) { name } ... @include(if: $rhs) { name }
-              ... @include(if: $hasher) { name } ... @include(if: $selection0) { name } ... @include(if: $selection) { name } ... @include(if: $selfValue) { name }
+              ... @include(if: $hasher) { name } ... @include(if: $selection0) { name } ... @include(if: $selection) { name } ... @include(if: $selfValue) { name } ... @include(if: $values) { name }
               ... @include(if: $Fragment) { name } ... @include(if: $Spread) { name }
               ... @include(if: $Owner) { name } ... @include(if: $Query) { name }
               ... @include(if: $Operation) { name } ... @include(if: $RefetchQuery) { name }
@@ -886,7 +886,7 @@ struct HostileNameDocuments {
           # The locals, parameters and local aliases of generated bodies.
           $bound: Boolean!, $errors: Boolean!, $child: Boolean!, $missing: Boolean!, $count: Boolean!,
           $fields: Boolean!, $lhs: Boolean!, $rhs: Boolean!, $hasher: Boolean!, $selection0: Boolean!, $selection: Boolean!, $optimistic: Boolean!,
-          $selfValue: Boolean!, $Fragment: Boolean!, $Spread: Boolean!, $Owner: Boolean!,
+          $selfValue: Boolean!, $values: Boolean!, $Fragment: Boolean!, $Spread: Boolean!, $Owner: Boolean!,
           $Query: Boolean!, $Operation: Boolean!, $RefetchQuery: Boolean!,
           # What an operation value, a mutation's action and its optimistic response declare.
           $name: Boolean!, $document: Boolean!, $text: Boolean!, $plan: Boolean!,
@@ -961,7 +961,7 @@ struct HostileNameDocuments {
               ... @include(if: $count) { cursor } ... @include(if: $fields) { cursor }
               ... @include(if: $lhs) { cursor } ... @include(if: $rhs) { cursor }
               ... @include(if: $hasher) { cursor } ... @include(if: $selection0) { cursor } ... @include(if: $selection) { cursor } ... @include(if: $optimistic) { cursor }
-              ... @include(if: $selfValue) { cursor } ... @include(if: $Fragment) { cursor }
+              ... @include(if: $selfValue) { cursor } ... @include(if: $values) { cursor } ... @include(if: $Fragment) { cursor }
               ... @include(if: $Spread) { cursor } ... @include(if: $Owner) { cursor }
               ... @include(if: $Query) { cursor } ... @include(if: $Operation) { cursor }
               ... @include(if: $RefetchQuery) { cursor }
@@ -1105,6 +1105,7 @@ struct HostileNameDocuments {
           selection: {type: "Boolean", defaultValue: true},
           optimistic: {type: "Boolean", defaultValue: true},
           selfValue: {type: "Boolean", defaultValue: true},
+          values: {type: "Boolean", defaultValue: true},
           Fragment: {type: "Boolean", defaultValue: true},
           Spread: {type: "Boolean", defaultValue: true},
           Owner: {type: "Boolean", defaultValue: true},
@@ -1206,7 +1207,7 @@ struct HostileNameDocuments {
           ... @include(if: $count) { name } ... @include(if: $fields) { name }
           ... @include(if: $lhs) { name } ... @include(if: $rhs) { name }
           ... @include(if: $hasher) { name } ... @include(if: $selection0) { name } ... @include(if: $selection) { name } ... @include(if: $optimistic) { name }
-          ... @include(if: $selfValue) { name } ... @include(if: $Fragment) { name }
+          ... @include(if: $selfValue) { name } ... @include(if: $values) { name } ... @include(if: $Fragment) { name }
           ... @include(if: $Spread) { name } ... @include(if: $Owner) { name }
           ... @include(if: $Query) { name } ... @include(if: $Operation) { name }
           ... @include(if: $RefetchQuery) { name }
@@ -1263,7 +1264,7 @@ struct HostileNameDocuments {
               isLoadingPrevious: name connectionID: name loadNext: name loadPrevious: name
               # The locals, parameters and local aliases of generated bodies.
               bound: name errors: name child: name missing: name count: name lhs: name rhs: name
-              hasher: name selection0: name selection: name optimistic: name selfValue: name Fragment: name Spread: name Owner: name
+              hasher: name selection0: name selection: name optimistic: name selfValue: name values: name Fragment: name Spread: name Owner: name
               Query: name Operation: name RefetchQuery: name fields: name
               # What an operation value, a mutation's action and its optimistic response declare.
               variables: name resolution: name name: name document: name text: name plan: name
@@ -1311,7 +1312,7 @@ struct HostileNameDocuments {
             # The locals, parameters and local aliases of generated bodies.
             bound: note { id } errors: note { id } child: note { id } missing: note { id }
             count: note { id } lhs: note { id } rhs: note { id } hasher: note { id } selection0: note { id } selection: note { id }
-            optimistic: note { id } selfValue: note { id } Fragment: note { id } Spread: note { id }
+            optimistic: note { id } selfValue: note { id } values: note { id } Fragment: note { id } Spread: note { id }
             Owner: note { id } Query: note { id } Operation: note { id } RefetchQuery: note { id }
             fields: note { id }
             # What an operation value, a mutation's action and its optimistic response declare.
@@ -1361,7 +1362,7 @@ struct HostileNameDocuments {
           loadNext: name loadPrevious: name
           # The locals, parameters and local aliases of generated bodies.
           bound: name errors: name child: name missing: name count: name fields: name lhs: name
-          rhs: name hasher: name selection0: name selection: name optimistic: name selfValue: name Fragment: name Spread: name
+          rhs: name hasher: name selection0: name selection: name optimistic: name selfValue: name values: name Fragment: name Spread: name
           Owner: name Query: name Operation: name RefetchQuery: name
           # What an operation value, a mutation's action and its optimistic response declare.
           variables: name resolution: name name: name document: name text: name plan: name
@@ -1414,7 +1415,7 @@ struct HostileNameDocuments {
           # The locals, parameters and local aliases of generated bodies.
           bound: origin { id } errors: origin { id } child: origin { id } missing: origin { id }
           count: origin { id } fields: origin { id } lhs: origin { id } rhs: origin { id }
-          hasher: origin { id } selection0: origin { id } selection: origin { id } optimistic: origin { id } selfValue: origin { id }
+          hasher: origin { id } selection0: origin { id } selection: origin { id } optimistic: origin { id } selfValue: origin { id } values: origin { id }
           Fragment: origin { id } Spread: origin { id } Owner: origin { id } Query: origin { id }
           Operation: origin { id } RefetchQuery: origin { id }
           # What an operation value, a mutation's action and its optimistic response declare.
@@ -1473,7 +1474,7 @@ struct HostileNameDocuments {
           # The locals, parameters and local aliases of generated bodies.
           bound: episode { id } errors: episode { id } child: episode { id } missing: episode { id }
           count: episode { id } fields: episode { id } lhs: episode { id } rhs: episode { id }
-          hasher: episode { id } selection0: episode { id } selection: episode { id } optimistic: episode { id } selfValue: episode { id }
+          hasher: episode { id } selection0: episode { id } selection: episode { id } optimistic: episode { id } selfValue: episode { id } values: episode { id }
           Fragment: episode { id } Spread: episode { id } Owner: episode { id } Query: episode { id }
           Operation: episode { id } RefetchQuery: episode { id }
           # What an operation value, a mutation's action and its optimistic response declare.
@@ -1611,7 +1612,7 @@ struct HostileNameDocuments {
           ... @alias(as: "rhs") { ...HostileInlineSpreadTarget_character }
           ... @alias(as: "hasher") { ...HostileInlineSpreadTarget_character } ... @alias(as: "selection0") { ...HostileInlineSpreadTarget_character } ... @alias(as: "selection") { ...HostileInlineSpreadTarget_character }
           ... @alias(as: "optimistic") { ...HostileInlineSpreadTarget_character }
-          ... @alias(as: "selfValue") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "selfValue") { ...HostileInlineSpreadTarget_character } ... @alias(as: "values") { ...HostileInlineSpreadTarget_character }
           ... @alias(as: "Fragment") { ...HostileInlineSpreadTarget_character }
           ... @alias(as: "Spread") { ...HostileInlineSpreadTarget_character }
           ... @alias(as: "Owner") { ...HostileInlineSpreadTarget_character }

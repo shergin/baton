@@ -101,7 +101,7 @@ fragment HostileSpreads_character on Character {
   ... @alias(as: "rhs") { ...HostileSpreadTarget_character }
   ... @alias(as: "hasher") { ...HostileSpreadTarget_character } ... @alias(as: "selection0") { ...HostileSpreadTarget_character } ... @alias(as: "selection") { ...HostileSpreadTarget_character }
   ... @alias(as: "optimistic") { ...HostileSpreadTarget_character }
-  ... @alias(as: "selfValue") { ...HostileSpreadTarget_character }
+  ... @alias(as: "selfValue") { ...HostileSpreadTarget_character } ... @alias(as: "values") { ...HostileSpreadTarget_character }
   ... @alias(as: "Fragment") { ...HostileSpreadTarget_character }
   ... @alias(as: "Spread") { ...HostileSpreadTarget_character }
   ... @alias(as: "Owner") { ...HostileSpreadTarget_character }

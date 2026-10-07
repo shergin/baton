@@ -43,7 +43,9 @@ nonisolated public struct TestKeys: Baton.Query {
     public static let document: Baton.Document = .text(#"query TestKeys($id:ID!,$name:String){search(name:"$0.00"){__typename,...on Node{__isNode:__typename,id}},character(id:"a,b"){name,id},charactersByIds(ids:[$id,"2"]){name,id},characters(filter:{status:"Alive",name:$name}){info{count}}}"#)
 
     public var variables: Baton.Variables {
-        Baton.Variables(["id": Baton.Variable(self.id), "name": Baton.Variable(self.name)])
+        var values: [String: Baton.Variable] = ["id": Baton.Variable(self.id)]
+        if self.name != nil { values["name"] = Baton.Variable(self.name) }
+        return Baton.Variables(values)
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -140,7 +142,10 @@ nonisolated public struct TestNoteCounts: Baton.Query {
     public static let document: Baton.Document = .text(#"query TestNoteCounts($page:Int,$count:Int){characters(page:$page){results{id,name,pinned:notes(first:97){totalCount},recent:notes(first:$count){totalCount}}}}"#)
 
     public var variables: Baton.Variables {
-        Baton.Variables(["page": Baton.Variable(self.page), "count": Baton.Variable(self.count)])
+        var values: [String: Baton.Variable] = [:]
+        if self.page != nil { values["page"] = Baton.Variable(self.page) }
+        if self.count != nil { values["count"] = Baton.Variable(self.count) }
+        return Baton.Variables(values)
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -218,7 +223,9 @@ nonisolated public struct TestSpreadKeys: Baton.Query {
     public static let document: Baton.Document = .text(#"query TestSpreadKeys($id:ID!,$name:String){character(id:$id){name,id},named:characters(filter:{name:$name}){info{count}},...TestKeyArguments_query_p86SO}fragment TestKeyArguments_query_p86SO on Query{charactersByIds(ids:[$id,"2"]){name,id},characters(filter:{status:"Alive",name:$name}){info{count}}}"#)
 
     public var variables: Baton.Variables {
-        Baton.Variables(["id": Baton.Variable(self.id), "name": Baton.Variable(self.name)])
+        var values: [String: Baton.Variable] = ["id": Baton.Variable(self.id)]
+        if self.name != nil { values["name"] = Baton.Variable(self.name) }
+        return Baton.Variables(values)
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {

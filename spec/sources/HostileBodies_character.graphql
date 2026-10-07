@@ -21,7 +21,7 @@ fragment HostileBodies_character on Character
   loadNext: name loadPrevious: name
   # The locals, parameters and local aliases of generated bodies.
   bound: name errors: name child: name missing: name count: name fields: name lhs: name
-  rhs: name hasher: name selection0: name selection: name optimistic: name selfValue: name Fragment: name Spread: name
+  rhs: name hasher: name selection0: name selection: name optimistic: name selfValue: name values: name Fragment: name Spread: name
   Owner: name Query: name Operation: name RefetchQuery: name
   # What an operation value, a mutation's action and its optimistic response declare.
   variables: name resolution: name name: name document: name text: name plan: name

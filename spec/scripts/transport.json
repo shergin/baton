@@ -17,6 +17,14 @@
     {
       "attach": {"operation": "TestFilteredCharacters", "variables": {"filters": [{"status": "Alive"}, {"name": "Rick", "species": "Human"}]}, "policy": "networkOnly", "as": "filtered", "failure": "transport"},
       "sent": [{"operation": "TestFilteredCharacters", "body": "{\"operationName\":\"TestFilteredCharacters\",\"query\":\"query TestFilteredCharacters($filters:[FilterCharacter!]!){charactersMatching(filters:$filters){id,name}}\",\"variables\":{\"filters\":[{\"status\":\"Alive\"},{\"name\":\"Rick\",\"species\":\"Human\"}]}}"}]
+    },
+    {
+      "attach": {"operation": "TestKeys", "variables": {"id": "1"}, "policy": "networkOnly", "as": "unnamed", "failure": "transport"},
+      "sent": [{"operation": "TestKeys", "body": "{\"operationName\":\"TestKeys\",\"query\":\"query TestKeys($id:ID!,$name:String){search(name:\\\"$0.00\\\"){__typename,...on Node{__isNode:__typename,id}},character(id:\\\"a,b\\\"){name,id},charactersByIds(ids:[$id,\\\"2\\\"]){name,id},characters(filter:{status:\\\"Alive\\\",name:$name}){info{count}}}\",\"variables\":{\"id\":\"1\"}}"}]
+    },
+    {
+      "attach": {"operation": "TestNotesPaginationQuery", "variables": {"id": "1"}, "policy": "networkOnly", "as": "defaulted", "failure": "transport"},
+      "sent": [{"operation": "TestNotesPaginationQuery", "body": "{\"operationName\":\"TestNotesPaginationQuery\",\"query\":\"query TestNotesPaginationQuery($count:Int=2,$cursor:String,$id:ID!){node(id:$id){__typename,...TestNotes_character_1G22uz,id}}fragment TestNotes_character_1G22uz on Character{name,notes(first:$count,after:$cursor){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}\",\"variables\":{\"count\":2,\"id\":\"1\"}}"}]
     }
   ]
 }

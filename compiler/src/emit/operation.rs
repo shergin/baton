@@ -9,7 +9,8 @@ use super::builder::builder;
 use super::lens::lens;
 use super::plan::PlanSelections;
 use super::swift::{
-    SwiftType, member, parameter, raw_literal, runtime_value, swift_literal, variable_type,
+    SwiftType, member, parameter, raw_literal, runtime_value, swift_literal, variable_literal,
+    variable_type,
 };
 use super::writer::Writer;
 use crate::config::OnError;
@@ -130,16 +131,27 @@ fn value_members(
     writer.blank();
     let variables = SwiftType::runtime("Variables");
     writer.block(format!("public var variables: {variables}"), |writer| {
-        let entries: Vec<String> = operation
+        // A non-null variable always has a value and a nullable one with a
+        // default is sent as the default when unset; both go in the literal.
+        // A nullable variable without a default is left out when unset, as
+        // GraphQL distinguishes absent from null, so it is added only when set.
+        let (present, unset): (Vec<&VariableValue>, Vec<&VariableValue>) = operation
             .variables
             .iter()
+            .partition(|variable| variable.non_null || variable.default_value.is_some());
+        let entries: Vec<String> = present
+            .iter()
             .map(|variable| {
-                format!(
-                    "{}: {}({})",
-                    swift_literal(&variable.name),
-                    runtime_value("Variable"),
-                    stored(&variable.name)
-                )
+                let value = match &variable.default_value {
+                    Some(default) if !variable.non_null => format!(
+                        "{stored} == nil ? {default} : {variable}({stored})",
+                        stored = stored(&variable.name),
+                        default = variable_literal(default),
+                        variable = runtime_value("Variable"),
+                    ),
+                    _ => format!("{}({})", runtime_value("Variable"), stored(&variable.name)),
+                };
+                format!("{}: {value}", swift_literal(&variable.name))
             })
             .collect();
         let entries = if entries.is_empty() {
@@ -147,7 +159,23 @@ fn value_members(
         } else {
             entries.join(", ")
         };
-        writer.line(format!("{}([{entries}])", runtime_value("Variables")));
+        if unset.is_empty() {
+            writer.line(format!("{}([{entries}])", runtime_value("Variables")));
+            return;
+        }
+        writer.line(format!(
+            "var values: [String: {}] = [{entries}]",
+            runtime_value("Variable")
+        ));
+        for variable in unset {
+            writer.line(format!(
+                "if {stored} != nil {{ values[{name}] = {variable}({stored}) }}",
+                stored = stored(&variable.name),
+                name = swift_literal(&variable.name),
+                variable = runtime_value("Variable"),
+            ));
+        }
+        writer.line(format!("return {}(values)", runtime_value("Variables")));
     });
     writer.blank();
     writer.block(
