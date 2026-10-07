@@ -5,6 +5,13 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- `spec/runtime.md`, the runtime contract: what a runtime does with a plan,
+  a response and a store, in no language's terms, one paragraph a rule,
+  each ending with the fixture that holds it or the word *unheld*, so a
+  second runtime is held to the rules and not to the Swift that spells
+  them. The principle *Two runtimes, one compiler* names it, and no longer
+  counts the image's bytes among what the fixtures specify: a second store
+  over the image reading the same records is what is shared.
 - `@inline` is built: a fragment so marked compiles to a `Sendable`,
   `Hashable` struct of its fields in place of a lens, with a nested struct
   per link, an array per plural link and an initializer that takes the

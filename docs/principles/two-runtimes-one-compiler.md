@@ -33,9 +33,12 @@ is computed once, in one language, and the native code is a small
 interpreter plus the platform's own networking, observation and storage.
 
 What remains written twice (the tokenizer, the store, retention, connections,
-the persisted row codec) is specified by language-neutral fixtures: recorded
-responses with the store contents and lens reads they must produce. A
-divergence is a failing test on both sides.
+the image) is specified in files no language owns: the runtime contract,
+which says what a runtime does with a plan, a response and a store, and the
+fixtures, recorded responses with the store contents and lens reads they
+must produce. A divergence is a failing test on both sides. The image's
+bytes are each runtime's own; what is shared is that a second store over
+the image reads the same records.
 
 ## Consequences
 
@@ -70,5 +73,8 @@ measurements and the one condition under which this bends.
 `swift/` holds the Swift runtime, its macros, its build plugin, its
 benchmarks and its tests; `compiler/` holds `batonc`, which emits Swift;
 `spec/` holds the schemas, the documents, the responses, the store dumps
-and the expected reads a runtime is held to, listed in `spec/manifest.json`. There is no Kotlin runtime yet, and `batonc` has no Kotlin
-emitter. This section may rot; the rest must not.
+and the expected reads a runtime is held to, listed in `spec/manifest.json`,
+and `spec/runtime.md`, the contract: the rules that produce them, each
+naming the fixture that holds it or marked unheld. There is no Kotlin
+runtime yet, and `batonc` has no Kotlin emitter. This section may rot; the
+rest must not.

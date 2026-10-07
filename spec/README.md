@@ -2,9 +2,11 @@
 
 What a Baton runtime is held to, in files no language owns: the schemas, the
 documents, the recorded responses, the records a store must hold after
-them, and what a generated lens must read. The Swift runtime passes these
-files; a second runtime passes the same files. The principle is
-[The response is the oracle](../docs/principles/response-is-the-oracle.md).
+them, what a generated lens must read, and the rules that produce all of
+it, in [`runtime.md`](runtime.md), the contract. The Swift runtime passes
+these files; a second runtime passes the same files. The principles are
+[The response is the oracle](../docs/principles/response-is-the-oracle.md)
+and [Two runtimes, one compiler](../docs/principles/two-runtimes-one-compiler.md).
 
 The fixtures are server responses, not tests: a change to the store, the
 tokenizer or the record layout is frozen under them, and none is edited to
@@ -25,6 +27,8 @@ and the documents).
   fragments, as the compiler emits it, compact on one line; written from
   the generated code and checked against it, so the two cannot drift.
 - `manifest.json`: the cases, below.
+- `runtime.md`: the contract, one paragraph a rule, each ending with the
+  fixture that holds it or the word *unheld*.
 
 ## The manifest
 
