@@ -670,6 +670,10 @@ Swift: an unmapped scalar reads as a `String`; a mapped one names a Swift
 type conforming to `MappedScalar`, which `Decimal`, `Date`, `URL` and
 `UUID` do, as the configuration's string or its `swift` entry; `@catch`
 makes it a `Result`; a variable takes the Swift type.
+Kotlin: a mapped one names, under its `kotlin` entry, the Kotlin type it
+reads as and the `object` implementing `ScalarConverter` for it, since the
+runtime cannot extend a type it does not own; a variable takes the type and
+is sent through the converter.
 
 **Enum.** *Composition: schema, lens.* GraphQL: a type with a closed set of
 named values.
@@ -771,6 +775,10 @@ interface's.
 Swift: an artifact opens with `@_spi(Generated) import Baton`, which is that
 interface; the shared file names the format as `Types.format` and the
 runtime declares it as a marker type; an app's own files import `Baton`.
+Kotlin: an artifact opens with `@file:OptIn(baton.Generated::class)`, which
+is that interface; the Kotlin format has numbers of its own, starting at 1,
+and the shared file names it as `Types.format`, the runtime's marker object
+`baton.Format1`.
 
 **Report.** *Composition: document, schema.* Baton's word.
 Here: what the compiler compiled for one target, written by

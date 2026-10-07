@@ -11,9 +11,9 @@ configuration and sources produce the same bytes, which the goldens under
 ## Commands
 
 ```
-batonc generate --config <baton.json> (--out <dir> | --emit <source>=<output>...) [--shared <file>] [--report <file>] [--check] <files...>
-batonc validate --config <baton.json> <files...>
-batonc print <OperationName> --config <baton.json> <files...>
+batonc generate --config <baton.json> [--language swift|kotlin] (--out <dir> | --emit <source>=<output>...) [--shared <file>] [--report <file>] [--check] <files...>
+batonc validate --config <baton.json> [--language swift|kotlin] <files...>
+batonc print <OperationName> --config <baton.json> [--language swift|kotlin] <files...>
 ```
 
 `--schema <sdl>` may replace `--config` when there is no configuration; the
@@ -21,28 +21,64 @@ configuration's `schema` is otherwise the schema, relative to the
 configuration's directory, as are its `schemaExtensions` and the persisted
 documents file.
 
-`<files...>` are the target's Swift sources and its `.graphql` or `.gql`
-documents. The compiler reads the GraphQL out of the Swift markers
-(`@Fragment`, `@Query`, `@Mutation`, `@Subscription`, bare or qualified as
-`@Baton.Query`) and compiles every document of the target together, since a
-fragment spread in one file is declared in another.
+`<files...>` are the target's host sources, Swift or Kotlin, and its
+`.graphql` or `.gql` documents. The compiler reads the GraphQL out of the
+markers (`@Fragment`, `@Query`, `@Mutation`, `@Subscription`, bare or
+qualified as `@Baton.Query` in Swift and `@baton.Query` in Kotlin) and
+compiles every document of the target together, since a fragment spread in
+one file is declared in another.
+
+### The language
+
+A run writes one language. `--language` names it, `swift` or `kotlin`; without
+it, the first host file's extension does, `.swift` or `.kt`, and a run of
+`.graphql` files alone writes Swift. A host file of the other language is an
+error at that file: run `batonc` once per language. The Kotlin target writes
+the operation values with their plans and the shared file; a fragment's lens,
+the fields of an operation's `Data` and a mutation's optimistic builder come
+with the Kotlin runtime's readers.
+
+A Kotlin marker takes one string literal, labelled `document =` or not, in
+any of Kotlin's forms: `"…"` with its escapes, a raw `"""…"""`, or either
+after a run of dollars, `$$"""…"""`, in which a run of fewer dollars than the
+prefix is text. A GraphQL variable is a template in a string without enough
+dollars, so a document with a variable is written in a `$$` string, and a
+template is an error at the marker. A raw string is read dedented: its
+common indentation removed and a blank first and last line dropped, so it
+equals the `.graphql` file an author would write. A bare `@Query` in a file
+that imports another library's `Query`, Room's or Retrofit's, is that
+library's.
+
+The Kotlin target reads two entries of `baton.json`:
+
+- `"kotlin": {"package": "<package>"}`: the package of the shared file and
+  of the code written for a `.graphql` source. A `.kt` host's code takes the
+  host's own `package`. The entry is required when the run writes the shared
+  file or compiles a `.graphql` source.
+- A mapped scalar's `kotlin` entry under `customScalarTypes`, the Kotlin type
+  it reads as and the `object` implementing the runtime's `ScalarConverter`
+  for it: `"Decimal": {"swift": "Foundation.Decimal", "kotlin": {"type":
+  "java.math.BigDecimal", "converter": "app.Decimals"}}`. A mapped scalar
+  without one is an error at the configuration in a Kotlin run, as one
+  without a Swift type is in a Swift run.
 
 ### `generate`
 
 Writes, and writes nothing when a document has an error:
 
-- **One output per Swift source that declares GraphQL**, named under `--out`
+- **One output per source that declares GraphQL**, named under `--out`
   by the source's path relative to the working directory with each separator
   an underscore and `.baton.swift` in place of `.swift`
   (`Sources/App/Screen.swift` writes `Sources_App_Screen.baton.swift`), or
-  exactly where `--emit <source>=<output>` says. A source that names a
+  `.baton.kt` in place of `.kt` in a Kotlin run, or exactly where
+  `--emit <source>=<output>` says. A source that names a
   marker but holds no document gets a header only, so a build system never
-  sees a missing output. Under `--out`, a `.baton.swift` in the directory
-  that this run did not write is removed, so a renamed source leaves nothing
-  behind.
-- **The shared file**, `Baton.baton.swift` under `--out` or `--shared
-  <file>`: the types every output names, the schema's digest, the format
-  marker.
+  sees a missing output. Under `--out`, an output of the run's language in
+  the directory that this run did not write is removed, so a renamed source
+  leaves nothing behind.
+- **The shared file**, `Baton.baton.swift`, or `Baton.baton.kt` in a Kotlin
+  run, under `--out` or `--shared <file>`: the types every output names, the
+  schema's digest, the format marker.
 - **The persisted documents file**, under `persistConfig`: beside the
   configuration, or under `--out` when given.
 - **The report**, `--report <file>`: what the target compiled, as JSON. See
@@ -68,8 +104,8 @@ tool, which formats it.
 ## Diagnostics and exit codes
 
 Diagnostics are printed to stderr as `path:line:column: severity: message`,
-with the position inside the GraphQL text in the host Swift file, so Xcode
-and Bazel both show them at the line. A warning does not fail the command.
+with the position inside the GraphQL text in the host file, so Xcode,
+Gradle and Bazel show them at the line. A warning does not fail the command.
 
 | Exit | Meaning |
 |---|---|

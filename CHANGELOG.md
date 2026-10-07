@@ -13,6 +13,14 @@ are expected and listed without apology.
   fields and deferred parts on their records, and every case of
   `spec/manifest.json` leaves its dump byte for byte on the JVM. The
   lenses, layers, retention and the image follow.
+- `batonc` writes Kotlin: `generate --language kotlin`, or a `.kt` host,
+  writes each operation as a class of its variables, equal by them, whose
+  companion holds its document and plan, and the shared `Baton.baton.kt`
+  with `Types`, `Slots`, the schema's enums and its input objects, in the
+  package `baton.json` names under `"kotlin": {"package": …}` or the host's
+  own. The `.kt` scanner reads every Kotlin string form, and a document with
+  a variable is written in a `$$` string. A mapped scalar names its Kotlin
+  type and converter under `kotlin`. Lenses follow with the Kotlin readers.
 - `URLSessionTransport` reads a request error answered with a 4xx or 5xx
   status as `application/graphql-response+json`, as GraphQL Yoga, Hive
   Gateway and Apollo Router do for a document that fails to parse or

@@ -8,6 +8,7 @@ use std::fmt;
 use std::path::{Path, PathBuf};
 
 use crate::diagnostics::Rendered;
+use crate::kotlin::KotlinHost;
 use crate::pipeline::Plan;
 use crate::swift::SwiftHost;
 
@@ -39,7 +40,26 @@ pub trait HostLanguage: Sync {
 }
 
 /// The host languages the compiler reads.
-pub const HOSTS: [&dyn HostLanguage; 1] = [&SwiftHost];
+pub const HOSTS: [&dyn HostLanguage; 2] = [&SwiftHost, &KotlinHost];
+
+/// The source's path relative to `root`, each directory separator an
+/// underscore, with `suffix` in place of the language's own `extension`
+/// and after any other, so `Thing.swift` and `Thing.graphql`, or two files
+/// of one name in two directories, write two outputs.
+pub fn output_name(source: &Path, root: &Path, extension: &str, suffix: &str) -> String {
+    let relative = source.strip_prefix(root).unwrap_or(source);
+    let parts: Vec<String> = relative
+        .components()
+        .filter_map(|component| match component {
+            std::path::Component::Normal(part) => Some(part.to_string_lossy().into_owned()),
+            std::path::Component::ParentDir => Some("..".to_string()),
+            _ => None,
+        })
+        .collect();
+    let joined = parts.join("_");
+    let stem = joined.strip_suffix(extension).unwrap_or(&joined);
+    format!("{stem}{suffix}")
+}
 
 /// The host language whose files have the extension of `path`.
 pub fn host_of(path: &Path) -> Option<&'static dyn HostLanguage> {
@@ -92,9 +112,23 @@ pub struct EmbeddedDocument {
     pub attribute: Position,
     /// Where the first character of `text` sits in the file.
     pub start: Position,
-    /// The literal's content, verbatim.
+    /// The literal's content: verbatim in Swift, the string's value in
+    /// Kotlin.
     pub text: String,
     pub property: Option<Property>,
+    /// The indentation removed from each line after the first, which a
+    /// position in the text adds back: a Kotlin raw string's text is
+    /// dedented, a Swift literal's is not.
+    #[serde(skip_serializing_if = "is_zero")]
+    pub indentation: u32,
+    /// The package the host file declares, which the code generated for it
+    /// takes: a Kotlin file's.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub package: Option<String>,
+}
+
+fn is_zero(value: &u32) -> bool {
+    *value == 0
 }
 
 /// One GraphQL source text and the place it lives.
@@ -212,9 +246,14 @@ impl Document {
                 column: self.start.column + column_in_line - 1,
             }
         } else {
+            let indentation = self
+                .embedded
+                .as_ref()
+                .map(|embedded| embedded.indentation)
+                .unwrap_or(0);
             Position {
                 line: self.start.line + newlines,
-                column: column_in_line,
+                column: column_in_line + indentation,
             }
         }
     }

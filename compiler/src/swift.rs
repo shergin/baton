@@ -12,7 +12,9 @@
 use std::path::Path;
 
 use crate::diagnostics::{self, Rendered};
-use crate::documents::{Document, EmbeddedDocument, HostLanguage, Marker, Position, Property};
+use crate::documents::{
+    self, Document, EmbeddedDocument, HostLanguage, Marker, Position, Property,
+};
 use crate::pipeline;
 
 /// The marker an attribute's identifier names, if any.
@@ -83,18 +85,7 @@ impl HostLanguage for SwiftHost {
     /// one name in two directories, write two outputs. The build plugin names
     /// its outputs by the same rule.
     fn output_name(&self, source: &Path, root: &Path) -> String {
-        let relative = source.strip_prefix(root).unwrap_or(source);
-        let parts: Vec<String> = relative
-            .components()
-            .filter_map(|component| match component {
-                std::path::Component::Normal(part) => Some(part.to_string_lossy().into_owned()),
-                std::path::Component::ParentDir => Some("..".to_string()),
-                _ => None,
-            })
-            .collect();
-        let joined = parts.join("_");
-        let stem = joined.strip_suffix(".swift").unwrap_or(&joined);
-        format!("{stem}{OUTPUT_SUFFIX}")
+        documents::output_name(source, root, ".swift", OUTPUT_SUFFIX)
     }
 
     fn shared_output_name(&self) -> &'static str {
@@ -424,6 +415,8 @@ impl<'a> Scanner<'a> {
             start,
             text,
             property,
+            indentation: 0,
+            package: None,
         });
     }
 

@@ -1,3 +1,5 @@
+//! The emitters: Swift's here, and Kotlin's in `kotlin`.
+//!
 //! The Swift emitter: lens types, the values of `@inline` fragments,
 //! operation values, plan tables, mutation actions with their optimistic
 //! builders, connection lenses with their pagination, the error and
@@ -16,6 +18,7 @@
 //! optimistic builders; `swift` holds the literals they share.
 
 mod builder;
+mod kotlin;
 mod lens;
 mod operation;
 mod plan;
@@ -30,7 +33,9 @@ use crate::config::Config;
 use crate::decide::Program;
 use crate::names::SwiftNaming;
 
-/// Generated Swift, grouped by the source file that declared the documents.
+pub use kotlin::Kotlin;
+
+/// Generated code, grouped by the source file that declared the documents.
 pub struct Output {
     pub files: BTreeMap<String, String>,
     pub shared: String,

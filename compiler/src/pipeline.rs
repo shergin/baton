@@ -12,8 +12,9 @@ mod plan;
 
 pub use plan::{
     ArgumentPlan, ArgumentValuePlan, CatchTarget, ConditionClass, ConnectionPlan, ConstantPlan,
-    EditPlan, FragmentPlan, LookupPlan, OperationKind, OperationPlan, Origin, Plan, RefetchPlan,
-    RequiredAction, RequiredPlan, SelectionPlan, StorageKeyPlan, TypeKind, TypePlan, VariablePlan,
+    EditKind, EditPlan, FragmentPlan, LookupPlan, OperationKind, OperationPlan, Origin, Plan,
+    RefetchPlan, RequiredAction, RequiredPlan, SelectionPlan, StorageKeyPlan, TypeKind, TypePlan,
+    VariablePlan,
 };
 
 use std::collections::{BTreeMap, BTreeSet};
@@ -34,7 +35,7 @@ use relay_transforms::{
 };
 use schema::{SDLSchema, Schema, Type};
 
-use crate::config::Config;
+use crate::config::{Config, Language};
 use crate::documents::Document;
 
 use lower::lower;
@@ -372,8 +373,9 @@ fn validate_client_fields(schema: &SDLSchema) -> Vec<Diagnostic> {
 }
 
 /// Checks each mapping in `customScalarTypes`: the name is a custom scalar
-/// of the schema, and the Swift type is written, as the value or as its
-/// `swift` entry.
+/// of the schema, and the host type of the language the run generates is
+/// written: Swift's as the value or as its `swift` entry, Kotlin's as its
+/// `kotlin` entry with the converter.
 fn validate_mappings(schema: &SDLSchema, config: &Config) -> Vec<Diagnostic> {
     let location = config_location(config);
     let mut errors = Vec::new();
@@ -394,6 +396,23 @@ fn validate_mappings(schema: &SDLSchema, config: &Config) -> Vec<Diagnostic> {
             None => fail(format!(
                 "`customScalarTypes` maps `{scalar}`, which the schema does not declare"
             )),
+        }
+        if config.language == Language::Kotlin {
+            match host_types.kotlin() {
+                None => fail(format!(
+                    "`customScalarTypes` maps `{scalar}` to no Kotlin type: write it under `kotlin` as `{{\"type\": …, \"converter\": …}}`, the type it reads as and the `ScalarConverter` object that converts it"
+                )),
+                Some(converted)
+                    if converted.type_name.trim().is_empty()
+                        || converted.converter.trim().is_empty() =>
+                {
+                    fail(format!(
+                        "`customScalarTypes` maps `{scalar}` to no Kotlin type: write the type it reads as and its converter"
+                    ))
+                }
+                Some(_) => {}
+            }
+            continue;
         }
         match host_types.swift() {
             None => fail(format!(

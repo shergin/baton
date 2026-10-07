@@ -333,6 +333,83 @@ fn the_swift_emitter_reproduces_its_goldens_byte_for_byte() {
     check_goldens(goldens(), &emit_swift_tests(), ".baton.swift");
 }
 
+/// The Kotlin goldens, which the Gradle module `kotlin/goldens` compiles.
+fn kotlin_goldens() -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("src/tests/goldens-kotlin")
+}
+
+/// The Swift test target's configuration as the Kotlin target reads it: the
+/// package `baton.goldens`, and each mapped scalar's Kotlin type with the
+/// converter `kotlin/goldens` declares for it.
+fn kotlin_tests_config() -> Config {
+    let mut config = swift_tests_config();
+    config.language = crate::config::Language::Kotlin;
+    config.kotlin = Some(crate::config::KotlinConfig {
+        package: Some("baton.goldens".to_string()),
+    });
+    let kotlin_types = [
+        ("Decimal", "java.math.BigDecimal", "baton.scalars.Decimals"),
+        ("DateTime", "java.time.Instant", "baton.scalars.DateTimes"),
+        ("Url", "java.net.URI", "baton.scalars.Urls"),
+    ];
+    for (scalar, type_name, converter) in kotlin_types {
+        let swift = config.custom_scalar_types[scalar]
+            .swift()
+            .expect("the test target maps the scalar for Swift")
+            .to_string();
+        let by_language = BTreeMap::from([
+            ("swift".to_string(), crate::config::HostType::Named(swift)),
+            (
+                "kotlin".to_string(),
+                crate::config::HostType::Converted(crate::config::ConvertedType {
+                    type_name: type_name.to_string(),
+                    converter: converter.to_string(),
+                }),
+            ),
+        ]);
+        config.custom_scalar_types.insert(
+            scalar.to_string(),
+            crate::config::HostTypes::ByLanguage(by_language),
+        );
+    }
+    config
+}
+
+/// Compiles the Swift test target's documents and returns the Kotlin the
+/// Kotlin target writes for them by output name, the shared file among
+/// them.
+fn emit_kotlin_tests() -> BTreeMap<String, String> {
+    let plan = compile_swift_tests();
+    let output =
+        super::kotlin::kotlin(&plan, &kotlin_tests_config()).unwrap_or_else(|duplicates| {
+            let messages: Vec<String> = duplicates.iter().map(ToString::to_string).collect();
+            panic!(
+                "the test documents emit names twice in Kotlin:\n{}",
+                messages.join("\n")
+            )
+        });
+    let mut files: BTreeMap<String, String> = output
+        .files
+        .into_iter()
+        .map(|(source, text)| (golden_name(&source, ".baton.kt"), text))
+        .collect();
+    files.insert("Baton.baton.kt".to_string(), output.shared);
+    files
+}
+
+#[test]
+fn the_kotlin_emitter_reproduces_its_goldens_byte_for_byte() {
+    check_goldens(kotlin_goldens(), &emit_kotlin_tests(), ".baton.kt");
+}
+
+#[test]
+fn compiling_the_same_sources_twice_emits_the_same_kotlin() {
+    assert!(
+        emit_kotlin_tests() == emit_kotlin_tests(),
+        "two compilations of the same sources emitted different Kotlin"
+    );
+}
+
 #[test]
 fn the_plan_reproduces_its_goldens_byte_for_byte() {
     check_goldens(plans(), &plan_swift_tests(), ".plan.json");

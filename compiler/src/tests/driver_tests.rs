@@ -94,7 +94,10 @@ fn stale_count(result: Result<(), DriverError>) -> usize {
 fn fresh_outputs_pass_the_check() {
     let out = Scratch::new("fresh");
     let planned = fresh(&out);
-    assert_eq!(stale_count(check_outputs(&planned, Some(&out.0))), 0);
+    assert_eq!(
+        stale_count(check_outputs(&planned, Some(&out.0), &SwiftHost)),
+        0
+    );
 }
 
 #[test]
@@ -103,7 +106,10 @@ fn an_edited_output_is_stale() {
     let planned = fresh(&out);
     std::fs::write(out.join("Screen.baton.swift"), "// Screen, edited\n")
         .expect("the output is edited");
-    assert_eq!(stale_count(check_outputs(&planned, Some(&out.0))), 1);
+    assert_eq!(
+        stale_count(check_outputs(&planned, Some(&out.0), &SwiftHost)),
+        1
+    );
     assert_eq!(
         std::fs::read_to_string(out.join("Screen.baton.swift")).ok(),
         Some("// Screen, edited\n".to_string()),
@@ -116,7 +122,10 @@ fn a_missing_output_is_stale() {
     let out = Scratch::new("missing");
     let planned = fresh(&out);
     std::fs::remove_file(out.join("Screen.baton.swift")).expect("the output is removed");
-    assert_eq!(stale_count(check_outputs(&planned, Some(&out.0))), 1);
+    assert_eq!(
+        stale_count(check_outputs(&planned, Some(&out.0), &SwiftHost)),
+        1
+    );
     assert!(
         !out.join("Screen.baton.swift").exists(),
         "the check writes nothing"
@@ -128,7 +137,10 @@ fn a_generated_file_nothing_writes_is_stale() {
     let out = Scratch::new("stray");
     let planned = fresh(&out);
     std::fs::write(out.join("Removed.baton.swift"), "// Removed\n").expect("the stray is written");
-    assert_eq!(stale_count(check_outputs(&planned, Some(&out.0))), 1);
+    assert_eq!(
+        stale_count(check_outputs(&planned, Some(&out.0), &SwiftHost)),
+        1
+    );
     assert!(
         out.join("Removed.baton.swift").exists(),
         "the check removes nothing"
@@ -141,7 +153,10 @@ fn a_file_of_another_extension_in_the_output_directory_is_ignored() {
     let planned = fresh(&out);
     std::fs::write(out.join("Notes.swift"), "// Notes\n").expect("the file is written");
     std::fs::write(out.join("Baton.report.json"), "{}\n").expect("the file is written");
-    assert_eq!(stale_count(check_outputs(&planned, Some(&out.0))), 0);
+    assert_eq!(
+        stale_count(check_outputs(&planned, Some(&out.0), &SwiftHost)),
+        0
+    );
 }
 
 #[test]
@@ -152,11 +167,20 @@ fn a_planned_output_outside_the_output_directory_is_compared_too() {
     let report = elsewhere.join("Baton.report.json");
     planned.push((report.clone(), "{}\n".to_string()));
     std::fs::write(&report, "{}\n").expect("the report is written");
-    assert_eq!(stale_count(check_outputs(&planned, Some(&out.0))), 0);
+    assert_eq!(
+        stale_count(check_outputs(&planned, Some(&out.0), &SwiftHost)),
+        0
+    );
     std::fs::write(&report, "{ \"edited\": true }\n").expect("the report is edited");
-    assert_eq!(stale_count(check_outputs(&planned, Some(&out.0))), 1);
+    assert_eq!(
+        stale_count(check_outputs(&planned, Some(&out.0), &SwiftHost)),
+        1
+    );
     std::fs::remove_file(&report).expect("the report is removed");
-    assert_eq!(stale_count(check_outputs(&planned, Some(&out.0))), 1);
+    assert_eq!(
+        stale_count(check_outputs(&planned, Some(&out.0), &SwiftHost)),
+        1
+    );
 }
 
 #[test]
@@ -166,5 +190,8 @@ fn every_difference_is_counted() {
     std::fs::write(out.join("Screen.baton.swift"), "// edited\n").expect("the output is edited");
     std::fs::remove_file(out.join("Baton.baton.swift")).expect("the output is removed");
     std::fs::write(out.join("Removed.baton.swift"), "// Removed\n").expect("the stray is written");
-    assert_eq!(stale_count(check_outputs(&planned, Some(&out.0))), 3);
+    assert_eq!(
+        stale_count(check_outputs(&planned, Some(&out.0), &SwiftHost)),
+        3
+    );
 }

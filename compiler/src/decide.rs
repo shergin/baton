@@ -28,9 +28,9 @@ pub use collect::{InputField, Shared};
 pub use keys::{KeyPart, SlotRef, constant_json};
 pub use lens::{
     Accessor, AliasGuard, AliasedRead, Binding, BoundArgument, ConditionRead, ConnectionMembers,
-    ErrorCheck, ErrorLine, Guarded, LinkedForm, LinkedRead, LoadMore, Primitive, Read, ReaderPlan,
-    RefetchMembers, SatisfiedCheck, ScalarForm, ScalarRead, ScalarShape, SlotAccess, SpreadForm,
-    SpreadGuard, SpreadRead, TypeTest,
+    ErrorCheck, ErrorLine, Guarded, LinkedForm, LinkedRead, ListShape, LoadMore, Primitive, Read,
+    ReaderPlan, RefetchMembers, SatisfiedCheck, ScalarForm, ScalarRead, ScalarShape, SlotAccess,
+    SpreadForm, SpreadGuard, SpreadRead, TypeTest,
 };
 pub use operation::{BuilderPlan, BuilderValue, OperationValue, VariableBase, VariableValue};
 

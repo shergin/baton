@@ -166,17 +166,80 @@ pub enum OnError {
 #[serde(untagged)]
 pub enum HostTypes {
     One(String),
-    ByLanguage(BTreeMap<String, String>),
+    ByLanguage(BTreeMap<String, HostType>),
+}
+
+/// One language's entry of a mapped scalar: a type's name, as Swift's is,
+/// or a type and the converter between it and the scalar's text, as
+/// Kotlin's is.
+#[derive(Debug, Clone, PartialEq, Eq, serde::Deserialize)]
+#[serde(untagged)]
+pub enum HostType {
+    Named(String),
+    Converted(ConvertedType),
+}
+
+/// A host type the runtime cannot extend, and the `object` that converts it
+/// from and to the scalar's text: Kotlin's `{"type":
+/// "java.math.BigDecimal", "converter": "app.Decimals"}`.
+#[derive(Debug, Clone, PartialEq, Eq, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ConvertedType {
+    #[serde(rename = "type")]
+    pub type_name: String,
+    pub converter: String,
 }
 
 impl HostTypes {
-    /// The Swift type: the string, or the `swift` entry.
+    /// The Swift type: the string, or the `swift` entry when it names one.
     pub fn swift(&self) -> Option<&str> {
         match self {
             HostTypes::One(swift_type) => Some(swift_type),
-            HostTypes::ByLanguage(types) => types.get("swift").map(String::as_str),
+            HostTypes::ByLanguage(types) => match types.get("swift")? {
+                HostType::Named(swift_type) => Some(swift_type),
+                HostType::Converted(_) => None,
+            },
         }
     }
+
+    /// The `kotlin` entry, when it gives a type and its converter.
+    pub fn kotlin(&self) -> Option<&ConvertedType> {
+        match self {
+            HostTypes::One(_) => None,
+            HostTypes::ByLanguage(types) => match types.get("kotlin")? {
+                HostType::Converted(converted) => Some(converted),
+                HostType::Named(_) => None,
+            },
+        }
+    }
+}
+
+/// The language a run generates.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub enum Language {
+    #[default]
+    Swift,
+    Kotlin,
+}
+
+impl Language {
+    /// The language as a message names it.
+    pub fn name(self) -> &'static str {
+        match self {
+            Language::Swift => "Swift",
+            Language::Kotlin => "Kotlin",
+        }
+    }
+}
+
+/// What the Kotlin target reads from `baton.json`.
+#[derive(Debug, Clone, Default, PartialEq, Eq, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct KotlinConfig {
+    /// The package of the shared file and of the code generated from
+    /// `.graphql` sources; a `.kt` host's code takes the host's own.
+    #[serde(default)]
+    pub package: Option<String>,
 }
 
 #[derive(Debug, Clone, Default, serde::Deserialize)]
@@ -209,8 +272,9 @@ pub struct Config {
     pub persist_config: Option<PersistConfig>,
     /// Relay's `customScalarTypes`: the host type a custom scalar reads as,
     /// by the scalar's name, e.g. `"Decimal": "Foundation.Decimal"` or
-    /// `"Decimal": {"swift": "Foundation.Decimal", "kotlin":
-    /// "java.math.BigDecimal"}`. The store keeps the text; the accessor
+    /// `"Decimal": {"swift": "Foundation.Decimal", "kotlin": {"type":
+    /// "java.math.BigDecimal", "converter": "app.Decimals"}}`. The store
+    /// keeps the text; the accessor
     /// converts at the read, and says the conversion can fail. An unmapped
     /// custom scalar reads as `String`.
     #[serde(rename = "customScalarTypes", default)]
@@ -221,6 +285,14 @@ pub struct Config {
     /// nullability: non-null only where errors are handled.
     #[serde(rename = "onError", default)]
     pub on_error: Option<OnError>,
+    /// What the Kotlin target reads: the package of the code it writes for
+    /// no host file of its own.
+    #[serde(default)]
+    pub kotlin: Option<KotlinConfig>,
+    /// The language the run generates, which the driver sets: a mapped
+    /// scalar needs an entry for it.
+    #[serde(skip)]
+    pub language: Language,
     /// Where the configuration was read from, for its diagnostics.
     #[serde(skip)]
     pub path: PathBuf,
@@ -276,5 +348,19 @@ impl Config {
                 Some((scalar.clone(), host_types.swift()?.to_string()))
             })
             .collect()
+    }
+
+    /// The Kotlin type and converter of each mapped custom scalar, by the
+    /// scalar's name.
+    pub fn kotlin_types(&self) -> BTreeMap<String, ConvertedType> {
+        self.custom_scalar_types
+            .iter()
+            .filter_map(|(scalar, host_types)| Some((scalar.clone(), host_types.kotlin()?.clone())))
+            .collect()
+    }
+
+    /// The package `kotlin.package` names.
+    pub fn kotlin_package(&self) -> Option<&str> {
+        self.kotlin.as_ref()?.package.as_deref()
     }
 }
