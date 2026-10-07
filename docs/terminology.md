@@ -129,7 +129,8 @@ read out by the spread's accessor on the parent's lens: for code off the
 main actor, and for rules tested with values. A fragment is a lens or
 inline, never both, and no API takes the value. An inline fragment spreads
 only inline fragments and takes no `@connection` or `@refetchable`, and its
-spread takes `@alias` and `@arguments` only. A view holds a value only as a
+spread takes what any spread takes but `@catch`, a conditional or
+deferred one yielding an optional value. A view holds a value only as a
 parameter of its own initializer, and an operation root needed as a value
 spreads one inline fragment. See
 [the decision](decisions/a-fragment-has-one-reading.md).

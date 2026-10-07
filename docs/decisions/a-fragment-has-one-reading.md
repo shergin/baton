@@ -7,9 +7,9 @@ Status: accepted, 2026-10-04. Serves
 real screen needs both readings of one fragment and cannot spread an inline
 fragment beside its own, or if adopters' views start taking inline values.
 Sharpened 2026-10-06, before the build, with the rules it gained: what an
-inline fragment contains and what its spread takes, the `Hashable` value
-under `@catch`, operation roots, a value held by a view, and where a read
-of the value registers. The decision is unchanged.
+inline fragment contains and that its spread takes Relay's directives but
+`@catch`, the `Hashable` value under `@catch`, operation roots, a value
+held by a view, and where a read of the value registers. The decision is unchanged.
 
 ## Context
 
@@ -59,14 +59,18 @@ value, for code outside views.
   tap is the intended use. What is refused is a Baton API that takes one.
 - `@connection` and `@refetchable` have no meaning on a frozen value, and
   are refused on an inline fragment and inside one.
-- The spread of an inline fragment takes `@alias` and `@arguments` only;
-  `@include`, `@skip`, `@defer` and `@catch` on it are errors. Relay keeps
-  the spread's arguments and refuses `@catch` there; it lifts `@include`,
-  `@skip` and `@defer` off the spread before its check, so refusing those
-  three is stricter than Relay. They wait for a case that needs a value
-  that may be absent; a refusal lifted then breaks no document. The spread
-  table in `directives.rs` (`SPREAD`) gains a branch for an inline
-  fragment's spread when this is built.
+- The spread of an inline fragment takes what any spread takes but
+  `@catch`: `@include`, `@skip`, `@defer`, `@arguments` and `@alias`.
+  `@catch` on it is an error, as in Relay. A conditional or deferred
+  spread's accessor returns an optional value, as a lens's does, so
+  nothing new is needed and Relay's documents keep compiling. Relay keeps
+  the spread's arguments; its IR builder lifts `@include` and `@skip` into
+  a condition around the spread, and its defer transform, which runs before
+  the inline transform, lifts `@defer` the same way; `@catch` stays on the
+  spread and is refused there. A restriction Relay does not have needs a
+  reason, and there is none. The spread table in `directives.rs`
+  (`SPREAD`) gains a branch that refuses `@catch` on an inline fragment's
+  spread when this is built.
 - The value is `Hashable` unconditionally, and `@catch` breaks that as
   built: a caught field reads as a `Result` whose failure is `FieldErrors`,
   which is not `Hashable`. Open for the build: `FieldErrors` gains
@@ -128,6 +132,8 @@ value, for code outside views.
 
 - `@snapshot` as filed: an invented word, and a second type for every
   marked fragment.
+- Refusing conditions and `@defer` on an inline fragment's spread, which
+  Relay allows, for no reason a document would show.
 - Refusing the need, which was the first answer. Every crossing of the
   main actor's boundary stays a hand copy that nothing checks, a function
   outside a view cannot state the data it needs as a value, and a document
