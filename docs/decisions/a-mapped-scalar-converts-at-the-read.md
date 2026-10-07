@@ -88,3 +88,10 @@ all three.
   need it.
 - A non-optional accessor that reads a zero on failure, the rule the
   built-in scalars follow: `URL` has no zero and a zero amount is data.
+
+## Since
+
+`reportUnexpected` is gone: the four hooks became one sink, and a failed
+conversion is logged as the `unexpected` event, per
+[The environment logs value-free events](the-environment-logs-value-free-events.md).
+The rule above is unchanged.

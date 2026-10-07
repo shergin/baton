@@ -224,7 +224,9 @@ behind a gate, and the gate failed on the bench (`BENCHMARKS.md`,
 2026-10-05: the verdict costs 567 µs untracked and 4.56 ms in a body's
 tracking scope on the strict fixture, against the 50 µs the gate allowed),
 so the phase stays stored and a fetch's failure is read beside it as the
-fetch's value. See [the decision](decisions/a-handle-derives-its-phase.md).
+fetch's value. See [the decision](decisions/the-phase-stays-stored.md),
+which superseded [the first one](decisions/a-handle-derives-its-phase.md)
+on that point.
 
 **Action.** *Composition: lens, operation value, environment.* A mutation as
 a callable value, after SwiftUI's `dismiss` and `openURL`: called with one
@@ -236,9 +238,9 @@ labelled argument per variable and an optional `optimistic:` response,
 
 **Record.** *Concept: record.* Relay: a normalized object in the store.
 Here: an observable object identified by typename plus key, holding interned
-slots and per-field errors. Type-membership bits, so that a record of a
-concrete type the build never saw takes its variant from the response's own
-`__isX` answers, are *(planned)*. Its values are sized by
+slots and per-field errors. A record of a concrete type the build never
+saw takes its variant from the response's own `__isX` answers, as
+[membership](#documents) says. Its values are sized by
 what was written, not by how many storage keys the type has, and the keys
 rendered from variables written to it are kept in a short list apart. A
 record `@deleteRecord` removed is *deleted*: links to it read as null, lists
@@ -325,8 +327,8 @@ payload)` runs the operation's plan over a payload in a response's shape,
 with the ingest, the commit and the image a fetch has, through the same
 door: the one way for data from outside the transport, a REST response, a
 socket's tick, a preview's fixture, a test's seed. A payload may carry part
-of what the operation selects. Client fields it alone writes are
-*(planned)*. See
+of what the operation selects, and it alone writes
+[client fields](#compiler). See
 [the decision](decisions/client-data-is-described-and-committed.md).
 
 **Root, retain, release buffer.** *Composition: store, operation value,
@@ -360,7 +362,8 @@ of every response, a handle's fetch, a refetch, a page, `Environment.fetch`
 or `commitPayload`, whoever asked for it, and persisted as the image's fetch
 time; a handle reads it as `fetchTime`. Data with no known age is stale
 wherever an expiration applies, in memory as from the image. See
-[the decision](decisions/the-store-owns-roots-and-ages.md).
+[the decision](decisions/the-store-owns-roots-and-ages.md) and
+[the revalidation decision](decisions/revalidation-is-the-apps-call.md).
 
 **Persistence, image.** *Concept: store.* Baton's words; Relay's store lives
 in memory. The image is the store's records in one SQLite file, written
@@ -451,8 +454,8 @@ it is not a miss, so nothing heals it.
 ## Compiler
 
 **Schema.** *Concept: schema.* GraphQL: the SDL. Here: a checked-in file,
-named in `baton.json`. Identity configured beside it is *(planned)*; the
-compiler has no introspection command, and the file is downloaded by the
+named in `baton.json`, with the [identity](#store) configured beside it;
+the compiler has no introspection command, and the file is downloaded by the
 app's own tooling.
 
 **Client schema extension, client field.** *Concept: schema.* Relay:
@@ -772,8 +775,8 @@ environment's. The transport's kind carries what the transport threw,
 unchanged, and `error` is the error as thrown whatever the kind. A field
 error is not a kind: under `@throwOnFieldError` it fails the phase, as a
 `@required` field that bubbled does, but it is a fact about the data. A
-handle's [fetch](#runtime) carries it; a stream's end *(planned)* and the
-events the runtime reports, proposed apart, classify by it. What the phase's
+handle's [fetch](#runtime) carries it, a subscription's stream ends with
+it, and the [log](#runtime)'s events name its kind. What the phase's
 failed case and `refetch()` carry stays `any Error`, the error as thrown,
 which the decision leaves open. See
 [the decision](decisions/a-failure-says-its-kind.md).
@@ -785,7 +788,8 @@ decided on attach over the availability check and staleness. The policy is
 the holder's: it stays with the retention the attach makes, so a fetch the
 runtime starts later, for an invalidation, a revalidation or a heal, asks
 whether any holder allows the network, and a `storeOnly` holder is fetched
-for by none of them.
+for by none of them. See
+[the decision](decisions/revalidation-is-the-apps-call.md).
 
 **Lookup.** *Composition: schema, store, plan.* Baton's word for a root
 field configured in `baton.json` as returning an entity by its arguments,

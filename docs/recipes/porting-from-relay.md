@@ -58,7 +58,7 @@ a native runtime make better, and what Baton leaves out on purpose. Each
 | `@module`, `@match` | Code splitting is a bundler's concern | none |
 | Reader snapshots, `seenRecords`, store subscriptions | Observation does what they do, per field | none |
 | Suspense, the missed-update epoch | Reads are synchronous; the heal refetches | none |
-| Generator-based GC | The collector runs off the main actor on the store's schedule | A pass that misses a frame |
+| Generator-based GC | A pass runs whole on the main actor, once a turn after a root left or a commit dropped a link: 2.8 ms over 50,000 records ([why](../decisions/the-check-and-collection-run-on-the-main-actor.md)) | A pass that misses a frame |
 | `invalidateRecord` | Ages belong to the operation, not the record | A product that must mark one entity stale |
 | `@stream`, `@stream_connection` | No server in use emits them | A server in use that does |
 | Imperative store updaters | Directives and payloads have expressed every write so far | A real write neither can express |

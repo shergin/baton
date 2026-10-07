@@ -5,7 +5,12 @@ Status: accepted, 2026-10-05. Serves
 [Honest data](../principles/honest-data.md). Reopen if the bench named
 under Evidence fails its limits (then the fetch's value ships alone and the
 phase stays stored), or if a reader outside a body needs the phase pushed to
-it rather than computed when it asks.
+it rather than computed when it asks. Superseded on the derived phase, by
+its own reopening line, by
+[The phase stays stored, beside the fetch](the-phase-stays-stored.md); the
+fetch as a value is built as decided (`61c3ac4`). The policy and the
+revalidation it left open are answered by
+[Revalidation is one call the app makes](revalidation-is-the-apps-call.md).
 
 ## Context
 
