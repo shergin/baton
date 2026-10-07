@@ -17,7 +17,7 @@ struct DerivedStateTests {
     let quiet = Duration.milliseconds(500)
 
     func commit(_ environment: Environment, _ character: String) async throws {
-        try await environment.commitPayload(TestHeaderQuery(id: "5"), Data(#"{"data":{"character":{"id":"5",\#(character)}}}"#.utf8))
+        try await environment.commitPayload(TestHeaderQuery(id: "5"), Payload(json: #"{"data":{"character":{"id":"5",\#(character)}}}"#))
     }
 
     @Test func a_model_outside_views_observes_a_lens_field_through_Observations() async throws {

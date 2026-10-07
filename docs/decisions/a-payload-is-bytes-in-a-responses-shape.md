@@ -2,7 +2,7 @@
 
 Status: accepted, 2026-10-07. Serves
 [The response is the oracle](../principles/response-is-the-oracle.md) and
-[Relay's words](../principles/relays-words.md). Not built yet. Reopen if a
+[Relay's words](../principles/relays-words.md). Built 2026-10-07. Reopen if a
 caller of the door needs to hand it something that is not in a response's
 shape.
 

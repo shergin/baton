@@ -470,11 +470,13 @@ nonisolated public struct TestAddNote: Baton.Mutation {
         public init(addNote: AddNote? = nil) {
             self.addNote = addNote
         }
-        public var variable: Baton.Variable {
+        @_spi(Generated) public var variable: Baton.Variable {
             var fields: [String: Baton.Variable] = [:]
             if let addNote { fields["addNote"] = addNote.variable }
             return .object(fields)
         }
+        /// The response this builder describes, as the bytes the door takes.
+        public var payload: Baton.Payload { .init(data: variable) }
 
         /// A partial response to show before the server answers; absent fields leave the store untouched.
         nonisolated public struct AddNote: Sendable {
@@ -482,7 +484,7 @@ nonisolated public struct TestAddNote: Baton.Mutation {
             public init(noteEdge: NoteEdge? = nil) {
                 self.noteEdge = noteEdge
             }
-            public var variable: Baton.Variable {
+            @_spi(Generated) public var variable: Baton.Variable {
                 var fields: [String: Baton.Variable] = [:]
                 if let noteEdge { fields["noteEdge"] = noteEdge.variable }
                 return .object(fields)
@@ -496,7 +498,7 @@ nonisolated public struct TestAddNote: Baton.Mutation {
                     self.cursor = cursor
                     self.node = node
                 }
-                public var variable: Baton.Variable {
+                @_spi(Generated) public var variable: Baton.Variable {
                     var fields: [String: Baton.Variable] = [:]
                     if let cursor { fields["cursor"] = .init(cursor) }
                     if let node { fields["node"] = node.variable }
@@ -511,7 +513,7 @@ nonisolated public struct TestAddNote: Baton.Mutation {
                         self.id = id
                         self.text = text
                     }
-                    public var variable: Baton.Variable {
+                    @_spi(Generated) public var variable: Baton.Variable {
                         var fields: [String: Baton.Variable] = [:]
                         if let id { fields["id"] = .init(id) }
                         if let text { fields["text"] = .init(text) }
@@ -527,7 +529,7 @@ extension TestAddNote.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
     public func callAsFunction(characterId: String, text: String, connections: [String], optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
-        try await self.commit(.init(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
+        try await self.commit(.init(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.payload)
     }
 }
 
@@ -610,11 +612,13 @@ nonisolated public struct TestAddNoteFirst: Baton.Mutation {
         public init(addNote: AddNote? = nil) {
             self.addNote = addNote
         }
-        public var variable: Baton.Variable {
+        @_spi(Generated) public var variable: Baton.Variable {
             var fields: [String: Baton.Variable] = [:]
             if let addNote { fields["addNote"] = addNote.variable }
             return .object(fields)
         }
+        /// The response this builder describes, as the bytes the door takes.
+        public var payload: Baton.Payload { .init(data: variable) }
 
         /// A partial response to show before the server answers; absent fields leave the store untouched.
         nonisolated public struct AddNote: Sendable {
@@ -622,7 +626,7 @@ nonisolated public struct TestAddNoteFirst: Baton.Mutation {
             public init(noteEdge: NoteEdge? = nil) {
                 self.noteEdge = noteEdge
             }
-            public var variable: Baton.Variable {
+            @_spi(Generated) public var variable: Baton.Variable {
                 var fields: [String: Baton.Variable] = [:]
                 if let noteEdge { fields["noteEdge"] = noteEdge.variable }
                 return .object(fields)
@@ -636,7 +640,7 @@ nonisolated public struct TestAddNoteFirst: Baton.Mutation {
                     self.cursor = cursor
                     self.node = node
                 }
-                public var variable: Baton.Variable {
+                @_spi(Generated) public var variable: Baton.Variable {
                     var fields: [String: Baton.Variable] = [:]
                     if let cursor { fields["cursor"] = .init(cursor) }
                     if let node { fields["node"] = node.variable }
@@ -651,7 +655,7 @@ nonisolated public struct TestAddNoteFirst: Baton.Mutation {
                         self.id = id
                         self.text = text
                     }
-                    public var variable: Baton.Variable {
+                    @_spi(Generated) public var variable: Baton.Variable {
                         var fields: [String: Baton.Variable] = [:]
                         if let id { fields["id"] = .init(id) }
                         if let text { fields["text"] = .init(text) }
@@ -667,7 +671,7 @@ extension TestAddNoteFirst.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
     public func callAsFunction(characterId: String, text: String, connections: [String], optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
-        try await self.commit(.init(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
+        try await self.commit(.init(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.payload)
     }
 }
 
@@ -739,11 +743,13 @@ nonisolated public struct TestAddNoteNode: Baton.Mutation {
         public init(addNote: AddNote? = nil) {
             self.addNote = addNote
         }
-        public var variable: Baton.Variable {
+        @_spi(Generated) public var variable: Baton.Variable {
             var fields: [String: Baton.Variable] = [:]
             if let addNote { fields["addNote"] = addNote.variable }
             return .object(fields)
         }
+        /// The response this builder describes, as the bytes the door takes.
+        public var payload: Baton.Payload { .init(data: variable) }
 
         /// A partial response to show before the server answers; absent fields leave the store untouched.
         nonisolated public struct AddNote: Sendable {
@@ -751,7 +757,7 @@ nonisolated public struct TestAddNoteNode: Baton.Mutation {
             public init(note: Note? = nil) {
                 self.note = note
             }
-            public var variable: Baton.Variable {
+            @_spi(Generated) public var variable: Baton.Variable {
                 var fields: [String: Baton.Variable] = [:]
                 if let note { fields["note"] = note.variable }
                 return .object(fields)
@@ -765,7 +771,7 @@ nonisolated public struct TestAddNoteNode: Baton.Mutation {
                     self.id = id
                     self.text = text
                 }
-                public var variable: Baton.Variable {
+                @_spi(Generated) public var variable: Baton.Variable {
                     var fields: [String: Baton.Variable] = [:]
                     if let id { fields["id"] = .init(id) }
                     if let text { fields["text"] = .init(text) }
@@ -780,7 +786,7 @@ extension TestAddNoteNode.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
     public func callAsFunction(characterId: String, text: String, connections: [String], optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
-        try await self.commit(.init(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
+        try await self.commit(.init(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.payload)
     }
 }
 
@@ -852,11 +858,13 @@ nonisolated public struct TestAddNoteNodeFirst: Baton.Mutation {
         public init(addNote: AddNote? = nil) {
             self.addNote = addNote
         }
-        public var variable: Baton.Variable {
+        @_spi(Generated) public var variable: Baton.Variable {
             var fields: [String: Baton.Variable] = [:]
             if let addNote { fields["addNote"] = addNote.variable }
             return .object(fields)
         }
+        /// The response this builder describes, as the bytes the door takes.
+        public var payload: Baton.Payload { .init(data: variable) }
 
         /// A partial response to show before the server answers; absent fields leave the store untouched.
         nonisolated public struct AddNote: Sendable {
@@ -864,7 +872,7 @@ nonisolated public struct TestAddNoteNodeFirst: Baton.Mutation {
             public init(note: Note? = nil) {
                 self.note = note
             }
-            public var variable: Baton.Variable {
+            @_spi(Generated) public var variable: Baton.Variable {
                 var fields: [String: Baton.Variable] = [:]
                 if let note { fields["note"] = note.variable }
                 return .object(fields)
@@ -878,7 +886,7 @@ nonisolated public struct TestAddNoteNodeFirst: Baton.Mutation {
                     self.id = id
                     self.text = text
                 }
-                public var variable: Baton.Variable {
+                @_spi(Generated) public var variable: Baton.Variable {
                     var fields: [String: Baton.Variable] = [:]
                     if let id { fields["id"] = .init(id) }
                     if let text { fields["text"] = .init(text) }
@@ -893,7 +901,7 @@ extension TestAddNoteNodeFirst.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
     public func callAsFunction(characterId: String, text: String, connections: [String], optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
-        try await self.commit(.init(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
+        try await self.commit(.init(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.payload)
     }
 }
 
@@ -965,11 +973,13 @@ nonisolated public struct TestAddNoteNodeOfAnotherType: Baton.Mutation {
         public init(addNote: AddNote? = nil) {
             self.addNote = addNote
         }
-        public var variable: Baton.Variable {
+        @_spi(Generated) public var variable: Baton.Variable {
             var fields: [String: Baton.Variable] = [:]
             if let addNote { fields["addNote"] = addNote.variable }
             return .object(fields)
         }
+        /// The response this builder describes, as the bytes the door takes.
+        public var payload: Baton.Payload { .init(data: variable) }
 
         /// A partial response to show before the server answers; absent fields leave the store untouched.
         nonisolated public struct AddNote: Sendable {
@@ -977,7 +987,7 @@ nonisolated public struct TestAddNoteNodeOfAnotherType: Baton.Mutation {
             public init(note: Note? = nil) {
                 self.note = note
             }
-            public var variable: Baton.Variable {
+            @_spi(Generated) public var variable: Baton.Variable {
                 var fields: [String: Baton.Variable] = [:]
                 if let note { fields["note"] = note.variable }
                 return .object(fields)
@@ -991,7 +1001,7 @@ nonisolated public struct TestAddNoteNodeOfAnotherType: Baton.Mutation {
                     self.id = id
                     self.text = text
                 }
-                public var variable: Baton.Variable {
+                @_spi(Generated) public var variable: Baton.Variable {
                     var fields: [String: Baton.Variable] = [:]
                     if let id { fields["id"] = .init(id) }
                     if let text { fields["text"] = .init(text) }
@@ -1006,7 +1016,7 @@ extension TestAddNoteNodeOfAnotherType.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
     public func callAsFunction(characterId: String, text: String, connections: [String], optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
-        try await self.commit(.init(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.variable)
+        try await self.commit(.init(characterId: characterId, text: text, connections: connections), optimistic: optimistic?.payload)
     }
 }
 
@@ -1354,11 +1364,13 @@ nonisolated public struct TestDeleteNote: Baton.Mutation {
         public init(removeNote: RemoveNote? = nil) {
             self.removeNote = removeNote
         }
-        public var variable: Baton.Variable {
+        @_spi(Generated) public var variable: Baton.Variable {
             var fields: [String: Baton.Variable] = [:]
             if let removeNote { fields["removeNote"] = removeNote.variable }
             return .object(fields)
         }
+        /// The response this builder describes, as the bytes the door takes.
+        public var payload: Baton.Payload { .init(data: variable) }
 
         /// A partial response to show before the server answers; absent fields leave the store untouched.
         nonisolated public struct RemoveNote: Sendable {
@@ -1366,7 +1378,7 @@ nonisolated public struct TestDeleteNote: Baton.Mutation {
             public init(removedNoteId: String? = nil) {
                 self.removedNoteId = removedNoteId
             }
-            public var variable: Baton.Variable {
+            @_spi(Generated) public var variable: Baton.Variable {
                 var fields: [String: Baton.Variable] = [:]
                 if let removedNoteId { fields["removedNoteId"] = .init(removedNoteId) }
                 return .object(fields)
@@ -1379,7 +1391,7 @@ extension TestDeleteNote.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
     public func callAsFunction(id: String, optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
-        try await self.commit(.init(id: id), optimistic: optimistic?.variable)
+        try await self.commit(.init(id: id), optimistic: optimistic?.payload)
     }
 }
 
@@ -2110,11 +2122,13 @@ nonisolated public struct TestRemoveNote: Baton.Mutation {
         public init(removeNote: RemoveNote? = nil) {
             self.removeNote = removeNote
         }
-        public var variable: Baton.Variable {
+        @_spi(Generated) public var variable: Baton.Variable {
             var fields: [String: Baton.Variable] = [:]
             if let removeNote { fields["removeNote"] = removeNote.variable }
             return .object(fields)
         }
+        /// The response this builder describes, as the bytes the door takes.
+        public var payload: Baton.Payload { .init(data: variable) }
 
         /// A partial response to show before the server answers; absent fields leave the store untouched.
         nonisolated public struct RemoveNote: Sendable {
@@ -2124,7 +2138,7 @@ nonisolated public struct TestRemoveNote: Baton.Mutation {
                 self.removedNoteId = removedNoteId
                 self.deleted = deleted
             }
-            public var variable: Baton.Variable {
+            @_spi(Generated) public var variable: Baton.Variable {
                 var fields: [String: Baton.Variable] = [:]
                 if let removedNoteId { fields["removedNoteId"] = .init(removedNoteId) }
                 if let deleted { fields["deleted"] = .init(deleted) }
@@ -2138,7 +2152,7 @@ extension TestRemoveNote.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
     public func callAsFunction(id: String, connections: [String], optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
-        try await self.commit(.init(id: id, connections: connections), optimistic: optimistic?.variable)
+        try await self.commit(.init(id: id, connections: connections), optimistic: optimistic?.payload)
     }
 }
 

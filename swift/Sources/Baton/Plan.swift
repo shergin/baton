@@ -73,7 +73,11 @@ public enum Format15 {}
 public enum Format16 {}
 
 @_spi(Generated)
+@available(*, unavailable, message: "this generated code is of format 17 and the runtime reads format 18: an optimistic response is a payload; rebuild with the compiler of this release")
 public enum Format17 {}
+
+@_spi(Generated)
+public enum Format18 {}
 
 /// An operation's normalization plan, emitted by the compiler as static data:
 /// what the response contains and where each value is stored.

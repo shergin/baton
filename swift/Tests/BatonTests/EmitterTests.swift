@@ -189,7 +189,7 @@ struct EmitterTests {
             "string": .object(["character": .object(["id": .string("1"), "name": .string("Rick Prime")])]),
             "sendable": favorite,
         ]))
-        let json = Data(("{\"data\":" + optimistic.variable.json + "}").utf8)
+        let json = optimistic.payload.bytes
         _ = store.applyOptimistic(try Ingest.normalize(json, plan: TestBuilderNames.plan.resolve(mutation.variables, in: store.keys), rootKey: Store.mutationRootKey))
         let root = try #require(store.existing(Store.mutationRootKey))
         let data = TestBuilderNames.Data(anchor: Anchor(record: root, variables: mutation.variables, store: store))
@@ -209,7 +209,7 @@ struct EmitterTests {
         #expect(optimistic.variable == .object([
             "setFavorite": .object(["Baton": .object(["id": .string("1"), "Baton": .string("Rick Prime")])]),
         ]))
-        let json = Data(("{\"data\":" + optimistic.variable.json + "}").utf8)
+        let json = optimistic.payload.bytes
         _ = store.applyOptimistic(try Ingest.normalize(json, plan: TestModuleNamedPayload.plan.resolve(mutation.variables, in: store.keys), rootKey: Store.mutationRootKey))
         let root = try #require(store.existing(Store.mutationRootKey))
         let data = TestModuleNamedPayload.Data(anchor: Anchor(record: root, variables: mutation.variables, store: store))
@@ -240,7 +240,7 @@ struct EmitterTests {
             "jsons": .list([.string("{\"a\":1}"), .string("1.50")]),
             "statuses": .list([.string("ALIVE"), .string("DEAD")]),
         ])]))
-        let json = Data(("{\"data\":" + optimistic.variable.json + "}").utf8)
+        let json = optimistic.payload.bytes
         _ = store.applyOptimistic(try Ingest.normalize(json, plan: TestListPayload.plan.resolve(mutation.variables, in: store.keys), rootKey: Store.mutationRootKey))
         let root = try #require(store.existing(Store.mutationRootKey))
         let data = TestListPayload.Data(anchor: Anchor(record: root, variables: mutation.variables, store: store))

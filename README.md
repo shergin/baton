@@ -263,8 +263,8 @@ the environment refetches what is stale or failed when the app returns to
 the foreground.
 
 A store is filled from a payload as well as from the network.
-`try await environment.commitPayload(CharacterQuery(id: "1"), fixture)` runs
-the operation's plan over bytes in a response's shape and commits them as a
+`try await environment.commitPayload(CharacterQuery(id: "1"), Payload(fixture))`
+runs the operation's plan over bytes in a response's shape and commits them as a
 fetch's response is, so a preview draws from a fixture and a test seeds its
 store without a transport; the payload may carry part of what the operation
 selects. For the paths that do go through the network, `BatonTesting`'s

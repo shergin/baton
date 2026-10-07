@@ -1117,7 +1117,7 @@ struct PhaseTests {
         let text = String(decoding: fixture("conditions-excluded"), as: UTF8.self)
             .replacingOccurrences(of: "\"origin\":{\"id\":\"1\"}", with: "\"origin\":{\"id\":\"99\"}")
         #expect(text.contains("\"99\""))
-        try await environment.commitPayload(originIdOnly, Data(text.utf8))
+        try await environment.commitPayload(originIdOnly, Payload(json: text))
     }
 
     /// The dimension of Rick's origin, read through a handle's lens.
@@ -1178,7 +1178,7 @@ struct PhaseTests {
     func aStoreOnlyHolderIsNotHealedFromTheNetwork() async throws {
         let transport = RecordedTransport([TestConditions.name: fixture("conditions-included")])
         let (environment, reports) = reporting(transport)
-        try await environment.commitPayload(withOrigin, fixture("conditions-included"))
+        try await environment.commitPayload(withOrigin, Payload(fixture("conditions-included")))
         let handle = environment.handle(for: withOrigin, fetchPolicy: .storeOnly)
         let retention = handle.retain()
         #expect(dimension(handle) == "Dimension C-137")

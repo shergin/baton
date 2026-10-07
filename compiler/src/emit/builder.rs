@@ -4,7 +4,9 @@
 //! types alone: a payload field named `Baton` is a property that hides the
 //! module from the expressions of its builder and of every builder nested
 //! in it. A value takes its type from the dictionary it is stored in, as
-//! `.init(name)` does.
+//! `.init(name)` does. The response's own builder renders a payload, bytes
+//! in a response's shape, which is what the door takes; the JSON value a
+//! builder collects its fields in is generated code's alone.
 
 use super::swift::{SwiftType, member, parameter, scalar_type, swift_literal};
 use super::writer::Writer;
@@ -78,13 +80,23 @@ pub(super) fn builder(writer: &mut Writer, builder: &BuilderPlan) {
                     }
                 },
             );
-            writer.block(format!("public var variable: {variable}"), |writer| {
-                writer.line(format!("var {collected}: [String: {variable}] = [:]"));
-                for render in &renders {
-                    writer.line(render);
-                }
-                writer.line(format!("return .object({collected})"));
-            });
+            writer.block(
+                format!("@_spi(Generated) public var variable: {variable}"),
+                |writer| {
+                    writer.line(format!("var {collected}: [String: {variable}] = [:]"));
+                    for render in &renders {
+                        writer.line(render);
+                    }
+                    writer.line(format!("return .object({collected})"));
+                },
+            );
+            if builder.payload {
+                writer.doc("The response this builder describes, as the bytes the door takes.");
+                writer.line(format!(
+                    "public var payload: {} {{ .init(data: variable) }}",
+                    SwiftType::runtime("Payload")
+                ));
+            }
             for child in &builder.nested {
                 writer.blank();
                 self::builder(writer, child);

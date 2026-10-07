@@ -25,7 +25,7 @@ struct ScriptedTransportTests {
         let transport = ScriptedTransport()
         let environment = Environment(transport: transport, store: try seededStore())
         let rick = try favorite(environment.store, "Character:1")
-        let mutation = Task { try await environment.mutate(TestSetFavorite(id: "1", favorite: true), optimistic: optimistic.variable) }
+        let mutation = Task { try await environment.mutate(TestSetFavorite(id: "1", favorite: true), optimistic: optimistic.payload) }
         await until { transport.held.count == 1 }
 
         let held = try #require(transport.held.first)
@@ -47,7 +47,7 @@ struct ScriptedTransportTests {
         let transport = ScriptedTransport()
         let environment = Environment(transport: transport, store: try seededStore())
         let rick = try favorite(environment.store, "Character:1")
-        let mutation = Task { try await environment.mutate(TestSetFavorite(id: "1", favorite: true), optimistic: optimistic.variable) }
+        let mutation = Task { try await environment.mutate(TestSetFavorite(id: "1", favorite: true), optimistic: optimistic.payload) }
         await until { transport.held.count == 1 }
         #expect(rick.favorite == true)
 

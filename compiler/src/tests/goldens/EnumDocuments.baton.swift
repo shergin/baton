@@ -99,11 +99,13 @@ nonisolated public struct TestSetStatuses: Baton.Mutation {
         public init(setLists: SetLists? = nil) {
             self.setLists = setLists
         }
-        public var variable: Baton.Variable {
+        @_spi(Generated) public var variable: Baton.Variable {
             var fields: [String: Baton.Variable] = [:]
             if let setLists { fields["setLists"] = setLists.variable }
             return .object(fields)
         }
+        /// The response this builder describes, as the bytes the door takes.
+        public var payload: Baton.Payload { .init(data: variable) }
 
         /// A partial response to show before the server answers; absent fields leave the store untouched.
         nonisolated public struct SetLists: Sendable {
@@ -111,7 +113,7 @@ nonisolated public struct TestSetStatuses: Baton.Mutation {
             public init(statuses: [Status?]? = nil) {
                 self.statuses = statuses
             }
-            public var variable: Baton.Variable {
+            @_spi(Generated) public var variable: Baton.Variable {
                 var fields: [String: Baton.Variable] = [:]
                 if let statuses { fields["statuses"] = .init(statuses) }
                 return .object(fields)
@@ -124,7 +126,7 @@ extension TestSetStatuses.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
     public func callAsFunction(optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
-        try await self.commit(.init(), optimistic: optimistic?.variable)
+        try await self.commit(.init(), optimistic: optimistic?.payload)
     }
 }
 

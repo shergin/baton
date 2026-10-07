@@ -325,8 +325,9 @@ and an optional optimistic response, asynchronous and able to fail, it
 returns the mutation's data lens and says whether it is in flight. See
 [the contract](../spec/runtime.md#10-the-environment-and-the-wire).
 Swift: the arguments are labelled, the optimistic response is
-`optimistic:`, the call is `async throws`, and `isInFlight` says it is in
-flight: `@Mutation("…") var star: StarMutation.Action`.
+`optimistic:`, the mutation's `OptimisticResponse` builder whose `payload`
+the action commits, the call is `async throws`, and `isInFlight` says it is
+in flight: `@Mutation("…") var star: StarMutation.Action`.
 
 ## Store
 
@@ -436,8 +437,9 @@ builders render, a payload committed by hand. A payload keeps a scalar's
 text as written. See
 [the contract](../spec/runtime.md#3-the-ingest-a-response-to-a-change-set)
 and [the decision](decisions/a-payload-is-bytes-in-a-responses-shape.md).
-Swift: `Payload`, to be built as the decision says; today `commitPayload`
-takes `Data` and an optimistic response is a `Variable` the builders render.
+Swift: `Payload`, over `Data`, with `init(json:)`; `commitPayload` and
+`mutate(_:optimistic:)` take one, and a mutation's `OptimisticResponse`
+builder renders one as `payload`.
 
 **Commit payload.** *Composition: store, plan, operation value,
 environment.* Relay: `commitPayload`, writing a response for an operation

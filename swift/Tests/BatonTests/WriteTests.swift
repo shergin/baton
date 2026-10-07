@@ -93,7 +93,7 @@ struct WriteTests {
         #expect(rick.favorite == nil, "the list never fetched the field")
 
         let optimistic = TestSetFavorite.OptimisticResponse(setFavorite: .init(character: .init(id: "1", favorite: true)))
-        let mutation = Task { try await environment.mutate(TestSetFavorite(id: "1", favorite: true), optimistic: optimistic.variable) }
+        let mutation = Task { try await environment.mutate(TestSetFavorite(id: "1", favorite: true), optimistic: optimistic.payload) }
         await until { transport.pending != 0 }
 
         #expect(rick.favorite == true, "the layer is visible before the server answers")
@@ -112,7 +112,7 @@ struct WriteTests {
         let rick = try favorite(environment.store, "Character:1")
 
         let optimistic = TestSetFavorite.OptimisticResponse(setFavorite: .init(character: .init(id: "1", favorite: true)))
-        let mutation = Task { try await environment.mutate(TestSetFavorite(id: "1", favorite: true), optimistic: optimistic.variable) }
+        let mutation = Task { try await environment.mutate(TestSetFavorite(id: "1", favorite: true), optimistic: optimistic.payload) }
         await until { transport.pending != 0 }
         #expect(rick.favorite == true)
 
@@ -123,6 +123,26 @@ struct WriteTests {
         #expect(rick.favorite == true)
         #expect(environment.store.optimisticLayers.isEmpty)
         #expect(environment.store.mutationRoot !== environment.store.root)
+    }
+
+    // No mutation the spec's documents hold returns a mapped scalar, so the
+    // proof is the custom scalar `JSON` a mutation of the test target returns,
+    // written as numbers whose text a JSON value would not keep.
+    @Test("a custom scalar an optimistic response writes as a number reads as its text as written")
+    func anOptimisticCustomScalarReadsAsItsText() async throws {
+        let transport = GatedTransport()
+        let environment = Environment(transport: transport)
+        let mutation = TestListPayload()
+        let task = Task { try await environment.mutate(mutation, optimistic: Payload(fixture("set-lists-jsons-as-numbers"))) }
+        await until { transport.pending != 0 }
+
+        let root = try #require(environment.store.existing(Store.mutationRootKey))
+        let data = TestListPayload.Data(anchor: Anchor(record: root, variables: mutation.variables, store: environment.store))
+        #expect(data.setLists?.jsons == ["1.50", "12345678901234567890", "-0.0", "1e3"])
+
+        transport.fail(TransportError(statusCode: 500, body: "no"))
+        await #expect(throws: TransportError.self) { try await task.value }
+        #expect(environment.store.optimisticLayers.isEmpty)
     }
 
     @Test("the data a mutation returns stays readable through a collection while the environment keeps the mutation, and not after")
@@ -366,7 +386,7 @@ struct WriteTests {
         try await fetched.fetch(Fixture(page: 1))
 
         let committed = Environment(transport: SilentTransport())
-        try await committed.commitPayload(Fixture(page: 1), fixtureData)
+        try await committed.commitPayload(Fixture(page: 1), Payload(fixtureData))
         #expect(StoreExport.text(of: committed.store) == StoreExport.text(of: fetched.store))
 
         let handle = committed.handle(for: Fixture(page: 1), fetchPolicy: .storeOnly)
@@ -382,10 +402,10 @@ struct WriteTests {
     func aPartialPayloadWritesOnlyWhatItCarries() async throws {
         let environment = Environment(transport: SilentTransport())
         environment.log = nil
-        try await environment.commitPayload(Fixture(page: 1), fixtureData)
+        try await environment.commitPayload(Fixture(page: 1), Payload(fixtureData))
         let before = StoreExport.text(of: environment.store).split(separator: "\n")
 
-        let payload = Data(#"{"data":{"character":{"id":"1","name":"Rick Prime"}}}"#.utf8)
+        let payload = Payload(json: #"{"data":{"character":{"id":"1","name":"Rick Prime"}}}"#)
         try await environment.commitPayload(TestHeaderQuery(id: "1"), payload)
         let after = StoreExport.text(of: environment.store).split(separator: "\n")
 
@@ -413,7 +433,7 @@ struct WriteTests {
         #expect(character.notes.nodes.map(\.text) == ["Wubba lubba dub dub", "Portal gun needs charging"])
 
         let mutation = TestAddNote(characterId: "1", text: "Appended", connections: [character.notes.connectionID])
-        try await environment.commitPayload(mutation, fixture("add-note-n9"))
+        try await environment.commitPayload(mutation, Payload(fixture("add-note-n9")))
         #expect(character.notes.nodes.map(\.text) == ["Wubba lubba dub dub", "Portal gun needs charging", "Appended"])
         let roots = StoreExport.text(of: environment.store).split(separator: "\n")
         #expect(roots.contains { $0.hasPrefix(#"  "client:root:mutation": "#) && $0.contains("addNote") }, "the payload hangs off the mutation root")
@@ -435,7 +455,7 @@ struct WriteTests {
         let character = try #require(data.character?.testNotes)
 
         let subscription = TestNoteAdded(characterId: "1", connections: [character.notes.connectionID])
-        try await environment.commitPayload(subscription, fixture("note-added-1"))
+        try await environment.commitPayload(subscription, Payload(fixture("note-added-1")))
         #expect(character.notes.nodes.map(\.text).last == "Live from the garage")
 
         let store = environment.store
@@ -452,12 +472,12 @@ struct WriteTests {
         let environment = Environment(transport: SilentTransport())
         environment.log = nil
         let thrown = await #expect(throws: FieldErrors.self) {
-            try await environment.commitPayload(TestStrictQuery(id: "1"), fixture("character-name-hidden"))
+            try await environment.commitPayload(TestStrictQuery(id: "1"), Payload(fixture("character-name-hidden")))
         }
         #expect(thrown?.errors.map(\.path) == ["character.name"])
         #expect(environment.store.existing("Character:1") != nil, "the payload is committed regardless")
 
-        try await environment.commitPayload(TestStrictQuery(id: "1"), fixture("character-name-shown"))
+        try await environment.commitPayload(TestStrictQuery(id: "1"), Payload(fixture("character-name-shown")))
         let handle = environment.handle(for: TestStrictQuery(id: "1"), fetchPolicy: .storeOnly)
         guard case .ready(let data) = handle.phase else {
             Issue.record("expected .ready, got \(handle.phase)")
@@ -472,7 +492,7 @@ struct WriteTests {
         let caller = Task { @MainActor in
             withUnsafeCurrentTask { $0?.cancel() }
             #expect(Task.isCancelled)
-            try await environment.commitPayload(Fixture(page: 1), fixtureData)
+            try await environment.commitPayload(Fixture(page: 1), Payload(fixtureData))
         }
         try await caller.value
         let handle = environment.handle(for: Fixture(page: 1), fetchPolicy: .storeOnly)

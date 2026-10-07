@@ -47,6 +47,6 @@ struct EnumTests {
     @Test("an optimistic response of a list of an enum renders each case as its text and a nil as null")
     func anOptimisticListOfAnEnumRendersAsText() {
         let optimistic = TestSetStatuses.OptimisticResponse(setLists: .init(statuses: [.ALIVE, nil]))
-        #expect(optimistic.variable.json == #"{"setLists":{"statuses":["ALIVE",null]}}"#)
+        #expect(optimistic.payload == Payload(json: #"{"data":{"setLists":{"statuses":["ALIVE",null]}}}"#))
     }
 }

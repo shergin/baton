@@ -212,7 +212,7 @@ struct ListTests {
         let connections = [character.notes.connectionID]
         let optimistic = TestAddNote.OptimisticResponse(addNote: .init(noteEdge: .init(node: .init(id: "client:new", text: "Pending"))))
 
-        let mutation = Task { try await mutating.mutate(TestAddNote(characterId: "1", text: "Pending", connections: connections), optimistic: optimistic.variable) }
+        let mutation = Task { try await mutating.mutate(TestAddNote(characterId: "1", text: "Pending", connections: connections), optimistic: optimistic.payload) }
         await until { gate.pending != 0 }
         #expect(character.notes.nodes.map(\.text) == ["Wubba lubba dub dub", "Portal gun needs charging", "Pending"])
 
@@ -228,7 +228,7 @@ struct ListTests {
         #expect(environment.store.optimisticLayers.isEmpty)
 
         // A failure reverts the optimistic edge.
-        let failing = Task { try await mutating.mutate(TestAddNote(characterId: "1", text: "Doomed", connections: connections), optimistic: TestAddNote.OptimisticResponse(addNote: .init(noteEdge: .init(node: .init(id: "client:doomed", text: "Doomed")))).variable) }
+        let failing = Task { try await mutating.mutate(TestAddNote(characterId: "1", text: "Doomed", connections: connections), optimistic: TestAddNote.OptimisticResponse(addNote: .init(noteEdge: .init(node: .init(id: "client:doomed", text: "Doomed")))).payload) }
         await until { gate.pending != 0 }
         #expect(character.notes.nodes.count == 6)
         gate.fail(TransportError(statusCode: 500, body: "no"))

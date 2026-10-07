@@ -246,7 +246,7 @@ fn action(writer: &mut Writer, operation: &OperationValue) {
         // a variable named `$commit` would take its place.
         writer.block(function, |writer| {
             writer.line(format!(
-                "try await self.commit(.init({}), optimistic: optimistic?.variable)",
+                "try await self.commit(.init({}), optimistic: optimistic?.payload)",
                 arguments.join(", ")
             ));
         });

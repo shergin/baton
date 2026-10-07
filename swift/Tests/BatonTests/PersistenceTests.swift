@@ -189,7 +189,7 @@ struct PersistenceTests {
     @Test("a payload committed by hand reaches the image, and the next launch answers its operation from it")
     func aPayloadCommittedByHandReachesTheImage() async throws {
         let first = launch()
-        try await first.commitPayload(Fixture(page: 1), fixtureData)
+        try await first.commitPayload(Fixture(page: 1), Payload(fixtureData))
         await finish(first)
 
         let second = launch()
@@ -1338,13 +1338,13 @@ struct PersistenceTests {
         // measured on a file of their own instead.
         let alone = TemporaryImage()
         let assetsOnly = launch(at: alone.url)
-        try await assetsOnly.commitPayload(TestAssetPricesQuery(), fixture("asset-prices"))
+        try await assetsOnly.commitPayload(TestAssetPricesQuery(), Payload(fixture("asset-prices")))
         await finish(assetsOnly)
         let assetsSize = try #require(try FileManager.default.attributesOfItem(atPath: alone.url.path)[.size] as? Int)
 
         try await seed(launch())
         let second = launch()
-        try await second.commitPayload(TestAssetPricesQuery(), fixture("asset-prices"))
+        try await second.commitPayload(TestAssetPricesQuery(), Payload(fixture("asset-prices")))
         await finish(second)
         let afterSecond = try fileSize()
         try #require(afterSecond > assetsSize, "the first launch's rows take room the second's alone do not")

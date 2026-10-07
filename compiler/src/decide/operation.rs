@@ -56,6 +56,9 @@ pub struct BuilderPlan {
     /// they bind their values to.
     pub collected: String,
     pub nested: Vec<BuilderPlan>,
+    /// Whether the builder is the response's own, which renders a payload:
+    /// a nested builder renders the value its parent collects.
+    pub payload: bool,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -136,6 +139,7 @@ pub(super) fn operation(
             builder_names,
             readers.naming,
             duplicates,
+            true,
         )
     });
     OperationValue {
@@ -289,7 +293,8 @@ fn nested_types(
     scope.finish()
 }
 
-/// The builder named `name` for `selection`, and those nested in it.
+/// The builder named `name` for `selection`, and those nested in it;
+/// `payload` for the response's own, which renders a payload.
 fn builder(
     path: &str,
     name: &str,
@@ -297,6 +302,7 @@ fn builder(
     builder_names: &Reserved,
     naming: &dyn Naming,
     duplicates: &mut Vec<NameError>,
+    payload: bool,
 ) -> BuilderPlan {
     // Every field any variant reads, once: the response is written for
     // whichever type it names.
@@ -313,6 +319,13 @@ fn builder(
         Kind::Instance,
         "the optimistic response's `variable`",
     );
+    if payload {
+        scope.declare(
+            "payload",
+            Kind::Instance,
+            "the optimistic response's `payload`",
+        );
+    }
     for field in &fields {
         scope.declare_written(
             &field.response_key,
@@ -363,6 +376,7 @@ fn builder(
                 builder_names,
                 naming,
                 duplicates,
+                false,
             )
         })
         .collect();
@@ -375,6 +389,7 @@ fn builder(
         collected: numbered("fields", &locals),
         fields: builder_fields,
         nested,
+        payload,
     }
 }
 

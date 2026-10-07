@@ -222,8 +222,8 @@ struct InlineTests {
         environment.log = nil
         // The notes under the fragment's default count, two, and under the
         // count the spread binds, one: three and five notes.
-        try await environment.commitPayload(TestNoteCounts(page: 1, count: 2), fixture("note-counts-1"))
-        try await environment.commitPayload(TestInlineQuery(id: "1", withNotes: true), fixture("notes-page-1"))
+        try await environment.commitPayload(TestNoteCounts(page: 1, count: 2), Payload(fixture("note-counts-1")))
+        try await environment.commitPayload(TestInlineQuery(id: "1", withNotes: true), Payload(fixture("notes-page-1")))
         let store = environment.store
 
         let included = TestInlineQuery(id: "1", withNotes: true)

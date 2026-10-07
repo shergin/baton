@@ -443,7 +443,7 @@ struct LifetimeTests {
         #expect(!fetched.isStale)
 
         let beforeCommit = environment.store.rootCount
-        try await environment.commitPayload(Fixture(page: 1), fixtureData)
+        try await environment.commitPayload(Fixture(page: 1), Payload(fixtureData))
         #expect(environment.store.rootCount == beforeCommit + 1, "the query committed by hand waits in the release buffer")
         let committed = environment.handle(for: Fixture(page: 1), fetchPolicy: .storeOnly)
         guard case .ready = committed.phase else {
@@ -1108,7 +1108,7 @@ struct LifetimeTests {
 
         await #expect(throws: EnvironmentError.gone) { try await environment.fetch(TestList(page: 1)) }
         await #expect(throws: EnvironmentError.gone) { try await environment.mutate(TestRename(id: "1", name: "Rick Prime")) }
-        await #expect(throws: EnvironmentError.gone) { try await environment.commitPayload(TestList(page: 1), fixtureData) }
+        await #expect(throws: EnvironmentError.gone) { try await environment.commitPayload(TestList(page: 1), Payload(fixtureData)) }
         #expect(transport.requestCount == 0, "nothing reached the network")
         #expect(environment.store.count == 3, "nothing reached the store")
 

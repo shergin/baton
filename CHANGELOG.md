@@ -5,6 +5,14 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- `Payload`, bytes in a response's shape, is what the door takes:
+  `commitPayload` takes a `Payload` where it took `Data`, and
+  `mutate(_:optimistic:)` and a mutation's action take one where they took a
+  `Variable`; a mutation's `OptimisticResponse` builder renders its
+  `payload`, and the JSON value it collected its fields in is generated
+  code's alone. `Variable` is a variable's JSON value and nothing else.
+  Format 18. Recorded in
+  `docs/decisions/a-payload-is-bytes-in-a-responses-shape.md`.
 - A key the store holds at two slots, a rendering and the constant the
   build named for it afterwards, is one field in every report: a commit's
   `changed` count counts the pair once, and the store's dump and the

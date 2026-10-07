@@ -23,7 +23,7 @@ a native runtime make better, and what Baton leaves out on purpose. Each
 | `RelayEnvironmentProvider` | `.environment(\.baton, environment)` |
 | `Environment` with `Network.create(fetch, subscribe)` | `Environment(transport:subscriptions:)`; a transport has one verb, `send`, yielding a stream of payloads |
 | `persistConfig` and `persisted-queries.json` | `persistConfig` in `baton.json`; an operation carries its id, the file is written by the build |
-| `commitPayload(operationDescriptor, payload)` | `environment.commitPayload(Q(...), data)` |
+| `commitPayload(operationDescriptor, payload)` | `environment.commitPayload(Q(...), Payload(data))` |
 | `RecordSource` persisted by hand | `Persistence(name:version:)`: an image on disk the launch renders from |
 | `environment.getStore().invalidateStore()` | `environment.invalidate()`; `revalidate()` refetches what is stale when the app returns |
 | `fetchPolicy: 'store-or-network'` and friends | `FetchPolicy` on `handle(for:fetchPolicy:)`: `storeOrNetwork`, `networkOnly`, `storeOnly`, `storeAndNetwork` |

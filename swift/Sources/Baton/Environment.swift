@@ -260,10 +260,10 @@ public final class Environment {
     /// carry part of what the operation selects; what it leaves out stays as
     /// it was. Under `@throwOnFieldError` the field errors no `@catch`
     /// handled are thrown, as a fetch throws them.
-    public func commitPayload<Op: Operation>(_ operation: Op, _ payload: Data) async throws {
+    public func commitPayload<Op: Operation>(_ operation: Op, _ payload: Payload) async throws {
         guard !ended else { throw EnvironmentError.gone }
         let root = store.root(Store.rootKey(Op.name, operation.variables), resolved: Op.plan.resolve(operation.variables, in: store.keys), record: rootRecord(of: Op.kind))
-        let committed = try await commit(payload, plan: root.resolved, root: root, checkingCancellation: false, complete: false)
+        let committed = try await commit(payload.bytes, plan: root.resolved, root: root, checkingCancellation: false, complete: false)
         if Op.throwsOnFieldError, !committed.uncaught.isEmpty { throw FieldErrors(committed.uncaught) }
     }
 
@@ -360,23 +360,23 @@ public final class Environment {
         try await fetch(operation, variables: variables)
     }
 
-    /// Commits a mutation. The optimistic response, if any, is ingested with the
-    /// mutation's own plan and applied as a layer first, on the main actor, so
-    /// the layer shows in the turn of the call; the server's payload is
-    /// ingested off it and then replaces the layer in one batch, or the layer
-    /// is reverted on failure.
+    /// Commits a mutation. The optimistic response, if any, a payload the
+    /// generated builders render, is ingested with the mutation's own plan
+    /// and applied as a layer first, on the main actor, so the layer shows
+    /// in the turn of the call; the server's payload is ingested off it and
+    /// then replaces the layer in one batch, or the layer is reverted on
+    /// failure.
     /// The data returned reads the mutation root: its payload stays alive
     /// until `releaseBufferSize` completions of other operation values follow
     /// it, and then reads only the records other roots keep. A completion of
     /// an equal value, the same name and variables, takes its place.
-    public func mutate<Op: Mutation>(_ operation: Op, optimistic: Variable? = nil) async throws -> Op.Data {
+    public func mutate<Op: Mutation>(_ operation: Op, optimistic: Payload? = nil) async throws -> Op.Data {
         guard !ended else { throw EnvironmentError.gone }
         let resolved = Op.plan.resolve(operation.variables, in: store.keys)
         let root = store.root(Store.rootKey(Op.name, operation.variables), resolved: resolved, record: store.mutationRoot)
         var layer: UUID?
         if let optimistic {
-            let json = Data(("{\"data\":" + optimistic.json + "}").utf8)
-            let changes = try Ingest.normalize(json, plan: resolved, rootKey: Store.mutationRootKey)
+            let changes = try Ingest.normalize(optimistic.bytes, plan: resolved, rootKey: Store.mutationRootKey)
             layer = store.applyOptimistic(changes)
         }
         let uncaught: [FieldError]

@@ -316,7 +316,7 @@ nonisolated public struct TestBuilderNames: Baton.Mutation {
             self.string = string
             self.sendable = sendable
         }
-        public var variable: Baton.Variable {
+        @_spi(Generated) public var variable: Baton.Variable {
             var fields: [String: Baton.Variable] = [:]
             if let type { fields["type"] = type.variable }
             if let selfValue = self.`self` { fields["self"] = selfValue.variable }
@@ -324,6 +324,8 @@ nonisolated public struct TestBuilderNames: Baton.Mutation {
             if let sendable { fields["sendable"] = sendable.variable }
             return .object(fields)
         }
+        /// The response this builder describes, as the bytes the door takes.
+        public var payload: Baton.Payload { .init(data: variable) }
 
         /// A partial response to show before the server answers; absent fields leave the store untouched.
         nonisolated public struct TypeResponse: Sendable {
@@ -331,7 +333,7 @@ nonisolated public struct TestBuilderNames: Baton.Mutation {
             public init(character: Character? = nil) {
                 self.character = character
             }
-            public var variable: Baton.Variable {
+            @_spi(Generated) public var variable: Baton.Variable {
                 var fields: [String: Baton.Variable] = [:]
                 if let character { fields["character"] = character.variable }
                 return .object(fields)
@@ -345,7 +347,7 @@ nonisolated public struct TestBuilderNames: Baton.Mutation {
                     self.id = id
                     self.favorite = favorite
                 }
-                public var variable: Baton.Variable {
+                @_spi(Generated) public var variable: Baton.Variable {
                     var fields: [String: Baton.Variable] = [:]
                     if let id { fields["id"] = .init(id) }
                     if let favorite { fields["favorite"] = .init(favorite) }
@@ -360,7 +362,7 @@ nonisolated public struct TestBuilderNames: Baton.Mutation {
             public init(character: Character? = nil) {
                 self.character = character
             }
-            public var variable: Baton.Variable {
+            @_spi(Generated) public var variable: Baton.Variable {
                 var fields: [String: Baton.Variable] = [:]
                 if let character { fields["character"] = character.variable }
                 return .object(fields)
@@ -374,7 +376,7 @@ nonisolated public struct TestBuilderNames: Baton.Mutation {
                     self.id = id
                     self.favorite = favorite
                 }
-                public var variable: Baton.Variable {
+                @_spi(Generated) public var variable: Baton.Variable {
                     var fields: [String: Baton.Variable] = [:]
                     if let id { fields["id"] = .init(id) }
                     if let favorite { fields["favorite"] = .init(favorite) }
@@ -389,7 +391,7 @@ nonisolated public struct TestBuilderNames: Baton.Mutation {
             public init(character: Character? = nil) {
                 self.character = character
             }
-            public var variable: Baton.Variable {
+            @_spi(Generated) public var variable: Baton.Variable {
                 var fields: [String: Baton.Variable] = [:]
                 if let character { fields["character"] = character.variable }
                 return .object(fields)
@@ -403,7 +405,7 @@ nonisolated public struct TestBuilderNames: Baton.Mutation {
                     self.id = id
                     self.name = name
                 }
-                public var variable: Baton.Variable {
+                @_spi(Generated) public var variable: Baton.Variable {
                     var fields: [String: Baton.Variable] = [:]
                     if let id { fields["id"] = .init(id) }
                     if let name { fields["name"] = .init(name) }
@@ -418,7 +420,7 @@ nonisolated public struct TestBuilderNames: Baton.Mutation {
             public init(character: Character? = nil) {
                 self.character = character
             }
-            public var variable: Baton.Variable {
+            @_spi(Generated) public var variable: Baton.Variable {
                 var fields: [String: Baton.Variable] = [:]
                 if let character { fields["character"] = character.variable }
                 return .object(fields)
@@ -432,7 +434,7 @@ nonisolated public struct TestBuilderNames: Baton.Mutation {
                     self.id = id
                     self.favorite = favorite
                 }
-                public var variable: Baton.Variable {
+                @_spi(Generated) public var variable: Baton.Variable {
                     var fields: [String: Baton.Variable] = [:]
                     if let id { fields["id"] = .init(id) }
                     if let favorite { fields["favorite"] = .init(favorite) }
@@ -447,7 +449,7 @@ extension TestBuilderNames.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
     public func callAsFunction(id: String, favorite: Bool, `self` selfValue: String, optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
-        try await self.commit(.init(id: id, favorite: favorite, self: selfValue), optimistic: optimistic?.variable)
+        try await self.commit(.init(id: id, favorite: favorite, self: selfValue), optimistic: optimistic?.payload)
     }
 }
 
@@ -617,11 +619,13 @@ nonisolated public struct TestCommitVariable: Baton.Mutation {
         public init(setFavorite: SetFavorite? = nil) {
             self.setFavorite = setFavorite
         }
-        public var variable: Baton.Variable {
+        @_spi(Generated) public var variable: Baton.Variable {
             var fields: [String: Baton.Variable] = [:]
             if let setFavorite { fields["setFavorite"] = setFavorite.variable }
             return .object(fields)
         }
+        /// The response this builder describes, as the bytes the door takes.
+        public var payload: Baton.Payload { .init(data: variable) }
 
         /// A partial response to show before the server answers; absent fields leave the store untouched.
         nonisolated public struct SetFavorite: Sendable {
@@ -629,7 +633,7 @@ nonisolated public struct TestCommitVariable: Baton.Mutation {
             public init(character: Character? = nil) {
                 self.character = character
             }
-            public var variable: Baton.Variable {
+            @_spi(Generated) public var variable: Baton.Variable {
                 var fields: [String: Baton.Variable] = [:]
                 if let character { fields["character"] = character.variable }
                 return .object(fields)
@@ -645,7 +649,7 @@ nonisolated public struct TestCommitVariable: Baton.Mutation {
                     self.name = name
                     self.favorite = favorite
                 }
-                public var variable: Baton.Variable {
+                @_spi(Generated) public var variable: Baton.Variable {
                     var fields: [String: Baton.Variable] = [:]
                     if let id { fields["id"] = .init(id) }
                     if let name { fields["name"] = .init(name) }
@@ -661,7 +665,7 @@ extension TestCommitVariable.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
     public func callAsFunction(commit: String, optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
-        try await self.commit(.init(commit: commit), optimistic: optimistic?.variable)
+        try await self.commit(.init(commit: commit), optimistic: optimistic?.payload)
     }
 }
 
@@ -1072,11 +1076,13 @@ nonisolated public struct TestListPayload: Baton.Mutation {
         public init(setLists: SetLists? = nil) {
             self.setLists = setLists
         }
-        public var variable: Baton.Variable {
+        @_spi(Generated) public var variable: Baton.Variable {
             var fields: [String: Baton.Variable] = [:]
             if let setLists { fields["setLists"] = setLists.variable }
             return .object(fields)
         }
+        /// The response this builder describes, as the bytes the door takes.
+        public var payload: Baton.Payload { .init(data: variable) }
 
         /// A partial response to show before the server answers; absent fields leave the store untouched.
         nonisolated public struct SetLists: Sendable {
@@ -1096,7 +1102,7 @@ nonisolated public struct TestListPayload: Baton.Mutation {
                 self.jsons = jsons
                 self.statuses = statuses
             }
-            public var variable: Baton.Variable {
+            @_spi(Generated) public var variable: Baton.Variable {
                 var fields: [String: Baton.Variable] = [:]
                 if let strings { fields["strings"] = .init(strings) }
                 if let ids { fields["ids"] = .init(ids) }
@@ -1115,7 +1121,7 @@ extension TestListPayload.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
     public func callAsFunction(optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
-        try await self.commit(.init(), optimistic: optimistic?.variable)
+        try await self.commit(.init(), optimistic: optimistic?.payload)
     }
 }
 
@@ -1237,11 +1243,13 @@ nonisolated public struct TestModuleNamedPayload: Baton.Mutation {
         public init(setFavorite: SetFavorite? = nil) {
             self.setFavorite = setFavorite
         }
-        public var variable: Baton.Variable {
+        @_spi(Generated) public var variable: Baton.Variable {
             var fields: [String: Baton.Variable] = [:]
             if let setFavorite { fields["setFavorite"] = setFavorite.variable }
             return .object(fields)
         }
+        /// The response this builder describes, as the bytes the door takes.
+        public var payload: Baton.Payload { .init(data: variable) }
 
         /// A partial response to show before the server answers; absent fields leave the store untouched.
         nonisolated public struct SetFavorite: Sendable {
@@ -1249,7 +1257,7 @@ nonisolated public struct TestModuleNamedPayload: Baton.Mutation {
             public init(Baton: BatonResponse? = nil) {
                 self.Baton = Baton
             }
-            public var variable: Baton.Variable {
+            @_spi(Generated) public var variable: Baton.Variable {
                 var fields: [String: Baton.Variable] = [:]
                 if let Baton { fields["Baton"] = Baton.variable }
                 return .object(fields)
@@ -1263,7 +1271,7 @@ nonisolated public struct TestModuleNamedPayload: Baton.Mutation {
                     self.id = id
                     self.Baton = Baton
                 }
-                public var variable: Baton.Variable {
+                @_spi(Generated) public var variable: Baton.Variable {
                     var fields: [String: Baton.Variable] = [:]
                     if let id { fields["id"] = .init(id) }
                     if let Baton { fields["Baton"] = .init(Baton) }
@@ -1278,7 +1286,7 @@ extension TestModuleNamedPayload.Action {
     /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
     @MainActor @discardableResult
     public func callAsFunction(id: String, optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
-        try await self.commit(.init(id: id), optimistic: optimistic?.variable)
+        try await self.commit(.init(id: id), optimistic: optimistic?.payload)
     }
 }
 

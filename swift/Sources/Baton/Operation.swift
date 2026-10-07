@@ -589,11 +589,12 @@ public struct MutationAction<Op: Mutation>: Sendable {
     /// Whether a commit is running.
     @MainActor public var isInFlight: Bool { state.inFlight > 0 }
 
-    /// Commits the mutation. An optimistic response shows at once as a layer
-    /// that rebases under every commit until the server answers; on failure
-    /// it is reverted and the error rethrown.
+    /// Commits the mutation. An optimistic response, the payload its
+    /// generated builder renders, shows at once as a layer that rebases
+    /// under every commit until the server answers; on failure it is
+    /// reverted and the error rethrown.
     @MainActor
-    public func commit(_ operation: Op, optimistic: Variable? = nil) async throws -> Op.Data {
+    public func commit(_ operation: Op, optimistic: Payload? = nil) async throws -> Op.Data {
         // No environment, no session: an action outside every environment
         // says so rather than commit into a store that stands in.
         guard let environment else { throw EnvironmentError.notInjected }

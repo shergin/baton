@@ -11,11 +11,11 @@ the environment's own.
 
 ```swift
 let environment = Environment(transport: SilentTransport())
-try await environment.commitPayload(CharacterQuery(id: "1"), fixture)
+try await environment.commitPayload(CharacterQuery(id: "1"), Payload(fixture))
 ```
 
-`commitPayload` runs the operation's plan over bytes in a response's shape
-and commits them as a fetch's response is committed, so the preview draws
+`commitPayload` runs the operation's plan over a payload, bytes in a
+response's shape, and commits them as a fetch's response is committed, so the preview draws
 from the fixture through the same lenses, and `SilentTransport` never
 answers, so nothing behind the preview waits on a network. The payload may
 carry part of what the operation selects; what it leaves out reads as
@@ -39,7 +39,7 @@ that says so.
 ```swift
 let transport = ScriptedTransport([CharacterQuery.name: fixture("character-1")])
 let environment = Environment(transport: transport, subscriptions: transport)
-let task = Task { try await environment.mutate(SetFavorite(id: "1", favorite: true), optimistic: optimistic) }
+let task = Task { try await environment.mutate(SetFavorite(id: "1", favorite: true), optimistic: optimistic.payload) }
 await wait(until: { transport.held.count == 1 })
 // The optimistic layer is applied; the server has not answered.
 transport.held[0].respond(fixture("set-favorite-1"))

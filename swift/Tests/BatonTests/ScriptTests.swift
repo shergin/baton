@@ -135,14 +135,15 @@ final class ScriptRun {
         case .payload(let reference, let response):
             guard let operation = bind(reference) else { return nil }
             do {
-                try await Self.commitPayload(operation.value, Spec.data(response), in: environment)
+                try await Self.commitPayload(operation.value, Payload(Spec.data(response)), in: environment)
                 return nil
             } catch {
                 return error
             }
 
         case .optimistic(let reference, let response, let name):
-            guard let operation = bind(reference), let optimistic = optimisticVariable(response) else { return nil }
+            guard let operation = bind(reference) else { return nil }
+            let optimistic = Payload(Spec.data(response))
             let sent = requests(of: operation)
             let finished = Flag()
             let task = mutation(operation, optimistic: optimistic, finished: finished)
@@ -280,7 +281,7 @@ final class ScriptRun {
     }
 
     /// A mutation sent in a task of its own, as an action sends it.
-    func mutation(_ operation: OracleOperation, optimistic: Variable?, finished: Flag) -> Task<Void, any Error> {
+    func mutation(_ operation: OracleOperation, optimistic: Payload?, finished: Flag) -> Task<Void, any Error> {
         guard let mutation = operation.value as? any Mutation else {
             fail("\(operation.name) is not a mutation")
             return Task {}
@@ -292,24 +293,12 @@ final class ScriptRun {
         }
     }
 
-    static func mutate<Op: Mutation>(_ operation: Op, optimistic: Variable?, in environment: Environment) async throws {
+    static func mutate<Op: Mutation>(_ operation: Op, optimistic: Payload?, in environment: Environment) async throws {
         _ = try await environment.mutate(operation, optimistic: optimistic)
     }
 
-    static func commitPayload<Op: Baton.Operation>(_ operation: Op, _ payload: Data, in environment: Environment) async throws {
+    static func commitPayload<Op: Baton.Operation>(_ operation: Op, _ payload: Payload, in environment: Environment) async throws {
         try await environment.commitPayload(operation, payload)
-    }
-
-    /// The `data` of a response, as the variable an optimistic response is
-    /// given as.
-    func optimisticVariable(_ response: String) -> Variable? {
-        guard let value = try? JSONDecoder().decode(Manifest.Value.self, from: Spec.data(response)),
-            case .object(let members) = value, let data = members["data"]
-        else {
-            fail("\(response) has no data to apply")
-            return nil
-        }
-        return Variable(data)
     }
 
     // MARK: The transport

@@ -88,7 +88,7 @@ struct ExtensionTests {
             _ = character.status
         } onChange: { server.fired += 1 }
 
-        try await environment.commitPayload(TestPinnedCharacter(id: "1"), fixture("pin-character"))
+        try await environment.commitPayload(TestPinnedCharacter(id: "1"), Payload(fixture("pin-character")))
         #expect(character.isPinned == true)
         #expect(character.note == "the one who built the portal gun")
         #expect(pin.fired == 1)
@@ -133,7 +133,7 @@ struct ExtensionTests {
         let image = TemporaryImage()
         let first = Environment(transport: SilentTransport(), store: Store(persistence: Persistence(url: image.url)))
         first.log = nil
-        try await first.commitPayload(TestPinnedCharacter(id: "1"), fixture("pin-character"))
+        try await first.commitPayload(TestPinnedCharacter(id: "1"), Payload(fixture("pin-character")))
         await first.store.persistence?.close()
 
         let second = Environment(transport: SilentTransport(), store: Store(persistence: Persistence(url: image.url)))
@@ -153,7 +153,7 @@ struct ExtensionTests {
         let image = TemporaryImage()
         let first = Environment(transport: SilentTransport(), store: Store(persistence: Persistence(url: image.url)))
         first.log = nil
-        try await first.commitPayload(TestDrafts(), fixture("drafts"))
+        try await first.commitPayload(TestDrafts(), Payload(fixture("drafts")))
         await first.store.persistence?.close()
 
         let second = Environment(transport: SilentTransport(), store: Store(persistence: Persistence(url: image.url)))

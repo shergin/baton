@@ -128,7 +128,7 @@ struct LogTests {
         let events = Events()
         environment.log = events.log
         let optimistic = TestSetFavorite.OptimisticResponse(setFavorite: .init(character: .init(id: "1", favorite: true)))
-        let mutation = Task { try await environment.mutate(TestSetFavorite(id: "1", favorite: true), optimistic: optimistic.variable) }
+        let mutation = Task { try await environment.mutate(TestSetFavorite(id: "1", favorite: true), optimistic: optimistic.payload) }
         await until { transport.held.count == 1 }
         #expect(events.commits == [.optimistic])
         guard case .committed(kind: .optimistic, let changed) = events.all.first else {

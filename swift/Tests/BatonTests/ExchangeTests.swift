@@ -257,7 +257,7 @@ struct ExchangeTests {
         let environment = Environment(transport: Exchange(base: transport, step: .milliseconds(1)), store: store)
         let rick = TestFavorite_character(anchor: Anchor(record: try #require(store.existing("Character:1")), variables: .none, store: store))
         let optimistic = TestSetFavorite.OptimisticResponse(setFavorite: .init(character: .init(id: "1", favorite: true)))
-        let favorite = Task { try await environment.mutate(TestSetFavorite(id: "1", favorite: true), optimistic: optimistic.variable) }
+        let favorite = Task { try await environment.mutate(TestSetFavorite(id: "1", favorite: true), optimistic: optimistic.payload) }
         await until { transport.held.count == 1 }
         #expect(rick.favorite == true)
 

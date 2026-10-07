@@ -12,7 +12,7 @@ struct InspectorTests {
     func aCommittedPayloadExportsItsDump() async throws {
         let environment = Environment(transport: SilentTransport())
         environment.log = nil
-        try await environment.commitPayload(Fixture(page: 1), fixtureData)
+        try await environment.commitPayload(Fixture(page: 1), Payload(fixtureData))
         let expected = try String(contentsOf: Spec.directory.appendingPathComponent("rickandmorty/characters-page-1.store.json"), encoding: .utf8)
         #expect(StoreExport.text(of: environment.store) == expected)
     }
@@ -39,7 +39,7 @@ struct InspectorTests {
     func theExportSortsRecordsAndFields() async throws {
         let environment = Environment(transport: SilentTransport())
         environment.log = nil
-        try await environment.commitPayload(Fixture(page: 1), fixtureData)
+        try await environment.commitPayload(Fixture(page: 1), Payload(fixtureData))
         let text = StoreExport.text(of: environment.store)
         let lines = text.split(separator: "\n").dropFirst().dropLast().map(String.init)
         let keys = try lines.map { try #require(Self.key(of: $0)) }

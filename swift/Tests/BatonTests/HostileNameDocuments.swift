@@ -49,7 +49,7 @@ struct HostileNameDocuments {
           variables: name resolution: name name: name document: name text: name plan: name
           errorBehavior: name throwsOnFieldError: name bubbles: name hasDeferred: name cacheExpiration: name Data: name
           Action: name OptimisticResponse: name hash: name commit: name callAsFunction: name Op: name
-          variable: name
+          variable: name payload: name
           # What the runtime's protocols give a generated type.
           hashValue: name phase: name isRefreshing: name isStale: name retry: name subscription: name
           # The shared enums.
@@ -105,7 +105,7 @@ struct HostileNameDocuments {
           errorBehavior: origin { id } throwsOnFieldError: origin { id } bubbles: origin { id }
           hasDeferred: origin { id } cacheExpiration: origin { id } Data: origin { id } Action: origin { id }
           OptimisticResponse: origin { id } hash: origin { id } commit: origin { id }
-          callAsFunction: origin { id } Op: origin { id } variable: origin { id }
+          callAsFunction: origin { id } Op: origin { id } variable: origin { id } payload: origin { id }
           # What the runtime's protocols give a generated type.
           hashValue: origin { id } phase: origin { id } isRefreshing: origin { id }
           isStale: origin { id } retry: origin { id } subscription: origin { id }
@@ -188,7 +188,7 @@ struct HostileNameDocuments {
           ... @alias(as: "Data") { name } ... @alias(as: "Action") { name }
           ... @alias(as: "OptimisticResponse") { name } ... @alias(as: "hash") { name }
           ... @alias(as: "commit") { name } ... @alias(as: "callAsFunction") { name }
-          ... @alias(as: "Op") { name } ... @alias(as: "variable") { name }
+          ... @alias(as: "Op") { name } ... @alias(as: "variable") { name } ... @alias(as: "payload") { name }
           # What the runtime's protocols give a generated type.
           ... @alias(as: "hashValue") { name } ... @alias(as: "phase") { name }
           ... @alias(as: "isRefreshing") { name } ... @alias(as: "isStale") { name }
@@ -349,6 +349,7 @@ struct HostileNameDocuments {
           ... @alias(as: "callAsFunction") { ...HostileSpreadTarget_character }
           ... @alias(as: "Op") { ...HostileSpreadTarget_character }
           ... @alias(as: "variable") { ...HostileSpreadTarget_character }
+          ... @alias(as: "payload") { ...HostileSpreadTarget_character }
           # What the runtime's protocols give a generated type.
           ... @alias(as: "hashValue") { ...HostileSpreadTarget_character }
           ... @alias(as: "phase") { ...HostileSpreadTarget_character }
@@ -440,7 +441,7 @@ struct HostileNameDocuments {
           variables: name resolution: name name: name document: name text: name plan: name
           errorBehavior: name throwsOnFieldError: name bubbles: name hasDeferred: name cacheExpiration: name Data: name
           Action: name OptimisticResponse: name hash: name commit: name callAsFunction: name Op: name
-          variable: name
+          variable: name payload: name
           # What the runtime's protocols give a generated type.
           hashValue: name phase: name isRefreshing: name isStale: name retry: name subscription: name
           # The shared enums.
@@ -499,7 +500,7 @@ struct HostileNameDocuments {
             text: totalCount plan: totalCount errorBehavior: totalCount throwsOnFieldError: totalCount
             bubbles: totalCount hasDeferred: totalCount cacheExpiration: totalCount Data: totalCount Action: totalCount
             OptimisticResponse: totalCount hash: totalCount commit: totalCount
-            callAsFunction: totalCount Op: totalCount variable: totalCount
+            callAsFunction: totalCount Op: totalCount variable: totalCount payload: totalCount
             # What the runtime's protocols give a generated type.
             hashValue: totalCount phase: totalCount isRefreshing: totalCount isStale: totalCount
             retry: totalCount subscription: totalCount
@@ -575,7 +576,7 @@ struct HostileNameDocuments {
             variables: name resolution: name name: name document: name text: name plan: name
             errorBehavior: name throwsOnFieldError: name bubbles: name hasDeferred: name cacheExpiration: name Data: name
             Action: name OptimisticResponse: name hash: name commit: name callAsFunction: name Op: name
-            variable: name
+            variable: name payload: name
             # What the runtime's protocols give a generated type.
             hashValue: name phase: name isRefreshing: name isStale: name retry: name subscription: name
             # The shared enums.
@@ -616,7 +617,7 @@ struct HostileNameDocuments {
           # What an operation value, a mutation's action and its optimistic response declare.
           variables: id resolution: id name: id document: id text: id plan: id errorBehavior: id
           throwsOnFieldError: id bubbles: id hasDeferred: id cacheExpiration: id Data: id Action: id OptimisticResponse: id
-          hash: id commit: id callAsFunction: id Op: id variable: id
+          hash: id commit: id callAsFunction: id Op: id variable: id payload: id
           # What the runtime's protocols give a generated type.
           hashValue: id phase: id isRefreshing: id isStale: id retry: id subscription: id
           # The shared enums.
@@ -662,7 +663,7 @@ struct HostileNameDocuments {
           $name: ID!, $document: ID!, $text: ID!, $plan: ID!, $errorBehavior: ID!,
           $throwsOnFieldError: ID!, $bubbles: ID!, $hasDeferred: ID!, $cacheExpiration: ID!, $Action: ID!,
           $OptimisticResponse: ID!, $hash: ID!, $commit: ID!, $callAsFunction: ID!, $Op: ID!,
-          $variable: ID!,
+          $variable: ID!, $payload: ID!,
           # What the runtime's protocols give a generated type.
           $retry: ID!, $subscription: ID!,
           # The shared enums.
@@ -691,7 +692,7 @@ struct HostileNameDocuments {
             $selfValue, $Fragment, $Spread, $Owner, $Query, $Operation, $RefetchQuery,
             # What an operation value, a mutation's action and its optimistic response declare.
             $name, $document, $text, $plan, $errorBehavior, $throwsOnFieldError, $bubbles,
-            $hasDeferred, $cacheExpiration, $Action, $OptimisticResponse, $hash, $commit, $callAsFunction, $Op, $variable,
+            $hasDeferred, $cacheExpiration, $Action, $OptimisticResponse, $hash, $commit, $callAsFunction, $Op, $variable, $payload,
             # What the runtime's protocols give a generated type.
             $retry, $subscription,
             # The shared enums.
@@ -743,7 +744,7 @@ struct HostileNameDocuments {
           $resolution: Boolean!, $name: Boolean!, $document: Boolean!, $text: Boolean!,
           $plan: Boolean!, $errorBehavior: Boolean!, $throwsOnFieldError: Boolean!, $bubbles: Boolean!,
           $hasDeferred: Boolean!, $cacheExpiration: Boolean!, $hash: Boolean!, $commit: Boolean!, $callAsFunction: Boolean!,
-          $Op: Boolean!, $variable: Boolean!,
+          $Op: Boolean!, $variable: Boolean!, $payload: Boolean!,
           # What the runtime's protocols give a generated type.
           $phase: Boolean!, $isRefreshing: Boolean!, $isStale: Boolean!, $retry: Boolean!,
           $subscription: Boolean!,
@@ -822,7 +823,7 @@ struct HostileNameDocuments {
               ... @include(if: $throwsOnFieldError) { name } ... @include(if: $bubbles) { name }
               ... @include(if: $hasDeferred) { name } ... @include(if: $cacheExpiration) { name } ... @include(if: $hash) { name }
               ... @include(if: $commit) { name } ... @include(if: $callAsFunction) { name }
-              ... @include(if: $Op) { name } ... @include(if: $variable) { name }
+              ... @include(if: $Op) { name } ... @include(if: $variable) { name } ... @include(if: $payload) { name }
               # What the runtime's protocols give a generated type.
               ... @include(if: $phase) { name } ... @include(if: $isRefreshing) { name }
               ... @include(if: $isStale) { name } ... @include(if: $retry) { name }
@@ -891,7 +892,7 @@ struct HostileNameDocuments {
           $name: Boolean!, $document: Boolean!, $text: Boolean!, $plan: Boolean!,
           $errorBehavior: Boolean!, $throwsOnFieldError: Boolean!, $bubbles: Boolean!,
           $hasDeferred: Boolean!, $cacheExpiration: Boolean!, $Action: Boolean!, $OptimisticResponse: Boolean!, $hash: Boolean!,
-          $commit: Boolean!, $callAsFunction: Boolean!, $Op: Boolean!, $variable: Boolean!,
+          $commit: Boolean!, $callAsFunction: Boolean!, $Op: Boolean!, $variable: Boolean!, $payload: Boolean!,
           # What the runtime's protocols give a generated type.
           $phase: Boolean!, $isRefreshing: Boolean!, $isStale: Boolean!, $retry: Boolean!,
           # The shared enums.
@@ -972,7 +973,7 @@ struct HostileNameDocuments {
               ... @include(if: $hasDeferred) { cursor } ... @include(if: $cacheExpiration) { cursor } ... @include(if: $Action) { cursor }
               ... @include(if: $OptimisticResponse) { cursor } ... @include(if: $hash) { cursor }
               ... @include(if: $commit) { cursor } ... @include(if: $callAsFunction) { cursor }
-              ... @include(if: $Op) { cursor } ... @include(if: $variable) { cursor }
+              ... @include(if: $Op) { cursor } ... @include(if: $variable) { cursor } ... @include(if: $payload) { cursor }
               # What the runtime's protocols give a generated type.
               ... @include(if: $phase) { cursor } ... @include(if: $isRefreshing) { cursor }
               ... @include(if: $isStale) { cursor } ... @include(if: $retry) { cursor }
@@ -1127,6 +1128,7 @@ struct HostileNameDocuments {
           callAsFunction: {type: "Boolean", defaultValue: true},
           Op: {type: "Boolean", defaultValue: true},
           variable: {type: "Boolean", defaultValue: true},
+          payload: {type: "Boolean", defaultValue: true},
           # What the runtime's protocols give a generated type.
           retry: {type: "Boolean", defaultValue: true},
           subscription: {type: "Boolean", defaultValue: true},
@@ -1216,7 +1218,7 @@ struct HostileNameDocuments {
           ... @include(if: $Action) { name } ... @include(if: $OptimisticResponse) { name }
           ... @include(if: $hash) { name } ... @include(if: $commit) { name }
           ... @include(if: $callAsFunction) { name } ... @include(if: $Op) { name }
-          ... @include(if: $variable) { name }
+          ... @include(if: $variable) { name } ... @include(if: $payload) { name }
           # What the runtime's protocols give a generated type.
           ... @include(if: $retry) { name }
           ... @include(if: $subscription) { name }
@@ -1267,7 +1269,7 @@ struct HostileNameDocuments {
               variables: name resolution: name name: name document: name text: name plan: name
               errorBehavior: name throwsOnFieldError: name bubbles: name hasDeferred: name cacheExpiration: name Data: name
               Action: name OptimisticResponse: name hash: name commit: name callAsFunction: name
-              Op: name
+              Op: name payload: name
               # What the runtime's protocols give a generated type.
               hashValue: name phase: name isRefreshing: name isStale: name retry: name
               subscription: name
@@ -1317,7 +1319,7 @@ struct HostileNameDocuments {
             text: note { id } plan: note { id } errorBehavior: note { id }
             throwsOnFieldError: note { id } bubbles: note { id } hasDeferred: note { id } cacheExpiration: note { id }
             Data: note { id } Action: note { id } OptimisticResponse: note { id } hash: note { id }
-            commit: note { id } callAsFunction: note { id } Op: note { id }
+            commit: note { id } callAsFunction: note { id } Op: note { id } payload: note { id }
             # What the runtime's protocols give a generated type.
             hashValue: note { id } phase: note { id } isRefreshing: note { id } isStale: note { id }
             retry: note { id } subscription: note { id }
@@ -1365,7 +1367,7 @@ struct HostileNameDocuments {
           variables: name resolution: name name: name document: name text: name plan: name
           errorBehavior: name throwsOnFieldError: name bubbles: name hasDeferred: name cacheExpiration: name Data: name
           Action: name OptimisticResponse: name hash: name commit: name callAsFunction: name Op: name
-          variable: name
+          variable: name payload: name
           # What the runtime's protocols give a generated type.
           hashValue: name phase: name isRefreshing: name isStale: name retry: name subscription: name
           # The shared enums.
@@ -1421,7 +1423,7 @@ struct HostileNameDocuments {
           errorBehavior: origin { id } throwsOnFieldError: origin { id } bubbles: origin { id }
           hasDeferred: origin { id } cacheExpiration: origin { id } Data: origin { id } Action: origin { id }
           OptimisticResponse: origin { id } hash: origin { id } commit: origin { id }
-          callAsFunction: origin { id } Op: origin { id } variable: origin { id }
+          callAsFunction: origin { id } Op: origin { id } variable: origin { id } payload: origin { id }
           # What the runtime's protocols give a generated type.
           hashValue: origin { id } phase: origin { id } isRefreshing: origin { id }
           isStale: origin { id } retry: origin { id } subscription: origin { id }
@@ -1480,7 +1482,7 @@ struct HostileNameDocuments {
           errorBehavior: episode { id } throwsOnFieldError: episode { id } bubbles: episode { id }
           hasDeferred: episode { id } cacheExpiration: episode { id } Data: episode { id } Action: episode { id }
           OptimisticResponse: episode { id } hash: episode { id } commit: episode { id }
-          callAsFunction: episode { id } Op: episode { id } variable: episode { id }
+          callAsFunction: episode { id } Op: episode { id } variable: episode { id } payload: episode { id }
           # What the runtime's protocols give a generated type.
           hashValue: episode { id } phase: episode { id } isRefreshing: episode { id }
           isStale: episode { id } retry: episode { id } subscription: episode { id }
@@ -1636,6 +1638,7 @@ struct HostileNameDocuments {
           ... @alias(as: "callAsFunction") { ...HostileInlineSpreadTarget_character }
           ... @alias(as: "Op") { ...HostileInlineSpreadTarget_character }
           ... @alias(as: "variable") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "payload") { ...HostileInlineSpreadTarget_character }
           # What the runtime's protocols give a generated type.
           ... @alias(as: "hashValue") { ...HostileInlineSpreadTarget_character }
           ... @alias(as: "phase") { ...HostileInlineSpreadTarget_character }
