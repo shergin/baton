@@ -495,8 +495,9 @@ impl<'a> Readers<'a> {
         members: &mut [Member],
     ) -> Vec<NameError> {
         let mut scope = Scope::new(path, &self.lens_names);
-        scope.declare("anchor", Kind::Instance, "the `anchor` every lens has");
-        scope.declare("recordID", Kind::Instance, "the `recordID` every lens has");
+        for (name, what) in self.naming.lens_members() {
+            scope.declare(name, Kind::Instance, what);
+        }
         if facts.refetchable {
             scope.declare(
                 "refetchable",

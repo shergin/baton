@@ -8,10 +8,11 @@
 //! scope keeps; the allocator in `naming` holds a scope's declarations to
 //! them.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 use crate::config::Config;
-use crate::naming::{Naming, Position, Spelled, numbered};
+use crate::naming::{Declared, Kind, Naming, Position, Spelled, ValueNames, numbered};
+use crate::pipeline::{OperationKind, OperationPlan};
 
 /// Every type and attribute name the emitter writes unqualified inside a
 /// lens, and the names Swift keeps for itself. A nested lens of one of
@@ -421,6 +422,103 @@ impl Naming for SwiftNaming {
 
     fn host_type(&self, scalar: &str) -> Option<&str> {
         self.host_types.get(scalar).map(String::as_str)
+    }
+
+    /// Before the variables, the runtime's module, the shared enums the value
+    /// spells and a mutation's action's own parameter; after them, what
+    /// every operation value has, what the runtime's protocols give a value
+    /// of its kind, the static data and the nested types.
+    fn value_names(&self, operation: &OperationPlan, spelled: &BTreeSet<Spelled>) -> ValueNames {
+        let mut before = vec![Declared::spelled(self, Spelled::Runtime)];
+        for name in spelled {
+            before.push(Declared::spelled(self, *name));
+        }
+        if operation.kind == OperationKind::Mutation {
+            before.push(Declared::new(
+                "optimistic",
+                Kind::Instance,
+                "the action's parameter `optimistic`",
+            ));
+        }
+        let mut after = vec![Declared::new(
+            "variables",
+            Kind::Instance,
+            "the operation's `variables`",
+        )];
+        if operation.kind != OperationKind::Mutation {
+            after.push(Declared::new(
+                "resolution",
+                Kind::Instance,
+                "the operation's `resolution`",
+            ));
+        }
+        // A property the value declares takes the place of one a protocol
+        // gives it, or stands beside it: `isStale` would read the variable
+        // where a view meant the handle's state, silently when the two have
+        // one type, and `hashValue` would make a read of either ambiguous.
+        // Swift tells a property from a method by the call, so variables
+        // named `refetch` or `retry` compile beside a query's `refetch()`
+        // and `retry()`.
+        after.push(Declared::new(
+            "hashValue",
+            Kind::Instance,
+            "the `hashValue` every operation value has",
+        ));
+        let given: &[&str] = match operation.kind {
+            OperationKind::Query => &["phase", "isRefreshing", "isStale"],
+            OperationKind::Subscription => &["subscription"],
+            OperationKind::Mutation => &[],
+        };
+        for name in given {
+            after.push(Declared::new(
+                *name,
+                Kind::Instance,
+                format!("the `{name}` every {} value has", operation.kind),
+            ));
+        }
+        for name in ["name", "document", "text", "plan"] {
+            after.push(Declared::new(
+                name,
+                Kind::Static,
+                format!("the operation's `{name}`"),
+            ));
+        }
+        let flags = [
+            ("errorBehavior", operation.error_behavior.is_some()),
+            ("cacheExpiration", operation.cache_expiration.is_some()),
+            ("throwsOnFieldError", operation.throws_on_field_error),
+            ("bubbles", operation.bubbles),
+            ("hasDeferred", operation.has_deferred),
+        ];
+        for (name, declared) in flags {
+            if declared {
+                after.push(Declared::new(
+                    name,
+                    Kind::Static,
+                    format!("the operation's `{name}`"),
+                ));
+            }
+        }
+        for spelled in self.value_types(operation.kind) {
+            after.push(Declared::spelled(self, spelled));
+        }
+        ValueNames { before, after }
+    }
+
+    fn value_types(&self, kind: OperationKind) -> Vec<Spelled> {
+        match kind {
+            OperationKind::Mutation => {
+                vec![Spelled::Data, Spelled::Action, Spelled::OptimisticResponse]
+            }
+            OperationKind::Query | OperationKind::Subscription => vec![Spelled::Data],
+        }
+    }
+
+    fn lens_members(&self) -> Vec<(&'static str, String)> {
+        vec![
+            ("anchor", "the `anchor` every lens has".to_string()),
+            ("recordID", "the `recordID` every lens has".to_string()),
+        ]
     }
 }
 

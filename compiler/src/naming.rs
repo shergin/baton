@@ -15,7 +15,7 @@
 
 use std::collections::BTreeSet;
 
-use crate::pipeline::Origin;
+use crate::pipeline::{OperationKind, OperationPlan, Origin};
 
 /// What the decide pass asks of the language it decides names for: how a
 /// document's name becomes an identifier, which names a nested type may not
@@ -73,6 +73,56 @@ pub trait Naming {
     /// The host type a mapped custom scalar reads as, by the scalar's name,
     /// as the configuration names it for the language.
     fn host_type(&self, scalar: &str) -> Option<&str>;
+
+    /// What an operation's value declares, or spells where a variable would
+    /// hide it, beside its variables; `spelled` are the shared families its
+    /// plan and root lens read through.
+    fn value_names(&self, operation: &OperationPlan, spelled: &BTreeSet<Spelled>) -> ValueNames;
+
+    /// The types an operation's value of `kind` nests, which a fragment its
+    /// lenses spread may not be named.
+    fn value_types(&self, kind: OperationKind) -> Vec<Spelled>;
+
+    /// What every lens declares beside its fields, each with what a message
+    /// calls it.
+    fn lens_members(&self) -> Vec<(&'static str, String)>;
+}
+
+/// A name the generated code declares in a scope the document's names
+/// share, which the compiler chose: the name, how it meets the others, and
+/// what a message calls it.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct Declared {
+    pub name: String,
+    pub kind: Kind,
+    pub what: String,
+}
+
+impl Declared {
+    pub fn new(name: impl Into<String>, kind: Kind, what: impl Into<String>) -> Declared {
+        Declared {
+            name: name.into(),
+            kind,
+            what: what.into(),
+        }
+    }
+
+    /// The type `naming` spells for `spelled`.
+    pub fn spelled(naming: &dyn Naming, spelled: Spelled) -> Declared {
+        Declared::new(
+            naming.spelling(spelled),
+            Kind::Type,
+            naming.description(spelled),
+        )
+    }
+}
+
+/// The names an operation's value declares or spells, in the order its
+/// scope takes them: those before its variables and those after.
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct ValueNames {
+    pub before: Vec<Declared>,
+    pub after: Vec<Declared>,
 }
 
 /// A position a nested type is named in from a document's name: each keeps
@@ -258,6 +308,11 @@ impl<'a> Scope<'a> {
     /// name the scope declared already is an error.
     pub fn declare(&mut self, name: &str, kind: Kind, what: impl Into<String>) {
         self.declare_written(name, kind, what, None);
+    }
+
+    /// Declares `declared`, which the compiler chose.
+    pub fn declare_chosen(&mut self, declared: Declared) {
+        self.declare(&declared.name, declared.kind, declared.what);
     }
 
     /// Declares the type `naming` spells for `spelled`, which the compiler

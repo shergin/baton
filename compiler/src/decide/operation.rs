@@ -50,6 +50,9 @@ pub struct VariableValue {
     pub default_value: Option<ConstantPlan>,
     /// The name its value goes by as a parameter.
     pub local: String,
+    /// The default the document declares, which a target may send for a
+    /// value left unset.
+    pub default: Option<ConstantPlan>,
 }
 
 /// A builder of a partial response: one struct per selection set, every
@@ -108,7 +111,6 @@ pub(super) fn operation(
     builder_names: &Reserved,
     duplicates: &mut Vec<NameError>,
 ) -> OperationValue {
-    let resolves = operation.kind != OperationKind::Mutation;
     let names: Vec<&str> = operation
         .variables
         .iter()
@@ -123,18 +125,13 @@ pub(super) fn operation(
             non_null: variable.type_.non_null(),
             default_value: variable.default_value.clone(),
             local: readers.naming.local(&variable.name, &names),
+            default: variable.default_value.clone(),
         })
         .collect();
     let normalization = super::normalization(&operation.root_type, &operation.normalization);
     let data = readers.operation(operation);
     let naming = readers.naming;
-    duplicates.extend(operation_scope(
-        operation,
-        resolves,
-        &data,
-        &normalization,
-        naming,
-    ));
+    duplicates.extend(operation_scope(operation, &data, &normalization, naming));
     duplicates.extend(nested_types(operation, &data, fragments, naming));
     let optimistic = (operation.kind == OperationKind::Mutation).then(|| {
         let name = naming.spelling(Spelled::OptimisticResponse);
@@ -168,37 +165,26 @@ pub(super) fn operation(
 }
 
 /// The names an operation's value would declare twice: its variables beside
-/// what every operation value has, beside what the runtime's protocols give
-/// a value of its kind, which a variable would take the place of, and
-/// beside the names its code spells, which a variable would hide: the
-/// runtime's module, the shared enums its plan and its root lens read
-/// through or test conditions by, the type's own name, Swift's `Self`,
-/// where a lens nested in it reaches a static member of its own, and a
-/// mutation's action's own parameter.
+/// what `naming` says every value of its kind declares, which a variable
+/// would take the place of, and beside the names its code spells, which a
+/// variable would hide; `spelled` among them are the shared enums its plan
+/// and its root lens read through or test conditions by.
 fn operation_scope(
     operation: &OperationPlan,
-    resolves: bool,
     data: &ReaderPlan,
     normalization: &NormalizationSelection,
     naming: &dyn Naming,
 ) -> Vec<NameError> {
     let none = Reserved::none(naming);
     let mut scope = Scope::new(operation.name.as_str(), &none);
-    scope.declare_spelled(naming, Spelled::Runtime);
     let mut spelled = data.hideable_names();
     spelled.extend([Spelled::Types, Spelled::Slots]);
     if normalization.has_guards() {
         spelled.insert(Spelled::Guards);
     }
-    for name in spelled {
-        scope.declare_spelled(naming, name);
-    }
-    if operation.kind == OperationKind::Mutation {
-        scope.declare(
-            "optimistic",
-            Kind::Instance,
-            "the action's parameter `optimistic`",
-        );
+    let names = naming.value_names(operation, &spelled);
+    for declared in names.before {
+        scope.declare_chosen(declared);
     }
     for variable in &operation.variables {
         scope.declare_written(
@@ -211,61 +197,10 @@ fn operation_scope(
             }),
         );
     }
-    scope.declare("variables", Kind::Instance, "the operation's `variables`");
-    if resolves {
-        scope.declare("resolution", Kind::Instance, "the operation's `resolution`");
+    for declared in names.after {
+        scope.declare_chosen(declared);
     }
-    // A property the value declares takes the place of one a protocol
-    // gives it, or stands beside it: `isStale` would read the variable
-    // where a view meant the handle's state, silently when the two have
-    // one type, and `hashValue` would make a read of either ambiguous.
-    // Swift tells a property from a method by the call, so variables named
-    // `refetch` or `retry` compile beside a query's `refetch()` and
-    // `retry()`.
-    scope.declare(
-        "hashValue",
-        Kind::Instance,
-        "the `hashValue` every operation value has",
-    );
-    let given: &[&str] = match operation.kind {
-        OperationKind::Query => &["phase", "isRefreshing", "isStale"],
-        OperationKind::Subscription => &["subscription"],
-        OperationKind::Mutation => &[],
-    };
-    for name in given {
-        scope.declare(
-            name,
-            Kind::Instance,
-            format!("the `{name}` every {} value has", operation.kind),
-        );
-    }
-    for name in ["name", "document", "text", "plan"] {
-        scope.declare(name, Kind::Static, format!("the operation's `{name}`"));
-    }
-    let flags = [
-        ("errorBehavior", operation.error_behavior.is_some()),
-        ("cacheExpiration", operation.cache_expiration.is_some()),
-        ("throwsOnFieldError", operation.throws_on_field_error),
-        ("bubbles", operation.bubbles),
-        ("hasDeferred", operation.has_deferred),
-    ];
-    for (name, declared) in flags {
-        if declared {
-            scope.declare(name, Kind::Static, format!("the operation's `{name}`"));
-        }
-    }
-    declare_nested_types(&mut scope, operation.kind, naming);
     scope.finish()
-}
-
-/// Declares the types an operation's value nests: `Data`, and a mutation's
-/// `Action` and `OptimisticResponse`, as `naming` spells them.
-fn declare_nested_types(scope: &mut Scope<'_>, kind: OperationKind, naming: &dyn Naming) {
-    scope.declare_spelled(naming, Spelled::Data);
-    if kind == OperationKind::Mutation {
-        scope.declare_spelled(naming, Spelled::Action);
-        scope.declare_spelled(naming, Spelled::OptimisticResponse);
-    }
 }
 
 /// The clashes of the fragments an operation's lenses spread with the types
@@ -281,7 +216,9 @@ fn nested_types(
 ) -> Vec<NameError> {
     let none = Reserved::none(naming);
     let mut scope = Scope::new(operation.name.as_str(), &none);
-    declare_nested_types(&mut scope, operation.kind, naming);
+    for spelled in naming.value_types(operation.kind) {
+        scope.declare_spelled(naming, spelled);
+    }
     for name in data.spread_fragments() {
         let origin = fragments
             .iter()
