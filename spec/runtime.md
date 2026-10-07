@@ -91,6 +91,13 @@ is another record: `client:root:characters(page:1)`,
 rickandmorty/characters-page-1 (`client:root:characters(page:1)`),
 tests/union-path-character and tests/union-path-location.
 
+**A mutation root's fields are keyed without their arguments.** `addNote`
+rather than `addNote(text:"...")`, and an aliased one by its alias,
+`addNote(as:"first")`: a caller reads a payload once, and a key per input
+would number a slot for every call. A subscription root's fields keep their
+arguments, since two live subscriptions of one field must not share a slot.
+*Held by* tests/add-note-n9 and tests/note-added-1 as dumps.
+
 **A connection's records hang off the parent.** The client record every
 page merges into is keyed by the parent's key, `:` and Relay's handle key,
 `__<key>_connection` with the filters; its page info is `<connection
@@ -158,6 +165,32 @@ is kept per type and per set of conditions. *Held by*
 tests/conditions-included and tests/conditions-excluded (guards),
 tests/notes-page-2 (a connection's mode), tests/union-unknown-type (an
 unlisted type's variant).
+
+**A fragment's arguments bind over the parent's variables.** A spread
+with `@arguments` binds the fragment's scope over the parent's: for each
+argument the passed literal or variable, else the default, else null; the
+compiler inlines the values into the normalization plan and the text, as
+Relay does, and the lens's owner binds the scope once per parent owner. *Held
+by* tests/author-notes-page-1 and tests/notes-page-2 through their keys.
+
+**An operation's expiration is a constant of its plan.**
+`@cacheExpiration(seconds:)` is emitted as a constant of the operation,
+left out of the text a server receives; the store reads it against the
+root's age, an operation that states none takes the store's default, and
+no timer is armed. *Unheld* (script `ages`).
+
+**The compiler decides what the runtime relies on.** An operation's text
+is printed compact, with Relay's printer's own option (no newline,
+indentation or optional space, a comma between items, strings as they
+are), the fragments it reaches after it, and that one text is sent, hashed
+and kept in the persisted file. An operation of client fields alone is
+refused, since a server answers one field at least. A spread inside an
+inline fragment on an abstract selection carries `@alias`, Relay's rule.
+Under `onError: NULL` a field the schema types non-null is typed by its
+semantic nullability: non-optional under `@throwOnFieldError` and inside
+`@catch`, optional elsewhere. *Held by* `spec/documents/*.graphql`, written
+from the generated code and checked against it, for the text; the rest by
+the compiler's goldens.
 
 **Resolution makes the lists the walks use.** From a variant's fields: the
 fields a response is read by (every field but `__typename`); the ones a
@@ -399,6 +432,23 @@ of that slot alone; a body is invalidated when that slot of that record
 changes and at no other time. *Held by* every case's `reads` for the
 values; the invalidation by script `notifications`.
 
+**Two anchors are equal when their three words are the same objects.** The
+record, the owner and the origin, by identity; a lens is equal when its
+anchor is, and no lens is hashable. *Unheld*; the rule is the platform's
+diffing to use.
+
+**An `@inline` fragment reads as a value.** A fragment so marked compiles to
+a value of its fields in place of a lens: a nested value per link, a list
+per plural link. The spread's accessor on the parent's lens builds it from
+the record when it is called, on the main thread, through the readers a
+lens's accessors use, so what the build registers and reports is the same;
+a conditional or deferred spread yields an optional value. A value's field
+errors include those of the values it spreads; a value with
+`@throwOnFieldError` is not spread inside another value; an inline fragment
+spreads only inline fragments and takes no `@connection`, `@refetchable` or
+`@required`; a non-null mapped scalar in it reads optional. *Unheld* (the
+Swift tests prove it); the reads could be rows of `reads`.
+
 **A scalar reads as its type or reports.** A string reads a string, and a
 number or boolean as its text; an int reads an int, or a float that is a
 whole number; a float reads a float or an int; a bool a bool. A null in a
@@ -538,6 +588,11 @@ and healed no further. A lens made by hand, with no root, is logged and
 not healed. A deleted record's fields and a client field report nothing.
 *Unheld* (script `heal`).
 
+**A page's fetch has no handle and no root of its own.** The fetch runs the
+fragment's refetch query, the connection owns the merged pages, and the
+root the fetch makes waits in the release buffer like any fetch nothing
+retains. *Unheld* (script `connections`).
+
 **A session ends once.** The environment's end cancels every fetch and
 stream it started, drops the roots, clears every record, closes the image
 and forgets the session's keys. An ended store commits nothing: a response
@@ -554,6 +609,16 @@ per operation value, shared by equal values, with the root among the
 store's and the fetch in flight among its own; `preload` makes one and
 parks its root in the buffer, so the first attach finds the fetch made or
 on the way and makes none. *Unheld* (script `phase`).
+
+**A value is resolved by a view, and no environment is not a session.**
+Outside any view an operation value is unresolved and reads as loading. A
+view's storage resolves it to a handle in the environment the view sees,
+retains the root for the view's life, and resolves again when the value or
+the environment changes. A view outside every environment gets no handle:
+the value reads as failed with the environment error that says so, its
+fetch is idle, a refetch throws that error, and nothing is fetched; a
+mutation action outside every environment throws it too. No placeholder
+environment and no store stand in. *Unheld* (the Swift tests prove it).
 
 **An attach applies a policy.** The store is checked for the operation's
 data (not under `networkOnly`, which asks it nothing); a complete answer
@@ -631,6 +696,16 @@ response with a few of a record's fields leaves the rest for the next
 check. A deleted record replaces its row, and a deleted row's cells are not
 merged into a record a payload names again. *Unheld.*
 
+**One image holds a file, and a takeover is a launch.** One process uses a
+file through one image at a time: a second image made on a file another
+holds runs without it, and stops a debug build where it is made. An image
+that takes a file over after the environment that held it ended counts as
+a launch, though the process is the same, so the rows the closed one wrote
+and it does not read age out a launch sooner. The file is made with the
+protection class the app names, or its directory's default. Removing the
+file is a step apart from the end, under a marker the next open finishes
+if a crash interrupts the deletion. *Unheld*.
+
 **The image is a cache.** A file of another format, version or protection
 class, a corrupt file and a file that is not an image are deleted and
 started again (a database that is not an image is left alone). Rows age
@@ -657,6 +732,17 @@ writes `operationName`, `query` or `documentId`, `variables`, and `onError`
 when set, in that order, as one JSON object. A client field is left out of
 the text and the id a server receives. *Unheld* (script `transport`).
 
+**A variable is sent as its JSON value.** A variable of a mapped scalar or
+an enum is sent as its text; an input object as the object its fields
+render, a field left unset absent from the request, as GraphQL
+distinguishes absent from null, and an explicit null written as a constant
+in the document. A server with another convention replaces the encoding on
+the built-in transports and keeps them. *Unheld* (script `transport`).
+
+**An environment error says what is missing.** The view's environment, the
+lens's (a lens made by hand asked to fetch), the one that made a handle and
+is gone or has ended, or the subscription transport. *Unheld*.
+
 **A transport has one verb.** A request yields a stream of payloads: one
 for a query or a mutation, the parts of a deferred response, the events of
 a subscription. The built-in HTTP transport posts the body, asks for
@@ -674,6 +760,13 @@ a mutation does not, since the server applied it, and its request runs in
 a task the caller's cancellation does not reach; a subscription commits
 until its task ends. *Unheld.*
 
+**A transport for tests is a transport.** A recorded transport answers by
+operation name from recorded responses or from a function of the request;
+a scripted one holds an operation until the test replies or refuses, drives
+a subscription's events, and lists what was sent; an operation with no
+answer fails with status 0 and says so; a silent one never answers. Nothing
+behind them can tell. *Unheld*; each runtime's test product.
+
 **The log is value-free.** The environment calls one function with each
 event: a fetch started, completed with its duration, or failed with its
 failure's kind; a server or optimistic batch committed with the slots it
@@ -682,7 +775,8 @@ operation and response path; the image opened, unavailable, written with
 its batch count, or failed; a field read and never fetched; a value a
 reader's type cannot hold; an id naming records of several types; a
 `@required(action: LOG)` field null; a deferred part dropped. Never a
-record, a slot, a value, a variable or a response body. *Unheld* (script
+record, a slot, a value, a variable or a response body. A debug build
+prints the missing-data cases until a log is set. *Unheld* (script
 `events`).
 
 ## 11. What is not the contract
