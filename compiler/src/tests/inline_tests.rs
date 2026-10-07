@@ -165,3 +165,67 @@ fn an_alias_that_names_an_inline_spread_by_its_fragment_is_no_alias() {
         "{renamed}"
     );
 }
+
+#[test]
+fn a_throwing_value_spread_inside_a_value_is_refused_at_the_outer_fragment_name() {
+    let text = "fragment Inner_character on Character @inline @throwOnFieldError { name }
+fragment Outer_character on Character @inline {
+  id
+  origin { id }
+  ...Inner_character
+}";
+    assert_eq!(
+        refusals(text),
+        vec![(
+            "`Inner_character` is `@throwOnFieldError` and is spread inside the `@inline` fragment `Outer_character`; a value is built in one pass, so the policy goes on `Outer_character`, whose errors include those of the values it spreads".to_string(),
+            2,
+            10
+        )]
+    );
+}
+
+#[test]
+fn a_scanning_value_collects_a_spread_with_arguments_through_its_binding_and_a_conditional_one_under_its_guard()
+ {
+    let swift = emitted(
+        "fragment Counted_character on Character @inline @argumentDefinitions(count: {type: \"Int\", defaultValue: 2}) { notes(first: $count) { totalCount } }
+fragment Named_character on Character @inline { name }
+fragment Outer_character on Character @inline @throwOnFieldError @argumentDefinitions(withName: {type: \"Boolean!\"}) {
+  id
+  ...Counted_character @arguments(count: 1)
+  ...Named_character @include(if: $withName) @alias(as: \"named\")
+}
+query Probe($withName: Boolean!) { character(id: 1) { ...Outer_character @arguments(withName: $withName) } }",
+    );
+    let start = swift
+        .find("public struct Outer_character:")
+        .expect("the outer value is emitted");
+    let outer = &swift[start..];
+    let body = &outer[outer
+        .find("static func fieldErrors(")
+        .expect("the outer value collects its errors")..];
+    let body = &body[..body.find("\n    }\n").expect("the function closes")];
+    let lines: Vec<&str> = body.lines().map(str::trim).collect();
+    let counted = lines
+        .iter()
+        .position(|line| *line == "typealias Fragment = Counted_character")
+        .unwrap_or_else(|| panic!("{body}"));
+    assert!(
+        lines[counted + 1].starts_with("let bound = anchor.binding(Sites."),
+        "{body}"
+    );
+    assert_eq!(
+        lines[counted + 2],
+        "errors.append(contentsOf: Fragment.fieldErrors(bound))"
+    );
+    let named = lines
+        .iter()
+        .position(|line| *line == "typealias Fragment = Named_character")
+        .unwrap_or_else(|| panic!("{body}"));
+    assert!(
+        lines[named + 1].starts_with("if anchor.owner.selects(Guards.")
+            && lines[named + 1]
+                .ends_with("{ errors.append(contentsOf: Fragment.fieldErrors(anchor)) }"),
+        "{body}"
+    );
+}

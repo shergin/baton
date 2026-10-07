@@ -398,6 +398,49 @@ struct InlineTests {
         #expect(episode == TestResultValue_searchResult(asCharacter: nil, asLocation: nil))
     }
 
+    // MARK: The errors of the values a value spreads
+
+    @Test("a caught spread is a failure carrying the field error of a value its value spreads")
+    func aCaughtSpreadSeesTheErrorsOfTheValuesItsValueSpreads() throws {
+        let hidden = TestCaughtValueQuery(id: "2")
+        let store = Store()
+        store.log = nil
+        store.commit(try Ingest.normalize(fixture("strict-origin-2-hidden"), plan: TestCaughtValueQuery.plan.resolve(hidden.variables, in: store.keys)))
+        let data = TestCaughtValueQuery.Data(anchor: Anchor(record: store.root, variables: hidden.variables, store: store))
+        let caught = try #require(data.character?.caughtValue)
+        let failure: Result<TestCharacterValue_character, FieldErrors> = .failure(FieldErrors([FieldError(message: "name hidden", path: "character.origin.name")]))
+        #expect(caught == failure, "the origin's name is read through the spread of `TestOriginValue_location`")
+    }
+
+    @Test("a value under @throwOnFieldError throws an error of a value it spreads under a condition that holds, reads in the scope of a spread's arguments, and leaves a caught spread's errors to it")
+    func aThrowingValueCollectsTheValuesItSpreads() throws {
+        let store = Store()
+        store.log = nil
+        let shown = TestScanningValueQuery(id: "1", withName: true)
+        let plan = TestScanningValueQuery.plan.resolve(shown.variables, in: store.keys)
+        // The notes under the count the spread binds, then a name the server
+        // hid.
+        store.commit(try Ingest.normalize(fixture("notes-page-1"), plan: plan))
+        store.commit(try Ingest.normalize(fixture("character-name-hidden"), plan: plan))
+        let hiddenName = FieldError(message: "name hidden", path: "character.name")
+
+        let withName = try #require(TestScanningValueQuery.Data(anchor: Anchor(record: store.root, variables: shown.variables, store: store)).character)
+        #expect(throws: FieldErrors([hiddenName]), "the named value is spread and its name errored") {
+            try withName.testScanningValue
+        }
+
+        let skipped = TestScanningValueQuery(id: "1", withName: false)
+        let withoutName = try #require(TestScanningValueQuery.Data(anchor: Anchor(record: store.root, variables: skipped.variables, store: store)).character)
+        let value = try withoutName.testScanningValue
+        #expect(value.named == nil)
+        #expect(value.testNotesValue.notes.totalCount == 5, "the notes are read under notes(first: 1)")
+        guard case .failure(let caught) = value.caughtCharacter else {
+            Issue.record("the caught value's name errored, got \(value.caughtCharacter)")
+            return
+        }
+        #expect(caught.errors.contains(hiddenName), "the caught spread keeps the error the outer value left to it")
+    }
+
     // MARK: A rule tested with a value
 
     @Test("a rule over a value is tested with a value built by hand and holds for one read from the store")

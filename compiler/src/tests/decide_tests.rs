@@ -694,3 +694,153 @@ fn under_throw_on_field_error_a_lens_reads_a_non_null_mapped_scalar_required() {
         vec![("listedAt".to_string(), "Foundation.Date".to_string())]
     );
 }
+
+/// The decided lenses of the fragments in `text`, by name, compiled against
+/// the test schema.
+fn fragment_lenses(text: &str) -> BTreeMap<String, ReaderPlan> {
+    let schema_path = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .expect("the compiler sits one level below the repository root")
+        .join("spec/tests/schema.graphql");
+    let schema = std::fs::read_to_string(&schema_path).expect("the test schema is readable");
+    let document = Document {
+        path: PathBuf::from("Decide.swift"),
+        index: 0,
+        start: crate::swift::Position { line: 1, column: 1 },
+        text: text.to_string(),
+        embedded: None,
+    };
+    let compiled = pipeline::compile(
+        &schema,
+        &schema_path.to_string_lossy(),
+        &[],
+        &[document],
+        &Config::default(),
+    )
+    .unwrap_or_else(|errors| panic!("the document does not compile: {errors:?}"));
+    program(&compiled.plan)
+        .unwrap_or_else(|errors| panic!("{errors:?}"))
+        .fragments
+        .into_iter()
+        .map(|fragment| (fragment.name, fragment.lens))
+        .collect()
+}
+
+/// The fragments of `text` that carry `fieldErrors`.
+fn scanning(text: &str) -> Vec<String> {
+    fragment_lenses(text)
+        .into_iter()
+        .filter(|(_, lens)| lens.field_errors.is_some())
+        .map(|(name, _)| name)
+        .collect()
+}
+
+/// The spreads a lens's `fieldErrors` collects from, in its own checks.
+fn collected_spreads(lens: &ReaderPlan) -> Vec<SpreadRead> {
+    lens.field_errors
+        .iter()
+        .flatten()
+        .filter_map(|check| match check {
+            ErrorCheck::Member(member) => Some(&member.item),
+            ErrorCheck::Condition { .. } => None,
+        })
+        .flatten()
+        .filter_map(|line| match line {
+            ErrorLine::Spread(read) => Some(read.clone()),
+            _ => None,
+        })
+        .collect()
+}
+
+const INNER_VALUE: &str = "fragment Inner_character on Character @inline { name }";
+
+#[test]
+fn a_value_spread_inside_a_value_under_throw_on_field_error_scans_for_errors() {
+    let text = format!(
+        "{INNER_VALUE} fragment Outer_character on Character @inline @throwOnFieldError {{ id ...Inner_character }} \
+         query Probe {{ character(id: 1) {{ ...Outer_character }} }}"
+    );
+    assert_eq!(scanning(&text), vec!["Inner_character", "Outer_character"]);
+    let lenses = fragment_lenses(&text);
+    let spreads = collected_spreads(&lenses["Outer_character"]);
+    assert_eq!(
+        spreads
+            .iter()
+            .map(|read| read.fragment.as_str())
+            .collect::<Vec<_>>(),
+        vec!["Inner_character"]
+    );
+}
+
+#[test]
+fn a_value_spread_inside_a_plain_value_does_not_scan() {
+    let text = format!(
+        "{INNER_VALUE} fragment Outer_character on Character @inline {{ id ...Inner_character }} \
+         query Probe {{ character(id: 1) {{ ...Outer_character }} }}"
+    );
+    assert_eq!(scanning(&text), Vec::<String>::new());
+}
+
+#[test]
+fn a_value_spread_under_a_caught_link_inside_a_plain_value_scans() {
+    let text = "fragment Place_location on Location @inline { name dimension } \
+                fragment Outer_character on Character @inline { id origin @catch { ...Place_location } } \
+                query Probe { character(id: 1) { ...Outer_character } }";
+    assert_eq!(scanning(text), vec!["Place_location"]);
+}
+
+#[test]
+fn the_scan_reaches_a_value_spread_two_levels_down() {
+    let text = "fragment Leaf_character on Character @inline { status } \
+                fragment Middle_character on Character @inline { name ...Leaf_character } \
+                fragment Top_character on Character @inline @throwOnFieldError { id ...Middle_character } \
+                fragment Untouched_character on Character @inline { species } \
+                query Probe { character(id: 1) { ...Top_character ...Untouched_character } }";
+    assert_eq!(
+        scanning(text),
+        vec!["Leaf_character", "Middle_character", "Top_character"]
+    );
+}
+
+#[test]
+fn a_scanning_value_collects_a_spread_with_arguments_in_its_bound_scope_and_a_conditional_one_under_its_guard()
+ {
+    let text = "fragment Counted_character on Character @inline @argumentDefinitions(count: {type: \"Int\", defaultValue: 2}) { notes(first: $count) { totalCount } } \
+                fragment Named_character on Character @inline { name } \
+                fragment Outer_character on Character @inline @throwOnFieldError @argumentDefinitions(withName: {type: \"Boolean!\"}) { \
+                  id ...Counted_character @arguments(count: 1) ...Named_character @include(if: $withName) @alias(as: \"named\") } \
+                query Probe($withName: Boolean!) { character(id: 1) { ...Outer_character @arguments(withName: $withName) } }";
+    let lenses = fragment_lenses(text);
+    let spreads = collected_spreads(&lenses["Outer_character"]);
+    let counted = spreads
+        .iter()
+        .find(|read| read.fragment == "Counted_character")
+        .expect("the spread with arguments is collected");
+    assert!(counted.binding.is_some(), "{counted:?}");
+    let named = spreads
+        .iter()
+        .find(|read| read.fragment == "Named_character")
+        .expect("the conditional spread is collected");
+    assert!(
+        named
+            .guards
+            .iter()
+            .any(|guard| matches!(guard, SpreadGuard::Selects(_))),
+        "{named:?}"
+    );
+}
+
+#[test]
+fn a_caught_spread_inside_a_value_is_left_out_of_the_value_s_errors() {
+    let text = format!(
+        "{INNER_VALUE} fragment Outer_character on Character @inline @throwOnFieldError {{ \
+           id ... @alias(as: \"caughtInner\") @catch {{ ...Inner_character }} }} \
+         query Probe {{ character(id: 1) {{ ...Outer_character }} }}"
+    );
+    let lenses = fragment_lenses(&text);
+    assert!(lenses["Inner_character"].field_errors.is_some());
+    assert!(
+        collected_spreads(&lenses["Outer_character"]).is_empty(),
+        "the caught spread catches its own errors"
+    );
+}
