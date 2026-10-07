@@ -121,6 +121,13 @@ const SUBSCRIPTION_NAME: &str = "a subscription's name";
 const REFETCH_QUERY_NAME: &str = "a refetch query's name";
 const QUERY_SPREAD: &str = "the name of a fragment a query spreads";
 const MUTATION_SPREAD: &str = "the name of a fragment a mutation spreads";
+const VALUE_SCALAR: &str = "a scalar field of an inline fragment's value";
+const VALUE_LINKED: &str = "a linked field of an inline fragment's value";
+const VALUE_PLURAL: &str = "a plural linked field of an inline fragment's value";
+const VALUE_SPREAD: &str = "an aliased spread of a value inside a value";
+const INLINE_FRAGMENT_NAME: &str = "an inline fragment's name";
+const VALUE_SPREAD_NAME: &str = "the name of an inline fragment a value spreads";
+const QUERY_VALUE_SPREADS: &str = "the name of an inline fragment a query spreads in every form";
 
 /// A position a document's name can take, and what the compiler makes of a
 /// hostile name there.
@@ -150,7 +157,6 @@ struct Position {
 /// compile, as Swift 6.3.3 says with warnings as errors: defects of the
 /// compiler, kept here until each is fixed, when its names move to the
 /// corpus or to the refusals.
-#[allow(dead_code, reason = "no defect is known; the table waits for the next")]
 struct Defect {
     positions: &'static [&'static str],
     names: &'static [&'static str],
@@ -449,11 +455,114 @@ fn positions() -> Vec<Position> {
             "rename the fragment",
             &[DATA, ACTION, OPTIMISTIC_RESPONSE],
         ),
+        // A value's stored properties, beside every body a value can have:
+        // the checks of `@throwOnFieldError`, and `isPresent` and `caught`
+        // for a deferred and a caught spread of it.
+        field(
+            VALUE_SCALAR,
+            value_scalar_names,
+            r#"fragment Probe_character on Character @inline @throwOnFieldError { HOSTILE: name } query ProbeReach { character(id: 1) { ...Probe_character @defer ... @alias(as: "caughtValue") @catch { ...Probe_character } } }"#,
+            &[ANCHOR, RECORD_ID, SLOTS],
+        ),
+        field(
+            VALUE_LINKED,
+            value_linked_names,
+            r#"fragment Probe_character on Character @inline @throwOnFieldError { HOSTILE: origin { id } } query ProbeReach { character(id: 1) { ...Probe_character @defer ... @alias(as: "caughtValue") @catch { ...Probe_character } } }"#,
+            &[ANCHOR, RECORD_ID, SLOTS],
+        ),
+        field(
+            VALUE_PLURAL,
+            value_plural_names,
+            r#"fragment Probe_character on Character @inline @throwOnFieldError { HOSTILE: episode { id } } query ProbeReach { character(id: 1) { ...Probe_character @defer ... @alias(as: "caughtValue") @catch { ...Probe_character } } }"#,
+            &[ANCHOR, RECORD_ID, SLOTS],
+        ),
+        selection(
+            VALUE_SPREAD,
+            value_spread_names,
+            r#"fragment ProbeTarget_character on Character @inline { name } fragment Probe_character on Character @inline @throwOnFieldError { ... @alias(as: "HOSTILE") { ...ProbeTarget_character } } query ProbeReach { character(id: 1) { ...Probe_character @defer ... @alias(as: "caughtValue") @catch { ...Probe_character } } }"#,
+            &[ANCHOR, RECORD_ID],
+        ),
+        top_level(
+            INLINE_FRAGMENT_NAME,
+            "fragment HOSTILE on Character @inline { name }",
+            HOSTILE,
+            "the fragment `HOSTILE`",
+            "rename the fragment",
+            &[],
+        ),
+        top_level(
+            VALUE_SPREAD_NAME,
+            "fragment HOSTILE on Character @inline { name } fragment Probe_character on Character @inline { ...HOSTILE }",
+            HOSTILE,
+            "the fragment `HOSTILE`",
+            "rename the fragment",
+            &[],
+        ),
+        // Plainly, with arguments, under a condition with an alias, caught
+        // under an alias and under `@defer`.
+        top_level(
+            QUERY_VALUE_SPREADS,
+            r#"fragment HOSTILE on Character @inline @argumentDefinitions(flag: {type: "Boolean!", defaultValue: true}) @throwOnFieldError { name @include(if: $flag) } query Probe($flag: Boolean!) { character(id: 1) { ...HOSTILE ...HOSTILE @arguments(flag: false) @alias(as: "boundValue") ...HOSTILE @include(if: $flag) @alias(as: "conditionalValue") ... @alias(as: "caughtValue") @catch { ...HOSTILE } } } query ProbeDeferred { character(id: 1) { ...HOSTILE @defer } }"#,
+            HOSTILE,
+            "the fragment `HOSTILE`",
+            "rename the fragment",
+            &[DATA, SITES, GUARDS],
+        ),
     ]
 }
 
 fn defects() -> Vec<Defect> {
-    Vec::new()
+    // A value's memberwise initializer takes each property under its own
+    // name, so a parameter named `self` hides the instance its body
+    // assigns to; an operation value's initializer names it `selfValue`.
+    let value_self = |positions, writes, swift| Defect {
+        positions,
+        names: &["self"],
+        writes,
+        swift,
+    };
+    vec![
+        value_self(
+            &[VALUE_SCALAR],
+            &[
+                "public init(`HOSTILE`: String?) {",
+                "self.`HOSTILE` = `HOSTILE`",
+            ],
+            "value of optional type 'String?' must be unwrapped to refer to member 'self' of wrapped base type 'String'",
+        ),
+        value_self(
+            &[VALUE_LINKED],
+            &[
+                "public init(`HOSTILE`: SelfLens?) {",
+                "self.`HOSTILE` = `HOSTILE`",
+            ],
+            "value of type 'Probe_character.SelfLens?' has no member 'self'",
+        ),
+        value_self(
+            &[VALUE_PLURAL],
+            &[
+                "public init(`HOSTILE`: [SelfLens]) {",
+                "self.`HOSTILE` = `HOSTILE`",
+            ],
+            "value of type '[Probe_character.SelfLens]' has no member 'self'",
+        ),
+        value_self(
+            &[VALUE_SPREAD],
+            &[
+                "public init(`HOSTILE`: ProbeTarget_character) {",
+                "self.`HOSTILE` = `HOSTILE`",
+            ],
+            "value of type 'ProbeTarget_character' has no member 'self'",
+        ),
+        value_self(
+            &[VALUE_SPREAD_NAME],
+            &[
+                "public init(`HOSTILE`: `HOSTILE`) {",
+                "self.`HOSTILE` = `HOSTILE`",
+            ],
+            "value of type '`self`' has no member 'self'",
+        ),
+    ]
 }
 
 /// Defects of a name that hides another the same document chose, outside
@@ -563,6 +672,34 @@ fn required_names(plan: &Plan) -> Vec<String> {
 
 fn abstract_names(plan: &Plan) -> Vec<String> {
     aliases_of(&fragment(plan, "HostileAbstract_node").reader, "id")
+}
+
+fn value_scalar_names(plan: &Plan) -> Vec<String> {
+    aliases_of(
+        &fragment(plan, "HostileInlineScalars_character").reader,
+        "name",
+    )
+}
+
+fn value_linked_names(plan: &Plan) -> Vec<String> {
+    aliases_of(
+        &fragment(plan, "HostileInlineLinks_character").reader,
+        "origin",
+    )
+}
+
+fn value_plural_names(plan: &Plan) -> Vec<String> {
+    aliases_of(
+        &fragment(plan, "HostileInlinePlurals_character").reader,
+        "episode",
+    )
+}
+
+fn value_spread_names(plan: &Plan) -> Vec<String> {
+    inline_aliases(
+        &fragment(plan, "HostileInlineSpreads_character").reader,
+        true,
+    )
 }
 
 fn variable_names(operation: &OperationPlan) -> Vec<String> {

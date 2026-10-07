@@ -642,6 +642,9 @@ mod condition_lens_tests;
 #[path = "persist_tests.rs"]
 mod persist_tests;
 
+#[path = "inline_tests.rs"]
+mod inline_tests;
+
 #[test]
 fn an_operation_prints_compact_with_its_fragments_following_it() {
     let (sdl, path) = schema();

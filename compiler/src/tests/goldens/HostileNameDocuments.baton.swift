@@ -848,6 +848,9560 @@ nonisolated public struct HostileDeferred_character: Baton.Lens {
     @_spi(Generated) @MainActor public static func isPresent(_ anchor: Baton.Anchor) -> Bool { anchor.present(Slots.Character.name) }
 }
 
+/// Value of `fragment HostileInlineLinks_character on Character @inline`.
+nonisolated public struct HostileInlineLinks_character: Swift.Sendable, Swift.Hashable {
+    public let `Type`: TypeLens?
+    public let `Protocol`: ProtocolLens?
+    public let `Any`: AnyLens?
+    public let `Self`: SelfLens?
+    public let `init`: Init?
+    public let `deinit`: Deinit?
+    public let `subscript`: Subscript?
+    public let `class`: Class?
+    public let `struct`: Struct?
+    public let `enum`: Enum?
+    public let `func`: Func?
+    public let `var`: Var?
+    public let `let`: Let?
+    public let `import`: Import?
+    public let `extension`: Extension?
+    public let `operator`: Operator?
+    public let `static`: Static?
+    public let `default`: Default?
+    public let `case`: Case?
+    public let `switch`: Switch?
+    public let `if`: If?
+    public let `else`: Else?
+    public let `for`: For?
+    public let `in`: In?
+    public let `while`: While?
+    public let `repeat`: Repeat?
+    public let `return`: Return?
+    public let `break`: Break?
+    public let `continue`: Continue?
+    public let `where`: Where?
+    public let `is`: Is?
+    public let `as`: As?
+    public let `try`: Try?
+    public let `throw`: Throw?
+    public let `throws`: Throws?
+    public let `guard`: Guard?
+    public let `defer`: Defer?
+    public let `do`: Do?
+    public let `catch`: Catch?
+    public let `true`: True?
+    public let `false`: False?
+    public let `nil`: Nil?
+    public let `super`: Super?
+    public let `internal`: Internal?
+    public let `private`: Private?
+    public let `public`: Public?
+    public let `fileprivate`: Fileprivate?
+    public let `open`: Open?
+    public let `inout`: Inout?
+    public let `typealias`: Typealias?
+    public let `associatedtype`: Associatedtype?
+    public let `protocol`: ProtocolLens2?
+    public let `some`: Some?
+    public let `any`: AnyLens2?
+    public let `rethrows`: Rethrows?
+    public let `fallthrough`: Fallthrough?
+    public let `precedencegroup`: Precedencegroup?
+    public let `_`: _2?
+    public let async: Async?
+    public let `await`: Await?
+    public let `borrowing`: Borrowing?
+    public let consume: Consume?
+    public let `consuming`: Consuming?
+    public let copy: Copy?
+    public let discard: Discard?
+    public let `each`: Each?
+    public let `isolated`: Isolated?
+    public let `sending`: Sending?
+    public let then: Then?
+    public let unsafe: Unsafe?
+    public let satisfied: Satisfied?
+    public let missingRequiredField: MissingRequiredField?
+    public let fieldErrors: FieldErrors?
+    public let isPresent: IsPresent?
+    public let throwing: Throwing?
+    public let caught: Caught?
+    public let refetchable: Refetchable?
+    public let refetch: Refetch?
+    public let connection: Connection?
+    public let nodes: Nodes?
+    public let hasNext: HasNext?
+    public let hasPrevious: HasPrevious?
+    public let isLoadingNext: IsLoadingNext?
+    public let isLoadingPrevious: IsLoadingPrevious?
+    public let connectionID: ConnectionID?
+    public let loadNext: LoadNext?
+    public let loadPrevious: LoadPrevious?
+    public let bound: Bound?
+    public let errors: Errors?
+    public let child: Child?
+    public let missing: Missing?
+    public let count: Count?
+    public let fields: Fields?
+    public let lhs: Lhs?
+    public let rhs: Rhs?
+    public let hasher: Hasher2?
+    public let selection0: Selection0?
+    public let selection: Selection?
+    public let optimistic: Optimistic?
+    public let selfValue: SelfValue?
+    public let Fragment: FragmentLens?
+    public let Spread: Spread2?
+    public let Owner: Owner2?
+    public let Query: Query2?
+    public let Operation: Operation2?
+    public let RefetchQuery: RefetchQuery2?
+    public let variables: Variables?
+    public let resolution: Resolution?
+    public let name: Name?
+    public let document: Document?
+    public let text: Text?
+    public let plan: Plan?
+    public let errorBehavior: ErrorBehavior?
+    public let throwsOnFieldError: ThrowsOnFieldError?
+    public let bubbles: Bubbles?
+    public let hasDeferred: HasDeferred?
+    public let cacheExpiration: CacheExpiration?
+    public let Data: Data2?
+    public let Action: Action2?
+    public let OptimisticResponse: OptimisticResponse2?
+    public let hash: Hash?
+    public let commit: Commit?
+    public let callAsFunction: CallAsFunction?
+    public let Op: Op2?
+    public let variable: Variable?
+    public let hashValue: HashValue?
+    public let phase: Phase?
+    public let isRefreshing: IsRefreshing?
+    public let isStale: IsStale?
+    public let retry: Retry?
+    public let subscription: Subscription?
+    public let Types: TypesLens?
+    public let Sites: SitesLens?
+    public let Guards: GuardsLens?
+    public let AbstractSlots: AbstractSlotsLens?
+    public let schemaDigest: SchemaDigest?
+    public let format: Format?
+    public let transient: Transient?
+    public let Baton: BatonLens?
+    public let Swift: SwiftLens?
+    public let Set: Set2?
+    public let Result: ResultLens?
+    public let Optional: OptionalLens?
+    public let String: StringLens?
+    public let Int: IntLens?
+    public let Double: DoubleLens?
+    public let Bool: BoolLens?
+    public let MainActor: MainActorLens?
+    public let Hasher: Hasher3?
+    public let Sendable: Sendable2?
+    public init(`Type`: TypeLens?, `Protocol`: ProtocolLens?, `Any`: AnyLens?, `Self`: SelfLens?, `init`: Init?, `deinit`: Deinit?, `subscript`: Subscript?, `class`: Class?, `struct`: Struct?, `enum`: Enum?, `func`: Func?, `var`: Var?, `let`: Let?, `import`: Import?, `extension`: Extension?, `operator`: Operator?, `static`: Static?, `default`: Default?, `case`: Case?, `switch`: Switch?, `if`: If?, `else`: Else?, `for`: For?, `in`: In?, `while`: While?, `repeat`: Repeat?, `return`: Return?, `break`: Break?, `continue`: Continue?, `where`: Where?, `is`: Is?, `as`: As?, `try`: Try?, `throw`: Throw?, `throws`: Throws?, `guard`: Guard?, `defer`: Defer?, `do`: Do?, `catch`: Catch?, `true`: True?, `false`: False?, `nil`: Nil?, `super`: Super?, `internal`: Internal?, `private`: Private?, `public`: Public?, `fileprivate`: Fileprivate?, `open`: Open?, `inout`: Inout?, `typealias`: Typealias?, `associatedtype`: Associatedtype?, `protocol`: ProtocolLens2?, `some`: Some?, `any`: AnyLens2?, `rethrows`: Rethrows?, `fallthrough`: Fallthrough?, `precedencegroup`: Precedencegroup?, `_`: _2?, async: Async?, `await`: Await?, `borrowing`: Borrowing?, consume: Consume?, `consuming`: Consuming?, copy: Copy?, discard: Discard?, `each`: Each?, `isolated`: Isolated?, `sending`: Sending?, then: Then?, unsafe: Unsafe?, satisfied: Satisfied?, missingRequiredField: MissingRequiredField?, fieldErrors: FieldErrors?, isPresent: IsPresent?, throwing: Throwing?, caught: Caught?, refetchable: Refetchable?, refetch: Refetch?, connection: Connection?, nodes: Nodes?, hasNext: HasNext?, hasPrevious: HasPrevious?, isLoadingNext: IsLoadingNext?, isLoadingPrevious: IsLoadingPrevious?, connectionID: ConnectionID?, loadNext: LoadNext?, loadPrevious: LoadPrevious?, bound: Bound?, errors: Errors?, child: Child?, missing: Missing?, count: Count?, fields: Fields?, lhs: Lhs?, rhs: Rhs?, hasher: Hasher2?, selection0: Selection0?, selection: Selection?, optimistic: Optimistic?, selfValue: SelfValue?, Fragment: FragmentLens?, Spread: Spread2?, Owner: Owner2?, Query: Query2?, Operation: Operation2?, RefetchQuery: RefetchQuery2?, variables: Variables?, resolution: Resolution?, name: Name?, document: Document?, text: Text?, plan: Plan?, errorBehavior: ErrorBehavior?, throwsOnFieldError: ThrowsOnFieldError?, bubbles: Bubbles?, hasDeferred: HasDeferred?, cacheExpiration: CacheExpiration?, Data: Data2?, Action: Action2?, OptimisticResponse: OptimisticResponse2?, hash: Hash?, commit: Commit?, callAsFunction: CallAsFunction?, Op: Op2?, variable: Variable?, hashValue: HashValue?, phase: Phase?, isRefreshing: IsRefreshing?, isStale: IsStale?, retry: Retry?, subscription: Subscription?, Types: TypesLens?, Sites: SitesLens?, Guards: GuardsLens?, AbstractSlots: AbstractSlotsLens?, schemaDigest: SchemaDigest?, format: Format?, transient: Transient?, Baton: BatonLens?, Swift: SwiftLens?, Set: Set2?, Result: ResultLens?, Optional: OptionalLens?, String: StringLens?, Int: IntLens?, Double: DoubleLens?, Bool: BoolLens?, MainActor: MainActorLens?, Hasher: Hasher3?, Sendable: Sendable2?) {
+        self.`Type` = `Type`
+        self.`Protocol` = `Protocol`
+        self.`Any` = `Any`
+        self.`Self` = `Self`
+        self.`init` = `init`
+        self.`deinit` = `deinit`
+        self.`subscript` = `subscript`
+        self.`class` = `class`
+        self.`struct` = `struct`
+        self.`enum` = `enum`
+        self.`func` = `func`
+        self.`var` = `var`
+        self.`let` = `let`
+        self.`import` = `import`
+        self.`extension` = `extension`
+        self.`operator` = `operator`
+        self.`static` = `static`
+        self.`default` = `default`
+        self.`case` = `case`
+        self.`switch` = `switch`
+        self.`if` = `if`
+        self.`else` = `else`
+        self.`for` = `for`
+        self.`in` = `in`
+        self.`while` = `while`
+        self.`repeat` = `repeat`
+        self.`return` = `return`
+        self.`break` = `break`
+        self.`continue` = `continue`
+        self.`where` = `where`
+        self.`is` = `is`
+        self.`as` = `as`
+        self.`try` = `try`
+        self.`throw` = `throw`
+        self.`throws` = `throws`
+        self.`guard` = `guard`
+        self.`defer` = `defer`
+        self.`do` = `do`
+        self.`catch` = `catch`
+        self.`true` = `true`
+        self.`false` = `false`
+        self.`nil` = `nil`
+        self.`super` = `super`
+        self.`internal` = `internal`
+        self.`private` = `private`
+        self.`public` = `public`
+        self.`fileprivate` = `fileprivate`
+        self.`open` = `open`
+        self.`inout` = `inout`
+        self.`typealias` = `typealias`
+        self.`associatedtype` = `associatedtype`
+        self.`protocol` = `protocol`
+        self.`some` = `some`
+        self.`any` = `any`
+        self.`rethrows` = `rethrows`
+        self.`fallthrough` = `fallthrough`
+        self.`precedencegroup` = `precedencegroup`
+        self.`_` = `_`
+        self.async = async
+        self.`await` = `await`
+        self.`borrowing` = `borrowing`
+        self.consume = consume
+        self.`consuming` = `consuming`
+        self.copy = copy
+        self.discard = discard
+        self.`each` = `each`
+        self.`isolated` = `isolated`
+        self.`sending` = `sending`
+        self.then = then
+        self.unsafe = unsafe
+        self.satisfied = satisfied
+        self.missingRequiredField = missingRequiredField
+        self.fieldErrors = fieldErrors
+        self.isPresent = isPresent
+        self.throwing = throwing
+        self.caught = caught
+        self.refetchable = refetchable
+        self.refetch = refetch
+        self.connection = connection
+        self.nodes = nodes
+        self.hasNext = hasNext
+        self.hasPrevious = hasPrevious
+        self.isLoadingNext = isLoadingNext
+        self.isLoadingPrevious = isLoadingPrevious
+        self.connectionID = connectionID
+        self.loadNext = loadNext
+        self.loadPrevious = loadPrevious
+        self.bound = bound
+        self.errors = errors
+        self.child = child
+        self.missing = missing
+        self.count = count
+        self.fields = fields
+        self.lhs = lhs
+        self.rhs = rhs
+        self.hasher = hasher
+        self.selection0 = selection0
+        self.selection = selection
+        self.optimistic = optimistic
+        self.selfValue = selfValue
+        self.Fragment = Fragment
+        self.Spread = Spread
+        self.Owner = Owner
+        self.Query = Query
+        self.Operation = Operation
+        self.RefetchQuery = RefetchQuery
+        self.variables = variables
+        self.resolution = resolution
+        self.name = name
+        self.document = document
+        self.text = text
+        self.plan = plan
+        self.errorBehavior = errorBehavior
+        self.throwsOnFieldError = throwsOnFieldError
+        self.bubbles = bubbles
+        self.hasDeferred = hasDeferred
+        self.cacheExpiration = cacheExpiration
+        self.Data = Data
+        self.Action = Action
+        self.OptimisticResponse = OptimisticResponse
+        self.hash = hash
+        self.commit = commit
+        self.callAsFunction = callAsFunction
+        self.Op = Op
+        self.variable = variable
+        self.hashValue = hashValue
+        self.phase = phase
+        self.isRefreshing = isRefreshing
+        self.isStale = isStale
+        self.retry = retry
+        self.subscription = subscription
+        self.Types = Types
+        self.Sites = Sites
+        self.Guards = Guards
+        self.AbstractSlots = AbstractSlots
+        self.schemaDigest = schemaDigest
+        self.format = format
+        self.transient = transient
+        self.Baton = Baton
+        self.Swift = Swift
+        self.Set = Set
+        self.Result = Result
+        self.Optional = Optional
+        self.String = String
+        self.Int = Int
+        self.Double = Double
+        self.Bool = Bool
+        self.MainActor = MainActor
+        self.Hasher = Hasher
+        self.Sendable = Sendable
+    }
+    /// Reads the fragment's fields out of the record, once, at the call.
+    @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+        self.`Type` = anchor.linked(Slots.Character.origin).map { TypeLens(anchor: $0) }
+        self.`Protocol` = anchor.linked(Slots.Character.origin).map { ProtocolLens(anchor: $0) }
+        self.`Any` = anchor.linked(Slots.Character.origin).map { AnyLens(anchor: $0) }
+        self.`Self` = anchor.linked(Slots.Character.origin).map { SelfLens(anchor: $0) }
+        self.`init` = anchor.linked(Slots.Character.origin).map { Init(anchor: $0) }
+        self.`deinit` = anchor.linked(Slots.Character.origin).map { Deinit(anchor: $0) }
+        self.`subscript` = anchor.linked(Slots.Character.origin).map { Subscript(anchor: $0) }
+        self.`class` = anchor.linked(Slots.Character.origin).map { Class(anchor: $0) }
+        self.`struct` = anchor.linked(Slots.Character.origin).map { Struct(anchor: $0) }
+        self.`enum` = anchor.linked(Slots.Character.origin).map { Enum(anchor: $0) }
+        self.`func` = anchor.linked(Slots.Character.origin).map { Func(anchor: $0) }
+        self.`var` = anchor.linked(Slots.Character.origin).map { Var(anchor: $0) }
+        self.`let` = anchor.linked(Slots.Character.origin).map { Let(anchor: $0) }
+        self.`import` = anchor.linked(Slots.Character.origin).map { Import(anchor: $0) }
+        self.`extension` = anchor.linked(Slots.Character.origin).map { Extension(anchor: $0) }
+        self.`operator` = anchor.linked(Slots.Character.origin).map { Operator(anchor: $0) }
+        self.`static` = anchor.linked(Slots.Character.origin).map { Static(anchor: $0) }
+        self.`default` = anchor.linked(Slots.Character.origin).map { Default(anchor: $0) }
+        self.`case` = anchor.linked(Slots.Character.origin).map { Case(anchor: $0) }
+        self.`switch` = anchor.linked(Slots.Character.origin).map { Switch(anchor: $0) }
+        self.`if` = anchor.linked(Slots.Character.origin).map { If(anchor: $0) }
+        self.`else` = anchor.linked(Slots.Character.origin).map { Else(anchor: $0) }
+        self.`for` = anchor.linked(Slots.Character.origin).map { For(anchor: $0) }
+        self.`in` = anchor.linked(Slots.Character.origin).map { In(anchor: $0) }
+        self.`while` = anchor.linked(Slots.Character.origin).map { While(anchor: $0) }
+        self.`repeat` = anchor.linked(Slots.Character.origin).map { Repeat(anchor: $0) }
+        self.`return` = anchor.linked(Slots.Character.origin).map { Return(anchor: $0) }
+        self.`break` = anchor.linked(Slots.Character.origin).map { Break(anchor: $0) }
+        self.`continue` = anchor.linked(Slots.Character.origin).map { Continue(anchor: $0) }
+        self.`where` = anchor.linked(Slots.Character.origin).map { Where(anchor: $0) }
+        self.`is` = anchor.linked(Slots.Character.origin).map { Is(anchor: $0) }
+        self.`as` = anchor.linked(Slots.Character.origin).map { As(anchor: $0) }
+        self.`try` = anchor.linked(Slots.Character.origin).map { Try(anchor: $0) }
+        self.`throw` = anchor.linked(Slots.Character.origin).map { Throw(anchor: $0) }
+        self.`throws` = anchor.linked(Slots.Character.origin).map { Throws(anchor: $0) }
+        self.`guard` = anchor.linked(Slots.Character.origin).map { Guard(anchor: $0) }
+        self.`defer` = anchor.linked(Slots.Character.origin).map { Defer(anchor: $0) }
+        self.`do` = anchor.linked(Slots.Character.origin).map { Do(anchor: $0) }
+        self.`catch` = anchor.linked(Slots.Character.origin).map { Catch(anchor: $0) }
+        self.`true` = anchor.linked(Slots.Character.origin).map { True(anchor: $0) }
+        self.`false` = anchor.linked(Slots.Character.origin).map { False(anchor: $0) }
+        self.`nil` = anchor.linked(Slots.Character.origin).map { Nil(anchor: $0) }
+        self.`super` = anchor.linked(Slots.Character.origin).map { Super(anchor: $0) }
+        self.`internal` = anchor.linked(Slots.Character.origin).map { Internal(anchor: $0) }
+        self.`private` = anchor.linked(Slots.Character.origin).map { Private(anchor: $0) }
+        self.`public` = anchor.linked(Slots.Character.origin).map { Public(anchor: $0) }
+        self.`fileprivate` = anchor.linked(Slots.Character.origin).map { Fileprivate(anchor: $0) }
+        self.`open` = anchor.linked(Slots.Character.origin).map { Open(anchor: $0) }
+        self.`inout` = anchor.linked(Slots.Character.origin).map { Inout(anchor: $0) }
+        self.`typealias` = anchor.linked(Slots.Character.origin).map { Typealias(anchor: $0) }
+        self.`associatedtype` = anchor.linked(Slots.Character.origin).map { Associatedtype(anchor: $0) }
+        self.`protocol` = anchor.linked(Slots.Character.origin).map { ProtocolLens2(anchor: $0) }
+        self.`some` = anchor.linked(Slots.Character.origin).map { Some(anchor: $0) }
+        self.`any` = anchor.linked(Slots.Character.origin).map { AnyLens2(anchor: $0) }
+        self.`rethrows` = anchor.linked(Slots.Character.origin).map { Rethrows(anchor: $0) }
+        self.`fallthrough` = anchor.linked(Slots.Character.origin).map { Fallthrough(anchor: $0) }
+        self.`precedencegroup` = anchor.linked(Slots.Character.origin).map { Precedencegroup(anchor: $0) }
+        self.`_` = anchor.linked(Slots.Character.origin).map { _2(anchor: $0) }
+        self.async = anchor.linked(Slots.Character.origin).map { Async(anchor: $0) }
+        self.`await` = anchor.linked(Slots.Character.origin).map { Await(anchor: $0) }
+        self.`borrowing` = anchor.linked(Slots.Character.origin).map { Borrowing(anchor: $0) }
+        self.consume = anchor.linked(Slots.Character.origin).map { Consume(anchor: $0) }
+        self.`consuming` = anchor.linked(Slots.Character.origin).map { Consuming(anchor: $0) }
+        self.copy = anchor.linked(Slots.Character.origin).map { Copy(anchor: $0) }
+        self.discard = anchor.linked(Slots.Character.origin).map { Discard(anchor: $0) }
+        self.`each` = anchor.linked(Slots.Character.origin).map { Each(anchor: $0) }
+        self.`isolated` = anchor.linked(Slots.Character.origin).map { Isolated(anchor: $0) }
+        self.`sending` = anchor.linked(Slots.Character.origin).map { Sending(anchor: $0) }
+        self.then = anchor.linked(Slots.Character.origin).map { Then(anchor: $0) }
+        self.unsafe = anchor.linked(Slots.Character.origin).map { Unsafe(anchor: $0) }
+        self.satisfied = anchor.linked(Slots.Character.origin).map { Satisfied(anchor: $0) }
+        self.missingRequiredField = anchor.linked(Slots.Character.origin).map { MissingRequiredField(anchor: $0) }
+        self.fieldErrors = anchor.linked(Slots.Character.origin).map { FieldErrors(anchor: $0) }
+        self.isPresent = anchor.linked(Slots.Character.origin).map { IsPresent(anchor: $0) }
+        self.throwing = anchor.linked(Slots.Character.origin).map { Throwing(anchor: $0) }
+        self.caught = anchor.linked(Slots.Character.origin).map { Caught(anchor: $0) }
+        self.refetchable = anchor.linked(Slots.Character.origin).map { Refetchable(anchor: $0) }
+        self.refetch = anchor.linked(Slots.Character.origin).map { Refetch(anchor: $0) }
+        self.connection = anchor.linked(Slots.Character.origin).map { Connection(anchor: $0) }
+        self.nodes = anchor.linked(Slots.Character.origin).map { Nodes(anchor: $0) }
+        self.hasNext = anchor.linked(Slots.Character.origin).map { HasNext(anchor: $0) }
+        self.hasPrevious = anchor.linked(Slots.Character.origin).map { HasPrevious(anchor: $0) }
+        self.isLoadingNext = anchor.linked(Slots.Character.origin).map { IsLoadingNext(anchor: $0) }
+        self.isLoadingPrevious = anchor.linked(Slots.Character.origin).map { IsLoadingPrevious(anchor: $0) }
+        self.connectionID = anchor.linked(Slots.Character.origin).map { ConnectionID(anchor: $0) }
+        self.loadNext = anchor.linked(Slots.Character.origin).map { LoadNext(anchor: $0) }
+        self.loadPrevious = anchor.linked(Slots.Character.origin).map { LoadPrevious(anchor: $0) }
+        self.bound = anchor.linked(Slots.Character.origin).map { Bound(anchor: $0) }
+        self.errors = anchor.linked(Slots.Character.origin).map { Errors(anchor: $0) }
+        self.child = anchor.linked(Slots.Character.origin).map { Child(anchor: $0) }
+        self.missing = anchor.linked(Slots.Character.origin).map { Missing(anchor: $0) }
+        self.count = anchor.linked(Slots.Character.origin).map { Count(anchor: $0) }
+        self.fields = anchor.linked(Slots.Character.origin).map { Fields(anchor: $0) }
+        self.lhs = anchor.linked(Slots.Character.origin).map { Lhs(anchor: $0) }
+        self.rhs = anchor.linked(Slots.Character.origin).map { Rhs(anchor: $0) }
+        self.hasher = anchor.linked(Slots.Character.origin).map { Hasher2(anchor: $0) }
+        self.selection0 = anchor.linked(Slots.Character.origin).map { Selection0(anchor: $0) }
+        self.selection = anchor.linked(Slots.Character.origin).map { Selection(anchor: $0) }
+        self.optimistic = anchor.linked(Slots.Character.origin).map { Optimistic(anchor: $0) }
+        self.selfValue = anchor.linked(Slots.Character.origin).map { SelfValue(anchor: $0) }
+        self.Fragment = anchor.linked(Slots.Character.origin).map { FragmentLens(anchor: $0) }
+        self.Spread = anchor.linked(Slots.Character.origin).map { Spread2(anchor: $0) }
+        self.Owner = anchor.linked(Slots.Character.origin).map { Owner2(anchor: $0) }
+        self.Query = anchor.linked(Slots.Character.origin).map { Query2(anchor: $0) }
+        self.Operation = anchor.linked(Slots.Character.origin).map { Operation2(anchor: $0) }
+        self.RefetchQuery = anchor.linked(Slots.Character.origin).map { RefetchQuery2(anchor: $0) }
+        self.variables = anchor.linked(Slots.Character.origin).map { Variables(anchor: $0) }
+        self.resolution = anchor.linked(Slots.Character.origin).map { Resolution(anchor: $0) }
+        self.name = anchor.linked(Slots.Character.origin).map { Name(anchor: $0) }
+        self.document = anchor.linked(Slots.Character.origin).map { Document(anchor: $0) }
+        self.text = anchor.linked(Slots.Character.origin).map { Text(anchor: $0) }
+        self.plan = anchor.linked(Slots.Character.origin).map { Plan(anchor: $0) }
+        self.errorBehavior = anchor.linked(Slots.Character.origin).map { ErrorBehavior(anchor: $0) }
+        self.throwsOnFieldError = anchor.linked(Slots.Character.origin).map { ThrowsOnFieldError(anchor: $0) }
+        self.bubbles = anchor.linked(Slots.Character.origin).map { Bubbles(anchor: $0) }
+        self.hasDeferred = anchor.linked(Slots.Character.origin).map { HasDeferred(anchor: $0) }
+        self.cacheExpiration = anchor.linked(Slots.Character.origin).map { CacheExpiration(anchor: $0) }
+        self.Data = anchor.linked(Slots.Character.origin).map { Data2(anchor: $0) }
+        self.Action = anchor.linked(Slots.Character.origin).map { Action2(anchor: $0) }
+        self.OptimisticResponse = anchor.linked(Slots.Character.origin).map { OptimisticResponse2(anchor: $0) }
+        self.hash = anchor.linked(Slots.Character.origin).map { Hash(anchor: $0) }
+        self.commit = anchor.linked(Slots.Character.origin).map { Commit(anchor: $0) }
+        self.callAsFunction = anchor.linked(Slots.Character.origin).map { CallAsFunction(anchor: $0) }
+        self.Op = anchor.linked(Slots.Character.origin).map { Op2(anchor: $0) }
+        self.variable = anchor.linked(Slots.Character.origin).map { Variable(anchor: $0) }
+        self.hashValue = anchor.linked(Slots.Character.origin).map { HashValue(anchor: $0) }
+        self.phase = anchor.linked(Slots.Character.origin).map { Phase(anchor: $0) }
+        self.isRefreshing = anchor.linked(Slots.Character.origin).map { IsRefreshing(anchor: $0) }
+        self.isStale = anchor.linked(Slots.Character.origin).map { IsStale(anchor: $0) }
+        self.retry = anchor.linked(Slots.Character.origin).map { Retry(anchor: $0) }
+        self.subscription = anchor.linked(Slots.Character.origin).map { Subscription(anchor: $0) }
+        self.Types = anchor.linked(Slots.Character.origin).map { TypesLens(anchor: $0) }
+        self.Sites = anchor.linked(Slots.Character.origin).map { SitesLens(anchor: $0) }
+        self.Guards = anchor.linked(Slots.Character.origin).map { GuardsLens(anchor: $0) }
+        self.AbstractSlots = anchor.linked(Slots.Character.origin).map { AbstractSlotsLens(anchor: $0) }
+        self.schemaDigest = anchor.linked(Slots.Character.origin).map { SchemaDigest(anchor: $0) }
+        self.format = anchor.linked(Slots.Character.origin).map { Format(anchor: $0) }
+        self.transient = anchor.linked(Slots.Character.origin).map { Transient(anchor: $0) }
+        self.Baton = anchor.linked(Slots.Character.origin).map { BatonLens(anchor: $0) }
+        self.Swift = anchor.linked(Slots.Character.origin).map { SwiftLens(anchor: $0) }
+        self.Set = anchor.linked(Slots.Character.origin).map { Set2(anchor: $0) }
+        self.Result = anchor.linked(Slots.Character.origin).map { ResultLens(anchor: $0) }
+        self.Optional = anchor.linked(Slots.Character.origin).map { OptionalLens(anchor: $0) }
+        self.String = anchor.linked(Slots.Character.origin).map { StringLens(anchor: $0) }
+        self.Int = anchor.linked(Slots.Character.origin).map { IntLens(anchor: $0) }
+        self.Double = anchor.linked(Slots.Character.origin).map { DoubleLens(anchor: $0) }
+        self.Bool = anchor.linked(Slots.Character.origin).map { BoolLens(anchor: $0) }
+        self.MainActor = anchor.linked(Slots.Character.origin).map { MainActorLens(anchor: $0) }
+        self.Hasher = anchor.linked(Slots.Character.origin).map { Hasher3(anchor: $0) }
+        self.Sendable = anchor.linked(Slots.Character.origin).map { Sendable2(anchor: $0) }
+    }
+    /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+    @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+        var errors: [Baton.FieldError] = []
+        anchor.collectErrors(Slots.Character.origin, within: TypeLens.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: ProtocolLens.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: AnyLens.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: SelfLens.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Init.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Deinit.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Subscript.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Class.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Struct.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Enum.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Func.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Var.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Let.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Import.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Extension.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Operator.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Static.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Default.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Case.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Switch.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: If.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Else.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: For.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: In.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: While.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Repeat.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Return.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Break.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Continue.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Where.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Is.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: As.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Try.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Throw.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Throws.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Guard.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Defer.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Do.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Catch.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: True.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: False.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Nil.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Super.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Internal.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Private.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Public.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Fileprivate.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Open.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Inout.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Typealias.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Associatedtype.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: ProtocolLens2.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Some.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: AnyLens2.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Rethrows.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Fallthrough.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Precedencegroup.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: _2.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Async.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Await.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Borrowing.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Consume.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Consuming.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Copy.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Discard.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Each.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Isolated.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Sending.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Then.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Unsafe.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Satisfied.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: MissingRequiredField.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: FieldErrors.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: IsPresent.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Throwing.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Caught.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Refetchable.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Refetch.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Connection.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Nodes.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: HasNext.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: HasPrevious.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: IsLoadingNext.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: IsLoadingPrevious.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: ConnectionID.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: LoadNext.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: LoadPrevious.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Bound.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Errors.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Child.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Missing.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Count.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Fields.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Lhs.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Rhs.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Hasher2.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Selection0.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Selection.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Optimistic.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: SelfValue.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: FragmentLens.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Spread2.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Owner2.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Query2.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Operation2.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: RefetchQuery2.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Variables.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Resolution.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Name.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Document.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Text.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Plan.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: ErrorBehavior.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: ThrowsOnFieldError.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Bubbles.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: HasDeferred.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: CacheExpiration.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Data2.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Action2.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: OptimisticResponse2.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Hash.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Commit.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: CallAsFunction.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Op2.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Variable.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: HashValue.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Phase.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: IsRefreshing.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: IsStale.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Retry.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Subscription.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: TypesLens.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: SitesLens.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: GuardsLens.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: AbstractSlotsLens.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: SchemaDigest.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Format.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Transient.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: BatonLens.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: SwiftLens.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Set2.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: ResultLens.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: OptionalLens.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: StringLens.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: IntLens.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: DoubleLens.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: BoolLens.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: MainActorLens.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Hasher3.fieldErrors, into: &errors)
+        anchor.collectErrors(Slots.Character.origin, within: Sendable2.fieldErrors, into: &errors)
+        return errors
+    }
+    /// The value, or the field errors in it as a thrown `FieldErrors`.
+    @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+    /// The value, or the field errors in it as a `Result`.
+    @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+        let errors = fieldErrors(anchor)
+        return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+    }
+    /// Whether the deferred part that carries this fragment has arrived.
+    @_spi(Generated) @MainActor public static func isPresent(_ anchor: Baton.Anchor) -> Bool { anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) }
+
+    nonisolated public struct TypeLens: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct ProtocolLens: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct AnyLens: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct SelfLens: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Init: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Deinit: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Subscript: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Class: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Struct: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Enum: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Func: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Var: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Let: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Import: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Extension: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Operator: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Static: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Default: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Case: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Switch: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct If: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Else: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct For: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct In: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct While: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Repeat: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Return: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Break: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Continue: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Where: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Is: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct As: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Try: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Throw: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Throws: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Guard: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Defer: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Do: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Catch: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct True: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct False: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Nil: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Super: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Internal: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Private: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Public: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Fileprivate: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Open: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Inout: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Typealias: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Associatedtype: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct ProtocolLens2: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Some: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct AnyLens2: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Rethrows: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Fallthrough: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Precedencegroup: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct _2: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Async: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Await: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Borrowing: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Consume: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Consuming: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Copy: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Discard: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Each: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Isolated: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Sending: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Then: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Unsafe: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Satisfied: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct MissingRequiredField: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct FieldErrors: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct IsPresent: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Throwing: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Caught: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Refetchable: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Refetch: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Connection: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Nodes: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct HasNext: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct HasPrevious: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct IsLoadingNext: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct IsLoadingPrevious: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct ConnectionID: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct LoadNext: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct LoadPrevious: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Bound: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Errors: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Child: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Missing: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Count: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Fields: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Lhs: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Rhs: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Hasher2: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Selection0: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Selection: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Optimistic: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct SelfValue: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct FragmentLens: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Spread2: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Owner2: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Query2: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Operation2: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct RefetchQuery2: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Variables: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Resolution: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Name: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Document: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Text: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Plan: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct ErrorBehavior: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct ThrowsOnFieldError: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Bubbles: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct HasDeferred: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct CacheExpiration: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Data2: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Action2: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct OptimisticResponse2: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Hash: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Commit: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct CallAsFunction: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Op2: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Variable: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct HashValue: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Phase: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct IsRefreshing: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct IsStale: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Retry: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Subscription: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct TypesLens: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct SitesLens: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct GuardsLens: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct AbstractSlotsLens: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct SchemaDigest: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Format: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Transient: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct BatonLens: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct SwiftLens: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Set2: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct ResultLens: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct OptionalLens: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct StringLens: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct IntLens: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct DoubleLens: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct BoolLens: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct MainActorLens: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Hasher3: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Sendable2: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Location.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Location.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+}
+
+/// Value of `fragment HostileInlinePlurals_character on Character @inline`.
+nonisolated public struct HostileInlinePlurals_character: Swift.Sendable, Swift.Hashable {
+    public let `Type`: [TypeLens]
+    public let `Protocol`: [ProtocolLens]
+    public let `Any`: [AnyLens]
+    public let `Self`: [SelfLens]
+    public let `init`: [Init]
+    public let `deinit`: [Deinit]
+    public let `subscript`: [Subscript]
+    public let `class`: [Class]
+    public let `struct`: [Struct]
+    public let `enum`: [Enum]
+    public let `func`: [Func]
+    public let `var`: [Var]
+    public let `let`: [Let]
+    public let `import`: [Import]
+    public let `extension`: [Extension]
+    public let `operator`: [Operator]
+    public let `static`: [Static]
+    public let `default`: [Default]
+    public let `case`: [Case]
+    public let `switch`: [Switch]
+    public let `if`: [If]
+    public let `else`: [Else]
+    public let `for`: [For]
+    public let `in`: [In]
+    public let `while`: [While]
+    public let `repeat`: [Repeat]
+    public let `return`: [Return]
+    public let `break`: [Break]
+    public let `continue`: [Continue]
+    public let `where`: [Where]
+    public let `is`: [Is]
+    public let `as`: [As]
+    public let `try`: [Try]
+    public let `throw`: [Throw]
+    public let `throws`: [Throws]
+    public let `guard`: [Guard]
+    public let `defer`: [Defer]
+    public let `do`: [Do]
+    public let `catch`: [Catch]
+    public let `true`: [True]
+    public let `false`: [False]
+    public let `nil`: [Nil]
+    public let `super`: [Super]
+    public let `internal`: [Internal]
+    public let `private`: [Private]
+    public let `public`: [Public]
+    public let `fileprivate`: [Fileprivate]
+    public let `open`: [Open]
+    public let `inout`: [Inout]
+    public let `typealias`: [Typealias]
+    public let `associatedtype`: [Associatedtype]
+    public let `protocol`: [ProtocolLens2]
+    public let `some`: [Some]
+    public let `any`: [AnyLens2]
+    public let `rethrows`: [Rethrows]
+    public let `fallthrough`: [Fallthrough]
+    public let `precedencegroup`: [Precedencegroup]
+    public let `_`: [_2]
+    public let async: [Async]
+    public let `await`: [Await]
+    public let `borrowing`: [Borrowing]
+    public let consume: [Consume]
+    public let `consuming`: [Consuming]
+    public let copy: [Copy]
+    public let discard: [Discard]
+    public let `each`: [Each]
+    public let `isolated`: [Isolated]
+    public let `sending`: [Sending]
+    public let then: [Then]
+    public let unsafe: [Unsafe]
+    public let satisfied: [Satisfied]
+    public let missingRequiredField: [MissingRequiredField]
+    public let fieldErrors: [FieldErrors]
+    public let isPresent: [IsPresent]
+    public let throwing: [Throwing]
+    public let caught: [Caught]
+    public let refetchable: [Refetchable]
+    public let refetch: [Refetch]
+    public let connection: [Connection]
+    public let nodes: [Nodes]
+    public let hasNext: [HasNext]
+    public let hasPrevious: [HasPrevious]
+    public let isLoadingNext: [IsLoadingNext]
+    public let isLoadingPrevious: [IsLoadingPrevious]
+    public let connectionID: [ConnectionID]
+    public let loadNext: [LoadNext]
+    public let loadPrevious: [LoadPrevious]
+    public let bound: [Bound]
+    public let errors: [Errors]
+    public let child: [Child]
+    public let missing: [Missing]
+    public let count: [Count]
+    public let fields: [Fields]
+    public let lhs: [Lhs]
+    public let rhs: [Rhs]
+    public let hasher: [Hasher2]
+    public let selection0: [Selection0]
+    public let selection: [Selection]
+    public let optimistic: [Optimistic]
+    public let selfValue: [SelfValue]
+    public let Fragment: [FragmentLens]
+    public let Spread: [Spread2]
+    public let Owner: [Owner2]
+    public let Query: [Query2]
+    public let Operation: [Operation2]
+    public let RefetchQuery: [RefetchQuery2]
+    public let variables: [Variables]
+    public let resolution: [Resolution]
+    public let name: [Name]
+    public let document: [Document]
+    public let text: [Text]
+    public let plan: [Plan]
+    public let errorBehavior: [ErrorBehavior]
+    public let throwsOnFieldError: [ThrowsOnFieldError]
+    public let bubbles: [Bubbles]
+    public let hasDeferred: [HasDeferred]
+    public let cacheExpiration: [CacheExpiration]
+    public let Data: [Data2]
+    public let Action: [Action2]
+    public let OptimisticResponse: [OptimisticResponse2]
+    public let hash: [Hash]
+    public let commit: [Commit]
+    public let callAsFunction: [CallAsFunction]
+    public let Op: [Op2]
+    public let variable: [Variable]
+    public let hashValue: [HashValue]
+    public let phase: [Phase]
+    public let isRefreshing: [IsRefreshing]
+    public let isStale: [IsStale]
+    public let retry: [Retry]
+    public let subscription: [Subscription]
+    public let Types: [TypesLens]
+    public let Sites: [SitesLens]
+    public let Guards: [GuardsLens]
+    public let AbstractSlots: [AbstractSlotsLens]
+    public let schemaDigest: [SchemaDigest]
+    public let format: [Format]
+    public let transient: [Transient]
+    public let Baton: [BatonLens]
+    public let Swift: [SwiftLens]
+    public let Set: [Set2]
+    public let Result: [ResultLens]
+    public let Optional: [OptionalLens]
+    public let String: [StringLens]
+    public let Int: [IntLens]
+    public let Double: [DoubleLens]
+    public let Bool: [BoolLens]
+    public let MainActor: [MainActorLens]
+    public let Hasher: [Hasher3]
+    public let Sendable: [Sendable2]
+    public init(`Type`: [TypeLens], `Protocol`: [ProtocolLens], `Any`: [AnyLens], `Self`: [SelfLens], `init`: [Init], `deinit`: [Deinit], `subscript`: [Subscript], `class`: [Class], `struct`: [Struct], `enum`: [Enum], `func`: [Func], `var`: [Var], `let`: [Let], `import`: [Import], `extension`: [Extension], `operator`: [Operator], `static`: [Static], `default`: [Default], `case`: [Case], `switch`: [Switch], `if`: [If], `else`: [Else], `for`: [For], `in`: [In], `while`: [While], `repeat`: [Repeat], `return`: [Return], `break`: [Break], `continue`: [Continue], `where`: [Where], `is`: [Is], `as`: [As], `try`: [Try], `throw`: [Throw], `throws`: [Throws], `guard`: [Guard], `defer`: [Defer], `do`: [Do], `catch`: [Catch], `true`: [True], `false`: [False], `nil`: [Nil], `super`: [Super], `internal`: [Internal], `private`: [Private], `public`: [Public], `fileprivate`: [Fileprivate], `open`: [Open], `inout`: [Inout], `typealias`: [Typealias], `associatedtype`: [Associatedtype], `protocol`: [ProtocolLens2], `some`: [Some], `any`: [AnyLens2], `rethrows`: [Rethrows], `fallthrough`: [Fallthrough], `precedencegroup`: [Precedencegroup], `_`: [_2], async: [Async], `await`: [Await], `borrowing`: [Borrowing], consume: [Consume], `consuming`: [Consuming], copy: [Copy], discard: [Discard], `each`: [Each], `isolated`: [Isolated], `sending`: [Sending], then: [Then], unsafe: [Unsafe], satisfied: [Satisfied], missingRequiredField: [MissingRequiredField], fieldErrors: [FieldErrors], isPresent: [IsPresent], throwing: [Throwing], caught: [Caught], refetchable: [Refetchable], refetch: [Refetch], connection: [Connection], nodes: [Nodes], hasNext: [HasNext], hasPrevious: [HasPrevious], isLoadingNext: [IsLoadingNext], isLoadingPrevious: [IsLoadingPrevious], connectionID: [ConnectionID], loadNext: [LoadNext], loadPrevious: [LoadPrevious], bound: [Bound], errors: [Errors], child: [Child], missing: [Missing], count: [Count], fields: [Fields], lhs: [Lhs], rhs: [Rhs], hasher: [Hasher2], selection0: [Selection0], selection: [Selection], optimistic: [Optimistic], selfValue: [SelfValue], Fragment: [FragmentLens], Spread: [Spread2], Owner: [Owner2], Query: [Query2], Operation: [Operation2], RefetchQuery: [RefetchQuery2], variables: [Variables], resolution: [Resolution], name: [Name], document: [Document], text: [Text], plan: [Plan], errorBehavior: [ErrorBehavior], throwsOnFieldError: [ThrowsOnFieldError], bubbles: [Bubbles], hasDeferred: [HasDeferred], cacheExpiration: [CacheExpiration], Data: [Data2], Action: [Action2], OptimisticResponse: [OptimisticResponse2], hash: [Hash], commit: [Commit], callAsFunction: [CallAsFunction], Op: [Op2], variable: [Variable], hashValue: [HashValue], phase: [Phase], isRefreshing: [IsRefreshing], isStale: [IsStale], retry: [Retry], subscription: [Subscription], Types: [TypesLens], Sites: [SitesLens], Guards: [GuardsLens], AbstractSlots: [AbstractSlotsLens], schemaDigest: [SchemaDigest], format: [Format], transient: [Transient], Baton: [BatonLens], Swift: [SwiftLens], Set: [Set2], Result: [ResultLens], Optional: [OptionalLens], String: [StringLens], Int: [IntLens], Double: [DoubleLens], Bool: [BoolLens], MainActor: [MainActorLens], Hasher: [Hasher3], Sendable: [Sendable2]) {
+        self.`Type` = `Type`
+        self.`Protocol` = `Protocol`
+        self.`Any` = `Any`
+        self.`Self` = `Self`
+        self.`init` = `init`
+        self.`deinit` = `deinit`
+        self.`subscript` = `subscript`
+        self.`class` = `class`
+        self.`struct` = `struct`
+        self.`enum` = `enum`
+        self.`func` = `func`
+        self.`var` = `var`
+        self.`let` = `let`
+        self.`import` = `import`
+        self.`extension` = `extension`
+        self.`operator` = `operator`
+        self.`static` = `static`
+        self.`default` = `default`
+        self.`case` = `case`
+        self.`switch` = `switch`
+        self.`if` = `if`
+        self.`else` = `else`
+        self.`for` = `for`
+        self.`in` = `in`
+        self.`while` = `while`
+        self.`repeat` = `repeat`
+        self.`return` = `return`
+        self.`break` = `break`
+        self.`continue` = `continue`
+        self.`where` = `where`
+        self.`is` = `is`
+        self.`as` = `as`
+        self.`try` = `try`
+        self.`throw` = `throw`
+        self.`throws` = `throws`
+        self.`guard` = `guard`
+        self.`defer` = `defer`
+        self.`do` = `do`
+        self.`catch` = `catch`
+        self.`true` = `true`
+        self.`false` = `false`
+        self.`nil` = `nil`
+        self.`super` = `super`
+        self.`internal` = `internal`
+        self.`private` = `private`
+        self.`public` = `public`
+        self.`fileprivate` = `fileprivate`
+        self.`open` = `open`
+        self.`inout` = `inout`
+        self.`typealias` = `typealias`
+        self.`associatedtype` = `associatedtype`
+        self.`protocol` = `protocol`
+        self.`some` = `some`
+        self.`any` = `any`
+        self.`rethrows` = `rethrows`
+        self.`fallthrough` = `fallthrough`
+        self.`precedencegroup` = `precedencegroup`
+        self.`_` = `_`
+        self.async = async
+        self.`await` = `await`
+        self.`borrowing` = `borrowing`
+        self.consume = consume
+        self.`consuming` = `consuming`
+        self.copy = copy
+        self.discard = discard
+        self.`each` = `each`
+        self.`isolated` = `isolated`
+        self.`sending` = `sending`
+        self.then = then
+        self.unsafe = unsafe
+        self.satisfied = satisfied
+        self.missingRequiredField = missingRequiredField
+        self.fieldErrors = fieldErrors
+        self.isPresent = isPresent
+        self.throwing = throwing
+        self.caught = caught
+        self.refetchable = refetchable
+        self.refetch = refetch
+        self.connection = connection
+        self.nodes = nodes
+        self.hasNext = hasNext
+        self.hasPrevious = hasPrevious
+        self.isLoadingNext = isLoadingNext
+        self.isLoadingPrevious = isLoadingPrevious
+        self.connectionID = connectionID
+        self.loadNext = loadNext
+        self.loadPrevious = loadPrevious
+        self.bound = bound
+        self.errors = errors
+        self.child = child
+        self.missing = missing
+        self.count = count
+        self.fields = fields
+        self.lhs = lhs
+        self.rhs = rhs
+        self.hasher = hasher
+        self.selection0 = selection0
+        self.selection = selection
+        self.optimistic = optimistic
+        self.selfValue = selfValue
+        self.Fragment = Fragment
+        self.Spread = Spread
+        self.Owner = Owner
+        self.Query = Query
+        self.Operation = Operation
+        self.RefetchQuery = RefetchQuery
+        self.variables = variables
+        self.resolution = resolution
+        self.name = name
+        self.document = document
+        self.text = text
+        self.plan = plan
+        self.errorBehavior = errorBehavior
+        self.throwsOnFieldError = throwsOnFieldError
+        self.bubbles = bubbles
+        self.hasDeferred = hasDeferred
+        self.cacheExpiration = cacheExpiration
+        self.Data = Data
+        self.Action = Action
+        self.OptimisticResponse = OptimisticResponse
+        self.hash = hash
+        self.commit = commit
+        self.callAsFunction = callAsFunction
+        self.Op = Op
+        self.variable = variable
+        self.hashValue = hashValue
+        self.phase = phase
+        self.isRefreshing = isRefreshing
+        self.isStale = isStale
+        self.retry = retry
+        self.subscription = subscription
+        self.Types = Types
+        self.Sites = Sites
+        self.Guards = Guards
+        self.AbstractSlots = AbstractSlots
+        self.schemaDigest = schemaDigest
+        self.format = format
+        self.transient = transient
+        self.Baton = Baton
+        self.Swift = Swift
+        self.Set = Set
+        self.Result = Result
+        self.Optional = Optional
+        self.String = String
+        self.Int = Int
+        self.Double = Double
+        self.Bool = Bool
+        self.MainActor = MainActor
+        self.Hasher = Hasher
+        self.Sendable = Sendable
+    }
+    /// Reads the fragment's fields out of the record, once, at the call.
+    @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+        self.`Type` = anchor.requiredValues(Slots.Character.episode) { TypeLens(anchor: $0) }
+        self.`Protocol` = anchor.requiredValues(Slots.Character.episode) { ProtocolLens(anchor: $0) }
+        self.`Any` = anchor.requiredValues(Slots.Character.episode) { AnyLens(anchor: $0) }
+        self.`Self` = anchor.requiredValues(Slots.Character.episode) { SelfLens(anchor: $0) }
+        self.`init` = anchor.requiredValues(Slots.Character.episode) { Init(anchor: $0) }
+        self.`deinit` = anchor.requiredValues(Slots.Character.episode) { Deinit(anchor: $0) }
+        self.`subscript` = anchor.requiredValues(Slots.Character.episode) { Subscript(anchor: $0) }
+        self.`class` = anchor.requiredValues(Slots.Character.episode) { Class(anchor: $0) }
+        self.`struct` = anchor.requiredValues(Slots.Character.episode) { Struct(anchor: $0) }
+        self.`enum` = anchor.requiredValues(Slots.Character.episode) { Enum(anchor: $0) }
+        self.`func` = anchor.requiredValues(Slots.Character.episode) { Func(anchor: $0) }
+        self.`var` = anchor.requiredValues(Slots.Character.episode) { Var(anchor: $0) }
+        self.`let` = anchor.requiredValues(Slots.Character.episode) { Let(anchor: $0) }
+        self.`import` = anchor.requiredValues(Slots.Character.episode) { Import(anchor: $0) }
+        self.`extension` = anchor.requiredValues(Slots.Character.episode) { Extension(anchor: $0) }
+        self.`operator` = anchor.requiredValues(Slots.Character.episode) { Operator(anchor: $0) }
+        self.`static` = anchor.requiredValues(Slots.Character.episode) { Static(anchor: $0) }
+        self.`default` = anchor.requiredValues(Slots.Character.episode) { Default(anchor: $0) }
+        self.`case` = anchor.requiredValues(Slots.Character.episode) { Case(anchor: $0) }
+        self.`switch` = anchor.requiredValues(Slots.Character.episode) { Switch(anchor: $0) }
+        self.`if` = anchor.requiredValues(Slots.Character.episode) { If(anchor: $0) }
+        self.`else` = anchor.requiredValues(Slots.Character.episode) { Else(anchor: $0) }
+        self.`for` = anchor.requiredValues(Slots.Character.episode) { For(anchor: $0) }
+        self.`in` = anchor.requiredValues(Slots.Character.episode) { In(anchor: $0) }
+        self.`while` = anchor.requiredValues(Slots.Character.episode) { While(anchor: $0) }
+        self.`repeat` = anchor.requiredValues(Slots.Character.episode) { Repeat(anchor: $0) }
+        self.`return` = anchor.requiredValues(Slots.Character.episode) { Return(anchor: $0) }
+        self.`break` = anchor.requiredValues(Slots.Character.episode) { Break(anchor: $0) }
+        self.`continue` = anchor.requiredValues(Slots.Character.episode) { Continue(anchor: $0) }
+        self.`where` = anchor.requiredValues(Slots.Character.episode) { Where(anchor: $0) }
+        self.`is` = anchor.requiredValues(Slots.Character.episode) { Is(anchor: $0) }
+        self.`as` = anchor.requiredValues(Slots.Character.episode) { As(anchor: $0) }
+        self.`try` = anchor.requiredValues(Slots.Character.episode) { Try(anchor: $0) }
+        self.`throw` = anchor.requiredValues(Slots.Character.episode) { Throw(anchor: $0) }
+        self.`throws` = anchor.requiredValues(Slots.Character.episode) { Throws(anchor: $0) }
+        self.`guard` = anchor.requiredValues(Slots.Character.episode) { Guard(anchor: $0) }
+        self.`defer` = anchor.requiredValues(Slots.Character.episode) { Defer(anchor: $0) }
+        self.`do` = anchor.requiredValues(Slots.Character.episode) { Do(anchor: $0) }
+        self.`catch` = anchor.requiredValues(Slots.Character.episode) { Catch(anchor: $0) }
+        self.`true` = anchor.requiredValues(Slots.Character.episode) { True(anchor: $0) }
+        self.`false` = anchor.requiredValues(Slots.Character.episode) { False(anchor: $0) }
+        self.`nil` = anchor.requiredValues(Slots.Character.episode) { Nil(anchor: $0) }
+        self.`super` = anchor.requiredValues(Slots.Character.episode) { Super(anchor: $0) }
+        self.`internal` = anchor.requiredValues(Slots.Character.episode) { Internal(anchor: $0) }
+        self.`private` = anchor.requiredValues(Slots.Character.episode) { Private(anchor: $0) }
+        self.`public` = anchor.requiredValues(Slots.Character.episode) { Public(anchor: $0) }
+        self.`fileprivate` = anchor.requiredValues(Slots.Character.episode) { Fileprivate(anchor: $0) }
+        self.`open` = anchor.requiredValues(Slots.Character.episode) { Open(anchor: $0) }
+        self.`inout` = anchor.requiredValues(Slots.Character.episode) { Inout(anchor: $0) }
+        self.`typealias` = anchor.requiredValues(Slots.Character.episode) { Typealias(anchor: $0) }
+        self.`associatedtype` = anchor.requiredValues(Slots.Character.episode) { Associatedtype(anchor: $0) }
+        self.`protocol` = anchor.requiredValues(Slots.Character.episode) { ProtocolLens2(anchor: $0) }
+        self.`some` = anchor.requiredValues(Slots.Character.episode) { Some(anchor: $0) }
+        self.`any` = anchor.requiredValues(Slots.Character.episode) { AnyLens2(anchor: $0) }
+        self.`rethrows` = anchor.requiredValues(Slots.Character.episode) { Rethrows(anchor: $0) }
+        self.`fallthrough` = anchor.requiredValues(Slots.Character.episode) { Fallthrough(anchor: $0) }
+        self.`precedencegroup` = anchor.requiredValues(Slots.Character.episode) { Precedencegroup(anchor: $0) }
+        self.`_` = anchor.requiredValues(Slots.Character.episode) { _2(anchor: $0) }
+        self.async = anchor.requiredValues(Slots.Character.episode) { Async(anchor: $0) }
+        self.`await` = anchor.requiredValues(Slots.Character.episode) { Await(anchor: $0) }
+        self.`borrowing` = anchor.requiredValues(Slots.Character.episode) { Borrowing(anchor: $0) }
+        self.consume = anchor.requiredValues(Slots.Character.episode) { Consume(anchor: $0) }
+        self.`consuming` = anchor.requiredValues(Slots.Character.episode) { Consuming(anchor: $0) }
+        self.copy = anchor.requiredValues(Slots.Character.episode) { Copy(anchor: $0) }
+        self.discard = anchor.requiredValues(Slots.Character.episode) { Discard(anchor: $0) }
+        self.`each` = anchor.requiredValues(Slots.Character.episode) { Each(anchor: $0) }
+        self.`isolated` = anchor.requiredValues(Slots.Character.episode) { Isolated(anchor: $0) }
+        self.`sending` = anchor.requiredValues(Slots.Character.episode) { Sending(anchor: $0) }
+        self.then = anchor.requiredValues(Slots.Character.episode) { Then(anchor: $0) }
+        self.unsafe = anchor.requiredValues(Slots.Character.episode) { Unsafe(anchor: $0) }
+        self.satisfied = anchor.requiredValues(Slots.Character.episode) { Satisfied(anchor: $0) }
+        self.missingRequiredField = anchor.requiredValues(Slots.Character.episode) { MissingRequiredField(anchor: $0) }
+        self.fieldErrors = anchor.requiredValues(Slots.Character.episode) { FieldErrors(anchor: $0) }
+        self.isPresent = anchor.requiredValues(Slots.Character.episode) { IsPresent(anchor: $0) }
+        self.throwing = anchor.requiredValues(Slots.Character.episode) { Throwing(anchor: $0) }
+        self.caught = anchor.requiredValues(Slots.Character.episode) { Caught(anchor: $0) }
+        self.refetchable = anchor.requiredValues(Slots.Character.episode) { Refetchable(anchor: $0) }
+        self.refetch = anchor.requiredValues(Slots.Character.episode) { Refetch(anchor: $0) }
+        self.connection = anchor.requiredValues(Slots.Character.episode) { Connection(anchor: $0) }
+        self.nodes = anchor.requiredValues(Slots.Character.episode) { Nodes(anchor: $0) }
+        self.hasNext = anchor.requiredValues(Slots.Character.episode) { HasNext(anchor: $0) }
+        self.hasPrevious = anchor.requiredValues(Slots.Character.episode) { HasPrevious(anchor: $0) }
+        self.isLoadingNext = anchor.requiredValues(Slots.Character.episode) { IsLoadingNext(anchor: $0) }
+        self.isLoadingPrevious = anchor.requiredValues(Slots.Character.episode) { IsLoadingPrevious(anchor: $0) }
+        self.connectionID = anchor.requiredValues(Slots.Character.episode) { ConnectionID(anchor: $0) }
+        self.loadNext = anchor.requiredValues(Slots.Character.episode) { LoadNext(anchor: $0) }
+        self.loadPrevious = anchor.requiredValues(Slots.Character.episode) { LoadPrevious(anchor: $0) }
+        self.bound = anchor.requiredValues(Slots.Character.episode) { Bound(anchor: $0) }
+        self.errors = anchor.requiredValues(Slots.Character.episode) { Errors(anchor: $0) }
+        self.child = anchor.requiredValues(Slots.Character.episode) { Child(anchor: $0) }
+        self.missing = anchor.requiredValues(Slots.Character.episode) { Missing(anchor: $0) }
+        self.count = anchor.requiredValues(Slots.Character.episode) { Count(anchor: $0) }
+        self.fields = anchor.requiredValues(Slots.Character.episode) { Fields(anchor: $0) }
+        self.lhs = anchor.requiredValues(Slots.Character.episode) { Lhs(anchor: $0) }
+        self.rhs = anchor.requiredValues(Slots.Character.episode) { Rhs(anchor: $0) }
+        self.hasher = anchor.requiredValues(Slots.Character.episode) { Hasher2(anchor: $0) }
+        self.selection0 = anchor.requiredValues(Slots.Character.episode) { Selection0(anchor: $0) }
+        self.selection = anchor.requiredValues(Slots.Character.episode) { Selection(anchor: $0) }
+        self.optimistic = anchor.requiredValues(Slots.Character.episode) { Optimistic(anchor: $0) }
+        self.selfValue = anchor.requiredValues(Slots.Character.episode) { SelfValue(anchor: $0) }
+        self.Fragment = anchor.requiredValues(Slots.Character.episode) { FragmentLens(anchor: $0) }
+        self.Spread = anchor.requiredValues(Slots.Character.episode) { Spread2(anchor: $0) }
+        self.Owner = anchor.requiredValues(Slots.Character.episode) { Owner2(anchor: $0) }
+        self.Query = anchor.requiredValues(Slots.Character.episode) { Query2(anchor: $0) }
+        self.Operation = anchor.requiredValues(Slots.Character.episode) { Operation2(anchor: $0) }
+        self.RefetchQuery = anchor.requiredValues(Slots.Character.episode) { RefetchQuery2(anchor: $0) }
+        self.variables = anchor.requiredValues(Slots.Character.episode) { Variables(anchor: $0) }
+        self.resolution = anchor.requiredValues(Slots.Character.episode) { Resolution(anchor: $0) }
+        self.name = anchor.requiredValues(Slots.Character.episode) { Name(anchor: $0) }
+        self.document = anchor.requiredValues(Slots.Character.episode) { Document(anchor: $0) }
+        self.text = anchor.requiredValues(Slots.Character.episode) { Text(anchor: $0) }
+        self.plan = anchor.requiredValues(Slots.Character.episode) { Plan(anchor: $0) }
+        self.errorBehavior = anchor.requiredValues(Slots.Character.episode) { ErrorBehavior(anchor: $0) }
+        self.throwsOnFieldError = anchor.requiredValues(Slots.Character.episode) { ThrowsOnFieldError(anchor: $0) }
+        self.bubbles = anchor.requiredValues(Slots.Character.episode) { Bubbles(anchor: $0) }
+        self.hasDeferred = anchor.requiredValues(Slots.Character.episode) { HasDeferred(anchor: $0) }
+        self.cacheExpiration = anchor.requiredValues(Slots.Character.episode) { CacheExpiration(anchor: $0) }
+        self.Data = anchor.requiredValues(Slots.Character.episode) { Data2(anchor: $0) }
+        self.Action = anchor.requiredValues(Slots.Character.episode) { Action2(anchor: $0) }
+        self.OptimisticResponse = anchor.requiredValues(Slots.Character.episode) { OptimisticResponse2(anchor: $0) }
+        self.hash = anchor.requiredValues(Slots.Character.episode) { Hash(anchor: $0) }
+        self.commit = anchor.requiredValues(Slots.Character.episode) { Commit(anchor: $0) }
+        self.callAsFunction = anchor.requiredValues(Slots.Character.episode) { CallAsFunction(anchor: $0) }
+        self.Op = anchor.requiredValues(Slots.Character.episode) { Op2(anchor: $0) }
+        self.variable = anchor.requiredValues(Slots.Character.episode) { Variable(anchor: $0) }
+        self.hashValue = anchor.requiredValues(Slots.Character.episode) { HashValue(anchor: $0) }
+        self.phase = anchor.requiredValues(Slots.Character.episode) { Phase(anchor: $0) }
+        self.isRefreshing = anchor.requiredValues(Slots.Character.episode) { IsRefreshing(anchor: $0) }
+        self.isStale = anchor.requiredValues(Slots.Character.episode) { IsStale(anchor: $0) }
+        self.retry = anchor.requiredValues(Slots.Character.episode) { Retry(anchor: $0) }
+        self.subscription = anchor.requiredValues(Slots.Character.episode) { Subscription(anchor: $0) }
+        self.Types = anchor.requiredValues(Slots.Character.episode) { TypesLens(anchor: $0) }
+        self.Sites = anchor.requiredValues(Slots.Character.episode) { SitesLens(anchor: $0) }
+        self.Guards = anchor.requiredValues(Slots.Character.episode) { GuardsLens(anchor: $0) }
+        self.AbstractSlots = anchor.requiredValues(Slots.Character.episode) { AbstractSlotsLens(anchor: $0) }
+        self.schemaDigest = anchor.requiredValues(Slots.Character.episode) { SchemaDigest(anchor: $0) }
+        self.format = anchor.requiredValues(Slots.Character.episode) { Format(anchor: $0) }
+        self.transient = anchor.requiredValues(Slots.Character.episode) { Transient(anchor: $0) }
+        self.Baton = anchor.requiredValues(Slots.Character.episode) { BatonLens(anchor: $0) }
+        self.Swift = anchor.requiredValues(Slots.Character.episode) { SwiftLens(anchor: $0) }
+        self.Set = anchor.requiredValues(Slots.Character.episode) { Set2(anchor: $0) }
+        self.Result = anchor.requiredValues(Slots.Character.episode) { ResultLens(anchor: $0) }
+        self.Optional = anchor.requiredValues(Slots.Character.episode) { OptionalLens(anchor: $0) }
+        self.String = anchor.requiredValues(Slots.Character.episode) { StringLens(anchor: $0) }
+        self.Int = anchor.requiredValues(Slots.Character.episode) { IntLens(anchor: $0) }
+        self.Double = anchor.requiredValues(Slots.Character.episode) { DoubleLens(anchor: $0) }
+        self.Bool = anchor.requiredValues(Slots.Character.episode) { BoolLens(anchor: $0) }
+        self.MainActor = anchor.requiredValues(Slots.Character.episode) { MainActorLens(anchor: $0) }
+        self.Hasher = anchor.requiredValues(Slots.Character.episode) { Hasher3(anchor: $0) }
+        self.Sendable = anchor.requiredValues(Slots.Character.episode) { Sendable2(anchor: $0) }
+    }
+    /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+    @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+        var errors: [Baton.FieldError] = []
+        anchor.collectErrors(list: Slots.Character.episode, within: TypeLens.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: ProtocolLens.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: AnyLens.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: SelfLens.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Init.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Deinit.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Subscript.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Class.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Struct.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Enum.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Func.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Var.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Let.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Import.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Extension.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Operator.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Static.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Default.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Case.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Switch.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: If.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Else.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: For.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: In.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: While.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Repeat.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Return.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Break.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Continue.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Where.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Is.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: As.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Try.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Throw.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Throws.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Guard.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Defer.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Do.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Catch.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: True.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: False.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Nil.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Super.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Internal.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Private.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Public.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Fileprivate.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Open.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Inout.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Typealias.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Associatedtype.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: ProtocolLens2.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Some.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: AnyLens2.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Rethrows.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Fallthrough.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Precedencegroup.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: _2.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Async.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Await.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Borrowing.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Consume.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Consuming.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Copy.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Discard.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Each.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Isolated.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Sending.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Then.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Unsafe.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Satisfied.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: MissingRequiredField.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: FieldErrors.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: IsPresent.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Throwing.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Caught.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Refetchable.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Refetch.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Connection.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Nodes.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: HasNext.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: HasPrevious.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: IsLoadingNext.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: IsLoadingPrevious.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: ConnectionID.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: LoadNext.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: LoadPrevious.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Bound.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Errors.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Child.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Missing.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Count.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Fields.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Lhs.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Rhs.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Hasher2.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Selection0.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Selection.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Optimistic.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: SelfValue.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: FragmentLens.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Spread2.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Owner2.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Query2.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Operation2.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: RefetchQuery2.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Variables.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Resolution.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Name.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Document.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Text.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Plan.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: ErrorBehavior.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: ThrowsOnFieldError.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Bubbles.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: HasDeferred.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: CacheExpiration.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Data2.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Action2.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: OptimisticResponse2.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Hash.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Commit.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: CallAsFunction.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Op2.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Variable.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: HashValue.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Phase.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: IsRefreshing.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: IsStale.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Retry.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Subscription.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: TypesLens.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: SitesLens.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: GuardsLens.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: AbstractSlotsLens.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: SchemaDigest.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Format.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Transient.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: BatonLens.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: SwiftLens.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Set2.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: ResultLens.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: OptionalLens.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: StringLens.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: IntLens.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: DoubleLens.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: BoolLens.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: MainActorLens.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Hasher3.fieldErrors, into: &errors)
+        anchor.collectErrors(list: Slots.Character.episode, within: Sendable2.fieldErrors, into: &errors)
+        return errors
+    }
+    /// The value, or the field errors in it as a thrown `FieldErrors`.
+    @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+    /// The value, or the field errors in it as a `Result`.
+    @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+        let errors = fieldErrors(anchor)
+        return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+    }
+    /// Whether the deferred part that carries this fragment has arrived.
+    @_spi(Generated) @MainActor public static func isPresent(_ anchor: Baton.Anchor) -> Bool { anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) }
+
+    nonisolated public struct TypeLens: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct ProtocolLens: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct AnyLens: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct SelfLens: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Init: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Deinit: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Subscript: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Class: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Struct: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Enum: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Func: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Var: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Let: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Import: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Extension: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Operator: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Static: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Default: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Case: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Switch: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct If: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Else: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct For: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct In: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct While: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Repeat: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Return: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Break: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Continue: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Where: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Is: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct As: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Try: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Throw: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Throws: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Guard: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Defer: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Do: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Catch: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct True: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct False: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Nil: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Super: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Internal: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Private: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Public: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Fileprivate: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Open: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Inout: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Typealias: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Associatedtype: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct ProtocolLens2: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Some: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct AnyLens2: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Rethrows: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Fallthrough: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Precedencegroup: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct _2: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Async: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Await: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Borrowing: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Consume: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Consuming: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Copy: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Discard: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Each: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Isolated: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Sending: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Then: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Unsafe: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Satisfied: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct MissingRequiredField: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct FieldErrors: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct IsPresent: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Throwing: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Caught: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Refetchable: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Refetch: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Connection: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Nodes: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct HasNext: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct HasPrevious: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct IsLoadingNext: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct IsLoadingPrevious: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct ConnectionID: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct LoadNext: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct LoadPrevious: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Bound: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Errors: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Child: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Missing: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Count: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Fields: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Lhs: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Rhs: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Hasher2: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Selection0: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Selection: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Optimistic: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct SelfValue: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct FragmentLens: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Spread2: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Owner2: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Query2: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Operation2: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct RefetchQuery2: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Variables: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Resolution: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Name: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Document: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Text: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Plan: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct ErrorBehavior: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct ThrowsOnFieldError: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Bubbles: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct HasDeferred: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct CacheExpiration: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Data2: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Action2: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct OptimisticResponse2: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Hash: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Commit: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct CallAsFunction: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Op2: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Variable: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct HashValue: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Phase: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct IsRefreshing: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct IsStale: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Retry: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Subscription: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct TypesLens: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct SitesLens: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct GuardsLens: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct AbstractSlotsLens: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct SchemaDigest: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Format: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Transient: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct BatonLens: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct SwiftLens: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Set2: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct ResultLens: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct OptionalLens: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct StringLens: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct IntLens: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct DoubleLens: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct BoolLens: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct MainActorLens: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Hasher3: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+
+    nonisolated public struct Sendable2: Swift.Sendable, Swift.Hashable {
+        public let id: String?
+        public init(id: String?) {
+            self.id = id
+        }
+        /// Reads the fragment's fields out of the record, once, at the call.
+        @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+            self.id = anchor.string(Slots.Episode.id)
+        }
+        /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            anchor.collectError(Slots.Episode.id, into: &errors)
+            return errors
+        }
+        /// The value, or the field errors in it as a thrown `FieldErrors`.
+        @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+        /// The value, or the field errors in it as a `Result`.
+        @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+            let errors = fieldErrors(anchor)
+            return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+        }
+    }
+}
+
+/// Value of `fragment HostileInlineScalars_character on Character @inline`.
+nonisolated public struct HostileInlineScalars_character: Swift.Sendable, Swift.Hashable {
+    public let `Type`: String?
+    public let `Protocol`: String?
+    public let `Any`: String?
+    public let `Self`: String?
+    public let `init`: String?
+    public let `deinit`: String?
+    public let `subscript`: String?
+    public let `class`: String?
+    public let `struct`: String?
+    public let `enum`: String?
+    public let `func`: String?
+    public let `var`: String?
+    public let `let`: String?
+    public let `import`: String?
+    public let `extension`: String?
+    public let `operator`: String?
+    public let `static`: String?
+    public let `default`: String?
+    public let `case`: String?
+    public let `switch`: String?
+    public let `if`: String?
+    public let `else`: String?
+    public let `for`: String?
+    public let `in`: String?
+    public let `while`: String?
+    public let `repeat`: String?
+    public let `return`: String?
+    public let `break`: String?
+    public let `continue`: String?
+    public let `where`: String?
+    public let `is`: String?
+    public let `as`: String?
+    public let `try`: String?
+    public let `throw`: String?
+    public let `throws`: String?
+    public let `guard`: String?
+    public let `defer`: String?
+    public let `do`: String?
+    public let `catch`: String?
+    public let `true`: String?
+    public let `false`: String?
+    public let `nil`: String?
+    public let `super`: String?
+    public let `internal`: String?
+    public let `private`: String?
+    public let `public`: String?
+    public let `fileprivate`: String?
+    public let `open`: String?
+    public let `inout`: String?
+    public let `typealias`: String?
+    public let `associatedtype`: String?
+    public let `protocol`: String?
+    public let `some`: String?
+    public let `any`: String?
+    public let `rethrows`: String?
+    public let `fallthrough`: String?
+    public let `precedencegroup`: String?
+    public let `_`: String?
+    public let async: String?
+    public let `await`: String?
+    public let `borrowing`: String?
+    public let consume: String?
+    public let `consuming`: String?
+    public let copy: String?
+    public let discard: String?
+    public let `each`: String?
+    public let `isolated`: String?
+    public let `sending`: String?
+    public let then: String?
+    public let unsafe: String?
+    public let satisfied: String?
+    public let missingRequiredField: String?
+    public let fieldErrors: String?
+    public let isPresent: String?
+    public let throwing: String?
+    public let caught: String?
+    public let refetchable: String?
+    public let refetch: String?
+    public let connection: String?
+    public let nodes: String?
+    public let hasNext: String?
+    public let hasPrevious: String?
+    public let isLoadingNext: String?
+    public let isLoadingPrevious: String?
+    public let connectionID: String?
+    public let loadNext: String?
+    public let loadPrevious: String?
+    public let bound: String?
+    public let errors: String?
+    public let child: String?
+    public let missing: String?
+    public let count: String?
+    public let fields: String?
+    public let lhs: String?
+    public let rhs: String?
+    public let hasher: String?
+    public let selection0: String?
+    public let selection: String?
+    public let optimistic: String?
+    public let selfValue: String?
+    public let Fragment: String?
+    public let Spread: String?
+    public let Owner: String?
+    public let Query: String?
+    public let Operation: String?
+    public let RefetchQuery: String?
+    public let variables: String?
+    public let resolution: String?
+    public let name: String?
+    public let document: String?
+    public let text: String?
+    public let plan: String?
+    public let errorBehavior: String?
+    public let throwsOnFieldError: String?
+    public let bubbles: String?
+    public let hasDeferred: String?
+    public let cacheExpiration: String?
+    public let Data: String?
+    public let Action: String?
+    public let OptimisticResponse: String?
+    public let hash: String?
+    public let commit: String?
+    public let callAsFunction: String?
+    public let Op: String?
+    public let variable: String?
+    public let hashValue: String?
+    public let phase: String?
+    public let isRefreshing: String?
+    public let isStale: String?
+    public let retry: String?
+    public let subscription: String?
+    public let Types: String?
+    public let Sites: String?
+    public let Guards: String?
+    public let AbstractSlots: String?
+    public let schemaDigest: String?
+    public let format: String?
+    public let transient: String?
+    public let Baton: String?
+    public let Swift: String?
+    public let Set: String?
+    public let Result: String?
+    public let Optional: String?
+    public let String: String?
+    public let Int: String?
+    public let Double: String?
+    public let Bool: String?
+    public let MainActor: String?
+    public let Hasher: String?
+    public let Sendable: String?
+    public init(`Type`: String?, `Protocol`: String?, `Any`: String?, `Self`: String?, `init`: String?, `deinit`: String?, `subscript`: String?, `class`: String?, `struct`: String?, `enum`: String?, `func`: String?, `var`: String?, `let`: String?, `import`: String?, `extension`: String?, `operator`: String?, `static`: String?, `default`: String?, `case`: String?, `switch`: String?, `if`: String?, `else`: String?, `for`: String?, `in`: String?, `while`: String?, `repeat`: String?, `return`: String?, `break`: String?, `continue`: String?, `where`: String?, `is`: String?, `as`: String?, `try`: String?, `throw`: String?, `throws`: String?, `guard`: String?, `defer`: String?, `do`: String?, `catch`: String?, `true`: String?, `false`: String?, `nil`: String?, `super`: String?, `internal`: String?, `private`: String?, `public`: String?, `fileprivate`: String?, `open`: String?, `inout`: String?, `typealias`: String?, `associatedtype`: String?, `protocol`: String?, `some`: String?, `any`: String?, `rethrows`: String?, `fallthrough`: String?, `precedencegroup`: String?, `_`: String?, async: String?, `await`: String?, `borrowing`: String?, consume: String?, `consuming`: String?, copy: String?, discard: String?, `each`: String?, `isolated`: String?, `sending`: String?, then: String?, unsafe: String?, satisfied: String?, missingRequiredField: String?, fieldErrors: String?, isPresent: String?, throwing: String?, caught: String?, refetchable: String?, refetch: String?, connection: String?, nodes: String?, hasNext: String?, hasPrevious: String?, isLoadingNext: String?, isLoadingPrevious: String?, connectionID: String?, loadNext: String?, loadPrevious: String?, bound: String?, errors: String?, child: String?, missing: String?, count: String?, fields: String?, lhs: String?, rhs: String?, hasher: String?, selection0: String?, selection: String?, optimistic: String?, selfValue: String?, Fragment: String?, Spread: String?, Owner: String?, Query: String?, Operation: String?, RefetchQuery: String?, variables: String?, resolution: String?, name: String?, document: String?, text: String?, plan: String?, errorBehavior: String?, throwsOnFieldError: String?, bubbles: String?, hasDeferred: String?, cacheExpiration: String?, Data: String?, Action: String?, OptimisticResponse: String?, hash: String?, commit: String?, callAsFunction: String?, Op: String?, variable: String?, hashValue: String?, phase: String?, isRefreshing: String?, isStale: String?, retry: String?, subscription: String?, Types: String?, Sites: String?, Guards: String?, AbstractSlots: String?, schemaDigest: String?, format: String?, transient: String?, Baton: String?, Swift: String?, Set: String?, Result: String?, Optional: String?, String: String?, Int: String?, Double: String?, Bool: String?, MainActor: String?, Hasher: String?, Sendable: String?) {
+        self.`Type` = `Type`
+        self.`Protocol` = `Protocol`
+        self.`Any` = `Any`
+        self.`Self` = `Self`
+        self.`init` = `init`
+        self.`deinit` = `deinit`
+        self.`subscript` = `subscript`
+        self.`class` = `class`
+        self.`struct` = `struct`
+        self.`enum` = `enum`
+        self.`func` = `func`
+        self.`var` = `var`
+        self.`let` = `let`
+        self.`import` = `import`
+        self.`extension` = `extension`
+        self.`operator` = `operator`
+        self.`static` = `static`
+        self.`default` = `default`
+        self.`case` = `case`
+        self.`switch` = `switch`
+        self.`if` = `if`
+        self.`else` = `else`
+        self.`for` = `for`
+        self.`in` = `in`
+        self.`while` = `while`
+        self.`repeat` = `repeat`
+        self.`return` = `return`
+        self.`break` = `break`
+        self.`continue` = `continue`
+        self.`where` = `where`
+        self.`is` = `is`
+        self.`as` = `as`
+        self.`try` = `try`
+        self.`throw` = `throw`
+        self.`throws` = `throws`
+        self.`guard` = `guard`
+        self.`defer` = `defer`
+        self.`do` = `do`
+        self.`catch` = `catch`
+        self.`true` = `true`
+        self.`false` = `false`
+        self.`nil` = `nil`
+        self.`super` = `super`
+        self.`internal` = `internal`
+        self.`private` = `private`
+        self.`public` = `public`
+        self.`fileprivate` = `fileprivate`
+        self.`open` = `open`
+        self.`inout` = `inout`
+        self.`typealias` = `typealias`
+        self.`associatedtype` = `associatedtype`
+        self.`protocol` = `protocol`
+        self.`some` = `some`
+        self.`any` = `any`
+        self.`rethrows` = `rethrows`
+        self.`fallthrough` = `fallthrough`
+        self.`precedencegroup` = `precedencegroup`
+        self.`_` = `_`
+        self.async = async
+        self.`await` = `await`
+        self.`borrowing` = `borrowing`
+        self.consume = consume
+        self.`consuming` = `consuming`
+        self.copy = copy
+        self.discard = discard
+        self.`each` = `each`
+        self.`isolated` = `isolated`
+        self.`sending` = `sending`
+        self.then = then
+        self.unsafe = unsafe
+        self.satisfied = satisfied
+        self.missingRequiredField = missingRequiredField
+        self.fieldErrors = fieldErrors
+        self.isPresent = isPresent
+        self.throwing = throwing
+        self.caught = caught
+        self.refetchable = refetchable
+        self.refetch = refetch
+        self.connection = connection
+        self.nodes = nodes
+        self.hasNext = hasNext
+        self.hasPrevious = hasPrevious
+        self.isLoadingNext = isLoadingNext
+        self.isLoadingPrevious = isLoadingPrevious
+        self.connectionID = connectionID
+        self.loadNext = loadNext
+        self.loadPrevious = loadPrevious
+        self.bound = bound
+        self.errors = errors
+        self.child = child
+        self.missing = missing
+        self.count = count
+        self.fields = fields
+        self.lhs = lhs
+        self.rhs = rhs
+        self.hasher = hasher
+        self.selection0 = selection0
+        self.selection = selection
+        self.optimistic = optimistic
+        self.selfValue = selfValue
+        self.Fragment = Fragment
+        self.Spread = Spread
+        self.Owner = Owner
+        self.Query = Query
+        self.Operation = Operation
+        self.RefetchQuery = RefetchQuery
+        self.variables = variables
+        self.resolution = resolution
+        self.name = name
+        self.document = document
+        self.text = text
+        self.plan = plan
+        self.errorBehavior = errorBehavior
+        self.throwsOnFieldError = throwsOnFieldError
+        self.bubbles = bubbles
+        self.hasDeferred = hasDeferred
+        self.cacheExpiration = cacheExpiration
+        self.Data = Data
+        self.Action = Action
+        self.OptimisticResponse = OptimisticResponse
+        self.hash = hash
+        self.commit = commit
+        self.callAsFunction = callAsFunction
+        self.Op = Op
+        self.variable = variable
+        self.hashValue = hashValue
+        self.phase = phase
+        self.isRefreshing = isRefreshing
+        self.isStale = isStale
+        self.retry = retry
+        self.subscription = subscription
+        self.Types = Types
+        self.Sites = Sites
+        self.Guards = Guards
+        self.AbstractSlots = AbstractSlots
+        self.schemaDigest = schemaDigest
+        self.format = format
+        self.transient = transient
+        self.Baton = Baton
+        self.Swift = Swift
+        self.Set = Set
+        self.Result = Result
+        self.Optional = Optional
+        self.String = String
+        self.Int = Int
+        self.Double = Double
+        self.Bool = Bool
+        self.MainActor = MainActor
+        self.Hasher = Hasher
+        self.Sendable = Sendable
+    }
+    /// Reads the fragment's fields out of the record, once, at the call.
+    @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+        self.`Type` = anchor.string(Slots.Character.name)
+        self.`Protocol` = anchor.string(Slots.Character.name)
+        self.`Any` = anchor.string(Slots.Character.name)
+        self.`Self` = anchor.string(Slots.Character.name)
+        self.`init` = anchor.string(Slots.Character.name)
+        self.`deinit` = anchor.string(Slots.Character.name)
+        self.`subscript` = anchor.string(Slots.Character.name)
+        self.`class` = anchor.string(Slots.Character.name)
+        self.`struct` = anchor.string(Slots.Character.name)
+        self.`enum` = anchor.string(Slots.Character.name)
+        self.`func` = anchor.string(Slots.Character.name)
+        self.`var` = anchor.string(Slots.Character.name)
+        self.`let` = anchor.string(Slots.Character.name)
+        self.`import` = anchor.string(Slots.Character.name)
+        self.`extension` = anchor.string(Slots.Character.name)
+        self.`operator` = anchor.string(Slots.Character.name)
+        self.`static` = anchor.string(Slots.Character.name)
+        self.`default` = anchor.string(Slots.Character.name)
+        self.`case` = anchor.string(Slots.Character.name)
+        self.`switch` = anchor.string(Slots.Character.name)
+        self.`if` = anchor.string(Slots.Character.name)
+        self.`else` = anchor.string(Slots.Character.name)
+        self.`for` = anchor.string(Slots.Character.name)
+        self.`in` = anchor.string(Slots.Character.name)
+        self.`while` = anchor.string(Slots.Character.name)
+        self.`repeat` = anchor.string(Slots.Character.name)
+        self.`return` = anchor.string(Slots.Character.name)
+        self.`break` = anchor.string(Slots.Character.name)
+        self.`continue` = anchor.string(Slots.Character.name)
+        self.`where` = anchor.string(Slots.Character.name)
+        self.`is` = anchor.string(Slots.Character.name)
+        self.`as` = anchor.string(Slots.Character.name)
+        self.`try` = anchor.string(Slots.Character.name)
+        self.`throw` = anchor.string(Slots.Character.name)
+        self.`throws` = anchor.string(Slots.Character.name)
+        self.`guard` = anchor.string(Slots.Character.name)
+        self.`defer` = anchor.string(Slots.Character.name)
+        self.`do` = anchor.string(Slots.Character.name)
+        self.`catch` = anchor.string(Slots.Character.name)
+        self.`true` = anchor.string(Slots.Character.name)
+        self.`false` = anchor.string(Slots.Character.name)
+        self.`nil` = anchor.string(Slots.Character.name)
+        self.`super` = anchor.string(Slots.Character.name)
+        self.`internal` = anchor.string(Slots.Character.name)
+        self.`private` = anchor.string(Slots.Character.name)
+        self.`public` = anchor.string(Slots.Character.name)
+        self.`fileprivate` = anchor.string(Slots.Character.name)
+        self.`open` = anchor.string(Slots.Character.name)
+        self.`inout` = anchor.string(Slots.Character.name)
+        self.`typealias` = anchor.string(Slots.Character.name)
+        self.`associatedtype` = anchor.string(Slots.Character.name)
+        self.`protocol` = anchor.string(Slots.Character.name)
+        self.`some` = anchor.string(Slots.Character.name)
+        self.`any` = anchor.string(Slots.Character.name)
+        self.`rethrows` = anchor.string(Slots.Character.name)
+        self.`fallthrough` = anchor.string(Slots.Character.name)
+        self.`precedencegroup` = anchor.string(Slots.Character.name)
+        self.`_` = anchor.string(Slots.Character.name)
+        self.async = anchor.string(Slots.Character.name)
+        self.`await` = anchor.string(Slots.Character.name)
+        self.`borrowing` = anchor.string(Slots.Character.name)
+        self.consume = anchor.string(Slots.Character.name)
+        self.`consuming` = anchor.string(Slots.Character.name)
+        self.copy = anchor.string(Slots.Character.name)
+        self.discard = anchor.string(Slots.Character.name)
+        self.`each` = anchor.string(Slots.Character.name)
+        self.`isolated` = anchor.string(Slots.Character.name)
+        self.`sending` = anchor.string(Slots.Character.name)
+        self.then = anchor.string(Slots.Character.name)
+        self.unsafe = anchor.string(Slots.Character.name)
+        self.satisfied = anchor.string(Slots.Character.name)
+        self.missingRequiredField = anchor.string(Slots.Character.name)
+        self.fieldErrors = anchor.string(Slots.Character.name)
+        self.isPresent = anchor.string(Slots.Character.name)
+        self.throwing = anchor.string(Slots.Character.name)
+        self.caught = anchor.string(Slots.Character.name)
+        self.refetchable = anchor.string(Slots.Character.name)
+        self.refetch = anchor.string(Slots.Character.name)
+        self.connection = anchor.string(Slots.Character.name)
+        self.nodes = anchor.string(Slots.Character.name)
+        self.hasNext = anchor.string(Slots.Character.name)
+        self.hasPrevious = anchor.string(Slots.Character.name)
+        self.isLoadingNext = anchor.string(Slots.Character.name)
+        self.isLoadingPrevious = anchor.string(Slots.Character.name)
+        self.connectionID = anchor.string(Slots.Character.name)
+        self.loadNext = anchor.string(Slots.Character.name)
+        self.loadPrevious = anchor.string(Slots.Character.name)
+        self.bound = anchor.string(Slots.Character.name)
+        self.errors = anchor.string(Slots.Character.name)
+        self.child = anchor.string(Slots.Character.name)
+        self.missing = anchor.string(Slots.Character.name)
+        self.count = anchor.string(Slots.Character.name)
+        self.fields = anchor.string(Slots.Character.name)
+        self.lhs = anchor.string(Slots.Character.name)
+        self.rhs = anchor.string(Slots.Character.name)
+        self.hasher = anchor.string(Slots.Character.name)
+        self.selection0 = anchor.string(Slots.Character.name)
+        self.selection = anchor.string(Slots.Character.name)
+        self.optimistic = anchor.string(Slots.Character.name)
+        self.selfValue = anchor.string(Slots.Character.name)
+        self.Fragment = anchor.string(Slots.Character.name)
+        self.Spread = anchor.string(Slots.Character.name)
+        self.Owner = anchor.string(Slots.Character.name)
+        self.Query = anchor.string(Slots.Character.name)
+        self.Operation = anchor.string(Slots.Character.name)
+        self.RefetchQuery = anchor.string(Slots.Character.name)
+        self.variables = anchor.string(Slots.Character.name)
+        self.resolution = anchor.string(Slots.Character.name)
+        self.name = anchor.string(Slots.Character.name)
+        self.document = anchor.string(Slots.Character.name)
+        self.text = anchor.string(Slots.Character.name)
+        self.plan = anchor.string(Slots.Character.name)
+        self.errorBehavior = anchor.string(Slots.Character.name)
+        self.throwsOnFieldError = anchor.string(Slots.Character.name)
+        self.bubbles = anchor.string(Slots.Character.name)
+        self.hasDeferred = anchor.string(Slots.Character.name)
+        self.cacheExpiration = anchor.string(Slots.Character.name)
+        self.Data = anchor.string(Slots.Character.name)
+        self.Action = anchor.string(Slots.Character.name)
+        self.OptimisticResponse = anchor.string(Slots.Character.name)
+        self.hash = anchor.string(Slots.Character.name)
+        self.commit = anchor.string(Slots.Character.name)
+        self.callAsFunction = anchor.string(Slots.Character.name)
+        self.Op = anchor.string(Slots.Character.name)
+        self.variable = anchor.string(Slots.Character.name)
+        self.hashValue = anchor.string(Slots.Character.name)
+        self.phase = anchor.string(Slots.Character.name)
+        self.isRefreshing = anchor.string(Slots.Character.name)
+        self.isStale = anchor.string(Slots.Character.name)
+        self.retry = anchor.string(Slots.Character.name)
+        self.subscription = anchor.string(Slots.Character.name)
+        self.Types = anchor.string(Slots.Character.name)
+        self.Sites = anchor.string(Slots.Character.name)
+        self.Guards = anchor.string(Slots.Character.name)
+        self.AbstractSlots = anchor.string(Slots.Character.name)
+        self.schemaDigest = anchor.string(Slots.Character.name)
+        self.format = anchor.string(Slots.Character.name)
+        self.transient = anchor.string(Slots.Character.name)
+        self.Baton = anchor.string(Slots.Character.name)
+        self.Swift = anchor.string(Slots.Character.name)
+        self.Set = anchor.string(Slots.Character.name)
+        self.Result = anchor.string(Slots.Character.name)
+        self.Optional = anchor.string(Slots.Character.name)
+        self.String = anchor.string(Slots.Character.name)
+        self.Int = anchor.string(Slots.Character.name)
+        self.Double = anchor.string(Slots.Character.name)
+        self.Bool = anchor.string(Slots.Character.name)
+        self.MainActor = anchor.string(Slots.Character.name)
+        self.Hasher = anchor.string(Slots.Character.name)
+        self.Sendable = anchor.string(Slots.Character.name)
+    }
+    /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+    @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+        var errors: [Baton.FieldError] = []
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        anchor.collectError(Slots.Character.name, into: &errors)
+        return errors
+    }
+    /// The value, or the field errors in it as a thrown `FieldErrors`.
+    @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+    /// The value, or the field errors in it as a `Result`.
+    @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+        let errors = fieldErrors(anchor)
+        return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+    }
+    /// Whether the deferred part that carries this fragment has arrived.
+    @_spi(Generated) @MainActor public static func isPresent(_ anchor: Baton.Anchor) -> Bool { anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) }
+}
+
+/// Value of `fragment HostileInlineSpreadTarget_character on Character @inline`.
+nonisolated public struct HostileInlineSpreadTarget_character: Swift.Sendable, Swift.Hashable {
+    public let name: String?
+    public init(name: String?) {
+        self.name = name
+    }
+    /// Reads the fragment's fields out of the record, once, at the call.
+    @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+        self.name = anchor.string(Slots.Character.name)
+    }
+}
+
+/// Value of `fragment HostileInlineSpreads_character on Character @inline`.
+nonisolated public struct HostileInlineSpreads_character: Swift.Sendable, Swift.Hashable {
+    public let `Type`: HostileInlineSpreadTarget_character
+    public let `Protocol`: HostileInlineSpreadTarget_character
+    public let `Any`: HostileInlineSpreadTarget_character
+    public let `Self`: HostileInlineSpreadTarget_character
+    public let `init`: HostileInlineSpreadTarget_character
+    public let `deinit`: HostileInlineSpreadTarget_character
+    public let `subscript`: HostileInlineSpreadTarget_character
+    public let `class`: HostileInlineSpreadTarget_character
+    public let `struct`: HostileInlineSpreadTarget_character
+    public let `enum`: HostileInlineSpreadTarget_character
+    public let `func`: HostileInlineSpreadTarget_character
+    public let `var`: HostileInlineSpreadTarget_character
+    public let `let`: HostileInlineSpreadTarget_character
+    public let `import`: HostileInlineSpreadTarget_character
+    public let `extension`: HostileInlineSpreadTarget_character
+    public let `operator`: HostileInlineSpreadTarget_character
+    public let `static`: HostileInlineSpreadTarget_character
+    public let `default`: HostileInlineSpreadTarget_character
+    public let `case`: HostileInlineSpreadTarget_character
+    public let `switch`: HostileInlineSpreadTarget_character
+    public let `if`: HostileInlineSpreadTarget_character
+    public let `else`: HostileInlineSpreadTarget_character
+    public let `for`: HostileInlineSpreadTarget_character
+    public let `in`: HostileInlineSpreadTarget_character
+    public let `while`: HostileInlineSpreadTarget_character
+    public let `repeat`: HostileInlineSpreadTarget_character
+    public let `return`: HostileInlineSpreadTarget_character
+    public let `break`: HostileInlineSpreadTarget_character
+    public let `continue`: HostileInlineSpreadTarget_character
+    public let `where`: HostileInlineSpreadTarget_character
+    public let `is`: HostileInlineSpreadTarget_character
+    public let `as`: HostileInlineSpreadTarget_character
+    public let `try`: HostileInlineSpreadTarget_character
+    public let `throw`: HostileInlineSpreadTarget_character
+    public let `throws`: HostileInlineSpreadTarget_character
+    public let `guard`: HostileInlineSpreadTarget_character
+    public let `defer`: HostileInlineSpreadTarget_character
+    public let `do`: HostileInlineSpreadTarget_character
+    public let `catch`: HostileInlineSpreadTarget_character
+    public let `true`: HostileInlineSpreadTarget_character
+    public let `false`: HostileInlineSpreadTarget_character
+    public let `nil`: HostileInlineSpreadTarget_character
+    public let `super`: HostileInlineSpreadTarget_character
+    public let `internal`: HostileInlineSpreadTarget_character
+    public let `private`: HostileInlineSpreadTarget_character
+    public let `public`: HostileInlineSpreadTarget_character
+    public let `fileprivate`: HostileInlineSpreadTarget_character
+    public let `open`: HostileInlineSpreadTarget_character
+    public let `inout`: HostileInlineSpreadTarget_character
+    public let `typealias`: HostileInlineSpreadTarget_character
+    public let `associatedtype`: HostileInlineSpreadTarget_character
+    public let `protocol`: HostileInlineSpreadTarget_character
+    public let `some`: HostileInlineSpreadTarget_character
+    public let `any`: HostileInlineSpreadTarget_character
+    public let `rethrows`: HostileInlineSpreadTarget_character
+    public let `fallthrough`: HostileInlineSpreadTarget_character
+    public let `precedencegroup`: HostileInlineSpreadTarget_character
+    public let `_`: HostileInlineSpreadTarget_character
+    public let async: HostileInlineSpreadTarget_character
+    public let `await`: HostileInlineSpreadTarget_character
+    public let `borrowing`: HostileInlineSpreadTarget_character
+    public let consume: HostileInlineSpreadTarget_character
+    public let `consuming`: HostileInlineSpreadTarget_character
+    public let copy: HostileInlineSpreadTarget_character
+    public let discard: HostileInlineSpreadTarget_character
+    public let `each`: HostileInlineSpreadTarget_character
+    public let `isolated`: HostileInlineSpreadTarget_character
+    public let `sending`: HostileInlineSpreadTarget_character
+    public let then: HostileInlineSpreadTarget_character
+    public let unsafe: HostileInlineSpreadTarget_character
+    public let satisfied: HostileInlineSpreadTarget_character
+    public let missingRequiredField: HostileInlineSpreadTarget_character
+    public let fieldErrors: HostileInlineSpreadTarget_character
+    public let isPresent: HostileInlineSpreadTarget_character
+    public let throwing: HostileInlineSpreadTarget_character
+    public let caught: HostileInlineSpreadTarget_character
+    public let refetchable: HostileInlineSpreadTarget_character
+    public let refetch: HostileInlineSpreadTarget_character
+    public let connection: HostileInlineSpreadTarget_character
+    public let nodes: HostileInlineSpreadTarget_character
+    public let hasNext: HostileInlineSpreadTarget_character
+    public let hasPrevious: HostileInlineSpreadTarget_character
+    public let isLoadingNext: HostileInlineSpreadTarget_character
+    public let isLoadingPrevious: HostileInlineSpreadTarget_character
+    public let connectionID: HostileInlineSpreadTarget_character
+    public let loadNext: HostileInlineSpreadTarget_character
+    public let loadPrevious: HostileInlineSpreadTarget_character
+    public let bound: HostileInlineSpreadTarget_character
+    public let errors: HostileInlineSpreadTarget_character
+    public let child: HostileInlineSpreadTarget_character
+    public let missing: HostileInlineSpreadTarget_character
+    public let count: HostileInlineSpreadTarget_character
+    public let fields: HostileInlineSpreadTarget_character
+    public let lhs: HostileInlineSpreadTarget_character
+    public let rhs: HostileInlineSpreadTarget_character
+    public let hasher: HostileInlineSpreadTarget_character
+    public let selection0: HostileInlineSpreadTarget_character
+    public let selection: HostileInlineSpreadTarget_character
+    public let optimistic: HostileInlineSpreadTarget_character
+    public let selfValue: HostileInlineSpreadTarget_character
+    public let Fragment: HostileInlineSpreadTarget_character
+    public let Spread: HostileInlineSpreadTarget_character
+    public let Owner: HostileInlineSpreadTarget_character
+    public let Query: HostileInlineSpreadTarget_character
+    public let Operation: HostileInlineSpreadTarget_character
+    public let RefetchQuery: HostileInlineSpreadTarget_character
+    public let variables: HostileInlineSpreadTarget_character
+    public let resolution: HostileInlineSpreadTarget_character
+    public let name: HostileInlineSpreadTarget_character
+    public let document: HostileInlineSpreadTarget_character
+    public let text: HostileInlineSpreadTarget_character
+    public let plan: HostileInlineSpreadTarget_character
+    public let errorBehavior: HostileInlineSpreadTarget_character
+    public let throwsOnFieldError: HostileInlineSpreadTarget_character
+    public let bubbles: HostileInlineSpreadTarget_character
+    public let hasDeferred: HostileInlineSpreadTarget_character
+    public let cacheExpiration: HostileInlineSpreadTarget_character
+    public let Data: HostileInlineSpreadTarget_character
+    public let Action: HostileInlineSpreadTarget_character
+    public let OptimisticResponse: HostileInlineSpreadTarget_character
+    public let hash: HostileInlineSpreadTarget_character
+    public let commit: HostileInlineSpreadTarget_character
+    public let callAsFunction: HostileInlineSpreadTarget_character
+    public let Op: HostileInlineSpreadTarget_character
+    public let variable: HostileInlineSpreadTarget_character
+    public let hashValue: HostileInlineSpreadTarget_character
+    public let phase: HostileInlineSpreadTarget_character
+    public let isRefreshing: HostileInlineSpreadTarget_character
+    public let isStale: HostileInlineSpreadTarget_character
+    public let retry: HostileInlineSpreadTarget_character
+    public let subscription: HostileInlineSpreadTarget_character
+    public let Types: HostileInlineSpreadTarget_character
+    public let Slots: HostileInlineSpreadTarget_character
+    public let Sites: HostileInlineSpreadTarget_character
+    public let Guards: HostileInlineSpreadTarget_character
+    public let AbstractSlots: HostileInlineSpreadTarget_character
+    public let schemaDigest: HostileInlineSpreadTarget_character
+    public let format: HostileInlineSpreadTarget_character
+    public let transient: HostileInlineSpreadTarget_character
+    public let Baton: HostileInlineSpreadTarget_character
+    public let Swift: HostileInlineSpreadTarget_character
+    public let Set: HostileInlineSpreadTarget_character
+    public let Result: HostileInlineSpreadTarget_character
+    public let Optional: HostileInlineSpreadTarget_character
+    public let String: HostileInlineSpreadTarget_character
+    public let Int: HostileInlineSpreadTarget_character
+    public let Double: HostileInlineSpreadTarget_character
+    public let Bool: HostileInlineSpreadTarget_character
+    public let MainActor: HostileInlineSpreadTarget_character
+    public let Hasher: HostileInlineSpreadTarget_character
+    public let Sendable: HostileInlineSpreadTarget_character
+    public init(`Type`: HostileInlineSpreadTarget_character, `Protocol`: HostileInlineSpreadTarget_character, `Any`: HostileInlineSpreadTarget_character, `Self`: HostileInlineSpreadTarget_character, `init`: HostileInlineSpreadTarget_character, `deinit`: HostileInlineSpreadTarget_character, `subscript`: HostileInlineSpreadTarget_character, `class`: HostileInlineSpreadTarget_character, `struct`: HostileInlineSpreadTarget_character, `enum`: HostileInlineSpreadTarget_character, `func`: HostileInlineSpreadTarget_character, `var`: HostileInlineSpreadTarget_character, `let`: HostileInlineSpreadTarget_character, `import`: HostileInlineSpreadTarget_character, `extension`: HostileInlineSpreadTarget_character, `operator`: HostileInlineSpreadTarget_character, `static`: HostileInlineSpreadTarget_character, `default`: HostileInlineSpreadTarget_character, `case`: HostileInlineSpreadTarget_character, `switch`: HostileInlineSpreadTarget_character, `if`: HostileInlineSpreadTarget_character, `else`: HostileInlineSpreadTarget_character, `for`: HostileInlineSpreadTarget_character, `in`: HostileInlineSpreadTarget_character, `while`: HostileInlineSpreadTarget_character, `repeat`: HostileInlineSpreadTarget_character, `return`: HostileInlineSpreadTarget_character, `break`: HostileInlineSpreadTarget_character, `continue`: HostileInlineSpreadTarget_character, `where`: HostileInlineSpreadTarget_character, `is`: HostileInlineSpreadTarget_character, `as`: HostileInlineSpreadTarget_character, `try`: HostileInlineSpreadTarget_character, `throw`: HostileInlineSpreadTarget_character, `throws`: HostileInlineSpreadTarget_character, `guard`: HostileInlineSpreadTarget_character, `defer`: HostileInlineSpreadTarget_character, `do`: HostileInlineSpreadTarget_character, `catch`: HostileInlineSpreadTarget_character, `true`: HostileInlineSpreadTarget_character, `false`: HostileInlineSpreadTarget_character, `nil`: HostileInlineSpreadTarget_character, `super`: HostileInlineSpreadTarget_character, `internal`: HostileInlineSpreadTarget_character, `private`: HostileInlineSpreadTarget_character, `public`: HostileInlineSpreadTarget_character, `fileprivate`: HostileInlineSpreadTarget_character, `open`: HostileInlineSpreadTarget_character, `inout`: HostileInlineSpreadTarget_character, `typealias`: HostileInlineSpreadTarget_character, `associatedtype`: HostileInlineSpreadTarget_character, `protocol`: HostileInlineSpreadTarget_character, `some`: HostileInlineSpreadTarget_character, `any`: HostileInlineSpreadTarget_character, `rethrows`: HostileInlineSpreadTarget_character, `fallthrough`: HostileInlineSpreadTarget_character, `precedencegroup`: HostileInlineSpreadTarget_character, `_`: HostileInlineSpreadTarget_character, async: HostileInlineSpreadTarget_character, `await`: HostileInlineSpreadTarget_character, `borrowing`: HostileInlineSpreadTarget_character, consume: HostileInlineSpreadTarget_character, `consuming`: HostileInlineSpreadTarget_character, copy: HostileInlineSpreadTarget_character, discard: HostileInlineSpreadTarget_character, `each`: HostileInlineSpreadTarget_character, `isolated`: HostileInlineSpreadTarget_character, `sending`: HostileInlineSpreadTarget_character, then: HostileInlineSpreadTarget_character, unsafe: HostileInlineSpreadTarget_character, satisfied: HostileInlineSpreadTarget_character, missingRequiredField: HostileInlineSpreadTarget_character, fieldErrors: HostileInlineSpreadTarget_character, isPresent: HostileInlineSpreadTarget_character, throwing: HostileInlineSpreadTarget_character, caught: HostileInlineSpreadTarget_character, refetchable: HostileInlineSpreadTarget_character, refetch: HostileInlineSpreadTarget_character, connection: HostileInlineSpreadTarget_character, nodes: HostileInlineSpreadTarget_character, hasNext: HostileInlineSpreadTarget_character, hasPrevious: HostileInlineSpreadTarget_character, isLoadingNext: HostileInlineSpreadTarget_character, isLoadingPrevious: HostileInlineSpreadTarget_character, connectionID: HostileInlineSpreadTarget_character, loadNext: HostileInlineSpreadTarget_character, loadPrevious: HostileInlineSpreadTarget_character, bound: HostileInlineSpreadTarget_character, errors: HostileInlineSpreadTarget_character, child: HostileInlineSpreadTarget_character, missing: HostileInlineSpreadTarget_character, count: HostileInlineSpreadTarget_character, fields: HostileInlineSpreadTarget_character, lhs: HostileInlineSpreadTarget_character, rhs: HostileInlineSpreadTarget_character, hasher: HostileInlineSpreadTarget_character, selection0: HostileInlineSpreadTarget_character, selection: HostileInlineSpreadTarget_character, optimistic: HostileInlineSpreadTarget_character, selfValue: HostileInlineSpreadTarget_character, Fragment: HostileInlineSpreadTarget_character, Spread: HostileInlineSpreadTarget_character, Owner: HostileInlineSpreadTarget_character, Query: HostileInlineSpreadTarget_character, Operation: HostileInlineSpreadTarget_character, RefetchQuery: HostileInlineSpreadTarget_character, variables: HostileInlineSpreadTarget_character, resolution: HostileInlineSpreadTarget_character, name: HostileInlineSpreadTarget_character, document: HostileInlineSpreadTarget_character, text: HostileInlineSpreadTarget_character, plan: HostileInlineSpreadTarget_character, errorBehavior: HostileInlineSpreadTarget_character, throwsOnFieldError: HostileInlineSpreadTarget_character, bubbles: HostileInlineSpreadTarget_character, hasDeferred: HostileInlineSpreadTarget_character, cacheExpiration: HostileInlineSpreadTarget_character, Data: HostileInlineSpreadTarget_character, Action: HostileInlineSpreadTarget_character, OptimisticResponse: HostileInlineSpreadTarget_character, hash: HostileInlineSpreadTarget_character, commit: HostileInlineSpreadTarget_character, callAsFunction: HostileInlineSpreadTarget_character, Op: HostileInlineSpreadTarget_character, variable: HostileInlineSpreadTarget_character, hashValue: HostileInlineSpreadTarget_character, phase: HostileInlineSpreadTarget_character, isRefreshing: HostileInlineSpreadTarget_character, isStale: HostileInlineSpreadTarget_character, retry: HostileInlineSpreadTarget_character, subscription: HostileInlineSpreadTarget_character, Types: HostileInlineSpreadTarget_character, Slots: HostileInlineSpreadTarget_character, Sites: HostileInlineSpreadTarget_character, Guards: HostileInlineSpreadTarget_character, AbstractSlots: HostileInlineSpreadTarget_character, schemaDigest: HostileInlineSpreadTarget_character, format: HostileInlineSpreadTarget_character, transient: HostileInlineSpreadTarget_character, Baton: HostileInlineSpreadTarget_character, Swift: HostileInlineSpreadTarget_character, Set: HostileInlineSpreadTarget_character, Result: HostileInlineSpreadTarget_character, Optional: HostileInlineSpreadTarget_character, String: HostileInlineSpreadTarget_character, Int: HostileInlineSpreadTarget_character, Double: HostileInlineSpreadTarget_character, Bool: HostileInlineSpreadTarget_character, MainActor: HostileInlineSpreadTarget_character, Hasher: HostileInlineSpreadTarget_character, Sendable: HostileInlineSpreadTarget_character) {
+        self.`Type` = `Type`
+        self.`Protocol` = `Protocol`
+        self.`Any` = `Any`
+        self.`Self` = `Self`
+        self.`init` = `init`
+        self.`deinit` = `deinit`
+        self.`subscript` = `subscript`
+        self.`class` = `class`
+        self.`struct` = `struct`
+        self.`enum` = `enum`
+        self.`func` = `func`
+        self.`var` = `var`
+        self.`let` = `let`
+        self.`import` = `import`
+        self.`extension` = `extension`
+        self.`operator` = `operator`
+        self.`static` = `static`
+        self.`default` = `default`
+        self.`case` = `case`
+        self.`switch` = `switch`
+        self.`if` = `if`
+        self.`else` = `else`
+        self.`for` = `for`
+        self.`in` = `in`
+        self.`while` = `while`
+        self.`repeat` = `repeat`
+        self.`return` = `return`
+        self.`break` = `break`
+        self.`continue` = `continue`
+        self.`where` = `where`
+        self.`is` = `is`
+        self.`as` = `as`
+        self.`try` = `try`
+        self.`throw` = `throw`
+        self.`throws` = `throws`
+        self.`guard` = `guard`
+        self.`defer` = `defer`
+        self.`do` = `do`
+        self.`catch` = `catch`
+        self.`true` = `true`
+        self.`false` = `false`
+        self.`nil` = `nil`
+        self.`super` = `super`
+        self.`internal` = `internal`
+        self.`private` = `private`
+        self.`public` = `public`
+        self.`fileprivate` = `fileprivate`
+        self.`open` = `open`
+        self.`inout` = `inout`
+        self.`typealias` = `typealias`
+        self.`associatedtype` = `associatedtype`
+        self.`protocol` = `protocol`
+        self.`some` = `some`
+        self.`any` = `any`
+        self.`rethrows` = `rethrows`
+        self.`fallthrough` = `fallthrough`
+        self.`precedencegroup` = `precedencegroup`
+        self.`_` = `_`
+        self.async = async
+        self.`await` = `await`
+        self.`borrowing` = `borrowing`
+        self.consume = consume
+        self.`consuming` = `consuming`
+        self.copy = copy
+        self.discard = discard
+        self.`each` = `each`
+        self.`isolated` = `isolated`
+        self.`sending` = `sending`
+        self.then = then
+        self.unsafe = unsafe
+        self.satisfied = satisfied
+        self.missingRequiredField = missingRequiredField
+        self.fieldErrors = fieldErrors
+        self.isPresent = isPresent
+        self.throwing = throwing
+        self.caught = caught
+        self.refetchable = refetchable
+        self.refetch = refetch
+        self.connection = connection
+        self.nodes = nodes
+        self.hasNext = hasNext
+        self.hasPrevious = hasPrevious
+        self.isLoadingNext = isLoadingNext
+        self.isLoadingPrevious = isLoadingPrevious
+        self.connectionID = connectionID
+        self.loadNext = loadNext
+        self.loadPrevious = loadPrevious
+        self.bound = bound
+        self.errors = errors
+        self.child = child
+        self.missing = missing
+        self.count = count
+        self.fields = fields
+        self.lhs = lhs
+        self.rhs = rhs
+        self.hasher = hasher
+        self.selection0 = selection0
+        self.selection = selection
+        self.optimistic = optimistic
+        self.selfValue = selfValue
+        self.Fragment = Fragment
+        self.Spread = Spread
+        self.Owner = Owner
+        self.Query = Query
+        self.Operation = Operation
+        self.RefetchQuery = RefetchQuery
+        self.variables = variables
+        self.resolution = resolution
+        self.name = name
+        self.document = document
+        self.text = text
+        self.plan = plan
+        self.errorBehavior = errorBehavior
+        self.throwsOnFieldError = throwsOnFieldError
+        self.bubbles = bubbles
+        self.hasDeferred = hasDeferred
+        self.cacheExpiration = cacheExpiration
+        self.Data = Data
+        self.Action = Action
+        self.OptimisticResponse = OptimisticResponse
+        self.hash = hash
+        self.commit = commit
+        self.callAsFunction = callAsFunction
+        self.Op = Op
+        self.variable = variable
+        self.hashValue = hashValue
+        self.phase = phase
+        self.isRefreshing = isRefreshing
+        self.isStale = isStale
+        self.retry = retry
+        self.subscription = subscription
+        self.Types = Types
+        self.Slots = Slots
+        self.Sites = Sites
+        self.Guards = Guards
+        self.AbstractSlots = AbstractSlots
+        self.schemaDigest = schemaDigest
+        self.format = format
+        self.transient = transient
+        self.Baton = Baton
+        self.Swift = Swift
+        self.Set = Set
+        self.Result = Result
+        self.Optional = Optional
+        self.String = String
+        self.Int = Int
+        self.Double = Double
+        self.Bool = Bool
+        self.MainActor = MainActor
+        self.Hasher = Hasher
+        self.Sendable = Sendable
+    }
+    /// Reads the fragment's fields out of the record, once, at the call.
+    @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
+        self.`Type` = .init(anchor: anchor.entering())
+        self.`Protocol` = .init(anchor: anchor.entering())
+        self.`Any` = .init(anchor: anchor.entering())
+        self.`Self` = .init(anchor: anchor.entering())
+        self.`init` = .init(anchor: anchor.entering())
+        self.`deinit` = .init(anchor: anchor.entering())
+        self.`subscript` = .init(anchor: anchor.entering())
+        self.`class` = .init(anchor: anchor.entering())
+        self.`struct` = .init(anchor: anchor.entering())
+        self.`enum` = .init(anchor: anchor.entering())
+        self.`func` = .init(anchor: anchor.entering())
+        self.`var` = .init(anchor: anchor.entering())
+        self.`let` = .init(anchor: anchor.entering())
+        self.`import` = .init(anchor: anchor.entering())
+        self.`extension` = .init(anchor: anchor.entering())
+        self.`operator` = .init(anchor: anchor.entering())
+        self.`static` = .init(anchor: anchor.entering())
+        self.`default` = .init(anchor: anchor.entering())
+        self.`case` = .init(anchor: anchor.entering())
+        self.`switch` = .init(anchor: anchor.entering())
+        self.`if` = .init(anchor: anchor.entering())
+        self.`else` = .init(anchor: anchor.entering())
+        self.`for` = .init(anchor: anchor.entering())
+        self.`in` = .init(anchor: anchor.entering())
+        self.`while` = .init(anchor: anchor.entering())
+        self.`repeat` = .init(anchor: anchor.entering())
+        self.`return` = .init(anchor: anchor.entering())
+        self.`break` = .init(anchor: anchor.entering())
+        self.`continue` = .init(anchor: anchor.entering())
+        self.`where` = .init(anchor: anchor.entering())
+        self.`is` = .init(anchor: anchor.entering())
+        self.`as` = .init(anchor: anchor.entering())
+        self.`try` = .init(anchor: anchor.entering())
+        self.`throw` = .init(anchor: anchor.entering())
+        self.`throws` = .init(anchor: anchor.entering())
+        self.`guard` = .init(anchor: anchor.entering())
+        self.`defer` = .init(anchor: anchor.entering())
+        self.`do` = .init(anchor: anchor.entering())
+        self.`catch` = .init(anchor: anchor.entering())
+        self.`true` = .init(anchor: anchor.entering())
+        self.`false` = .init(anchor: anchor.entering())
+        self.`nil` = .init(anchor: anchor.entering())
+        self.`super` = .init(anchor: anchor.entering())
+        self.`internal` = .init(anchor: anchor.entering())
+        self.`private` = .init(anchor: anchor.entering())
+        self.`public` = .init(anchor: anchor.entering())
+        self.`fileprivate` = .init(anchor: anchor.entering())
+        self.`open` = .init(anchor: anchor.entering())
+        self.`inout` = .init(anchor: anchor.entering())
+        self.`typealias` = .init(anchor: anchor.entering())
+        self.`associatedtype` = .init(anchor: anchor.entering())
+        self.`protocol` = .init(anchor: anchor.entering())
+        self.`some` = .init(anchor: anchor.entering())
+        self.`any` = .init(anchor: anchor.entering())
+        self.`rethrows` = .init(anchor: anchor.entering())
+        self.`fallthrough` = .init(anchor: anchor.entering())
+        self.`precedencegroup` = .init(anchor: anchor.entering())
+        self.`_` = .init(anchor: anchor.entering())
+        self.async = .init(anchor: anchor.entering())
+        self.`await` = .init(anchor: anchor.entering())
+        self.`borrowing` = .init(anchor: anchor.entering())
+        self.consume = .init(anchor: anchor.entering())
+        self.`consuming` = .init(anchor: anchor.entering())
+        self.copy = .init(anchor: anchor.entering())
+        self.discard = .init(anchor: anchor.entering())
+        self.`each` = .init(anchor: anchor.entering())
+        self.`isolated` = .init(anchor: anchor.entering())
+        self.`sending` = .init(anchor: anchor.entering())
+        self.then = .init(anchor: anchor.entering())
+        self.unsafe = .init(anchor: anchor.entering())
+        self.satisfied = .init(anchor: anchor.entering())
+        self.missingRequiredField = .init(anchor: anchor.entering())
+        self.fieldErrors = .init(anchor: anchor.entering())
+        self.isPresent = .init(anchor: anchor.entering())
+        self.throwing = .init(anchor: anchor.entering())
+        self.caught = .init(anchor: anchor.entering())
+        self.refetchable = .init(anchor: anchor.entering())
+        self.refetch = .init(anchor: anchor.entering())
+        self.connection = .init(anchor: anchor.entering())
+        self.nodes = .init(anchor: anchor.entering())
+        self.hasNext = .init(anchor: anchor.entering())
+        self.hasPrevious = .init(anchor: anchor.entering())
+        self.isLoadingNext = .init(anchor: anchor.entering())
+        self.isLoadingPrevious = .init(anchor: anchor.entering())
+        self.connectionID = .init(anchor: anchor.entering())
+        self.loadNext = .init(anchor: anchor.entering())
+        self.loadPrevious = .init(anchor: anchor.entering())
+        self.bound = .init(anchor: anchor.entering())
+        self.errors = .init(anchor: anchor.entering())
+        self.child = .init(anchor: anchor.entering())
+        self.missing = .init(anchor: anchor.entering())
+        self.count = .init(anchor: anchor.entering())
+        self.fields = .init(anchor: anchor.entering())
+        self.lhs = .init(anchor: anchor.entering())
+        self.rhs = .init(anchor: anchor.entering())
+        self.hasher = .init(anchor: anchor.entering())
+        self.selection0 = .init(anchor: anchor.entering())
+        self.selection = .init(anchor: anchor.entering())
+        self.optimistic = .init(anchor: anchor.entering())
+        self.selfValue = .init(anchor: anchor.entering())
+        self.Fragment = .init(anchor: anchor.entering())
+        self.Spread = .init(anchor: anchor.entering())
+        self.Owner = .init(anchor: anchor.entering())
+        self.Query = .init(anchor: anchor.entering())
+        self.Operation = .init(anchor: anchor.entering())
+        self.RefetchQuery = .init(anchor: anchor.entering())
+        self.variables = .init(anchor: anchor.entering())
+        self.resolution = .init(anchor: anchor.entering())
+        self.name = .init(anchor: anchor.entering())
+        self.document = .init(anchor: anchor.entering())
+        self.text = .init(anchor: anchor.entering())
+        self.plan = .init(anchor: anchor.entering())
+        self.errorBehavior = .init(anchor: anchor.entering())
+        self.throwsOnFieldError = .init(anchor: anchor.entering())
+        self.bubbles = .init(anchor: anchor.entering())
+        self.hasDeferred = .init(anchor: anchor.entering())
+        self.cacheExpiration = .init(anchor: anchor.entering())
+        self.Data = .init(anchor: anchor.entering())
+        self.Action = .init(anchor: anchor.entering())
+        self.OptimisticResponse = .init(anchor: anchor.entering())
+        self.hash = .init(anchor: anchor.entering())
+        self.commit = .init(anchor: anchor.entering())
+        self.callAsFunction = .init(anchor: anchor.entering())
+        self.Op = .init(anchor: anchor.entering())
+        self.variable = .init(anchor: anchor.entering())
+        self.hashValue = .init(anchor: anchor.entering())
+        self.phase = .init(anchor: anchor.entering())
+        self.isRefreshing = .init(anchor: anchor.entering())
+        self.isStale = .init(anchor: anchor.entering())
+        self.retry = .init(anchor: anchor.entering())
+        self.subscription = .init(anchor: anchor.entering())
+        self.Types = .init(anchor: anchor.entering())
+        self.Slots = .init(anchor: anchor.entering())
+        self.Sites = .init(anchor: anchor.entering())
+        self.Guards = .init(anchor: anchor.entering())
+        self.AbstractSlots = .init(anchor: anchor.entering())
+        self.schemaDigest = .init(anchor: anchor.entering())
+        self.format = .init(anchor: anchor.entering())
+        self.transient = .init(anchor: anchor.entering())
+        self.Baton = .init(anchor: anchor.entering())
+        self.Swift = .init(anchor: anchor.entering())
+        self.Set = .init(anchor: anchor.entering())
+        self.Result = .init(anchor: anchor.entering())
+        self.Optional = .init(anchor: anchor.entering())
+        self.String = .init(anchor: anchor.entering())
+        self.Int = .init(anchor: anchor.entering())
+        self.Double = .init(anchor: anchor.entering())
+        self.Bool = .init(anchor: anchor.entering())
+        self.MainActor = .init(anchor: anchor.entering())
+        self.Hasher = .init(anchor: anchor.entering())
+        self.Sendable = .init(anchor: anchor.entering())
+    }
+    /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+    @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] { [] }
+    /// The value, or the field errors in it as a thrown `FieldErrors`.
+    @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+    /// The value, or the field errors in it as a `Result`.
+    @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+        let errors = fieldErrors(anchor)
+        return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+    }
+    /// Whether the deferred part that carries this fragment has arrived.
+    @_spi(Generated) @MainActor public static func isPresent(_ anchor: Baton.Anchor) -> Bool { true }
+}
+
 /// Lens for `fragment HostileLinks_character on Character`.
 nonisolated public struct HostileLinks_character: Baton.Lens {
     @_spi(Generated) public let anchor: Baton.Anchor
@@ -4261,6 +13815,1034 @@ nonisolated public struct HostileHidden: Baton.Query {
             @_spi(Generated) public let anchor: Baton.Anchor
             @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
             @MainActor public var _hostileHidden: _hostileHidden { .init(anchor: anchor.entering()) }
+        }
+    }
+}
+
+/// Operation value for `query HostileInlineReach`.
+nonisolated public struct HostileInlineReach: Baton.Query {
+    @_spi(Generated) public var resolution: Baton.OperationHandle<Self>? = nil
+
+    public init() {
+    }
+
+    public static let name = "HostileInlineReach"
+    public static let document: Baton.Document = .text(#"query HostileInlineReach{scalarsCharacter:character(id:1){...HostileInlineScalars_character@defer(label:"HostileInlineReach$defer$HostileInlineScalars_character"),...HostileInlineScalars_character,id},linksCharacter:character(id:1){...HostileInlineLinks_character@defer(label:"HostileInlineReach$defer$HostileInlineLinks_character"),...HostileInlineLinks_character,id},pluralsCharacter:character(id:1){...HostileInlinePlurals_character@defer(label:"HostileInlineReach$defer$HostileInlinePlurals_character"),...HostileInlinePlurals_character,id},spreadsCharacter:character(id:1){...HostileInlineSpreads_character@defer(label:"HostileInlineReach$defer$HostileInlineSpreads_character"),...HostileInlineSpreads_character,id}}fragment HostileInlineLinks_character on Character{Type:origin{id},Protocol:origin{id},Any:origin{id},Self:origin{id},init:origin{id},deinit:origin{id},subscript:origin{id},class:origin{id},struct:origin{id},enum:origin{id},func:origin{id},var:origin{id},let:origin{id},import:origin{id},extension:origin{id},operator:origin{id},static:origin{id},default:origin{id},case:origin{id},switch:origin{id},if:origin{id},else:origin{id},for:origin{id},in:origin{id},while:origin{id},repeat:origin{id},return:origin{id},break:origin{id},continue:origin{id},where:origin{id},is:origin{id},as:origin{id},try:origin{id},throw:origin{id},throws:origin{id},guard:origin{id},defer:origin{id},do:origin{id},catch:origin{id},true:origin{id},false:origin{id},nil:origin{id},super:origin{id},internal:origin{id},private:origin{id},public:origin{id},fileprivate:origin{id},open:origin{id},inout:origin{id},typealias:origin{id},associatedtype:origin{id},protocol:origin{id},some:origin{id},any:origin{id},rethrows:origin{id},fallthrough:origin{id},precedencegroup:origin{id},_:origin{id},async:origin{id},await:origin{id},borrowing:origin{id},consume:origin{id},consuming:origin{id},copy:origin{id},discard:origin{id},each:origin{id},isolated:origin{id},sending:origin{id},then:origin{id},unsafe:origin{id},satisfied:origin{id},missingRequiredField:origin{id},fieldErrors:origin{id},isPresent:origin{id},throwing:origin{id},caught:origin{id},refetchable:origin{id},refetch:origin{id},connection:origin{id},nodes:origin{id},hasNext:origin{id},hasPrevious:origin{id},isLoadingNext:origin{id},isLoadingPrevious:origin{id},connectionID:origin{id},loadNext:origin{id},loadPrevious:origin{id},bound:origin{id},errors:origin{id},child:origin{id},missing:origin{id},count:origin{id},fields:origin{id},lhs:origin{id},rhs:origin{id},hasher:origin{id},selection0:origin{id},selection:origin{id},optimistic:origin{id},selfValue:origin{id},Fragment:origin{id},Spread:origin{id},Owner:origin{id},Query:origin{id},Operation:origin{id},RefetchQuery:origin{id},variables:origin{id},resolution:origin{id},name:origin{id},document:origin{id},text:origin{id},plan:origin{id},errorBehavior:origin{id},throwsOnFieldError:origin{id},bubbles:origin{id},hasDeferred:origin{id},cacheExpiration:origin{id},Data:origin{id},Action:origin{id},OptimisticResponse:origin{id},hash:origin{id},commit:origin{id},callAsFunction:origin{id},Op:origin{id},variable:origin{id},hashValue:origin{id},phase:origin{id},isRefreshing:origin{id},isStale:origin{id},retry:origin{id},subscription:origin{id},Types:origin{id},Sites:origin{id},Guards:origin{id},AbstractSlots:origin{id},schemaDigest:origin{id},format:origin{id},transient:origin{id},Baton:origin{id},Swift:origin{id},Set:origin{id},Result:origin{id},Optional:origin{id},String:origin{id},Int:origin{id},Double:origin{id},Bool:origin{id},MainActor:origin{id},Hasher:origin{id},Sendable:origin{id}}fragment HostileInlinePlurals_character on Character{Type:episode{id},Protocol:episode{id},Any:episode{id},Self:episode{id},init:episode{id},deinit:episode{id},subscript:episode{id},class:episode{id},struct:episode{id},enum:episode{id},func:episode{id},var:episode{id},let:episode{id},import:episode{id},extension:episode{id},operator:episode{id},static:episode{id},default:episode{id},case:episode{id},switch:episode{id},if:episode{id},else:episode{id},for:episode{id},in:episode{id},while:episode{id},repeat:episode{id},return:episode{id},break:episode{id},continue:episode{id},where:episode{id},is:episode{id},as:episode{id},try:episode{id},throw:episode{id},throws:episode{id},guard:episode{id},defer:episode{id},do:episode{id},catch:episode{id},true:episode{id},false:episode{id},nil:episode{id},super:episode{id},internal:episode{id},private:episode{id},public:episode{id},fileprivate:episode{id},open:episode{id},inout:episode{id},typealias:episode{id},associatedtype:episode{id},protocol:episode{id},some:episode{id},any:episode{id},rethrows:episode{id},fallthrough:episode{id},precedencegroup:episode{id},_:episode{id},async:episode{id},await:episode{id},borrowing:episode{id},consume:episode{id},consuming:episode{id},copy:episode{id},discard:episode{id},each:episode{id},isolated:episode{id},sending:episode{id},then:episode{id},unsafe:episode{id},satisfied:episode{id},missingRequiredField:episode{id},fieldErrors:episode{id},isPresent:episode{id},throwing:episode{id},caught:episode{id},refetchable:episode{id},refetch:episode{id},connection:episode{id},nodes:episode{id},hasNext:episode{id},hasPrevious:episode{id},isLoadingNext:episode{id},isLoadingPrevious:episode{id},connectionID:episode{id},loadNext:episode{id},loadPrevious:episode{id},bound:episode{id},errors:episode{id},child:episode{id},missing:episode{id},count:episode{id},fields:episode{id},lhs:episode{id},rhs:episode{id},hasher:episode{id},selection0:episode{id},selection:episode{id},optimistic:episode{id},selfValue:episode{id},Fragment:episode{id},Spread:episode{id},Owner:episode{id},Query:episode{id},Operation:episode{id},RefetchQuery:episode{id},variables:episode{id},resolution:episode{id},name:episode{id},document:episode{id},text:episode{id},plan:episode{id},errorBehavior:episode{id},throwsOnFieldError:episode{id},bubbles:episode{id},hasDeferred:episode{id},cacheExpiration:episode{id},Data:episode{id},Action:episode{id},OptimisticResponse:episode{id},hash:episode{id},commit:episode{id},callAsFunction:episode{id},Op:episode{id},variable:episode{id},hashValue:episode{id},phase:episode{id},isRefreshing:episode{id},isStale:episode{id},retry:episode{id},subscription:episode{id},Types:episode{id},Sites:episode{id},Guards:episode{id},AbstractSlots:episode{id},schemaDigest:episode{id},format:episode{id},transient:episode{id},Baton:episode{id},Swift:episode{id},Set:episode{id},Result:episode{id},Optional:episode{id},String:episode{id},Int:episode{id},Double:episode{id},Bool:episode{id},MainActor:episode{id},Hasher:episode{id},Sendable:episode{id}}fragment HostileInlineScalars_character on Character{Type:name,Protocol:name,Any:name,Self:name,init:name,deinit:name,subscript:name,class:name,struct:name,enum:name,func:name,var:name,let:name,import:name,extension:name,operator:name,static:name,default:name,case:name,switch:name,if:name,else:name,for:name,in:name,while:name,repeat:name,return:name,break:name,continue:name,where:name,is:name,as:name,try:name,throw:name,throws:name,guard:name,defer:name,do:name,catch:name,true:name,false:name,nil:name,super:name,internal:name,private:name,public:name,fileprivate:name,open:name,inout:name,typealias:name,associatedtype:name,protocol:name,some:name,any:name,rethrows:name,fallthrough:name,precedencegroup:name,_:name,async:name,await:name,borrowing:name,consume:name,consuming:name,copy:name,discard:name,each:name,isolated:name,sending:name,then:name,unsafe:name,satisfied:name,missingRequiredField:name,fieldErrors:name,isPresent:name,throwing:name,caught:name,refetchable:name,refetch:name,connection:name,nodes:name,hasNext:name,hasPrevious:name,isLoadingNext:name,isLoadingPrevious:name,connectionID:name,loadNext:name,loadPrevious:name,bound:name,errors:name,child:name,missing:name,count:name,fields:name,lhs:name,rhs:name,hasher:name,selection0:name,selection:name,optimistic:name,selfValue:name,Fragment:name,Spread:name,Owner:name,Query:name,Operation:name,RefetchQuery:name,variables:name,resolution:name,name,document:name,text:name,plan:name,errorBehavior:name,throwsOnFieldError:name,bubbles:name,hasDeferred:name,cacheExpiration:name,Data:name,Action:name,OptimisticResponse:name,hash:name,commit:name,callAsFunction:name,Op:name,variable:name,hashValue:name,phase:name,isRefreshing:name,isStale:name,retry:name,subscription:name,Types:name,Sites:name,Guards:name,AbstractSlots:name,schemaDigest:name,format:name,transient:name,Baton:name,Swift:name,Set:name,Result:name,Optional:name,String:name,Int:name,Double:name,Bool:name,MainActor:name,Hasher:name,Sendable:name}fragment HostileInlineSpreadTarget_character on Character{name}fragment HostileInlineSpreads_character on Character{...HostileInlineSpreadTarget_character}"#)
+    @_spi(Generated) public static let hasDeferred = true
+
+    public var variables: Baton.Variables {
+        Baton.Variables([:])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        true
+    }
+
+    public func hash(into hasher: inout Hasher) {
+    }
+
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient)
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+        .linked("scalarsCharacter", key: .fixed(Slots.Query.character_c74a1e), plural: false, lookup: Baton.Lookup(type: Types.Character, key: [.literal("1")]), selection: selection6),
+        .linked("linksCharacter", key: .fixed(Slots.Query.character_c74a1e), plural: false, lookup: Baton.Lookup(type: Types.Character, key: [.literal("1")]), selection: selection4),
+        .linked("pluralsCharacter", key: .fixed(Slots.Query.character_c74a1e), plural: false, lookup: Baton.Lookup(type: Types.Character, key: [.literal("1")]), selection: selection2),
+        .linked("spreadsCharacter", key: .fixed(Slots.Query.character_c74a1e), plural: false, lookup: Baton.Lookup(type: Types.Character, key: [.literal("1")]), selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
+        .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineSpreads_character"),
+        .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+    ])
+    private static let selection2: Baton.Selection = Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
+        .linked("Type", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("Type", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("Protocol", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("Protocol", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("Any", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("Any", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("Self", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("Self", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("init", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("init", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("deinit", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("deinit", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("subscript", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("subscript", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("class", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("class", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("struct", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("struct", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("enum", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("enum", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("func", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("func", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("var", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("var", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("let", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("let", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("import", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("import", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("extension", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("extension", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("operator", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("operator", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("static", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("static", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("default", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("default", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("case", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("case", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("switch", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("switch", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("if", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("if", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("else", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("else", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("for", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("for", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("in", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("in", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("while", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("while", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("repeat", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("repeat", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("return", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("return", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("break", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("break", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("continue", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("continue", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("where", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("where", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("is", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("is", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("as", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("as", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("try", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("try", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("throw", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("throw", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("throws", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("throws", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("guard", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("guard", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("defer", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("defer", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("do", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("do", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("catch", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("catch", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("true", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("true", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("false", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("false", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("nil", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("nil", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("super", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("super", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("internal", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("internal", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("private", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("private", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("public", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("public", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("fileprivate", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("fileprivate", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("open", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("open", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("inout", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("inout", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("typealias", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("typealias", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("associatedtype", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("associatedtype", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("protocol", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("protocol", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("some", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("some", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("any", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("any", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("rethrows", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("rethrows", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("fallthrough", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("fallthrough", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("precedencegroup", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("precedencegroup", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("_", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("_", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("async", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("async", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("await", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("await", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("borrowing", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("borrowing", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("consume", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("consume", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("consuming", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("consuming", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("copy", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("copy", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("discard", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("discard", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("each", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("each", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("isolated", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("isolated", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("sending", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("sending", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("then", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("then", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("unsafe", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("unsafe", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("satisfied", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("satisfied", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("missingRequiredField", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("missingRequiredField", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("fieldErrors", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("fieldErrors", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("isPresent", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("isPresent", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("throwing", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("throwing", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("caught", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("caught", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("refetchable", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("refetchable", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("refetch", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("refetch", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("connection", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("connection", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("nodes", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("nodes", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("hasNext", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("hasNext", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("hasPrevious", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("hasPrevious", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("isLoadingNext", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("isLoadingNext", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("isLoadingPrevious", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("isLoadingPrevious", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("connectionID", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("connectionID", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("loadNext", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("loadNext", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("loadPrevious", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("loadPrevious", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("bound", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("bound", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("errors", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("errors", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("child", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("child", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("missing", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("missing", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("count", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("count", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("fields", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("fields", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("lhs", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("lhs", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("rhs", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("rhs", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("hasher", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("hasher", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("selection0", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("selection0", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("selection", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("selection", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("optimistic", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("optimistic", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("selfValue", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("selfValue", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("Fragment", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("Fragment", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("Spread", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("Spread", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("Owner", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("Owner", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("Query", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("Query", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("Operation", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("Operation", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("RefetchQuery", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("RefetchQuery", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("variables", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("variables", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("resolution", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("resolution", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("name", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("name", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("document", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("document", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("text", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("text", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("plan", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("plan", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("errorBehavior", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("errorBehavior", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("throwsOnFieldError", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("throwsOnFieldError", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("bubbles", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("bubbles", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("hasDeferred", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("hasDeferred", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("cacheExpiration", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("cacheExpiration", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("Data", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("Data", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("Action", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("Action", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("OptimisticResponse", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("OptimisticResponse", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("hash", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("hash", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("commit", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("commit", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("callAsFunction", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("callAsFunction", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("Op", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("Op", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("variable", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("variable", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("hashValue", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("hashValue", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("phase", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("phase", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("isRefreshing", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("isRefreshing", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("isStale", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("isStale", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("retry", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("retry", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("subscription", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("subscription", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("Types", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("Types", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("Sites", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("Sites", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("Guards", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("Guards", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("AbstractSlots", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("AbstractSlots", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("schemaDigest", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("schemaDigest", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("format", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("format", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("transient", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("transient", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("Baton", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("Baton", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("Swift", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("Swift", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("Set", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("Set", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("Result", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("Result", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("Optional", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("Optional", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("String", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("String", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("Int", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("Int", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("Double", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("Double", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("Bool", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("Bool", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("MainActor", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("MainActor", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("Hasher", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("Hasher", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .linked("Sendable", key: .fixed(Slots.Character.episode), plural: true, selection: selection3),
+        .linked("Sendable", key: .fixed(Slots.Character.episode), plural: true, deferred: "HostileInlineReach$defer$HostileInlinePlurals_character", selection: selection3),
+        .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+    ])
+    private static let selection3: Baton.Selection = Baton.Selection(type: Types.Episode, key: ["id"], abstract: false, fields: [
+        .scalar("id", key: .fixed(Slots.Episode.id), kind: .string, list: false),
+    ])
+    private static let selection4: Baton.Selection = Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
+        .linked("Type", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("Type", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("Protocol", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("Protocol", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("Any", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("Any", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("Self", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("Self", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("init", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("init", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("deinit", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("deinit", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("subscript", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("subscript", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("class", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("class", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("struct", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("struct", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("enum", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("enum", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("func", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("func", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("var", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("var", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("let", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("let", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("import", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("import", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("extension", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("extension", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("operator", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("operator", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("static", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("static", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("default", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("default", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("case", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("case", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("switch", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("switch", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("if", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("if", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("else", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("else", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("for", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("for", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("in", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("in", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("while", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("while", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("repeat", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("repeat", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("return", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("return", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("break", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("break", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("continue", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("continue", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("where", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("where", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("is", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("is", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("as", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("as", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("try", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("try", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("throw", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("throw", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("throws", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("throws", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("guard", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("guard", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("defer", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("defer", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("do", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("do", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("catch", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("catch", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("true", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("true", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("false", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("false", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("nil", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("nil", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("super", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("super", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("internal", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("internal", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("private", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("private", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("public", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("public", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("fileprivate", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("fileprivate", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("open", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("open", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("inout", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("inout", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("typealias", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("typealias", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("associatedtype", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("associatedtype", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("protocol", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("protocol", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("some", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("some", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("any", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("any", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("rethrows", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("rethrows", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("fallthrough", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("fallthrough", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("precedencegroup", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("precedencegroup", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("_", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("_", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("async", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("async", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("await", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("await", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("borrowing", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("borrowing", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("consume", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("consume", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("consuming", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("consuming", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("copy", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("copy", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("discard", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("discard", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("each", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("each", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("isolated", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("isolated", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("sending", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("sending", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("then", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("then", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("unsafe", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("unsafe", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("satisfied", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("satisfied", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("missingRequiredField", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("missingRequiredField", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("fieldErrors", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("fieldErrors", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("isPresent", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("isPresent", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("throwing", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("throwing", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("caught", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("caught", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("refetchable", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("refetchable", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("refetch", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("refetch", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("connection", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("connection", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("nodes", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("nodes", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("hasNext", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("hasNext", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("hasPrevious", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("hasPrevious", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("isLoadingNext", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("isLoadingNext", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("isLoadingPrevious", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("isLoadingPrevious", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("connectionID", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("connectionID", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("loadNext", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("loadNext", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("loadPrevious", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("loadPrevious", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("bound", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("bound", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("errors", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("errors", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("child", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("child", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("missing", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("missing", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("count", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("count", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("fields", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("fields", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("lhs", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("lhs", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("rhs", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("rhs", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("hasher", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("hasher", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("selection0", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("selection0", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("selection", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("selection", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("optimistic", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("optimistic", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("selfValue", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("selfValue", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("Fragment", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("Fragment", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("Spread", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("Spread", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("Owner", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("Owner", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("Query", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("Query", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("Operation", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("Operation", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("RefetchQuery", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("RefetchQuery", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("variables", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("variables", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("resolution", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("resolution", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("name", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("name", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("document", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("document", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("text", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("text", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("plan", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("plan", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("errorBehavior", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("errorBehavior", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("throwsOnFieldError", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("throwsOnFieldError", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("bubbles", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("bubbles", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("hasDeferred", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("hasDeferred", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("cacheExpiration", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("cacheExpiration", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("Data", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("Data", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("Action", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("Action", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("OptimisticResponse", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("OptimisticResponse", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("hash", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("hash", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("commit", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("commit", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("callAsFunction", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("callAsFunction", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("Op", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("Op", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("variable", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("variable", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("hashValue", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("hashValue", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("phase", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("phase", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("isRefreshing", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("isRefreshing", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("isStale", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("isStale", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("retry", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("retry", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("subscription", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("subscription", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("Types", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("Types", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("Sites", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("Sites", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("Guards", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("Guards", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("AbstractSlots", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("AbstractSlots", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("schemaDigest", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("schemaDigest", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("format", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("format", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("transient", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("transient", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("Baton", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("Baton", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("Swift", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("Swift", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("Set", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("Set", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("Result", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("Result", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("Optional", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("Optional", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("String", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("String", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("Int", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("Int", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("Double", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("Double", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("Bool", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("Bool", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("MainActor", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("MainActor", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("Hasher", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("Hasher", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .linked("Sendable", key: .fixed(Slots.Character.origin), plural: false, selection: selection5),
+        .linked("Sendable", key: .fixed(Slots.Character.origin), plural: false, deferred: "HostileInlineReach$defer$HostileInlineLinks_character", selection: selection5),
+        .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+    ])
+    private static let selection5: Baton.Selection = Baton.Selection(type: Types.Location, key: ["id"], abstract: false, fields: [
+        .scalar("id", key: .fixed(Slots.Location.id), kind: .string, list: false),
+    ])
+    private static let selection6: Baton.Selection = Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
+        .scalar("Type", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Type", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("Protocol", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Protocol", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("Any", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Any", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("Self", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Self", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("init", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("init", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("deinit", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("deinit", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("subscript", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("subscript", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("class", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("class", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("struct", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("struct", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("enum", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("enum", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("func", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("func", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("var", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("var", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("let", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("let", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("import", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("import", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("extension", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("extension", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("operator", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("operator", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("static", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("static", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("default", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("default", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("case", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("case", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("switch", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("switch", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("if", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("if", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("else", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("else", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("for", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("for", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("in", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("in", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("while", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("while", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("repeat", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("repeat", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("return", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("return", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("break", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("break", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("continue", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("continue", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("where", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("where", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("is", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("is", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("as", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("as", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("try", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("try", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("throw", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("throw", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("throws", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("throws", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("guard", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("guard", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("defer", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("defer", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("do", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("do", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("catch", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("catch", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("true", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("true", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("false", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("false", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("nil", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("nil", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("super", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("super", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("internal", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("internal", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("private", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("private", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("public", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("public", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("fileprivate", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("fileprivate", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("open", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("open", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("inout", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("inout", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("typealias", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("typealias", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("associatedtype", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("associatedtype", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("protocol", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("protocol", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("some", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("some", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("any", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("any", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("rethrows", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("rethrows", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("fallthrough", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("fallthrough", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("precedencegroup", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("precedencegroup", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("_", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("_", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("async", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("async", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("await", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("await", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("borrowing", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("borrowing", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("consume", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("consume", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("consuming", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("consuming", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("copy", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("copy", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("discard", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("discard", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("each", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("each", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("isolated", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("isolated", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("sending", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("sending", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("then", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("then", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("unsafe", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("unsafe", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("satisfied", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("satisfied", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("missingRequiredField", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("missingRequiredField", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("fieldErrors", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("fieldErrors", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("isPresent", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("isPresent", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("throwing", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("throwing", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("caught", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("caught", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("refetchable", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("refetchable", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("refetch", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("refetch", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("connection", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("connection", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("nodes", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("nodes", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("hasNext", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("hasNext", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("hasPrevious", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("hasPrevious", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("isLoadingNext", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("isLoadingNext", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("isLoadingPrevious", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("isLoadingPrevious", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("connectionID", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("connectionID", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("loadNext", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("loadNext", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("loadPrevious", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("loadPrevious", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("bound", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("bound", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("errors", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("errors", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("child", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("child", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("missing", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("missing", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("count", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("count", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("fields", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("fields", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("lhs", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("lhs", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("rhs", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("rhs", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("hasher", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("hasher", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("selection0", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("selection0", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("selection", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("selection", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("optimistic", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("optimistic", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("selfValue", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("selfValue", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("Fragment", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Fragment", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("Spread", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Spread", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("Owner", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Owner", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("Query", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Query", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("Operation", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Operation", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("RefetchQuery", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("RefetchQuery", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("variables", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("variables", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("resolution", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("resolution", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("document", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("document", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("text", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("text", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("plan", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("plan", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("errorBehavior", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("errorBehavior", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("throwsOnFieldError", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("throwsOnFieldError", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("bubbles", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("bubbles", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("hasDeferred", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("hasDeferred", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("cacheExpiration", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("cacheExpiration", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("Data", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Data", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("Action", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Action", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("OptimisticResponse", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("OptimisticResponse", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("hash", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("hash", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("commit", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("commit", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("callAsFunction", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("callAsFunction", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("Op", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Op", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("variable", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("variable", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("hashValue", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("hashValue", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("phase", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("phase", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("isRefreshing", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("isRefreshing", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("isStale", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("isStale", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("retry", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("retry", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("subscription", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("subscription", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("Types", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Types", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("Sites", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Sites", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("Guards", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Guards", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("AbstractSlots", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("AbstractSlots", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("schemaDigest", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("schemaDigest", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("format", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("format", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("transient", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("transient", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("Baton", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Baton", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("Swift", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Swift", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("Set", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Set", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("Result", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Result", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("Optional", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Optional", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("String", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("String", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("Int", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Int", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("Double", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Double", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("Bool", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Bool", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("MainActor", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("MainActor", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("Hasher", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Hasher", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("Sendable", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .scalar("Sendable", key: .fixed(Slots.Character.name), kind: .string, list: false, deferred: "HostileInlineReach$defer$HostileInlineScalars_character"),
+        .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+    ])
+
+    nonisolated public struct Data: Baton.Lens {
+        @_spi(Generated) public let anchor: Baton.Anchor
+        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        @MainActor public var scalarsCharacter: ScalarsCharacter? { anchor.linked(Slots.Query.character_c74a1e).map(ScalarsCharacter.init(anchor:)) }
+        @MainActor public var linksCharacter: LinksCharacter? { anchor.linked(Slots.Query.character_c74a1e).map(LinksCharacter.init(anchor:)) }
+        @MainActor public var pluralsCharacter: PluralsCharacter? { anchor.linked(Slots.Query.character_c74a1e).map(PluralsCharacter.init(anchor:)) }
+        @MainActor public var spreadsCharacter: SpreadsCharacter? { anchor.linked(Slots.Query.character_c74a1e).map(SpreadsCharacter.init(anchor:)) }
+
+        nonisolated public struct ScalarsCharacter: Baton.Lens {
+            @_spi(Generated) public let anchor: Baton.Anchor
+            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            @MainActor public var hostileInlineScalars: HostileInlineScalars_character? {
+                get throws {
+                    typealias Fragment = HostileInlineScalars_character
+                    guard Fragment.isPresent(anchor) else { return nil }
+                    return try .throwing(anchor.entering())
+                }
+            }
+            @MainActor public var caughtValue: Result<HostileInlineScalars_character, Baton.FieldErrors> {
+                typealias Fragment = HostileInlineScalars_character
+                let errors = Fragment.fieldErrors(anchor)
+                return errors.isEmpty ? .success(.init(anchor: anchor.entering())) : .failure(.init(errors))
+            }
+        }
+
+        nonisolated public struct LinksCharacter: Baton.Lens {
+            @_spi(Generated) public let anchor: Baton.Anchor
+            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            @MainActor public var hostileInlineLinks: HostileInlineLinks_character? {
+                get throws {
+                    typealias Fragment = HostileInlineLinks_character
+                    guard Fragment.isPresent(anchor) else { return nil }
+                    return try .throwing(anchor.entering())
+                }
+            }
+            @MainActor public var caughtValue: Result<HostileInlineLinks_character, Baton.FieldErrors> {
+                typealias Fragment = HostileInlineLinks_character
+                let errors = Fragment.fieldErrors(anchor)
+                return errors.isEmpty ? .success(.init(anchor: anchor.entering())) : .failure(.init(errors))
+            }
+        }
+
+        nonisolated public struct PluralsCharacter: Baton.Lens {
+            @_spi(Generated) public let anchor: Baton.Anchor
+            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            @MainActor public var hostileInlinePlurals: HostileInlinePlurals_character? {
+                get throws {
+                    typealias Fragment = HostileInlinePlurals_character
+                    guard Fragment.isPresent(anchor) else { return nil }
+                    return try .throwing(anchor.entering())
+                }
+            }
+            @MainActor public var caughtValue: Result<HostileInlinePlurals_character, Baton.FieldErrors> {
+                typealias Fragment = HostileInlinePlurals_character
+                let errors = Fragment.fieldErrors(anchor)
+                return errors.isEmpty ? .success(.init(anchor: anchor.entering())) : .failure(.init(errors))
+            }
+        }
+
+        nonisolated public struct SpreadsCharacter: Baton.Lens {
+            @_spi(Generated) public let anchor: Baton.Anchor
+            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            @MainActor public var hostileInlineSpreads: HostileInlineSpreads_character? {
+                get throws {
+                    typealias Fragment = HostileInlineSpreads_character
+                    guard Fragment.isPresent(anchor) else { return nil }
+                    return try .throwing(anchor.entering())
+                }
+            }
+            @MainActor public var caughtValue: Result<HostileInlineSpreads_character, Baton.FieldErrors> {
+                typealias Fragment = HostileInlineSpreads_character
+                let errors = Fragment.fieldErrors(anchor)
+                return errors.isEmpty ? .success(.init(anchor: anchor.entering())) : .failure(.init(errors))
+            }
         }
     }
 }

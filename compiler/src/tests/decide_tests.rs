@@ -584,3 +584,113 @@ fn a_condition_on_the_parent_type_itself_decides_no_variant_and_no_membership() 
     );
     assert!(node.memberships.is_empty());
 }
+
+/// The lens decided for the fragment `name` in `text`, compiled with the
+/// test schema's custom scalars mapped as the Swift test target maps them.
+fn mapped_fragment(text: &str, name: &str) -> ReaderPlan {
+    let schema_path = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .expect("the compiler sits one level below the repository root")
+        .join("spec/tests/schema.graphql");
+    let schema = std::fs::read_to_string(&schema_path).expect("the test schema is readable");
+    let document = Document {
+        path: PathBuf::from("Decide.swift"),
+        index: 0,
+        start: crate::swift::Position { line: 1, column: 1 },
+        text: text.to_string(),
+        embedded: None,
+    };
+    let mut config: Config = serde_json::from_str(
+        r#"{
+            "identity": {"types": {"Asset": ["uuid"], "Quote": ["base", "quote"]}},
+            "customScalarTypes": {"Decimal": "Foundation.Decimal", "DateTime": "Foundation.Date", "Url": "Foundation.URL"}
+        }"#,
+    )
+    .expect("the configuration parses");
+    config.path = PathBuf::from("baton.json");
+    let compiled = pipeline::compile(
+        &schema,
+        &schema_path.to_string_lossy(),
+        &[],
+        &[document],
+        &config,
+    )
+    .unwrap_or_else(|errors| panic!("the document does not compile: {errors:?}"));
+    let program = program(&compiled.plan).unwrap_or_else(|errors| panic!("{errors:?}"));
+    program
+        .fragments
+        .into_iter()
+        .find(|fragment| fragment.name == name)
+        .unwrap_or_else(|| panic!("no fragment `{name}`"))
+        .lens
+}
+
+/// The form the accessor `name` of `lens` reads its scalar in.
+fn scalar_form(lens: &ReaderPlan, name: &str) -> ScalarForm {
+    let accessor = lens
+        .accessors
+        .iter()
+        .find(|accessor| accessor.name == name)
+        .unwrap_or_else(|| panic!("no accessor `{name}` in {lens:?}"));
+    match &accessor.read {
+        Read::Scalar(read) => read.form.clone(),
+        other => panic!("`{name}` reads {other:?}"),
+    }
+}
+
+/// The paths and Swift types of the conversions the lens's `fieldErrors`
+/// checks.
+fn conversions(lens: &ReaderPlan) -> Vec<(String, String)> {
+    lens.field_errors
+        .iter()
+        .flatten()
+        .filter_map(|check| match check {
+            ErrorCheck::Member(member) => Some(&member.item),
+            ErrorCheck::Condition { .. } => None,
+        })
+        .flatten()
+        .filter_map(|line| match line {
+            ErrorLine::Converts {
+                path, swift_type, ..
+            } => Some((path.clone(), swift_type.clone())),
+            _ => None,
+        })
+        .collect()
+}
+
+#[test]
+fn a_non_null_mapped_scalar_in_an_inline_fragment_reads_optional() {
+    let value = mapped_fragment(
+        "fragment Value_asset on Asset @inline { uuid listedAt }",
+        "Value_asset",
+    );
+    assert_eq!(scalar_form(&value, "listedAt"), ScalarForm::Optional);
+    assert_eq!(scalar_form(&value, "uuid"), ScalarForm::Required);
+}
+
+#[test]
+fn under_throw_on_field_error_an_inline_fragment_reads_its_mapped_scalar_optional_and_checks_its_conversion()
+ {
+    let value = mapped_fragment(
+        "fragment Value_asset on Asset @inline @throwOnFieldError { uuid listedAt }",
+        "Value_asset",
+    );
+    assert_eq!(scalar_form(&value, "listedAt"), ScalarForm::Optional);
+    assert_eq!(
+        conversions(&value),
+        vec![("listedAt".to_string(), "Foundation.Date".to_string())]
+    );
+}
+
+#[test]
+fn under_throw_on_field_error_a_lens_reads_a_non_null_mapped_scalar_required() {
+    let lens = mapped_fragment(
+        "fragment Lens_asset on Asset @throwOnFieldError { uuid listedAt }",
+        "Lens_asset",
+    );
+    assert_eq!(scalar_form(&lens, "listedAt"), ScalarForm::Required);
+    assert_eq!(
+        conversions(&lens),
+        vec![("listedAt".to_string(), "Foundation.Date".to_string())]
+    );
+}

@@ -11,8 +11,10 @@ import Baton
 /// aliased spread of a plain lens; as a field beside every kind of generated
 /// body, beside a connection's members, beside the checks of a required field
 /// that bubbles to the root, and on an interface; as a variable of a query,
-/// a mutation and a subscription and as a fragment's argument; and as a scalar
-/// and a linked field of a mutation's payload. A name the compiler refuses in
+/// a mutation and a subscription and as a fragment's argument; as a scalar
+/// and a linked field of a mutation's payload; and as a scalar, a linked and
+/// a plural linked field and an aliased spread of an `@inline` fragment's
+/// value. A name the compiler refuses in
 /// a position, or that it accepts and writes Swift for that does not compile,
 /// is left out of that position; `compiler/src/tests/hostile_name_tests.rs`
 /// lists both, and proves every other name is here.
@@ -1330,6 +1332,367 @@ struct HostileNameDocuments {
         }
         """)
     var payload: HostilePayload.Action
+
+    /// Each name as a stored property of an `@inline` fragment's value and a
+    /// label of its initializer, beside every body a value can have: the
+    /// checks of `@throwOnFieldError`, and `isPresent` and `caught` for the
+    /// deferred and the caught spreads `HostileInlineReach` gives it.
+    @Fragment("""
+        fragment HostileInlineScalars_character on Character @inline @throwOnFieldError {
+          # Swift's keywords, as `escape` lists them.
+          Type: name Protocol: name Any: name Self: name init: name deinit: name
+          subscript: name class: name struct: name enum: name func: name var: name let: name
+          import: name extension: name operator: name static: name default: name case: name switch: name
+          if: name else: name for: name in: name while: name repeat: name return: name break: name
+          continue: name where: name is: name as: name try: name throw: name throws: name guard: name
+          defer: name do: name catch: name true: name false: name nil: name super: name internal: name
+          private: name public: name fileprivate: name open: name inout: name typealias: name
+          associatedtype: name protocol: name some: name any: name
+          rethrows: name fallthrough: name precedencegroup: name _: name
+          # Swift's contextual keywords that start an expression or a type.
+          async: name await: name borrowing: name consume: name consuming: name copy: name discard: name
+          each: name isolated: name sending: name then: name unsafe: name
+          # What every lens declares, and what a refetchable fragment and a connection add.
+          satisfied: name missingRequiredField: name fieldErrors: name isPresent: name
+          throwing: name caught: name refetchable: name refetch: name connection: name nodes: name
+          hasNext: name hasPrevious: name isLoadingNext: name isLoadingPrevious: name connectionID: name
+          loadNext: name loadPrevious: name
+          # The locals, parameters and local aliases of generated bodies.
+          bound: name errors: name child: name missing: name count: name fields: name lhs: name
+          rhs: name hasher: name selection0: name selection: name optimistic: name selfValue: name Fragment: name Spread: name
+          Owner: name Query: name Operation: name RefetchQuery: name
+          # What an operation value, a mutation's action and its optimistic response declare.
+          variables: name resolution: name name: name document: name text: name plan: name
+          errorBehavior: name throwsOnFieldError: name bubbles: name hasDeferred: name cacheExpiration: name Data: name
+          Action: name OptimisticResponse: name hash: name commit: name callAsFunction: name Op: name
+          variable: name
+          # What the runtime's protocols give a generated type.
+          hashValue: name phase: name isRefreshing: name isStale: name retry: name subscription: name
+          # The shared enums.
+          Types: name Sites: name Guards: name AbstractSlots: name schemaDigest: name format: name transient: name
+          # The modules, and what the generated code spells from the standard library.
+          Baton: name Swift: name Set: name Result: name Optional: name String: name Int: name
+          Double: name Bool: name MainActor: name Hasher: name Sendable: name
+        }
+        """)
+    var inlineScalars: HostileInlineScalars_character
+
+    /// Each name as a linked field of a value, a stored property of a nested
+    /// value type that takes the name capitalized.
+    @Fragment("""
+        fragment HostileInlineLinks_character on Character @inline @throwOnFieldError {
+          # Swift's keywords, as `escape` lists them.
+          Type: origin { id } Protocol: origin { id } Any: origin { id }
+          Self: origin { id } init: origin { id } deinit: origin { id } subscript: origin { id }
+          class: origin { id } struct: origin { id } enum: origin { id } func: origin { id }
+          var: origin { id } let: origin { id } import: origin { id } extension: origin { id }
+          operator: origin { id } static: origin { id } default: origin { id } case: origin { id }
+          switch: origin { id } if: origin { id } else: origin { id } for: origin { id }
+          in: origin { id } while: origin { id } repeat: origin { id } return: origin { id }
+          break: origin { id } continue: origin { id } where: origin { id } is: origin { id }
+          as: origin { id } try: origin { id } throw: origin { id } throws: origin { id }
+          guard: origin { id } defer: origin { id } do: origin { id } catch: origin { id }
+          true: origin { id } false: origin { id } nil: origin { id } super: origin { id }
+          internal: origin { id } private: origin { id } public: origin { id }
+          fileprivate: origin { id } open: origin { id } inout: origin { id } typealias: origin { id }
+          associatedtype: origin { id } protocol: origin { id } some: origin { id } any: origin { id }
+          rethrows: origin { id } fallthrough: origin { id } precedencegroup: origin { id }
+          _: origin { id }
+          # Swift's contextual keywords that start an expression or a type.
+          async: origin { id } await: origin { id } borrowing: origin { id } consume: origin { id }
+          consuming: origin { id } copy: origin { id } discard: origin { id } each: origin { id }
+          isolated: origin { id } sending: origin { id } then: origin { id } unsafe: origin { id }
+          # What every lens declares, and what a refetchable fragment and a connection add.
+          satisfied: origin { id } missingRequiredField: origin { id }
+          fieldErrors: origin { id } isPresent: origin { id } throwing: origin { id }
+          caught: origin { id } refetchable: origin { id } refetch: origin { id }
+          connection: origin { id } nodes: origin { id } hasNext: origin { id }
+          hasPrevious: origin { id } isLoadingNext: origin { id } isLoadingPrevious: origin { id }
+          connectionID: origin { id } loadNext: origin { id } loadPrevious: origin { id }
+          # The locals, parameters and local aliases of generated bodies.
+          bound: origin { id } errors: origin { id } child: origin { id } missing: origin { id }
+          count: origin { id } fields: origin { id } lhs: origin { id } rhs: origin { id }
+          hasher: origin { id } selection0: origin { id } selection: origin { id } optimistic: origin { id } selfValue: origin { id }
+          Fragment: origin { id } Spread: origin { id } Owner: origin { id } Query: origin { id }
+          Operation: origin { id } RefetchQuery: origin { id }
+          # What an operation value, a mutation's action and its optimistic response declare.
+          variables: origin { id } resolution: origin { id } name: origin { id }
+          document: origin { id } text: origin { id } plan: origin { id }
+          errorBehavior: origin { id } throwsOnFieldError: origin { id } bubbles: origin { id }
+          hasDeferred: origin { id } cacheExpiration: origin { id } Data: origin { id } Action: origin { id }
+          OptimisticResponse: origin { id } hash: origin { id } commit: origin { id }
+          callAsFunction: origin { id } Op: origin { id } variable: origin { id }
+          # What the runtime's protocols give a generated type.
+          hashValue: origin { id } phase: origin { id } isRefreshing: origin { id }
+          isStale: origin { id } retry: origin { id } subscription: origin { id }
+          # The shared enums.
+          Types: origin { id } Sites: origin { id } Guards: origin { id } AbstractSlots: origin { id }
+          schemaDigest: origin { id } format: origin { id } transient: origin { id }
+          # The modules, and what the generated code spells from the standard library.
+          Baton: origin { id } Swift: origin { id } Set: origin { id } Result: origin { id }
+          Optional: origin { id } String: origin { id } Int: origin { id } Double: origin { id }
+          Bool: origin { id } MainActor: origin { id } Hasher: origin { id } Sendable: origin { id }
+        }
+        """)
+    var inlineLinks: HostileInlineLinks_character
+
+    /// Each name as a plural linked field of a value, an array of a nested
+    /// value type that takes the name capitalized.
+    @Fragment("""
+        fragment HostileInlinePlurals_character on Character @inline @throwOnFieldError {
+          # Swift's keywords, as `escape` lists them.
+          Type: episode { id } Protocol: episode { id } Any: episode { id }
+          Self: episode { id } init: episode { id } deinit: episode { id } subscript: episode { id }
+          class: episode { id } struct: episode { id } enum: episode { id } func: episode { id }
+          var: episode { id } let: episode { id } import: episode { id } extension: episode { id }
+          operator: episode { id } static: episode { id } default: episode { id } case: episode { id }
+          switch: episode { id } if: episode { id } else: episode { id } for: episode { id }
+          in: episode { id } while: episode { id } repeat: episode { id } return: episode { id }
+          break: episode { id } continue: episode { id } where: episode { id } is: episode { id }
+          as: episode { id } try: episode { id } throw: episode { id } throws: episode { id }
+          guard: episode { id } defer: episode { id } do: episode { id } catch: episode { id }
+          true: episode { id } false: episode { id } nil: episode { id } super: episode { id }
+          internal: episode { id } private: episode { id } public: episode { id }
+          fileprivate: episode { id } open: episode { id } inout: episode { id } typealias: episode { id }
+          associatedtype: episode { id } protocol: episode { id } some: episode { id } any: episode { id }
+          rethrows: episode { id } fallthrough: episode { id } precedencegroup: episode { id }
+          _: episode { id }
+          # Swift's contextual keywords that start an expression or a type.
+          async: episode { id } await: episode { id } borrowing: episode { id } consume: episode { id }
+          consuming: episode { id } copy: episode { id } discard: episode { id } each: episode { id }
+          isolated: episode { id } sending: episode { id } then: episode { id } unsafe: episode { id }
+          # What every lens declares, and what a refetchable fragment and a connection add.
+          satisfied: episode { id } missingRequiredField: episode { id }
+          fieldErrors: episode { id } isPresent: episode { id } throwing: episode { id }
+          caught: episode { id } refetchable: episode { id } refetch: episode { id }
+          connection: episode { id } nodes: episode { id } hasNext: episode { id }
+          hasPrevious: episode { id } isLoadingNext: episode { id } isLoadingPrevious: episode { id }
+          connectionID: episode { id } loadNext: episode { id } loadPrevious: episode { id }
+          # The locals, parameters and local aliases of generated bodies.
+          bound: episode { id } errors: episode { id } child: episode { id } missing: episode { id }
+          count: episode { id } fields: episode { id } lhs: episode { id } rhs: episode { id }
+          hasher: episode { id } selection0: episode { id } selection: episode { id } optimistic: episode { id } selfValue: episode { id }
+          Fragment: episode { id } Spread: episode { id } Owner: episode { id } Query: episode { id }
+          Operation: episode { id } RefetchQuery: episode { id }
+          # What an operation value, a mutation's action and its optimistic response declare.
+          variables: episode { id } resolution: episode { id } name: episode { id }
+          document: episode { id } text: episode { id } plan: episode { id }
+          errorBehavior: episode { id } throwsOnFieldError: episode { id } bubbles: episode { id }
+          hasDeferred: episode { id } cacheExpiration: episode { id } Data: episode { id } Action: episode { id }
+          OptimisticResponse: episode { id } hash: episode { id } commit: episode { id }
+          callAsFunction: episode { id } Op: episode { id } variable: episode { id }
+          # What the runtime's protocols give a generated type.
+          hashValue: episode { id } phase: episode { id } isRefreshing: episode { id }
+          isStale: episode { id } retry: episode { id } subscription: episode { id }
+          # The shared enums.
+          Types: episode { id } Sites: episode { id } Guards: episode { id } AbstractSlots: episode { id }
+          schemaDigest: episode { id } format: episode { id } transient: episode { id }
+          # The modules, and what the generated code spells from the standard library.
+          Baton: episode { id } Swift: episode { id } Set: episode { id } Result: episode { id }
+          Optional: episode { id } String: episode { id } Int: episode { id } Double: episode { id }
+          Bool: episode { id } MainActor: episode { id } Hasher: episode { id } Sendable: episode { id }
+        }
+        """)
+    var inlinePlurals: HostileInlinePlurals_character
+
+    /// The value the aliased spreads inside a value spread.
+    @Fragment("""
+        fragment HostileInlineSpreadTarget_character on Character @inline {
+          name
+        }
+        """)
+    var inlineSpreadTarget: HostileInlineSpreadTarget_character
+
+    /// Each name as an aliased spread of a value inside a value, a stored
+    /// property of the name that holds the spread value.
+    @Fragment("""
+        fragment HostileInlineSpreads_character on Character @inline @throwOnFieldError {
+          # Swift's keywords, as `escape` lists them.
+          ... @alias(as: "Type") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "Protocol") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "Any") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "Self") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "init") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "deinit") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "subscript") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "class") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "struct") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "enum") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "func") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "var") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "let") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "import") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "extension") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "operator") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "static") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "default") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "case") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "switch") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "if") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "else") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "for") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "in") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "while") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "repeat") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "return") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "break") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "continue") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "where") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "is") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "as") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "try") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "throw") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "throws") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "guard") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "defer") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "do") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "catch") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "true") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "false") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "nil") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "super") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "internal") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "private") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "public") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "fileprivate") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "open") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "inout") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "typealias") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "associatedtype") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "protocol") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "some") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "any") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "rethrows") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "fallthrough") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "precedencegroup") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "_") { ...HostileInlineSpreadTarget_character }
+          # Swift's contextual keywords that start an expression or a type.
+          ... @alias(as: "async") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "await") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "borrowing") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "consume") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "consuming") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "copy") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "discard") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "each") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "isolated") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "sending") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "then") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "unsafe") { ...HostileInlineSpreadTarget_character }
+          # What every lens declares, and what a refetchable fragment and a connection add.
+          ... @alias(as: "satisfied") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "missingRequiredField") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "fieldErrors") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "isPresent") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "throwing") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "caught") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "refetchable") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "refetch") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "connection") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "nodes") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "hasNext") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "hasPrevious") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "isLoadingNext") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "isLoadingPrevious") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "connectionID") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "loadNext") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "loadPrevious") { ...HostileInlineSpreadTarget_character }
+          # The locals, parameters and local aliases of generated bodies.
+          ... @alias(as: "bound") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "errors") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "child") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "missing") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "count") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "fields") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "lhs") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "rhs") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "hasher") { ...HostileInlineSpreadTarget_character } ... @alias(as: "selection0") { ...HostileInlineSpreadTarget_character } ... @alias(as: "selection") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "optimistic") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "selfValue") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "Fragment") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "Spread") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "Owner") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "Query") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "Operation") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "RefetchQuery") { ...HostileInlineSpreadTarget_character }
+          # What an operation value, a mutation's action and its optimistic response declare.
+          ... @alias(as: "variables") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "resolution") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "name") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "document") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "text") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "plan") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "errorBehavior") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "throwsOnFieldError") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "bubbles") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "hasDeferred") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "cacheExpiration") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "Data") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "Action") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "OptimisticResponse") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "hash") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "commit") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "callAsFunction") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "Op") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "variable") { ...HostileInlineSpreadTarget_character }
+          # What the runtime's protocols give a generated type.
+          ... @alias(as: "hashValue") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "phase") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "isRefreshing") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "isStale") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "retry") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "subscription") { ...HostileInlineSpreadTarget_character }
+          # The shared enums.
+          ... @alias(as: "Types") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "Slots") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "Sites") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "Guards") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "AbstractSlots") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "schemaDigest") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "format") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "transient") { ...HostileInlineSpreadTarget_character }
+          # The modules, and what the generated code spells from the standard library.
+          ... @alias(as: "Baton") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "Swift") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "Set") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "Result") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "Optional") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "String") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "Int") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "Double") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "Bool") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "MainActor") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "Hasher") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "Sendable") { ...HostileInlineSpreadTarget_character }
+        }
+        """)
+    var inlineSpreads: HostileInlineSpreads_character
+
+    /// The query that reads each value under `@defer` and caught under an
+    /// alias, so each value has every body; it exists only to be compiled.
+    /// Each value sits under a field of its own, since the values give one
+    /// alias to different fields.
+    @Query("""
+        query HostileInlineReach {
+          scalarsCharacter: character(id: 1) {
+            ...HostileInlineScalars_character @defer
+            ... @alias(as: "caughtValue") @catch { ...HostileInlineScalars_character }
+          }
+          linksCharacter: character(id: 1) {
+            ...HostileInlineLinks_character @defer
+            ... @alias(as: "caughtValue") @catch { ...HostileInlineLinks_character }
+          }
+          pluralsCharacter: character(id: 1) {
+            ...HostileInlinePlurals_character @defer
+            ... @alias(as: "caughtValue") @catch { ...HostileInlinePlurals_character }
+          }
+          spreadsCharacter: character(id: 1) {
+            ...HostileInlineSpreads_character @defer
+            ... @alias(as: "caughtValue") @catch { ...HostileInlineSpreads_character }
+          }
+        }
+        """)
+    var inlineReach: HostileInlineReach
 
     /// The query that reaches the fragments no other document spreads, so
     /// each lens has an operation to be read from; it exists only to be

@@ -2,8 +2,11 @@
 """Type-checks, one document at a time, the hostile names the corpus tests
 prove accepted but never compile: the name of a fragment, a query, a
 mutation, a subscription and a refetch query, and of a fragment a query or
-a mutation spreads; and each name as a fragment spread plainly, with
-arguments, under `@defer` and under `@catch`. Each is a type of the whole
+a mutation spreads; each name as a fragment spread plainly, with
+arguments, under `@defer` and under `@catch`; and each name as an `@inline`
+fragment, as one a value spreads, and as one a query spreads plainly, with
+arguments, under a condition with an alias, under `@defer` and caught under
+an alias. Each is a type of the whole
 module, and one named like a type the target's own sources spell would
 change what they mean, so the corpus cannot hold them. A name batonc refuses
 is refused; a name it accepts whose Swift does not type-check is a defect.
@@ -44,6 +47,18 @@ fragment Spreader_character on Character {
   ... @alias(as: "boundSpread") { ...HOSTILE @arguments(flag: false) }
   ...HOSTILE
   ... @alias(as: "caughtSpread") @catch { ...HOSTILE }
+}
+query Deferring { character(id: 1) { ...HOSTILE @defer } }""",
+    "inline-fragment": "fragment HOSTILE on Character @inline { name }",
+    "value-spread": "fragment HOSTILE on Character @inline { name } fragment Probe_character on Character @inline { ...HOSTILE }",
+    "value-spread-forms": """fragment HOSTILE on Character @inline @argumentDefinitions(flag: {type: "Boolean!", defaultValue: true}) @throwOnFieldError { name @include(if: $flag) }
+query Probe($flag: Boolean!) {
+  character(id: 1) {
+    ...HOSTILE
+    ...HOSTILE @arguments(flag: false) @alias(as: "boundValue")
+    ...HOSTILE @include(if: $flag) @alias(as: "conditionalValue")
+    ... @alias(as: "caughtValue") @catch { ...HOSTILE }
+  }
 }
 query Deferring { character(id: 1) { ...HOSTILE @defer } }""",
 }

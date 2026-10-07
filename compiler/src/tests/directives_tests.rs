@@ -33,11 +33,23 @@ fn the_directives_baton_gives_a_meaning_pass_in_their_places() {
 }
 
 #[test]
+fn inline_on_a_fragment_definition_passes_the_directive_check() {
+    assert!(errors("fragment F on T @inline { a }", Some(Marker::Fragment)).is_empty());
+    assert!(
+        errors(
+            "fragment F on T @inline @throwOnFieldError @argumentDefinitions(n: {type: \"Int\"}) { a }",
+            Some(Marker::Fragment)
+        )
+        .is_empty()
+    );
+}
+
+#[test]
 fn a_directive_baton_gives_no_meaning_is_an_error_at_it() {
     assert_eq!(
-        errors("fragment F on T @inline { a }", Some(Marker::Fragment)),
+        errors("fragment F on T @no_inline { a }", Some(Marker::Fragment)),
         vec![
-            "`@inline` on a fragment definition has no meaning in Baton; a fragment definition takes `@argumentDefinitions`, `@refetchable`, `@throwOnFieldError`"
+            "`@no_inline` on a fragment definition has no meaning in Baton; a fragment definition takes `@argumentDefinitions`, `@refetchable`, `@throwOnFieldError`, `@inline`"
         ]
     );
     assert_eq!(
