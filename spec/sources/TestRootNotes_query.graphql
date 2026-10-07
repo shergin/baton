@@ -1,0 +1,8 @@
+fragment TestRootNotes_query on Query
+@refetchable(queryName: "TestRootNotesPaginationQuery")
+@argumentDefinitions(count: {type: "Int", defaultValue: 2}, cursor: {type: "String"}) {
+  notes(first: $count, after: $cursor) @connection(key: "TestRootNotes_notes") {
+    totalCount
+    edges { node { id text } }
+  }
+}

@@ -1,0 +1,36 @@
+fragment HostileInlineScalars_character on Character @inline @throwOnFieldError {
+  # Swift's keywords, as `escape` lists them.
+  Type: name Protocol: name Any: name self: name Self: name init: name deinit: name
+  subscript: name class: name struct: name enum: name func: name var: name let: name
+  import: name extension: name operator: name static: name default: name case: name switch: name
+  if: name else: name for: name in: name while: name repeat: name return: name break: name
+  continue: name where: name is: name as: name try: name throw: name throws: name guard: name
+  defer: name do: name catch: name true: name false: name nil: name super: name internal: name
+  private: name public: name fileprivate: name open: name inout: name typealias: name
+  associatedtype: name protocol: name some: name any: name
+  rethrows: name fallthrough: name precedencegroup: name _: name
+  # Swift's contextual keywords that start an expression or a type.
+  async: name await: name borrowing: name consume: name consuming: name copy: name discard: name
+  each: name isolated: name sending: name then: name unsafe: name
+  # What every lens declares, and what a refetchable fragment and a connection add.
+  satisfied: name missingRequiredField: name fieldErrors: name isPresent: name
+  throwing: name caught: name refetchable: name refetch: name connection: name nodes: name
+  hasNext: name hasPrevious: name isLoadingNext: name isLoadingPrevious: name connectionID: name
+  loadNext: name loadPrevious: name
+  # The locals, parameters and local aliases of generated bodies.
+  bound: name errors: name child: name missing: name count: name fields: name lhs: name
+  rhs: name hasher: name selection0: name selection: name optimistic: name selfValue: name Fragment: name Spread: name
+  Owner: name Query: name Operation: name RefetchQuery: name
+  # What an operation value, a mutation's action and its optimistic response declare.
+  variables: name resolution: name name: name document: name text: name plan: name
+  errorBehavior: name throwsOnFieldError: name bubbles: name hasDeferred: name cacheExpiration: name Data: name
+  Action: name OptimisticResponse: name hash: name commit: name callAsFunction: name Op: name
+  variable: name payload: name
+  # What the runtime's protocols give a generated type.
+  hashValue: name phase: name isRefreshing: name isStale: name retry: name subscription: name
+  # The shared enums.
+  Types: name Sites: name Guards: name AbstractSlots: name schemaDigest: name format: name transient: name
+  # The modules, and what the generated code spells from the standard library.
+  Baton: name Swift: name Set: name Result: name Optional: name String: name Int: name
+  Double: name Bool: name MainActor: name Hasher: name Sendable: name
+}

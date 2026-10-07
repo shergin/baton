@@ -1,0 +1,6 @@
+query TestRequiredOrigin($id: ID!) {
+  character(id: $id) @required(action: NONE) {
+    id
+    origin @required(action: NONE) { id name }
+  }
+}

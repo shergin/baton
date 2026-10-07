@@ -1,0 +1,5 @@
+fragment TestFavorite_character on Character {
+  id
+  name
+  favorite
+}

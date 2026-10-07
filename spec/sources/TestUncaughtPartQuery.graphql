@@ -1,0 +1,3 @@
+query TestUncaughtPartQuery($id: ID!) @throwOnFieldError {
+  character(id: $id) { id name ...TestAppearances_character @defer }
+}

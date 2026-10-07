@@ -1,0 +1,19 @@
+query TestSwiftNames($id: ID!) {
+  type: character(id: $id) { id }
+  self: character(id: $id) { id }
+  protocol: character(id: $id) { id }
+  any: character(id: $id) { id }
+  mainActor: character(id: $id) { id }
+  baton: character(id: $id) { id }
+  abstractSlots: character(id: $id) { id }
+  result: character(id: $id) { id }
+  optional: character(id: $id) { id }
+  string: character(id: $id) { id }
+  int: character(id: $id) { id }
+  double: character(id: $id) { id }
+  bool: character(id: $id) { id }
+  owner: character(id: $id) { id }
+  caught: character(id: $id) @catch { id }
+  node(id: $id) { id }
+  tokenizer { ratio count flag }
+}

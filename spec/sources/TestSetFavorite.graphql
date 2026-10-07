@@ -1,0 +1,5 @@
+mutation TestSetFavorite($id: ID!, $favorite: Boolean!) {
+  setFavorite(id: $id, favorite: $favorite) {
+    character { id name favorite }
+  }
+}

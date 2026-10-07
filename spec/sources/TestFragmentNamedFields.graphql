@@ -1,0 +1,12 @@
+query TestFragmentNamedFields($id: ID!) {
+  character(id: $id) {
+    TestCaughtProfile_character: name
+    TestCaughtStrict_character: species
+    ...TestCaughtProfile_character
+    ...TestCaughtStrict_character
+    ... @alias(as: "caughtProfile") @catch { ...TestCaughtProfile_character }
+    ... @alias(as: "nulledProfile") @catch(to: NULL) { ...TestCaughtProfile_character }
+    Fragment: status
+    ... @alias(as: "nulledFragment") @catch(to: NULL) { ...Fragment }
+  }
+}

@@ -1,0 +1,237 @@
+fragment HostileArguments_character on Character
+@argumentDefinitions(
+  # Swift's keywords, as `escape` lists them.
+  Type: {type: "Boolean", defaultValue: true},
+  Protocol: {type: "Boolean", defaultValue: true},
+  Any: {type: "Boolean", defaultValue: true},
+  self: {type: "Boolean", defaultValue: true},
+  Self: {type: "Boolean", defaultValue: true},
+  init: {type: "Boolean", defaultValue: true},
+  deinit: {type: "Boolean", defaultValue: true},
+  subscript: {type: "Boolean", defaultValue: true},
+  class: {type: "Boolean", defaultValue: true},
+  struct: {type: "Boolean", defaultValue: true},
+  enum: {type: "Boolean", defaultValue: true},
+  func: {type: "Boolean", defaultValue: true},
+  var: {type: "Boolean", defaultValue: true},
+  let: {type: "Boolean", defaultValue: true},
+  import: {type: "Boolean", defaultValue: true},
+  extension: {type: "Boolean", defaultValue: true},
+  operator: {type: "Boolean", defaultValue: true},
+  static: {type: "Boolean", defaultValue: true},
+  default: {type: "Boolean", defaultValue: true},
+  case: {type: "Boolean", defaultValue: true},
+  switch: {type: "Boolean", defaultValue: true},
+  if: {type: "Boolean", defaultValue: true},
+  else: {type: "Boolean", defaultValue: true},
+  for: {type: "Boolean", defaultValue: true},
+  in: {type: "Boolean", defaultValue: true},
+  while: {type: "Boolean", defaultValue: true},
+  repeat: {type: "Boolean", defaultValue: true},
+  return: {type: "Boolean", defaultValue: true},
+  break: {type: "Boolean", defaultValue: true},
+  continue: {type: "Boolean", defaultValue: true},
+  where: {type: "Boolean", defaultValue: true},
+  is: {type: "Boolean", defaultValue: true},
+  as: {type: "Boolean", defaultValue: true},
+  try: {type: "Boolean", defaultValue: true},
+  throw: {type: "Boolean", defaultValue: true},
+  throws: {type: "Boolean", defaultValue: true},
+  guard: {type: "Boolean", defaultValue: true},
+  defer: {type: "Boolean", defaultValue: true},
+  do: {type: "Boolean", defaultValue: true},
+  catch: {type: "Boolean", defaultValue: true},
+  true: {type: "Boolean", defaultValue: true},
+  false: {type: "Boolean", defaultValue: true},
+  nil: {type: "Boolean", defaultValue: true},
+  super: {type: "Boolean", defaultValue: true},
+  internal: {type: "Boolean", defaultValue: true},
+  private: {type: "Boolean", defaultValue: true},
+  public: {type: "Boolean", defaultValue: true},
+  fileprivate: {type: "Boolean", defaultValue: true},
+  open: {type: "Boolean", defaultValue: true},
+  inout: {type: "Boolean", defaultValue: true},
+  typealias: {type: "Boolean", defaultValue: true},
+  associatedtype: {type: "Boolean", defaultValue: true},
+  protocol: {type: "Boolean", defaultValue: true},
+  some: {type: "Boolean", defaultValue: true},
+  any: {type: "Boolean", defaultValue: true},
+  rethrows: {type: "Boolean", defaultValue: true},
+  fallthrough: {type: "Boolean", defaultValue: true},
+  precedencegroup: {type: "Boolean", defaultValue: true},
+  _: {type: "Boolean", defaultValue: true},
+  # Swift's contextual keywords that start an expression or a type.
+  async: {type: "Boolean", defaultValue: true},
+  borrowing: {type: "Boolean", defaultValue: true},
+  consume: {type: "Boolean", defaultValue: true},
+  consuming: {type: "Boolean", defaultValue: true},
+  copy: {type: "Boolean", defaultValue: true},
+  discard: {type: "Boolean", defaultValue: true},
+  each: {type: "Boolean", defaultValue: true},
+  isolated: {type: "Boolean", defaultValue: true},
+  sending: {type: "Boolean", defaultValue: true},
+  then: {type: "Boolean", defaultValue: true},
+  unsafe: {type: "Boolean", defaultValue: true},
+  await: {type: "Boolean", defaultValue: true},
+  # What every lens declares, and what a refetchable fragment and a connection add.
+  anchor: {type: "Boolean", defaultValue: true},
+  recordID: {type: "Boolean", defaultValue: true},
+  satisfied: {type: "Boolean", defaultValue: true},
+  missingRequiredField: {type: "Boolean", defaultValue: true},
+  fieldErrors: {type: "Boolean", defaultValue: true},
+  isPresent: {type: "Boolean", defaultValue: true},
+  throwing: {type: "Boolean", defaultValue: true},
+  caught: {type: "Boolean", defaultValue: true},
+  refetchable: {type: "Boolean", defaultValue: true},
+  refetch: {type: "Boolean", defaultValue: true},
+  connection: {type: "Boolean", defaultValue: true},
+  nodes: {type: "Boolean", defaultValue: true},
+  hasNext: {type: "Boolean", defaultValue: true},
+  hasPrevious: {type: "Boolean", defaultValue: true},
+  isLoadingNext: {type: "Boolean", defaultValue: true},
+  isLoadingPrevious: {type: "Boolean", defaultValue: true},
+  connectionID: {type: "Boolean", defaultValue: true},
+  loadNext: {type: "Boolean", defaultValue: true},
+  loadPrevious: {type: "Boolean", defaultValue: true},
+  # The locals, parameters and local aliases of generated bodies.
+  bound: {type: "Boolean", defaultValue: true},
+  errors: {type: "Boolean", defaultValue: true},
+  child: {type: "Boolean", defaultValue: true},
+  missing: {type: "Boolean", defaultValue: true},
+  count: {type: "Boolean", defaultValue: true},
+  fields: {type: "Boolean", defaultValue: true},
+  lhs: {type: "Boolean", defaultValue: true},
+  rhs: {type: "Boolean", defaultValue: true},
+  hasher: {type: "Boolean", defaultValue: true},
+  selection0: {type: "Boolean", defaultValue: true},
+  selection: {type: "Boolean", defaultValue: true},
+  optimistic: {type: "Boolean", defaultValue: true},
+  selfValue: {type: "Boolean", defaultValue: true},
+  Fragment: {type: "Boolean", defaultValue: true},
+  Spread: {type: "Boolean", defaultValue: true},
+  Owner: {type: "Boolean", defaultValue: true},
+  Query: {type: "Boolean", defaultValue: true},
+  Operation: {type: "Boolean", defaultValue: true},
+  RefetchQuery: {type: "Boolean", defaultValue: true},
+  # What an operation value, a mutation's action and its optimistic response declare.
+  name: {type: "Boolean", defaultValue: true},
+  document: {type: "Boolean", defaultValue: true},
+  text: {type: "Boolean", defaultValue: true},
+  plan: {type: "Boolean", defaultValue: true},
+  errorBehavior: {type: "Boolean", defaultValue: true},
+  throwsOnFieldError: {type: "Boolean", defaultValue: true},
+  bubbles: {type: "Boolean", defaultValue: true},
+  hasDeferred: {type: "Boolean", defaultValue: true},
+  cacheExpiration: {type: "Boolean", defaultValue: true},
+  Action: {type: "Boolean", defaultValue: true},
+  OptimisticResponse: {type: "Boolean", defaultValue: true},
+  hash: {type: "Boolean", defaultValue: true},
+  commit: {type: "Boolean", defaultValue: true},
+  callAsFunction: {type: "Boolean", defaultValue: true},
+  Op: {type: "Boolean", defaultValue: true},
+  variable: {type: "Boolean", defaultValue: true},
+  payload: {type: "Boolean", defaultValue: true},
+  # What the runtime's protocols give a generated type.
+  retry: {type: "Boolean", defaultValue: true},
+  subscription: {type: "Boolean", defaultValue: true},
+  # The shared enums.
+  AbstractSlots: {type: "Boolean", defaultValue: true},
+  schemaDigest: {type: "Boolean", defaultValue: true},
+  format: {type: "Boolean", defaultValue: true},
+  transient: {type: "Boolean", defaultValue: true},
+  # The modules, and what the generated code spells from the standard library.
+  Swift: {type: "Boolean", defaultValue: true},
+  Set: {type: "Boolean", defaultValue: true},
+  Result: {type: "Boolean", defaultValue: true},
+  Optional: {type: "Boolean", defaultValue: true},
+  String: {type: "Boolean", defaultValue: true},
+  Int: {type: "Boolean", defaultValue: true},
+  Double: {type: "Boolean", defaultValue: true},
+  Bool: {type: "Boolean", defaultValue: true},
+  MainActor: {type: "Boolean", defaultValue: true},
+  Hasher: {type: "Boolean", defaultValue: true},
+  Sendable: {type: "Boolean", defaultValue: true}
+)
+@refetchable(queryName: "HostileArgumentsRefetchQuery") {
+  # Swift's keywords, as `escape` lists them.
+  ... @include(if: $Type) { name } ... @include(if: $Protocol) { name }
+  ... @include(if: $Any) { name } ... @include(if: $self) { name }
+  ... @include(if: $Self) { name } ... @include(if: $init) { name }
+  ... @include(if: $deinit) { name } ... @include(if: $subscript) { name }
+  ... @include(if: $class) { name } ... @include(if: $struct) { name }
+  ... @include(if: $enum) { name } ... @include(if: $func) { name }
+  ... @include(if: $var) { name } ... @include(if: $let) { name }
+  ... @include(if: $import) { name } ... @include(if: $extension) { name }
+  ... @include(if: $operator) { name } ... @include(if: $static) { name }
+  ... @include(if: $default) { name } ... @include(if: $case) { name }
+  ... @include(if: $switch) { name } ... @include(if: $if) { name }
+  ... @include(if: $else) { name } ... @include(if: $for) { name }
+  ... @include(if: $in) { name } ... @include(if: $while) { name }
+  ... @include(if: $repeat) { name } ... @include(if: $return) { name }
+  ... @include(if: $break) { name } ... @include(if: $continue) { name }
+  ... @include(if: $where) { name } ... @include(if: $is) { name }
+  ... @include(if: $as) { name } ... @include(if: $try) { name }
+  ... @include(if: $throw) { name } ... @include(if: $throws) { name }
+  ... @include(if: $guard) { name } ... @include(if: $defer) { name }
+  ... @include(if: $do) { name } ... @include(if: $catch) { name }
+  ... @include(if: $true) { name } ... @include(if: $false) { name }
+  ... @include(if: $nil) { name } ... @include(if: $super) { name }
+  ... @include(if: $internal) { name } ... @include(if: $private) { name }
+  ... @include(if: $public) { name } ... @include(if: $fileprivate) { name }
+  ... @include(if: $open) { name } ... @include(if: $inout) { name }
+  ... @include(if: $typealias) { name } ... @include(if: $associatedtype) { name }
+  ... @include(if: $protocol) { name } ... @include(if: $some) { name }
+  ... @include(if: $any) { name }
+  ... @include(if: $rethrows) { name } ... @include(if: $fallthrough) { name }
+  ... @include(if: $precedencegroup) { name } ... @include(if: $_) { name }
+  # Swift's contextual keywords that start an expression or a type.
+  ... @include(if: $async) { name } ... @include(if: $borrowing) { name }
+  ... @include(if: $consume) { name } ... @include(if: $consuming) { name }
+  ... @include(if: $copy) { name } ... @include(if: $discard) { name }
+  ... @include(if: $each) { name } ... @include(if: $isolated) { name }
+  ... @include(if: $sending) { name } ... @include(if: $then) { name }
+  ... @include(if: $unsafe) { name } ... @include(if: $await) { name }
+  # What every lens declares, and what a refetchable fragment and a connection add.
+  ... @include(if: $anchor) { name } ... @include(if: $recordID) { name }
+  ... @include(if: $satisfied) { name }
+  ... @include(if: $missingRequiredField) { name } ... @include(if: $fieldErrors) { name }
+  ... @include(if: $isPresent) { name } ... @include(if: $throwing) { name }
+  ... @include(if: $caught) { name } ... @include(if: $refetchable) { name }
+  ... @include(if: $refetch) { name } ... @include(if: $connection) { name }
+  ... @include(if: $nodes) { name } ... @include(if: $hasNext) { name }
+  ... @include(if: $hasPrevious) { name } ... @include(if: $isLoadingNext) { name }
+  ... @include(if: $isLoadingPrevious) { name } ... @include(if: $connectionID) { name }
+  ... @include(if: $loadNext) { name } ... @include(if: $loadPrevious) { name }
+  # The locals, parameters and local aliases of generated bodies.
+  ... @include(if: $bound) { name } ... @include(if: $errors) { name }
+  ... @include(if: $child) { name } ... @include(if: $missing) { name }
+  ... @include(if: $count) { name } ... @include(if: $fields) { name }
+  ... @include(if: $lhs) { name } ... @include(if: $rhs) { name }
+  ... @include(if: $hasher) { name } ... @include(if: $selection0) { name } ... @include(if: $selection) { name } ... @include(if: $optimistic) { name }
+  ... @include(if: $selfValue) { name } ... @include(if: $Fragment) { name }
+  ... @include(if: $Spread) { name } ... @include(if: $Owner) { name }
+  ... @include(if: $Query) { name } ... @include(if: $Operation) { name }
+  ... @include(if: $RefetchQuery) { name }
+  # What an operation value, a mutation's action and its optimistic response declare.
+  ... @include(if: $name) { name } ... @include(if: $document) { name }
+  ... @include(if: $text) { name } ... @include(if: $plan) { name }
+  ... @include(if: $errorBehavior) { name } ... @include(if: $throwsOnFieldError) { name }
+  ... @include(if: $bubbles) { name } ... @include(if: $hasDeferred) { name } ... @include(if: $cacheExpiration) { name }
+  ... @include(if: $Action) { name } ... @include(if: $OptimisticResponse) { name }
+  ... @include(if: $hash) { name } ... @include(if: $commit) { name }
+  ... @include(if: $callAsFunction) { name } ... @include(if: $Op) { name }
+  ... @include(if: $variable) { name } ... @include(if: $payload) { name }
+  # What the runtime's protocols give a generated type.
+  ... @include(if: $retry) { name }
+  ... @include(if: $subscription) { name }
+  # The shared enums.
+  ... @include(if: $AbstractSlots) { name } ... @include(if: $schemaDigest) { name }
+  ... @include(if: $format) { name } ... @include(if: $transient) { name }
+  # The modules, and what the generated code spells from the standard library.
+  ... @include(if: $Swift) { name } ... @include(if: $Set) { name }
+  ... @include(if: $Result) { name } ... @include(if: $Optional) { name }
+  ... @include(if: $String) { name } ... @include(if: $Int) { name }
+  ... @include(if: $Double) { name } ... @include(if: $Bool) { name }
+  ... @include(if: $MainActor) { name } ... @include(if: $Hasher) { name }
+  ... @include(if: $Sendable) { name }
+}

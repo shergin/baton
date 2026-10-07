@@ -1,0 +1,1 @@
+query TestPinnedCharacter($id: ID!) { character(id: $id) { id name status isPinned note } }

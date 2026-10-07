@@ -1,0 +1,6 @@
+mutation TestRemoveNote($id: ID!, $connections: [ID!]!) {
+  removeNote(id: $id) {
+    removedNoteId @deleteEdge(connections: $connections)
+    deleted: removedNoteId @deleteRecord
+  }
+}

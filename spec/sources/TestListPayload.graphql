@@ -1,0 +1,3 @@
+mutation TestListPayload {
+  setLists { strings ids counts ratios flags jsons statuses }
+}

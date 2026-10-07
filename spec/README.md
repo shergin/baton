@@ -12,14 +12,22 @@ The fixtures are server responses, not tests: a change to the store, the
 tokenizer or the record layout is frozen under them, and none is edited to
 fit code. A new case adds files; a reviewed change to identity or layout
 rewrites the dumps (`BATON_BLESS=1 swift test` writes `.store.json` files
-and the documents).
+and the documents; `BATON_BLESS=1 cargo test` in `compiler/` writes
+`sources/` from the markers).
 
 ## Layout
 
 - `rickandmorty/`: the public API's schema, three documents and their
   responses.
 - `tests/`: the responses the test documents read, recorded or shaped by
-  hand to say one thing each, with the dump beside each one the oracle reads.
+  hand to say one thing each, with the dump beside each one the oracle reads,
+  the schema and its client extensions, and `baton.json`, the configuration
+  the authors' documents compile with: identity, lookups, transient types
+  and fields, and the custom scalars' types by language.
+- `sources/`: the authors' documents, one file for each document the Swift
+  test target writes, named for its first operation or fragment, as the
+  author wrote it, client directives included. Compiled with
+  `tests/baton.json`, they give the lenses every case and script reads.
 - `tokenizer/`: responses that exercise the tokenizer, and
   `malformed.json`, the responses that are not well formed, each with the
   outcome it must have.
@@ -27,10 +35,11 @@ and the documents).
   fragments, as the compiler emits it, compact on one line; written from
   the generated code and checked against it, so the two cannot drift. This
   is the text a server receives: the client directives the authors wrote,
-  `@catch`, `@required`, `@connection`, `@cacheExpiration`, are not in it,
-  and the author's documents a second runtime would compile its lenses
-  from live in the Swift test target's sources today. Owed: the author's
-  documents under `spec/`, checked against the markers as the texts are.
+  `@catch`, `@required`, `@connection`, `@cacheExpiration`, are not in it.
+  The authors' documents a second runtime compiles its lenses from are
+  under `sources/`, checked against the Swift test target's markers byte
+  for byte by the compiler's tests, which also prove that they plan what
+  the markers plan.
 - `scripts/`: the scripts, below: steps over time and what each leaves.
 - `manifest.json`: the cases and the scripts, below.
 - `runtime.md`: the contract, one paragraph a rule, each ending with the

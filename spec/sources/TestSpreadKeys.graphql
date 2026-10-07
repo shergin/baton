@@ -1,0 +1,5 @@
+query TestSpreadKeys($id: ID!, $name: String) {
+  character(id: $id) { name }
+  named: characters(filter: {name: $name}) { info { count } }
+  ...TestKeyArguments_query @arguments(ids: [$id, "2"], filter: {status: "Alive", name: $name})
+}

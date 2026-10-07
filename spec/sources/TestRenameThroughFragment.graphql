@@ -1,0 +1,3 @@
+mutation TestRenameThroughFragment($id: ID!, $name: String!) {
+  ...TestRenamePayload_mutation
+}

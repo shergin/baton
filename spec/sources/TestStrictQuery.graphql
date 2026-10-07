@@ -1,0 +1,3 @@
+query TestStrictQuery($id: ID!) @throwOnFieldError {
+  character(id: $id) { name species }
+}

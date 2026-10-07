@@ -1,0 +1,11 @@
+query TestTwoPagesQuery($id: ID!) {
+  character(id: $id) {
+    id
+    notes(first: 2) @connection(key: "TestTwoPages_notes") { edges { node { id text } } }
+  }
+  node(id: $id) {
+    ... on Character {
+      notes(first: 2, after: "c2") @connection(key: "TestTwoPages_notes") { edges { node { id text } } }
+    }
+  }
+}

@@ -1,0 +1,3 @@
+mutation TestDeleteNote($id: ID!) {
+  removeNote(id: $id) { removedNoteId @deleteRecord }
+}

@@ -1,0 +1,3 @@
+fragment TestThrowingOrigin_character on Character @throwOnFieldError {
+  origin @required(action: THROW) { name }
+}

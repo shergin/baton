@@ -1,0 +1,3 @@
+query TestCaughtNames {
+  types @catch(to: RESULT) { Baton }
+}

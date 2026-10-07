@@ -1,0 +1,6 @@
+fragment TestEdgesNames_character on Character {
+  notes(first: 2) @connection(key: "TestEdgesNames_notes") {
+    Edges: pageInfo { hasNextPage }
+    edges { node { id text } }
+  }
+}

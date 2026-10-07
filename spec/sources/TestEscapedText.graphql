@@ -1,0 +1,3 @@
+query TestEscapedText {
+  search(name: "\\#1") { __typename }
+}

@@ -1,0 +1,1 @@
+fragment TestCaughtPrices_asset on Asset { price @catch listedAt @catch page @catch(to: NULL) }

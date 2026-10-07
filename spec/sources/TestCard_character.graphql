@@ -1,0 +1,4 @@
+fragment TestCard_character on Character {
+  name
+  ...TestCharacterValue_character
+}

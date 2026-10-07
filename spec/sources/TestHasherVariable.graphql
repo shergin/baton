@@ -1,0 +1,3 @@
+query TestHasherVariable($hasher: ID!) {
+  character(id: $hasher) { id name }
+}

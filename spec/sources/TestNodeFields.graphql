@@ -1,0 +1,3 @@
+query TestNodeFields($id: ID!) {
+  node(id: $id) { id ... on Character { name } }
+}

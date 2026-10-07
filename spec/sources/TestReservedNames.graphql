@@ -1,0 +1,5 @@
+query TestReservedNames($id: ID!) {
+  sites: character(id: $id) { id ...TestNotes_character @arguments(count: 1) }
+  types: character(id: $id) { id }
+  slots: character(id: $id) { id }
+}

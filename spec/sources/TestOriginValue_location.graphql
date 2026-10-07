@@ -1,0 +1,5 @@
+fragment TestOriginValue_location on Location @inline {
+  id
+  name
+  dimension
+}

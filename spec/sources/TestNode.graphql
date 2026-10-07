@@ -1,0 +1,7 @@
+query TestNode($id: ID!) {
+  node(id: $id) {
+    __typename
+    ... on Character { id name }
+    ... on Episode { id name }
+  }
+}

@@ -1,0 +1,5 @@
+query TestSearchOrigins($name: String!) {
+  search(name: $name) {
+    ... on Character { origin { name } }
+  }
+}

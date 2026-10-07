@@ -1,0 +1,11 @@
+fragment TestHiddenNotes_character on Character
+@refetchable(queryName: "TestHiddenNotesPaginationQuery")
+@argumentDefinitions(count: {type: "Int", defaultValue: 2}, cursor: {type: "String"}) {
+  TestHiddenNotes_character: name
+  TestHiddenNotesPaginationQuery: status
+  notes(first: $count, after: $cursor) @connection(key: "TestHiddenNotes_notes") {
+    TestHiddenNotes_character: totalCount
+    TestHiddenNotesPaginationQuery: totalCount
+    edges { node { id text } }
+  }
+}

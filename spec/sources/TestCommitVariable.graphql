@@ -1,0 +1,3 @@
+mutation TestCommitVariable($commit: ID!) {
+  setFavorite(id: $commit, favorite: true) { character { id name favorite } }
+}

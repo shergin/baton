@@ -1,0 +1,18 @@
+query HostileInlineReach {
+  scalarsCharacter: character(id: 1) {
+    ...HostileInlineScalars_character @defer
+    ... @alias(as: "caughtValue") @catch { ...HostileInlineScalars_character }
+  }
+  linksCharacter: character(id: 1) {
+    ...HostileInlineLinks_character @defer
+    ... @alias(as: "caughtValue") @catch { ...HostileInlineLinks_character }
+  }
+  pluralsCharacter: character(id: 1) {
+    ...HostileInlinePlurals_character @defer
+    ... @alias(as: "caughtValue") @catch { ...HostileInlinePlurals_character }
+  }
+  spreadsCharacter: character(id: 1) {
+    ...HostileInlineSpreads_character @defer
+    ... @alias(as: "caughtValue") @catch { ...HostileInlineSpreads_character }
+  }
+}

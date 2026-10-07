@@ -1,0 +1,5 @@
+fragment HostileBound_character on Character
+@argumentDefinitions(flag: {type: "Boolean!", defaultValue: true}) {
+  name @include(if: $flag)
+  origin @required(action: NONE) { id }
+}

@@ -1,0 +1,7 @@
+query TestProfileQuery($id: ID!) {
+  character(id: $id) {
+    ...TestProfile_character
+    ...TestStrict_character @alias(as: "strict")
+    ...TestAppearances_character @defer
+  }
+}

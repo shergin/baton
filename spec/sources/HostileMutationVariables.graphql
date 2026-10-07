@@ -1,0 +1,132 @@
+mutation HostileMutationVariables(
+  # Swift's keywords, as `escape` lists them.
+  $Type: Boolean!, $Protocol: Boolean!, $Any: Boolean!, $self: Boolean!, $init: Boolean!,
+  $deinit: Boolean!, $subscript: Boolean!, $class: Boolean!, $struct: Boolean!, $enum: Boolean!,
+  $func: Boolean!, $import: Boolean!, $extension: Boolean!, $operator: Boolean!,
+  $static: Boolean!, $default: Boolean!, $case: Boolean!, $switch: Boolean!, $if: Boolean!,
+  $else: Boolean!, $for: Boolean!, $in: Boolean!, $while: Boolean!, $repeat: Boolean!,
+  $return: Boolean!, $break: Boolean!, $continue: Boolean!, $where: Boolean!, $is: Boolean!,
+  $as: Boolean!, $try: Boolean!, $throw: Boolean!, $throws: Boolean!, $guard: Boolean!,
+  $defer: Boolean!, $do: Boolean!, $catch: Boolean!, $true: Boolean!, $false: Boolean!,
+  $nil: Boolean!, $super: Boolean!, $internal: Boolean!, $private: Boolean!, $public: Boolean!,
+  $fileprivate: Boolean!, $open: Boolean!, $inout: Boolean!, $typealias: Boolean!,
+  $associatedtype: Boolean!, $protocol: Boolean!, $some: Boolean!, $any: Boolean!,
+  $rethrows: Boolean!, $fallthrough: Boolean!, $precedencegroup: Boolean!, $_: Boolean!,
+  $var: Boolean!, $let: Boolean!, $Self: Boolean!,
+  # Swift's contextual keywords that start an expression or a type.
+  $async: Boolean!, $borrowing: Boolean!, $consume: Boolean!, $consuming: Boolean!,
+  $copy: Boolean!, $discard: Boolean!, $each: Boolean!, $isolated: Boolean!, $sending: Boolean!,
+  $then: Boolean!, $unsafe: Boolean!, $await: Boolean!,
+  # What every lens declares, and what a refetchable fragment and a connection add.
+  $anchor: Boolean!, $recordID: Boolean!, $satisfied: Boolean!,
+  $missingRequiredField: Boolean!, $fieldErrors: Boolean!, $isPresent: Boolean!,
+  $throwing: Boolean!, $caught: Boolean!, $refetchable: Boolean!, $refetch: Boolean!,
+  $connection: Boolean!, $nodes: Boolean!, $hasNext: Boolean!, $hasPrevious: Boolean!,
+  $isLoadingNext: Boolean!, $isLoadingPrevious: Boolean!, $connectionID: Boolean!,
+  $loadNext: Boolean!, $loadPrevious: Boolean!,
+  # The locals, parameters and local aliases of generated bodies.
+  $bound: Boolean!, $errors: Boolean!, $child: Boolean!, $missing: Boolean!, $count: Boolean!,
+  $fields: Boolean!, $lhs: Boolean!, $rhs: Boolean!, $hasher: Boolean!, $selection0: Boolean!, $selection: Boolean!, $selfValue: Boolean!,
+  $Fragment: Boolean!, $Spread: Boolean!, $Owner: Boolean!, $Query: Boolean!,
+  $Operation: Boolean!, $RefetchQuery: Boolean!,
+  # What an operation value, a mutation's action and its optimistic response declare.
+  $resolution: Boolean!, $name: Boolean!, $document: Boolean!, $text: Boolean!,
+  $plan: Boolean!, $errorBehavior: Boolean!, $throwsOnFieldError: Boolean!, $bubbles: Boolean!,
+  $hasDeferred: Boolean!, $cacheExpiration: Boolean!, $hash: Boolean!, $commit: Boolean!, $callAsFunction: Boolean!,
+  $Op: Boolean!, $variable: Boolean!, $payload: Boolean!,
+  # What the runtime's protocols give a generated type.
+  $phase: Boolean!, $isRefreshing: Boolean!, $isStale: Boolean!, $retry: Boolean!,
+  $subscription: Boolean!,
+  # The shared enums.
+  $Sites: Boolean!, $AbstractSlots: Boolean!, $schemaDigest: Boolean!, $format: Boolean!, $transient: Boolean!,
+  # The modules, and what the generated code spells from the standard library.
+  $Swift: Boolean!, $Set: Boolean!, $Result: Boolean!, $Optional: Boolean!, $String: Boolean!,
+  $Int: Boolean!, $Double: Boolean!, $Bool: Boolean!, $MainActor: Boolean!, $Hasher: Boolean!,
+  $Sendable: Boolean!
+) {
+  setFavorite(id: "1", favorite: true) @catch {
+    character {
+      id
+      # Swift's keywords, as `escape` lists them.
+      ... @include(if: $Type) { name } ... @include(if: $Protocol) { name }
+      ... @include(if: $Any) { name } ... @include(if: $self) { name }
+      ... @include(if: $init) { name } ... @include(if: $deinit) { name }
+      ... @include(if: $subscript) { name } ... @include(if: $class) { name }
+      ... @include(if: $struct) { name } ... @include(if: $enum) { name }
+      ... @include(if: $func) { name } ... @include(if: $import) { name }
+      ... @include(if: $extension) { name } ... @include(if: $operator) { name }
+      ... @include(if: $static) { name } ... @include(if: $default) { name }
+      ... @include(if: $case) { name } ... @include(if: $switch) { name }
+      ... @include(if: $if) { name } ... @include(if: $else) { name }
+      ... @include(if: $for) { name } ... @include(if: $in) { name }
+      ... @include(if: $while) { name } ... @include(if: $repeat) { name }
+      ... @include(if: $return) { name } ... @include(if: $break) { name }
+      ... @include(if: $continue) { name } ... @include(if: $where) { name }
+      ... @include(if: $is) { name } ... @include(if: $as) { name }
+      ... @include(if: $try) { name } ... @include(if: $throw) { name }
+      ... @include(if: $throws) { name } ... @include(if: $guard) { name }
+      ... @include(if: $defer) { name } ... @include(if: $do) { name }
+      ... @include(if: $catch) { name } ... @include(if: $true) { name }
+      ... @include(if: $false) { name } ... @include(if: $nil) { name }
+      ... @include(if: $super) { name } ... @include(if: $internal) { name }
+      ... @include(if: $private) { name } ... @include(if: $public) { name }
+      ... @include(if: $fileprivate) { name } ... @include(if: $open) { name }
+      ... @include(if: $inout) { name } ... @include(if: $typealias) { name }
+      ... @include(if: $associatedtype) { name } ... @include(if: $protocol) { name }
+      ... @include(if: $some) { name } ... @include(if: $any) { name }
+      ... @include(if: $rethrows) { name } ... @include(if: $fallthrough) { name }
+      ... @include(if: $precedencegroup) { name } ... @include(if: $_) { name }
+      ... @include(if: $var) { name } ... @include(if: $let) { name }
+      ... @include(if: $Self) { name }
+      # Swift's contextual keywords that start an expression or a type.
+      ... @include(if: $async) { name } ... @include(if: $borrowing) { name }
+      ... @include(if: $consume) { name } ... @include(if: $consuming) { name }
+      ... @include(if: $copy) { name } ... @include(if: $discard) { name }
+      ... @include(if: $each) { name } ... @include(if: $isolated) { name }
+      ... @include(if: $sending) { name } ... @include(if: $then) { name }
+      ... @include(if: $unsafe) { name } ... @include(if: $await) { name }
+      # What every lens declares, and what a refetchable fragment and a connection add.
+      ... @include(if: $anchor) { name } ... @include(if: $recordID) { name }
+      ... @include(if: $satisfied) { name }
+      ... @include(if: $missingRequiredField) { name } ... @include(if: $fieldErrors) { name }
+      ... @include(if: $isPresent) { name } ... @include(if: $throwing) { name }
+      ... @include(if: $caught) { name } ... @include(if: $refetchable) { name }
+      ... @include(if: $refetch) { name } ... @include(if: $connection) { name }
+      ... @include(if: $nodes) { name } ... @include(if: $hasNext) { name }
+      ... @include(if: $hasPrevious) { name } ... @include(if: $isLoadingNext) { name }
+      ... @include(if: $isLoadingPrevious) { name } ... @include(if: $connectionID) { name }
+      ... @include(if: $loadNext) { name } ... @include(if: $loadPrevious) { name }
+      # The locals, parameters and local aliases of generated bodies.
+      ... @include(if: $bound) { name } ... @include(if: $errors) { name }
+      ... @include(if: $child) { name } ... @include(if: $missing) { name }
+      ... @include(if: $count) { name } ... @include(if: $fields) { name }
+      ... @include(if: $lhs) { name } ... @include(if: $rhs) { name }
+      ... @include(if: $hasher) { name } ... @include(if: $selection0) { name } ... @include(if: $selection) { name } ... @include(if: $selfValue) { name }
+      ... @include(if: $Fragment) { name } ... @include(if: $Spread) { name }
+      ... @include(if: $Owner) { name } ... @include(if: $Query) { name }
+      ... @include(if: $Operation) { name } ... @include(if: $RefetchQuery) { name }
+      # What an operation value, a mutation's action and its optimistic response declare.
+      ... @include(if: $resolution) { name } ... @include(if: $name) { name }
+      ... @include(if: $document) { name } ... @include(if: $text) { name }
+      ... @include(if: $plan) { name } ... @include(if: $errorBehavior) { name }
+      ... @include(if: $throwsOnFieldError) { name } ... @include(if: $bubbles) { name }
+      ... @include(if: $hasDeferred) { name } ... @include(if: $cacheExpiration) { name } ... @include(if: $hash) { name }
+      ... @include(if: $commit) { name } ... @include(if: $callAsFunction) { name }
+      ... @include(if: $Op) { name } ... @include(if: $variable) { name } ... @include(if: $payload) { name }
+      # What the runtime's protocols give a generated type.
+      ... @include(if: $phase) { name } ... @include(if: $isRefreshing) { name }
+      ... @include(if: $isStale) { name } ... @include(if: $retry) { name }
+      ... @include(if: $subscription) { name }
+      # The shared enums.
+      ... @include(if: $Sites) { name } ... @include(if: $AbstractSlots) { name }
+      ... @include(if: $schemaDigest) { name } ... @include(if: $format) { name } ... @include(if: $transient) { name }
+      # The modules, and what the generated code spells from the standard library.
+      ... @include(if: $Swift) { name } ... @include(if: $Set) { name }
+      ... @include(if: $Result) { name } ... @include(if: $Optional) { name }
+      ... @include(if: $String) { name } ... @include(if: $Int) { name }
+      ... @include(if: $Double) { name } ... @include(if: $Bool) { name }
+      ... @include(if: $MainActor) { name } ... @include(if: $Hasher) { name }
+      ... @include(if: $Sendable) { name }
+    }
+  }
+}

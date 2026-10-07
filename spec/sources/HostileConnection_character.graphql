@@ -1,0 +1,50 @@
+fragment HostileConnection_character on Character
+@argumentDefinitions(count: {type: "Int", defaultValue: 2}, cursor: {type: "String"})
+@refetchable(queryName: "HostileConnectionRefetchQuery") {
+  notes(first: $count, after: $cursor) @connection(key: "HostileConnection_notes") {
+    # Swift's keywords, as `escape` lists them.
+    Type: totalCount Protocol: totalCount Any: totalCount self: totalCount init: totalCount
+    deinit: totalCount subscript: totalCount class: totalCount struct: totalCount
+    enum: totalCount func: totalCount var: totalCount let: totalCount import: totalCount
+    extension: totalCount operator: totalCount static: totalCount default: totalCount
+    case: totalCount switch: totalCount if: totalCount else: totalCount for: totalCount
+    in: totalCount while: totalCount repeat: totalCount return: totalCount break: totalCount
+    continue: totalCount where: totalCount is: totalCount as: totalCount try: totalCount
+    throw: totalCount throws: totalCount guard: totalCount defer: totalCount do: totalCount
+    catch: totalCount true: totalCount false: totalCount nil: totalCount super: totalCount
+    internal: totalCount private: totalCount public: totalCount fileprivate: totalCount
+    open: totalCount inout: totalCount typealias: totalCount associatedtype: totalCount
+    protocol: totalCount some: totalCount any: totalCount
+    rethrows: totalCount fallthrough: totalCount precedencegroup: totalCount _: totalCount
+    # Swift's contextual keywords that start an expression or a type.
+    async: totalCount await: totalCount borrowing: totalCount consume: totalCount
+    consuming: totalCount copy: totalCount discard: totalCount each: totalCount
+    isolated: totalCount sending: totalCount then: totalCount unsafe: totalCount
+    # What every lens declares, and what a refetchable fragment and a connection add.
+    satisfied: totalCount missingRequiredField: totalCount
+    fieldErrors: totalCount isPresent: totalCount throwing: totalCount caught: totalCount
+    refetchable: totalCount refetch: totalCount connection: totalCount loadNext: totalCount
+    loadPrevious: totalCount
+    # The locals, parameters and local aliases of generated bodies.
+    bound: totalCount errors: totalCount child: totalCount missing: totalCount count: totalCount
+    fields: totalCount lhs: totalCount rhs: totalCount hasher: totalCount selection0: totalCount selection: totalCount optimistic: totalCount
+    selfValue: totalCount Fragment: totalCount Spread: totalCount Owner: totalCount
+    Query: totalCount Operation: totalCount RefetchQuery: totalCount
+    # What an operation value, a mutation's action and its optimistic response declare.
+    variables: totalCount resolution: totalCount name: totalCount document: totalCount
+    text: totalCount plan: totalCount errorBehavior: totalCount throwsOnFieldError: totalCount
+    bubbles: totalCount hasDeferred: totalCount cacheExpiration: totalCount Data: totalCount Action: totalCount
+    OptimisticResponse: totalCount hash: totalCount commit: totalCount
+    callAsFunction: totalCount Op: totalCount variable: totalCount payload: totalCount
+    # What the runtime's protocols give a generated type.
+    hashValue: totalCount phase: totalCount isRefreshing: totalCount isStale: totalCount
+    retry: totalCount subscription: totalCount
+    # The shared enums.
+    Sites: totalCount Guards: totalCount AbstractSlots: totalCount schemaDigest: totalCount format: totalCount transient: totalCount
+    # The modules, and what the generated code spells from the standard library.
+    Baton: totalCount Swift: totalCount Set: totalCount Result: totalCount Optional: totalCount
+    String: totalCount Int: totalCount Double: totalCount Bool: totalCount MainActor: totalCount
+    Hasher: totalCount Sendable: totalCount
+    edges { node { id } }
+  }
+}

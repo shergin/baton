@@ -1,0 +1,3 @@
+query TestCaughtEpisodes($id: ID!) {
+  character(id: $id) { id caught: episode @catch { name } }
+}

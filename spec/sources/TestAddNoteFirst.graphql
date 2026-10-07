@@ -1,0 +1,5 @@
+mutation TestAddNoteFirst($characterId: ID!, $text: String!, $connections: [ID!]!) {
+  addNote(characterId: $characterId, text: $text) {
+    noteEdge @prependEdge(connections: $connections) { cursor node { id text } }
+  }
+}

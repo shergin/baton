@@ -1,0 +1,3 @@
+fragment HostileSpreadTarget_character on Character {
+  name
+}

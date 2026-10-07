@@ -1,0 +1,7 @@
+fragment TestRecentNotes_character on Character
+@refetchable(queryName: "TestRecentNotesPaginationQuery")
+@argumentDefinitions(count: {type: "Int", defaultValue: 2}, cursor: {type: "String"}) {
+  notes(last: $count, before: $cursor) @connection(key: "TestRecentNotes_notes") {
+    edges { node { id text } }
+  }
+}

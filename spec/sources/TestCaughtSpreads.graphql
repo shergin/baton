@@ -1,0 +1,13 @@
+query TestCaughtSpreads($id: ID!) {
+  character(id: $id) {
+    id
+    ... @alias(as: "profile") @catch { ...TestCaughtProfile_character }
+    ... @alias(as: "nulledProfile") @catch(to: NULL) { ...TestCaughtProfile_character }
+    ... @alias(as: "strict") @catch { ...TestCaughtStrict_character }
+    ... @alias(as: "nulledStrict") @catch(to: NULL) { ...TestCaughtStrict_character }
+  }
+  node(id: $id) {
+    id
+    ... on Character @alias(as: "profile") @catch { ...TestCaughtProfile_character }
+  }
+}

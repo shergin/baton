@@ -1,0 +1,3 @@
+query TestSpreadNames($id: ID!) {
+  character(id: $id) { testCaughtStrict: species ...TestCaughtStrict_character }
+}

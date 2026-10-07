@@ -1,0 +1,3 @@
+mutation HostileNamesake($HostileNamesake: ID!) {
+  setFavorite(id: $HostileNamesake, favorite: true) { character { id } }
+}

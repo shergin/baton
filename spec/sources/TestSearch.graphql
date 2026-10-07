@@ -1,0 +1,7 @@
+query TestSearch($name: String!) {
+  search(name: $name) {
+    __typename
+    ... on Character { id name }
+    ... on Location { id name dimension }
+  }
+}

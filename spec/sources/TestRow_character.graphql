@@ -1,0 +1,5 @@
+fragment TestRow_character on Character {
+  name
+  status
+  image
+}

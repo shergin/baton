@@ -1,0 +1,3 @@
+query TestTwoSpreads($id: ID!, $again: Boolean!) {
+  character(id: $id) { ...TestRow_character ...TestRow_character ...TestRow_character @include(if: $again) @alias(as: "again") }
+}

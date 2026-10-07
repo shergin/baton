@@ -1,0 +1,5 @@
+query TestScanningValueQuery($id: ID!, $withName: Boolean!) {
+  character(id: $id) {
+    ...TestScanningValue_character @arguments(withName: $withName)
+  }
+}

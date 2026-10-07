@@ -1,0 +1,6 @@
+query TestCaughtValueQuery($id: ID!) {
+  character(id: $id) {
+    id
+    ... @alias(as: "caughtValue") @catch { ...TestCharacterValue_character }
+  }
+}

@@ -1,0 +1,6 @@
+mutation TestBuilderNames($id: ID!, $favorite: Boolean!, $self: ID!) {
+  type: setFavorite(id: $id, favorite: $favorite) { character { id favorite } }
+  self: setFavorite(id: $self, favorite: $favorite) { character { id favorite } }
+  string: setFavorite(id: $id, favorite: $favorite) { character { id name } }
+  sendable: setFavorite(id: $id, favorite: $favorite) { character { id favorite } }
+}

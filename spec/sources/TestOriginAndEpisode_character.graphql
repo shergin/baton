@@ -1,0 +1,4 @@
+fragment TestOriginAndEpisode_character on Character {
+  origin { name }
+  episode { name }
+}

@@ -1,0 +1,6 @@
+query TestLoggedOrigin($id: ID!) {
+  character(id: $id) @required(action: LOG) {
+    id
+    origin @required(action: LOG) { id name }
+  }
+}

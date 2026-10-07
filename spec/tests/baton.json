@@ -1,0 +1,70 @@
+{
+  "schema": "schema.graphql",
+  "schemaExtensions": [
+    "extensions.graphql"
+  ],
+  "identity": {
+    "types": {
+      "Asset": [
+        "uuid"
+      ],
+      "Quote": [
+        "base",
+        "quote"
+      ]
+    }
+  },
+  "customScalarTypes": {
+    "Decimal": {
+      "swift": "Foundation.Decimal"
+    },
+    "DateTime": {
+      "swift": "Foundation.Date"
+    },
+    "Url": {
+      "swift": "Foundation.URL"
+    }
+  },
+  "transient": {
+    "types": [
+      "Secret"
+    ],
+    "fields": [
+      "Query.secrets"
+    ]
+  },
+  "lookups": [
+    {
+      "field": "Query.character",
+      "type": "Character",
+      "argument": "id"
+    },
+    {
+      "field": "Query.location",
+      "type": "Location",
+      "argument": "id"
+    },
+    {
+      "field": "Query.episode",
+      "type": "Episode",
+      "argument": "id"
+    },
+    {
+      "field": "Query.node",
+      "argument": "id"
+    },
+    {
+      "field": "Query.asset",
+      "type": "Asset",
+      "argument": "uuid"
+    },
+    {
+      "field": "Query.quote",
+      "type": "Quote",
+      "arguments": [
+        "base",
+        "quote"
+      ]
+    }
+  ]
+}

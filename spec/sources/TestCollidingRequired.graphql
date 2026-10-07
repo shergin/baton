@@ -1,0 +1,4 @@
+query TestCollidingRequired($id: ID!) {
+  types: character(id: $id) { id }
+  typesLens: character(id: $id) @required(action: NONE) { id name @required(action: NONE) }
+}

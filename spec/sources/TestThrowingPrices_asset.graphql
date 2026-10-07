@@ -1,0 +1,1 @@
+fragment TestThrowingPrices_asset on Asset @throwOnFieldError { price prices }

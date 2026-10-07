@@ -1,0 +1,3 @@
+fragment TestLoggedNotes_character on Character {
+  notes(first: 1) { totalCount ...TestLogEdges_connection }
+}

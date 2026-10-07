@@ -1,0 +1,3 @@
+query HostileHidden {
+  character(id: 1) { ..._hostileHidden }
+}

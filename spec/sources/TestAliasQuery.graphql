@@ -1,0 +1,3 @@
+query TestAliasQuery($id: ID!) {
+  character(id: $id) { ...TestRow_character @alias(as: "row") }
+}

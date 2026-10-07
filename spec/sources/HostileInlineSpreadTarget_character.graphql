@@ -1,0 +1,3 @@
+fragment HostileInlineSpreadTarget_character on Character @inline {
+  name
+}

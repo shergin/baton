@@ -1,0 +1,3 @@
+query TestFilteredCharacters($filters: [FilterCharacter!]!) {
+  charactersMatching(filters: $filters) { id name }
+}

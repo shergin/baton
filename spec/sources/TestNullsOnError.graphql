@@ -1,0 +1,3 @@
+query TestNullsOnError($id: ID!) {
+  character(id: $id) { name }
+}

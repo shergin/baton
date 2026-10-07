@@ -1,0 +1,3 @@
+query TestThrowingSpread($id: ID!) @throwOnFieldError {
+  character(id: $id) { species ...TestName_character }
+}

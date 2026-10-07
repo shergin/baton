@@ -1,0 +1,3 @@
+query TestHiddenRecentNotesQuery($id: ID!) {
+  character(id: $id) { ...TestHiddenRecentNotes_character }
+}

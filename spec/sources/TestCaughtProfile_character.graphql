@@ -1,0 +1,4 @@
+fragment TestCaughtProfile_character on Character {
+  name
+  origin { name }
+}

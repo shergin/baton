@@ -1,0 +1,11 @@
+query TestConditionNames($id: ID!, $name: String!) {
+  namesake(name: $name) {
+    asCharacter: name
+    ... on Character { status }
+  }
+  node(id: $id) {
+    id
+    ... on Episode @alias(as: "asCharacter") { name }
+    ... on Character { name }
+  }
+}

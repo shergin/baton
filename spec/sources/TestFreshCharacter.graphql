@@ -1,0 +1,3 @@
+query TestFreshCharacter($id: ID!) @cacheExpiration(seconds: 30) {
+  character(id: $id) { id name }
+}

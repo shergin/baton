@@ -1,0 +1,5 @@
+subscription TestNoteAdded($characterId: ID!, $connections: [ID!]!) {
+  noteAdded(characterId: $characterId) {
+    noteEdge @appendEdge(connections: $connections) { cursor node { id text } }
+  }
+}

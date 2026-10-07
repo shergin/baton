@@ -1,0 +1,9 @@
+fragment TestAssetValue_asset on Asset @inline @throwOnFieldError {
+  uuid
+  name
+  price
+  listedAt
+  page
+  prices
+  caughtSize: size @catch
+}

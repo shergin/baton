@@ -1,0 +1,9 @@
+query HostileReach {
+  scalarsCharacter: character(id: 1) { ...HostileScalars_character }
+  linksCharacter: character(id: 1) { ...HostileLinks_character }
+  selectionsCharacter: character(id: 1) { ...HostileSelections_character }
+  spreadTargetCharacter: character(id: 1) { ...HostileSpreadTarget_character }
+  spreadsCharacter: character(id: 1) { ...HostileSpreads_character }
+  connectionNodesCharacter: character(id: 1) { ...HostileConnectionNodes_character }
+  abstractNode: node(id: 1) { ...HostileAbstract_node }
+}

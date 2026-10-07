@@ -1,0 +1,1 @@
+query TestAssetNameQuery($uuid: String!) { asset(uuid: $uuid) { name } }

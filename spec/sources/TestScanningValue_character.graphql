@@ -1,0 +1,9 @@
+fragment TestScanningValue_character on Character
+  @inline
+  @throwOnFieldError
+  @argumentDefinitions(withName: { type: "Boolean!" }) {
+  id
+  ...TestNotesValue_character @arguments(count: 1)
+  ...TestNamedValue_character @include(if: $withName) @alias(as: "named")
+  ... @alias(as: "caughtCharacter") @catch { ...TestCharacterValue_character }
+}

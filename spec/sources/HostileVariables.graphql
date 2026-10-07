@@ -1,0 +1,68 @@
+query HostileVariables(
+  # Swift's keywords, as `escape` lists them.
+  $Type: ID!, $Protocol: ID!, $Any: ID!, $self: ID!, $init: ID!, $deinit: ID!, $subscript: ID!,
+  $class: ID!, $struct: ID!, $enum: ID!, $func: ID!, $var: ID!, $let: ID!, $import: ID!,
+  $extension: ID!, $operator: ID!, $static: ID!, $default: ID!, $case: ID!, $switch: ID!,
+  $if: ID!, $else: ID!, $for: ID!, $in: ID!, $while: ID!, $repeat: ID!, $return: ID!,
+  $break: ID!, $continue: ID!, $where: ID!, $is: ID!, $as: ID!, $try: ID!, $throw: ID!,
+  $throws: ID!, $guard: ID!, $defer: ID!, $do: ID!, $catch: ID!, $true: ID!, $false: ID!,
+  $nil: ID!, $super: ID!, $internal: ID!, $private: ID!, $public: ID!, $fileprivate: ID!,
+  $open: ID!, $inout: ID!, $typealias: ID!, $associatedtype: ID!, $protocol: ID!, $some: ID!,
+  $any: ID!,
+  $rethrows: ID!, $fallthrough: ID!, $precedencegroup: ID!, $_: ID!, $Self: ID!,
+  # Swift's contextual keywords that start an expression or a type.
+  $async: ID!, $borrowing: ID!, $consume: ID!, $consuming: ID!, $copy: ID!, $discard: ID!,
+  $each: ID!, $isolated: ID!, $sending: ID!, $then: ID!, $unsafe: ID!, $await: ID!,
+  # What every lens declares, and what a refetchable fragment and a connection add.
+  $anchor: ID!, $recordID: ID!, $satisfied: ID!, $missingRequiredField: ID!,
+  $fieldErrors: ID!, $isPresent: ID!, $throwing: ID!, $caught: ID!, $refetchable: ID!,
+  $refetch: ID!, $connection: ID!, $nodes: ID!, $hasNext: ID!, $hasPrevious: ID!,
+  $isLoadingNext: ID!, $isLoadingPrevious: ID!, $connectionID: ID!, $loadNext: ID!,
+  $loadPrevious: ID!,
+  # The locals, parameters and local aliases of generated bodies.
+  $bound: ID!, $errors: ID!, $child: ID!, $missing: ID!, $count: ID!, $fields: ID!, $lhs: ID!,
+  $rhs: ID!, $hasher: ID!, $selection0: ID!, $selection: ID!, $optimistic: ID!, $selfValue: ID!, $Fragment: ID!, $Spread: ID!,
+  $Owner: ID!, $Query: ID!, $Operation: ID!, $RefetchQuery: ID!,
+  # What an operation value, a mutation's action and its optimistic response declare.
+  $name: ID!, $document: ID!, $text: ID!, $plan: ID!, $errorBehavior: ID!,
+  $throwsOnFieldError: ID!, $bubbles: ID!, $hasDeferred: ID!, $cacheExpiration: ID!, $Action: ID!,
+  $OptimisticResponse: ID!, $hash: ID!, $commit: ID!, $callAsFunction: ID!, $Op: ID!,
+  $variable: ID!, $payload: ID!,
+  # What the runtime's protocols give a generated type.
+  $retry: ID!, $subscription: ID!,
+  # The shared enums.
+  $Sites: ID!, $Guards: ID!, $AbstractSlots: ID!, $schemaDigest: ID!, $format: ID!, $transient: ID!,
+  # The modules, and what the generated code spells from the standard library.
+  $Swift: ID!, $Set: ID!, $Result: ID!, $Optional: ID!, $String: ID!, $Int: ID!, $Double: ID!,
+  $Bool: ID!, $MainActor: ID!, $Hasher: ID!, $Sendable: ID!
+) @throwOnFieldError {
+  charactersByIds(ids: [
+    # Swift's keywords, as `escape` lists them.
+    $Type, $Protocol, $Any, $self, $init, $deinit, $subscript, $class, $struct, $enum, $func,
+    $var, $let, $import, $extension, $operator, $static, $default, $case, $switch, $if, $else,
+    $for, $in, $while, $repeat, $return, $break, $continue, $where, $is, $as, $try, $throw,
+    $throws, $guard, $defer, $do, $catch, $true, $false, $nil, $super, $internal, $private,
+    $public, $fileprivate, $open, $inout, $typealias, $associatedtype, $protocol, $some, $any,
+    $rethrows, $fallthrough, $precedencegroup, $_, $Self,
+    # Swift's contextual keywords that start an expression or a type.
+    $async, $borrowing, $consume, $consuming, $copy, $discard, $each, $isolated, $sending,
+    $then, $unsafe, $await,
+    # What every lens declares, and what a refetchable fragment and a connection add.
+    $anchor, $recordID, $satisfied, $missingRequiredField, $fieldErrors, $isPresent,
+    $throwing, $caught, $refetchable, $refetch, $connection, $nodes, $hasNext, $hasPrevious,
+    $isLoadingNext, $isLoadingPrevious, $connectionID, $loadNext, $loadPrevious,
+    # The locals, parameters and local aliases of generated bodies.
+    $bound, $errors, $child, $missing, $count, $fields, $lhs, $rhs, $hasher, $selection0, $selection, $optimistic,
+    $selfValue, $Fragment, $Spread, $Owner, $Query, $Operation, $RefetchQuery,
+    # What an operation value, a mutation's action and its optimistic response declare.
+    $name, $document, $text, $plan, $errorBehavior, $throwsOnFieldError, $bubbles,
+    $hasDeferred, $cacheExpiration, $Action, $OptimisticResponse, $hash, $commit, $callAsFunction, $Op, $variable, $payload,
+    # What the runtime's protocols give a generated type.
+    $retry, $subscription,
+    # The shared enums.
+    $Sites, $Guards, $AbstractSlots, $schemaDigest, $format, $transient,
+    # The modules, and what the generated code spells from the standard library.
+    $Swift, $Set, $Result, $Optional, $String, $Int, $Double, $Bool, $MainActor, $Hasher,
+    $Sendable
+  ]) { id }
+}

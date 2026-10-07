@@ -1,0 +1,10 @@
+query TestNoteCounts($page: Int, $count: Int) {
+  characters(page: $page) {
+    results {
+      id
+      name
+      pinned: notes(first: 97) { totalCount }
+      recent: notes(first: $count) { totalCount }
+    }
+  }
+}

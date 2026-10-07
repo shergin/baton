@@ -637,3 +637,6 @@ fn a_fragment_spread_enters_its_fragment_and_an_inline_fragment_does_not() {
 
 #[path = "hostile_name_tests.rs"]
 mod hostile_names;
+
+#[path = "spec_sources_tests.rs"]
+mod spec_sources;

@@ -1,0 +1,3 @@
+query TestOverlapQuery($id: ID!) {
+  character(id: $id) { name episode { id } ...TestAppearances_character @defer }
+}

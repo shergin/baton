@@ -1,0 +1,3 @@
+query TestStrictEpisodes($id: ID!) @throwOnFieldError {
+  character(id: $id) { id episode { id name } }
+}

@@ -1,0 +1,7 @@
+fragment TestCharacterValue_character on Character @inline {
+  id
+  name
+  status
+  origin { ...TestOriginValue_location }
+  episode { id name }
+}

@@ -1,0 +1,3 @@
+query TestNames {
+  types { Type Protocol Baton Any }
+}

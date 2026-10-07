@@ -1,0 +1,3 @@
+query TestThrowingNode($id: ID!) @throwOnFieldError {
+  node(id: $id) { id ... on Character { name } }
+}

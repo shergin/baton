@@ -1,0 +1,53 @@
+fragment HostileInlineLinks_character on Character @inline @throwOnFieldError {
+  # Swift's keywords, as `escape` lists them.
+  Type: origin { id } Protocol: origin { id } Any: origin { id } self: origin { id }
+  Self: origin { id } init: origin { id } deinit: origin { id } subscript: origin { id }
+  class: origin { id } struct: origin { id } enum: origin { id } func: origin { id }
+  var: origin { id } let: origin { id } import: origin { id } extension: origin { id }
+  operator: origin { id } static: origin { id } default: origin { id } case: origin { id }
+  switch: origin { id } if: origin { id } else: origin { id } for: origin { id }
+  in: origin { id } while: origin { id } repeat: origin { id } return: origin { id }
+  break: origin { id } continue: origin { id } where: origin { id } is: origin { id }
+  as: origin { id } try: origin { id } throw: origin { id } throws: origin { id }
+  guard: origin { id } defer: origin { id } do: origin { id } catch: origin { id }
+  true: origin { id } false: origin { id } nil: origin { id } super: origin { id }
+  internal: origin { id } private: origin { id } public: origin { id }
+  fileprivate: origin { id } open: origin { id } inout: origin { id } typealias: origin { id }
+  associatedtype: origin { id } protocol: origin { id } some: origin { id } any: origin { id }
+  rethrows: origin { id } fallthrough: origin { id } precedencegroup: origin { id }
+  _: origin { id }
+  # Swift's contextual keywords that start an expression or a type.
+  async: origin { id } await: origin { id } borrowing: origin { id } consume: origin { id }
+  consuming: origin { id } copy: origin { id } discard: origin { id } each: origin { id }
+  isolated: origin { id } sending: origin { id } then: origin { id } unsafe: origin { id }
+  # What every lens declares, and what a refetchable fragment and a connection add.
+  satisfied: origin { id } missingRequiredField: origin { id }
+  fieldErrors: origin { id } isPresent: origin { id } throwing: origin { id }
+  caught: origin { id } refetchable: origin { id } refetch: origin { id }
+  connection: origin { id } nodes: origin { id } hasNext: origin { id }
+  hasPrevious: origin { id } isLoadingNext: origin { id } isLoadingPrevious: origin { id }
+  connectionID: origin { id } loadNext: origin { id } loadPrevious: origin { id }
+  # The locals, parameters and local aliases of generated bodies.
+  bound: origin { id } errors: origin { id } child: origin { id } missing: origin { id }
+  count: origin { id } fields: origin { id } lhs: origin { id } rhs: origin { id }
+  hasher: origin { id } selection0: origin { id } selection: origin { id } optimistic: origin { id } selfValue: origin { id }
+  Fragment: origin { id } Spread: origin { id } Owner: origin { id } Query: origin { id }
+  Operation: origin { id } RefetchQuery: origin { id }
+  # What an operation value, a mutation's action and its optimistic response declare.
+  variables: origin { id } resolution: origin { id } name: origin { id }
+  document: origin { id } text: origin { id } plan: origin { id }
+  errorBehavior: origin { id } throwsOnFieldError: origin { id } bubbles: origin { id }
+  hasDeferred: origin { id } cacheExpiration: origin { id } Data: origin { id } Action: origin { id }
+  OptimisticResponse: origin { id } hash: origin { id } commit: origin { id }
+  callAsFunction: origin { id } Op: origin { id } variable: origin { id } payload: origin { id }
+  # What the runtime's protocols give a generated type.
+  hashValue: origin { id } phase: origin { id } isRefreshing: origin { id }
+  isStale: origin { id } retry: origin { id } subscription: origin { id }
+  # The shared enums.
+  Types: origin { id } Sites: origin { id } Guards: origin { id } AbstractSlots: origin { id }
+  schemaDigest: origin { id } format: origin { id } transient: origin { id }
+  # The modules, and what the generated code spells from the standard library.
+  Baton: origin { id } Swift: origin { id } Set: origin { id } Result: origin { id }
+  Optional: origin { id } String: origin { id } Int: origin { id } Double: origin { id }
+  Bool: origin { id } MainActor: origin { id } Hasher: origin { id } Sendable: origin { id }
+}

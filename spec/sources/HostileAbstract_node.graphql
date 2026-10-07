@@ -1,0 +1,34 @@
+fragment HostileAbstract_node on Node {
+  # Swift's keywords, as `escape` lists them.
+  Type: id Protocol: id Any: id self: id Self: id init: id deinit: id subscript: id class: id
+  struct: id enum: id func: id var: id let: id import: id extension: id operator: id static: id
+  default: id case: id switch: id if: id else: id for: id in: id while: id repeat: id return: id
+  break: id continue: id where: id is: id as: id try: id throw: id throws: id guard: id
+  defer: id do: id catch: id true: id false: id nil: id super: id internal: id private: id
+  public: id fileprivate: id open: id inout: id typealias: id associatedtype: id protocol: id
+  some: id any: id
+  rethrows: id fallthrough: id precedencegroup: id _: id
+  # Swift's contextual keywords that start an expression or a type.
+  async: id await: id borrowing: id consume: id consuming: id copy: id discard: id each: id
+  isolated: id sending: id then: id unsafe: id
+  # What every lens declares, and what a refetchable fragment and a connection add.
+  satisfied: id missingRequiredField: id fieldErrors: id isPresent: id throwing: id
+  caught: id refetchable: id refetch: id connection: id nodes: id hasNext: id hasPrevious: id
+  isLoadingNext: id isLoadingPrevious: id connectionID: id loadNext: id loadPrevious: id
+  # The locals, parameters and local aliases of generated bodies.
+  bound: id errors: id child: id missing: id count: id fields: id lhs: id rhs: id hasher: id selection0: id selection: id
+  optimistic: id selfValue: id Fragment: id Spread: id Owner: id Query: id Operation: id
+  RefetchQuery: id
+  # What an operation value, a mutation's action and its optimistic response declare.
+  variables: id resolution: id name: id document: id text: id plan: id errorBehavior: id
+  throwsOnFieldError: id bubbles: id hasDeferred: id cacheExpiration: id Data: id Action: id OptimisticResponse: id
+  hash: id commit: id callAsFunction: id Op: id variable: id payload: id
+  # What the runtime's protocols give a generated type.
+  hashValue: id phase: id isRefreshing: id isStale: id retry: id subscription: id
+  # The shared enums.
+  Sites: id Guards: id schemaDigest: id format: id transient: id
+  # The modules, and what the generated code spells from the standard library.
+  Baton: id Swift: id Set: id Result: id Optional: id String: id Int: id Double: id Bool: id
+  MainActor: id Hasher: id Sendable: id
+  ... on Character { status }
+}

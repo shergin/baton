@@ -1,0 +1,1 @@
+query TestDrafts { drafts { id text about { id name } } character(id: "1") { id name } }

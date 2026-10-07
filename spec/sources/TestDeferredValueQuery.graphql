@@ -1,0 +1,6 @@
+query TestDeferredValueQuery($id: ID!) {
+  character(id: $id) {
+    id
+    ...TestCharacterValue_character @defer
+  }
+}

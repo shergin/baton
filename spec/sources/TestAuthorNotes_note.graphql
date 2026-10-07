@@ -1,0 +1,12 @@
+fragment TestAuthorNotes_note on Note
+@refetchable(queryName: "TestAuthorNotesPaginationQuery")
+@argumentDefinitions(count: {type: "Int", defaultValue: 2}, cursor: {type: "String"}) {
+  id
+  author {
+    id
+    name
+    notes(first: $count, after: $cursor) @connection(key: "TestAuthorNotes_notes") {
+      edges { node { id text } }
+    }
+  }
+}

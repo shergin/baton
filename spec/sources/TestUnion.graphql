@@ -1,0 +1,9 @@
+query TestUnion($name: String!) {
+  search(name: $name) {
+    __typename
+    ... on Character { label: name status }
+    ... on Location { label: dimension type }
+    ... on Episode { air_date }
+    ... on Named { name }
+  }
+}

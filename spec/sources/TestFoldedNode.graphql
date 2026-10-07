@@ -1,0 +1,3 @@
+query TestFoldedNode($name: String!) {
+  search(name: $name) { ... on Node { id } }
+}

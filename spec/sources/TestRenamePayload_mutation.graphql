@@ -1,0 +1,5 @@
+fragment TestRenamePayload_mutation on Mutation {
+  rename(id: $id, name: $name) {
+    character { id name }
+  }
+}

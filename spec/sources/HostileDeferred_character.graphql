@@ -1,0 +1,3 @@
+fragment HostileDeferred_character on Character {
+  name
+}

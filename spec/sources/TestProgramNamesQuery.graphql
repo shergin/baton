@@ -1,0 +1,3 @@
+query TestProgramNamesQuery($id: ID!) {
+  character(id: $id) { ...TestProgramNames_character }
+}

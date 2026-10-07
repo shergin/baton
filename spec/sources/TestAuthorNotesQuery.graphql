@@ -1,0 +1,3 @@
+query TestAuthorNotesQuery($id: ID!) {
+  node(id: $id) { ...TestAuthorNotes_note @alias(as: "note") }
+}

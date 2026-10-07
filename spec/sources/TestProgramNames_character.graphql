@@ -1,0 +1,6 @@
+fragment TestProgramNames_character on Character
+@refetchable(queryName: "TestProgramNamesRefetchQuery") {
+  testProgramNamesRefetchQuery: origin { name }
+  testCaughtProfile_character: location { name }
+  ...TestCaughtProfile_character
+}

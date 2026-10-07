@@ -1,0 +1,15 @@
+query TestTokenizerQuery {
+  tokenizer {
+    id
+    text
+    strings
+    count
+    counts
+    ratio
+    ratios
+    flag
+    flags
+    json
+    jsons
+  }
+}

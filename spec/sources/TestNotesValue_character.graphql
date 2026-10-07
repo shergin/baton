@@ -1,0 +1,5 @@
+fragment TestNotesValue_character on Character
+  @inline
+  @argumentDefinitions(count: { type: "Int", defaultValue: 2 }) {
+  notes(first: $count) { totalCount }
+}

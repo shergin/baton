@@ -1,0 +1,3 @@
+fragment TestLogEdges_connection on NoteConnection {
+  edges @required(action: LOG) { cursor }
+}

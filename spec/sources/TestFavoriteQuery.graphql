@@ -1,0 +1,3 @@
+query TestFavoriteQuery($id: ID!) {
+  character(id: $id) { id ...TestFavorite_character }
+}

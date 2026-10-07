@@ -1,0 +1,3 @@
+query TestTwoFieldPartQuery($id: ID!) {
+  character(id: $id) { id name ...TestOriginAndEpisode_character @defer }
+}

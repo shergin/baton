@@ -1,0 +1,7 @@
+fragment TestDeferredNotes_character on Character
+@refetchable(queryName: "TestDeferredNotesPaginationQuery")
+@argumentDefinitions(count: {type: "Int", defaultValue: 2}, cursor: {type: "String"}) {
+  notes(first: $count, after: $cursor) @connection(key: "TestDeferredNotes_notes") {
+    edges { node { id ...TestNoteText_note @defer(label: "noteText") } }
+  }
+}

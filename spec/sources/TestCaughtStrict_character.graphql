@@ -1,0 +1,3 @@
+fragment TestCaughtStrict_character on Character @throwOnFieldError {
+  species
+}

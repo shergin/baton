@@ -1,0 +1,3 @@
+query TestHeaderQuery($id: ID!) {
+  character(id: $id) { ...TestHeader_character }
+}

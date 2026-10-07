@@ -1,0 +1,1 @@
+fragment TestNamed_named on Named { name }

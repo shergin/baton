@@ -1,0 +1,5 @@
+query TestList($page: Int) {
+  characters(page: $page) {
+    results { ...TestRow_character ...TestHeader_character }
+  }
+}

@@ -1,0 +1,3 @@
+mutation TestModuleNamedPayload($id: ID!) {
+  setFavorite(id: $id, favorite: true) { Baton: character { id Baton: name } }
+}

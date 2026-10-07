@@ -1,0 +1,6 @@
+fragment HostileConnectionNodes_character on Character {
+  notes(first: 2) @connection(key: "HostileConnectionNodes_notes") {
+    nodes: totalCount
+    edges { node { id } }
+  }
+}

@@ -1,0 +1,3 @@
+query TestNamedSpread($id: ID!) {
+  node(id: $id) { id ...TestNamed_named @alias(as: "named") }
+}

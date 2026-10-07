@@ -1,0 +1,3 @@
+fragment TestAppearances_character on Character {
+  episode { name air_date }
+}

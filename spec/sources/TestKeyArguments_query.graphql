@@ -1,0 +1,5 @@
+fragment TestKeyArguments_query on Query
+@argumentDefinitions(ids: {type: "[ID!]!"}, filter: {type: "FilterCharacter"}) {
+  charactersByIds(ids: $ids) { name }
+  characters(filter: $filter) { info { count } }
+}

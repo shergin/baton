@@ -1,0 +1,1 @@
+fragment TestName_character on Character { name }

@@ -1,0 +1,3 @@
+query TestLowercaseSpreads($id: ID!) {
+  character(id: $id) { ...testLowercase ...testLowercaseRequired }
+}

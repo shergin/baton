@@ -1,0 +1,3 @@
+fragment TestCaughtAppearances_character on Character {
+  episode @catch { name }
+}

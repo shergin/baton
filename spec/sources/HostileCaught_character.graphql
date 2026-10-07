@@ -1,0 +1,3 @@
+fragment HostileCaught_character on Character {
+  name
+}

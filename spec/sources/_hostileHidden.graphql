@@ -1,0 +1,3 @@
+fragment _hostileHidden on Character {
+  name
+}

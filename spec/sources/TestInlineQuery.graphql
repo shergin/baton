@@ -1,0 +1,6 @@
+query TestInlineQuery($id: ID!, $withNotes: Boolean!) {
+  character(id: $id) {
+    ...TestCard_character
+    ...TestNotesValue_character @arguments(count: 1) @include(if: $withNotes) @alias(as: "notesValue")
+  }
+}

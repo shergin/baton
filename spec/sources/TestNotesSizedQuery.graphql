@@ -1,0 +1,3 @@
+query TestNotesSizedQuery($id: ID!, $size: Int) {
+  character(id: $id) { ...TestNotes_character @arguments(count: $size) }
+}

@@ -1,0 +1,82 @@
+fragment HostileSelections_character on Character {
+  # Swift's keywords, as `escape` lists them.
+  ... @alias(as: "Type") { name } ... @alias(as: "Protocol") { name }
+  ... @alias(as: "Any") { name } ... @alias(as: "self") { name } ... @alias(as: "Self") { name }
+  ... @alias(as: "init") { name } ... @alias(as: "deinit") { name }
+  ... @alias(as: "subscript") { name } ... @alias(as: "class") { name }
+  ... @alias(as: "struct") { name } ... @alias(as: "enum") { name }
+  ... @alias(as: "func") { name } ... @alias(as: "var") { name } ... @alias(as: "let") { name }
+  ... @alias(as: "import") { name } ... @alias(as: "extension") { name }
+  ... @alias(as: "operator") { name } ... @alias(as: "static") { name }
+  ... @alias(as: "default") { name } ... @alias(as: "case") { name }
+  ... @alias(as: "switch") { name } ... @alias(as: "if") { name }
+  ... @alias(as: "else") { name } ... @alias(as: "for") { name } ... @alias(as: "in") { name }
+  ... @alias(as: "while") { name } ... @alias(as: "repeat") { name }
+  ... @alias(as: "return") { name } ... @alias(as: "break") { name }
+  ... @alias(as: "continue") { name } ... @alias(as: "where") { name }
+  ... @alias(as: "is") { name } ... @alias(as: "as") { name } ... @alias(as: "try") { name }
+  ... @alias(as: "throw") { name } ... @alias(as: "throws") { name }
+  ... @alias(as: "guard") { name } ... @alias(as: "defer") { name }
+  ... @alias(as: "do") { name } ... @alias(as: "catch") { name } ... @alias(as: "true") { name }
+  ... @alias(as: "false") { name } ... @alias(as: "nil") { name }
+  ... @alias(as: "super") { name } ... @alias(as: "internal") { name }
+  ... @alias(as: "private") { name } ... @alias(as: "public") { name }
+  ... @alias(as: "fileprivate") { name } ... @alias(as: "open") { name }
+  ... @alias(as: "inout") { name } ... @alias(as: "typealias") { name }
+  ... @alias(as: "associatedtype") { name } ... @alias(as: "protocol") { name }
+  ... @alias(as: "some") { name } ... @alias(as: "any") { name }
+  ... @alias(as: "rethrows") { name } ... @alias(as: "fallthrough") { name }
+  ... @alias(as: "precedencegroup") { name } ... @alias(as: "_") { name }
+  # Swift's contextual keywords that start an expression or a type.
+  ... @alias(as: "async") { name } ... @alias(as: "await") { name }
+  ... @alias(as: "borrowing") { name } ... @alias(as: "consume") { name }
+  ... @alias(as: "consuming") { name } ... @alias(as: "copy") { name }
+  ... @alias(as: "discard") { name } ... @alias(as: "each") { name }
+  ... @alias(as: "isolated") { name } ... @alias(as: "sending") { name }
+  ... @alias(as: "then") { name } ... @alias(as: "unsafe") { name }
+  # What every lens declares, and what a refetchable fragment and a connection add.
+  ... @alias(as: "satisfied") { name }
+  ... @alias(as: "missingRequiredField") { name } ... @alias(as: "fieldErrors") { name }
+  ... @alias(as: "isPresent") { name } ... @alias(as: "throwing") { name }
+  ... @alias(as: "caught") { name } ... @alias(as: "refetchable") { name }
+  ... @alias(as: "refetch") { name } ... @alias(as: "connection") { name }
+  ... @alias(as: "nodes") { name } ... @alias(as: "hasNext") { name }
+  ... @alias(as: "hasPrevious") { name } ... @alias(as: "isLoadingNext") { name }
+  ... @alias(as: "isLoadingPrevious") { name } ... @alias(as: "connectionID") { name }
+  ... @alias(as: "loadNext") { name } ... @alias(as: "loadPrevious") { name }
+  # The locals, parameters and local aliases of generated bodies.
+  ... @alias(as: "bound") { name } ... @alias(as: "errors") { name }
+  ... @alias(as: "child") { name } ... @alias(as: "missing") { name }
+  ... @alias(as: "count") { name } ... @alias(as: "fields") { name }
+  ... @alias(as: "lhs") { name } ... @alias(as: "rhs") { name }
+  ... @alias(as: "hasher") { name } ... @alias(as: "selection0") { name } ... @alias(as: "selection") { name } ... @alias(as: "optimistic") { name }
+  ... @alias(as: "selfValue") { name } ... @alias(as: "Fragment") { name }
+  ... @alias(as: "Spread") { name } ... @alias(as: "Owner") { name }
+  ... @alias(as: "Query") { name } ... @alias(as: "Operation") { name }
+  ... @alias(as: "RefetchQuery") { name }
+  # What an operation value, a mutation's action and its optimistic response declare.
+  ... @alias(as: "variables") { name } ... @alias(as: "resolution") { name }
+  ... @alias(as: "name") { name } ... @alias(as: "document") { name }
+  ... @alias(as: "text") { name } ... @alias(as: "plan") { name }
+  ... @alias(as: "errorBehavior") { name } ... @alias(as: "throwsOnFieldError") { name }
+  ... @alias(as: "bubbles") { name } ... @alias(as: "hasDeferred") { name } ... @alias(as: "cacheExpiration") { name }
+  ... @alias(as: "Data") { name } ... @alias(as: "Action") { name }
+  ... @alias(as: "OptimisticResponse") { name } ... @alias(as: "hash") { name }
+  ... @alias(as: "commit") { name } ... @alias(as: "callAsFunction") { name }
+  ... @alias(as: "Op") { name } ... @alias(as: "variable") { name } ... @alias(as: "payload") { name }
+  # What the runtime's protocols give a generated type.
+  ... @alias(as: "hashValue") { name } ... @alias(as: "phase") { name }
+  ... @alias(as: "isRefreshing") { name } ... @alias(as: "isStale") { name }
+  ... @alias(as: "retry") { name } ... @alias(as: "subscription") { name }
+  # The shared enums.
+  ... @alias(as: "Types") { name } ... @alias(as: "Sites") { name } ... @alias(as: "Guards") { name }
+  ... @alias(as: "AbstractSlots") { name } ... @alias(as: "schemaDigest") { name }
+  ... @alias(as: "format") { name } ... @alias(as: "transient") { name }
+  # The modules, and what the generated code spells from the standard library.
+  ... @alias(as: "Baton") { name } ... @alias(as: "Swift") { name }
+  ... @alias(as: "Set") { name } ... @alias(as: "Result") { name }
+  ... @alias(as: "Optional") { name } ... @alias(as: "String") { name }
+  ... @alias(as: "Int") { name } ... @alias(as: "Double") { name }
+  ... @alias(as: "Bool") { name } ... @alias(as: "MainActor") { name }
+  ... @alias(as: "Hasher") { name } ... @alias(as: "Sendable") { name }
+}

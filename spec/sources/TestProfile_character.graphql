@@ -1,0 +1,8 @@
+fragment TestProfile_character on Character {
+  name
+  origin @required(action: NONE) { name }
+  status @required(action: LOG)
+  image @catch
+  location @catch { name dimension }
+  gender @catch(to: NULL)
+}

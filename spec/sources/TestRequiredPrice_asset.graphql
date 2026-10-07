@@ -1,0 +1,1 @@
+fragment TestRequiredPrice_asset on Asset { price @required(action: NONE) }

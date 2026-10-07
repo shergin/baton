@@ -1,0 +1,3 @@
+fragment Fragment on Character {
+  status
+}

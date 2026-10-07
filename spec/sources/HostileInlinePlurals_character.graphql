@@ -1,0 +1,53 @@
+fragment HostileInlinePlurals_character on Character @inline @throwOnFieldError {
+  # Swift's keywords, as `escape` lists them.
+  Type: episode { id } Protocol: episode { id } Any: episode { id } self: episode { id }
+  Self: episode { id } init: episode { id } deinit: episode { id } subscript: episode { id }
+  class: episode { id } struct: episode { id } enum: episode { id } func: episode { id }
+  var: episode { id } let: episode { id } import: episode { id } extension: episode { id }
+  operator: episode { id } static: episode { id } default: episode { id } case: episode { id }
+  switch: episode { id } if: episode { id } else: episode { id } for: episode { id }
+  in: episode { id } while: episode { id } repeat: episode { id } return: episode { id }
+  break: episode { id } continue: episode { id } where: episode { id } is: episode { id }
+  as: episode { id } try: episode { id } throw: episode { id } throws: episode { id }
+  guard: episode { id } defer: episode { id } do: episode { id } catch: episode { id }
+  true: episode { id } false: episode { id } nil: episode { id } super: episode { id }
+  internal: episode { id } private: episode { id } public: episode { id }
+  fileprivate: episode { id } open: episode { id } inout: episode { id } typealias: episode { id }
+  associatedtype: episode { id } protocol: episode { id } some: episode { id } any: episode { id }
+  rethrows: episode { id } fallthrough: episode { id } precedencegroup: episode { id }
+  _: episode { id }
+  # Swift's contextual keywords that start an expression or a type.
+  async: episode { id } await: episode { id } borrowing: episode { id } consume: episode { id }
+  consuming: episode { id } copy: episode { id } discard: episode { id } each: episode { id }
+  isolated: episode { id } sending: episode { id } then: episode { id } unsafe: episode { id }
+  # What every lens declares, and what a refetchable fragment and a connection add.
+  satisfied: episode { id } missingRequiredField: episode { id }
+  fieldErrors: episode { id } isPresent: episode { id } throwing: episode { id }
+  caught: episode { id } refetchable: episode { id } refetch: episode { id }
+  connection: episode { id } nodes: episode { id } hasNext: episode { id }
+  hasPrevious: episode { id } isLoadingNext: episode { id } isLoadingPrevious: episode { id }
+  connectionID: episode { id } loadNext: episode { id } loadPrevious: episode { id }
+  # The locals, parameters and local aliases of generated bodies.
+  bound: episode { id } errors: episode { id } child: episode { id } missing: episode { id }
+  count: episode { id } fields: episode { id } lhs: episode { id } rhs: episode { id }
+  hasher: episode { id } selection0: episode { id } selection: episode { id } optimistic: episode { id } selfValue: episode { id }
+  Fragment: episode { id } Spread: episode { id } Owner: episode { id } Query: episode { id }
+  Operation: episode { id } RefetchQuery: episode { id }
+  # What an operation value, a mutation's action and its optimistic response declare.
+  variables: episode { id } resolution: episode { id } name: episode { id }
+  document: episode { id } text: episode { id } plan: episode { id }
+  errorBehavior: episode { id } throwsOnFieldError: episode { id } bubbles: episode { id }
+  hasDeferred: episode { id } cacheExpiration: episode { id } Data: episode { id } Action: episode { id }
+  OptimisticResponse: episode { id } hash: episode { id } commit: episode { id }
+  callAsFunction: episode { id } Op: episode { id } variable: episode { id } payload: episode { id }
+  # What the runtime's protocols give a generated type.
+  hashValue: episode { id } phase: episode { id } isRefreshing: episode { id }
+  isStale: episode { id } retry: episode { id } subscription: episode { id }
+  # The shared enums.
+  Types: episode { id } Sites: episode { id } Guards: episode { id } AbstractSlots: episode { id }
+  schemaDigest: episode { id } format: episode { id } transient: episode { id }
+  # The modules, and what the generated code spells from the standard library.
+  Baton: episode { id } Swift: episode { id } Set: episode { id } Result: episode { id }
+  Optional: episode { id } String: episode { id } Int: episode { id } Double: episode { id }
+  Bool: episode { id } MainActor: episode { id } Hasher: episode { id } Sendable: episode { id }
+}

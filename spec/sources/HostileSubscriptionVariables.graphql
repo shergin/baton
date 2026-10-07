@@ -1,0 +1,134 @@
+subscription HostileSubscriptionVariables(
+  # Swift's keywords, as `escape` lists them.
+  $Type: Boolean!, $Protocol: Boolean!, $Any: Boolean!, $self: Boolean!, $init: Boolean!,
+  $deinit: Boolean!, $subscript: Boolean!, $class: Boolean!, $struct: Boolean!, $enum: Boolean!,
+  $func: Boolean!, $var: Boolean!, $let: Boolean!, $import: Boolean!, $extension: Boolean!,
+  $operator: Boolean!, $static: Boolean!, $default: Boolean!, $case: Boolean!,
+  $switch: Boolean!, $if: Boolean!, $else: Boolean!, $for: Boolean!, $in: Boolean!,
+  $while: Boolean!, $repeat: Boolean!, $return: Boolean!, $break: Boolean!, $continue: Boolean!,
+  $where: Boolean!, $is: Boolean!, $as: Boolean!, $try: Boolean!, $throw: Boolean!,
+  $throws: Boolean!, $guard: Boolean!, $defer: Boolean!, $do: Boolean!, $catch: Boolean!,
+  $true: Boolean!, $false: Boolean!, $nil: Boolean!, $super: Boolean!, $internal: Boolean!,
+  $private: Boolean!, $public: Boolean!, $fileprivate: Boolean!, $open: Boolean!,
+  $inout: Boolean!, $typealias: Boolean!, $associatedtype: Boolean!, $protocol: Boolean!,
+  $some: Boolean!, $any: Boolean!,
+  $rethrows: Boolean!, $fallthrough: Boolean!, $precedencegroup: Boolean!, $_: Boolean!,
+  $Self: Boolean!,
+  # Swift's contextual keywords that start an expression or a type.
+  $async: Boolean!, $borrowing: Boolean!, $consume: Boolean!, $consuming: Boolean!,
+  $copy: Boolean!, $discard: Boolean!, $each: Boolean!, $isolated: Boolean!, $sending: Boolean!,
+  $then: Boolean!, $unsafe: Boolean!, $await: Boolean!,
+  # What every lens declares, and what a refetchable fragment and a connection add.
+  $anchor: Boolean!, $recordID: Boolean!, $satisfied: Boolean!,
+  $missingRequiredField: Boolean!, $fieldErrors: Boolean!, $isPresent: Boolean!,
+  $throwing: Boolean!, $caught: Boolean!, $refetchable: Boolean!, $refetch: Boolean!,
+  $connection: Boolean!, $nodes: Boolean!, $hasNext: Boolean!, $hasPrevious: Boolean!,
+  $isLoadingNext: Boolean!, $isLoadingPrevious: Boolean!, $connectionID: Boolean!,
+  $loadNext: Boolean!, $loadPrevious: Boolean!,
+  # The locals, parameters and local aliases of generated bodies.
+  $bound: Boolean!, $errors: Boolean!, $child: Boolean!, $missing: Boolean!, $count: Boolean!,
+  $fields: Boolean!, $lhs: Boolean!, $rhs: Boolean!, $hasher: Boolean!, $selection0: Boolean!, $selection: Boolean!, $optimistic: Boolean!,
+  $selfValue: Boolean!, $Fragment: Boolean!, $Spread: Boolean!, $Owner: Boolean!,
+  $Query: Boolean!, $Operation: Boolean!, $RefetchQuery: Boolean!,
+  # What an operation value, a mutation's action and its optimistic response declare.
+  $name: Boolean!, $document: Boolean!, $text: Boolean!, $plan: Boolean!,
+  $errorBehavior: Boolean!, $throwsOnFieldError: Boolean!, $bubbles: Boolean!,
+  $hasDeferred: Boolean!, $cacheExpiration: Boolean!, $Action: Boolean!, $OptimisticResponse: Boolean!, $hash: Boolean!,
+  $commit: Boolean!, $callAsFunction: Boolean!, $Op: Boolean!, $variable: Boolean!, $payload: Boolean!,
+  # What the runtime's protocols give a generated type.
+  $phase: Boolean!, $isRefreshing: Boolean!, $isStale: Boolean!, $retry: Boolean!,
+  # The shared enums.
+  $Sites: Boolean!, $AbstractSlots: Boolean!, $schemaDigest: Boolean!, $format: Boolean!, $transient: Boolean!,
+  # The modules, and what the generated code spells from the standard library.
+  $Swift: Boolean!, $Set: Boolean!, $Result: Boolean!, $Optional: Boolean!, $String: Boolean!,
+  $Int: Boolean!, $Double: Boolean!, $Bool: Boolean!, $MainActor: Boolean!, $Hasher: Boolean!,
+  $Sendable: Boolean!
+) {
+  noteAdded(characterId: "1") @catch {
+    noteEdge {
+      node { id }
+      # Swift's keywords, as `escape` lists them.
+      ... @include(if: $Type) { cursor } ... @include(if: $Protocol) { cursor }
+      ... @include(if: $Any) { cursor } ... @include(if: $self) { cursor }
+      ... @include(if: $init) { cursor } ... @include(if: $deinit) { cursor }
+      ... @include(if: $subscript) { cursor } ... @include(if: $class) { cursor }
+      ... @include(if: $struct) { cursor } ... @include(if: $enum) { cursor }
+      ... @include(if: $func) { cursor } ... @include(if: $var) { cursor }
+      ... @include(if: $let) { cursor } ... @include(if: $import) { cursor }
+      ... @include(if: $extension) { cursor } ... @include(if: $operator) { cursor }
+      ... @include(if: $static) { cursor } ... @include(if: $default) { cursor }
+      ... @include(if: $case) { cursor } ... @include(if: $switch) { cursor }
+      ... @include(if: $if) { cursor } ... @include(if: $else) { cursor }
+      ... @include(if: $for) { cursor } ... @include(if: $in) { cursor }
+      ... @include(if: $while) { cursor } ... @include(if: $repeat) { cursor }
+      ... @include(if: $return) { cursor } ... @include(if: $break) { cursor }
+      ... @include(if: $continue) { cursor } ... @include(if: $where) { cursor }
+      ... @include(if: $is) { cursor } ... @include(if: $as) { cursor }
+      ... @include(if: $try) { cursor } ... @include(if: $throw) { cursor }
+      ... @include(if: $throws) { cursor } ... @include(if: $guard) { cursor }
+      ... @include(if: $defer) { cursor } ... @include(if: $do) { cursor }
+      ... @include(if: $catch) { cursor } ... @include(if: $true) { cursor }
+      ... @include(if: $false) { cursor } ... @include(if: $nil) { cursor }
+      ... @include(if: $super) { cursor } ... @include(if: $internal) { cursor }
+      ... @include(if: $private) { cursor } ... @include(if: $public) { cursor }
+      ... @include(if: $fileprivate) { cursor } ... @include(if: $open) { cursor }
+      ... @include(if: $inout) { cursor } ... @include(if: $typealias) { cursor }
+      ... @include(if: $associatedtype) { cursor } ... @include(if: $protocol) { cursor }
+      ... @include(if: $some) { cursor } ... @include(if: $any) { cursor }
+      ... @include(if: $rethrows) { cursor } ... @include(if: $fallthrough) { cursor }
+      ... @include(if: $precedencegroup) { cursor } ... @include(if: $_) { cursor }
+      ... @include(if: $Self) { cursor }
+      # Swift's contextual keywords that start an expression or a type.
+      ... @include(if: $async) { cursor } ... @include(if: $borrowing) { cursor }
+      ... @include(if: $consume) { cursor } ... @include(if: $consuming) { cursor }
+      ... @include(if: $copy) { cursor } ... @include(if: $discard) { cursor }
+      ... @include(if: $each) { cursor } ... @include(if: $isolated) { cursor }
+      ... @include(if: $sending) { cursor } ... @include(if: $then) { cursor }
+      ... @include(if: $unsafe) { cursor } ... @include(if: $await) { cursor }
+      # What every lens declares, and what a refetchable fragment and a connection add.
+      ... @include(if: $anchor) { cursor } ... @include(if: $recordID) { cursor }
+      ... @include(if: $satisfied) { cursor }
+      ... @include(if: $missingRequiredField) { cursor }
+      ... @include(if: $fieldErrors) { cursor } ... @include(if: $isPresent) { cursor }
+      ... @include(if: $throwing) { cursor } ... @include(if: $caught) { cursor }
+      ... @include(if: $refetchable) { cursor } ... @include(if: $refetch) { cursor }
+      ... @include(if: $connection) { cursor } ... @include(if: $nodes) { cursor }
+      ... @include(if: $hasNext) { cursor } ... @include(if: $hasPrevious) { cursor }
+      ... @include(if: $isLoadingNext) { cursor }
+      ... @include(if: $isLoadingPrevious) { cursor } ... @include(if: $connectionID) { cursor }
+      ... @include(if: $loadNext) { cursor } ... @include(if: $loadPrevious) { cursor }
+      # The locals, parameters and local aliases of generated bodies.
+      ... @include(if: $bound) { cursor } ... @include(if: $errors) { cursor }
+      ... @include(if: $child) { cursor } ... @include(if: $missing) { cursor }
+      ... @include(if: $count) { cursor } ... @include(if: $fields) { cursor }
+      ... @include(if: $lhs) { cursor } ... @include(if: $rhs) { cursor }
+      ... @include(if: $hasher) { cursor } ... @include(if: $selection0) { cursor } ... @include(if: $selection) { cursor } ... @include(if: $optimistic) { cursor }
+      ... @include(if: $selfValue) { cursor } ... @include(if: $Fragment) { cursor }
+      ... @include(if: $Spread) { cursor } ... @include(if: $Owner) { cursor }
+      ... @include(if: $Query) { cursor } ... @include(if: $Operation) { cursor }
+      ... @include(if: $RefetchQuery) { cursor }
+      # What an operation value, a mutation's action and its optimistic response declare.
+      ... @include(if: $name) { cursor } ... @include(if: $document) { cursor }
+      ... @include(if: $text) { cursor } ... @include(if: $plan) { cursor }
+      ... @include(if: $errorBehavior) { cursor }
+      ... @include(if: $throwsOnFieldError) { cursor } ... @include(if: $bubbles) { cursor }
+      ... @include(if: $hasDeferred) { cursor } ... @include(if: $cacheExpiration) { cursor } ... @include(if: $Action) { cursor }
+      ... @include(if: $OptimisticResponse) { cursor } ... @include(if: $hash) { cursor }
+      ... @include(if: $commit) { cursor } ... @include(if: $callAsFunction) { cursor }
+      ... @include(if: $Op) { cursor } ... @include(if: $variable) { cursor } ... @include(if: $payload) { cursor }
+      # What the runtime's protocols give a generated type.
+      ... @include(if: $phase) { cursor } ... @include(if: $isRefreshing) { cursor }
+      ... @include(if: $isStale) { cursor } ... @include(if: $retry) { cursor }
+      # The shared enums.
+      ... @include(if: $Sites) { cursor } ... @include(if: $AbstractSlots) { cursor }
+      ... @include(if: $schemaDigest) { cursor } ... @include(if: $format) { cursor } ... @include(if: $transient) { cursor }
+      # The modules, and what the generated code spells from the standard library.
+      ... @include(if: $Swift) { cursor } ... @include(if: $Set) { cursor }
+      ... @include(if: $Result) { cursor } ... @include(if: $Optional) { cursor }
+      ... @include(if: $String) { cursor } ... @include(if: $Int) { cursor }
+      ... @include(if: $Double) { cursor } ... @include(if: $Bool) { cursor }
+      ... @include(if: $MainActor) { cursor } ... @include(if: $Hasher) { cursor }
+      ... @include(if: $Sendable) { cursor }
+    }
+  }
+}

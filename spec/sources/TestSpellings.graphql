@@ -1,0 +1,10 @@
+query TestSpellings {
+  spellings {
+    ... on Spelled { label }
+    ... on Baton { id }
+    ... on Type { id }
+    ... on Protocol { id }
+    ... on Set { id }
+    ... on Any { id }
+  }
+}

@@ -1,0 +1,4 @@
+query TestKeywordVariables($where: ID!, $in: String!) {
+  character(id: $where) { id }
+  search(name: $in) { __typename }
+}

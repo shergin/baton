@@ -1,0 +1,8 @@
+query TestPricedAssetsQuery($price: Decimal!, $among: [Decimal!]) {
+  assetsPricedAbove(price: $price, among: $among) {
+    uuid
+    ...TestCaughtPrices_asset
+    ...TestThrowingPrices_asset
+    ...TestRequiredPrice_asset
+  }
+}

@@ -1,0 +1,4 @@
+query TestTwoScopes($a: ID!, $b: ID!) {
+  first: character(id: $a) { id name ...TestNotes_character @arguments(count: 1) }
+  second: character(id: $b) { id name ...TestNotes_character @arguments(count: 3) }
+}

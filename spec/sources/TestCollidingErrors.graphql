@@ -1,0 +1,4 @@
+query TestCollidingErrors($id: ID!) @throwOnFieldError {
+  types: character(id: $id) { id }
+  typesLens: character(id: $id) { id name }
+}

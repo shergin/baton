@@ -1,0 +1,4 @@
+fragment TestResultValue_searchResult on SearchResult @inline {
+  ... on Character { name status }
+  ... on Location { name dimension }
+}

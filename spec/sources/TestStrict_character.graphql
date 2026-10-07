@@ -1,0 +1,4 @@
+fragment TestStrict_character on Character @throwOnFieldError {
+  species
+  type @required(action: THROW)
+}

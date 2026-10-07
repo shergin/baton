@@ -1,0 +1,3 @@
+query TestCharactersWithStatus($status: Status!, $any: [Status!]) {
+  charactersWithStatus(status: $status, any: $any) { name }
+}

@@ -1,0 +1,3 @@
+query TestResultValuesQuery($name: String!) {
+  search(name: $name) { ...TestResultValue_searchResult }
+}

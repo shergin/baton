@@ -1,0 +1,8 @@
+query TestStandaloneFragmentsQuery($id: ID!) {
+  character(id: $id) {
+    id
+    ...TestThrowingOrigin_character
+    ...TestLoggedNotes_character
+    notes(first: 1) { ...TestLogEdges_connection }
+  }
+}

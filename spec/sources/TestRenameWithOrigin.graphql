@@ -1,0 +1,5 @@
+mutation TestRenameWithOrigin($id: ID!, $name: String!, $withOrigin: Boolean!) {
+  rename(id: $id, name: $name) {
+    character { id name origin @include(if: $withOrigin) { id name } }
+  }
+}
