@@ -87,9 +87,9 @@ struct RecordInspector: View {
     }
 
     private var slots: [(key: String, value: String, error: String?)] {
-        record.storedSlots
-            .map { slot, value, error in
-                (key: store.storageKey(of: slot), value: StoreExport.json(value), error: error.map { "\($0.message) at \($0.path)" })
+        store.storedFields(of: record)
+            .map { key, value, error in
+                (key: key, value: StoreExport.json(value), error: error.map { "\($0.message) at \($0.path)" })
             }
             .sorted { $0.key < $1.key }
     }

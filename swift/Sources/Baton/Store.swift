@@ -181,6 +181,18 @@ public final class Store {
     package var count: Int { records.count }
 
     package func existing(_ key: String) -> Record? { records[key] }
+    /// Every field a record holds, by storage key, with its error; a key the
+    /// store holds at two slots, a rendering and the constant adopted for
+    /// it, is one field. For the store dumps under `spec/` and the
+    /// inspector.
+    package func storedFields(of record: Record) -> [(key: String, value: Value, error: FieldError?)] {
+        record.storedSlots.compactMap { slot, value, error in
+            // The rendered half of a twin pair yields to the constant's.
+            if slot.index < 0, !twins.isEmpty, twins[slot] != nil { return nil }
+            return (keys.text(of: slot), value, error)
+        }
+    }
+
 
     /// Every record the store holds, by key; for the store dumps under `spec/`.
     package var recordsByKey: [String: Record] { records }
@@ -264,6 +276,10 @@ public final class Store {
         private var flags: [ObjectIdentifier: (record: Record, was: Bool)] = [:]
 
         private struct Original {
+            /// Whether the slot counts among the changed: a twin's write is
+            /// the same key written again, notified on its own channel and
+            /// counted with its twin.
+            let counted: Bool
             let record: Record
             let slot: Slot
             let value: Value
@@ -274,15 +290,17 @@ public final class Store {
             self.direct = direct
         }
 
-        /// Notes a slot about to change, with what it held before.
-        mutating func touched(_ record: Record, _ slot: Slot, value: Value, error: FieldError?) {
+        /// Notes a slot about to change, with what it held before. A twin's
+        /// write is notified, so the readers through the other slot hear of
+        /// it, and not counted, since it is one key.
+        mutating func touched(_ record: Record, _ slot: Slot, value: Value, error: FieldError?, twin: Bool = false) {
             if direct {
                 record.notify(slot)
-                directCount += 1
+                if !twin { directCount += 1 }
                 return
             }
             let key = SlotKey(record: ObjectIdentifier(record), slot: slot)
-            if originals[key] == nil { originals[key] = Original(record: record, slot: slot, value: value, error: error) }
+            if originals[key] == nil { originals[key] = Original(record: record, slot: slot, value: value, error: error, counted: !twin) }
         }
 
         /// Notes a record whose deleted flag is about to change, with the flag
@@ -304,7 +322,7 @@ public final class Store {
             for original in originals.values
             where original.record.peek(original.slot) != original.value || original.record.peekError(original.slot) != original.error {
                 original.record.notify(original.slot)
-                changed += 1
+                if original.counted { changed += 1 }
             }
             return changed
         }
@@ -339,8 +357,8 @@ public final class Store {
             keepsUndo = kind != .local
         }
 
-        mutating func touched(_ record: Record, _ slot: Slot, value: Value, error: FieldError?) {
-            transaction.touched(record, slot, value: value, error: error)
+        mutating func touched(_ record: Record, _ slot: Slot, value: Value, error: FieldError?, twin: Bool = false) {
+            transaction.touched(record, slot, value: value, error: error, twin: twin)
         }
 
         mutating func flagged(_ record: Record, was: Bool) {
@@ -573,13 +591,13 @@ public final class Store {
     /// silently, recorded for the net notification and for the undo log.
     func set(_ record: Record, _ slot: Slot, _ value: Value, _ batch: inout Batch) {
         write(record, slot, value, &batch)
-        if !twins.isEmpty, let twin = twins[slot] { write(record, twin, value, &batch) }
+        if !twins.isEmpty, let twin = twins[slot] { write(record, twin, value, &batch, twin: true) }
     }
 
-    private func write(_ record: Record, _ slot: Slot, _ value: Value, _ batch: inout Batch) {
+    private func write(_ record: Record, _ slot: Slot, _ value: Value, _ batch: inout Batch, twin: Bool = false) {
         let error = record.peekError(slot)
         if let previous = record.writeSilently(slot, value) {
-            batch.touched(record, slot, value: previous, error: error)
+            batch.touched(record, slot, value: previous, error: error, twin: twin)
             batch.record(.slot(record, slot, previous))
             // A local write binds or repairs a link; it brings no new null
             // or error into a selection.
@@ -600,13 +618,13 @@ public final class Store {
     /// log.
     private func setError(_ record: Record, _ slot: Slot, _ error: FieldError?, _ batch: inout Batch) {
         setOwnError(record, slot, error, &batch)
-        if !twins.isEmpty, let twin = twins[slot] { setOwnError(record, twin, error, &batch) }
+        if !twins.isEmpty, let twin = twins[slot] { setOwnError(record, twin, error, &batch, twin: true) }
     }
 
-    private func setOwnError(_ record: Record, _ slot: Slot, _ error: FieldError?, _ batch: inout Batch) {
+    private func setOwnError(_ record: Record, _ slot: Slot, _ error: FieldError?, _ batch: inout Batch, twin: Bool = false) {
         let previous = record.peekError(slot)
         guard record.setError(slot, error) else { return }
-        batch.touched(record, slot, value: record.peek(slot), error: previous)
+        batch.touched(record, slot, value: record.peek(slot), error: previous, twin: twin)
         batch.record(.error(record, slot, previous))
         nullsOrErrorsChanged = true
     }
@@ -791,8 +809,13 @@ public final class Store {
                     }
                     value = .list(list)
                 }
-                if created[index], twins.isEmpty {
-                    // Nobody can have read a record this batch created.
+                if created[index] {
+                    // Nobody can have read a record this batch created: its
+                    // slots, and their twins, are written without a
+                    // notification and count among nothing changed.
+                    if !twins.isEmpty, let twin = twins[entry.slot], let previous = record.writeSilently(twin, value) {
+                        batch.record(.slot(record, twin, previous))
+                    }
                     if let previous = record.writeSilently(entry.slot, value) {
                         batch.record(.slot(record, entry.slot, previous))
                         noteNulls(previous, value)

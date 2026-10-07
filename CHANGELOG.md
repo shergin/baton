@@ -5,6 +5,14 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- A key the store holds at two slots, a rendering and the constant the
+  build named for it afterwards, is one field in every report: a commit's
+  `changed` count counts the pair once, and the store's dump and the
+  inspector list the key once, and a record a batch creates counts among
+  nothing changed whether or not the store holds twins. Before, a late
+  constant doubled the count, made created records count, and showed the
+  key twice in the dump, so a count or a dump compared across test runs
+  differed by what else the process had touched.
 - The compiler's `decide` stage spells nothing itself: it asks a naming the
   target supplies for every identifier, suffix, family and member name it
   needs, and the driver decides first and prints through the Swift target

@@ -19,10 +19,10 @@ public enum StoreExport {
     @MainActor private static func object(_ record: Record, in store: Store) -> String {
         var fields: [(String, String)] = [("__typename", quote(record.type.name))]
         var errors: [(String, String)] = []
-        for (slot, value, error) in record.storedSlots {
-            fields.append((store.storageKey(of: slot), json(value)))
+        for (key, value, error) in store.storedFields(of: record) {
+            fields.append((key, json(value)))
             if let error {
-                errors.append((store.storageKey(of: slot), "{\"message\": " + quote(error.message) + ", \"path\": " + quote(error.path) + "}"))
+                errors.append((key, "{\"message\": " + quote(error.message) + ", \"path\": " + quote(error.path) + "}"))
             }
         }
         if !errors.isEmpty {

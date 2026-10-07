@@ -1,4 +1,5 @@
 @_spi(Generated) import Baton
+import BatonInspector
 import BatonSpec
 import BatonTesting
 import Foundation
@@ -484,6 +485,91 @@ struct SpineTests {
         #expect(after.index >= 0)
         #expect(after == constant)
         #expect(totalCount(try #require(store.existing("Character:1")), after) == 3)
+    }
+
+    /// A row type and a root field of their own, so that no other test
+    /// numbers keys on them, and a plan that links the row and reads its
+    /// `labels(first: $count)` under a key rendered from the variable.
+    struct Labeled {
+        let row = Registry.type("Twinned_" + UUID().uuidString.replacingOccurrences(of: "-", with: ""))
+        let link: Slot
+        let labels: DynamicKey
+        let plan: Plan
+        let three = Variables(["count": .int(3)])
+
+        init() {
+            let query = Registry.type("Query")
+            link = Registry.slot(query, "twinned" + row.name)
+            labels = DynamicKey(row, "labels", [KeyArgument("first", [.variable("count")])])
+            plan = Plan(root: Selection(type: query, key: [], fields: [
+                .linked("labeled", key: .fixed(link), plural: false, selection: Selection(type: row, key: ["id"], fields: [
+                    .scalar("id", key: .fixed(Registry.slot(row, "id")), kind: .string, list: false),
+                    .scalar("labels", key: .dynamic(labels), kind: .string, list: false),
+                ])),
+            ]))
+        }
+
+        func response(id: String, labels: String) -> Data {
+            Data(#"{"data":{"labeled":{"id":"\#(id)","labels":"\#(labels)"}}}"#.utf8)
+        }
+
+        /// Commits a response through the rendering plan and returns the
+        /// `changed` count of the commit the store logged.
+        @MainActor
+        func commit(id: String, labels: String, into store: Store) throws -> Int? {
+            let heard = HeardEvents()
+            store.log = heard.log
+            defer { store.log = nil }
+            store.commit(try Ingest.normalize(response(id: id, labels: labels), plan: plan.resolve(three, in: store.keys)))
+            return heard.all.compactMap { event -> Int? in
+                guard case .committed(_, let changed) = event else { return nil }
+                return changed
+            }.first
+        }
+    }
+
+    /// Makes twins in a fresh store: a commit renders `labels(first:3)` on a
+    /// row, then the build names the text as a constant, and the next commit
+    /// adopts it. Returns the store, the row's record and the slots.
+    func twinnedStore(_ labeled: Labeled) throws -> (store: Store, record: Record, rendered: Slot, constant: Slot) {
+        let store = Store()
+        store.log = nil
+        #expect(try labeled.commit(id: "1", labels: "first", into: store) == 1, "the root's link and nothing of the row it created")
+        let record = try #require(store.existing(labeled.row.name + ":1"))
+        let rendered = try #require(record.storedSlots.map(\.slot).first { store.storageKey(of: $0) == "labels(first:3)" })
+        #expect(rendered.index < 0, "the store numbered the text")
+        let constant = Registry.slot(labeled.row, "labels(first:3)")
+        #expect(constant.index >= 0, "the build names the text only now")
+        return (store, record, rendered, constant)
+    }
+
+    @Test("a commit that changes a key the store holds at two slots, a rendering and the constant named for it later, counts one changed field, and the dump lists the key once")
+    func twinsCountOnceInACommitAndTheDump() throws {
+        let labeled = Labeled()
+        let (store, record, rendered, constant) = try twinnedStore(labeled)
+        // This commit adopts the constant, then writes through it.
+        #expect(try labeled.commit(id: "1", labels: "second", into: store) == 1, "one key changed, held at two slots")
+        #expect(record.read(constant) == .string("second"))
+        #expect(record.read(rendered) == .string("second"), "the twin holds the write too")
+        #expect(record.storedSlots.count == 3, "the id and the two slots of one key")
+
+        let fields = store.storedFields(of: record).map(\.key)
+        #expect(fields.filter { $0 == "labels(first:3)" }.count == 1)
+        let line = try #require(StoreExport.text(of: store).split(separator: "\n").first { $0.contains("\"" + labeled.row.name + ":1\"") })
+        #expect(line.components(separatedBy: "\"labels(first:3)\"").count == 2, "the dump lists the key once: \(line)")
+    }
+
+    @Test("a response that creates records while the store holds twins counts none of the created records' fields among the changed, only the fields that changed in records that existed")
+    func createdRecordsCountNothingBesideTwins() throws {
+        let labeled = Labeled()
+        let (store, _, _, _) = try twinnedStore(labeled)
+        // The commit that adopts the constant changes nothing.
+        #expect(try labeled.commit(id: "1", labels: "first", into: store) == 0)
+        // A second row, created by this commit, writes its id and its labels
+        // at both twins; the root's link to it is the one changed field.
+        #expect(try labeled.commit(id: "2", labels: "created", into: store) == 1)
+        let created = try #require(store.existing(labeled.row.name + ":2"))
+        #expect(created.read(Registry.slot(labeled.row, "labels(first:3)")) == .string("created"))
     }
 
     @Test("two stores number the same rendered key apart, each in its own table, and the process numbers nothing for it")
