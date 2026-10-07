@@ -21,6 +21,33 @@ Best ingest and best commit of the fixture at each release below.
   <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
 
+## Unreleased, the writer merges a record memory has not read — 2026-10-06
+
+Revision: the working tree of the merge change on top of `89364b0`, one
+`--quick` run each, the column before from `89364b0` built the same way.
+Machine: Apple M1 Pro (MacBook Pro), macOS 26.5.2, release build. Not a
+quiet machine; read each row against its neighbour from the same pair of
+runs.
+
+The writer merges the snapshot of a record memory has not read from the
+image into the record's row, rather than replace the row with it
+(`docs/decisions/the-image-is-sqlite.md`). The cost is one keyed read of
+the old row per such record that has one, off the main actor; a record
+without a row, as on a first launch, pays nothing. The write-behind rows
+below rewrite 898 records the image already holds, from stores that never
+read them, so every row is merged.
+
+| Measurement | Before | Now |
+|---|---|---|
+| Commit into an empty store, image on (899 records), on the main actor | 696 µs | 689 µs |
+| Write-behind of that commit, off the main actor, 898 rows merged | 1.11 ms | 1.62 ms |
+| Write-behind of one changed record, merged | 49.0 µs | 52.0 µs |
+| A launch's first write-behind of the fixture: aging, the names sweep and 898 rows merged | 1.29 ms | 1.88 ms |
+| Hydration: the check reads 898 rows into an empty store | 2.51 ms | 2.54 ms |
+
+The main actor's share of a commit and the read path are unchanged; the
+merge adds about 0.6 µs per existing row to the writer.
+
 ## Unreleased, a plan's selections declared once — 2026-10-06
 
 Revision: the working tree on top of `c8ca8cc`. Machine: Apple M1 Pro

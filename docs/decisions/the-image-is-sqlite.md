@@ -41,6 +41,16 @@ simplest one wins.
   second connection; a read waits for a write in flight.
 - A file that cannot be read is deleted and started again. Rows age out by
   launch: one whole launch unread, then gone.
+- Added 2026-10-06: a record's row is replaced by its snapshot only when
+  memory holds everything the image does, that is, when the check has read
+  the record's row. The snapshot of a record memory has not read holds what
+  this launch's responses wrote and nothing of what the image held; the
+  writer merges it into the row, its own cells first and then the row's
+  cells it does not write, inside the same transaction. A deleted record
+  replaces its row, and a deleted row's cells are not merged into a record
+  a payload names again, as hydration reads none of them. Without this a
+  response with a few of a record's fields, a header before a screen,
+  emptied the row of everything else and the next check missed.
 
 ## Evidence
 
@@ -79,4 +89,8 @@ simplest one wins.
   for a second index and a mutable id on every record.
 - Size-ordered eviction, a preload off the main actor, a second connection
   for reads, merging a row with fields only the image holds. Each waits for a
-  measurement on a device that asks for it.
+  measurement on a device that asks for it. The merge was taken up on
+  2026-10-06 on evidence of another kind: the persistence test of a check
+  that fills a record a reader holds failed on CI whenever the writer landed
+  before the check, since the row had lost the fields the response did not
+  carry. The addition to the decision above records it.

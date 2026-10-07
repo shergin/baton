@@ -1021,6 +1021,110 @@ struct PersistenceTests {
         await finish(second)
     }
 
+    /// Jerry's header with his name changed, as a later response has it.
+    var renamedJerry: Data {
+        Data(String(decoding: fixture("character-header-5"), as: UTF8.self)
+            .replacingOccurrences(of: "\"name\":\"Jerry Smith\"", with: "\"name\":\"Jerry C-137\"").utf8)
+    }
+
+    /// The slot of a field of `Character` named by its storage key.
+    func characterSlot(_ storageKey: String) -> Slot {
+        Registry.slot(Registry.type("Character"), storageKey)
+    }
+
+    @Test("a response with a few of a record's fields keeps the rest of its row in the image, so a check behind its write reads them")
+    func aPartialResponseKeepsTheRestOfTheRow() async throws {
+        try await seedJerry()
+
+        let second = launch()
+        let store = second.store
+        // Jerry's header from the network, written before any check reads
+        // his row: the order the race in the test above can take.
+        store.commit(try Ingest.normalize(fixture("character-header-5"), plan: header("5", in: store)))
+        await store.persistence?.flush()
+        #expect(store.check(TestEpisodesQuery.plan.resolve(TestEpisodesQuery(id: "5").variables, in: store.keys)) == .image)
+        let episodes = try #require(try stored(TestEpisodesQuery(id: "5"), in: second).character?.episode)
+        #expect(episodes.count == 39)
+        #expect(episodes.first?.name == "Rick Potion #9")
+        await finish(second)
+    }
+
+    @Test("a field a partial response writes replaces its cell in the record's row, and the fields it does not write survive the next launch")
+    func aPartialResponseReplacesTheCellsItWrites() async throws {
+        try await seedJerry()
+
+        let second = launch()
+        second.store.commit(try Ingest.normalize(renamedJerry, plan: header("5", in: second.store)))
+        await finish(second)
+
+        let third = launch()
+        let jerry = try stored(TestHeaderQuery(id: "5"), in: third).character?.testHeader
+        #expect(jerry?.name == "Jerry C-137", "the response's value, not the row's")
+        #expect(jerry?.origin?.name == "Earth (Replacement Dimension)")
+        let record = try #require(third.store.existing("Character:5"))
+        #expect(record.read(characterSlot("gender")) == .string("Male"), "a field only the list wrote")
+        #expect(record.read(characterSlot("created")) == .string("2017-11-04T19:26:56.301Z"))
+        guard case .refs(let episodes) = record.read(characterSlot("episode")) else {
+            Issue.record("the row lost Jerry's episodes")
+            return
+        }
+        #expect(episodes.count == 39)
+        await finish(third)
+    }
+
+    /// The length of the row the image holds for a record, or nil for none.
+    func rowLength(_ key: String) -> Int64? {
+        integer("SELECT length(row) FROM records WHERE key = ?1", key)
+    }
+
+    @Test("a record deleted in a launch that never read its row leaves a deleted row of what memory held, not the fields the image had")
+    func aDeletionReplacesTheRow() async throws {
+        try await seed(launch())
+        let full = try #require(rowLength("Character:1"))
+
+        let second = launch()
+        let rename = TestRename(id: "1", name: "Rick Prime")
+        second.store.commit(try Ingest.normalize(fixture("rename-1"), plan: TestRename.plan.resolve(rename.variables, in: second.store.keys), rootKey: Store.mutationRootKey))
+        let deletion = TestDeleteNote(id: "1")
+        second.store.commit(try Ingest.normalize(fixture("delete-record-1"), plan: TestDeleteNote.plan.resolve(deletion.variables, in: second.store.keys), rootKey: Store.mutationRootKey))
+        #expect(second.store.existing("Character:1")?.deleted == true, "memory held the record, so the deletion marked it")
+        await finish(second)
+
+        let deleted = try #require(rowLength("Character:1"), "the record keeps a row, marked deleted")
+        #expect(deleted < full / 4, "the row holds the id and name memory had, not the list's fields and 51 episodes")
+        let third = launch()
+        #expect(third.store.check(header("1", in: third.store)) == .miss)
+        #expect(third.store.existing("Character:1")?.deleted == true, "the row reads deleted")
+        await finish(third)
+    }
+
+    @Test("a record a payload names again after a launch that never read its row deleted it starts over in the image: the fields the image had do not come back")
+    func aRecordNamedAgainStartsOver() async throws {
+        try await seed(launch())
+
+        // A response names the character, and the bare id then names him
+        // alone among the records memory holds.
+        let second = launch()
+        second.store.commit(try Ingest.normalize(fixture("characters-7-8"), plan: TestList.plan.resolve(TestList(page: 1).variables, in: second.store.keys)))
+        let deletion = TestDeleteNote(id: "7")
+        second.store.commit(try Ingest.normalize(fixture("delete-note-7"), plan: TestDeleteNote.plan.resolve(deletion.variables, in: second.store.keys), rootKey: Store.mutationRootKey))
+        #expect(second.store.existing("Character:7")?.deleted == true)
+        await finish(second)
+
+        let third = launch()
+        third.store.commit(try Ingest.normalize(fixture("characters-7-8"), plan: TestList.plan.resolve(TestList(page: 1).variables, in: third.store.keys)))
+        await finish(third)
+
+        let fourth = launch()
+        #expect(fourth.store.check(header("7", in: fourth.store)) == .miss, "the header's fields went with the deletion")
+        let record = try #require(fourth.store.existing("Character:7"))
+        #expect(!record.deleted, "the payload named it again")
+        #expect(record.read(characterSlot("name")) == .string("Abradolf Lincler"))
+        #expect(record.read(characterSlot("status")) == .missing)
+        #expect(record.read(characterSlot("gender")) == .missing)
+        await finish(fourth)
+    }
+
     @Test("data read every launch keeps its age: expired in the second launch, still dated and fresh in the third")
     func ageReadEveryLaunch() async throws {
         let transport = RecordedTransport { _ in fixtureData }

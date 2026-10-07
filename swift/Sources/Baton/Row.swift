@@ -47,6 +47,29 @@ struct RowWriter {
         }
     }
 
+    /// Keeps, after the row's own cells, the cells of the record's earlier
+    /// row that it does not write: for a record memory has not read from
+    /// the image, whose snapshot holds what this launch's responses wrote
+    /// and not what the image held of it. The row's own cells come first,
+    /// so that a stale name in the old row cuts a read short only after
+    /// everything new; a damaged old row is kept as far as it reads. The
+    /// cells of a deleted row are not kept: a payload that names a deleted
+    /// record again starts it over, as hydration reads none of them.
+    mutating func merge(over old: UnsafeRawBufferPointer) {
+        var oldCells = RowReader(old)
+        guard let flags = oldCells.byte(), flags & 1 == 0, oldCells.index() != nil else { return }
+        var written: [Int] = []
+        bytes.withUnsafeBytes { row in
+            var cells = RowReader(row)
+            guard cells.byte() != nil, cells.index() != nil else { return }
+            while let cell = cells.cell() { written.append(cell.name) }
+        }
+        while let cell = oldCells.cell() {
+            if written.contains(cell.name) { continue }
+            bytes.append(contentsOf: UnsafeRawBufferPointer(rebasing: old[cell.bytes]))
+        }
+    }
+
     /// A record's cell: the key's name and the value with its error.
     private mutating func cell(_ slot: Slot, _ value: Value, _ errors: [Int32: FieldError]?, typeName: (TypeID) -> Int32, slotName: (Slot) -> Int32) {
         if case .missing = value { return }
@@ -281,6 +304,16 @@ struct RowReader {
     /// Marks the names a root field's cell uses: the types its links name.
     mutating func names(ofCell used: inout [Bool]) -> Bool {
         skip(valueMarking: &used)
+    }
+
+    /// The next cell of a record's row, past its header: the key's name and
+    /// the range of the cell's bytes, name and value. Nil at the end, or at
+    /// a damaged cell.
+    mutating func cell() -> (name: Int, bytes: Range<Int>)? {
+        let start = offset
+        var unmarked: [Bool] = []
+        guard let name = index(), skip(valueMarking: &unmarked) else { return nil }
+        return (name, start..<offset)
     }
 
     private func mark(_ name: Int, _ used: inout [Bool]) {

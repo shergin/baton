@@ -313,6 +313,12 @@ public final class Record: Observable {
         let renderedValues: ContiguousArray<Value>
         let errors: [Int32: FieldError]?
         let deleted: Bool
+        /// Whether the record's row had been read when the snapshot was
+        /// taken, so that the values are everything the image holds of the
+        /// record. The writer merges the values of a record not read into
+        /// its row, rather than lose what the image held and memory never
+        /// saw.
+        let hydrated: Bool
 
         /// The rendered keys the row is written under, which the writer
         /// names when it writes: not to be freed before.
@@ -323,7 +329,7 @@ public final class Record: Observable {
 
     /// The record as the image stores it: its values and errors now.
     func snapshot() -> Snapshot {
-        Snapshot(record: self, values: values, renderedIDs: renderedIDs, renderedValues: renderedValues, errors: errors, deleted: deleted)
+        Snapshot(record: self, values: values, renderedIDs: renderedIDs, renderedValues: renderedValues, errors: errors, deleted: deleted, hydrated: hydrated)
     }
 
     /// The field error beside a slot, without registering the read.

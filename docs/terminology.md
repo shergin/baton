@@ -368,9 +368,13 @@ wherever an expiration applies, in memory as from the image. See
 **Persistence, image.** *Concept: store.* Baton's words; Relay's store lives
 in memory. The image is the store's records in one SQLite file, written
 behind every commit of server data, off the main actor: a row per record,
-the query root a row per field, each operation's fetch time. Optimistic
-layers never reach it. `Persistence(url:)` or `Persistence(name:)`, handed
-to `Store(persistence:)`. It is a cache: an image of another format,
+the query root a row per field, each operation's fetch time. A row is
+replaced by a commit's snapshot of the record when the check has read the
+row into memory; the snapshot of a record memory has not read is merged
+into the row, so a response with a few of a record's fields leaves the rest
+for the next check. Optimistic layers never reach it. `Persistence(url:)`
+or `Persistence(name:)`, handed to `Store(persistence:)`. It is a cache: an
+image of another format,
 `version` or protection class and a corrupt one are deleted and started
 again; one over its size limit evicts the rows of launches before the last,
 then the last launch's, and starts again only when nothing is left to evict

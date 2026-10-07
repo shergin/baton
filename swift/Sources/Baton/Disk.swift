@@ -563,16 +563,23 @@ final class Disk: @unchecked Sendable {
     /// Calls `body` with the record's row, if the image has one.
     func record(_ key: String, _ body: (UnsafeRawBufferPointer) -> Void) -> Bool {
         guard let prepared else { return false }
-        return read(prepared.selectRecord, key, isRecord: true, body)
+        return read(prepared.selectRecord, key, noting: .record, body)
     }
 
     /// Calls `body` with a root field's cell, if the image has one.
     func rootField(_ storageKey: String, _ body: (UnsafeRawBufferPointer) -> Void) -> Bool {
         guard let prepared else { return false }
-        return read(prepared.selectRoot, storageKey, isRecord: false, body)
+        return read(prepared.selectRoot, storageKey, noting: .root, body)
     }
 
-    private func read(_ statement: OpaquePointer, _ key: String, isRecord: Bool, _ body: (UnsafeRawBufferPointer) -> Void) -> Bool {
+    /// Where a read notes a row it found carrying an older generation, for
+    /// the writer to stamp: the writer's own read of a row it rewrites at
+    /// once notes it nowhere.
+    private enum Noting {
+        case record, root, nowhere
+    }
+
+    private func read(_ statement: OpaquePointer, _ key: String, noting: Noting, _ body: (UnsafeRawBufferPointer) -> Void) -> Bool {
         key.withCString { text in
             sqlite3_bind_text(statement, 1, text, -1, nil)
             defer { sqlite3_reset(statement) }
@@ -587,7 +594,11 @@ final class Disk: @unchecked Sendable {
             // though the writer's first batch has not deleted it yet.
             if used < generation - 1 { return false }
             if used != generation {
-                if isRecord { readRecords.append(key) } else { readRoot.append(key) }
+                switch noting {
+                case .record: readRecords.append(key)
+                case .root: readRoot.append(key)
+                case .nowhere: break
+                }
             }
             body(UnsafeRawBufferPointer(start: bytes, count: Int(sqlite3_column_bytes(statement, 1))))
             return true
@@ -710,6 +721,15 @@ final class Disk: @unchecked Sendable {
         if Registry.isTransient(record.type) { return true }
         writer.reset()
         writer.row(snapshot, typeName: name(of:), slotName: { name(of: $0, keys) })
+        // A record memory has read from the image holds everything the image
+        // does, and its snapshot replaces the row. One it has not read holds
+        // what this launch's responses wrote: its row keeps the cells the
+        // snapshot does not write, so a response with a few of a record's
+        // fields does not lose the rest to the next check. A deleted record
+        // replaces its row whatever was read.
+        if !snapshot.hydrated, !snapshot.deleted {
+            _ = read(prepared.selectRecord, record.key, noting: .nowhere) { writer.merge(over: $0) }
+        }
         return upsert(prepared.upsertRecord, record.key)
     }
 

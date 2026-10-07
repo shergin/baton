@@ -5,6 +5,15 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- A response with a few of a record's fields no longer empties the
+  record's row in the image of the rest. The writer replaced every row with
+  the commit's snapshot of the record, which for a record memory had not
+  read from the image held only what this launch's responses wrote: a
+  header fetched before a screen left the screen's next check a miss. The
+  snapshot of a record memory has not read is now merged into its row, the
+  response's cells over the row's; a record the check has read replaces
+  its row as before, and so does a deleted one. Recorded in
+  `docs/decisions/the-image-is-sqlite.md`.
 - An operation's text is printed compact, with Relay's printer's own
   option: no newline, indentation or optional space, a comma between
   items, strings as they are. The test target's 115 operations hold
