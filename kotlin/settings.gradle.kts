@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 rootProject.name = "baton-kotlin"
 
 include(":baton")
+include(":goldens")

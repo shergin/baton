@@ -16,7 +16,10 @@ API is designed in the private notes before it is built.
 ```
 baton/     the runtime: commonMain, jvmMain (androidMain later); jvmTest runs the spec
 scripts/   the plans' transcriber, until the Kotlin emitter prints plans
+goldens/   compiles the Kotlin emitter's goldens, compiler/src/tests/goldens-kotlin, against the runtime
 ```
+
+`scripts/check-kotlin-goldens.sh` runs `:goldens:compileKotlinJvm`.
 
 ## Building
 
