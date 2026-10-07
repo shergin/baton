@@ -519,6 +519,7 @@
           "id"
         ],
         "identifier": "id",
+        "identifier_field": "id",
         "connection": null
       },
       "throws_on_field_error": false,

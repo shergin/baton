@@ -525,7 +525,8 @@ impl Lowering<'_> {
     }
 
     /// The `@refetchable` metadata Relay attached: the generated query's name
-    /// and variables, the id variable, and the one connection it paginates.
+    /// and variables, the id variable and the field it carries, and the one
+    /// connection it paginates.
     fn refetch(&self, fragment: &FragmentDefinition) -> Option<RefetchPlan> {
         let metadata = RefetchableMetadata::find(&fragment.directives)?;
         let operation = metadata.operation_name.0.lookup().to_string();
@@ -551,9 +552,12 @@ impl Lowering<'_> {
             .filter(|metadatas| metadatas.len() == 1)
             .and_then(|metadatas| {
                 let metadata = &metadatas[0];
-                let path = metadata.path.as_ref()?;
+                // Relay gives no path to a connection under a plural field,
+                // which the refetch query cannot page. The runtime finds the
+                // connection it pages by the anchor's origin, so the path
+                // itself is not kept.
+                metadata.path.as_ref()?;
                 Some(PaginationPlan {
-                    path: path.iter().map(|part| part.lookup().to_string()).collect(),
                     first: metadata.first.map(|name| name.lookup().to_string()),
                     after: metadata.after.map(|name| name.lookup().to_string()),
                     last: metadata.last.map(|name| name.lookup().to_string()),
@@ -567,6 +571,10 @@ impl Lowering<'_> {
                 .identifier_info
                 .as_ref()
                 .map(|info| info.identifier_query_variable_name.lookup().to_string()),
+            identifier_field: metadata
+                .identifier_info
+                .as_ref()
+                .map(|info| info.identifier_field.lookup().to_string()),
             connection,
         })
     }

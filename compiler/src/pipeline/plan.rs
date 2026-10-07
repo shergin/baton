@@ -101,13 +101,15 @@ pub struct RefetchPlan {
     pub variables: Vec<String>,
     /// The variable the owner's id is passed as (`id`), when the query roots at `node`.
     pub identifier: Option<String>,
+    /// The field of the owner whose value the identifier variable carries,
+    /// as Relay's `@refetchable` names it.
+    pub identifier_field: Option<String>,
     pub connection: Option<PaginationPlan>,
 }
 
 /// The variables a fragment's one connection paginates by.
 #[derive(Debug, Clone, serde::Serialize)]
 pub struct PaginationPlan {
-    pub path: Vec<String>,
     pub first: Option<String>,
     pub after: Option<String>,
     pub last: Option<String>,

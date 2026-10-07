@@ -1058,18 +1058,20 @@ fn linked_read(
 /// query and `refetch()`.
 fn refetch_members(refetch: &RefetchPlan, type_name: &str) -> RefetchMembers {
     let pagination = refetch.connection.as_ref();
-    let id = StorageKeyPlan {
-        name: "id".to_string(),
-        arguments: Vec::new(),
-    };
+    // The identity is read from the field Relay fetches the owner again by,
+    // which takes no arguments.
+    let identity = refetch.identifier_field.as_ref().map(|field| {
+        let key = StorageKeyPlan {
+            name: field.clone(),
+            arguments: Vec::new(),
+        };
+        SlotAccess::of(type_name, false, &key)
+    });
     RefetchMembers {
         operation: refetch.operation.clone(),
         variables: refetch.variables.clone(),
         identifier: refetch.identifier.clone(),
-        identity: refetch
-            .identifier
-            .as_ref()
-            .map(|_| SlotAccess::of(type_name, false, &id)),
+        identity,
         first: pagination.and_then(|pagination| pagination.first.clone()),
         after: pagination.and_then(|pagination| pagination.after.clone()),
         last: pagination.and_then(|pagination| pagination.last.clone()),

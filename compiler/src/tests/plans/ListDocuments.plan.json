@@ -42,11 +42,8 @@
           "id"
         ],
         "identifier": "id",
+        "identifier_field": "id",
         "connection": {
-          "path": [
-            "author",
-            "notes"
-          ],
           "first": "count",
           "after": "cursor",
           "last": null,
@@ -466,10 +463,8 @@
           "id"
         ],
         "identifier": "id",
+        "identifier_field": "id",
         "connection": {
-          "path": [
-            "notes"
-          ],
           "first": "count",
           "after": "cursor",
           "last": null,
@@ -809,10 +804,8 @@
           "id"
         ],
         "identifier": "id",
+        "identifier_field": "id",
         "connection": {
-          "path": [
-            "notes"
-          ],
           "first": "count",
           "after": "cursor",
           "last": null,
@@ -1239,10 +1232,8 @@
           "id"
         ],
         "identifier": "id",
+        "identifier_field": "id",
         "connection": {
-          "path": [
-            "notes"
-          ],
           "first": null,
           "after": null,
           "last": "count",
@@ -1664,10 +1655,8 @@
           "id"
         ],
         "identifier": "id",
+        "identifier_field": "id",
         "connection": {
-          "path": [
-            "notes"
-          ],
           "first": "count",
           "after": "cursor",
           "last": null,
@@ -2052,10 +2041,8 @@
           "id"
         ],
         "identifier": "id",
+        "identifier_field": "id",
         "connection": {
-          "path": [
-            "notes"
-          ],
           "first": null,
           "after": null,
           "last": "count",
