@@ -421,6 +421,33 @@ extension Anchor {
         default: unexpected(slot, value); return nil
         }
     }
+
+    /// A plural link read out as values, for an `@inline` fragment: `build`
+    /// runs once per linked record, in order, at the read. Null elements and
+    /// deleted records are dropped, as a `List` drops them.
+    public func values<Element>(_ slot: Slot, _ build: (Anchor) -> Element) -> [Element]? {
+        values(slot, nonNull: false, build)
+    }
+
+    public func requiredValues<Element>(_ slot: Slot, _ build: (Anchor) -> Element) -> [Element] {
+        values(slot, nonNull: true, build) ?? []
+    }
+
+    private func values<Element>(_ slot: Slot, nonNull: Bool, _ build: (Anchor) -> Element) -> [Element]? {
+        let value = record.read(slot)
+        switch value {
+        case .refs(let records):
+            var elements: [Element] = []
+            elements.reserveCapacity(records.count)
+            for case let target? in records where !target.deleted {
+                elements.append(build(child(target)))
+            }
+            return elements
+        case .null: if nonNull { unexpected(slot, value) }; return nil
+        case .missing: missing(slot); return nil
+        default: unexpected(slot, value); return nil
+        }
+    }
 }
 
 /// Honest data: the readers behind `@required`, `@catch`,
@@ -508,6 +535,21 @@ extension Anchor {
         collectErrors(list: slot, within: within, into: &errors)
         if !errors.isEmpty { return .failure(FieldErrors(errors)) }
         return .success(list(slot, nonNull: true, keep: keep) ?? List(records: [], anchor: self, keep: nil))
+    }
+
+    /// `@catch` on a plural link read out as values.
+    public func caughtValues<Element>(_ slot: Slot, within: (Anchor) -> [FieldError], _ build: (Anchor) -> Element) -> Result<[Element]?, FieldErrors> {
+        var errors: [FieldError] = []
+        collectErrors(list: slot, within: within, into: &errors)
+        if !errors.isEmpty { return .failure(FieldErrors(errors)) }
+        return .success(values(slot, build))
+    }
+
+    public func caughtRequiredValues<Element>(_ slot: Slot, within: (Anchor) -> [FieldError], _ build: (Anchor) -> Element) -> Result<[Element], FieldErrors> {
+        var errors: [FieldError] = []
+        collectErrors(list: slot, within: within, into: &errors)
+        if !errors.isEmpty { return .failure(FieldErrors(errors)) }
+        return .success(requiredValues(slot, build))
     }
 
     /// Appends the field's own error, if any.

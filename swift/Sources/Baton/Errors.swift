@@ -42,7 +42,7 @@ public struct FieldError: Error, Hashable, Sendable, CustomStringConvertible, Lo
 }
 
 /// The field errors a `@catch` collected or a `@throwOnFieldError` threw.
-public struct FieldErrors: Error, Sendable, CustomStringConvertible, LocalizedError {
+public struct FieldErrors: Error, Hashable, Sendable, CustomStringConvertible, LocalizedError {
     public let errors: [FieldError]
 
     public init(_ errors: [FieldError]) { self.errors = errors }

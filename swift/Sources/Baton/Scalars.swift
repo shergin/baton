@@ -5,8 +5,9 @@ import Foundation
 /// wrote it; the accessor converts at the read and says the conversion can
 /// fail, so a value the type cannot hold reads as nil, or as the failure a
 /// directive asks for, never as a zero. A variable of the type is sent as
-/// its text.
-public protocol MappedScalar: Sendable {
+/// its text. The type is `Hashable`, so an `@inline` fragment's value, which
+/// holds one as a stored property, is `Hashable` too.
+public protocol MappedScalar: Sendable, Hashable {
     /// The value the text names, or nil when the text does not convert.
     init?(scalarText: String)
     /// The text a server receives for the value.

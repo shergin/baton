@@ -5,6 +5,12 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- The runtime reads a plural link out as values: `values`, `requiredValues`,
+  `caughtValues` and `caughtRequiredValues` on an anchor build one value per
+  linked record at the read, for the `@inline` fragment the compiler is
+  learning to emit. `FieldErrors` and every `MappedScalar` are `Hashable`,
+  so a value holding a caught field or a mapped scalar can be. A mapped
+  scalar type of the app's own that was not `Hashable` must become it.
 - A response with a few of a record's fields no longer empties the
   record's row in the image of the rest. The writer replaced every row with
   the commit's snapshot of the record, which for a record memory had not
