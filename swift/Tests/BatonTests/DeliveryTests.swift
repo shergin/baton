@@ -819,12 +819,16 @@ struct DeliveryTests {
         let live = environment.subscriptionHandle(for: TestNoteAdded(characterId: "events-\(#line)", connections: []))
         let liveRetention = live.retain()
         await until { events.continuation != nil }
+        // The retry lands in the turn of the main actor that delivered the
+        // event, before the replaced stream's task can take it up, however
+        // the tasks are scheduled. A suspension between the two would race
+        // the event's ingest: the task resumes through the cooperative pool,
+        // and so does `Task.yield()`.
         events.send(fixture("not-authorized"))
-        // One turn of the main actor hands the event to the ingest, off the
-        // main actor; the retry lands before the handle hears back from it.
-        await Task.yield()
         live.retry()
         await until { events.requests.count == 2 }
+        // Long past the few milliseconds the event takes to read: had it
+        // been shown, it would be by now.
         try await Task.sleep(for: .milliseconds(50))
         #expect(live.error == nil, "the replaced stream's bad event is not the new stream's")
         #expect(live.isActive)
@@ -854,11 +858,13 @@ struct DeliveryTests {
         await until { live.events == 1 }
         #expect(character.notes.nodes.map(\.text).last == "Live from the garage", "the event before the release landed")
 
-        // One turn of the main actor hands the event to the ingest, off the
-        // main actor; the release lands before the handle hears back from
-        // it, and the commit finds the task cancelled.
+        // The release lands in the turn of the main actor that delivered the
+        // event, before the handle's task can take it up, however the tasks
+        // are scheduled. A suspension between the two would race the
+        // event's ingest: the task resumes through the cooperative pool, and
+        // so does `Task.yield()`, and an ingest that finished first would
+        // commit the event before the release, as it should.
         events.send(fixture("note-added-2"))
-        await Task.yield()
         _ = consume liveRetention
         // Long past the few milliseconds the event takes to read: had it
         // been committed, it would be in the store by now.
