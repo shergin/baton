@@ -126,6 +126,41 @@ extension Anchor {
     private var anchor: Anchor { self }
 
 
+    /// The conversions a scalar reader accepts for a value of another kind,
+    /// shared with the list readers so a list follows its element type: a
+    /// string reads a number's or a boolean's text, a double reads an int,
+    /// an int reads a whole double. A kind nothing converts is nil.
+    static func stringValue(_ value: Value) -> String? {
+        switch value {
+        case .string(let string): return string
+        case .int(let int): return String(int)
+        case .double(let double): return String(double)
+        case .bool(let bool): return bool ? "true" : "false"
+        default: return nil
+        }
+    }
+
+    static func intValue(_ value: Value) -> Int? {
+        switch value {
+        case .int(let int): return int
+        case .double(let double): return Int(exactly: double)
+        default: return nil
+        }
+    }
+
+    static func doubleValue(_ value: Value) -> Double? {
+        switch value {
+        case .double(let double): return double
+        case .int(let int): return Double(int)
+        default: return nil
+        }
+    }
+
+    static func boolValue(_ value: Value) -> Bool? {
+        if case .bool(let bool) = value { return bool }
+        return nil
+    }
+
     /// Whether an `@include` or `@skip` condition selects: the variable has
     /// the value. An accessor under a condition that does not select reads
     /// as nil and reports nothing missing.
@@ -310,25 +345,25 @@ extension Anchor {
         }
     }
 
-    public func strings(_ slot: Slot) -> [String]? { scalars(slot, nonNull: false) { if case .string(let string) = $0 { string } else { nil } } }
-    public func requiredStrings(_ slot: Slot) -> [String] { scalars(slot, nonNull: true) { if case .string(let string) = $0 { string } else { nil } } ?? [] }
-    public func ints(_ slot: Slot) -> [Int]? { scalars(slot, nonNull: false) { if case .int(let int) = $0 { int } else { nil } } }
-    public func requiredInts(_ slot: Slot) -> [Int] { scalars(slot, nonNull: true) { if case .int(let int) = $0 { int } else { nil } } ?? [] }
-    public func doubles(_ slot: Slot) -> [Double]? { scalars(slot, nonNull: false) { if case .double(let double) = $0 { double } else { nil } } }
-    public func requiredDoubles(_ slot: Slot) -> [Double] { scalars(slot, nonNull: true) { if case .double(let double) = $0 { double } else { nil } } ?? [] }
-    public func bools(_ slot: Slot) -> [Bool]? { scalars(slot, nonNull: false) { if case .bool(let bool) = $0 { bool } else { nil } } }
-    public func requiredBools(_ slot: Slot) -> [Bool] { scalars(slot, nonNull: true) { if case .bool(let bool) = $0 { bool } else { nil } } ?? [] }
+    public func strings(_ slot: Slot) -> [String]? { scalars(slot, nonNull: false, Anchor.stringValue) }
+    public func requiredStrings(_ slot: Slot) -> [String] { scalars(slot, nonNull: true, Anchor.stringValue) ?? [] }
+    public func ints(_ slot: Slot) -> [Int]? { scalars(slot, nonNull: false, Anchor.intValue) }
+    public func requiredInts(_ slot: Slot) -> [Int] { scalars(slot, nonNull: true, Anchor.intValue) ?? [] }
+    public func doubles(_ slot: Slot) -> [Double]? { scalars(slot, nonNull: false, Anchor.doubleValue) }
+    public func requiredDoubles(_ slot: Slot) -> [Double] { scalars(slot, nonNull: true, Anchor.doubleValue) ?? [] }
+    public func bools(_ slot: Slot) -> [Bool]? { scalars(slot, nonNull: false, Anchor.boolValue) }
+    public func requiredBools(_ slot: Slot) -> [Bool] { scalars(slot, nonNull: true, Anchor.boolValue) ?? [] }
 
     /// Lists whose elements the schema types nullable: a null element reads
     /// as nil, as Relay types it.
-    public func nullableStrings(_ slot: Slot) -> [String?]? { nullableScalars(slot, nonNull: false) { if case .string(let string) = $0 { string } else { nil } } }
-    public func requiredNullableStrings(_ slot: Slot) -> [String?] { nullableScalars(slot, nonNull: true) { if case .string(let string) = $0 { string } else { nil } } ?? [] }
-    public func nullableInts(_ slot: Slot) -> [Int?]? { nullableScalars(slot, nonNull: false) { if case .int(let int) = $0 { int } else { nil } } }
-    public func requiredNullableInts(_ slot: Slot) -> [Int?] { nullableScalars(slot, nonNull: true) { if case .int(let int) = $0 { int } else { nil } } ?? [] }
-    public func nullableDoubles(_ slot: Slot) -> [Double?]? { nullableScalars(slot, nonNull: false) { if case .double(let double) = $0 { double } else { nil } } }
-    public func requiredNullableDoubles(_ slot: Slot) -> [Double?] { nullableScalars(slot, nonNull: true) { if case .double(let double) = $0 { double } else { nil } } ?? [] }
-    public func nullableBools(_ slot: Slot) -> [Bool?]? { nullableScalars(slot, nonNull: false) { if case .bool(let bool) = $0 { bool } else { nil } } }
-    public func requiredNullableBools(_ slot: Slot) -> [Bool?] { nullableScalars(slot, nonNull: true) { if case .bool(let bool) = $0 { bool } else { nil } } ?? [] }
+    public func nullableStrings(_ slot: Slot) -> [String?]? { nullableScalars(slot, nonNull: false, Anchor.stringValue) }
+    public func requiredNullableStrings(_ slot: Slot) -> [String?] { nullableScalars(slot, nonNull: true, Anchor.stringValue) ?? [] }
+    public func nullableInts(_ slot: Slot) -> [Int?]? { nullableScalars(slot, nonNull: false, Anchor.intValue) }
+    public func requiredNullableInts(_ slot: Slot) -> [Int?] { nullableScalars(slot, nonNull: true, Anchor.intValue) ?? [] }
+    public func nullableDoubles(_ slot: Slot) -> [Double?]? { nullableScalars(slot, nonNull: false, Anchor.doubleValue) }
+    public func requiredNullableDoubles(_ slot: Slot) -> [Double?] { nullableScalars(slot, nonNull: true, Anchor.doubleValue) ?? [] }
+    public func nullableBools(_ slot: Slot) -> [Bool?]? { nullableScalars(slot, nonNull: false, Anchor.boolValue) }
+    public func requiredNullableBools(_ slot: Slot) -> [Bool?] { nullableScalars(slot, nonNull: true, Anchor.boolValue) ?? [] }
 
     /// A list of scalars the schema types non-null. An element the list
     /// cannot hold, a null or a value of another type, is reported once, as

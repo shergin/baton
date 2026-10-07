@@ -5,6 +5,12 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- A list of scalars follows its element type in what it accepts, as the
+  contract says and the Kotlin readers do: a list of strings reads a
+  number's or a boolean's text, a list of floats reads an int, a list of
+  ints reads a whole float, as the single-value readers always did. Before,
+  a list element of another kind was dropped or read as nil where the
+  scalar reader converted it.
 - The Kotlin runtime has its store and its ingest: a response's bytes
   become a change set by the plan, with no JSON tree between, and the
   commit writes it into records whose cells are Compose snapshot state, so

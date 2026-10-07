@@ -219,6 +219,80 @@ struct ReaderTests {
         #expect(anchor.string(value) == "text")
     }
 
+    /// A record whose scalar lists hold values of one kind each, for list
+    /// readers of another kind to read: ints, floats, booleans and strings.
+    func listKinds(in store: Store) throws -> (anchor: Anchor, ints: Slot, doubles: Slot, bools: Slot, strings: Slot) {
+        let query = Registry.type("Query")
+        let kinds = Registry.type("TestListKinds")
+        let ints = Registry.slot(kinds, "ints")
+        let doubles = Registry.slot(kinds, "doubles")
+        let bools = Registry.slot(kinds, "bools")
+        let strings = Registry.slot(kinds, "strings")
+        let plan = Plan(root: Selection(type: query, key: [], fields: [
+            .linked("listKinds", key: .fixed(Registry.slot(query, "listKinds")), plural: false, selection: Selection(type: kinds, key: [], fields: [
+                .scalar("ints", key: .fixed(ints), kind: .int, list: true),
+                .scalar("doubles", key: .fixed(doubles), kind: .double, list: true),
+                .scalar("bools", key: .fixed(bools), kind: .bool, list: true),
+                .scalar("strings", key: .fixed(strings), kind: .string, list: true),
+            ])),
+        ])).resolve(.none, in: store.keys)
+        let response = #"{"data":{"listKinds":{"ints":[1,2],"doubles":[2.0,2.5,3.0],"bools":[true,false],"strings":["yes","no"]}}}"#
+        store.commit(try Ingest.normalize(Data(response.utf8), plan: plan))
+        let anchor = Anchor(record: try #require(store.existing("client:root:listKinds")), variables: .none, store: store)
+        return (anchor, ints, doubles, bools, strings)
+    }
+
+    @Test("a list of floats reads an int element as its double, as the float reader does, and reports nothing")
+    func aFloatListReadsAnIntElement() throws {
+        let reports = Reports()
+        let store = store(reports)
+        let lists = try listKinds(in: store)
+        #expect(lists.anchor.requiredDoubles(lists.ints) == [1.0, 2.0])
+        #expect(lists.anchor.doubles(lists.ints) == [1.0, 2.0])
+        #expect(lists.anchor.nullableDoubles(lists.ints) == [1.0, 2.0])
+        #expect(reports.unexpected.isEmpty)
+    }
+
+    @Test("a list of non-null ints reads a whole float as its int and drops a fractional one, reported once as unexpected")
+    func aNonNullIntListReadsAWholeFloatAndDropsAFraction() throws {
+        let reports = Reports()
+        let store = store(reports)
+        let lists = try listKinds(in: store)
+        #expect(lists.anchor.requiredInts(lists.doubles) == [2, 3])
+        #expect(reports.unexpected == ["TestListKinds.doubles"])
+    }
+
+    @Test("a list of nullable ints reads a whole float as its int and a fractional one as nil, reported once as unexpected")
+    func aNullableIntListReadsAWholeFloatAndAFractionAsNil() throws {
+        let reports = Reports()
+        let store = store(reports)
+        let lists = try listKinds(in: store)
+        #expect(lists.anchor.nullableInts(lists.doubles) == [2, nil, 3])
+        #expect(reports.unexpected == ["TestListKinds.doubles"])
+    }
+
+    @Test("a list of strings reads a number's or a boolean's text, as the string reader does, and reports nothing")
+    func aStringListReadsTheTextOfNumbersAndBooleans() throws {
+        let reports = Reports()
+        let store = store(reports)
+        let lists = try listKinds(in: store)
+        #expect(lists.anchor.requiredStrings(lists.ints) == ["1", "2"])
+        #expect(lists.anchor.strings(lists.doubles) == ["2.0", "2.5", "3.0"])
+        #expect(lists.anchor.nullableStrings(lists.bools) == ["true", "false"])
+        #expect(reports.unexpected.isEmpty)
+    }
+
+    @Test("a list of booleans drops a string element, or reads it as nil where elements are nullable, and reports it once per read")
+    func aBoolListDropsAStringElement() throws {
+        let reports = Reports()
+        let store = store(reports)
+        let lists = try listKinds(in: store)
+        #expect(lists.anchor.requiredBools(lists.strings) == [])
+        #expect(lists.anchor.nullableBools(lists.strings) == [nil, nil])
+        #expect(reports.unexpected == ["TestListKinds.strings", "TestListKinds.strings"])
+        #expect(lists.anchor.requiredBools(lists.bools) == [true, false])
+    }
+
     @Test("one owner keeps each key with variables and each spread with arguments apart")
     func ownerKeepsKeysApart() throws {
         let store = Store()
